@@ -12,12 +12,12 @@ public class VideoPlayerController : MonoBehaviour
         // ตั้งค่า VideoPlayer
         videoPlayer.renderMode = VideoRenderMode.APIOnly; // ตั้งให้ VideoPlayer ไม่แสดงผลเอง
         videoPlayer.prepareCompleted += OnVideoPrepared;
-        videoPlayer.Prepare(); // เตรียมตัวเล่นวิดีโอ
+        videoPlayer.Prepare();
     }
     
     private void OnVideoPrepared(VideoPlayer vp)
     {
         rawImage.texture = videoPlayer.texture; // ตั้ง RawImage ให้แสดงผลจาก VideoPlayer
-        videoPlayer.Play(); // เริ่มเล่นวิดีโอ
+        videoPlayer.Play();
     }
 }
