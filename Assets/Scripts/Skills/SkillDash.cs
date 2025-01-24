@@ -22,11 +22,11 @@ namespace Skills
                 OwnerCharacter.UpdateScale();
             });
         }
-
+        
         protected override void SkillAction()
         {
             float dashForce = Mathf.Lerp(minDashForce, maxDashForce, chargePercentage);
-            float lostOxygen = Mathf.Lerp(minLostOxygen, maxLostOxygen, chargePercentage);
+            float lostOxygen = Mathf.Lerp(OwnerCharacter.BubbleSize * (minLostOxygen / 100), OwnerCharacter.BubbleSize * (maxLostOxygen / 100), chargePercentage);
             Vector2 direction = new Vector2();
             
             if (OwnerCharacter.CompareTag("Player")) 
@@ -34,6 +34,7 @@ namespace Skills
             else 
                 direction = OwnerCharacter.rigidbody2D.velocity.normalized;
             
+            Debug.Log(lostOxygen);
             OwnerCharacter.AdjustSize(-lostOxygen);
             OwnerCharacter.rigidbody2D.velocity = Vector2.zero;
             OwnerCharacter.rigidbody2D.AddForce(-direction * backStepForce);

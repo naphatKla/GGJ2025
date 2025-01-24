@@ -67,7 +67,7 @@ namespace Characters
                     break;
             }
         
-            if (size > 0) return;
+            if (bubbleSize > 0) return;
             Dead();
         }
 
