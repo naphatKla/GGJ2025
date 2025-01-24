@@ -4,7 +4,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.Video; // หากใช้ TextMeshPro
 
 public class Credits : MonoBehaviour
-{
+{ 
     public RectTransform creditsText;
     public float scrollSpeed = 50f; 
     public float endPositionY = 1000f;
