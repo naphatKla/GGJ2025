@@ -12,8 +12,9 @@ namespace Skills
         [SerializeField] [Title("SkillBase")] private float cooldown = 1f;
         [SerializeField] protected float skillDuration = 1f;
         protected CharacterBase OwnerCharacter;
-        [Title("Events")] [PropertyOrder(100)] public UnityEvent onSKillStart;
+        [Title("Events")] [PropertyOrder(100)] public UnityEvent onSkillStart;
         [PropertyOrder(100)] public UnityEvent onSkillEnd;
+        protected float chargePercentage;
     
         /// <summary>
         /// Override this method to implement the skill logic
@@ -35,7 +36,7 @@ namespace Skills
             cooldown -= Time.deltaTime;
         }
     
-        public virtual void UseSkill()
+        public virtual void UseSkill(float chargePercentage = 0)
         {
             if (cooldown > 0)
             {
@@ -43,8 +44,10 @@ namespace Skills
                 return;
             }
             
+            this.chargePercentage = chargePercentage;
+            
             SkillAction();
-            onSKillStart?.Invoke();
+            onSkillStart?.Invoke();
             cooldown = 1;
             
             if (skillDuration <= 0) 

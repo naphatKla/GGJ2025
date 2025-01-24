@@ -1,3 +1,4 @@
+using DG.Tweening;
 using MoreMountains.Feedbacks;
 using Sirenix.OdinInspector;
 using Skills;
@@ -10,6 +11,7 @@ namespace Characters
     {
         [SerializeField] private float bubbleSize = 1f;
         [SerializeField] private float speed = 1f;
+        [SerializeField] private float increaseScalePerSize = 0.01f;
         [SerializeField] [SceneObjectsOnly] [BoxGroup("Skills")] protected SkillBase SkillMouseLeft;
         [SerializeField] [SceneObjectsOnly] [BoxGroup("Skills")] protected  SkillBase SkillMouseRight;
         [SerializeField] [BoxGroup("Feedbacks")] private MMF_Player sizeUpFeedback;
@@ -35,6 +37,17 @@ namespace Characters
             SkillMouseRight.UpdateCooldown();
         }
         
+        private void OnTriggerEnter2D(Collider2D other)
+        {
+            if (other.CompareTag("Exp"))
+            {
+                ExpScript exp = other.GetComponent<ExpScript>();
+                AdjustSize(exp.expAmount);
+                UpdateScale();
+                Destroy(other.gameObject);
+            }
+        }
+        
         protected virtual void Dead()
         {
             Destroy(gameObject);
@@ -56,6 +69,12 @@ namespace Characters
         
             if (size > 0) return;
             Dead();
+        }
+
+        public void UpdateScale()
+        {
+            Vector2 newScale = Vector2.one * (bubbleSize * increaseScalePerSize);
+            transform.DOScale(newScale, 0.05f).SetEase(Ease.OutBounce);
         }
     }
 }

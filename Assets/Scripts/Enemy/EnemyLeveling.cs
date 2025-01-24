@@ -34,15 +34,7 @@ public class EnemyLeveling : MonoBehaviour
         }
         return Vector3.zero;
     }
-
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        if (other.CompareTag("Exp"))
-        {
-            Destroy(other.gameObject);
-        }
-    }
-
+    
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.yellow;
