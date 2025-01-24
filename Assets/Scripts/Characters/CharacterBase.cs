@@ -1,3 +1,4 @@
+using System;
 using DG.Tweening;
 using MoreMountains.Feedbacks;
 using Sirenix.OdinInspector;
@@ -11,7 +12,12 @@ namespace Characters
     {
         [SerializeField] private float bubbleSize = 1f;
         [SerializeField] private float speed = 1f;
-        [SerializeField] private float increaseScalePerSize = 0.01f;
+        [SerializeField] [PropertyTooltip("1 bubble size will affect to the object scale += 0.01")] private float increaseScalePerSize = 0.01f; 
+        [SerializeField] [BoxGroup("PickUpOxygen")] private float oxygenDetectionRadius = 1f;
+        [SerializeField] [BoxGroup("PickUpOxygen")] private float oxygenMagneticStartForce = 3f;
+        [SerializeField] [BoxGroup("PickUpOxygen")] private float oxygenMagneticEndForce = 3f;
+        [SerializeField] [BoxGroup("PickUpOxygen")] private float oxygenCurveForce = 2.6f;
+        [SerializeField] [BoxGroup("PickUpOxygen")] private LayerMask oxygenLayer;
         [SerializeField] [SceneObjectsOnly] [BoxGroup("Skills")] protected SkillBase SkillMouseLeft;
         [SerializeField] [SceneObjectsOnly] [BoxGroup("Skills")] protected  SkillBase SkillMouseRight;
         [SerializeField] [BoxGroup("Feedbacks")] private MMF_Player sizeUpFeedback;
@@ -35,6 +41,19 @@ namespace Characters
             SkillInputHandler();
             SkillMouseLeft.UpdateCooldown();
             SkillMouseRight.UpdateCooldown();
+            
+            // เก็บ oxygen รอบๆรัศมี
+            Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, (transform.localScale.x / 2) + oxygenDetectionRadius, oxygenLayer);
+            
+            foreach (var collider in colliders)
+            {
+                Vector2 direction = (transform.position - collider.transform.position).normalized;
+                Vector2 perpendicularRight = new Vector2(direction.y, -direction.x).normalized;
+                Vector2 combinedVector = (direction + perpendicularRight).normalized;
+                float force = oxygenMagneticStartForce - Time.deltaTime;
+                force = Mathf.Clamp(force, oxygenMagneticEndForce, oxygenMagneticStartForce);
+                collider.transform.position += (Vector3) (combinedVector * force * Time.deltaTime);
+            }
         }
         
         private void OnTriggerEnter2D(Collider2D other)
@@ -75,6 +94,12 @@ namespace Characters
         {
             Vector2 newScale = Vector2.one * (bubbleSize * increaseScalePerSize);
             transform.DOScale(newScale, 0.05f).SetEase(Ease.OutBounce);
+        }
+
+        private void OnDrawGizmos()
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireSphere(transform.position, (transform.localScale.x/2) + oxygenDetectionRadius);
         }
     }
 }

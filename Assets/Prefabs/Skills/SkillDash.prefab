@@ -46,6 +46,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cooldown: 2
   skillDuration: 0.5
+  minOxygenToUseSKill: 130
   onSkillStart:
     m_PersistentCalls:
       m_Calls: []
@@ -56,5 +57,5 @@ MonoBehaviour:
   backStepDuration: 0.2
   minDashForce: 800
   maxDashForce: 1500
-  minLostOxygen: 5
-  maxLostOxygen: 30
+  minLostOxygen: 1
+  maxLostOxygen: 10
