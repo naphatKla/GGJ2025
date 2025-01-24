@@ -22,6 +22,7 @@ public class EnemyManager : CharacterBase
     private GameObject _target;
     private float aiSize;
     private float playerSize;
+    private float lastDashTime = 0f;
     void Start()
     {
         //Get Dependent
@@ -34,27 +35,48 @@ public class EnemyManager : CharacterBase
         //Set AI attribute
         navMesh.updateRotation = false;
         navMesh.updateUpAxis = false;
+        navMesh.speed = base.Speed;
     }
 
     protected override void SkillInputHandler()
     {
-        /*SkillMouseLeft?.UseSkill();
-        SkillMouseRight?.UseSkill();*/
+        if (currentState == EnemyState.hunting && Random.value > 0.3f)
+        {
+            float random = Random.Range(2f, 5f);
+            if (Time.time >= lastDashTime + random)
+            {
+                SkillMouseLeft.UseSkill();
+                lastDashTime = Time.time;
+            }
+        }
+        
+        if (currentState == EnemyState.runaway && Random.value > 0.3f)
+        {
+            float random = Random.Range(2f, 5f);
+            if (Time.time >= lastDashTime + random)
+            {
+                SkillMouseLeft.UseSkill();
+                lastDashTime = Time.time;
+            }
+        }
     }
 
     protected override void Update()
     {
         base.Update();
         aiSize = BubbleSize;
-        playerSize = _target.GetComponent<CharacterBase>().BubbleSize;
-        //navMesh.velocity = Vector2.ClampMagnitude(navMesh.velocity, Speed);
-        
+        if (navMesh.enabled) PerformLeveling();
+        if (_target == null)
+        {
+            currentState = EnemyState.leveling;
+            return;
+        }
+        playerSize = _target.GetComponent<CharacterBase>().BubbleSize;;
+
         StateDecide();
         if (IsModifyingMovement) return;
-        PerformLeveling();
-        PerformHunting();
-        //PerformCaution();
-        PerformRunaway();
+        if (navMesh.enabled) PerformHunting();
+        if (navMesh.enabled) PerformRunaway();
     }
     
     private void StateDecide()
@@ -76,7 +98,6 @@ public class EnemyManager : CharacterBase
         //Enemy would target player if they entered player screen for 0.5s
         if (huntScript.EnemyDetectPlayer() && CompareValues(aiSize,playerSize) > 10 && currentState == EnemyState.leveling)
         {
-            navMesh.ResetPath();
             StartCoroutine(PreHunting());
         }
 
@@ -104,6 +125,7 @@ public class EnemyManager : CharacterBase
     {
         if (currentState == EnemyState.leveling)
         {
+            if (navMesh == null) { return; }
             navMesh.SetDestination(levelScript.FindNearestExpOrb());
         }
     }
@@ -185,8 +207,8 @@ public class EnemyManager : CharacterBase
             elapsedTime += Time.deltaTime;
             yield return null;
         }
-
         currentState = EnemyState.hunting;
+        navMesh.ResetPath();
     }
     
     private IEnumerator PreRunAway()
