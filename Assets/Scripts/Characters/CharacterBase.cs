@@ -61,16 +61,28 @@ namespace Characters
         
         private void OnTriggerEnter2D(Collider2D other)
         {
+            float distance = Vector2.Distance(transform.position, other.transform.position);
+            float thisRadius = (transform.localScale.x / 2);
+            
             if (other.CompareTag("Exp"))
             {
                 ExpScript exp = other.GetComponent<ExpScript>();
                 AdjustSize(exp.expAmount);
                 UpdateScale();
                 Destroy(other.gameObject);
+                return;
             }
+
+            CharacterBase otherCharacter = other.GetComponent<CharacterBase>();
+            if (!otherCharacter) return;
+            bool canEat = (distance <= thisRadius) && (bubbleSize > otherCharacter.bubbleSize);
+            if (!canEat) return;
+            AdjustSize(otherCharacter.bubbleSize);
+            UpdateScale();
+            otherCharacter.Dead();
         }
         
-        protected virtual void Dead()
+        public virtual void Dead()
         {
             Destroy(gameObject);
             deadFeedback?.PlayFeedbacks();
