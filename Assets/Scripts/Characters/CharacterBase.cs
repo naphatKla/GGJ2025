@@ -94,23 +94,27 @@ namespace Characters
         [Button]
         protected virtual void Dead()
         {
+            DropOxygen(bubbleSize);
+            deadFeedback?.PlayFeedbacks();
+            Destroy(gameObject);
+        }
+
+        public virtual void DropOxygen(float amount)
+        {
             float sumDrop = 0;
             
             foreach (ExpScript drop in oxygenDrops)
             {
-                while (sumDrop + drop.expAmount <= bubbleSize)
+                while (sumDrop + drop.expAmount <= amount)
                 {
                     sumDrop += drop.expAmount;
                     float radius = transform.localScale.x;
                     Vector2 randomPosition = transform.position + new Vector3(Random.Range(-radius, radius), Random.Range(-radius, radius), 0);
                     ExpScript dropInstant = Instantiate(drop.gameObject, transform.position, Quaternion.identity).GetComponent<ExpScript>();
                     dropInstant.canPickUp = false;
-                    dropInstant.transform.DOMove(randomPosition, 0.15f).SetEase(Ease.OutBounce).onComplete += () => dropInstant.canPickUp = true;
+                    dropInstant.transform.DOMove(randomPosition, 0.4f).SetEase(Ease.InOutSine).onComplete += () => dropInstant.canPickUp = true;
                 }
             }
-            
-            deadFeedback?.PlayFeedbacks();
-            Destroy(gameObject);
         }
         
         public virtual void AdjustSize(float size)
@@ -129,6 +133,7 @@ namespace Characters
                     break;
                 case < 0:
                     sizeDownFeedback?.PlayFeedbacks();
+                    DropOxygen(Mathf.Abs(size));
                     break;
             }
         
