@@ -14,7 +14,7 @@ public class ExpData
 public class RandomSpawnExp : MonoBehaviour
 {
     [SerializeField] private List<ExpData> expDataList = new List<ExpData>();
-    [SerializeField] private Transform expParent;
+    [SerializeField] public Transform expParent;
     [SerializeField] private int maxSpawn;
     [SerializeField] private float expSpawnTimer;
     [Tooltip("The size of spawn region")]
