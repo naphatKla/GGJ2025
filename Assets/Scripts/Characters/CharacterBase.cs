@@ -1,7 +1,8 @@
-using System;
 using MoreMountains.Feedbacks;
 using Sirenix.OdinInspector;
+using Skills;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Characters
 {
@@ -9,23 +10,35 @@ namespace Characters
     {
         [SerializeField] private float bubbleSize = 1f;
         [SerializeField] private float speed = 1f;
-        [SerializeField] private MMF_Player sizeUpFeedback;
-        [SerializeField] private MMF_Player sizeDownFeedback;
-        [SerializeField] private MMF_Player deadFeedback;
-        [ShowInInspector] private SkillBase _skill;
+        [SerializeField] [SceneObjectsOnly] [BoxGroup("Skills")] protected SkillBase SkillMouseLeft;
+        [SerializeField] [SceneObjectsOnly] [BoxGroup("Skills")] protected  SkillBase SkillMouseRight;
+        [SerializeField] [BoxGroup("Feedbacks")] private MMF_Player sizeUpFeedback;
+        [SerializeField] [BoxGroup("Feedbacks")] private MMF_Player sizeDownFeedback;
+        [SerializeField] [BoxGroup("Feedbacks")] private MMF_Player deadFeedback;
+        [HideInInspector] public Rigidbody2D rigidbody2D;
         public float BubbleSize => bubbleSize;
-        public float Speed => speed;
+        protected float Speed => speed;
+        public bool IsModifyingMovement { get; set; }
+        protected abstract void SkillInputHandler();
         
-        protected void Awake()
+        protected virtual void Awake()
         {
-            _skill = new SkillTest();
-            _skill.InitializeSkill(this);
+            SkillMouseLeft?.InitializeSkill(this);
+            SkillMouseRight?.InitializeSkill(this);
+            rigidbody2D = GetComponent<Rigidbody2D>();
         }
-
+        
+        protected virtual void Update()
+        {
+            SkillInputHandler();
+            SkillMouseLeft.UpdateCooldown();
+            SkillMouseRight.UpdateCooldown();
+        }
+        
         protected virtual void Dead()
         {
             Destroy(gameObject);
-            deadFeedback.PlayFeedbacks();
+            deadFeedback?.PlayFeedbacks();
         }
         
         public virtual void AdjustSize(float size)
