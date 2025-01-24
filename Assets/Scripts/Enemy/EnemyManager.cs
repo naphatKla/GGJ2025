@@ -47,7 +47,7 @@ public class EnemyManager : CharacterBase
         base.Update();
         aiSize = BubbleSize;
         playerSize = _target.GetComponent<CharacterBase>().BubbleSize;
-        navMesh.velocity = Vector2.ClampMagnitude(navMesh.velocity, Speed);
+        //navMesh.velocity = Vector2.ClampMagnitude(navMesh.velocity, Speed);
         
         StateDecide();
         if (IsModifyingMovement) return;
