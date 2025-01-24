@@ -1,17 +1,21 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.AI;
 
 
 public class EnemyManager : MonoBehaviour
 {
-    [SerializeField] public EnemyPickup pickupScript;
-    [SerializeField] public NavMeshAgent navMesh;
+    [BoxGroup("Dependent")] [SerializeField] public EnemyPickup pickupScript;
+    [BoxGroup("Dependent")] [SerializeField] public NavMeshAgent navMesh;
 
-    [SerializeField] private float walkSpeed;
-    [SerializeField] private float currentSize;
+    [BoxGroup("Properties")] [SerializeField] private float walkSpeed;
+    [BoxGroup("Properties")] [SerializeField] private float currentSize;
+    
+    [BoxGroup("State")] 
+    [ShowInInspector]
     [SerializeField] private enum EnemyState { leveling, hunting, escape, useSkill}
     
     void Start()
