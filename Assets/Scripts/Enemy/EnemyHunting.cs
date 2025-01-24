@@ -14,9 +14,11 @@ public class EnemyHunting : MonoBehaviour
     {
         _target = GameObject.FindGameObjectWithTag("Player");
     }
-    
+
     public bool EnemyDetectPlayer()
     {
+        if (_target == null) { return false; }
+        
         float _distance = Vector2.Distance(this.transform.position ,_target.transform.position);
         
         if (_distance <= targetdetectRadius)
