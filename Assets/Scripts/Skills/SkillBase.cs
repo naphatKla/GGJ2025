@@ -12,7 +12,7 @@ namespace Skills
         [SerializeField] [Title("SkillBase")] private float cooldown = 1f;
         [SerializeField] protected float skillDuration = 1f;
         protected CharacterBase OwnerCharacter;
-        [Title("Events")] [PropertyOrder(100)] public UnityEvent onSKillStart;
+        [Title("Events")] [PropertyOrder(100)] public UnityEvent onSkillStart;
         [PropertyOrder(100)] public UnityEvent onSkillEnd;
     
         /// <summary>
@@ -44,12 +44,14 @@ namespace Skills
             }
             
             SkillAction();
-            onSKillStart?.Invoke();
+            onSkillStart?.Invoke();
+            Debug.LogWarning("START");
             cooldown = 1;
             
             if (skillDuration <= 0) 
             {
                 onSkillEnd?.Invoke();
+                Debug.LogWarning("END");
                 return;
             }
             DOVirtual.DelayedCall(skillDuration, () => onSkillEnd?.Invoke());

@@ -12,7 +12,7 @@ namespace Skills
         
         private void Start()
         {
-            onSKillStart.AddListener(() => OwnerCharacter.IsModifyingMovement = true);
+            onSkillStart.AddListener(() => OwnerCharacter.IsModifyingMovement = true);
             onSkillEnd.AddListener(() => OwnerCharacter.IsModifyingMovement = false);
         }
 
@@ -21,7 +21,12 @@ namespace Skills
             Vector2 direction = OwnerCharacter.rigidbody2D.velocity.normalized;
             OwnerCharacter.rigidbody2D.velocity = Vector2.zero;
             OwnerCharacter.rigidbody2D.AddForce(-direction * backStepForce);
-            DOVirtual.DelayedCall(backStepDuration, () => OwnerCharacter.rigidbody2D.AddForce(direction * dashForce));
+            transform.DOScale(Vector2.one * 1.5f, backStepDuration).OnComplete(() =>
+            {
+                OwnerCharacter.rigidbody2D.AddForce(direction * dashForce);
+                float leftDuration = skillDuration - backStepDuration;
+                transform.DOScale(Vector2.one,leftDuration);
+            });
         }
     }
 }
