@@ -239,6 +239,59 @@ MonoBehaviour:
   m_MaximumFOV: 60
   m_MinimumOrthoSize: 1
   m_MaximumOrthoSize: 5000
+--- !u!1 &291539828
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 291539830}
+  - component: {fileID: 291539829}
+  m_Layer: 0
+  m_Name: RandomExpSpawnManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &291539829
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 291539828}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 546a1cf84915a4b4d9f15a5b8aece133, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  expDataList:
+  - expPrefab: {fileID: 8127382671166669969, guid: 24a9528711b33b94ba0f1b23ab96a896, type: 3}
+    expChance: 0.8
+  - expPrefab: {fileID: 3943751700105974232, guid: 3dfddfbc35b19b148b4b18176c8926e3, type: 3}
+    expChance: 0.1
+  expParent: {fileID: 1935656736}
+  maxSpawn: 30
+  expSpawnTimer: 1
+  regionSize: {x: 17.73, y: 10}
+--- !u!4 &291539830
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 291539828}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &685380859
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -611,7 +664,7 @@ GameObject:
   - component: {fileID: 1193216039}
   - component: {fileID: 1193216038}
   m_Layer: 0
-  m_Name: images
+  m_Name: BG
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -888,7 +941,7 @@ GameObject:
   - component: {fileID: 1623226466}
   m_Layer: 0
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -905,14 +958,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f8579db15e52aa4199d320d18485be7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bubbleSize: 1
+  bubbleSize: 100
   speed: 3
+  increaseScalePerSize: 0.01
   SkillMouseLeft: {fileID: 1211752805}
   SkillMouseRight: {fileID: 685380861}
   sizeUpFeedback: {fileID: 0}
   sizeDownFeedback: {fileID: 0}
   deadFeedback: {fileID: 0}
   rigidbody2D: {fileID: 0}
+  maxChargeMouseButton: 5
 --- !u!212 &1623226464
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1127,7 +1182,7 @@ GameObject:
   - component: {fileID: 1655105236}
   - component: {fileID: 1655105235}
   m_Layer: 0
-  m_Name: Big
+  m_Name: BigCam
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1188,12 +1243,45 @@ Transform:
   - {fileID: 1146162030}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1935656735
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1935656736}
+  m_Layer: 0
+  m_Name: ExpParent
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1935656736
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1935656735}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 727001504}
   - {fileID: 1623226465}
+  - {fileID: 1935656736}
+  - {fileID: 291539830}
   - {fileID: 1648103411}
   - {fileID: 1655105236}
   - {fileID: 1193216039}

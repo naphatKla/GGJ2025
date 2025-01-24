@@ -18,7 +18,7 @@ namespace Characters
         {
             if (IsModifyingMovement) return;
             Vector2 mouseDirection = Camera.main.ScreenToWorldPoint(Input.mousePosition) - transform.position;
-            rigidbody2D.AddForce(mouseDirection * Speed);
+            rigidbody2D.AddForce(mouseDirection.normalized * Speed);
             rigidbody2D.velocity = Vector2.ClampMagnitude(rigidbody2D.velocity, Speed);
         }
         
@@ -31,7 +31,7 @@ namespace Characters
             }
             else if (Input.GetMouseButtonUp(0))
             {
-                SkillMouseLeft.UseSkill(leftClickTime);
+                SkillMouseLeft.UseSkill(leftClickTime/maxChargeMouseButton);
                 leftClickTime = 0;
             }
             
@@ -42,7 +42,7 @@ namespace Characters
             }
             else if (Input.GetMouseButtonUp(0))
             {
-                SkillMouseRight.UseSkill(rightClickTime);
+                SkillMouseRight.UseSkill(rightClickTime/maxChargeMouseButton);
                 rightClickTime = 0;
             }
         }

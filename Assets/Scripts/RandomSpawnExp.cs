@@ -7,7 +7,6 @@ using UnityEngine;
 public class ExpData
 {
     public GameObject expPrefab;
-    public int expAmount;
     public float expChance;
 }
 

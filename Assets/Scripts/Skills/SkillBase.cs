@@ -14,7 +14,7 @@ namespace Skills
         protected CharacterBase OwnerCharacter;
         [Title("Events")] [PropertyOrder(100)] public UnityEvent onSkillStart;
         [PropertyOrder(100)] public UnityEvent onSkillEnd;
-        protected float chargeTime;
+        protected float chargePercentage;
     
         /// <summary>
         /// Override this method to implement the skill logic
@@ -36,7 +36,7 @@ namespace Skills
             cooldown -= Time.deltaTime;
         }
     
-        public virtual void UseSkill(float chargeTime = 0)
+        public virtual void UseSkill(float chargePercentage = 0)
         {
             if (cooldown > 0)
             {
@@ -44,7 +44,7 @@ namespace Skills
                 return;
             }
             
-            this.chargeTime = chargeTime;
+            this.chargePercentage = chargePercentage;
             
             SkillAction();
             onSkillStart?.Invoke();
