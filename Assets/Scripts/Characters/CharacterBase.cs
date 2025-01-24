@@ -3,6 +3,7 @@ using MoreMountains.Feedbacks;
 using Sirenix.OdinInspector;
 using Skills;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace Characters
 {
@@ -10,7 +11,7 @@ namespace Characters
     {
         [SerializeField] private float bubbleSize = 1f;
         [SerializeField] private float speed = 1f;
-        [SerializeField] [PropertyTooltip("1 bubble size will affect to the object scale += 0.01")] private float increaseScalePerSize = 0.01f; 
+        [SerializeField] [PropertyTooltip("1 bubble size will affect to the object scale += 0.01")] [BoxGroup("Upgrade")] private float increaseScalePerSize = 0.01f; 
         [SerializeField] [BoxGroup("PickUpOxygen")] private float oxygenDetectionRadius = 1f;
         [SerializeField] [BoxGroup("PickUpOxygen")] private float oxygenMagneticStartForce = 3f;
         [SerializeField] [BoxGroup("PickUpOxygen")] private float oxygenMagneticEndForce = 3f;
@@ -22,10 +23,14 @@ namespace Characters
         [SerializeField] [BoxGroup("Feedbacks")] private MMF_Player sizeDownFeedback;
         [SerializeField] [BoxGroup("Feedbacks")] private MMF_Player deadFeedback;
         [HideInInspector] public Rigidbody2D rigidbody2D;
+        protected float lastStateSize = 100f;
+        
         public float BubbleSize => bubbleSize;
         protected float Speed => speed;
         public bool IsModifyingMovement { get; set; }
         protected abstract void SkillInputHandler();
+        [Title("Events")] public UnityEvent onSizeUpState;
+     
         
         protected virtual void Awake()
         {
@@ -74,6 +79,12 @@ namespace Characters
         public virtual void AdjustSize(float size)
         {
             bubbleSize += size;
+            if (Mathf.Abs(bubbleSize - lastStateSize) >= 100) 
+            {
+                onSizeUpState?.Invoke();
+                lastStateSize = bubbleSize;
+            }
+            
             switch (size)
             {
                 case > 0:
