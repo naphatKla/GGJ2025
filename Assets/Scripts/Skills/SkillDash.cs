@@ -1,6 +1,7 @@
 using DG.Tweening;
 using Sirenix.OdinInspector;
 using UnityEngine;
+using UnityEngine.AI;
 
 namespace Skills
 {
@@ -10,31 +11,46 @@ namespace Skills
         [SerializeField] [ValidateInput("@backStepDuration <= skillDuration")] private float backStepDuration = 0.25f;
         [SerializeField] private float minDashForce = 5f;
         [SerializeField] private float maxDashForce = 10f;
+        [SerializeField] [Unit(Units.Percent)] private float minLostOxygen;
+        [SerializeField] [Unit(Units.Percent)] private float maxLostOxygen;
         
         private void Start()
         {
-            onSkillStart.AddListener(() => OwnerCharacter.IsModifyingMovement = true);
+            NavMeshAgent agent = OwnerCharacter.GetComponent<NavMeshAgent>();
+            
+            onSkillStart.AddListener(() =>
+            {
+                OwnerCharacter.IsModifyingMovement = true;
+            });
             onSkillEnd.AddListener(() =>
             {
                 OwnerCharacter.IsModifyingMovement = false;
                 OwnerCharacter.UpdateScale();
+                if (agent) agent.enabled = true;
             });
         }
-
+        
         protected override void SkillAction()
         {
-            float dashForce = maxDashForce * chargePercentage;
+            float dashForce = Mathf.Lerp(minDashForce, maxDashForce, chargePercentage);
+            float lostOxygen = Mathf.Lerp(OwnerCharacter.BubbleSize * (minLostOxygen / 100), OwnerCharacter.BubbleSize * (maxLostOxygen / 100), chargePercentage);
             Vector2 direction = new Vector2();
+            
             if (OwnerCharacter.CompareTag("Player")) 
                 direction = (Camera.main.ScreenToWorldPoint(Input.mousePosition) - OwnerCharacter.transform.position).normalized;
-            else 
-                direction = OwnerCharacter.rigidbody2D.velocity.normalized;
+            else
+            {
+                NavMeshAgent agent = OwnerCharacter.GetComponent<NavMeshAgent>();
+                direction = agent.velocity.normalized;
+                agent.enabled = false;
+            }
             
+            OwnerCharacter.AdjustSize(-lostOxygen);
             OwnerCharacter.rigidbody2D.velocity = Vector2.zero;
             OwnerCharacter.rigidbody2D.AddForce(-direction * backStepForce);
             DOVirtual.DelayedCall(backStepDuration, () =>
             {
-                OwnerCharacter.rigidbody2D.AddForce(direction * (maxDashForce));
+                OwnerCharacter.rigidbody2D.AddForce(direction * dashForce);
             });
         }
     }

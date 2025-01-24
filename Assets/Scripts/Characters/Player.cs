@@ -1,13 +1,25 @@
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace Characters
 {
     public class Player : CharacterBase
     {
-        [SerializeField] private float maxChargeMouseButton = 5f;
+        [SerializeField] [BoxGroup("Skills")] private float maxChargeMouseButton = 1f;
+        [SerializeField] [BoxGroup("Upgrade")] private float cameraSizePerState = 3f;
         protected float leftClickTime;
         protected float rightClickTime;
-        
+
+        private void Start()
+        {
+            onSizeUpState.AddListener(() =>
+            {
+                int state = (int)(BubbleSize / 100) - 1;
+                float size = CameraManager.Instance.StartOrthographicSize + (state * cameraSizePerState);
+                CameraManager.Instance.SetLensOrthographicSize(size,0.3f);
+            });
+        }
+
         protected override void Update()
         {
             base.Update();
@@ -21,7 +33,7 @@ namespace Characters
             rigidbody2D.AddForce(mouseDirection.normalized * Speed);
             rigidbody2D.velocity = Vector2.ClampMagnitude(rigidbody2D.velocity, Speed);
         }
-        
+
         protected override void SkillInputHandler()
         {
             if (Input.GetMouseButton(0))
