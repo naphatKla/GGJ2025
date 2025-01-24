@@ -7,17 +7,11 @@ namespace Skills
 {
     public class SkillDash : SkillBase
     {
-        [Title("SkillDash")] [SerializeField] private float backStepForce = 3f;
-        [SerializeField] [ValidateInput("@backStepDuration <= skillDuration")] private float backStepDuration = 0.25f;
-        [SerializeField] private float minDashForce = 5f;
-        [SerializeField] private float maxDashForce = 10f;
-        [SerializeField] [Unit(Units.Percent)] private float minLostOxygen;
-        [SerializeField] [Unit(Units.Percent)] private float maxLostOxygen;
+        [Title("SkillDash")] [SerializeField] private float dashDistance = 8f;
+        [SerializeField] [Unit(Units.Percent)] private float lostOxygen = 3f;
         
         private void Start()
         {
-            NavMeshAgent agent = OwnerCharacter.GetComponent<NavMeshAgent>();
-            
             onSkillStart.AddListener(() =>
             {
                 OwnerCharacter.IsModifyingMovement = true;
@@ -26,18 +20,23 @@ namespace Skills
             {
                 OwnerCharacter.IsModifyingMovement = false;
                 OwnerCharacter.UpdateScale();
-                if (agent) agent.enabled = true;
+                if (!IsPlayer) OwnerCharacter.GetComponent<NavMeshAgent>().enabled = true;
             });
         }
         
         protected override void SkillAction()
         {
-            float dashForce = Mathf.Lerp(minDashForce, maxDashForce, chargePercentage);
-            float lostOxygen = Mathf.Lerp(OwnerCharacter.BubbleSize * (minLostOxygen / 100), OwnerCharacter.BubbleSize * (maxLostOxygen / 100), chargePercentage);
+            float distance = 0f;
+            Vector2 dashPosition = new Vector2();
             Vector2 direction = new Vector2();
+            float lostOxygenValue = OwnerCharacter.BubbleSize * (lostOxygen / 100);
             
-            if (OwnerCharacter.CompareTag("Player")) 
-                direction = (Camera.main.ScreenToWorldPoint(Input.mousePosition) - OwnerCharacter.transform.position).normalized;
+            if (IsPlayer)
+            {
+                dashPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                direction = (dashPosition - (Vector2)OwnerCharacter.transform.position).normalized;
+                distance = Vector2.Distance(OwnerCharacter.transform.position, dashPosition);
+            }
             else
             {
                 NavMeshAgent agent = OwnerCharacter.GetComponent<NavMeshAgent>();
@@ -45,13 +44,12 @@ namespace Skills
                 agent.enabled = false;
             }
             
-            OwnerCharacter.AdjustSize(-lostOxygen);
+            if (distance > dashDistance || !IsPlayer)
+                dashPosition = (Vector2)OwnerCharacter.transform.position + (direction * dashDistance);
+            
+            OwnerCharacter.AdjustSize(-lostOxygenValue);
             OwnerCharacter.rigidbody2D.velocity = Vector2.zero;
-            OwnerCharacter.rigidbody2D.AddForce(-direction * backStepForce);
-            DOVirtual.DelayedCall(backStepDuration, () =>
-            {
-                OwnerCharacter.rigidbody2D.AddForce(direction * dashForce);
-            });
+            OwnerCharacter.transform.DOMove(dashPosition, skillDuration).SetEase(Ease.InOutSine);
         }
     }
 }

@@ -5,10 +5,7 @@ namespace Characters
 {
     public class Player : CharacterBase
     {
-        [SerializeField] [BoxGroup("Skills")] private float maxChargeMouseButton = 1f;
         [SerializeField] [BoxGroup("Upgrade")] private float cameraSizePerState = 3f;
-        protected float leftClickTime;
-        protected float rightClickTime;
 
         private void Start()
         {
@@ -38,24 +35,12 @@ namespace Characters
         {
             if (Input.GetMouseButton(0))
             {
-                leftClickTime += Time.deltaTime;
-                leftClickTime = Mathf.Clamp(leftClickTime, 0, maxChargeMouseButton);
-            }
-            else if (Input.GetMouseButtonUp(0))
-            {
-                SkillMouseLeft.UseSkill(leftClickTime/maxChargeMouseButton);
-                leftClickTime = 0;
+                SkillMouseLeft.UseSkill();
             }
             
             if (Input.GetMouseButton(0))
             {
-                rightClickTime += Time.deltaTime;
-                rightClickTime = Mathf.Clamp(rightClickTime, 0, maxChargeMouseButton);
-            }
-            else if (Input.GetMouseButtonUp(0))
-            {
-                SkillMouseRight.UseSkill(rightClickTime/maxChargeMouseButton);
-                rightClickTime = 0;
+                SkillMouseRight.UseSkill();
             }
         }
     }

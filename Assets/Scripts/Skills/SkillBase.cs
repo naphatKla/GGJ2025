@@ -15,7 +15,8 @@ namespace Skills
         protected CharacterBase OwnerCharacter;
         [Title("Events")] [PropertyOrder(100)] public UnityEvent onSkillStart;
         [PropertyOrder(100)] public UnityEvent onSkillEnd;
-        protected float chargePercentage;
+        protected bool IsPlayer => OwnerCharacter.CompareTag("Player");
+        protected float cooldownCounter;
     
         /// <summary>
         /// Override this method to implement the skill logic
@@ -29,27 +30,25 @@ namespace Skills
     
         public void UpdateCooldown()
         {
-            if (cooldown <= 0)
+            if (cooldownCounter <= 0)
             {
-                cooldown = 0;
+                cooldownCounter = 0;
                 return;
             }
-            cooldown -= Time.deltaTime;
+            cooldownCounter -= Time.deltaTime;
         }
     
-        public virtual void UseSkill(float chargePercentage = 0)
+        public virtual void UseSkill()
         {
-            if (cooldown > 0 || OwnerCharacter.BubbleSize < minOxygenToUseSKill)
+            if (cooldownCounter > 0 || OwnerCharacter.BubbleSize < minOxygenToUseSKill)
             {
                 Debug.LogWarning("Skill is on cooldown or not enough oxygen to use skill");
                 return;
             }
             
-            this.chargePercentage = chargePercentage;
-            
             SkillAction();
             onSkillStart?.Invoke();
-            cooldown = 1;
+            cooldownCounter = cooldown;
             
             if (skillDuration <= 0) 
             {

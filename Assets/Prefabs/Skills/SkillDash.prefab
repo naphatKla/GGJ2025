@@ -44,8 +44,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 434232f2dab170d4abdc17e050c653f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cooldown: 2
-  skillDuration: 0.5
+  cooldown: 0.5
+  skillDuration: 0.25
   minOxygenToUseSKill: 130
   onSkillStart:
     m_PersistentCalls:
@@ -53,9 +53,5 @@ MonoBehaviour:
   onSkillEnd:
     m_PersistentCalls:
       m_Calls: []
-  backStepForce: 300
-  backStepDuration: 0.2
-  minDashForce: 800
-  maxDashForce: 1500
-  minLostOxygen: 1
-  maxLostOxygen: 10
+  dashDistance: 8
+  lostOxygen: 3
