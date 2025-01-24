@@ -12,13 +12,13 @@ namespace Characters
         [SerializeField] private float bubbleSize = 1f;
         [SerializeField] private float speed = 1f;
         [SerializeField] [PropertyTooltip("1 bubble size will affect to the object scale += 0.01")] [BoxGroup("Upgrade")] private float increaseScalePerSize = 0.01f; 
-        [SerializeField] [BoxGroup("PickUpOxygen")] private float oxygenDetectionRadius = 1f;
-        [SerializeField] [BoxGroup("PickUpOxygen")] private float oxygenMagneticStartForce = 3f;
-        [SerializeField] [BoxGroup("PickUpOxygen")] private float oxygenMagneticEndForce = 3f;
-        [SerializeField] [BoxGroup("PickUpOxygen")] private float oxygenCurveForce = 2.6f;
+        [SerializeField] [BoxGroup("PickUpOxygen")] private float oxygenDetectionRadius = 2f;
+        [SerializeField] [BoxGroup("PickUpOxygen")] private float oxygenMagneticStartForce = 9f;
+        [SerializeField] [BoxGroup("PickUpOxygen")] private float oxygenMagneticEndForce = 2f;
+        [SerializeField] [BoxGroup("PickUpOxygen")] private float oxygenCurveForce = 5f;
         [SerializeField] [BoxGroup("PickUpOxygen")] private LayerMask oxygenLayer;
-        [SerializeField] [SceneObjectsOnly] [BoxGroup("Skills")] protected SkillBase SkillMouseLeft;
-        [SerializeField] [SceneObjectsOnly] [BoxGroup("Skills")] protected  SkillBase SkillMouseRight;
+        [SerializeField] [BoxGroup("Skills")] protected SkillBase SkillMouseLeft;
+        [SerializeField] [BoxGroup("Skills")] protected  SkillBase SkillMouseRight;
         [SerializeField] [BoxGroup("Feedbacks")] private MMF_Player sizeUpFeedback;
         [SerializeField] [BoxGroup("Feedbacks")] private MMF_Player sizeDownFeedback;
         [SerializeField] [BoxGroup("Feedbacks")] private MMF_Player deadFeedback;
@@ -42,8 +42,8 @@ namespace Characters
         protected virtual void Update()
         {
             SkillInputHandler();
-            SkillMouseLeft.UpdateCooldown();
-            SkillMouseRight.UpdateCooldown();
+            SkillMouseLeft?.UpdateCooldown();
+            SkillMouseRight?.UpdateCooldown();
             
             // เก็บ oxygen รอบๆรัศมี
             Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, (transform.localScale.x / 2) + oxygenDetectionRadius, oxygenLayer);

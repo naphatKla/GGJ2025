@@ -1,4 +1,3 @@
-using System;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -6,7 +5,7 @@ namespace Characters
 {
     public class Player : CharacterBase
     {
-        [SerializeField] [BoxGroup("Skills")] private float maxChargeMouseButton = 5f;
+        [SerializeField] [BoxGroup("Skills")] private float maxChargeMouseButton = 1f;
         [SerializeField] [BoxGroup("Upgrade")] private float cameraSizePerState = 3f;
         protected float leftClickTime;
         protected float rightClickTime;

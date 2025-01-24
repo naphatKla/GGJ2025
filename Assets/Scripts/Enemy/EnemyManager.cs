@@ -38,21 +38,24 @@ public class EnemyManager : CharacterBase
 
     protected override void SkillInputHandler()
     {
-        throw new NotImplementedException();
+        /*SkillMouseLeft?.UseSkill();
+        SkillMouseRight?.UseSkill();*/
     }
 
-    void Update()
+    protected override void Update()
     {
+        base.Update();
         aiSize = BubbleSize;
         playerSize = _target.GetComponent<CharacterBase>().BubbleSize;
         
         StateDecide();
+        if (IsModifyingMovement) return;
         PerformLeveling();
         PerformHunting();
         //PerformCaution();
         PerformRunaway();
     }
-
+    
     private void StateDecide()
     {
         //leveling

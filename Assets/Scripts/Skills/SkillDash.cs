@@ -1,6 +1,7 @@
 using DG.Tweening;
 using Sirenix.OdinInspector;
 using UnityEngine;
+using UnityEngine.AI;
 
 namespace Skills
 {
@@ -15,11 +16,17 @@ namespace Skills
         
         private void Start()
         {
-            onSkillStart.AddListener(() => OwnerCharacter.IsModifyingMovement = true);
+            NavMeshAgent agent = OwnerCharacter.GetComponent<NavMeshAgent>();
+            
+            onSkillStart.AddListener(() =>
+            {
+                OwnerCharacter.IsModifyingMovement = true;
+            });
             onSkillEnd.AddListener(() =>
             {
                 OwnerCharacter.IsModifyingMovement = false;
                 OwnerCharacter.UpdateScale();
+                if (agent) agent.enabled = true;
             });
         }
         
@@ -31,10 +38,13 @@ namespace Skills
             
             if (OwnerCharacter.CompareTag("Player")) 
                 direction = (Camera.main.ScreenToWorldPoint(Input.mousePosition) - OwnerCharacter.transform.position).normalized;
-            else 
-                direction = OwnerCharacter.rigidbody2D.velocity.normalized;
+            else
+            {
+                NavMeshAgent agent = OwnerCharacter.GetComponent<NavMeshAgent>();
+                direction = agent.velocity.normalized;
+                agent.enabled = false;
+            }
             
-            Debug.Log(lostOxygen);
             OwnerCharacter.AdjustSize(-lostOxygen);
             OwnerCharacter.rigidbody2D.velocity = Vector2.zero;
             OwnerCharacter.rigidbody2D.AddForce(-direction * backStepForce);
