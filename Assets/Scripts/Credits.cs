@@ -1,6 +1,7 @@
 using UnityEngine;
 using TMPro;
-using UnityEngine.SceneManagement; // หากใช้ TextMeshPro
+using UnityEngine.SceneManagement;
+using UnityEngine.Video; // หากใช้ TextMeshPro
 
 public class Credits : MonoBehaviour
 {
@@ -8,10 +9,13 @@ public class Credits : MonoBehaviour
     public float scrollSpeed = 50f; 
     public float endPositionY = 1000f;
     private Vector3 startPosition;
+    public VideoPlayer bubble;
 
     void Start()
     {
         startPosition = creditsText.localPosition; 
+        /*bubble.isLooping = true;
+        bubble.Play();*/
     }
 
     void Update()
