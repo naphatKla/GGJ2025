@@ -1,10 +1,8 @@
-using System;
 using DG.Tweening;
 using MoreMountains.Feedbacks;
 using Sirenix.OdinInspector;
 using Skills;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Characters
 {
@@ -50,7 +48,7 @@ namespace Characters
                 Vector2 direction = (transform.position - collider.transform.position).normalized;
                 Vector2 perpendicularRight = new Vector2(direction.y, -direction.x).normalized;
                 Vector2 combinedVector = (direction + perpendicularRight).normalized;
-                float force = oxygenMagneticStartForce - Time.deltaTime;
+                float force = oxygenMagneticStartForce - (Time.deltaTime*3);
                 force = Mathf.Clamp(force, oxygenMagneticEndForce, oxygenMagneticStartForce);
                 collider.transform.position += (Vector3) (combinedVector * force * Time.deltaTime);
             }
