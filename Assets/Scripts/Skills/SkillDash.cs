@@ -8,12 +8,18 @@ namespace Skills
     {
         [Title("SkillDash")] [SerializeField] private float backStepForce = 3f;
         [SerializeField] [ValidateInput("@backStepDuration <= skillDuration")] private float backStepDuration = 0.25f;
-        [SerializeField] private float dashForce = 10f;
+        [SerializeField] private float maxDashForce = 10f;
+        private Vector2 originalScale;
         
         private void Start()
         {
             onSkillStart.AddListener(() => OwnerCharacter.IsModifyingMovement = true);
-            onSkillEnd.AddListener(() => OwnerCharacter.IsModifyingMovement = false);
+            onSkillEnd.AddListener(() =>
+            {
+                OwnerCharacter.IsModifyingMovement = false;
+                OwnerCharacter.transform.DOScale(Vector2.one, 0.1f).SetEase(Ease.OutBounce);
+            });
+            originalScale = OwnerCharacter.transform.localScale;
         }
 
         protected override void SkillAction()
@@ -21,11 +27,9 @@ namespace Skills
             Vector2 direction = OwnerCharacter.rigidbody2D.velocity.normalized;
             OwnerCharacter.rigidbody2D.velocity = Vector2.zero;
             OwnerCharacter.rigidbody2D.AddForce(-direction * backStepForce);
-            transform.DOScale(Vector2.one * 1.5f, backStepDuration).OnComplete(() =>
+            DOVirtual.DelayedCall(backStepDuration, () =>
             {
-                OwnerCharacter.rigidbody2D.AddForce(direction * dashForce);
-                float leftDuration = skillDuration - backStepDuration;
-                transform.DOScale(Vector2.one,leftDuration);
+                OwnerCharacter.rigidbody2D.AddForce(direction * (maxDashForce*chargeTime));
             });
         }
     }
