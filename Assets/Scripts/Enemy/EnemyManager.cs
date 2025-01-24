@@ -65,7 +65,7 @@ public class EnemyManager : CharacterBase
     {
         base.Update();
         aiSize = BubbleSize;
-        if (navMesh != null) { PerformLeveling(); };
+        if (navMesh.enabled) PerformLeveling();
         if (_target == null)
         {
             currentState = EnemyState.leveling;
@@ -75,8 +75,8 @@ public class EnemyManager : CharacterBase
 
         StateDecide();
         if (IsModifyingMovement) return;
-        PerformHunting();
-        PerformRunaway();
+        if (navMesh.enabled) PerformHunting();
+        if (navMesh.enabled) PerformRunaway();
     }
     
     private void StateDecide()
@@ -207,9 +207,8 @@ public class EnemyManager : CharacterBase
             elapsedTime += Time.deltaTime;
             yield return null;
         }
-        if (navMesh == null) { yield break; }
-        navMesh.ResetPath();
         currentState = EnemyState.hunting;
+        navMesh.ResetPath();
     }
     
     private IEnumerator PreRunAway()
