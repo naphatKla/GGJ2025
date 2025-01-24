@@ -1,10 +1,13 @@
 using System;
+using System.Collections.Generic;
 using DG.Tweening;
 using MoreMountains.Feedbacks;
 using Sirenix.OdinInspector;
+using Sirenix.Utilities;
 using Skills;
 using UnityEngine;
 using UnityEngine.Events;
+using Random = UnityEngine.Random;
 
 namespace Characters
 {
@@ -23,6 +26,7 @@ namespace Characters
         [SerializeField] [BoxGroup("Feedbacks")] private MMF_Player sizeUpFeedback;
         [SerializeField] [BoxGroup("Feedbacks")] private MMF_Player sizeDownFeedback;
         [SerializeField] [BoxGroup("Feedbacks")] private MMF_Player deadFeedback;
+        [SerializeField] private ExpScript[] oxygenDrops;
         [HideInInspector] public Rigidbody2D rigidbody2D;
         protected float lastStateSize = 100f;
         
@@ -38,6 +42,8 @@ namespace Characters
             SkillMouseLeft?.InitializeSkill(this);
             SkillMouseRight?.InitializeSkill(this);
             rigidbody2D = GetComponent<Rigidbody2D>();
+            oxygenDrops.Sort((x, y) => x.expAmount.CompareTo(y.expAmount));
+            Array.Reverse(oxygenDrops);
         }
         
         protected virtual void Update()
@@ -64,6 +70,8 @@ namespace Characters
         {
             if (!other.CompareTag("Exp")) return;
             ExpScript exp = other.GetComponent<ExpScript>();
+            if (!exp.canPickUp) return;
+            
             AdjustSize(exp.expAmount);
             UpdateScale();
             Destroy(other.gameObject);
@@ -82,11 +90,31 @@ namespace Characters
             UpdateScale();
             otherCharacter.Dead();
         }
-
-        public virtual void Dead()
+        
+        [Button]
+        protected virtual void Dead()
         {
-            Destroy(gameObject);
+            DropOxygen(bubbleSize);
             deadFeedback?.PlayFeedbacks();
+            Destroy(gameObject);
+        }
+
+        public virtual void DropOxygen(float amount)
+        {
+            float sumDrop = 0;
+            
+            foreach (ExpScript drop in oxygenDrops)
+            {
+                while (sumDrop + drop.expAmount <= amount)
+                {
+                    sumDrop += drop.expAmount;
+                    float radius = transform.localScale.x;
+                    Vector2 randomPosition = transform.position + new Vector3(Random.Range(-radius, radius), Random.Range(-radius, radius), 0);
+                    ExpScript dropInstant = Instantiate(drop.gameObject, transform.position, Quaternion.identity).GetComponent<ExpScript>();
+                    dropInstant.canPickUp = false;
+                    dropInstant.transform.DOMove(randomPosition, 0.4f).SetEase(Ease.InOutSine).onComplete += () => dropInstant.canPickUp = true;
+                }
+            }
         }
         
         public virtual void AdjustSize(float size)
@@ -105,6 +133,7 @@ namespace Characters
                     break;
                 case < 0:
                     sizeDownFeedback?.PlayFeedbacks();
+                    DropOxygen(Mathf.Abs(size));
                     break;
             }
         
@@ -117,6 +146,7 @@ namespace Characters
             Vector2 newScale = Vector2.one * (bubbleSize * increaseScalePerSize);
             transform.DOScale(newScale, 0.05f).SetEase(Ease.OutBounce);
         }
+        
 
         private void OnDrawGizmos()
         {
