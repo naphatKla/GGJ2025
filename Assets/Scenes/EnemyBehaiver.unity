@@ -574,6 +574,7 @@ GameObject:
   - component: {fileID: 2015463715}
   - component: {fileID: 2015463711}
   - component: {fileID: 2015463712}
+  - component: {fileID: 2015463716}
   m_Layer: 0
   m_Name: Enemy
   m_TagString: Enemy
@@ -660,10 +661,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 36e9b96967648af42a09b12f448e013b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pickupScript: {fileID: 2015463712}
+  bubbleSize: 1
+  speed: 1
+  SkillMouseLeft: {fileID: 0}
+  SkillMouseRight: {fileID: 0}
+  sizeUpFeedback: {fileID: 0}
+  sizeDownFeedback: {fileID: 0}
+  deadFeedback: {fileID: 0}
+  rigidbody2D: {fileID: 0}
+  levelScript: {fileID: 0}
+  huntScript: {fileID: 0}
   navMesh: {fileID: 0}
   walkSpeed: 3
-  currentSize: 0
+  loseInterestTimer: 0
+  currentState: 0
 --- !u!114 &2015463712
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -676,7 +687,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb81d6395b359744eaaad6655acae3cb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  detectDistance: 10
+  expdetectDistance: 8
   expParent: {fileID: 1274631014}
 --- !u!195 &2015463713
 NavMeshAgent:
@@ -762,6 +773,21 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!114 &2015463716
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2015463708}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 884acd12f70d46249924ba205f3ca0d6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetdetectRadius: 0
+  timebeforeHunting: 0
+  timeloseInterest: 8
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
