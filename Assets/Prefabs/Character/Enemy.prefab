@@ -191,7 +191,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bubbleSize: 100
-  speed: 1
+  speed: 6
   increaseScalePerSize: 0.01
   oxygenDetectionRadius: 2
   oxygenMagneticStartForce: 2
@@ -205,6 +205,10 @@ MonoBehaviour:
   sizeUpFeedback: {fileID: 0}
   sizeDownFeedback: {fileID: 0}
   deadFeedback: {fileID: 0}
+  oxygenDrops:
+  - {fileID: -8003222913785711909, guid: 24a9528711b33b94ba0f1b23ab96a896, type: 3}
+  - {fileID: 7052029494687291963, guid: 3dfddfbc35b19b148b4b18176c8926e3, type: 3}
+  - {fileID: 7052029494687291963, guid: fa9c792c7eef49b48aaee032c6699c52, type: 3}
   rigidbody2D: {fileID: 0}
   onSizeUpState:
     m_PersistentCalls:
@@ -226,8 +230,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb81d6395b359744eaaad6655acae3cb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  expdetectDistance: 8
-  expParent: {fileID: 0}
+  expdetectDistance: 50
 --- !u!114 &8519075577304805911
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -240,9 +243,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 884acd12f70d46249924ba205f3ca0d6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetdetectRadius: 4
-  timebeforeHunting: 0
-  timeloseInterest: 0
+  targetdetectRadius: 12
+  timebeforeHunting: 2
+  timeloseInterest: 6
 --- !u!114 &3020871736648826920
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -255,7 +258,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a24024dfcb8f2a84d964b71c17da376c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  runDistance: 8
+  runDistance: 12
 --- !u!1 &8799538549743485690
 GameObject:
   m_ObjectHideFlags: 0
