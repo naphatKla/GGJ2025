@@ -8,28 +8,22 @@ public class ExpData
 {
     public GameObject expPrefab;
     public int expAmount;
-    public int maxSpawn;
-    public float expSpawnTimer;
+    public float expChance;
 }
 
 public class RandomSpawnExp : MonoBehaviour
 {
     [SerializeField] private List<ExpData> expDataList = new List<ExpData>();
     [SerializeField] private Transform expParent;
+    [SerializeField] private int maxSpawn;
+    [SerializeField] private float expSpawnTimer;
     [Tooltip("The size of spawn region")]
     [BoxGroup("Size")] public Vector2 regionSize = Vector2.zero;
-    
-    private Dictionary<GameObject, int> expCountPerType = new Dictionary<GameObject, int>();
+
 
     private void Start()
     {
         StartCoroutine(RandomExpSpawn());
-        
-        foreach (var exp in expDataList)
-        {
-            expCountPerType[exp.expPrefab] = 0;
-        }
-        
     }
 
     private IEnumerator RandomExpSpawn()
@@ -38,19 +32,21 @@ public class RandomSpawnExp : MonoBehaviour
         {
             foreach (var exp in expDataList)
             {
-                float elapsedTime = 0f;
+                if (Random.value <= exp.expChance)
+                {
+                    float elapsedTime = 0f;
 
-                while (elapsedTime < exp.expSpawnTimer)
-                {
-                    elapsedTime += Time.deltaTime;
-                    yield return null;
-                }
+                    while (elapsedTime < expSpawnTimer)
+                    {
+                        elapsedTime += Time.deltaTime;
+                        yield return null;
+                    }
                 
-                if ( expCountPerType[exp.expPrefab] < exp.maxSpawn)
-                {
-                    GameObject obj = Instantiate(exp.expPrefab, GetRegionPosition(), Quaternion.identity);
-                    obj.transform.parent = expParent;
-                    expCountPerType[exp.expPrefab]++;
+                    if ( expParent.childCount < maxSpawn)
+                    {
+                        GameObject obj = Instantiate(exp.expPrefab, GetRegionPosition(), Quaternion.identity);
+                        obj.transform.parent = expParent;
+                    }
                 }
             }
         }

@@ -4,15 +4,21 @@ using UnityEngine;
 
 public class EnemyPickup : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    [SerializeField]
+    private Vector2 detectDistance;
+    void Update()
     {
         
     }
 
-    // Update is called once per frame
-    void Update()
+    public void FindExpOrb()
     {
         
+    }
+    
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireCube(Vector2.zero, new Vector2(detectDistance.x, detectDistance.y));
     }
 }
