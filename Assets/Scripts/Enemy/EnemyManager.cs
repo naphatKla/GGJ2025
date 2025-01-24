@@ -47,6 +47,7 @@ public class EnemyManager : CharacterBase
         base.Update();
         aiSize = BubbleSize;
         playerSize = _target.GetComponent<CharacterBase>().BubbleSize;
+        navMesh.velocity = Vector2.ClampMagnitude(navMesh.velocity, Speed);
         
         StateDecide();
         if (IsModifyingMovement) return;
@@ -75,6 +76,7 @@ public class EnemyManager : CharacterBase
         //Enemy would target player if they entered player screen for 0.5s
         if (huntScript.EnemyDetectPlayer() && CompareValues(aiSize,playerSize) > 10 && currentState == EnemyState.leveling)
         {
+            navMesh.ResetPath();
             StartCoroutine(PreHunting());
         }
 
@@ -176,7 +178,10 @@ public class EnemyManager : CharacterBase
         while (elapsedTime < huntScript.timebeforeHunting)
         {
             //if player out of range
-            if (!huntScript.EnemyDetectPlayer()) { yield break; }
+            if (!huntScript.EnemyDetectPlayer())
+            {
+                yield break;
+            }
             elapsedTime += Time.deltaTime;
             yield return null;
         }
