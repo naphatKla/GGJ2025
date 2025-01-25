@@ -194,6 +194,7 @@ namespace Characters
             {
                 directions[i] = new Vector2(Mathf.Cos(i * Mathf.PI / 4), Mathf.Sin(i * Mathf.PI / 4));
                 Vector2 position = _cloningParent.transform.position + ((Vector3)directions[i] * (transform.localScale.x + force));
+                Vector2 position2 = _cloningParent.transform.position + ((Vector3)directions[i] * (transform.localScale.x + (force + 2)));
                 GameObject obj = Instantiate(gameObject, _cloningParent.transform.position, Quaternion.identity, _cloningParent.transform);
                 MonoBehaviour[] scripts = obj.GetComponents<MonoBehaviour>();
                 foreach (MonoBehaviour script in scripts) 
@@ -205,7 +206,11 @@ namespace Characters
                 if (agent) agent.enabled = false;
                 _clones.Add(clone);
                 clone.OwnerCharacter = this;
-                clone.transform.DOMove(position, 0.25f).SetEase(Ease.InOutSine);
+                var i1 = i;
+                clone.transform.DOMove(position, 0.25f).SetEase(Ease.InOutSine).OnComplete(() =>
+                { 
+                    clone.transform.DOMove(position2, mergeTime).SetEase(Ease.InOutSine);
+                });
                 clone.SetSize(bubbleSize / 8f);
             }
             
