@@ -1,9 +1,9 @@
+using System;
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using MoreMountains.Tools;
 using Sirenix.OdinInspector;
-using UnityEngine;
 using Random = UnityEngine.Random;
 
 [System.Serializable]
@@ -17,7 +17,7 @@ public class EnemyData
     public float maxSizeonSpawn;
 }
 
-public class RandomEnemyRespawn : MMSingleton<RandomSpawnExp>
+public class RandomEnemyRespawn : MMSingleton<RandomEnemyRespawn>
 {
     [SerializeField] private List<EnemyData> enemyDataList = new List<EnemyData>();
     [SerializeField] public Transform enemyParent;
@@ -30,17 +30,23 @@ public class RandomEnemyRespawn : MMSingleton<RandomSpawnExp>
     [SerializeField] private Transform playerTransform;
     [Tooltip("Minimum distance from the player to spawn enemies")]
     [SerializeField] private float minDistanceFromPlayer = 5f;
-    
-    [ShowInInspector]
-    private List<EnemyManager> enemyList = new List<EnemyManager>();
-    
+
+    [ShowInInspector] private List<EnemyManager> enemyList = new List<EnemyManager>();
+    [ShowInInspector] private int enemyCount = 0;
+
     private void Start()
     {
         SpawnToMaxOnStart();
         StartCoroutine(RandomEnemySpawn());
         playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
     }
-    
+
+    private void Update()
+    {
+        enemyCount = enemyParent.childCount;
+        UpdateEnemyList();
+    }
+
     private void SpawnToMaxOnStart()
     {
         while (enemyParent.childCount < maxSpawn)
@@ -59,7 +65,12 @@ public class RandomEnemyRespawn : MMSingleton<RandomSpawnExp>
 
                     GameObject obj = Instantiate(enemy.enemyPrefab.gameObject, spawnPosition, Quaternion.identity);
                     obj.transform.SetParent(enemyParent);
-                    enemyList.Add(obj.GetComponent<EnemyManager>());
+                    EnemyManager enemyManager = obj.GetComponent<EnemyManager>();
+                    if (enemyManager != null)
+                    {
+                        enemyList.Add(enemyManager);
+                    }
+
                     if (enemy.setSpawnSize)
                     {
                         float randomSize = Random.Range(enemy.minSizeonSpawn, enemy.maxSizeonSpawn);
@@ -69,7 +80,7 @@ public class RandomEnemyRespawn : MMSingleton<RandomSpawnExp>
             }
         }
     }
-    
+
     private IEnumerator RandomEnemySpawn()
     {
         while (true)
@@ -96,17 +107,23 @@ public class RandomEnemyRespawn : MMSingleton<RandomSpawnExp>
 
                         GameObject obj = Instantiate(enemy.enemyPrefab.gameObject, spawnPosition, Quaternion.identity);
                         obj.transform.SetParent(enemyParent);
-                        enemyList.Add(obj.GetComponent<EnemyManager>());
+                        EnemyManager enemyManager = obj.GetComponent<EnemyManager>();
+                        if (enemyManager != null)
+                        {
+                            enemyList.Add(enemyManager);
+                        }
+
                         if (enemy.setSpawnSize)
                         {
-                            //Random Set Size
+                            float randomSize = Random.Range(enemy.minSizeonSpawn, enemy.maxSizeonSpawn);
+                            obj.transform.localScale = new Vector3(randomSize, randomSize, 1);
                         }
                     }
                 }
             }
         }
     }
-    
+
     private Vector3 GetRegionPosition()
     {
         return new Vector3(
@@ -115,7 +132,18 @@ public class RandomEnemyRespawn : MMSingleton<RandomSpawnExp>
             0
         );
     }
-    
+
+    private void UpdateEnemyList()
+    {
+        for (int i = enemyList.Count - 1; i >= 0; i--)
+        {
+            if (enemyList[i] == null || enemyList[i].gameObject == null)
+            {
+                enemyList.RemoveAt(i);
+            }
+        }
+    }
+
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.yellow;

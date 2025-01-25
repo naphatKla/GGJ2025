@@ -25,6 +25,7 @@ public class EnemyManager : CharacterBase
     private float aiSize;
     private float _targetSize;
     private float lastDashTime = 0f;
+    private bool isSkillUsed = false;
     void Start()
     {
         //Get Dependent
@@ -38,6 +39,8 @@ public class EnemyManager : CharacterBase
         navMesh.updateUpAxis = false;
         navMesh.speed = base.CurrentSpeed;
   
+        onSkillPerformed.AddListener(setboolSkill);
+        onSkillEnd.AddListener(setboolSkill);
     }
 
     protected override void SkillInputHandler()
@@ -131,9 +134,13 @@ public class EnemyManager : CharacterBase
     }
     private void PerformLeveling()
     {
-        if (currentState == EnemyState.leveling )
+        if (currentState == EnemyState.leveling && !isSkillUsed)
         {
             navMesh.SetDestination(levelScript.FindNearestExpOrb());
+        }
+        else if (currentState == EnemyState.leveling && isSkillUsed && !navMesh.hasPath)
+        {
+            navMesh.SetDestination(levelScript.FindFarthestExpOrb());
         }
     }
     
@@ -291,6 +298,18 @@ public class EnemyManager : CharacterBase
         }
 
         return closestTarget;
+    }
+    
+    private void setboolSkill()
+    {
+        if (!isSkillUsed)
+        {
+            isSkillUsed = true;
+        }
+        else
+        {
+            isSkillUsed = false;
+        }
     }
     
     private IEnumerator HoldTargetForSeconds(float seconds)
