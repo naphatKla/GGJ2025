@@ -93,10 +93,9 @@ namespace Characters
                 ExpScript exp = other.GetComponent<ExpScript>();
                 if (exp.canPickUp)
                 {
-                    animator.SetBool("IsEat", true);
                     AddSize(exp.expAmount);
                     Destroy(other.gameObject);
-                    StartCoroutine(StopEat());
+                    animator.SetTrigger("EatTrigger");
                     return;
                 }
             }
@@ -266,19 +265,10 @@ namespace Characters
             Gizmos.color = Color.red;
             Gizmos.DrawWireSphere(transform.position, (transform.localScale.x/2) + oxygenDetectionRadius);
         }
-        
-        private IEnumerator StopEat()
-        {
-            yield return new WaitForSeconds(0.2f);
-                
-            animator.SetBool("IsEat", false);
-                
-            yield return null;
-        }
 
         public void StartDash()
         {
-            animator.SetTrigger("IsDash");
+            animator.SetTrigger("DashTrigger");
         }
     }
 }
