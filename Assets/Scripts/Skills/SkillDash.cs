@@ -16,14 +16,13 @@ namespace Skills
             onSkillStart.AddListener(() =>
             {
                 OwnerCharacter.IsModifyingMovement = true;
-                //startOrthographicSize = CameraManager.Instance.currentCamera.m_Lens.OrthographicSize;
-                //CameraManager.Instance.SetLensOrthographicSize(startOrthographicSize * cameraPanOutMultiplier, 2);
+                OwnerCharacter.isDash = true;
             });
             onSkillEnd.AddListener(() =>
             {
                 OwnerCharacter.IsModifyingMovement = false;
+                OwnerCharacter.isDash = false;
                 if (!IsPlayer) OwnerCharacter.GetComponent<NavMeshAgent>().enabled = true;
-                //CameraManager.Instance.SetLensOrthographicSize(startOrthographicSize, skillDuration);
             });
         }
         

@@ -50,7 +50,7 @@ namespace Skills
             
             SkillAction();
             onSkillStart?.Invoke();
-            OwnerCharacter.AddSize(-oxygenCost);
+            OwnerCharacter.AddScore(-oxygenCost);
             cooldownCounter = cooldown;
             
             if (skillDuration <= 0) 

@@ -1,24 +1,24 @@
+using System.Collections;
+using System.Collections.Generic;
+using DG.Tweening;
+using MoreMountains.Feedbacks;
 using Sirenix.OdinInspector;
 using UnityEngine;
+using UnityEngine.AI;
 
 namespace Characters
 {
     public class Player : CharacterBase
     {
-        [SerializeField] [BoxGroup("Upgrade")] private float cameraSizePerState = 3f;
-
-        private void Start()
-        {
-            onSizeUpState.AddListener(() =>
-            {
-                ResizeCamera();
-            });
-        }
+        [SerializeField] [BoxGroup("Feedbacks")] private MMF_Player explodeFeedback;
+        [SerializeField] [BoxGroup("Feedbacks")] private MMF_Player mergeFeedback;
+        private List<CloningCharacter> _clones = new List<CloningCharacter>();
+        private GameObject _cloningParent;
+        private bool _isExploding;
 
         public void ResizeCamera()
         {
-            int state = (int)(BubbleSize / 100) - 1;
-            float size = CameraManager.Instance.StartOrthographicSize + (state * cameraSizePerState);
+            float size = CameraManager.Instance.StartOrthographicSize;
             CameraManager.Instance.SetLensOrthographicSize(size,0.3f);
         }
         
@@ -28,6 +28,18 @@ namespace Characters
             MovementController();
         }
 
+        private void OnTriggerStay2D(Collider2D other)
+        {
+            if (other.CompareTag("Enemy") && isDash)
+                other.GetComponent<EnemyManager>().Dead();
+
+            if (!other.CompareTag("Exp")) return;
+            ExpScript exp = other.GetComponent<ExpScript>();
+            if (!exp.canPickUp) return;
+            AddScore(exp.expAmount);
+            Destroy(other.gameObject);
+        }
+        
         private void MovementController()
         {
             if (IsModifyingMovement) return;
@@ -39,14 +51,81 @@ namespace Characters
         protected override void SkillInputHandler()
         {
             if (Input.GetMouseButton(0))
-            {
                 SkillMouseLeft.UseSkill();
-            }
             
             if (Input.GetMouseButton(1))
-            {
                 SkillMouseRight.UseSkill();
-            }
         }
+        
+        [Button]
+        public void ExplodeOut8Direction(float force, float mergeTime)
+        {
+            if (!gameObject.CompareTag("Player")) return;
+            Vector2[] directions = new Vector2[8];
+            _cloningParent = new GameObject("CloningParent");
+            _cloningParent.transform.position = transform.position;
+            explodeFeedback?.PlayFeedbacks();
+            _isExploding = true;
+            _clones.Clear();
+            
+            for (int i = 0; i < 8; i++)
+            {
+                directions[i] = new Vector2(Mathf.Cos(i * Mathf.PI / 4), Mathf.Sin(i * Mathf.PI / 4));
+                Vector2 position = _cloningParent.transform.position + ((Vector3)directions[i] * (transform.localScale.x + force));
+                Vector2 position2 = _cloningParent.transform.position + ((Vector3)directions[i] * (transform.localScale.x + (force + 2)));
+                GameObject obj = Instantiate(gameObject, _cloningParent.transform.position, Quaternion.identity, _cloningParent.transform);
+                MonoBehaviour[] scripts = obj.GetComponents<MonoBehaviour>();
+                foreach (MonoBehaviour script in scripts) 
+                    Destroy(script);
+                
+                obj.AddComponent(typeof(CloningCharacter));
+                CloningCharacter clone = obj.GetComponent<CloningCharacter>();
+                NavMeshAgent agent = obj.GetComponent<NavMeshAgent>();
+                if (agent) agent.enabled = false;
+                _clones.Add(clone);
+                clone.OwnerCharacter = this;
+                clone.canDead = false;
+                clone.SetScore(0);
+                clone.transform.DOMove(position, 0.25f).SetEase(Ease.InOutSine).OnComplete(() =>
+                { 
+                    clone.transform.DOMove(position2, mergeTime).SetEase(Ease.InOutSine);
+                });
+            }
+            
+            StartCoroutine(CloningFollowAndMergedBack(mergeTime));
+        }
+
+        IEnumerator CloningFollowAndMergedBack(float time)
+        {
+            float timeCounter = 0;
+            
+            while (timeCounter < time)
+            {
+                if (_clones.Count == 0)
+                {
+                    Dead();
+                    break;
+                }
+                _cloningParent.transform.position = Vector2.Lerp(_cloningParent.transform.position, transform.position, timeCounter / time);
+                timeCounter += Time.deltaTime;
+                yield return null;
+            }
+
+            mergeFeedback?.PlayFeedbacks();
+            foreach (CloningCharacter clone in _clones)
+            {
+                yield return new WaitForSeconds(0.05f);
+                clone.transform.DOMove(transform.position, 0.25f).SetEase(Ease.InOutSine).OnComplete(() =>
+                {
+                    AddScore(clone.Score);
+                    Destroy(clone.gameObject,0.02f);
+                });
+            }
+
+            yield return new WaitForSeconds(0.8f);
+            Destroy(_cloningParent);
+            _isExploding = false;
+        }
+        
     }
 }
