@@ -19,6 +19,13 @@ namespace Characters
         private List<CloningCharacter> _clones = new List<CloningCharacter>();
         private GameObject _cloningParent;
         private bool _isExploding;
+        public static Player Instance { get; private set; }
+
+        protected override void Awake()
+        {
+            Instance = this;
+            base.Awake();
+        }
 
         public void ResizeCamera()
         {
