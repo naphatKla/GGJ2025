@@ -104,13 +104,21 @@ public class LoadScene : MonoBehaviour
 
     private IEnumerator ToggleUI()
     {
-        openUI.SetActive(!openUI.activeSelf);
-        yield return null; // รอ 1 frame
+        bool wasActive = openUI.activeSelf;
+        openUI.SetActive(!wasActive); // สลับสถานะ
+        yield return null; // รอ 1 frame เพื่อให้ Unity อัปเดต
+
+        // ตรวจสอบและรีเซ็ต Canvas หากจำเป็น
         Canvas canvas = openUI.GetComponentInParent<Canvas>();
         if (canvas != null)
         {
-            canvas.enabled = false;
-            canvas.enabled = true;
+            if (!wasActive) // ถ้าเปิดครั้งแรก
+            {
+                canvas.enabled = false;
+                yield return null; // รออีก 1 frame
+                canvas.enabled = true;
+            }
         }
     }
+
 }
