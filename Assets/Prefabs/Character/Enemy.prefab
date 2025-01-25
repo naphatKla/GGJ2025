@@ -105,7 +105,7 @@ NavMeshAgent:
   m_GameObject: {fileID: 318422658666202670}
   m_Enabled: 1
   m_AgentTypeID: 0
-  m_Radius: 0.5
+  m_Radius: 0.1
   m_Speed: 3.5
   m_Acceleration: 8
   avoidancePriority: 50
@@ -209,7 +209,14 @@ MonoBehaviour:
   mergeFeedback: {fileID: 0}
   deadFeedback: {fileID: 0}
   rigidbody2D: {fileID: 0}
+  clones: []
   onSizeUpState:
+    m_PersistentCalls:
+      m_Calls: []
+  onSkillPerformed:
+    m_PersistentCalls:
+      m_Calls: []
+  onSkillEnd:
     m_PersistentCalls:
       m_Calls: []
   levelScript: {fileID: 0}
@@ -526,6 +533,10 @@ PrefabInstance:
     - target: {fileID: 2219902129330909781, guid: 544e8ceec27b98d498bf78b6537e5636, type: 3}
       propertyPath: m_Name
       value: SkillBlackHole
+      objectReference: {fileID: 0}
+    - target: {fileID: 5026074172752388844, guid: 544e8ceec27b98d498bf78b6537e5636, type: 3}
+      propertyPath: cooldown
+      value: 25
       objectReference: {fileID: 0}
     - target: {fileID: 9038077133492908107, guid: 544e8ceec27b98d498bf78b6537e5636, type: 3}
       propertyPath: m_LocalPosition.x

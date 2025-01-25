@@ -62,6 +62,7 @@ public class EnemyManager : CharacterBase
             }
         }
         
+        SkillMouseRight.UseSkill();
     }
 
     protected override void Update()

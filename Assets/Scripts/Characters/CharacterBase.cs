@@ -38,7 +38,6 @@ namespace Characters
         public List<CloningCharacter> clones = new List<CloningCharacter>();
         private GameObject _cloningParent;
         private bool isExploding;
-        private bool godMode;
         
         public float BubbleSize => bubbleSize;
         protected float CurrentSpeed => currentSpeed;
@@ -81,21 +80,20 @@ namespace Characters
             }
         }
         
-        private void OnTriggerEnter2D(Collider2D other)
-        {
-            if (godMode) return;
-            if (!other.CompareTag("Exp")) return;
-            ExpScript exp = other.GetComponent<ExpScript>();
-            if (!exp.canPickUp) return;
-            
-            AddSize(exp.expAmount);
-            Destroy(other.gameObject);
-            return;
-        }
-
+        
         private void OnTriggerStay2D(Collider2D other)
         {
-            if (godMode) return;
+            if (other.CompareTag("Exp"))
+            {
+                ExpScript exp = other.GetComponent<ExpScript>();
+                if (exp.canPickUp)
+                {
+                    AddSize(exp.expAmount);
+                    Destroy(other.gameObject);
+                    return;
+                }
+            }
+            
             CloningCharacter cloningCharacter = other.GetComponent<CloningCharacter>();
             CloningCharacter thisCharacter = GetComponent<CloningCharacter>();
             
@@ -188,6 +186,7 @@ namespace Characters
             _cloningParent.transform.position = transform.position;
             explodeFeedback?.PlayFeedbacks();
             isExploding = true;
+            clones.Clear();
             
             for (int i = 0; i < 8; i++)
             {
@@ -233,13 +232,13 @@ namespace Characters
             }
 
             mergeFeedback?.PlayFeedbacks();
-            StartCoroutine(SetGodmode(3f));
             foreach (CloningCharacter clone in clones)
             {
                 if (!clone) continue;
-                yield return new WaitForSeconds(0.02f);
+                yield return new WaitForSeconds(0.05f);
                 clone.transform.DOMove(transform.position, 0.25f).SetEase(Ease.InOutSine).OnComplete(() =>
                 {
+                    if (!clone) return;
                     AddSize(clone.BubbleSize);
                     _spriteRenderer.enabled = true;
                     _collider2D.enabled = true;
@@ -247,18 +246,12 @@ namespace Characters
                     Destroy(clone.gameObject,0.02f);
                 });
             }
-            yield return new WaitForSeconds(0.3f);
+
+            yield return new WaitForSeconds(0.8f);
             if (bubbleSize <= 0) Dead();
             Destroy(_cloningParent);
             isExploding = false;
             onSkillEnd?.Invoke();
-        }
-        
-        private IEnumerator SetGodmode(float time)
-        {
-            godMode = true;
-            yield return new WaitForSeconds(time);
-            godMode = false;
         }
         
         private void OnDrawGizmos()
