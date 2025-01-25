@@ -14,7 +14,7 @@ public class EnemyManager : CharacterBase
     [BoxGroup("Dependent")] [SerializeField] public EnemyHunting huntScript;
     [BoxGroup("Dependent")] [SerializeField] public EnemyRunAway runawayScript;
     [BoxGroup("Dependent")] [SerializeField] public NavMeshAgent navMesh;
-    
+
     [BoxGroup("State")] 
     private enum EnemyState { leveling, hunting, caution, runaway}
     [SerializeField] private EnemyState currentState = EnemyState.leveling;
@@ -30,8 +30,7 @@ public class EnemyManager : CharacterBase
         huntScript = GetComponent<EnemyHunting>();
         runawayScript = GetComponent<EnemyRunAway>();
         navMesh = GetComponent<NavMeshAgent>();
-        _target = GameObject.FindGameObjectWithTag("Player");
-        
+
         //Set AI attribute
         navMesh.updateRotation = false;
         navMesh.updateUpAxis = false;
@@ -65,6 +64,7 @@ public class EnemyManager : CharacterBase
     {
         base.Update();
         aiSize = BubbleSize;
+        _target = RadiusDetector();
         if (navMesh.enabled) PerformLeveling();
         if (_target == null)
         {
@@ -83,12 +83,12 @@ public class EnemyManager : CharacterBase
     {
         //leveling
         //Enemy loose interested after 8s if enemy is chasing at the Outer zone of the screen
-        if (!huntScript.EnemyDetectPlayer() && currentState == EnemyState.hunting)
+        if (!huntScript.EnemyDetectTarget(_target) && currentState == EnemyState.hunting)
         {
             StartCoroutine(LoseInterest());
         }
         //If run away from player scene reset state to leveling
-        if (!huntScript.EnemyDetectPlayer() && currentState == EnemyState.runaway)
+        if (!huntScript.EnemyDetectTarget(_target) && currentState == EnemyState.runaway)
         {
             currentState = EnemyState.leveling;
         }
@@ -96,14 +96,14 @@ public class EnemyManager : CharacterBase
         //hunting
         //If enemy has 10% oxygen more than player current oxygen
         //Enemy would target player if they entered player screen for 0.5s
-        if (huntScript.EnemyDetectPlayer() && CompareValues(aiSize,playerSize) > 10 && currentState == EnemyState.leveling)
+        if (huntScript.EnemyDetectTarget(_target) && CompareValues(aiSize,playerSize) > 10 && currentState == EnemyState.leveling)
         {
             StartCoroutine(PreHunting());
         }
 
         //caution
         //If enemy has oxygen not lower than 7% and not higher than 9% of player current oxygen
-        /*if (huntScript.EnemyDetectPlayer() 
+        /*if (huntScript.EnemyDetectTarget() 
             && (currentState == EnemyState.hunting || currentState == EnemyState.leveling )
             && (CompareValues(aiSize,playerSize) > 7 && CompareValues(aiSize,playerSize) < 9))
         {
@@ -116,7 +116,7 @@ public class EnemyManager : CharacterBase
         //If enemy has 8% oxygen lower than player current oxygen and is entering player screen
         //It waits for 0.5s → 1.5s before trying to run away
         //it will run away until it leaves player border screen
-        if (huntScript.EnemyDetectPlayer() && aiSize < playerSize)
+        if (huntScript.EnemyDetectTarget(_target) && aiSize < playerSize)
         {
             StartCoroutine(PreRunAway());
         }
@@ -157,7 +157,7 @@ public class EnemyManager : CharacterBase
     {
         if (currentState == EnemyState.runaway)
         {
-            if (NavMesh.SamplePosition(runawayScript.RunFromTarget(), out NavMeshHit hit, runawayScript.runDistance, NavMesh.AllAreas))
+            if (NavMesh.SamplePosition(runawayScript.RunFromTarget(_target), out NavMeshHit hit, runawayScript.runDistance, NavMesh.AllAreas))
             {
                 navMesh.SetDestination(hit.position);
             }
@@ -200,22 +200,22 @@ public class EnemyManager : CharacterBase
         while (elapsedTime < huntScript.timebeforeHunting)
         {
             //if player out of range
-            if (!huntScript.EnemyDetectPlayer())
+            if (!huntScript.EnemyDetectTarget(_target))
             {
                 yield break;
             }
             elapsedTime += Time.deltaTime;
             yield return null;
         }
+        if (navMesh.hasPath) { navMesh.ResetPath(); }
         currentState = EnemyState.hunting;
-        navMesh.ResetPath();
     }
     
     private IEnumerator PreRunAway()
     {
         float elapsedTime = 0f;
 
-        float random = Random.Range(0.5f, 1.5f);
+        float random = Random.Range(2f, 4f);
         while (elapsedTime < random)
         {
             elapsedTime += Time.deltaTime;
@@ -233,12 +233,26 @@ public class EnemyManager : CharacterBase
         while (elapsedTime < huntScript.timeloseInterest)
         {
             //if player out of range
-            if (huntScript.EnemyDetectPlayer()) { yield break; }
+            if (huntScript.EnemyDetectTarget(_target)) { yield break; }
             elapsedTime += Time.deltaTime;
             yield return null;
         }
 
         currentState = EnemyState.leveling;
+    }
+
+    private GameObject RadiusDetector()
+    {
+        Collider2D radius = Physics2D.OverlapCircle(transform.position, huntScript.targetdetectRadius);
+        if (radius != null)
+        {
+            if (radius.CompareTag("Player") || radius.CompareTag("Enemy"))
+            {
+                return radius.gameObject;
+            }
+        }
+
+        return null;
     }
 
 }
