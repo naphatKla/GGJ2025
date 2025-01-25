@@ -46,12 +46,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cooldown: 0.5
   skillDuration: 0.25
-  minOxygenToUseSkill: 130
+  minOxygenToUseSkill: 100
+  oxygenCost: 3
   onSkillStart:
     m_PersistentCalls:
       m_Calls: []
   onSkillEnd:
     m_PersistentCalls:
       m_Calls: []
+  Animator: {fileID: 0}
   dashDistance: 8
-  lostOxygen: 3

@@ -44,15 +44,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2e5bd4d11372fc4e9bcac7b53ae6744, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cooldown: 3
-  skillDuration: 1.8
+  cooldown: 5
+  skillDuration: 2.7
   minOxygenToUseSkill: 0
+  oxygenCost: 3
   onSkillStart:
     m_PersistentCalls:
       m_Calls: []
   onSkillEnd:
     m_PersistentCalls:
       m_Calls: []
+  Animator: {fileID: 0}
   explosionForce: 2
   MergeTime: 2
   cameraPanOutMultiplier: 1.5
