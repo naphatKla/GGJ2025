@@ -45,34 +45,57 @@ public class EnemyManager : CharacterBase
 
     protected override void SkillInputHandler()
     {
-        if (currentState == EnemyState.hunting && Random.value > 0.3f)
+        if (currentState == EnemyState.hunting)
         {
-            float random = Random.Range(2f, 5f);
-            if (Time.time >= lastDashTime + random)
+            if (Random.value >= 0.5f)
             {
-                SkillMouseLeft.UseSkill();
-                lastDashTime = Time.time;
+                float random = Random.Range(2f, 5f);
+                if (Time.time >= lastDashTime + random)
+                {
+                    SkillMouseLeft.UseSkill();
+                    lastDashTime = Time.time;
+                }
+            }
+            else
+            {
+                float random = Random.Range(2f, 5f);
+                if (Time.time >= lastDashTime + random)
+                {
+                    SkillMouseRight.UseSkill();
+                    lastDashTime = Time.time;
+                }
             }
         }
         
-        if (currentState == EnemyState.runaway && Random.value > 0.3f)
+        if (currentState == EnemyState.runaway)
         {
-            float random = Random.Range(2f, 5f);
-            if (Time.time >= lastDashTime + random)
+            if (Random.value >= 0.5f)
             {
-                SkillMouseLeft.UseSkill();
-                lastDashTime = Time.time;
+                float random = Random.Range(2f, 5f);
+                if (Time.time >= lastDashTime + random)
+                {
+                    SkillMouseLeft.UseSkill();
+                    lastDashTime = Time.time;
+                }
+            }
+            else
+            {
+                float random = Random.Range(2f, 5f);
+                if (Time.time >= lastDashTime + random)
+                {
+                    SkillMouseRight.UseSkill();
+                    lastDashTime = Time.time;
+                }
             }
         }
         
-        SkillMouseRight.UseSkill();
     }
 
     protected override void Update()
     {
         base.Update();
         aiSize = BubbleSize;
-        huntScript.targetdetectRadius = BubbleSize * 0.1f;
+        huntScript.targetdetectRadius = (aiSize * transform.localScale.x)/100;
         
         //target lock zone
         SelectTarget();
@@ -107,7 +130,7 @@ public class EnemyManager : CharacterBase
         //hunting
         //If enemy has 10% oxygen more than player current oxygen
         //Enemy would target player if they entered player screen for 0.5s
-        if (huntScript.EnemyDetectTarget(_target) && CompareValues(aiSize,_targetSize) > 10 && currentState == EnemyState.leveling)
+        if (huntScript.EnemyDetectTarget(_target) && aiSize > _targetSize && currentState == EnemyState.leveling)
         {
             StartCoroutine(PreHunting());
         }
@@ -171,7 +194,7 @@ public class EnemyManager : CharacterBase
     {
         if (currentState == EnemyState.runaway)
         {
-            if (_target)
+            if (_target && aiSize < _targetSize)
             {
                 if (NavMesh.SamplePosition(runawayScript.RunFromTarget(_target), out NavMeshHit hit, runawayScript.runDistance, NavMesh.AllAreas))
                 {
@@ -221,6 +244,7 @@ public class EnemyManager : CharacterBase
             yield return null;
         }
         currentState = EnemyState.hunting;
+        if (navMesh.hasPath) navMesh.ResetPath();
     }
     
     private IEnumerator PreRunAway()
