@@ -63,6 +63,7 @@ public class EnemyManager : CharacterBase
     private void PerformHunting()
     {
         if (currentState != EnemyState.Hunting) return;
+        if (Player.Instance == null) return;
         navMesh.SetDestination(Player.Instance.transform.position);
     }
 }

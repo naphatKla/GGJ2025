@@ -7,7 +7,7 @@ using Sirenix.OdinInspector;
 using Random = UnityEngine.Random;
 
 [System.Serializable]
-public class EnemyData
+public class EnemyData2
 {
     public EnemyManager enemyPrefab;
     public bool setSpawnSize;
@@ -19,7 +19,7 @@ public class EnemyData
 
 public class RandomEnemyRespawn : MMSingleton<RandomEnemyRespawn>
 {
-    [SerializeField] private List<EnemyData> enemyDataList = new List<EnemyData>();
+    [SerializeField] private List<EnemyData2> enemyDataList = new List<EnemyData2>();
     [SerializeField] public Transform enemyParent;
     [SerializeField] private int maxSpawn;
     [SerializeField] private int enemyPerSpawn;
@@ -32,7 +32,7 @@ public class RandomEnemyRespawn : MMSingleton<RandomEnemyRespawn>
     [SerializeField] private float minDistanceFromPlayer = 5f;
 
     [ShowInInspector] private List<EnemyManager> enemyList = new List<EnemyManager>();
-    [ShowInInspector] private int enemyCount = 0;
+    [ShowInInspector] public int enemyCount = 0;
 
     private void Start()
     {
