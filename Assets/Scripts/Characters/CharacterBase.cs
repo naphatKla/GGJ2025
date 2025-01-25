@@ -61,6 +61,7 @@ namespace Characters
             SkillMouseRight?.UpdateCooldown();
             
             // เก็บ oxygen รอบๆรัศมี
+            if (!_spriteRenderer.enabled) return;
             Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, (transform.localScale.x / 2) + oxygenDetectionRadius, LayerMask.GetMask("EXP"));
             
             foreach (var collider in colliders)
