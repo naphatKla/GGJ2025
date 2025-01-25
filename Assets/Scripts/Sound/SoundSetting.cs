@@ -16,15 +16,9 @@ public class SoundSetting : MonoBehaviour
 
     public void OpenUI()
     {
-        if (_isActive == false)
+        if (soundSetting != null)
         {
-            soundSetting.gameObject.SetActive(true);
-            _isActive = true;
-        }
-        else if (_isActive == true)
-        {
-            soundSetting.gameObject.SetActive(false);
-            _isActive = false;
+            soundSetting.SetActive(!soundSetting.activeSelf);
         }
     }
 }
