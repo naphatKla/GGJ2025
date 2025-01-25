@@ -38,7 +38,7 @@ namespace Characters
                 SkillMouseLeft.UseSkill();
             }
             
-            if (Input.GetMouseButton(0))
+            if (Input.GetMouseButton(1))
             {
                 SkillMouseRight.UseSkill();
             }

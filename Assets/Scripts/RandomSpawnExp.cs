@@ -1,16 +1,19 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using MoreMountains.Tools;
 using Sirenix.OdinInspector;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 [System.Serializable]
 public class ExpData
 {
-    public GameObject expPrefab;
+    public ExpScript expPrefab;
     public float expChance;
 }
 
-public class RandomSpawnExp : MonoBehaviour
+public class RandomSpawnExp : MMSingleton<RandomSpawnExp>
 {
     [SerializeField] private List<ExpData> expDataList = new List<ExpData>();
     [SerializeField] public Transform expParent;
@@ -19,10 +22,18 @@ public class RandomSpawnExp : MonoBehaviour
     [SerializeField] private float expSpawnTimer;
     [Tooltip("The size of spawn region")]
     [BoxGroup("Size")] public Vector2 regionSize = Vector2.zero;
+    private List<ExpScript> expList = new List<ExpScript>();
+    public List<ExpScript> OxygenAvailable => expList;
 
 
     private void Start()
     {
+        foreach (ExpData data in expDataList)
+        {
+            expList.Add(data.expPrefab);
+        }
+        expList.Sort((x, y) => x.expAmount.CompareTo(y.expAmount));
+        expList.Reverse();
         StartCoroutine(RandomExpSpawn());
     }
 
@@ -46,7 +57,7 @@ public class RandomSpawnExp : MonoBehaviour
                     {
                         for (int i = 0; i < expPerSpawn; i++)
                         {
-                            GameObject obj = Instantiate(exp.expPrefab, GetRegionPosition(), Quaternion.identity);
+                            GameObject obj = Instantiate(exp.expPrefab.gameObject, GetRegionPosition(), Quaternion.identity);
                             obj.transform.parent = expParent;
                         }
                     }

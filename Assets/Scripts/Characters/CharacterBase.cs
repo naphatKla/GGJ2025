@@ -1,10 +1,12 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
 using MoreMountains.Feedbacks;
 using Sirenix.OdinInspector;
 using Sirenix.Utilities;
 using Skills;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 using Random = UnityEngine.Random;
@@ -20,15 +22,20 @@ namespace Characters
         [SerializeField] [BoxGroup("PickUpOxygen")] private float oxygenMagneticStartForce = 9f;
         [SerializeField] [BoxGroup("PickUpOxygen")] private float oxygenMagneticEndForce = 2f;
         [SerializeField] [BoxGroup("PickUpOxygen")] private float oxygenCurveForce = 5f;
-        [SerializeField] [BoxGroup("PickUpOxygen")] private LayerMask oxygenLayer;
         [SerializeField] [BoxGroup("Skills")] protected SkillBase SkillMouseLeft;
         [SerializeField] [BoxGroup("Skills")] protected  SkillBase SkillMouseRight;
         [SerializeField] [BoxGroup("Feedbacks")] private MMF_Player sizeUpFeedback;
         [SerializeField] [BoxGroup("Feedbacks")] private MMF_Player sizeDownFeedback;
+        [SerializeField] [BoxGroup("Feedbacks")] private MMF_Player explodeFeedback;
+        [SerializeField] [BoxGroup("Feedbacks")] private MMF_Player mergeFeedback;
         [SerializeField] [BoxGroup("Feedbacks")] private MMF_Player deadFeedback;
-        [SerializeField] private ExpScript[] oxygenDrops;
+        private SpriteRenderer _spriteRenderer;
+        private Collider2D _collider2D;
+        private TrailRenderer _trailRenderer;
         [HideInInspector] public Rigidbody2D rigidbody2D;
         protected float lastStateSize = 100f;
+        private List<CloningCharacter> clones = new List<CloningCharacter>();
+        private GameObject _cloningParent;
         
         public float BubbleSize => bubbleSize;
         protected float Speed => speed;
@@ -42,8 +49,9 @@ namespace Characters
             SkillMouseLeft?.InitializeSkill(this);
             SkillMouseRight?.InitializeSkill(this);
             rigidbody2D = GetComponent<Rigidbody2D>();
-            oxygenDrops.Sort((x, y) => x.expAmount.CompareTo(y.expAmount));
-            Array.Reverse(oxygenDrops);
+            _spriteRenderer = GetComponent<SpriteRenderer>();
+            _collider2D = GetComponent<Collider2D>();
+            _trailRenderer = GetComponent<TrailRenderer>();
         }
         
         protected virtual void Update()
@@ -53,7 +61,7 @@ namespace Characters
             SkillMouseRight?.UpdateCooldown();
             
             // เก็บ oxygen รอบๆรัศมี
-            Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, (transform.localScale.x / 2) + oxygenDetectionRadius, oxygenLayer);
+            Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, (transform.localScale.x / 2) + oxygenDetectionRadius, LayerMask.GetMask("EXP"));
             
             foreach (var collider in colliders)
             {
@@ -72,26 +80,30 @@ namespace Characters
             ExpScript exp = other.GetComponent<ExpScript>();
             if (!exp.canPickUp) return;
             
-            AdjustSize(exp.expAmount);
-            UpdateScale();
+            AddSize(exp.expAmount);
             Destroy(other.gameObject);
             return;
         }
 
         private void OnTriggerStay2D(Collider2D other)
         {
+            CloningCharacter cloningCharacter = other.GetComponent<CloningCharacter>();
+            CloningCharacter thisCharacter = GetComponent<CloningCharacter>();
+            
+            if (cloningCharacter && cloningCharacter.OwnerCharacter == this) return;
+            if (thisCharacter && thisCharacter.OwnerCharacter == other.GetComponent<CharacterBase>()) return;
+            if (thisCharacter && cloningCharacter && (thisCharacter.OwnerCharacter == cloningCharacter.OwnerCharacter)) return;
+                
             float distance = Vector2.Distance(transform.position, other.transform.position);
             float thisRadius = (transform.localScale.x / 2);
             CharacterBase otherCharacter = other.GetComponent<CharacterBase>();
             if (!otherCharacter) return;
             bool canEat = (distance <= thisRadius) && (bubbleSize > otherCharacter.bubbleSize);
             if (!canEat) return;
-            AdjustSize(otherCharacter.bubbleSize);
-            UpdateScale();
+            AddSize(otherCharacter.bubbleSize);
             otherCharacter.Dead();
         }
         
-        [Button]
         protected virtual void Dead()
         {
             DropOxygen(bubbleSize);
@@ -99,11 +111,10 @@ namespace Characters
             Destroy(gameObject);
         }
 
-        public virtual void DropOxygen(float amount)
+        protected virtual void DropOxygen(float amount)
         {
             float sumDrop = 0;
-            
-            foreach (ExpScript drop in oxygenDrops)
+            foreach (ExpScript drop in RandomSpawnExp.Instance.OxygenAvailable)
             {
                 while (sumDrop + drop.expAmount <= amount)
                 {
@@ -117,7 +128,13 @@ namespace Characters
             }
         }
         
-        public virtual void AdjustSize(float size)
+        public virtual void SetSize(float size)
+        {
+            bubbleSize = size;
+            UpdateScale();
+        }
+        
+        public virtual void AddSize(float size)
         {
             bubbleSize += size;
             if (Mathf.Abs(bubbleSize - lastStateSize) >= 100) 
@@ -136,7 +153,7 @@ namespace Characters
                     DropOxygen(Mathf.Abs(size));
                     break;
             }
-        
+            UpdateScale();
             if (bubbleSize > 0) return;
             Dead();
         }
@@ -146,8 +163,68 @@ namespace Characters
             Vector2 newScale = Vector2.one * (bubbleSize * increaseScalePerSize);
             transform.DOScale(newScale, 0.05f).SetEase(Ease.OutBounce);
         }
-        
 
+        [Button]
+        public void ExplodeOut8Direction(float force, float mergeTime)
+        {
+            Vector2[] directions = new Vector2[8];
+            _cloningParent = new GameObject("CloningParent");
+            _cloningParent.transform.position = transform.position;
+            explodeFeedback?.PlayFeedbacks();
+            
+            for (int i = 0; i < 8; i++)
+            {
+                directions[i] = new Vector2(Mathf.Cos(i * Mathf.PI / 4), Mathf.Sin(i * Mathf.PI / 4));
+                Vector2 position = _cloningParent.transform.position + ((Vector3)directions[i] * (transform.localScale.x + force));
+                GameObject obj = Instantiate(gameObject, _cloningParent.transform.position, Quaternion.identity, _cloningParent.transform);
+                
+                MonoBehaviour[] scripts = obj.GetComponents<MonoBehaviour>();
+                foreach (MonoBehaviour script in scripts) 
+                    script.enabled = false;
+                
+                obj.AddComponent(typeof(CloningCharacter));
+                CloningCharacter clone = obj.GetComponent<CloningCharacter>();
+                clones.Add(clone);
+                clone.OwnerCharacter = this;
+
+                clone.transform.DOMove(position, 0.25f).SetEase(Ease.InOutSine);
+                clone.SetSize(bubbleSize / 3f);
+            }
+            
+            StartCoroutine(CloningFollowAndMergedBack(mergeTime));
+        }
+
+        IEnumerator CloningFollowAndMergedBack(float time)
+        {
+            float timeCounter = 0;
+            _spriteRenderer.enabled = false;
+            _collider2D.enabled = false;
+            _trailRenderer.enabled = false;
+            
+            while (timeCounter < time)
+            {
+                _cloningParent.transform.position = Vector2.Lerp(_cloningParent.transform.position, transform.position, timeCounter / time);
+                timeCounter += Time.deltaTime;
+                yield return null;
+            }
+
+            mergeFeedback?.PlayFeedbacks();
+            foreach (CloningCharacter clone in clones)
+            {
+                if (!clone) continue;
+                yield return new WaitForSeconds(0.02f);
+                clone.transform.DOMove(transform.position, 0.25f).SetEase(Ease.InOutSine).OnComplete(() =>
+                {
+                    Destroy(clone.gameObject);
+                    _spriteRenderer.enabled = true;
+                    _collider2D.enabled = true;
+                    _trailRenderer.enabled = true;
+                });
+            }
+            yield return new WaitForSeconds(0.3f);
+            Destroy(_cloningParent);
+        }
+        
         private void OnDrawGizmos()
         {
             Gizmos.color = Color.red;
