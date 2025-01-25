@@ -41,7 +41,7 @@ namespace Characters
             SkillMouseRight?.UpdateCooldown();
         }
         
-        public virtual void Dead(CharacterBase killer = null)
+        public virtual void Dead(CharacterBase killer)
         {
             if (!CanDead) return;
             DropOxygen(score);

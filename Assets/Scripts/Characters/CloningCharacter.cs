@@ -15,7 +15,7 @@ namespace Characters
             if (other.CompareTag("Enemy"))
             {
                 Debug.LogWarning("KILL");
-                other.GetComponent<EnemyManager>().Dead();
+                other.GetComponent<EnemyManager>().Dead(this);
             }
             
             if (!other.CompareTag("Exp")) return;
