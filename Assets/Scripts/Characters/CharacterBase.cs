@@ -36,6 +36,7 @@ namespace Characters
         [ShowInInspector] protected float currentSpeed;
         private List<CloningCharacter> clones = new List<CloningCharacter>();
         private GameObject _cloningParent;
+        protected Animator Animator;
         
         public float BubbleSize => bubbleSize;
         protected float CurrentSpeed => currentSpeed;
