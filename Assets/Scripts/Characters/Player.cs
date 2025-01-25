@@ -70,15 +70,10 @@ namespace Characters
             ExpScript exp = other.GetComponent<ExpScript>();
             if (!exp.canPickUp) return;
             AddScore(exp.expAmount);
-            AddCombo(exp.expAmount);
             onPickUpScore?.Invoke();
             Destroy(other.gameObject);
         }
         
-        public void AddCombo(float score)
-        {
-            Hitcombo += score;
-        }
         
         private void MovementController()
         {

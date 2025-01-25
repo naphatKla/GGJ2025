@@ -62,8 +62,11 @@ public class ComboText : MonoBehaviour
     
     private void PlayTween()
     {
-        isCombo = true;
-        comboTimeoutSlider.value = comboTimeOut;
+        if (_score > 0)
+        {
+            isCombo = true;
+            comboTimeoutSlider.value = comboTimeOut;
+        }
         hitText.transform.DOScale(new Vector3(scaleAmount, scaleAmount, 1), tweenDuration)
             .SetEase(Ease.OutBack)
             .OnComplete(() =>
