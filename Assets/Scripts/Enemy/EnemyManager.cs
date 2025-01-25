@@ -12,10 +12,10 @@ public class EnemyManager : CharacterBase
     private enum EnemyState {Hunting}
     [SerializeField] private EnemyState currentState = EnemyState.Hunting;
     private float _lastDashTime = 0f;
-  
-    void Start()
+
+    protected override void Start()
     {
-        //Get Dependent
+        base.Start();
         navMesh = GetComponent<NavMeshAgent>();
 
         //Set AI attribute

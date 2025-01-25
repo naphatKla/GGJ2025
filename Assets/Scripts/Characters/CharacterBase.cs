@@ -59,6 +59,7 @@ namespace Characters
             SkillMouseRight?.UpdateCooldown();
         }
         
+        [Button]
         public virtual void Dead(CharacterBase killer, bool dropOxygen = true) 
         {
             if (!CanDead) return;
@@ -68,7 +69,7 @@ namespace Characters
                 DropOxygen(score);
             deadFeedback?.PlayFeedbacks();
             killer?.killFeedback?.PlayFeedbacks();
-            _animator?.SetTrigger("DeadTrigger");
+            _animator.SetTrigger("DeadTrigger");
             Destroy(gameObject,0.4f);
         }
 
