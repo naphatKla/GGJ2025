@@ -103,7 +103,6 @@ public class EnemyManager : CharacterBase
         //Enemy would target player if they entered player screen for 0.5s
         if (huntScript.EnemyDetectTarget(_target) && CompareValues(aiSize,_targetSize) > 10 && currentState == EnemyState.leveling)
         {
-            Debug.Log("Hunt");
             StartCoroutine(PreHunting());
         }
 
@@ -246,6 +245,16 @@ public class EnemyManager : CharacterBase
 
     private void SelectTarget()
     {
+        if (_target != null && (_target.activeInHierarchy == false || _target == null))
+        {
+            _target = null;
+            if (_targetHoldCoroutine != null)
+            {
+                StopCoroutine(_targetHoldCoroutine);
+                _targetHoldCoroutine = null;
+            }
+        }
+        
         if (_target == null)
         {
             _target = RadiusDetector();
