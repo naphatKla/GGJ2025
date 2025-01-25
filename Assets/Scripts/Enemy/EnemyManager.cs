@@ -6,7 +6,6 @@ using Random = UnityEngine.Random;
 
 public class EnemyManager : CharacterBase
 {
-    [BoxGroup("Dependent")] [SerializeField] public EnemyHunting huntScript;
     [BoxGroup("Dependent")] [SerializeField] public NavMeshAgent navMesh;
 
     [BoxGroup("State")] 
@@ -17,13 +16,25 @@ public class EnemyManager : CharacterBase
     void Start()
     {
         //Get Dependent
-        huntScript = GetComponent<EnemyHunting>();
         navMesh = GetComponent<NavMeshAgent>();
 
         //Set AI attribute
         navMesh.updateRotation = false;
         navMesh.updateUpAxis = false;
         navMesh.speed = base.CurrentSpeed;
+    }
+    
+    protected override void Update()
+    {
+        base.Update();
+        if (IsModifyingMovement) return;
+        if (navMesh.enabled) PerformHunting();
+    }
+    
+    private void OnTriggerStay2D(Collider2D other)
+    {
+        if (other.CompareTag("Player") && IsDash)
+            Player.Instance.Dead();
     }
 
     protected override void SkillInputHandler()
@@ -47,13 +58,6 @@ public class EnemyManager : CharacterBase
                 _lastDashTime = Time.time;
             }
         }*/
-    }
-
-    protected override void Update()
-    {
-        base.Update();
-        if (IsModifyingMovement) return;
-        if (navMesh.enabled) PerformHunting();
     }
     
     private void PerformHunting()

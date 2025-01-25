@@ -13,19 +13,19 @@ namespace Characters
         [SerializeField] private float maxSpeed = 6f;
         [SerializeField] [BoxGroup("Skills")] protected SkillBase SkillMouseLeft;
         [SerializeField] [BoxGroup("Skills")] protected  SkillBase SkillMouseRight;
+        [SerializeField] [BoxGroup("Feedbacks")] public MMF_Player killFeedback;
         [SerializeField] [BoxGroup("Feedbacks")] private MMF_Player deadFeedback;
         [HideInInspector] public Rigidbody2D rigidbody2D;
-        [ShowInInspector] protected float currentSpeed;
+        public bool CanDead { get; set; } = true;
+        public bool IsDash { get; set; }
         protected Animator Animator;
-        public bool canDead;
-        public bool isDash;
+        private float currentSpeed;
         
         protected float CurrentSpeed => currentSpeed;
         public bool IsModifyingMovement { get; set; }
         protected abstract void SkillInputHandler();
         public float Score => score;
-
-
+        
         protected virtual void Awake()
         {
             SkillMouseLeft?.InitializeSkill(this);
@@ -41,11 +41,12 @@ namespace Characters
             SkillMouseRight?.UpdateCooldown();
         }
         
-        public virtual void Dead()
+        public virtual void Dead(CharacterBase killer = null)
         {
-            if (!canDead) return;
+            if (!CanDead) return;
             DropOxygen(score);
             deadFeedback?.PlayFeedbacks();
+            killer?.killFeedback?.PlayFeedbacks();
             Destroy(gameObject);
         }
 

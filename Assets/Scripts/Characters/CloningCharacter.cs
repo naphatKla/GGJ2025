@@ -1,6 +1,3 @@
-
-using System;
-
 namespace Characters
 {
     public class CloningCharacter : CharacterBase

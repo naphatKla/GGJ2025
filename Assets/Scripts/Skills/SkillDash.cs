@@ -14,12 +14,12 @@ namespace Skills
             onSkillStart.AddListener(() =>
             {
                 OwnerCharacter.IsModifyingMovement = true;
-                OwnerCharacter.isDash = true;
+                OwnerCharacter.IsDash = true;
             });
             onSkillEnd.AddListener(() =>
             {
                 OwnerCharacter.IsModifyingMovement = false;
-                OwnerCharacter.isDash = false;
+                OwnerCharacter.IsDash = false;
                 if (!IsPlayer) OwnerCharacter.GetComponent<NavMeshAgent>().enabled = true;
             });
         }

@@ -106,33 +106,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f8579db15e52aa4199d320d18485be7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bubbleSize: 100
-  maxLocalScale: 30
+  score: 0
   maxSpeed: 6
-  minSpeed: 2
-  increaseScalePerSize: 0.003
+  SkillMouseLeft: {fileID: 5658484918666970509}
+  SkillMouseRight: {fileID: 6339041768313023157}
+  killFeedback: {fileID: 0}
+  deadFeedback: {fileID: 0}
+  rigidbody2D: {fileID: 0}
+  canDead: 0
+  isDash: 0
   oxygenDetectionRadius: 2
   oxygenMagneticStartForce: 9
   oxygenMagneticEndForce: 1
   oxygenCurveForce: 5
-  SkillMouseLeft: {fileID: 5658484918666970509}
-  SkillMouseRight: {fileID: 6339041768313023157}
-  sizeUpFeedback: {fileID: 0}
-  sizeDownFeedback: {fileID: 0}
   explodeFeedback: {fileID: 0}
   mergeFeedback: {fileID: 0}
-  deadFeedback: {fileID: 0}
-  rigidbody2D: {fileID: 0}
-  onSizeUpState:
-    m_PersistentCalls:
-      m_Calls: []
-  onSkillPerformed:
-    m_PersistentCalls:
-      m_Calls: []
-  onSkillEnd:
-    m_PersistentCalls:
-      m_Calls: []
-  cameraSizePerState: 0.5
 --- !u!58 &3895866205044419862
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -461,7 +449,7 @@ PrefabInstance:
       objectReference: {fileID: 3059437350051171277}
     - target: {fileID: 2743243278566756321, guid: 7cd43370fed8d84469504dc3d00073c5, type: 3}
       propertyPath: managedReferences[7241849253592563712].Active
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2743243278566756321, guid: 7cd43370fed8d84469504dc3d00073c5, type: 3}
       propertyPath: managedReferences[7241849253592563712].Chance

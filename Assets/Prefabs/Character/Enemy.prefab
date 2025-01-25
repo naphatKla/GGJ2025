@@ -14,9 +14,6 @@ GameObject:
   - component: {fileID: 8380095991850804025}
   - component: {fileID: 7467694419736205728}
   - component: {fileID: 5725435335815257894}
-  - component: {fileID: 2038249193378421991}
-  - component: {fileID: 8519075577304805911}
-  - component: {fileID: 3020871736648826920}
   - component: {fileID: -7093311364811772289}
   m_Layer: 0
   m_Name: Enemy
@@ -194,56 +191,13 @@ MonoBehaviour:
   maxSpeed: 6
   SkillMouseLeft: {fileID: 23493788028573042}
   SkillMouseRight: {fileID: 0}
-  sizeUpFeedback: {fileID: 0}
-  sizeDownFeedback: {fileID: 0}
+  killFeedback: {fileID: 0}
   deadFeedback: {fileID: 0}
   rigidbody2D: {fileID: 0}
   canDead: 0
   isDash: 0
-  huntScript: {fileID: 0}
   navMesh: {fileID: 0}
   currentState: 0
---- !u!114 &2038249193378421991
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 318422658666202670}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bb81d6395b359744eaaad6655acae3cb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  expdetectDistance: 50
---- !u!114 &8519075577304805911
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 318422658666202670}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 884acd12f70d46249924ba205f3ca0d6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  targetdetectRadius: 12
-  timebeforeHunting: 0
-  timeloseInterest: 6
---- !u!114 &3020871736648826920
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 318422658666202670}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a24024dfcb8f2a84d964b71c17da376c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  runDistance: 12
 --- !u!96 &-7093311364811772289
 TrailRenderer:
   serializedVersion: 3
@@ -450,6 +404,14 @@ PrefabInstance:
     - target: {fileID: 251021742552189559, guid: 7cd43370fed8d84469504dc3d00073c5, type: 3}
       propertyPath: m_Name
       value: SkillDash_L
+      objectReference: {fileID: 0}
+    - target: {fileID: 2743243278566756321, guid: 7cd43370fed8d84469504dc3d00073c5, type: 3}
+      propertyPath: managedReferences[7241849249656995841].Active
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2743243278566756321, guid: 7cd43370fed8d84469504dc3d00073c5, type: 3}
+      propertyPath: managedReferences[7241849249656995842].Active
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6978556922848020585, guid: 7cd43370fed8d84469504dc3d00073c5, type: 3}
       propertyPath: m_LocalPosition.x

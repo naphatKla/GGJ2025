@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
@@ -18,15 +19,15 @@ namespace Characters
         [SerializeField] [BoxGroup("Feedbacks")] private MMF_Player mergeFeedback;
         private List<CloningCharacter> _clones = new List<CloningCharacter>();
         private GameObject _cloningParent;
-        private bool _isExploding;
         public static Player Instance { get; private set; }
 
         protected override void Awake()
         {
-            Instance = this;
+            if (!Instance)
+                Instance = this;
             base.Awake();
         }
-
+        
         public void ResizeCamera()
         {
             float size = CameraManager.Instance.StartOrthographicSize;
@@ -54,9 +55,13 @@ namespace Characters
 
         private void OnTriggerStay2D(Collider2D other)
         {
-            if (other.CompareTag("Enemy") && isDash)
+            Debug.LogWarning(other.tag);
+            if (other.CompareTag("Enemy") && IsDash)
+            {
+                Debug.LogWarning("KILL");
                 other.GetComponent<EnemyManager>().Dead();
-
+            }
+            
             if (!other.CompareTag("Exp")) return;
             ExpScript exp = other.GetComponent<ExpScript>();
             if (!exp.canPickUp) return;
@@ -84,12 +89,11 @@ namespace Characters
         [Button]
         public void ExplodeOut8Direction(float force, float mergeTime)
         {
-            if (!gameObject.CompareTag("Player")) return;
             Vector2[] directions = new Vector2[8];
-            _cloningParent = new GameObject("CloningParent");
+            if (!_cloningParent)
+                _cloningParent = new GameObject("CloningParent");
             _cloningParent.transform.position = transform.position;
             explodeFeedback?.PlayFeedbacks();
-            _isExploding = true;
             _clones.Clear();
             
             for (int i = 0; i < 8; i++)
@@ -108,7 +112,7 @@ namespace Characters
                 if (agent) agent.enabled = false;
                 _clones.Add(clone);
                 clone.OwnerCharacter = this;
-                clone.canDead = false;
+                clone.CanDead = false;
                 clone.SetScore(0);
                 clone.transform.DOMove(position, 0.25f).SetEase(Ease.InOutSine).OnComplete(() =>
                 { 
@@ -125,11 +129,6 @@ namespace Characters
             
             while (timeCounter < time)
             {
-                if (_clones.Count == 0)
-                {
-                    Dead();
-                    break;
-                }
                 _cloningParent.transform.position = Vector2.Lerp(_cloningParent.transform.position, transform.position, timeCounter / time);
                 timeCounter += Time.deltaTime;
                 yield return null;
@@ -145,10 +144,13 @@ namespace Characters
                     Destroy(clone.gameObject,0.02f);
                 });
             }
-
             yield return new WaitForSeconds(0.8f);
-            Destroy(_cloningParent);
-            _isExploding = false;
+        }
+        
+        public override void Dead(CharacterBase killer = null)
+        {
+            if (IsDash) return;
+            base.Dead(killer);
         }
     }
 }
