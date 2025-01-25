@@ -187,6 +187,7 @@ namespace Characters
                 CloningCharacter clone = obj.GetComponent<CloningCharacter>();
                 clones.Add(clone);
                 clone.OwnerCharacter = this;
+                clone.SizeGained = 0f;
 
                 clone.transform.DOMove(position, 0.25f).SetEase(Ease.InOutSine);
                 clone.SetSize(bubbleSize / 3f);
@@ -216,6 +217,7 @@ namespace Characters
                 yield return new WaitForSeconds(0.02f);
                 clone.transform.DOMove(transform.position, 0.25f).SetEase(Ease.InOutSine).OnComplete(() =>
                 {
+                    AddSize(clone.SizeGained);
                     Destroy(clone.gameObject);
                     _spriteRenderer.enabled = true;
                     _collider2D.enabled = true;

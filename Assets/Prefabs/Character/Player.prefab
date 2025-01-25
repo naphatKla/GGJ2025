@@ -110,9 +110,6 @@ MonoBehaviour:
   oxygenMagneticStartForce: 9
   oxygenMagneticEndForce: 1
   oxygenCurveForce: 5
-  oxygenLayer:
-    serializedVersion: 2
-    m_Bits: 1073741824
   SkillMouseLeft: {fileID: 5658484918666970509}
   SkillMouseRight: {fileID: 6339041768313023157}
   sizeUpFeedback: {fileID: 0}
@@ -124,7 +121,7 @@ MonoBehaviour:
   onSizeUpState:
     m_PersistentCalls:
       m_Calls: []
-  cameraSizePerState: 3
+  cameraSizePerState: 1
 --- !u!58 &3895866205044419862
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -585,6 +582,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5026074172752388844, guid: 544e8ceec27b98d498bf78b6537e5636, type: 3}
       propertyPath: cooldown
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5026074172752388844, guid: 544e8ceec27b98d498bf78b6537e5636, type: 3}
+      propertyPath: skillDuration
       value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 5026074172752388844, guid: 544e8ceec27b98d498bf78b6537e5636, type: 3}
