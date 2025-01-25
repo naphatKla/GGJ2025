@@ -264,9 +264,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 923201308}
-        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
-        m_MethodName: StartGame
+      - m_Target: {fileID: 1521753147}
+        m_TargetAssemblyTypeName: LoadScene, Assembly-CSharp
+        m_MethodName: RestartGame
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -587,9 +587,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b2d8a4e71e8d5d45ac2e32ecb3a176e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerControllerUI: {fileID: 0}
-  pauseUI: {fileID: 0}
-  hasStarted: 0
 --- !u!1 &1334132392
 GameObject:
   m_ObjectHideFlags: 0

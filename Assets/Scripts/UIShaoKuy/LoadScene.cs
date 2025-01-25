@@ -8,10 +8,56 @@ public class LoadScene : MonoBehaviour
 {
     [FormerlySerializedAs("soundSetting")] [Header("UI")]
     public GameObject openUI;
+    public GameObject pauseUI;
+    
+    public GameObject playerControllerUI;
+    private bool hasStarted = false;
+    
+    void Start()
+    {
+        // เริ่มเกมโดยแสดง Player Controller UI และหยุดเวลา
+        playerControllerUI.SetActive(true);
+        pauseUI.SetActive(false);
+        Time.timeScale = 0;
+    }
+
+    void Update()
+    {
+        if (!hasStarted && Input.GetMouseButtonDown(0) && Time.timeScale == 0)
+        {
+            StartGame();
+        }
+        
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (Time.timeScale == 0 && hasStarted)
+            {
+                ResumeGame();
+            }
+            else if (hasStarted)
+            {
+                PauseGame();
+            }
+        }
+    }
+    
+    public void ResumeGame()
+    {
+        pauseUI.SetActive(false);
+        Time.timeScale = 1;
+    }
+
+    public void PauseGame()
+    {
+        pauseUI.SetActive(true); 
+        Time.timeScale = 0;
+    }
     
     public void StartGame()
     {
-        SceneManager.LoadScene("");
+        playerControllerUI.SetActive(false);
+        Time.timeScale = 1;
+        hasStarted = true;
     }
 
     public void ReturnToMenu()
@@ -26,17 +72,13 @@ public class LoadScene : MonoBehaviour
     
     public void RestartGame()
     {
-        SceneManager.LoadScene("Gameplay");
-    }
-
-    public void Resume()
-    {
-        //Back to game
+        SceneManager.LoadScene("GameplayUI");
     }
 
     public void Exit()
     {
         Application.Quit();
+        Debug.Log("Exit");
     }
 
     public void OpenSoundSetting()
