@@ -67,6 +67,8 @@ namespace Characters
             isDead = true;
             if (dropOxygen)
                 DropOxygen(score);
+            if (gameObject.CompareTag("Enemy"))
+                Player.Hitcombo += 1;
             deadFeedback?.PlayFeedbacks();
             killer?.killFeedback?.PlayFeedbacks();
             _animator.SetTrigger("DeadTrigger");
