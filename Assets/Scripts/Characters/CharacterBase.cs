@@ -38,14 +38,17 @@ namespace Characters
         public List<CloningCharacter> clones = new List<CloningCharacter>();
         private GameObject _cloningParent;
         private bool isExploding;
+        private bool godMode;
         
         public float BubbleSize => bubbleSize;
         protected float CurrentSpeed => currentSpeed;
         public bool IsModifyingMovement { get; set; }
         protected abstract void SkillInputHandler();
         [Title("Events")] public UnityEvent onSizeUpState;
-     
-        
+        [Title("Events")] public UnityEvent onSkillPerformed;
+        [Title("Events")] public UnityEvent onSkillEnd;
+
+
         protected virtual void Awake()
         {
             SkillMouseLeft?.InitializeSkill(this);
@@ -80,6 +83,7 @@ namespace Characters
         
         private void OnTriggerEnter2D(Collider2D other)
         {
+            if (godMode) return;
             if (!other.CompareTag("Exp")) return;
             ExpScript exp = other.GetComponent<ExpScript>();
             if (!exp.canPickUp) return;
@@ -91,6 +95,7 @@ namespace Characters
 
         private void OnTriggerStay2D(Collider2D other)
         {
+            if (godMode) return;
             CloningCharacter cloningCharacter = other.GetComponent<CloningCharacter>();
             CloningCharacter thisCharacter = GetComponent<CloningCharacter>();
             
@@ -177,6 +182,7 @@ namespace Characters
         [Button]
         public void ExplodeOut8Direction(float force, float mergeTime)
         {
+            onSkillPerformed?.Invoke();
             Vector2[] directions = new Vector2[8];
             _cloningParent = new GameObject("CloningParent");
             _cloningParent.transform.position = transform.position;
@@ -227,6 +233,7 @@ namespace Characters
             }
 
             mergeFeedback?.PlayFeedbacks();
+            StartCoroutine(SetGodmode(3f));
             foreach (CloningCharacter clone in clones)
             {
                 if (!clone) continue;
@@ -244,6 +251,14 @@ namespace Characters
             if (bubbleSize <= 0) Dead();
             Destroy(_cloningParent);
             isExploding = false;
+            onSkillEnd?.Invoke();
+        }
+        
+        private IEnumerator SetGodmode(float time)
+        {
+            godMode = true;
+            yield return new WaitForSeconds(time);
+            godMode = false;
         }
         
         private void OnDrawGizmos()
