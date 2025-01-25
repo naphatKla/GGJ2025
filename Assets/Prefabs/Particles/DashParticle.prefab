@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 2779840451018205629}
   - component: {fileID: 7695579885367172554}
   - component: {fileID: 5082438276172502402}
+  - component: {fileID: 3616989214273661975}
   m_Layer: 0
   m_Name: DashParticle
   m_TagString: Untagged
@@ -115,7 +116,7 @@ ParticleSystem:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2974210351688831785}
   serializedVersion: 8
-  lengthInSec: 1
+  lengthInSec: 0.35
   simulationSpeed: 1
   stopAction: 0
   cullingMode: 0
@@ -191,7 +192,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 3
       scalar: 0.5
-      minScalar: 0.5
+      minScalar: 3
       maxCurve:
         serializedVersion: 2
         m_Curve:
@@ -243,8 +244,8 @@ ParticleSystem:
     startSpeed:
       serializedVersion: 2
       minMaxState: 3
-      scalar: -8
-      minScalar: -2
+      scalar: -20
+      minScalar: -15
       maxCurve:
         serializedVersion: 2
         m_Curve:
@@ -4888,3 +4889,17 @@ ParticleSystem:
         m_PostInfinity: 2
         m_RotationOrder: 4
     vectorLabel1_3: W
+--- !u!114 &3616989214273661975
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2974210351688831785}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3017627b5eb6c224b9f5ede65970e9b6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  parent: {fileID: 0}
+  scaleMultiplier: 0.15

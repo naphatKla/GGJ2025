@@ -14,7 +14,7 @@ namespace Characters
     public abstract class CharacterBase : MonoBehaviour
     {
         [SerializeField] private float bubbleSize = 1f;
-        [SerializeField] private float maxSize = 10000f;
+        [SerializeField] protected float maxLocalScale = 30f;
         [SerializeField] private float maxSpeed = 6f;
         [SerializeField] private float minSpeed = 2f;
         [SerializeField] [PropertyTooltip("1 bubble size will affect to the object scale += 0.01")] [BoxGroup("Upgrade")] private float increaseScalePerSize = 0.01f; 
@@ -31,13 +31,12 @@ namespace Characters
         [SerializeField] [BoxGroup("Feedbacks")] private MMF_Player deadFeedback;
         private SpriteRenderer _spriteRenderer;
         private Collider2D _collider2D;
-        private TrailRenderer _trailRenderer;
         [HideInInspector] public Rigidbody2D rigidbody2D;
-        protected float lastStateSize = 100f;
+        protected float lastLocalScale;
         [ShowInInspector] protected float currentSpeed;
-        public List<CloningCharacter> clones = new List<CloningCharacter>();
+        private List<CloningCharacter> _clones = new List<CloningCharacter>();
         private GameObject _cloningParent;
-        private bool isExploding;
+        private bool _isExploding;
         protected Animator Animator;
         
         public float BubbleSize => bubbleSize;
@@ -47,6 +46,7 @@ namespace Characters
         [Title("Events")] public UnityEvent onSizeUpState;
         [Title("Events")] public UnityEvent onSkillPerformed;
         [Title("Events")] public UnityEvent onSkillEnd;
+        private float _startBubbleSize;
 
 
         protected virtual void Awake()
@@ -56,8 +56,8 @@ namespace Characters
             rigidbody2D = GetComponent<Rigidbody2D>();
             _spriteRenderer = GetComponent<SpriteRenderer>();
             _collider2D = GetComponent<Collider2D>();
-            _trailRenderer = GetComponent<TrailRenderer>();
             currentSpeed = maxSpeed;
+            _startBubbleSize = bubbleSize;
         }
         
         protected virtual void Update()
@@ -144,10 +144,10 @@ namespace Characters
         public virtual void AddSize(float size)
         {
             bubbleSize += size;
-            if (Mathf.Abs(bubbleSize - lastStateSize) >= 100 && !isExploding) 
+            if (Mathf.Abs(transform.localScale.x - lastLocalScale) >= 1 && !_isExploding) 
             {
                 onSizeUpState?.Invoke();
-                lastStateSize = bubbleSize;
+                lastLocalScale = transform.localScale.x;
             }
             
             switch (size)
@@ -161,20 +161,21 @@ namespace Characters
                     break;
             }
             UpdateScaleAndSpeed();
-            if (bubbleSize > 0 || isExploding) return;
+            if (bubbleSize > 0 || _isExploding) return;
             Dead();
         }
 
         public void UpdateScaleAndSpeed()
         {
-            float size = Mathf.Clamp((bubbleSize * increaseScalePerSize), 0.5f, 100f);
-            Vector2 newScale = Vector2.one * size;
-            currentSpeed = Mathf.Lerp(minSpeed, maxSpeed, 1 - (bubbleSize / maxSize));
+            float deltaSizeFromStart = bubbleSize - _startBubbleSize;
+            float sizeAdded = Mathf.Clamp(deltaSizeFromStart * increaseScalePerSize, 0, maxLocalScale-1);
+            Vector2 newScale = Vector2.one + new Vector2(sizeAdded, sizeAdded);
+            currentSpeed = Mathf.Lerp(minSpeed, maxSpeed, 1 - (transform.localScale.x / maxLocalScale));
             currentSpeed = Mathf.Clamp(currentSpeed, minSpeed, maxSpeed);
             
             transform.DOScale(newScale, 0.05f).SetEase(Ease.OutBounce).OnComplete(() =>
             {
-                _trailRenderer.startWidth = transform.localScale.x;
+                
             });
         }
 
@@ -186,8 +187,8 @@ namespace Characters
             _cloningParent = new GameObject("CloningParent");
             _cloningParent.transform.position = transform.position;
             explodeFeedback?.PlayFeedbacks();
-            isExploding = true;
-            clones.Clear();
+            _isExploding = true;
+            _clones.Clear();
             
             for (int i = 0; i < 8; i++)
             {
@@ -202,9 +203,8 @@ namespace Characters
                 CloningCharacter clone = obj.GetComponent<CloningCharacter>();
                 NavMeshAgent agent = obj.GetComponent<NavMeshAgent>();
                 if (agent) agent.enabled = false;
-                clones.Add(clone);
+                _clones.Add(clone);
                 clone.OwnerCharacter = this;
-
                 clone.transform.DOMove(position, 0.25f).SetEase(Ease.InOutSine);
                 clone.SetSize(bubbleSize / 8f);
             }
@@ -217,11 +217,10 @@ namespace Characters
             float timeCounter = 0;
             _spriteRenderer.enabled = false;
             _collider2D.enabled = false;
-            _trailRenderer.enabled = false;
             
             while (timeCounter < time)
             {
-                if (clones.Count == 0)
+                if (_clones.Count == 0)
                 {
                     Dead();
                     break;
@@ -233,7 +232,7 @@ namespace Characters
 
             mergeFeedback?.PlayFeedbacks();
             SetSize(0);
-            foreach (CloningCharacter clone in clones)
+            foreach (CloningCharacter clone in _clones)
             {
                 if (!clone) continue;
                 yield return new WaitForSeconds(0.05f);
@@ -243,7 +242,6 @@ namespace Characters
                     AddSize(clone.BubbleSize);
                     _spriteRenderer.enabled = true;
                     _collider2D.enabled = true;
-                    _trailRenderer.enabled = true;
                     Destroy(clone.gameObject,0.02f);
                 });
             }
@@ -251,7 +249,7 @@ namespace Characters
             yield return new WaitForSeconds(0.8f);
             if (bubbleSize <= 0) Dead();
             Destroy(_cloningParent);
-            isExploding = false;
+            _isExploding = false;
             onSkillEnd?.Invoke();
         }
         
