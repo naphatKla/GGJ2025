@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 3895866205044419862}
   - component: {fileID: 7860668391114626237}
   - component: {fileID: 4326812607397302318}
+  - component: {fileID: 3458359518854809025}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -30,7 +31,7 @@ Transform:
   m_GameObject: {fileID: 479713288450829085}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.88, y: -6.23, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -80,7 +81,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
+  m_Sprite: {fileID: 1839967044, guid: 0ee7d6f283194314fa2e9274f168b2d0, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -104,7 +105,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bubbleSize: 100
-  speed: 6
+  maxSize: 10000
+  maxSpeed: 6
+  minSpeed: 2
   increaseScalePerSize: 0.01
   oxygenDetectionRadius: 2
   oxygenMagneticStartForce: 9
@@ -297,6 +300,27 @@ TrailRenderer:
   m_Autodestruct: 0
   m_Emitting: 1
   m_ApplyActiveColorSpace: 1
+--- !u!95 &3458359518854809025
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 479713288450829085}
+  m_Enabled: 1
+  m_Avatar: {fileID: 9000000, guid: 2a4a40e5b8a2c674d9d8d35164810540, type: 3}
+  m_Controller: {fileID: 9100000, guid: ce0f321b21237634b8d5264301f8b451, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &2892827327112750337
 GameObject:
   m_ObjectHideFlags: 0
@@ -463,6 +487,10 @@ PrefabInstance:
     - target: {fileID: 2219902129330909781, guid: 544e8ceec27b98d498bf78b6537e5636, type: 3}
       propertyPath: m_Name
       value: SkillBlackHole
+      objectReference: {fileID: 0}
+    - target: {fileID: 5026074172752388844, guid: 544e8ceec27b98d498bf78b6537e5636, type: 3}
+      propertyPath: m_Enabled
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 9038077133492908107, guid: 544e8ceec27b98d498bf78b6537e5636, type: 3}
       propertyPath: m_LocalPosition.x
