@@ -23,6 +23,11 @@ public class LoadScene : MonoBehaviour
     {
         SceneManager.LoadScene("Credits");
     }
+    
+    public void RestartGame()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
 
     public void Resume()
     {
