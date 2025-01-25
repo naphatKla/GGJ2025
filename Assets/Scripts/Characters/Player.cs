@@ -32,8 +32,8 @@ namespace Characters
         {
             if (IsModifyingMovement) return;
             Vector2 mouseDirection = Camera.main.ScreenToWorldPoint(Input.mousePosition) - transform.position;
-            rigidbody2D.AddForce(mouseDirection.normalized * Speed);
-            rigidbody2D.velocity = Vector2.ClampMagnitude(rigidbody2D.velocity, Speed);
+            rigidbody2D.AddForce(mouseDirection.normalized * CurrentSpeed);
+            rigidbody2D.velocity = Vector2.ClampMagnitude(rigidbody2D.velocity, CurrentSpeed);
         }
 
         protected override void SkillInputHandler()

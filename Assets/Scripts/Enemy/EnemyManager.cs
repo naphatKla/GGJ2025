@@ -34,7 +34,7 @@ public class EnemyManager : CharacterBase
         //Set AI attribute
         navMesh.updateRotation = false;
         navMesh.updateUpAxis = false;
-        navMesh.speed = base.Speed;
+        navMesh.speed = base.CurrentSpeed;
     }
 
     protected override void SkillInputHandler()
