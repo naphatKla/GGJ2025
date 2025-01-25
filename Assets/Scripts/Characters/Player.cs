@@ -6,6 +6,7 @@ using MoreMountains.Feedbacks;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Events;
 
 namespace Characters
 {
@@ -20,6 +21,8 @@ namespace Characters
         private List<CloningCharacter> _clones = new List<CloningCharacter>();
         private GameObject _cloningParent;
         public static Player Instance { get; private set; }
+        
+        public UnityEvent onPickUpScore;
 
         protected override void Awake()
         {
@@ -66,6 +69,7 @@ namespace Characters
             ExpScript exp = other.GetComponent<ExpScript>();
             if (!exp.canPickUp) return;
             AddScore(exp.expAmount);
+            onPickUpScore?.Invoke();
             Destroy(other.gameObject);
         }
         
