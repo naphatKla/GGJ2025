@@ -73,8 +73,7 @@ public class RandomEnemyRespawn : MMSingleton<RandomEnemyRespawn>
 
                     if (enemy.setSpawnSize)
                     {
-                        float randomSize = Random.Range(enemy.minSizeonSpawn, enemy.maxSizeonSpawn);
-                        obj.transform.localScale = new Vector3(randomSize, randomSize, 1);
+                        //SET SIZE
                     }
                 }
             }
@@ -115,8 +114,7 @@ public class RandomEnemyRespawn : MMSingleton<RandomEnemyRespawn>
 
                         if (enemy.setSpawnSize)
                         {
-                            float randomSize = Random.Range(enemy.minSizeonSpawn, enemy.maxSizeonSpawn);
-                            obj.transform.localScale = new Vector3(randomSize, randomSize, 1);
+                            //SET SIZE
                         }
                     }
                 }
