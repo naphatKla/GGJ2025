@@ -15,7 +15,9 @@ namespace Skills
             if (!IsPlayer) return;
             onSkillStart.AddListener(() =>
             {
-                CameraManager.Instance.SetLensOrthographicSize(CameraManager.Instance.currentCamera.m_Lens.OrthographicSize * cameraPanOutMultiplier, 0.25f);
+                float size = CameraManager.Instance.currentCamera.m_Lens.OrthographicSize * cameraPanOutMultiplier;
+                Debug.LogWarning(size);
+                CameraManager.Instance.SetLensOrthographicSize(size, 0.25f);
             });
             onSkillEnd.AddListener(() =>
             {

@@ -143,7 +143,7 @@ namespace Characters
         public virtual void AddSize(float size)
         {
             bubbleSize += size;
-            if (Mathf.Abs(bubbleSize - lastStateSize) >= 100) 
+            if (Mathf.Abs(bubbleSize - lastStateSize) >= 100 && !isExploding) 
             {
                 onSizeUpState?.Invoke();
                 lastStateSize = bubbleSize;
