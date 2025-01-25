@@ -93,7 +93,7 @@ public class LoadScene : MonoBehaviour
     public void PlayerDie()
     {
         loseUI.SetActive(true);
-        Time.timeScale = 0;
+        Time.timeScale = 0.5f;
     }
 
     public void OpenSoundSetting()
