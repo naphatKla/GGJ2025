@@ -26,7 +26,7 @@ public class LoadScene : MonoBehaviour
     
     public void RestartGame()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        SceneManager.LoadScene("Gameplay");
     }
 
     public void Resume()
