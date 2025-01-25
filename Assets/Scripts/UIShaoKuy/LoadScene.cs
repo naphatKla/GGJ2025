@@ -16,6 +16,11 @@ public class LoadScene : MonoBehaviour
     
     void Start()
     {
+        if (openUI != null)
+        {
+            openUI.SetActive(false);
+        }   
+        
         // เริ่มเกมโดยแสดง Player Controller UI และหยุดเวลา
         playerControllerUI.SetActive(true);
         pauseUI.SetActive(false);
@@ -93,9 +98,19 @@ public class LoadScene : MonoBehaviour
 
     public void OpenSoundSetting()
     {
-        if (openUI != null)
+        StartCoroutine(ToggleUI());
+        Debug.Log("Open Sound Setting"+ openUI.activeSelf);
+    }
+
+    private IEnumerator ToggleUI()
+    {
+        openUI.SetActive(!openUI.activeSelf);
+        yield return null; // รอ 1 frame
+        Canvas canvas = openUI.GetComponentInParent<Canvas>();
+        if (canvas != null)
         {
-            openUI.SetActive(!openUI.activeSelf);
+            canvas.enabled = false;
+            canvas.enabled = true;
         }
     }
 }
