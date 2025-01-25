@@ -1,10 +1,9 @@
-using System;
 using Characters;
 using DG.Tweening;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.Serialization;
+
 
 namespace Skills
 {
@@ -12,11 +11,10 @@ namespace Skills
     {
         [SerializeField] [Title("SkillBase")] private float cooldown = 1f;
         [SerializeField] protected float skillDuration = 1f;
-        [SerializeField] private float minOxygenToUseSkill = 130f;
-        [SerializeField] [Unit(Units.Percent)] protected float oxygenCost = 3f;
-        protected CharacterBase OwnerCharacter;
         [Title("Events")] [PropertyOrder(100)] public UnityEvent onSkillStart;
         [PropertyOrder(100)] public UnityEvent onSkillEnd;
+        
+        protected CharacterBase OwnerCharacter;
         protected bool IsPlayer => OwnerCharacter.CompareTag("Player");
         protected float cooldownCounter;
     
@@ -42,15 +40,10 @@ namespace Skills
     
         public virtual void UseSkill()
         {
-            if (cooldownCounter > 0 || OwnerCharacter.BubbleSize < minOxygenToUseSkill)
-            {
-                Debug.LogWarning("Skill is on cooldown or not enough oxygen to use skill");
-                return;
-            }
+            if (cooldownCounter > 0) return;
             
             SkillAction();
             onSkillStart?.Invoke();
-            OwnerCharacter.AddScore(-oxygenCost);
             cooldownCounter = cooldown;
             
             if (skillDuration <= 0) 

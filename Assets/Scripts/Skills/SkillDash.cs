@@ -8,8 +8,6 @@ namespace Skills
     public class SkillDash : SkillBase
     {
         [Title("SkillDash")] [SerializeField] private float dashDistance = 8f;
-        //[SerializeField] private float cameraPanOutMultiplier = 1.5f;
-        //private float startOrthographicSize;
         
         private void Start()
         {
@@ -31,7 +29,6 @@ namespace Skills
             float distance = 0f;
             Vector2 dashPosition = new Vector2();
             Vector2 direction = new Vector2();
-            float lostOxygenValue = OwnerCharacter.BubbleSize * (oxygenCost / 100);
             
             if (IsPlayer)
             {

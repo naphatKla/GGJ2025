@@ -10,6 +10,10 @@ namespace Characters
 {
     public class Player : CharacterBase
     {
+        [SerializeField] [BoxGroup("PickUpOxygen")] private float oxygenDetectionRadius = 2f;
+        [SerializeField] [BoxGroup("PickUpOxygen")] private float oxygenMagneticStartForce = 9f;
+        [SerializeField] [BoxGroup("PickUpOxygen")] private float oxygenMagneticEndForce = 2f;
+        [SerializeField] [BoxGroup("PickUpOxygen")] private float oxygenCurveForce = 5f;
         [SerializeField] [BoxGroup("Feedbacks")] private MMF_Player explodeFeedback;
         [SerializeField] [BoxGroup("Feedbacks")] private MMF_Player mergeFeedback;
         private List<CloningCharacter> _clones = new List<CloningCharacter>();
@@ -26,6 +30,19 @@ namespace Characters
         {
             base.Update();
             MovementController();
+            
+            // เก็บ oxygen รอบๆรัศมี
+            Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, (transform.localScale.x / 2) + oxygenDetectionRadius, LayerMask.GetMask("EXP"));
+            
+            foreach (var collider in colliders)
+            {
+                Vector2 direction = (transform.position - collider.transform.position).normalized;
+                Vector2 perpendicularRight = new Vector2(direction.y, -direction.x).normalized;
+                Vector2 combinedVector = (direction + perpendicularRight).normalized;
+                float force = oxygenMagneticStartForce - (Time.deltaTime*3);
+                force = Mathf.Clamp(force, oxygenMagneticEndForce, oxygenMagneticStartForce);
+                collider.transform.position += (Vector3)(combinedVector * force * Time.deltaTime);
+            }
         }
 
         private void OnTriggerStay2D(Collider2D other)
