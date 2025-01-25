@@ -11,7 +11,7 @@ public class LoadScene : MonoBehaviour
     
     public void StartGame()
     {
-        SceneManager.LoadScene("Gameplay");
+        SceneManager.LoadScene("");
     }
 
     public void ReturnToMenu()
