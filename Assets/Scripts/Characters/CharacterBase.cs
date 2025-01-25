@@ -1,12 +1,9 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
 using MoreMountains.Feedbacks;
 using Sirenix.OdinInspector;
-using Sirenix.Utilities;
 using Skills;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 using Random = UnityEngine.Random;
@@ -71,7 +68,7 @@ namespace Characters
                 Vector2 combinedVector = (direction + perpendicularRight).normalized;
                 float force = oxygenMagneticStartForce - (Time.deltaTime*3);
                 force = Mathf.Clamp(force, oxygenMagneticEndForce, oxygenMagneticStartForce);
-                collider.transform.position += (Vector3) (combinedVector * force * Time.deltaTime);
+                collider.transform.position += (Vector3)(combinedVector * force * Time.deltaTime);
             }
         }
         
@@ -162,7 +159,10 @@ namespace Characters
         public void UpdateScale()
         {
             Vector2 newScale = Vector2.one * (bubbleSize * increaseScalePerSize);
-            transform.DOScale(newScale, 0.05f).SetEase(Ease.OutBounce);
+            transform.DOScale(newScale, 0.05f).SetEase(Ease.OutBounce).OnComplete(() =>
+            {
+                _trailRenderer.startWidth = transform.localScale.x;
+            });
         }
 
         [Button]
@@ -218,10 +218,10 @@ namespace Characters
                 clone.transform.DOMove(transform.position, 0.25f).SetEase(Ease.InOutSine).OnComplete(() =>
                 {
                     AddSize(clone.SizeGained);
-                    Destroy(clone.gameObject);
                     _spriteRenderer.enabled = true;
                     _collider2D.enabled = true;
                     _trailRenderer.enabled = true;
+                    Destroy(clone.gameObject,0.02f);
                 });
             }
             yield return new WaitForSeconds(0.3f);

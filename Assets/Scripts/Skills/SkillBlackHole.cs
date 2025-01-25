@@ -1,3 +1,4 @@
+using Characters;
 using UnityEngine;
 
 namespace Skills
@@ -7,18 +8,17 @@ namespace Skills
         [SerializeField] protected float explosionForce = 3f;
         [SerializeField] protected float MergeTime = 2f;
         [SerializeField] protected float cameraPanOutMultiplier = 1.5f;
-        private float startOrthographicSize;
         
         private void Start()
         {
+            if (!IsPlayer) return;
             onSkillStart.AddListener(() =>
             {
-                startOrthographicSize = CameraManager.Instance.currentCamera.m_Lens.OrthographicSize;
-                CameraManager.Instance.SetLensOrthographicSize(startOrthographicSize * cameraPanOutMultiplier, 0.25f);
+                CameraManager.Instance.SetLensOrthographicSize(CameraManager.Instance.currentCamera.m_Lens.OrthographicSize * cameraPanOutMultiplier, 0.25f);
             });
             onSkillEnd.AddListener(() =>
             {
-                CameraManager.Instance.SetLensOrthographicSize(startOrthographicSize, 0.25f);
+                OwnerCharacter.GetComponent<Player>().ResizeCamera();
             });
         }
         

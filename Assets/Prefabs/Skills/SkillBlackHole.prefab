@@ -25,7 +25,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2219902129330909781}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: -0.023636952}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -44,12 +44,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2e5bd4d11372fc4e9bcac7b53ae6744, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cooldown: 1
-  skillDuration: 1
-  minOxygenToUseSKill: 130
+  cooldown: 3
+  skillDuration: 1.8
+  minOxygenToUseSkill: 0
   onSkillStart:
     m_PersistentCalls:
       m_Calls: []
   onSkillEnd:
     m_PersistentCalls:
       m_Calls: []
+  explosionForce: 2
+  MergeTime: 2
+  cameraPanOutMultiplier: 1.5

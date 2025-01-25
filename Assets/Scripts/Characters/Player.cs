@@ -11,12 +11,17 @@ namespace Characters
         {
             onSizeUpState.AddListener(() =>
             {
-                int state = (int)(BubbleSize / 100) - 1;
-                float size = CameraManager.Instance.StartOrthographicSize + (state * cameraSizePerState);
-                CameraManager.Instance.SetLensOrthographicSize(size,0.3f);
+                ResizeCamera();
             });
         }
 
+        public void ResizeCamera()
+        {
+            int state = (int)(BubbleSize / 100) - 1;
+            float size = CameraManager.Instance.StartOrthographicSize + (state * cameraSizePerState);
+            CameraManager.Instance.SetLensOrthographicSize(size,0.3f);
+        }
+        
         protected override void Update()
         {
             base.Update();
