@@ -8,7 +8,6 @@ namespace Skills
     public class SkillDash : SkillBase
     {
         [Title("SkillDash")] [SerializeField] private float dashDistance = 8f;
-        [SerializeField] [Unit(Units.Percent)] private float lostOxygen = 3f;
         //[SerializeField] private float cameraPanOutMultiplier = 1.5f;
         //private float startOrthographicSize;
         
@@ -33,7 +32,7 @@ namespace Skills
             float distance = 0f;
             Vector2 dashPosition = new Vector2();
             Vector2 direction = new Vector2();
-            float lostOxygenValue = OwnerCharacter.BubbleSize * (lostOxygen / 100);
+            float lostOxygenValue = OwnerCharacter.BubbleSize * (oxygenCost / 100);
             
             if (IsPlayer)
             {
@@ -51,7 +50,6 @@ namespace Skills
             if (distance > dashDistance || !IsPlayer)
                 dashPosition = (Vector2)OwnerCharacter.transform.position + (direction * dashDistance);
             
-            OwnerCharacter.AddSize(-lostOxygenValue);
             OwnerCharacter.rigidbody2D.velocity = Vector2.zero;
             OwnerCharacter.transform.DOMove(dashPosition, skillDuration).SetEase(Ease.InOutSine);
         }

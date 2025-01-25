@@ -4,6 +4,7 @@ using DG.Tweening;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.Serialization;
 
 namespace Skills
 {
@@ -12,6 +13,7 @@ namespace Skills
         [SerializeField] [Title("SkillBase")] private float cooldown = 1f;
         [SerializeField] protected float skillDuration = 1f;
         [SerializeField] private float minOxygenToUseSkill = 130f;
+        [SerializeField] [Unit(Units.Percent)] protected float oxygenCost = 3f;
         protected CharacterBase OwnerCharacter;
         [Title("Events")] [PropertyOrder(100)] public UnityEvent onSkillStart;
         [PropertyOrder(100)] public UnityEvent onSkillEnd;
@@ -48,6 +50,7 @@ namespace Skills
             
             SkillAction();
             onSkillStart?.Invoke();
+            OwnerCharacter.AddSize(-oxygenCost);
             cooldownCounter = cooldown;
             
             if (skillDuration <= 0) 

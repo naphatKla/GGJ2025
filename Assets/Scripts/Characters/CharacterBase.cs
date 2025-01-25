@@ -1,12 +1,9 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
 using MoreMountains.Feedbacks;
 using Sirenix.OdinInspector;
-using Sirenix.Utilities;
 using Skills;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 using Random = UnityEngine.Random;
@@ -16,7 +13,9 @@ namespace Characters
     public abstract class CharacterBase : MonoBehaviour
     {
         [SerializeField] private float bubbleSize = 1f;
-        [SerializeField] private float speed = 1f;
+        [SerializeField] private float maxSize = 10000f;
+        [SerializeField] private float maxSpeed = 6f;
+        [SerializeField] private float minSpeed = 2f;
         [SerializeField] [PropertyTooltip("1 bubble size will affect to the object scale += 0.01")] [BoxGroup("Upgrade")] private float increaseScalePerSize = 0.01f; 
         [SerializeField] [BoxGroup("PickUpOxygen")] private float oxygenDetectionRadius = 2f;
         [SerializeField] [BoxGroup("PickUpOxygen")] private float oxygenMagneticStartForce = 9f;
@@ -34,11 +33,12 @@ namespace Characters
         private TrailRenderer _trailRenderer;
         [HideInInspector] public Rigidbody2D rigidbody2D;
         protected float lastStateSize = 100f;
+        [ShowInInspector] protected float currentSpeed;
         private List<CloningCharacter> clones = new List<CloningCharacter>();
         private GameObject _cloningParent;
         
         public float BubbleSize => bubbleSize;
-        protected float Speed => speed;
+        protected float CurrentSpeed => currentSpeed;
         public bool IsModifyingMovement { get; set; }
         protected abstract void SkillInputHandler();
         [Title("Events")] public UnityEvent onSizeUpState;
@@ -52,6 +52,7 @@ namespace Characters
             _spriteRenderer = GetComponent<SpriteRenderer>();
             _collider2D = GetComponent<Collider2D>();
             _trailRenderer = GetComponent<TrailRenderer>();
+            currentSpeed = maxSpeed;
         }
         
         protected virtual void Update()
@@ -61,6 +62,7 @@ namespace Characters
             SkillMouseRight?.UpdateCooldown();
             
             // เก็บ oxygen รอบๆรัศมี
+            if (!_spriteRenderer.enabled) return;
             Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, (transform.localScale.x / 2) + oxygenDetectionRadius, LayerMask.GetMask("EXP"));
             
             foreach (var collider in colliders)
@@ -70,7 +72,7 @@ namespace Characters
                 Vector2 combinedVector = (direction + perpendicularRight).normalized;
                 float force = oxygenMagneticStartForce - (Time.deltaTime*3);
                 force = Mathf.Clamp(force, oxygenMagneticEndForce, oxygenMagneticStartForce);
-                collider.transform.position += (Vector3) (combinedVector * force * Time.deltaTime);
+                collider.transform.position += (Vector3)(combinedVector * force * Time.deltaTime);
             }
         }
         
@@ -131,7 +133,7 @@ namespace Characters
         public virtual void SetSize(float size)
         {
             bubbleSize = size;
-            UpdateScale();
+            UpdateScaleAndSpeed();
         }
         
         public virtual void AddSize(float size)
@@ -153,15 +155,22 @@ namespace Characters
                     DropOxygen(Mathf.Abs(size));
                     break;
             }
-            UpdateScale();
+            UpdateScaleAndSpeed();
             if (bubbleSize > 0) return;
             Dead();
         }
 
-        public void UpdateScale()
+        public void UpdateScaleAndSpeed()
         {
-            Vector2 newScale = Vector2.one * (bubbleSize * increaseScalePerSize);
-            transform.DOScale(newScale, 0.05f).SetEase(Ease.OutBounce);
+            float size = Mathf.Clamp((bubbleSize * increaseScalePerSize), 0, 100f);
+            Vector2 newScale = Vector2.one * size;
+            currentSpeed = Mathf.Lerp(minSpeed, maxSpeed, 1 - (bubbleSize / maxSize));
+            currentSpeed = Mathf.Clamp(currentSpeed, minSpeed, maxSpeed);
+            
+            transform.DOScale(newScale, 0.05f).SetEase(Ease.OutBounce).OnComplete(() =>
+            {
+                _trailRenderer.startWidth = transform.localScale.x;
+            });
         }
 
         [Button]
@@ -186,6 +195,7 @@ namespace Characters
                 CloningCharacter clone = obj.GetComponent<CloningCharacter>();
                 clones.Add(clone);
                 clone.OwnerCharacter = this;
+                clone.SizeGained = 0f;
 
                 clone.transform.DOMove(position, 0.25f).SetEase(Ease.InOutSine);
                 clone.SetSize(bubbleSize / 3f);
@@ -215,10 +225,11 @@ namespace Characters
                 yield return new WaitForSeconds(0.02f);
                 clone.transform.DOMove(transform.position, 0.25f).SetEase(Ease.InOutSine).OnComplete(() =>
                 {
-                    Destroy(clone.gameObject);
+                    AddSize(clone.SizeGained);
                     _spriteRenderer.enabled = true;
                     _collider2D.enabled = true;
                     _trailRenderer.enabled = true;
+                    Destroy(clone.gameObject,0.02f);
                 });
             }
             yield return new WaitForSeconds(0.3f);

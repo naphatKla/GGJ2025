@@ -11,12 +11,17 @@ namespace Characters
         {
             onSizeUpState.AddListener(() =>
             {
-                int state = (int)(BubbleSize / 100) - 1;
-                float size = CameraManager.Instance.StartOrthographicSize + (state * cameraSizePerState);
-                CameraManager.Instance.SetLensOrthographicSize(size,0.3f);
+                ResizeCamera();
             });
         }
 
+        public void ResizeCamera()
+        {
+            int state = (int)(BubbleSize / 100) - 1;
+            float size = CameraManager.Instance.StartOrthographicSize + (state * cameraSizePerState);
+            CameraManager.Instance.SetLensOrthographicSize(size,0.3f);
+        }
+        
         protected override void Update()
         {
             base.Update();
@@ -27,8 +32,8 @@ namespace Characters
         {
             if (IsModifyingMovement) return;
             Vector2 mouseDirection = Camera.main.ScreenToWorldPoint(Input.mousePosition) - transform.position;
-            rigidbody2D.AddForce(mouseDirection.normalized * Speed);
-            rigidbody2D.velocity = Vector2.ClampMagnitude(rigidbody2D.velocity, Speed);
+            rigidbody2D.AddForce(mouseDirection.normalized * CurrentSpeed);
+            rigidbody2D.velocity = Vector2.ClampMagnitude(rigidbody2D.velocity, CurrentSpeed);
         }
 
         protected override void SkillInputHandler()
