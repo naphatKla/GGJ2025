@@ -38,6 +38,7 @@ namespace Characters
         public List<CloningCharacter> clones = new List<CloningCharacter>();
         private GameObject _cloningParent;
         private bool isExploding;
+        protected Animator Animator;
         
         public float BubbleSize => bubbleSize;
         protected float CurrentSpeed => currentSpeed;

@@ -19,7 +19,7 @@ namespace Skills
         [PropertyOrder(100)] public UnityEvent onSkillEnd;
         protected bool IsPlayer => OwnerCharacter.CompareTag("Player");
         protected float cooldownCounter;
-        public Animator Animator;
+        protected Animator animator;
     
         /// <summary>
         /// Override this method to implement the skill logic

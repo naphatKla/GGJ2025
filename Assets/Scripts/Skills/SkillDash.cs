@@ -26,7 +26,7 @@ namespace Skills
                 //CameraManager.Instance.SetLensOrthographicSize(startOrthographicSize, skillDuration);
             });
 
-           // Animator.GetComponentInChildren<Animator>();
+            animator.GetComponentInChildren<Animator>();
         }
         
         protected override void SkillAction()
@@ -55,7 +55,7 @@ namespace Skills
             OwnerCharacter.rigidbody2D.velocity = Vector2.zero;
             OwnerCharacter.transform.DOMove(dashPosition, skillDuration).SetEase(Ease.InOutSine);
             
-            //Animator.SetTrigger("dashTrigger");
+            animator.SetBool("Dash", IsPlayer);
         }
     }
 }
