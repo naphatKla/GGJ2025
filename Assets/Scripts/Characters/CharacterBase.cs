@@ -218,7 +218,6 @@ namespace Characters
             _spriteRenderer.enabled = false;
             _collider2D.enabled = false;
             _trailRenderer.enabled = false;
-            SetSize(0);
             
             while (timeCounter < time)
             {
@@ -233,6 +232,7 @@ namespace Characters
             }
 
             mergeFeedback?.PlayFeedbacks();
+            SetSize(0);
             foreach (CloningCharacter clone in clones)
             {
                 if (!clone) continue;
