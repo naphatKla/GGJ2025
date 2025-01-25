@@ -35,7 +35,7 @@ public class EnemyManager : CharacterBase
     {
         if (isDead) return;
         if (other.CompareTag("Player") && IsDash)
-            Player.Instance.Dead();
+            Player.Instance.Dead(this);
     }
 
     protected override void SkillInputHandler()

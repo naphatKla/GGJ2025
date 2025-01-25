@@ -148,10 +148,10 @@ namespace Characters
             yield return new WaitForSeconds(0.8f);
         }
         
-        public override void Dead(CharacterBase killer = null)
+        public override void Dead(CharacterBase killer, bool dropOxygen = true)
         {
             if (IsDash) return;
-            base.Dead(killer);
+            base.Dead(killer, false);
         }
     }
 }

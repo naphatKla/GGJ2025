@@ -59,12 +59,13 @@ namespace Characters
             SkillMouseRight?.UpdateCooldown();
         }
         
-        public virtual void Dead(CharacterBase killer)
+        public virtual void Dead(CharacterBase killer, bool dropOxygen = true) 
         {
             if (!CanDead) return;
             if (isDead) return;
             isDead = true;
-            DropOxygen(score);
+            if (dropOxygen)
+                DropOxygen(score);
             deadFeedback?.PlayFeedbacks();
             killer?.killFeedback?.PlayFeedbacks();
             _animator?.SetTrigger("DeadTrigger");
