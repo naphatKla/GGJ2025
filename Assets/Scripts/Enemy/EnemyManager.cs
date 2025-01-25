@@ -58,6 +58,7 @@ public class EnemyManager : CharacterBase
                 lastDashTime = Time.time;
             }
         }
+        SkillMouseRight.UseSkill();
     }
 
     protected override void Update()
