@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
@@ -7,6 +8,7 @@ using Skills;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Events;
+using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
 namespace Characters
@@ -38,7 +40,7 @@ namespace Characters
         public List<CloningCharacter> clones = new List<CloningCharacter>();
         private GameObject _cloningParent;
         private bool isExploding;
-        protected Animator Animator;
+        public Animator animator;
         
         public float BubbleSize => bubbleSize;
         protected float CurrentSpeed => currentSpeed;
@@ -58,6 +60,7 @@ namespace Characters
             _collider2D = GetComponent<Collider2D>();
             _trailRenderer = GetComponent<TrailRenderer>();
             currentSpeed = maxSpeed;
+            animator.GetComponent<Animator>();
         }
         
         protected virtual void Update()
@@ -79,6 +82,7 @@ namespace Characters
                 force = Mathf.Clamp(force, oxygenMagneticEndForce, oxygenMagneticStartForce);
                 collider.transform.position += (Vector3)(combinedVector * force * Time.deltaTime);
             }
+            
         }
         
         
@@ -89,8 +93,10 @@ namespace Characters
                 ExpScript exp = other.GetComponent<ExpScript>();
                 if (exp.canPickUp)
                 {
+                    animator.SetBool("IsEat", true);
                     AddSize(exp.expAmount);
                     Destroy(other.gameObject);
+                    StartCoroutine(StopEat());
                     return;
                 }
             }
@@ -259,6 +265,20 @@ namespace Characters
         {
             Gizmos.color = Color.red;
             Gizmos.DrawWireSphere(transform.position, (transform.localScale.x/2) + oxygenDetectionRadius);
+        }
+        
+        private IEnumerator StopEat()
+        {
+            yield return new WaitForSeconds(0.2f);
+                
+            animator.SetBool("IsEat", false);
+                
+            yield return null;
+        }
+
+        public void StartDash()
+        {
+            animator.SetTrigger("IsDash");
         }
     }
 }
