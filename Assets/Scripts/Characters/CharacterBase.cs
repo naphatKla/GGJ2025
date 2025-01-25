@@ -25,6 +25,7 @@ namespace Characters
         public bool IsModifyingMovement { get; set; }
         protected abstract void SkillInputHandler();
         public float Score => score;
+        public Animator animator;
         
         protected virtual void Awake()
         {
@@ -32,6 +33,21 @@ namespace Characters
             SkillMouseRight?.InitializeSkill(this);
             rigidbody2D = GetComponent<Rigidbody2D>();
             currentSpeed = maxSpeed;
+        }
+        
+        protected virtual void Start()
+        {
+            animator.GetComponent<Animator>();
+            
+            SkillMouseLeft.onSkillStart.AddListener((() =>
+            {
+                animator.SetTrigger("DashTrigger");
+            }));
+            
+            SkillMouseRight.onSkillStart.AddListener((() =>
+            {
+                animator.SetTrigger("BlackHoleTrigger");
+            }));
         }
         
         protected virtual void Update()
@@ -48,6 +64,7 @@ namespace Characters
             deadFeedback?.PlayFeedbacks();
             killer?.killFeedback?.PlayFeedbacks();
             Destroy(gameObject);
+            animator.SetTrigger("DeadTrigger");
         }
 
         protected virtual void DropOxygen(float amount)

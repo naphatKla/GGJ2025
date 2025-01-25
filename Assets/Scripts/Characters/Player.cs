@@ -27,7 +27,7 @@ namespace Characters
                 Instance = this;
             base.Awake();
         }
-        
+
         public void ResizeCamera()
         {
             float size = CameraManager.Instance.StartOrthographicSize;
