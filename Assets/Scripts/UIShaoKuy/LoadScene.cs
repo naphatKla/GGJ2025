@@ -2,11 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 
 public class LoadScene : MonoBehaviour
 {
-    [Header("UI")]
-    public GameObject soundSetting;
+    [FormerlySerializedAs("soundSetting")] [Header("UI")]
+    public GameObject openUI;
     
     public void StartGame()
     {
@@ -35,9 +36,9 @@ public class LoadScene : MonoBehaviour
 
     public void OpenSoundSetting()
     {
-        if (soundSetting != null)
+        if (openUI != null)
         {
-            soundSetting.SetActive(!soundSetting.activeSelf);
+            openUI.SetActive(!openUI.activeSelf);
         }
     }
 }
