@@ -69,6 +69,7 @@ public class LoadScene : MonoBehaviour
 
     public void Credits()
     {
+        Time.timeScale = 1;
         SceneManager.LoadScene("Credits");
     }
     
