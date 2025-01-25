@@ -33,6 +33,7 @@ public class EnemyManager : CharacterBase
     
     private void OnTriggerStay2D(Collider2D other)
     {
+        if (isDead) return;
         if (other.CompareTag("Player") && IsDash)
             Player.Instance.Dead();
     }

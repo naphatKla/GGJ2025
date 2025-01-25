@@ -2,6 +2,7 @@ using DG.Tweening;
 using MoreMountains.Feedbacks;
 using Sirenix.OdinInspector;
 using Skills;
+using UnityEditor;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -20,6 +21,7 @@ namespace Characters
         public bool IsDash { get; set; }
         protected Animator Animator;
         private float currentSpeed;
+        protected bool isDead;
         
         protected float CurrentSpeed => currentSpeed;
         public bool IsModifyingMovement { get; set; }
@@ -60,11 +62,13 @@ namespace Characters
         public virtual void Dead(CharacterBase killer)
         {
             if (!CanDead) return;
+            if (isDead) return;
+            isDead = true;
             DropOxygen(score);
             deadFeedback?.PlayFeedbacks();
             killer?.killFeedback?.PlayFeedbacks();
-            Destroy(gameObject);
-            _animator.SetTrigger("DeadTrigger");
+            _animator?.SetTrigger("DeadTrigger");
+            Destroy(gameObject,0.4f);
         }
 
         protected virtual void DropOxygen(float amount)
@@ -86,12 +90,12 @@ namespace Characters
         
         public virtual void SetScore(float score)
         {
-            score = score;
+            this.score = score;
         }
         
         public virtual void AddScore(float score)
         {
-            score += score;
+            this.score += score;
             
             switch (score)
             {

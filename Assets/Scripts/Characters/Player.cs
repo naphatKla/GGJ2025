@@ -55,6 +55,7 @@ namespace Characters
 
         protected virtual void OnTriggerStay2D(Collider2D other)
         {
+            if (isDead) return;
             if (other.CompareTag("Enemy") && IsDash)
             {
                 Debug.LogWarning("KILL");
