@@ -99,11 +99,20 @@ public class RandomEnemyRespawn : MMSingleton<RandomEnemyRespawn>
                     for (int i = 0; i < enemyPerSpawn; i++)
                     {
                         Vector3 spawnPosition = GetRegionPosition();
-                        while (Vector3.Distance(spawnPosition, playerTransform.position) < minDistanceFromPlayer)
+                        if (playerTransform != null)
                         {
-                            spawnPosition = GetRegionPosition();
+                            while (Vector3.Distance(spawnPosition, playerTransform.position) < minDistanceFromPlayer)
+                            {
+                                spawnPosition = GetRegionPosition();
+                            }
                         }
-
+                        else
+                        {
+                            while (Vector3.Distance(spawnPosition, Vector3.zero) < minDistanceFromPlayer)
+                            {
+                                spawnPosition = GetRegionPosition();
+                            }
+                        }
                         GameObject obj = Instantiate(enemy.enemyPrefab.gameObject, spawnPosition, Quaternion.identity);
                         obj.transform.SetParent(enemyParent);
                         EnemyManager enemyManager = obj.GetComponent<EnemyManager>();
