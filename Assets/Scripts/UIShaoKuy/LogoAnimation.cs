@@ -4,12 +4,12 @@ using UnityEngine;
 
 public class LogoAnimation : MonoBehaviour
 {
-    public Transform logo; // Drag โลโก้ของคุณใน Inspector
-    public float minScale = 0.8f; // ขนาดต่ำสุด
-    public float maxScale = 1.2f; // ขนาดสูงสุด
-    public float animationSpeed = 1f; // ความเร็วของ Animation
+    public Transform logo;
+    public float minScale = 6f;
+    public float maxScale = 8f;
+    public float animationSpeed = 0.2f;
 
-    private float timer = 0f; // ตัวนับเวลา
+    private float timer = 0f;
 
     void Update()
     {
