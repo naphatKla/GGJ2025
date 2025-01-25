@@ -21,6 +21,7 @@ namespace Characters
         private List<CloningCharacter> _clones = new List<CloningCharacter>();
         private GameObject _cloningParent;
         public static Player Instance { get; private set; }
+        public static float Hitcombo;
         
         public UnityEvent onPickUpScore;
 
@@ -69,8 +70,14 @@ namespace Characters
             ExpScript exp = other.GetComponent<ExpScript>();
             if (!exp.canPickUp) return;
             AddScore(exp.expAmount);
+            AddCombo(exp.expAmount);
             onPickUpScore?.Invoke();
             Destroy(other.gameObject);
+        }
+        
+        public void AddCombo(float score)
+        {
+            Hitcombo += score;
         }
         
         private void MovementController()
