@@ -9,6 +9,7 @@ public class LoadScene : MonoBehaviour
     [FormerlySerializedAs("soundSetting")] [Header("UI")]
     public GameObject openUI;
     public GameObject pauseUI;
+    public GameObject loseUI;
     
     public GameObject playerControllerUI;
     private bool hasStarted = false;
@@ -18,6 +19,7 @@ public class LoadScene : MonoBehaviour
         // เริ่มเกมโดยแสดง Player Controller UI และหยุดเวลา
         playerControllerUI.SetActive(true);
         pauseUI.SetActive(false);
+        loseUI.SetActive(false);
         Time.timeScale = 0;
     }
 
@@ -73,12 +75,19 @@ public class LoadScene : MonoBehaviour
     public void RestartGame()
     {
         SceneManager.LoadScene("GameplayUI");
+        loseUI.SetActive(false);
     }
 
     public void Exit()
     {
         Application.Quit();
         Debug.Log("Exit");
+    }
+    
+    public void PlayerDie()
+    {
+        loseUI.SetActive(true);
+        Time.timeScale = 0;
     }
 
     public void OpenSoundSetting()
