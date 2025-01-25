@@ -14,9 +14,10 @@ public class CameraManager : MMSingleton<CameraManager>
         StartOrthographicSize = currentCamera.m_Lens.OrthographicSize;
     }
 
+    Tween lensTween;
     public void SetLensOrthographicSize(float size, float duration)
     {
-        Debug.LogWarning("CALL");
-        DOTween.To(() => currentCamera.m_Lens.OrthographicSize, x => currentCamera.m_Lens.OrthographicSize = x, size, duration);
+        if (lensTween.IsActive()) lensTween.Kill();
+        lensTween = DOTween.To(() => currentCamera.m_Lens.OrthographicSize, x => currentCamera.m_Lens.OrthographicSize = x, size, duration);
     }
 }
