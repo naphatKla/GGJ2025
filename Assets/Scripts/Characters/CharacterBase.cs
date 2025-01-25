@@ -5,6 +5,7 @@ using MoreMountains.Feedbacks;
 using Sirenix.OdinInspector;
 using Skills;
 using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.Events;
 using Random = UnityEngine.Random;
 
@@ -34,8 +35,9 @@ namespace Characters
         [HideInInspector] public Rigidbody2D rigidbody2D;
         protected float lastStateSize = 100f;
         [ShowInInspector] protected float currentSpeed;
-        private List<CloningCharacter> clones = new List<CloningCharacter>();
+        public List<CloningCharacter> clones = new List<CloningCharacter>();
         private GameObject _cloningParent;
+        private bool isExploding;
         
         public float BubbleSize => bubbleSize;
         protected float CurrentSpeed => currentSpeed;
@@ -102,7 +104,6 @@ namespace Characters
             if (!otherCharacter) return;
             bool canEat = (distance <= thisRadius) && (bubbleSize > otherCharacter.bubbleSize);
             if (!canEat) return;
-            AddSize(otherCharacter.bubbleSize);
             otherCharacter.Dead();
         }
         
@@ -156,13 +157,13 @@ namespace Characters
                     break;
             }
             UpdateScaleAndSpeed();
-            if (bubbleSize > 0) return;
+            if (bubbleSize > 0 || isExploding) return;
             Dead();
         }
 
         public void UpdateScaleAndSpeed()
         {
-            float size = Mathf.Clamp((bubbleSize * increaseScalePerSize), 0, 100f);
+            float size = Mathf.Clamp((bubbleSize * increaseScalePerSize), 0.5f, 100f);
             Vector2 newScale = Vector2.one * size;
             currentSpeed = Mathf.Lerp(minSpeed, maxSpeed, 1 - (bubbleSize / maxSize));
             currentSpeed = Mathf.Clamp(currentSpeed, minSpeed, maxSpeed);
@@ -180,25 +181,26 @@ namespace Characters
             _cloningParent = new GameObject("CloningParent");
             _cloningParent.transform.position = transform.position;
             explodeFeedback?.PlayFeedbacks();
+            isExploding = true;
             
             for (int i = 0; i < 8; i++)
             {
                 directions[i] = new Vector2(Mathf.Cos(i * Mathf.PI / 4), Mathf.Sin(i * Mathf.PI / 4));
                 Vector2 position = _cloningParent.transform.position + ((Vector3)directions[i] * (transform.localScale.x + force));
                 GameObject obj = Instantiate(gameObject, _cloningParent.transform.position, Quaternion.identity, _cloningParent.transform);
-                
                 MonoBehaviour[] scripts = obj.GetComponents<MonoBehaviour>();
                 foreach (MonoBehaviour script in scripts) 
-                    script.enabled = false;
+                    Destroy(script);
                 
                 obj.AddComponent(typeof(CloningCharacter));
                 CloningCharacter clone = obj.GetComponent<CloningCharacter>();
+                NavMeshAgent agent = obj.GetComponent<NavMeshAgent>();
+                if (agent) agent.enabled = false;
                 clones.Add(clone);
                 clone.OwnerCharacter = this;
-                clone.SizeGained = 0f;
 
                 clone.transform.DOMove(position, 0.25f).SetEase(Ease.InOutSine);
-                clone.SetSize(bubbleSize / 3f);
+                clone.SetSize(bubbleSize / 8f);
             }
             
             StartCoroutine(CloningFollowAndMergedBack(mergeTime));
@@ -210,9 +212,15 @@ namespace Characters
             _spriteRenderer.enabled = false;
             _collider2D.enabled = false;
             _trailRenderer.enabled = false;
+            SetSize(0);
             
             while (timeCounter < time)
             {
+                if (clones.Count == 0)
+                {
+                    Dead();
+                    break;
+                }
                 _cloningParent.transform.position = Vector2.Lerp(_cloningParent.transform.position, transform.position, timeCounter / time);
                 timeCounter += Time.deltaTime;
                 yield return null;
@@ -225,7 +233,7 @@ namespace Characters
                 yield return new WaitForSeconds(0.02f);
                 clone.transform.DOMove(transform.position, 0.25f).SetEase(Ease.InOutSine).OnComplete(() =>
                 {
-                    AddSize(clone.SizeGained);
+                    AddSize(clone.BubbleSize);
                     _spriteRenderer.enabled = true;
                     _collider2D.enabled = true;
                     _trailRenderer.enabled = true;
@@ -233,7 +241,9 @@ namespace Characters
                 });
             }
             yield return new WaitForSeconds(0.3f);
+            if (bubbleSize <= 0) Dead();
             Destroy(_cloningParent);
+            isExploding = false;
         }
         
         private void OnDrawGizmos()
