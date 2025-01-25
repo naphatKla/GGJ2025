@@ -19,9 +19,11 @@ public class EnemyManager : CharacterBase
     private enum EnemyState { leveling, hunting, caution, runaway}
     [SerializeField] private EnemyState currentState = EnemyState.leveling;
     
+    [ShowInInspector]
     private GameObject _target;
+    private Coroutine _targetHoldCoroutine;
     private float aiSize;
-    private float playerSize;
+    private float _targetSize;
     private float lastDashTime = 0f;
     void Start()
     {
@@ -64,15 +66,18 @@ public class EnemyManager : CharacterBase
     {
         base.Update();
         aiSize = BubbleSize;
-        _target = RadiusDetector();
+        huntScript.targetdetectRadius = BubbleSize * 0.1f;
+        
+        //target lock zone
+        SelectTarget();
+        
+        if( _target != null) { _targetSize = _target.GetComponent<CharacterBase>().BubbleSize; }
         if (navMesh.enabled) PerformLeveling();
         if (_target == null)
         {
             currentState = EnemyState.leveling;
-            return;
         }
-        playerSize = _target.GetComponent<CharacterBase>().BubbleSize;;
-
+        
         StateDecide();
         if (IsModifyingMovement) return;
         if (navMesh.enabled) PerformHunting();
@@ -96,8 +101,9 @@ public class EnemyManager : CharacterBase
         //hunting
         //If enemy has 10% oxygen more than player current oxygen
         //Enemy would target player if they entered player screen for 0.5s
-        if (huntScript.EnemyDetectTarget(_target) && CompareValues(aiSize,playerSize) > 10 && currentState == EnemyState.leveling)
+        if (huntScript.EnemyDetectTarget(_target) && CompareValues(aiSize,_targetSize) > 10 && currentState == EnemyState.leveling)
         {
+            Debug.Log("Hunt");
             StartCoroutine(PreHunting());
         }
 
@@ -105,7 +111,7 @@ public class EnemyManager : CharacterBase
         //If enemy has oxygen not lower than 7% and not higher than 9% of player current oxygen
         /*if (huntScript.EnemyDetectTarget() 
             && (currentState == EnemyState.hunting || currentState == EnemyState.leveling )
-            && (CompareValues(aiSize,playerSize) > 7 && CompareValues(aiSize,playerSize) < 9))
+            && (CompareValues(aiSize,_targetSize) > 7 && CompareValues(aiSize,_targetSize) < 9))
         {
             currentState = EnemyState.caution;
         }*/
@@ -116,7 +122,7 @@ public class EnemyManager : CharacterBase
         //If enemy has 8% oxygen lower than player current oxygen and is entering player screen
         //It waits for 0.5s → 1.5s before trying to run away
         //it will run away until it leaves player border screen
-        if (huntScript.EnemyDetectTarget(_target) && aiSize < playerSize)
+        if (huntScript.EnemyDetectTarget(_target) && aiSize < _targetSize)
         {
             StartCoroutine(PreRunAway());
         }
@@ -125,14 +131,13 @@ public class EnemyManager : CharacterBase
     {
         if (currentState == EnemyState.leveling)
         {
-            if (navMesh == null) { return; }
             navMesh.SetDestination(levelScript.FindNearestExpOrb());
         }
     }
     
     private void PerformHunting()
     {
-        if (currentState == EnemyState.hunting && (aiSize >= playerSize))
+        if (currentState == EnemyState.hunting && (aiSize >= _targetSize))
         {
             navMesh.SetDestination(_target.transform.position);
         }
@@ -157,21 +162,20 @@ public class EnemyManager : CharacterBase
     {
         if (currentState == EnemyState.runaway)
         {
-            if (NavMesh.SamplePosition(runawayScript.RunFromTarget(_target), out NavMeshHit hit, runawayScript.runDistance, NavMesh.AllAreas))
+            if (_target)
             {
-                navMesh.SetDestination(hit.position);
+                if (NavMesh.SamplePosition(runawayScript.RunFromTarget(_target), out NavMeshHit hit, runawayScript.runDistance, NavMesh.AllAreas))
+                {
+                    navMesh.SetDestination(hit.position);
+                }
+            }
+            else
+            {
+                navMesh.SetDestination(levelScript.FindNearestExpOrb());
             }
         }
     }
-    
-    private void PerformSkill()
-    {
-        if (currentState == EnemyState.hunting)
-        {
-            
-        }
-    }
-    
+ 
     private float CompareValues(float aiValue, float playerValue)
     {
         if (aiValue == playerValue)
@@ -207,7 +211,6 @@ public class EnemyManager : CharacterBase
             elapsedTime += Time.deltaTime;
             yield return null;
         }
-        if (navMesh.hasPath) { navMesh.ResetPath(); }
         currentState = EnemyState.hunting;
     }
     
@@ -241,18 +244,47 @@ public class EnemyManager : CharacterBase
         currentState = EnemyState.leveling;
     }
 
+    private void SelectTarget()
+    {
+        if (_target == null)
+        {
+            _target = RadiusDetector();
+            if (_target != null)
+            {
+                if (_targetHoldCoroutine != null)
+                {
+                    StopCoroutine(_targetHoldCoroutine);
+                }
+                _targetHoldCoroutine = StartCoroutine(HoldTargetForSeconds(8f));
+            }
+        }
+    }
+
     private GameObject RadiusDetector()
     {
-        Collider2D radius = Physics2D.OverlapCircle(transform.position, huntScript.targetdetectRadius);
-        if (radius != null)
+        Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, huntScript.targetdetectRadius);
+        GameObject closestTarget = null;
+        float closestSize = float.MaxValue;
+
+        foreach (Collider2D hit in hits)
         {
-            if (radius.CompareTag("Player") || radius.CompareTag("Enemy"))
+            if ((hit.CompareTag("Player") || hit.CompareTag("Enemy")) && hit.gameObject != gameObject)
             {
-                return radius.gameObject;
+                _targetSize = hit.GetComponent<CharacterBase>().BubbleSize;
+                if (aiSize > _targetSize)
+                {
+                    closestTarget = hit.gameObject;
+                }
             }
         }
 
-        return null;
+        return closestTarget;
     }
-
+    
+    private IEnumerator HoldTargetForSeconds(float seconds)
+    {
+        yield return new WaitForSeconds(seconds);
+        _target = null;
+        _targetHoldCoroutine = null;
+    }
 }

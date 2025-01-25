@@ -17,7 +17,7 @@ public class EnemyLeveling : MonoBehaviour
     {
         _allObjects = GameObject.FindGameObjectsWithTag("Exp");
         float closestDistance = Mathf.Infinity;
-        GameObject closestExp = null;
+        _nearestExp = null;
 
         foreach (GameObject exp in _allObjects)
         {
@@ -26,13 +26,13 @@ public class EnemyLeveling : MonoBehaviour
             if (distance <= expdetectDistance && distance < closestDistance)
             {
                 closestDistance = distance;
-                closestExp = exp;
+                _nearestExp = exp;
             }
         }
 
-        if (closestExp != null)
+        if (_nearestExp != null)
         {
-            return closestExp.transform.position;
+            return _nearestExp.transform.position;
         }
 
         return Vector3.zero;
