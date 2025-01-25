@@ -9,23 +9,21 @@ namespace Characters
 {
     public abstract class CharacterBase : MonoBehaviour
     {
-        [SerializeField] private float score = 0;
+        [SerializeField] protected float score = 0;
         [SerializeField] private float maxSpeed = 6f;
         [SerializeField] [BoxGroup("Skills")] protected SkillBase SkillMouseLeft;
         [SerializeField] [BoxGroup("Skills")] protected  SkillBase SkillMouseRight;
-        [SerializeField] [BoxGroup("Feedbacks")] private MMF_Player sizeUpFeedback;
-        [SerializeField] [BoxGroup("Feedbacks")] private MMF_Player sizeDownFeedback;
         [SerializeField] [BoxGroup("Feedbacks")] private MMF_Player deadFeedback;
         [HideInInspector] public Rigidbody2D rigidbody2D;
         [ShowInInspector] protected float currentSpeed;
         protected Animator Animator;
         public bool canDead;
         public bool isDash;
-
-        public float Score => score;
+        
         protected float CurrentSpeed => currentSpeed;
         public bool IsModifyingMovement { get; set; }
         protected abstract void SkillInputHandler();
+        public float Score => score;
 
 
         protected virtual void Awake()
@@ -70,20 +68,18 @@ namespace Characters
         
         public virtual void SetScore(float score)
         {
-            this.score = score;
+            score = score;
         }
         
         public virtual void AddScore(float score)
         {
-            this.score += score;
+            score += score;
             
             switch (score)
             {
                 case > 0:
-                    sizeUpFeedback?.PlayFeedbacks();
                     break;
                 case < 0:
-                    sizeDownFeedback?.PlayFeedbacks();
                     DropOxygen(Mathf.Abs(score));
                     break;
             }

@@ -27,7 +27,8 @@ namespace Skills
         
         protected override void SkillAction()
         {
-            OwnerCharacter.ExplodeOut8Direction(explosionForce,MergeTime);
+            if (!IsPlayer) return;
+            Player.Instance.ExplodeOut8Direction(explosionForce,MergeTime);
         }
     }
 }

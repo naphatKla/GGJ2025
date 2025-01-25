@@ -150,6 +150,5 @@ namespace Characters
             Destroy(_cloningParent);
             _isExploding = false;
         }
-        
     }
 }
