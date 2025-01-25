@@ -80,7 +80,7 @@ public class LoadScene : MonoBehaviour
     
     public void RestartGame()
     {
-        SceneManager.LoadScene("GameplayUI");
+        SceneManager.LoadScene("Kla");
         loseUI.SetActive(false);
     }
 
