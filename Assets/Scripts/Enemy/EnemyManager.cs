@@ -207,15 +207,15 @@ public class EnemyManager : CharacterBase
             elapsedTime += Time.deltaTime;
             yield return null;
         }
+        if (navMesh.hasPath) { navMesh.ResetPath(); }
         currentState = EnemyState.hunting;
-        navMesh.ResetPath();
     }
     
     private IEnumerator PreRunAway()
     {
         float elapsedTime = 0f;
 
-        float random = Random.Range(0.5f, 1.5f);
+        float random = Random.Range(2f, 4f);
         while (elapsedTime < random)
         {
             elapsedTime += Time.deltaTime;
