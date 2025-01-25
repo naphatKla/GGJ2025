@@ -18,10 +18,12 @@ namespace Skills
                 float size = CameraManager.Instance.currentCamera.m_Lens.OrthographicSize * cameraPanOutMultiplier;
                 Debug.LogWarning(size);
                 CameraManager.Instance.SetLensOrthographicSize(size, 0.25f);
+                Player.Instance.CanDead = false;
             });
             onSkillEnd.AddListener(() =>
             {
-                OwnerCharacter.GetComponent<Player>().ResizeCamera();
+                Player.Instance.CanDead = true;
+                Player.Instance.ResizeCamera();
             });
         }
         

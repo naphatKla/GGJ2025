@@ -59,7 +59,7 @@ namespace Characters
                 {
                     sumDrop += drop.expAmount;
                     float radius = transform.localScale.x;
-                    Vector2 randomPosition = transform.position + new Vector3(Random.Range(-radius, radius), Random.Range(-radius, radius), 0);
+                    Vector2 randomPosition = transform.position + new Vector3(Random.Range(-radius*2, radius*2), Random.Range(-radius*2, radius*2), 0);
                     ExpScript dropInstant = Instantiate(drop.gameObject, transform.position, Quaternion.identity).GetComponent<ExpScript>();
                     dropInstant.canPickUp = false;
                     dropInstant.transform.DOMove(randomPosition, 0.4f).SetEase(Ease.InOutSine).onComplete += () => dropInstant.canPickUp = true;

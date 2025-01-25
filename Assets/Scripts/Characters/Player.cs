@@ -53,9 +53,8 @@ namespace Characters
             }
         }
 
-        private void OnTriggerStay2D(Collider2D other)
+        protected virtual void OnTriggerStay2D(Collider2D other)
         {
-            Debug.LogWarning(other.tag);
             if (other.CompareTag("Enemy") && IsDash)
             {
                 Debug.LogWarning("KILL");
@@ -113,9 +112,10 @@ namespace Characters
                 _clones.Add(clone);
                 clone.OwnerCharacter = this;
                 clone.CanDead = false;
+                clone.canApplyDamage = true;
                 clone.SetScore(0);
                 clone.transform.DOMove(position, 0.25f).SetEase(Ease.InOutSine).OnComplete(() =>
-                { 
+                {
                     clone.transform.DOMove(position2, mergeTime).SetEase(Ease.InOutSine);
                 });
             }
