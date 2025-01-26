@@ -10,7 +10,7 @@ public class SoundSetting : MonoBehaviour
 
     private void Start()
     {
-        soundSetting.gameObject.SetActive(false);
+        /*soundSetting.gameObject.SetActive(false);*/
         _isActive = false;
     }
 

@@ -229,6 +229,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c1895ebf5b35e0a43a8e497d480ffee0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  settingMenu: {fileID: 0}
   masterSlider: {fileID: 0}
   musicSlider: {fileID: 0}
   sfxSlider: {fileID: 0}
@@ -2897,6 +2898,30 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1605641859698228012, guid: b468320752994dd40a2ddaf3672e52f6, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 7a7dbe230baa73946bdb516562fb6c23, type: 2}
+    - target: {fileID: 1605641859698228012, guid: b468320752994dd40a2ddaf3672e52f6, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: 125048664456036443, guid: 7a7dbe230baa73946bdb516562fb6c23, type: 2}
+    - target: {fileID: 1605641859698228012, guid: b468320752994dd40a2ddaf3672e52f6, type: 3}
+      propertyPath: m_hasFontAssetChanged
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2289757427298247509, guid: b468320752994dd40a2ddaf3672e52f6, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 7a7dbe230baa73946bdb516562fb6c23, type: 2}
+    - target: {fileID: 2289757427298247509, guid: b468320752994dd40a2ddaf3672e52f6, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: 125048664456036443, guid: 7a7dbe230baa73946bdb516562fb6c23, type: 2}
+    - target: {fileID: 2289757427298247509, guid: b468320752994dd40a2ddaf3672e52f6, type: 3}
+      propertyPath: m_hasFontAssetChanged
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3844599447599891232, guid: b468320752994dd40a2ddaf3672e52f6, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
@@ -3004,6 +3029,22 @@ PrefabInstance:
     - target: {fileID: 6493368060234300623, guid: b468320752994dd40a2ddaf3672e52f6, type: 3}
       propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6493368060234300623, guid: b468320752994dd40a2ddaf3672e52f6, type: 3}
+      propertyPath: m_TagString
+      value: Menu
+      objectReference: {fileID: 0}
+    - target: {fileID: 6760334965825051168, guid: b468320752994dd40a2ddaf3672e52f6, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 7a7dbe230baa73946bdb516562fb6c23, type: 2}
+    - target: {fileID: 6760334965825051168, guid: b468320752994dd40a2ddaf3672e52f6, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: 125048664456036443, guid: 7a7dbe230baa73946bdb516562fb6c23, type: 2}
+    - target: {fileID: 6760334965825051168, guid: b468320752994dd40a2ddaf3672e52f6, type: 3}
+      propertyPath: m_hasFontAssetChanged
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6891694574089422463, guid: b468320752994dd40a2ddaf3672e52f6, type: 3}
       propertyPath: m_AnchorMax.y
@@ -3684,7 +3725,7 @@ MonoBehaviour:
         MaxVolume: 1
         MinPitch: 1
         MaxPitch: 1
-        MmSoundManagerTrack: 0
+        MmSoundManagerTrack: 1
         ID: 0
         AudioGroup: {fileID: 0}
         RecycleAudioSource: {fileID: 0}

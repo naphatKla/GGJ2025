@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using MoreMountains.Tools;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 
@@ -14,12 +16,14 @@ public class LoadScene : MonoBehaviour
     public GameObject playerControllerUI;
     private bool hasStarted = false;
     
+    
     void Start()
     {
-        if (openUI != null)
-        {
-            openUI.SetActive(false);
-        }   
+        
+            if (openUI != null)
+            {
+                openUI.SetActive(false);
+            }   
         
         // เริ่มเกมโดยแสดง Player Controller UI และหยุดเวลา
         playerControllerUI.SetActive(true);
@@ -122,6 +126,12 @@ public class LoadScene : MonoBehaviour
                 canvas.enabled = true;
             }
         }
+    }
+
+    private IEnumerator DelayDisableUI()
+    {
+        yield return new WaitForSeconds(0.5f);
+        openUI.SetActive(false);
     }
 
 }
