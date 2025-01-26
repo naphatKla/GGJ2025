@@ -38,8 +38,9 @@ public class EnemySpawnManager : MonoBehaviour
 
     private Player player => Player.Instance;
 
-    private void Start()
+    private IEnumerator Start()
     {
+        yield return new WaitForSeconds(0.5f);
         StartCoroutine(SpawnEnemies());
         StartCoroutine(IncreaseLevelOverTime());
     }

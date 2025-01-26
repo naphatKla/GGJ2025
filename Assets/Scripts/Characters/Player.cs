@@ -166,6 +166,7 @@ namespace Characters
             takeDamageFeedback?.PlayFeedbacks();
             if (life > 0) return;
             onPlayerDead?.Invoke();
+            Hitcombo = 0;
             base.Dead(killer, false);
         }
     }
