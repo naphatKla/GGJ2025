@@ -12,18 +12,22 @@ namespace Characters
 {
     public class Player : CharacterBase
     {
+        [SerializeField] [BoxGroup("Life")] private int life = 3;
+        [SerializeField] [BoxGroup("Life")] private float iframeAfterhitDuration = 1f;
         [SerializeField] [BoxGroup("PickUpOxygen")] private float oxygenDetectionRadius = 2f;
         [SerializeField] [BoxGroup("PickUpOxygen")] private float oxygenMagneticStartForce = 9f;
         [SerializeField] [BoxGroup("PickUpOxygen")] private float oxygenMagneticEndForce = 2f;
         [SerializeField] [BoxGroup("PickUpOxygen")] private float oxygenCurveForce = 5f;
         [SerializeField] [BoxGroup("Feedbacks")] private MMF_Player explodeFeedback;
         [SerializeField] [BoxGroup("Feedbacks")] private MMF_Player mergeFeedback;
+        [SerializeField] [BoxGroup("Feedbacks")] private MMF_Player takeDamageFeedback;
         private List<CloningCharacter> _clones = new List<CloningCharacter>();
         private GameObject _cloningParent;
         public static Player Instance { get; private set; }
         public static float Hitcombo;
         
         public UnityEvent onPickUpScore;
+        private float _lastHitTime = 0f;
 
         protected override void Awake()
         {
@@ -60,9 +64,10 @@ namespace Characters
         protected virtual void OnTriggerStay2D(Collider2D other)
         {
             if (isDead) return;
+            if (Time.time - _lastHitTime < iframeAfterhitDuration) return;
             if (other.CompareTag("Enemy") && IsDash)
             {
-                Debug.LogWarning("KILL");
+                _lastHitTime = Time.time;
                 other.GetComponent<EnemyManager>().Dead(this);
             }
             
@@ -73,7 +78,6 @@ namespace Characters
             onPickUpScore?.Invoke();
             Destroy(other.gameObject);
         }
-        
         
         private void MovementController()
         {
@@ -157,6 +161,9 @@ namespace Characters
         public override void Dead(CharacterBase killer, bool dropOxygen = true)
         {
             if (IsDash) return;
+            life--;
+            takeDamageFeedback?.PlayFeedbacks();
+            if (life > 0) return;
             base.Dead(killer, false);
         }
     }
