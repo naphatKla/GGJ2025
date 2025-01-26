@@ -3,6 +3,7 @@ using MoreMountains.Feedbacks;
 using Sirenix.OdinInspector;
 using Skills;
 using UnityEngine;
+using UnityEngine.AI;
 using Random = UnityEngine.Random;
 
 namespace Characters
@@ -71,6 +72,8 @@ namespace Characters
             deadFeedback?.PlayFeedbacks();
             killer?.killFeedback?.PlayFeedbacks();
             _animator.SetTrigger("DeadTrigger");
+            if (CompareTag("Player")) rigidbody2D.velocity = Vector2.zero;
+            else GetComponent<NavMeshAgent>().velocity = Vector3.zero;
             Destroy(gameObject,0.4f);
         }
 

@@ -86,6 +86,7 @@ namespace Characters
 
         protected override void SkillInputHandler()
         {
+            if (Time.timeScale == 0) return;
             if (Input.GetMouseButton(0))
                 SkillMouseLeft.UseSkill();
             

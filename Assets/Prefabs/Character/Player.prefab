@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 7860668391114626237}
   - component: {fileID: 4326812607397302318}
   - component: {fileID: 3458359518854809025}
+  - component: {fileID: 5465021938853108724}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -128,10 +129,34 @@ MonoBehaviour:
   takeDamageFeedback: {fileID: 114347794673569938}
   onPlayerDead:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 0}
+        m_TargetAssemblyTypeName: LoadScene, Assembly-CSharp
+        m_MethodName: PlayerDie
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   onPickUpScore:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1106976263589378108}
+        m_TargetAssemblyTypeName: MoreMountains.Feedbacks.MMF_Player, MoreMountains.Feedbacks
+        m_MethodName: PlayFeedbacks
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!58 &3895866205044419862
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -328,6 +353,80 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &5465021938853108724
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 479713288450829085}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0cb29398a27cf104bb97fac0554c9457, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ChannelMode: 0
+  Channel: 0
+  MMChannelDefinition: {fileID: 0}
+  ShakeDuration: 0.5
+  PlayOnAwake: 0
+  PermanentShake: 0
+  Interruptible: 1
+  AlwaysResetTargetValuesAfterShake: 0
+  OnlyUseShakerValues: 0
+  CooldownBetweenShakes: 0
+  Shaking: 0
+  ForwardDirection: 1
+  TimescaleMode: 0
+  Mode: 0
+  TargetTransform: {fileID: 0}
+  TargetRectTransform: {fileID: 0}
+  ShakeSpeed: 20
+  ShakeRange: 0.5
+  ShakeMainDirection: {x: 0, y: 1, z: 0}
+  RandomizeDirection: 0
+  ShakeAltDirection: {x: 0, y: 1, z: 0}
+  RandomizeDirectionOnPlay: 0
+  AddDirectionalNoise: 1
+  DirectionalNoiseStrengthMin: {x: 0.25, y: 0.25, z: 0.25}
+  DirectionalNoiseStrengthMax: {x: 0.25, y: 0.25, z: 0.25}
+  RandomnessSeed: {x: 0, y: 0, z: 0}
+  RandomizeSeedOnShake: 1
+  UseAttenuation: 1
+  AttenuationCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.5
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  StartShakingButton: 0
 --- !u!1 &892913073304475509
 GameObject:
   m_ObjectHideFlags: 0
@@ -1479,8 +1578,8 @@ MonoBehaviour:
         SequentialOrderHoldCooldownDuration: 2
         RandomUnique: 0
         SoundDataSO: {fileID: 0}
-        MinVolume: 0.9
-        MaxVolume: 1.1
+        MinVolume: 1
+        MaxVolume: 1
         MinPitch: 0.9
         MaxPitch: 1.1
         MmSoundManagerTrack: 0
@@ -2520,7 +2619,7 @@ MonoBehaviour:
         RemapRangeFalloff: {x: 0, y: 1}
         Owner: {fileID: 2107775142338170011}
         DebugActive: 0
-        ShakeDuration: 0.2
+        ShakeDuration: 0.35
         ResetShakerValuesAfterShake: 1
         ResetTargetValuesAfterShake: 1
         RelativeValues: 1
@@ -2875,8 +2974,8 @@ MonoBehaviour:
         SequentialOrderHoldCooldownDuration: 2
         RandomUnique: 0
         SoundDataSO: {fileID: 0}
-        MinVolume: 0.9
-        MaxVolume: 1.1
+        MinVolume: 1
+        MaxVolume: 1
         MinPitch: 0.9
         MaxPitch: 1.1
         MmSoundManagerTrack: 0
@@ -3197,9 +3296,7 @@ MonoBehaviour:
         m_Calls: []
   DebugActive: 0
   FeedbacksList:
-  - rid: 8877965473690419207
-  - rid: 7241849262784905218
-  - rid: 7241849262784905224
+  - rid: 7241849262784905228
   KeepPlayModeChanges: 0
   PerformanceMode: 0
   StopFeedbacksOnDisable: 0
@@ -3207,82 +3304,11 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
-    - rid: 7241849262784905218
-      type: {class: MMF_CinemachineImpulseSource, ns: MoreMountains.FeedbacksForThirdParty, asm: MoreMountains.Feedbacks.Cinemachine}
-      data:
-        Active: 1
-        UniqueID: -1264424196
-        Label: Cinemachine Impulse Source
-        ChannelMode: 0
-        Channel: 0
-        MMChannelDefinition: {fileID: 0}
-        Chance: 100
-        DisplayColor: {r: 0, g: 0, b: 0, a: 1}
-        Timing:
-          TimescaleMode: 0
-          ExcludeFromHoldingPauses: 0
-          ContributeToTotalDuration: 1
-          InitialDelay: 0
-          CooldownDuration: 0
-          InterruptsOnStop: 1
-          NumberOfRepeats: 0
-          RepeatForever: 0
-          DelayBetweenRepeats: 1
-          MMFeedbacksDirectionCondition: 0
-          PlayDirection: 0
-          ConstantIntensity: 0
-          UseIntensityInterval: 0
-          IntensityIntervalMin: 0
-          IntensityIntervalMax: 0
-          Sequence: {fileID: 0}
-          TrackID: 0
-          Quantized: 0
-          TargetBPM: 120
-        AutomatedTargetAcquisition:
-          Mode: 0
-          ChildIndex: 0
-        RandomizeOutput: 0
-        RandomMultiplier: {x: 0.8, y: 1}
-        RandomizeDuration: 0
-        RandomDurationMultiplier: {x: 0.5, y: 2}
-        UseRange: 0
-        RangeDistance: 5
-        UseRangeFalloff: 0
-        RangeFalloff:
-          serializedVersion: 2
-          m_Curve:
-          - serializedVersion: 3
-            time: 0
-            value: 1
-            inSlope: 0
-            outSlope: 0
-            tangentMode: 0
-            weightedMode: 0
-            inWeight: 0
-            outWeight: 0
-          - serializedVersion: 3
-            time: 1
-            value: 0
-            inSlope: 0
-            outSlope: 0
-            tangentMode: 0
-            weightedMode: 0
-            inWeight: 0
-            outWeight: 0
-          m_PreInfinity: 2
-          m_PostInfinity: 2
-          m_RotationOrder: 4
-        RemapRangeFalloff: {x: 0, y: 1}
-        Owner: {fileID: 1106976263589378108}
-        DebugActive: 0
-        Velocity: {x: 0.5, y: 0.5, z: 0.5}
-        ImpulseSource: {fileID: 0}
-        ClearImpulseOnStop: 0
-    - rid: 7241849262784905224
+    - rid: 7241849262784905228
       type: {class: MMF_MMSoundManagerSound, ns: MoreMountains.Feedbacks, asm: MoreMountains.Feedbacks.MMTools}
       data:
         Active: 1
-        UniqueID: 246353135
+        UniqueID: -2092960298
         Label: MMSoundManager Sound
         ChannelMode: 0
         Channel: 0
@@ -3294,7 +3320,7 @@ MonoBehaviour:
           ExcludeFromHoldingPauses: 0
           ContributeToTotalDuration: 1
           InitialDelay: 0
-          CooldownDuration: 0
+          CooldownDuration: 0.1
           InterruptsOnStop: 1
           NumberOfRepeats: 0
           RepeatForever: 0
@@ -3348,14 +3374,15 @@ MonoBehaviour:
         DebugActive: 0
         Sfx: {fileID: 0}
         RandomSfx:
-        - {fileID: 8300000, guid: 8e8ce7a923a81434c84322f7eaad1621, type: 3}
+        - {fileID: 8300000, guid: af4ef481114b6c6449a508061967927e, type: 3}
+        - {fileID: 8300000, guid: 59c13cd11aa217b4881fa6c6eca42386, type: 3}
         SequentialOrder: 0
         SequentialOrderHoldLast: 0
         SequentialOrderHoldCooldownDuration: 2
         RandomUnique: 0
         SoundDataSO: {fileID: 0}
-        MinVolume: 0.9
-        MaxVolume: 1.1
+        MinVolume: 1
+        MaxVolume: 1
         MinPitch: 0.9
         MaxPitch: 1.1
         MmSoundManagerTrack: 0
@@ -3453,120 +3480,6 @@ MonoBehaviour:
           ButtonText: Debug Stop Sound
         ResetSequentialIndexButton:
           ButtonText: Reset Sequential Index
-    - rid: 8877965473690419207
-      type: {class: MMF_ImageAlpha, ns: MoreMountains.Feedbacks, asm: MoreMountains.Feedbacks.MMTools}
-      data:
-        Active: 1
-        UniqueID: 1092348050
-        Label: Image Alpha
-        ChannelMode: 0
-        Channel: 0
-        MMChannelDefinition: {fileID: 0}
-        Chance: 100
-        DisplayColor: {r: 0, g: 0, b: 0, a: 1}
-        Timing:
-          TimescaleMode: 0
-          ExcludeFromHoldingPauses: 0
-          ContributeToTotalDuration: 1
-          InitialDelay: 0
-          CooldownDuration: 0
-          InterruptsOnStop: 1
-          NumberOfRepeats: 0
-          RepeatForever: 0
-          DelayBetweenRepeats: 1
-          MMFeedbacksDirectionCondition: 0
-          PlayDirection: 0
-          ConstantIntensity: 0
-          UseIntensityInterval: 0
-          IntensityIntervalMin: 0
-          IntensityIntervalMax: 0
-          Sequence: {fileID: 0}
-          TrackID: 0
-          Quantized: 0
-          TargetBPM: 120
-        AutomatedTargetAcquisition:
-          Mode: 0
-          ChildIndex: 0
-        RandomizeOutput: 0
-        RandomMultiplier: {x: 0.8, y: 1}
-        RandomizeDuration: 0
-        RandomDurationMultiplier: {x: 0.5, y: 2}
-        UseRange: 0
-        RangeDistance: 5
-        UseRangeFalloff: 0
-        RangeFalloff:
-          serializedVersion: 2
-          m_Curve:
-          - serializedVersion: 3
-            time: 0
-            value: 1
-            inSlope: 0
-            outSlope: 0
-            tangentMode: 0
-            weightedMode: 0
-            inWeight: 0
-            outWeight: 0
-          - serializedVersion: 3
-            time: 1
-            value: 0
-            inSlope: 0
-            outSlope: 0
-            tangentMode: 0
-            weightedMode: 0
-            inWeight: 0
-            outWeight: 0
-          m_PreInfinity: 2
-          m_PostInfinity: 2
-          m_RotationOrder: 4
-        RemapRangeFalloff: {x: 0, y: 1}
-        Owner: {fileID: 1106976263589378108}
-        DebugActive: 0
-        BoundImage: {fileID: 7121321484407800720}
-        Mode: 0
-        Duration: 0.75
-        AllowAdditivePlays: 0
-        InstantAlpha: 1
-        Curve:
-          MMTweenDefinitionType: 1
-          MMTweenCurve: 4
-          Curve:
-            serializedVersion: 2
-            m_Curve:
-            - serializedVersion: 3
-              time: 0
-              value: 0
-              inSlope: 0
-              outSlope: 0
-              tangentMode: 0
-              weightedMode: 0
-              inWeight: 0
-              outWeight: 0
-            - serializedVersion: 3
-              time: 0.43755564
-              value: 0.2560063
-              inSlope: -0.0021797721
-              outSlope: -0.0021797721
-              tangentMode: 0
-              weightedMode: 0
-              inWeight: 0.33333334
-              outWeight: 0.33333334
-            - serializedVersion: 3
-              time: 1.0000105
-              value: -0.0014534884
-              inSlope: 0
-              outSlope: 0
-              tangentMode: 0
-              weightedMode: 0
-              inWeight: 0
-              outWeight: 0
-            m_PreInfinity: 2
-            m_PostInfinity: 2
-            m_RotationOrder: 4
-          Initialized: 0
-        CurveRemapZero: 0
-        CurveRemapOne: 1
-        DestinationAlpha: 1
-        DisableOnStop: 0
 --- !u!1 &8130159263438535861
 GameObject:
   m_ObjectHideFlags: 0
@@ -3845,8 +3758,8 @@ MonoBehaviour:
         SequentialOrderHoldCooldownDuration: 2
         RandomUnique: 0
         SoundDataSO: {fileID: 0}
-        MinVolume: 0.9
-        MaxVolume: 1.1
+        MinVolume: 1
+        MaxVolume: 1
         MinPitch: 0.9
         MaxPitch: 1.1
         MmSoundManagerTrack: 0
@@ -4928,11 +4841,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4184271065291911711, guid: 544e8ceec27b98d498bf78b6537e5636, type: 3}
       propertyPath: managedReferences[7241849262784905221].MaxVolume
-      value: 1.1
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4184271065291911711, guid: 544e8ceec27b98d498bf78b6537e5636, type: 3}
       propertyPath: managedReferences[7241849262784905221].MinVolume
-      value: 0.9
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4184271065291911711, guid: 544e8ceec27b98d498bf78b6537e5636, type: 3}
       propertyPath: managedReferences[7241849262784905221].PanStereo
@@ -5527,6 +5440,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5026074172752388844, guid: 544e8ceec27b98d498bf78b6537e5636, type: 3}
+      propertyPath: explosionForce
+      value: 4.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5026074172752388844, guid: 544e8ceec27b98d498bf78b6537e5636, type: 3}
       propertyPath: cameraPanOutMultiplier
       value: 1.125
       objectReference: {fileID: 0}
@@ -5672,11 +5589,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8648041963361168290, guid: 544e8ceec27b98d498bf78b6537e5636, type: 3}
       propertyPath: managedReferences[7241849262784905220].MaxVolume
-      value: 1.1
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8648041963361168290, guid: 544e8ceec27b98d498bf78b6537e5636, type: 3}
       propertyPath: managedReferences[7241849262784905220].MinVolume
-      value: 0.9
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8648041963361168290, guid: 544e8ceec27b98d498bf78b6537e5636, type: 3}
       propertyPath: managedReferences[7241849262784905220].PanStereo
@@ -5684,11 +5601,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8648041963361168290, guid: 544e8ceec27b98d498bf78b6537e5636, type: 3}
       propertyPath: managedReferences[7241849262784905225].MaxVolume
-      value: 1.1
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8648041963361168290, guid: 544e8ceec27b98d498bf78b6537e5636, type: 3}
       propertyPath: managedReferences[7241849262784905225].MinVolume
-      value: 0.9
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8648041963361168290, guid: 544e8ceec27b98d498bf78b6537e5636, type: 3}
       propertyPath: managedReferences[7241849262784905225].PanStereo
@@ -5965,6 +5882,10 @@ PrefabInstance:
     - target: {fileID: 8648041963361168290, guid: 544e8ceec27b98d498bf78b6537e5636, type: 3}
       propertyPath: managedReferences[7241849262784905225].Timing.TargetBPM
       value: 120
+      objectReference: {fileID: 0}
+    - target: {fileID: 8648041963361168290, guid: 544e8ceec27b98d498bf78b6537e5636, type: 3}
+      propertyPath: managedReferences[7241849253592563714].RemapIntensityOne
+      value: 0.52
       objectReference: {fileID: 0}
     - target: {fileID: 8648041963361168290, guid: 544e8ceec27b98d498bf78b6537e5636, type: 3}
       propertyPath: managedReferences[7241849262784905220].AttachToTransform
@@ -6567,6 +6488,10 @@ PrefabInstance:
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 8648041963361168290, guid: 544e8ceec27b98d498bf78b6537e5636, type: 3}
+      propertyPath: managedReferences[7241849253592563717].Intensity.m_Curve.Array.data[1].time
+      value: 0.4935913
+      objectReference: {fileID: 0}
+    - target: {fileID: 8648041963361168290, guid: 544e8ceec27b98d498bf78b6537e5636, type: 3}
       propertyPath: managedReferences[7241849262784905220].SpatialBlendCurve.m_Curve.Array.size
       value: 0
       objectReference: {fileID: 0}
@@ -6581,6 +6506,10 @@ PrefabInstance:
     - target: {fileID: 8648041963361168290, guid: 544e8ceec27b98d498bf78b6537e5636, type: 3}
       propertyPath: managedReferences[7241849262784905225].Timing.MMFeedbacksDirectionCondition
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8648041963361168290, guid: 544e8ceec27b98d498bf78b6537e5636, type: 3}
+      propertyPath: managedReferences[7241849253592563717].Intensity.m_Curve.Array.data[1].value
+      value: 0.52401733
       objectReference: {fileID: 0}
     - target: {fileID: 8648041963361168290, guid: 544e8ceec27b98d498bf78b6537e5636, type: 3}
       propertyPath: managedReferences[7241849262784905220].AutomatedTargetAcquisition.ChildIndex
