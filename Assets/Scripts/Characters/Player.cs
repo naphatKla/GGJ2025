@@ -65,12 +65,8 @@ namespace Characters
         protected virtual void OnTriggerStay2D(Collider2D other)
         {
             if (isDead) return;
-            if (Time.time - _lastHitTime < iframeAfterhitDuration) return;
-            if (other.CompareTag("Enemy") && IsDash)
-            {
-                _lastHitTime = Time.time;
+            if (other.CompareTag("Enemy") && IsDash) 
                 other.GetComponent<EnemyManager>().Dead(this);
-            }
             
             if (!other.CompareTag("Exp")) return;
             ExpScript exp = other.GetComponent<ExpScript>();
@@ -161,8 +157,11 @@ namespace Characters
         
         public override void Dead(CharacterBase killer, bool dropOxygen = true)
         {
+            if (Time.time - _lastHitTime < iframeAfterhitDuration) return;
+            if (!CanDead) return;
             if (IsDash) return;
             life--;
+            _lastHitTime = Time.time;
             takeDamageFeedback?.PlayFeedbacks();
             if (life > 0) return;
             onPlayerDead?.Invoke();
