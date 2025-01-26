@@ -21,6 +21,7 @@ namespace Characters
         [SerializeField] [BoxGroup("Feedbacks")] private MMF_Player explodeFeedback;
         [SerializeField] [BoxGroup("Feedbacks")] private MMF_Player mergeFeedback;
         [SerializeField] [BoxGroup("Feedbacks")] private MMF_Player takeDamageFeedback;
+        [SerializeField] [BoxGroup("Events")] private UnityEvent onPlayerDead;
         private List<CloningCharacter> _clones = new List<CloningCharacter>();
         private GameObject _cloningParent;
         public static Player Instance { get; private set; }
@@ -164,6 +165,7 @@ namespace Characters
             life--;
             takeDamageFeedback?.PlayFeedbacks();
             if (life > 0) return;
+            onPlayerDead?.Invoke();
             base.Dead(killer, false);
         }
     }
