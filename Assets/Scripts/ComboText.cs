@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Characters;
 using DG.Tweening;
+using MoreMountains.Feedbacks;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -16,6 +17,8 @@ public class ComboText : MonoBehaviour
     public Slider comboTimeoutSlider;
     private bool isCombo = false;
     private float _score => Player.Hitcombo;
+    public MMF_Player voiceFeedback;
+    private int _lastTriggeredScore = -1;
 
     void Start()
     {
@@ -32,6 +35,12 @@ public class ComboText : MonoBehaviour
         {
             isCombo = false;
             Player.Hitcombo = 0;
+        }
+        
+        if (_score > 0 && _score % 5 == 0 && _score != _lastTriggeredScore)
+        {
+            OnEveryFiveHitcombo();
+            _lastTriggeredScore = (int)_score;
         }
     }
 
@@ -73,5 +82,12 @@ public class ComboText : MonoBehaviour
             {
                 hitText.transform.DOScale(Vector3.one, tweenDuration);
             });
+    }
+    
+    
+    private void OnEveryFiveHitcombo()
+    {
+        Debug.Log("Every 10 Hitcombo!");
+        voiceFeedback.PlayFeedbacks();
     }
 }
