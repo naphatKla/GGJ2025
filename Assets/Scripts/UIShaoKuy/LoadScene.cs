@@ -50,6 +50,7 @@ public class LoadScene : MonoBehaviour
     
     public void ResumeGame()
     {
+        openUI.SetActive(false);
         pauseUI.SetActive(false);
          Debug.Log("Resume");
         Time.timeScale = 1;
@@ -100,6 +101,7 @@ public class LoadScene : MonoBehaviour
     public void OpenSoundSetting()
     {
         StartCoroutine(ToggleUI());
+        pauseUI.SetActive(false);
         Debug.Log("Open Sound Setting"+ openUI.activeSelf);
     }
 
