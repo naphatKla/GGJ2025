@@ -51,12 +51,13 @@ public class LoadScene : MonoBehaviour
     public void ResumeGame()
     {
         pauseUI.SetActive(false);
+         Debug.Log("Resume");
         Time.timeScale = 1;
     }
 
     public void PauseGame()
     {
-        pauseUI.SetActive(true); 
+        pauseUI.SetActive(true);
         Time.timeScale = 0;
     }
     
