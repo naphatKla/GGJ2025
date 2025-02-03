@@ -28,6 +28,14 @@ public class StageClass
     public int decreaseSpawnInterval;
     public float spawnIntervalCap = 0.5f;
 }
+public class StageEvent
+{
+    public UnityEvent onStageStart;
+    public UnityEvent onStageEnemySpawn;
+    public UnityEvent onStageReached;
+    public UnityEvent onEnemyQuotaUnitReached;
+    public UnityEvent onEnemyQuotaIntervalReached;
+}
 #endregion
 
 public class StageManager : SerializedMonoBehaviour
@@ -59,16 +67,11 @@ public class StageManager : SerializedMonoBehaviour
     private bool nextQuotaReached = false;
     private bool intervalQuotaReached = false;
     
+    public StageEvent stageEvent = new StageEvent();
+    
     
     #endregion
     
-    #region Events
-    public UnityEvent onStageStart;
-    public UnityEvent onStageEnemySpawn;
-    public UnityEvent onStageReached;
-    public UnityEvent onEnemyQuotaUnitReached;
-    public UnityEvent onEnemyQuotaIntervalReached;
-    #endregion
     
     #region Properties
     private float _score => Player.Instance.Score;
@@ -101,7 +104,7 @@ public class StageManager : SerializedMonoBehaviour
                 {
                     if (currentEnemyCount < currentMaxEnemySpawn)
                     {
-                        onStageEnemySpawn?.Invoke();
+                        stageEvent.onStageEnemySpawn?.Invoke();
                         SpawnEnemy();
                         currentEnemyCount++;
                     }
@@ -113,7 +116,7 @@ public class StageManager : SerializedMonoBehaviour
     
     private void SetStage()
     {
-        onStageStart?.Invoke();
+        stageEvent.onStageStart?.Invoke();
         currentMaxEnemySpawn = stageLabels[currentStage].maxEnemySpawnCap;
         currentSpawnInterval = stageLabels[currentStage].enemySpawnInterval;
         currentScoreQuota = stageLabels[currentStage].scoreQuota;
@@ -126,7 +129,7 @@ public class StageManager : SerializedMonoBehaviour
         if (_score >= currentScoreQuota)
         {
             Debug.Log("Score Quota Reached");
-            onStageReached?.Invoke();
+            stageEvent.onStageReached?.Invoke();
         }
     }
     
@@ -136,13 +139,13 @@ public class StageManager : SerializedMonoBehaviour
         {
             if (_score >= nextunitScoreQuota)
             {
-                onEnemyQuotaUnitReached?.Invoke();
+                stageEvent.onEnemyQuotaUnitReached?.Invoke();
                 currentEnemySpawn = Mathf.Clamp(currentEnemySpawn + 1, 1, stageLabels[currentStage].maxEnemySpawnCap);
                 nextunitScoreQuota += stageLabels[currentStage].unitScoreQuota;
             }
             if (_score >= intervalunitScoreQuota)
             {
-                onEnemyQuotaIntervalReached?.Invoke();
+                stageEvent.onEnemyQuotaIntervalReached?.Invoke();
                 float newInterval = currentSpawnInterval - 0.1f;
                 currentSpawnInterval = Mathf.Clamp(newInterval, stageLabels[currentStage].spawnIntervalCap, currentSpawnInterval);
                 intervalunitScoreQuota += stageLabels[currentStage].decreaseSpawnInterval;
