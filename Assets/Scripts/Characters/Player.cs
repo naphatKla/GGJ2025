@@ -29,16 +29,16 @@ namespace Characters
         #endregion -------------------------------------------------------------------------------------------------------------
         
         #region UnityMethods
-
-        protected void OnEnable()
-        {
-            onDead?.AddListener(() => HitCombo = 0f);
-        }
-        
         protected override void Awake()
         {
             if (!Instance)
+            {
                 Instance = this;
+                onDead?.AddListener(() => HitCombo = 0f);
+            }
+            else 
+                Destroy(this);
+                
             base.Awake();
         }
         
