@@ -6,6 +6,7 @@ using Sirenix.OdinInspector;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
 
 #region Class
@@ -73,16 +74,16 @@ public class StageManager : SerializedMonoBehaviour
 
     #endregion
     
-    
     #region Properties
     private float _score => Player.Instance.Score;
     private Player player => Player.Instance;
     #endregion
 
     #region Method
-    private void Start()
+    private IEnumerator Start()
     {
-        if (!isStarting) return;
+        yield return new WaitUntil(() => SceneManager.GetActiveScene().isLoaded);
+        if (!isStarting) yield break;
         SetStage();
         StartCoroutine(EnemyQuotaCoroutine());
         StartCoroutine(CheckSpawnEnemies());

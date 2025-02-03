@@ -36,9 +36,7 @@ namespace Characters
                 Instance = this;
                 onDead?.AddListener(() => HitCombo = 0f);
             }
-            else 
-                Destroy(this);
-                
+            
             base.Awake();
         }
         
