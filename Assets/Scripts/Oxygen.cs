@@ -2,6 +2,6 @@ using UnityEngine;
 
 public class Oxygen : MonoBehaviour
 {
-    public float expAmount;
+    public float scoreAmount;
     public bool canPickUp = true;
 }

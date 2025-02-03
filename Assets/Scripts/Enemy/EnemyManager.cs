@@ -6,19 +6,15 @@ using Random = UnityEngine.Random;
 
 public class EnemyManager : CharacterBase
 {
-    [BoxGroup("Dependent")] [SerializeField] public NavMeshAgent navMesh;
-
-    [BoxGroup("State")] 
-    private enum EnemyState {Hunting}
+    [SerializeField] private NavMeshAgent navMesh;
+    [BoxGroup("State")] private enum EnemyState {Hunting}
     [SerializeField] private EnemyState currentState = EnemyState.Hunting;
-    private float _lastDashTime = 0f;
+    private float _lastDashTime;
 
     protected override void Start()
     {
         base.Start();
         navMesh = GetComponent<NavMeshAgent>();
-
-        //Set AI attribute
         navMesh.updateRotation = false;
         navMesh.updateUpAxis = false;
         navMesh.speed = base.CurrentSpeed;
@@ -28,7 +24,8 @@ public class EnemyManager : CharacterBase
     {
         base.Update();
         if (IsModifyingMovement) return;
-        if (navMesh.enabled) PerformHunting();
+        if (navMesh.enabled) 
+            PerformHunting();
     }
     
     private void OnTriggerStay2D(Collider2D other)

@@ -5,25 +5,33 @@ using Sirenix.OdinInspector;
 using Skills;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Events;
 using Random = UnityEngine.Random;
 
 namespace Characters
 {
     public abstract class CharacterBase : MonoBehaviour
     {
-        #region Inspectors & Fields 
-        [SerializeField] protected float score = 0;
+        #region Inspectors & Fields
+
+        [SerializeField] protected float score;
         [SerializeField] private float maxSpeed = 6f;
+        [SerializeField] [BoxGroup("Life")] protected int life = 1;
+        [SerializeField] [BoxGroup("Life")] protected float iframeAfterHitDuration;
         [SerializeField] [BoxGroup("Skills")] protected SkillBase skillLeft;
         [SerializeField] [BoxGroup("Skills")] protected  SkillBase skillRight;
         [SerializeField] [BoxGroup("Feedbacks")] public MMF_Player killFeedback;
+        [SerializeField] [BoxGroup("Feedbacks")] private MMF_Player takeDamageFeedback;
         [SerializeField] [BoxGroup("Feedbacks")] private MMF_Player deadFeedback;
-        private Rigidbody2D _rigidbody2D;
+        [BoxGroup("Events")] [PropertyOrder(100f)] public UnityEvent onDead;
+        private Rigidbody2D _rigidBody2D;
         private float _currentSpeed;
         private Animator _animator;
         protected bool IsDead;
-        protected Animator Animator;
-        private static readonly int DeadTrigger = Animator.StringToHash("DeadTrigger");
+        private float _lastHitTime;
+        private static readonly int DeadTriggerAnimation = Animator.StringToHash("DeadTrigger");
+        private static readonly int DashTriggerAnimation = Animator.StringToHash("DashTrigger");
+        private static readonly int BlackHoleTriggerAnimation = Animator.StringToHash("BlackHoleTrigger");
 
         #endregion -------------------------------------------------------------------------------------------------------------
         
@@ -33,7 +41,7 @@ namespace Characters
         public bool IsModifyingMovement { get; set; }
         public bool IsIframe { get; set; } = true;
         public bool IsDash { get; set; }
-        protected Rigidbody2D Rigid2D => _rigidbody2D;
+        protected Rigidbody2D Rigid2D => _rigidBody2D;
         #endregion -------------------------------------------------------------------------------------------------------------
         
         #region UnityMethods 
@@ -41,15 +49,15 @@ namespace Characters
         {
             skillLeft?.InitializeSkill(this);
             skillRight?.InitializeSkill(this);
-            _rigidbody2D = GetComponent<Rigidbody2D>();
+            _rigidBody2D = GetComponent<Rigidbody2D>();
             _currentSpeed = maxSpeed;
         }
         
         protected virtual void Start()
         {
             _animator = GetComponent<Animator>();
-            skillLeft?.onSkillStart.AddListener(() => _animator.SetTrigger("DashTrigger"));
-            skillRight?.onSkillStart.AddListener(() => _animator.SetTrigger("BlackHoleTrigger"));
+            skillLeft?.onSkillStart.AddListener(() => _animator.SetTrigger(DashTriggerAnimation));
+            skillRight?.onSkillStart.AddListener(() => _animator.SetTrigger(BlackHoleTriggerAnimation));
         }
         
         protected virtual void Update()
@@ -85,16 +93,21 @@ namespace Characters
         {
             if (IsIframe) return;
             if (IsDead) return;
+            if (Time.time - _lastHitTime < iframeAfterHitDuration) return;
+            life--;
+            _lastHitTime = Time.time;
+            takeDamageFeedback?.PlayFeedbacks();
+            if (life > 0) return;
             
             IsDead = true;
             if (dropOxygen)
                 DropOxygen(score);
             
             if (CompareTag("Player"))
-                _rigidbody2D.velocity = Vector2.zero;
+                _rigidBody2D.velocity = Vector2.zero;
             else if (CompareTag("Enemy"))
             {
-                Player.Hitcombo++;
+                Player.HitCombo++;
                 NavMeshAgent navmesh = GetComponent<NavMeshAgent>();
                 navmesh.velocity = Vector3.zero;
                 navmesh.enabled = false;
@@ -105,9 +118,10 @@ namespace Characters
             else
                 killer?.killFeedback?.PlayFeedbacks();
             
-            _animator.SetTrigger(DeadTrigger);
+            _animator.SetTrigger(DeadTriggerAnimation);
             _animator.Play("Dead");
             deadFeedback?.PlayFeedbacks();
+            onDead?.Invoke();
             StartCoroutine(DeadAndDestroy());
         }
         
@@ -116,13 +130,13 @@ namespace Characters
             float sumDrop = 0;
             foreach (Oxygen drop in OxygenSpawnManager.Instance.AllOfOxygenType)
             {
-                while (sumDrop + drop.expAmount <= amount)
+                while (sumDrop + drop.scoreAmount <= amount)
                 {
-                    sumDrop += drop.expAmount;
+                    sumDrop += drop.scoreAmount;
                     Transform characterTransform = transform;
-                    float radius = characterTransform.localScale.x;
-                    Vector2 randomPosition = characterTransform.position + new Vector3(Random.Range(-radius*2, radius*2), Random.Range(-radius*2, radius*2), 0);
-                    Instantiate(drop.gameObject, transform.position, Quaternion.identity).TryGetComponent<Oxygen>(out Oxygen oxygenDrop);
+                    float radius = characterTransform.localScale.x * 2f;
+                    Vector2 randomPosition = characterTransform.position + new Vector3(Random.Range(-radius, radius), Random.Range(-radius, radius), 0);
+                    Instantiate(drop.gameObject, transform.position, Quaternion.identity).TryGetComponent(out Oxygen oxygenDrop);
                     oxygenDrop.transform.DOMove(randomPosition, 0.4f).SetEase(Ease.InOutSine).onComplete += () => oxygenDrop.canPickUp = true;
                     oxygenDrop.canPickUp = false;
                 }

@@ -16,7 +16,7 @@ public class ComboText : MonoBehaviour
     public int comboMultiplyTimeOut = 10;
     public Slider comboTimeoutSlider;
     private bool isCombo = false;
-    private float _score => Player.Hitcombo;
+    private float _score => Player.HitCombo;
     public MMF_Player voiceFeedback;
     private int _lastTriggeredScore = -1;
 
@@ -34,7 +34,7 @@ public class ComboText : MonoBehaviour
         if (comboTimeoutSlider.value <= 0)
         {
             isCombo = false;
-            Player.Hitcombo = 0;
+            Player.HitCombo = 0;
         }
         
         if (_score > 0 && _score % 5 == 0 && _score != _lastTriggeredScore)

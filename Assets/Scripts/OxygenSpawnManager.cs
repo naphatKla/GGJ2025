@@ -32,7 +32,7 @@ public class OxygenSpawnManager : MMSingleton<OxygenSpawnManager>
     {
         foreach (OxygenData data in oxygenDataList)
             _oxygenList.Add(data.oxygenPrefab);
-        _oxygenList.Sort((x, y) => x.expAmount.CompareTo(y.expAmount));
+        _oxygenList.Sort((x, y) => x.scoreAmount.CompareTo(y.scoreAmount));
         _oxygenList.Reverse();
         StartCoroutine(RandomOxygenSpawn());
     }

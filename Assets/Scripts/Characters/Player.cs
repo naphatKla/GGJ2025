@@ -12,76 +12,100 @@ namespace Characters
 {
     public class Player : CharacterBase
     {
-        [SerializeField] [BoxGroup("Life")] private int life = 3;
-        [SerializeField] [BoxGroup("Life")] private float iframeAfterhitDuration = 1f;
+        #region Inspectors & Fields 
         [SerializeField] [BoxGroup("PickUpOxygen")] private float oxygenDetectionRadius = 2f;
         [SerializeField] [BoxGroup("PickUpOxygen")] private float oxygenMagneticStartForce = 9f;
         [SerializeField] [BoxGroup("PickUpOxygen")] private float oxygenMagneticEndForce = 2f;
-        [SerializeField] [BoxGroup("PickUpOxygen")] private float oxygenCurveForce = 5f;
         [SerializeField] [BoxGroup("Feedbacks")] private MMF_Player explodeFeedback;
         [SerializeField] [BoxGroup("Feedbacks")] private MMF_Player mergeFeedback;
-        [SerializeField] [BoxGroup("Feedbacks")] private MMF_Player takeDamageFeedback;
-        [SerializeField] [BoxGroup("Events")] private UnityEvent onPlayerDead;
-        private List<CloningCharacter> _clones = new List<CloningCharacter>();
+        [BoxGroup("Events")] [PropertyOrder(100f)] public UnityEvent onPickUpScore;
+        private readonly List<CloningCharacter> _clones = new List<CloningCharacter>();
         private GameObject _cloningParent;
-        public static Player Instance { get; private set; }
-        public static float Hitcombo;
+        #endregion -------------------------------------------------------------------------------------------------------------
         
-        public UnityEvent onPickUpScore;
-        private float _lastHitTime = 0f;
-
+        #region Properties 
+        public static float HitCombo;
+        public static Player Instance { get; private set; }
+        #endregion -------------------------------------------------------------------------------------------------------------
+        
+        #region UnityMethods 
         protected override void Awake()
         {
             if (!Instance)
                 Instance = this;
+            onDead.AddListener(() => HitCombo = 0f);
             base.Awake();
-        }
-
-        public void ResizeCamera()
-        {
-            float size = CameraManager.Instance.StartOrthographicSize;
-            CameraManager.Instance.SetLensOrthographicSize(size,0.3f);
         }
         
         protected override void Update()
         {
             base.Update();
             MovementController();
-            
-            // เก็บ oxygen รอบๆรัศมี
-            Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, (transform.localScale.x / 2) + oxygenDetectionRadius, LayerMask.GetMask("EXP"));
-            
-            foreach (var collider in colliders)
-            {
-                Vector2 direction = (transform.position - collider.transform.position).normalized;
-                Vector2 perpendicularRight = new Vector2(direction.y, -direction.x).normalized;
-                Vector2 combinedVector = (direction + perpendicularRight).normalized;
-                float force = oxygenMagneticStartForce - (Time.deltaTime*3);
-                force = Mathf.Clamp(force, oxygenMagneticEndForce, oxygenMagneticStartForce);
-                collider.transform.position += (Vector3)(combinedVector * force * Time.deltaTime);
-            }
+            PickAndPullOxygen();
         }
-
+        
         protected virtual void OnTriggerStay2D(Collider2D other)
         {
             if (IsDead) return;
             if (other.CompareTag("Enemy") && IsDash) 
                 other.GetComponent<EnemyManager>().Dead(this);
             
-            if (!other.CompareTag("Exp")) return;
-            Oxygen exp = other.GetComponent<Oxygen>();
-            if (!exp.canPickUp) return;
-            AddScore(exp.expAmount);
+            if (!other.CompareTag("Oxygen")) return;
+            Oxygen oxygen = other.GetComponent<Oxygen>();
+            if (!oxygen.canPickUp) return;
+            AddScore(oxygen.scoreAmount);
             onPickUpScore?.Invoke();
             Destroy(other.gameObject);
         }
         
+        private IEnumerator CloningFollowAndMergedBack(float time)
+        {
+            float timeCounter = 0;
+            while (timeCounter < time)
+            {
+                _cloningParent.transform.position = Vector2.Lerp(_cloningParent.transform.position, transform.position, timeCounter / time);
+                timeCounter += Time.deltaTime;
+                yield return null;
+            }
+
+            mergeFeedback?.PlayFeedbacks();
+            foreach (CloningCharacter clone in _clones)
+            {
+                yield return new WaitForSeconds(0.05f);
+                clone.transform.DOMove(transform.position, 0.25f).SetEase(Ease.InOutSine).OnComplete(() =>
+                {
+                    AddScore(clone.Score);
+                    Destroy(clone.gameObject,0.02f);
+                });
+            }
+            yield return new WaitForSeconds(0.8f);
+        }
+        #endregion ---------------------------------------------------------------------------------------------
+
+        #region Methods
         private void MovementController()
         {
             if (IsModifyingMovement) return;
             Vector2 mouseDirection = Camera.main.ScreenToWorldPoint(Input.mousePosition) - transform.position;
             Rigid2D.AddForce(mouseDirection.normalized * CurrentSpeed);
             Rigid2D.velocity = Vector2.ClampMagnitude(Rigid2D.velocity, CurrentSpeed);
+        }
+        
+        private void PickAndPullOxygen()
+        {
+            Collider2D[] colliders = Array.Empty<Collider2D>();
+            int oxygenCount = Physics2D.OverlapCircleNonAlloc(transform.position, (transform.localScale.x / 2) + oxygenDetectionRadius, colliders , LayerMask.GetMask("Oxygen"));
+            if (oxygenCount <= 0 )return;
+            
+            foreach (Collider2D col in colliders)
+            {
+                Vector2 direction = (transform.position - col.transform.position).normalized;
+                Vector2 perpendicularRight = new Vector2(direction.y, -direction.x).normalized;
+                Vector2 combinedVector = (direction + perpendicularRight).normalized;
+                float force = oxygenMagneticStartForce - (Time.deltaTime*3);
+                force = Mathf.Clamp(force, oxygenMagneticEndForce, oxygenMagneticStartForce);
+                col.transform.position += (Vector3)(combinedVector * force * Time.deltaTime);
+            }
         }
 
         protected override void SkillInputHandler()
@@ -94,7 +118,6 @@ namespace Characters
                 skillRight.UseSkill();
         }
         
-        [Button]
         public void ExplodeOut8Direction(float force, float mergeTime)
         {
             Vector2[] directions = new Vector2[8];
@@ -131,43 +154,18 @@ namespace Characters
             
             StartCoroutine(CloningFollowAndMergedBack(mergeTime));
         }
-
-        IEnumerator CloningFollowAndMergedBack(float time)
+        
+        public void ResizeCamera()
         {
-            float timeCounter = 0;
-            
-            while (timeCounter < time)
-            {
-                _cloningParent.transform.position = Vector2.Lerp(_cloningParent.transform.position, transform.position, timeCounter / time);
-                timeCounter += Time.deltaTime;
-                yield return null;
-            }
-
-            mergeFeedback?.PlayFeedbacks();
-            foreach (CloningCharacter clone in _clones)
-            {
-                yield return new WaitForSeconds(0.05f);
-                clone.transform.DOMove(transform.position, 0.25f).SetEase(Ease.InOutSine).OnComplete(() =>
-                {
-                    AddScore(clone.Score);
-                    Destroy(clone.gameObject,0.02f);
-                });
-            }
-            yield return new WaitForSeconds(0.8f);
+            float size = CameraManager.Instance.StartOrthographicSize;
+            CameraManager.Instance.SetLensOrthographicSize(size,0.3f);
         }
         
         public override void Dead(CharacterBase killer, bool dropOxygen = true)
         {
-            if (Time.time - _lastHitTime < iframeAfterhitDuration) return;
-            if (IsIframe) return;
             if (IsDash) return;
-            life--;
-            _lastHitTime = Time.time;
-            takeDamageFeedback?.PlayFeedbacks();
-            if (life > 0) return;
-            onPlayerDead?.Invoke();
-            Hitcombo = 0;
             base.Dead(killer, false);
         }
+        #endregion ---------------------------------------------------------------------------------------------
     }
 }

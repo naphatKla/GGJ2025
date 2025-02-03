@@ -20,7 +20,7 @@ namespace Characters
             if (!other.CompareTag("Exp")) return;
             Oxygen exp = other.GetComponent<Oxygen>();
             if (!exp.canPickUp) return;
-            AddScore(exp.expAmount);
+            AddScore(exp.scoreAmount);
             Destroy(other.gameObject);
         }
     }
