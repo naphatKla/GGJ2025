@@ -9,7 +9,7 @@ using UnityEngine.Events;
 using Random = UnityEngine.Random;
 
 #region Class
-[System.Serializable]
+[Serializable]
 public struct EnemyStruct
 {
     public GameObject enemyPrefab;
@@ -27,14 +27,6 @@ public class StageClass
     public float unitScoreQuota;
     public int decreaseSpawnInterval;
     public float spawnIntervalCap = 0.5f;
-}
-public class StageEvent
-{
-    public UnityEvent onStageStart;
-    public UnityEvent onStageEnemySpawn;
-    public UnityEvent onStageReached;
-    public UnityEvent onEnemyQuotaUnitReached;
-    public UnityEvent onEnemyQuotaIntervalReached;
 }
 #endregion
 
@@ -67,9 +59,18 @@ public class StageManager : SerializedMonoBehaviour
     private bool nextQuotaReached = false;
     private bool intervalQuotaReached = false;
     
-    public StageEvent stageEvent = new StageEvent();
+    [Header("Stage Events")] [BoxGroup("Events")]
+    public StageEvent stageEvent;
     
-    
+    public class StageEvent
+    {
+        public UnityEvent onStageStart;
+        public UnityEvent onStageEnemySpawn;
+        public UnityEvent onStageReached;
+        public UnityEvent onEnemyQuotaUnitReached;
+        public UnityEvent onEnemyQuotaIntervalReached;
+    }
+
     #endregion
     
     
