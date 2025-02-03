@@ -13,10 +13,9 @@ public class EnemyData
     public EnemyManager enemyPrefab;
     public float spawnChance;
 }
-
-public class EnemySpawnManager : MonoBehaviour
+public class EnemySpawnManager : SerializedMonoBehaviour
 {
-    [SerializeField] public List<EnemyData> enemyDataList = new List<EnemyData>();
+    [SerializeField] private List<EnemyData> enemyDataList;
     [SerializeField] public Transform enemyParent;
     [Tooltip("Clamp Maximum number of enemies that can be spawned")]
     [BoxGroup("Global")] [SerializeField] private int globalmaximumEnemySpawn;

@@ -3102,6 +3102,37 @@ Transform:
   - {fileID: 347810667}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &901910439
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 901910440}
+  m_Layer: 0
+  m_Name: EnemyParent
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &901910440
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 901910439}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1077688100}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1044010871
 GameObject:
   m_ObjectHideFlags: 0
@@ -3263,8 +3294,153 @@ Transform:
   m_Children:
   - {fileID: 1935656736}
   - {fileID: 291539830}
+  - {fileID: 1077688100}
   - {fileID: 1533651967}
   m_Father: {fileID: 891916740}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1077688098
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1077688100}
+  - component: {fileID: 1077688099}
+  m_Layer: 0
+  m_Name: StageManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1077688099
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1077688098}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8efda2adc9649b145861e221974d3966, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects:
+    - {fileID: 318422658666202670, guid: 1427c58cf89ec90408813360c8547586, type: 3}
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes:
+    - Name: stageLabels
+      Entry: 7
+      Data: 0|System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[StageClass,
+        Assembly-CSharp]], mscorlib
+    - Name: comparer
+      Entry: 7
+      Data: 1|System.Collections.Generic.GenericEqualityComparer`1[[System.Int32,
+        mscorlib]], mscorlib
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 12
+      Data: 1
+    - Name: 
+      Entry: 7
+      Data: 
+    - Name: $k
+      Entry: 3
+      Data: 1
+    - Name: $v
+      Entry: 7
+      Data: 2|StageClass, Assembly-CSharp
+    - Name: enemyPrefab
+      Entry: 7
+      Data: 3|EnemyStruct[], Assembly-CSharp
+    - Name: 
+      Entry: 12
+      Data: 1
+    - Name: 
+      Entry: 7
+      Data: EnemyStruct, Assembly-CSharp
+    - Name: enemyPrefab
+      Entry: 10
+      Data: 0
+    - Name: spawnChance
+      Entry: 3
+      Data: 100
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: challenge
+      Entry: 6
+      Data: 
+    - Name: unlock
+      Entry: 6
+      Data: 
+    - Name: scoreQuota
+      Entry: 4
+      Data: 3500
+    - Name: maxEnemySpawnCap
+      Entry: 3
+      Data: 3
+    - Name: enemySpawnInterval
+      Entry: 4
+      Data: 1
+    - Name: decreaseSpawnInterval
+      Entry: 3
+      Data: 2500
+    - Name: spawnIntervalCap
+      Entry: 4
+      Data: 0.5
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+  currentStage: 1
+  currentSpawnInterval: 1
+  currentScoreQuota: 0
+  currentMaxEnemySpawn: 0
+  currentEnemySpawn: 1
+  scoreQuota: 0
+  minDistanceFromPlayer: 20
+  regionSize: {x: 44, y: 27}
+  enemyParent: {fileID: 901910440}
+--- !u!4 &1077688100
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1077688098}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 901910440}
+  m_Father: {fileID: 1052924953}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1119870741
 GameObject:
@@ -4953,7 +5129,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 891484560457837806, guid: 9afaeb8263808df4abfa8c050a45b4c2, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3032201241944595923, guid: 9afaeb8263808df4abfa8c050a45b4c2, type: 3}
       propertyPath: m_LocalPosition.x
@@ -5003,6 +5179,10 @@ PrefabInstance:
       propertyPath: enemyDataList.Array.size
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 3220648007299588584, guid: 9afaeb8263808df4abfa8c050a45b4c2, type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: 3220648007299588584, guid: 9afaeb8263808df4abfa8c050a45b4c2, type: 3}
     - target: {fileID: 3220648007299588584, guid: 9afaeb8263808df4abfa8c050a45b4c2, type: 3}
       propertyPath: enemyDataList.Array.data[0].enemyPrefab
       value: 

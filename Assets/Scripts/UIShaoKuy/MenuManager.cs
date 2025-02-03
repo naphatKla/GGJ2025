@@ -11,6 +11,7 @@ public class MenuManager : MonoBehaviour
     void Start()
     {
         FindSettingMenu();
+        if (settingUI == null)  { return; }
         if (soundButton != null)
         {
             soundButton.GetComponent<Button>().onClick.AddListener(settingUI.ActivateSetting);
