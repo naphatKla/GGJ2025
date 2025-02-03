@@ -14,7 +14,6 @@ namespace Characters
             if (!canApplyDamage) return;
             if (other.CompareTag("Enemy"))
             {
-                Debug.LogWarning("KILL");
                 other.GetComponent<EnemyManager>().Dead(this);
             }
             

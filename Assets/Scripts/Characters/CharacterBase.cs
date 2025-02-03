@@ -1,3 +1,4 @@
+using System.Collections;
 using DG.Tweening;
 using MoreMountains.Feedbacks;
 using Sirenix.OdinInspector;
@@ -69,12 +70,24 @@ namespace Characters
                 DropOxygen(score);
             if (gameObject.CompareTag("Enemy"))
                 Player.Hitcombo += 1;
+            
             deadFeedback?.PlayFeedbacks();
-            killer?.killFeedback?.PlayFeedbacks();
+            if (killer is CloningCharacter)
+                killer.GetComponent<CloningCharacter>().OwnerCharacter.killFeedback?.PlayFeedbacks();
+            else
+                killer?.killFeedback?.PlayFeedbacks();
+            
             _animator.SetTrigger("DeadTrigger");
-            if (CompareTag("Player")) rigidbody2D.velocity = Vector2.zero;
-            else GetComponent<NavMeshAgent>().velocity = Vector3.zero;
-            Destroy(gameObject,0.4f);
+            _animator.Play("Dead");
+            if (CompareTag("Player")) 
+                rigidbody2D.velocity = Vector2.zero;
+            else
+            {
+                NavMeshAgent navmesh = GetComponent<NavMeshAgent>();
+                navmesh.velocity = Vector3.zero;
+                navmesh.enabled = false;
+            }
+            StartCoroutine(DeadAndDestroy());
         }
 
         protected virtual void DropOxygen(float amount)
@@ -111,6 +124,13 @@ namespace Characters
                     DropOxygen(Mathf.Abs(score));
                     break;
             }
+        }
+        
+        private IEnumerator DeadAndDestroy()
+        {
+            yield return null;
+            yield return new WaitUntil(() => _animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1);
+            Destroy(gameObject);
         }
     }
 }

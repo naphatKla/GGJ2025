@@ -85,9 +85,9 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingLayerID: 1404105627
+  m_SortingLayer: 1
+  m_SortingOrder: 1
   m_Sprite: {fileID: -310011303, guid: ac332ac4db1b3ae4988bd64ef0b17ba2, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -258,9 +258,9 @@ TrailRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingLayerID: 1404105627
+  m_SortingLayer: 1
+  m_SortingOrder: -1
   m_Time: 0.2
   m_PreviewTimeScale: 1
   m_Parameters:
@@ -2762,11 +2762,11 @@ MonoBehaviour:
         Owner: {fileID: 2107775142338170011}
         DebugActive: 0
         Mode: 0
-        TimeScale: 0.1
+        TimeScale: 0.25
         TimeScaleDuration: 0.4
-        ResetTimescaleOnStop: 0
-        TimeScaleLerp: 0
-        TimescaleLerpMode: 0
+        ResetTimescaleOnStop: 1
+        TimeScaleLerp: 1
+        TimescaleLerpMode: 1
         TimeScaleLerpSpeed: 1
         TimescaleLerpCurve:
           MMTweenDefinitionType: 1
@@ -2796,7 +2796,7 @@ MonoBehaviour:
             m_PostInfinity: 2
             m_RotationOrder: 4
           Initialized: 0
-        TimescaleLerpDuration: 1
+        TimescaleLerpDuration: 0.1
         TimeScaleLerpOnReset: 0
         TimescaleLerpCurveOnReset:
           MMTweenDefinitionType: 1
@@ -2826,7 +2826,7 @@ MonoBehaviour:
             m_PostInfinity: 2
             m_RotationOrder: 4
           Initialized: 0
-        TimescaleLerpDurationOnReset: 1
+        TimescaleLerpDurationOnReset: 0.1
     - rid: 7241849256490041356
       type: {class: MMF_CinemachineImpulseSource, ns: MoreMountains.FeedbacksForThirdParty, asm: MoreMountains.Feedbacks.Cinemachine}
       data:
@@ -2895,7 +2895,7 @@ MonoBehaviour:
         RemapRangeFalloff: {x: 0, y: 1}
         Owner: {fileID: 2107775142338170011}
         DebugActive: 0
-        Velocity: {x: 0.5, y: 0.5, z: 0.5}
+        Velocity: {x: 0.65, y: 0.65, z: 0.65}
         ImpulseSource: {fileID: 0}
         ClearImpulseOnStop: 0
     - rid: 7241849262784905222
