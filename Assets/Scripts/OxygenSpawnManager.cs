@@ -1,9 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using MoreMountains.Tools;
-using Sirenix.OdinInspector;
 using UnityEngine;
-using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
 [System.Serializable]
@@ -15,52 +13,55 @@ public class OxygenData
 
 public class OxygenSpawnManager : MMSingleton<OxygenSpawnManager>
 {
+    #region Inspectors & Fields 
     [SerializeField] private List<OxygenData> oxygenDataList = new List<OxygenData>();
     [SerializeField] private Transform oxygenParent;
     [SerializeField] private int maxSpawn;
     [SerializeField] private int spawnPerTick;
     [SerializeField] private float timeTick;
     [SerializeField] private Vector2 spawnSize = Vector2.zero;
-    private List<Oxygen> expList = new List<Oxygen>();
-    public List<Oxygen> AllOfOxygenType => expList;
+    private readonly List<Oxygen> _oxygenList = new List<Oxygen>();
+    #endregion -----------------------------------------------------------------------------------------------------
 
-
+    #region Properties 
+    public List<Oxygen> AllOfOxygenType => _oxygenList;
+    #endregion -----------------------------------------------------------------------------------------------------
+    
+    #region UnityMethods 
     private void Start()
     {
         foreach (OxygenData data in oxygenDataList)
-        {
-            expList.Add(data.oxygenPrefab);
-        }
-        expList.Sort((x, y) => x.expAmount.CompareTo(y.expAmount));
-        expList.Reverse();
-        StartCoroutine(RandomExpSpawn());
+            _oxygenList.Add(data.oxygenPrefab);
+        _oxygenList.Sort((x, y) => x.expAmount.CompareTo(y.expAmount));
+        _oxygenList.Reverse();
+        StartCoroutine(RandomOxygenSpawn());
     }
-
-    private IEnumerator RandomExpSpawn()
+    
+    private IEnumerator RandomOxygenSpawn()
     {
         while (true)
         {
-            foreach (var exp in oxygenDataList)
+            yield return new WaitUntil(() => oxygenParent.childCount < maxSpawn);
+            foreach (OxygenData oxygen in oxygenDataList)
             {
-                if (!(Random.value <= exp.spawnChance)) continue;
-                float elapsedTime = 0f;
-
-                while (elapsedTime < timeTick)
-                {
-                    elapsedTime += Time.deltaTime;
-                    yield return null;
-                }
-
-                if (oxygenParent.childCount >= maxSpawn) continue;
-                for (int i = 0; i < spawnPerTick; i++)
-                {
-                    GameObject obj = Instantiate(exp.oxygenPrefab.gameObject, GetRegionPosition(), Quaternion.identity);
-                    obj.transform.parent = oxygenParent;
-                }
+                if (Random.value > oxygen.spawnChance) continue;
+                yield return new WaitForSeconds(timeTick);
+                if (oxygenParent.childCount >= maxSpawn) break;
+                int spawnCount = Mathf.Clamp(maxSpawn - oxygenParent.childCount, 0, spawnPerTick);
+                for (int i = 0; i < spawnCount; i++) 
+                    Instantiate(oxygen.oxygenPrefab.gameObject, GetRegionPosition(), Quaternion.identity,oxygenParent);
             }
         }
     }
+    
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireCube(Vector3.zero, new Vector3(spawnSize.x, spawnSize.y, 0));
+    }
+    #endregion -----------------------------------------------------------------------------------------------------
 
+    #region Methods
     private Vector3 GetRegionPosition()
     {
         return new Vector3(
@@ -69,10 +70,5 @@ public class OxygenSpawnManager : MMSingleton<OxygenSpawnManager>
             0
         );
     }
-
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = Color.green;
-        Gizmos.DrawWireCube(Vector3.zero, new Vector3(spawnSize.x, spawnSize.y, 0));
-    }
+    #endregion-----------------------------------------------------------------------------------------------------
 }
