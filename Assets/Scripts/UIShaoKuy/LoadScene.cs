@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using MoreMountains.Tools;
@@ -9,22 +10,15 @@ using UnityEngine.Serialization;
 public class LoadScene : MonoBehaviour
 {
     [FormerlySerializedAs("soundSetting")] [Header("UI")]
-    public GameObject openUI;
     public GameObject pauseUI;
     public GameObject loseUI;
     
     public GameObject playerControllerUI;
     private bool hasStarted = false;
     
-    
+
     void Start()
     {
-        
-            if (openUI != null)
-            {
-                openUI.SetActive(false);
-            }   
-        
         // เริ่มเกมโดยแสดง Player Controller UI และหยุดเวลา
         playerControllerUI.SetActive(true);
         pauseUI.SetActive(false);
@@ -54,7 +48,6 @@ public class LoadScene : MonoBehaviour
     
     public void ResumeGame()
     {
-        openUI.SetActive(false);
         pauseUI.SetActive(false);
          Debug.Log("Resume");
         Time.timeScale = 1;
@@ -102,14 +95,13 @@ public class LoadScene : MonoBehaviour
         Time.timeScale = 0.5f;
     }
 
-    public void OpenSoundSetting()
+    /*public void OpenSoundSetting()
     {
         StartCoroutine(ToggleUI());
         pauseUI.SetActive(false);
-        Debug.Log("Open Sound Setting"+ openUI.activeSelf);
-    }
+    }*/
 
-    private IEnumerator ToggleUI()
+    /*private IEnumerator ToggleUI()
     {
         bool wasActive = openUI.activeSelf;
         openUI.SetActive(!wasActive); // สลับสถานะ
@@ -126,12 +118,12 @@ public class LoadScene : MonoBehaviour
                 canvas.enabled = true;
             }
         }
-    }
+    }*/
 
-    private IEnumerator DelayDisableUI()
+    /*private IEnumerator DelayDisableUI()
     {
         yield return new WaitForSeconds(0.5f);
         openUI.SetActive(false);
-    }
+    }*/
 
 }

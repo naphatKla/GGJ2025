@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 public class LogoAnimation : MonoBehaviour
@@ -9,7 +10,7 @@ public class LogoAnimation : MonoBehaviour
     public float maxScale = 8f;
     public float animationSpeed = 0.2f;
 
-    private float timer = 0f;
+    [ShowInInspector] private float timer = 0f;
 
     void Update()
     {
