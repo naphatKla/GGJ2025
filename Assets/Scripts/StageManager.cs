@@ -130,6 +130,7 @@ public class StageManager : SerializedMonoBehaviour
     {
         if (_score >= currentScoreQuota)
         {
+            isStarting = false;
             Debug.Log("Score Quota Reached");
             stageEvent.onStageReached?.Invoke();
         }
