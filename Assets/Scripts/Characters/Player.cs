@@ -28,12 +28,17 @@ namespace Characters
         public static Player Instance { get; private set; }
         #endregion -------------------------------------------------------------------------------------------------------------
         
-        #region UnityMethods 
+        #region UnityMethods
+
+        protected void OnEnable()
+        {
+            onDead?.AddListener(() => HitCombo = 0f);
+        }
+        
         protected override void Awake()
         {
             if (!Instance)
                 Instance = this;
-            onDead.AddListener(() => HitCombo = 0f);
             base.Awake();
         }
         
@@ -93,10 +98,7 @@ namespace Characters
         
         private void PickAndPullOxygen()
         {
-            Collider2D[] colliders = Array.Empty<Collider2D>();
-            int oxygenCount = Physics2D.OverlapCircleNonAlloc(transform.position, (transform.localScale.x / 2) + oxygenDetectionRadius, colliders , LayerMask.GetMask("Oxygen"));
-            if (oxygenCount <= 0 )return;
-            
+            Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, (transform.localScale.x / 2) + oxygenDetectionRadius, LayerMask.GetMask("Oxygen"));
             foreach (Collider2D col in colliders)
             {
                 Vector2 direction = (transform.position - col.transform.position).normalized;
@@ -111,10 +113,10 @@ namespace Characters
         protected override void SkillInputHandler()
         {
             if (Time.timeScale == 0) return;
-            if (Input.GetMouseButton(0))
+            if (Input.GetMouseButtonDown(0))
                 skillLeft.UseSkill();
             
-            if (Input.GetMouseButton(1))
+            if (Input.GetMouseButtonDown(1))
                 skillRight.UseSkill();
         }
         

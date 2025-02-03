@@ -17,7 +17,7 @@ namespace Characters
                 other.GetComponent<EnemyManager>().Dead(this);
             }
             
-            if (!other.CompareTag("Exp")) return;
+            if (!other.CompareTag("Oxygen")) return;
             Oxygen exp = other.GetComponent<Oxygen>();
             if (!exp.canPickUp) return;
             AddScore(exp.scoreAmount);

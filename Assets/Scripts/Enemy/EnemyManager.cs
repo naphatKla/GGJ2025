@@ -17,7 +17,7 @@ public class EnemyManager : CharacterBase
         navMesh = GetComponent<NavMeshAgent>();
         navMesh.updateRotation = false;
         navMesh.updateUpAxis = false;
-        navMesh.speed = base.CurrentSpeed;
+        navMesh.speed = CurrentSpeed;
     }
     
     protected override void Update()
@@ -61,7 +61,7 @@ public class EnemyManager : CharacterBase
     private void PerformHunting()
     {
         if (currentState != EnemyState.Hunting) return;
-        if (Player.Instance == null) return;
+        if (!Player.Instance) return;
         navMesh.SetDestination(Player.Instance.transform.position);
     }
 }

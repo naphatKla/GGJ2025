@@ -111,36 +111,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f8579db15e52aa4199d320d18485be7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  life: 3
-  iframeAfterHitDuration: 1
   score: 0
   maxSpeed: 6
+  life: 3
+  iframeAfterHitDuration: 1
   skillLeft: {fileID: 5658484918666970509}
   skillRight: {fileID: 6339041768313023157}
   killFeedback: {fileID: 2107775142338170011}
+  takeDamageFeedback: {fileID: 114347794673569938}
   deadFeedback: {fileID: 2807276670116948768}
+  onDead:
+    m_PersistentCalls:
+      m_Calls: []
   oxygenDetectionRadius: 5
   oxygenMagneticStartForce: 20
   oxygenMagneticEndForce: 5
-  oxygenCurveForce: 19
   explodeFeedback: {fileID: 0}
   mergeFeedback: {fileID: 2893979952161094214}
-  takeDamageFeedback: {fileID: 114347794673569938}
-  onPlayerDead:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: LoadScene, Assembly-CSharp
-        m_MethodName: PlayerDie
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
   onPickUpScore:
     m_PersistentCalls:
       m_Calls:

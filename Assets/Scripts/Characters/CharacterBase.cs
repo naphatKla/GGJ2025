@@ -39,7 +39,7 @@ namespace Characters
         protected float CurrentSpeed => _currentSpeed;
         public float Score => score;
         public bool IsModifyingMovement { get; set; }
-        public bool IsIframe { get; set; } = true;
+        public bool IsIframe { get; set; }
         public bool IsDash { get; set; }
         protected Rigidbody2D Rigid2D => _rigidBody2D;
         #endregion -------------------------------------------------------------------------------------------------------------

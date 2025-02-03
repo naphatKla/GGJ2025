@@ -34,7 +34,6 @@ namespace Skills
             {
                 dashPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
                 direction = (dashPosition - (Vector2)OwnerCharacter.transform.position).normalized;
-                distance = Vector2.Distance(OwnerCharacter.transform.position, dashPosition);
             }
             else
             {
