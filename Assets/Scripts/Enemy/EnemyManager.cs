@@ -33,7 +33,7 @@ public class EnemyManager : CharacterBase
     
     private void OnTriggerStay2D(Collider2D other)
     {
-        if (isDead) return;
+        if (IsDead) return;
         if (other.CompareTag("Player") && IsDash)
             Player.Instance.Dead(this);
     }
@@ -46,7 +46,7 @@ public class EnemyManager : CharacterBase
             float random = Random.Range(2f, 5f);
             if (Time.time >= _lastDashTime + random)
             {
-                SkillMouseLeft.UseSkill();
+                skillLeft.UseSkill();
                 _lastDashTime = Time.time;
             }
         }

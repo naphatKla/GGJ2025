@@ -18,7 +18,7 @@ namespace Characters
             }
             
             if (!other.CompareTag("Exp")) return;
-            ExpScript exp = other.GetComponent<ExpScript>();
+            Oxygen exp = other.GetComponent<Oxygen>();
             if (!exp.canPickUp) return;
             AddScore(exp.expAmount);
             Destroy(other.gameObject);

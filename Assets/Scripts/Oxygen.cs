@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class ExpScript : MonoBehaviour
+public class Oxygen : MonoBehaviour
 {
     public float expAmount;
     public bool canPickUp = true;

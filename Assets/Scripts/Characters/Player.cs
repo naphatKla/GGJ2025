@@ -64,12 +64,12 @@ namespace Characters
 
         protected virtual void OnTriggerStay2D(Collider2D other)
         {
-            if (isDead) return;
+            if (IsDead) return;
             if (other.CompareTag("Enemy") && IsDash) 
                 other.GetComponent<EnemyManager>().Dead(this);
             
             if (!other.CompareTag("Exp")) return;
-            ExpScript exp = other.GetComponent<ExpScript>();
+            Oxygen exp = other.GetComponent<Oxygen>();
             if (!exp.canPickUp) return;
             AddScore(exp.expAmount);
             onPickUpScore?.Invoke();
@@ -80,18 +80,18 @@ namespace Characters
         {
             if (IsModifyingMovement) return;
             Vector2 mouseDirection = Camera.main.ScreenToWorldPoint(Input.mousePosition) - transform.position;
-            rigidbody2D.AddForce(mouseDirection.normalized * CurrentSpeed);
-            rigidbody2D.velocity = Vector2.ClampMagnitude(rigidbody2D.velocity, CurrentSpeed);
+            Rigid2D.AddForce(mouseDirection.normalized * CurrentSpeed);
+            Rigid2D.velocity = Vector2.ClampMagnitude(Rigid2D.velocity, CurrentSpeed);
         }
 
         protected override void SkillInputHandler()
         {
             if (Time.timeScale == 0) return;
             if (Input.GetMouseButton(0))
-                SkillMouseLeft.UseSkill();
+                skillLeft.UseSkill();
             
             if (Input.GetMouseButton(1))
-                SkillMouseRight.UseSkill();
+                skillRight.UseSkill();
         }
         
         [Button]
@@ -120,7 +120,7 @@ namespace Characters
                 if (agent) agent.enabled = false;
                 _clones.Add(clone);
                 clone.OwnerCharacter = this;
-                clone.CanDead = false;
+                clone.IsIframe = true;
                 clone.canApplyDamage = true;
                 clone.SetScore(0);
                 clone.transform.DOMove(position, 0.25f).SetEase(Ease.InOutSine).OnComplete(() =>
@@ -159,7 +159,7 @@ namespace Characters
         public override void Dead(CharacterBase killer, bool dropOxygen = true)
         {
             if (Time.time - _lastHitTime < iframeAfterhitDuration) return;
-            if (!CanDead) return;
+            if (IsIframe) return;
             if (IsDash) return;
             life--;
             _lastHitTime = Time.time;

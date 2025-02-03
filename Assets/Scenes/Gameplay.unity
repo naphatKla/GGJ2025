@@ -1087,7 +1087,7 @@ GameObject:
   - component: {fileID: 291539830}
   - component: {fileID: 291539829}
   m_Layer: 0
-  m_Name: RandomExpSpawnManager
+  m_Name: OxygenSpawnManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1105,18 +1105,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 546a1cf84915a4b4d9f15a5b8aece133, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  expDataList:
-  - expPrefab: {fileID: -8003222913785711909, guid: 24a9528711b33b94ba0f1b23ab96a896, type: 3}
-    expChance: 0.8
-  - expPrefab: {fileID: 7052029494687291963, guid: 3dfddfbc35b19b148b4b18176c8926e3, type: 3}
-    expChance: 0.1
-  - expPrefab: {fileID: 7052029494687291963, guid: fa9c792c7eef49b48aaee032c6699c52, type: 3}
-    expChance: 0.05
-  expParent: {fileID: 1935656736}
+  oxygenDataList:
+  - oxygenPrefab: {fileID: -8003222913785711909, guid: 24a9528711b33b94ba0f1b23ab96a896, type: 3}
+    spawnChance: 0.8
+  - oxygenPrefab: {fileID: 7052029494687291963, guid: 3dfddfbc35b19b148b4b18176c8926e3, type: 3}
+    spawnChance: 0.15
+  - oxygenPrefab: {fileID: 7052029494687291963, guid: fa9c792c7eef49b48aaee032c6699c52, type: 3}
+    spawnChance: 0.05
+  oxygenParent: {fileID: 1935656736}
   maxSpawn: 100
-  expPerSpawn: 5
-  expSpawnTimer: 0.5
-  regionSize: {x: 35.2, y: 20.5}
+  spawnPerTick: 5
+  timeTick: 0.5
+  spawnSize: {x: 0, y: 0}
 --- !u!4 &291539830
 Transform:
   m_ObjectHideFlags: 0
@@ -4827,7 +4827,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1935656736}
   m_Layer: 0
-  m_Name: ExpParent
+  m_Name: OxygenParent
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

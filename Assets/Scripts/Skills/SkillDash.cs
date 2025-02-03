@@ -44,7 +44,7 @@ namespace Skills
             }
             
             dashPosition = (Vector2)OwnerCharacter.transform.position + (direction * dashDistance);
-            OwnerCharacter.rigidbody2D.velocity = Vector2.zero;
+            OwnerCharacter.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
             OwnerCharacter.transform.DOMove(dashPosition, skillDuration).SetEase(Ease.InOutSine);
         }
     }

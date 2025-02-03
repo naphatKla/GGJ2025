@@ -17,11 +17,11 @@ namespace Skills
             {
                 float size = CameraManager.Instance.currentCamera.m_Lens.OrthographicSize * cameraPanOutMultiplier;
                 CameraManager.Instance.SetLensOrthographicSize(size, 0.25f);
-                Player.Instance.CanDead = false;
+                Player.Instance.IsIframe = true;
             });
             onSkillEnd.AddListener(() =>
             {
-                Player.Instance.CanDead = true;
+                Player.Instance.IsIframe = false;
                 Player.Instance.ResizeCamera();
             });
         }

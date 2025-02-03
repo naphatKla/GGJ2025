@@ -11,119 +11,52 @@ namespace Characters
 {
     public abstract class CharacterBase : MonoBehaviour
     {
+        #region Inspectors & Fields 
         [SerializeField] protected float score = 0;
         [SerializeField] private float maxSpeed = 6f;
-        [SerializeField] [BoxGroup("Skills")] protected SkillBase SkillMouseLeft;
-        [SerializeField] [BoxGroup("Skills")] protected  SkillBase SkillMouseRight;
+        [SerializeField] [BoxGroup("Skills")] protected SkillBase skillLeft;
+        [SerializeField] [BoxGroup("Skills")] protected  SkillBase skillRight;
         [SerializeField] [BoxGroup("Feedbacks")] public MMF_Player killFeedback;
         [SerializeField] [BoxGroup("Feedbacks")] private MMF_Player deadFeedback;
-        [HideInInspector] public Rigidbody2D rigidbody2D;
-        public bool CanDead { get; set; } = true;
-        public bool IsDash { get; set; }
-        protected Animator Animator;
-        private float currentSpeed;
-        protected bool isDead;
-        
-        protected float CurrentSpeed => currentSpeed;
-        public bool IsModifyingMovement { get; set; }
-        protected abstract void SkillInputHandler();
-        public float Score => score;
+        private Rigidbody2D _rigidbody2D;
+        private float _currentSpeed;
         private Animator _animator;
+        protected bool IsDead;
+        protected Animator Animator;
+        private static readonly int DeadTrigger = Animator.StringToHash("DeadTrigger");
+
+        #endregion -------------------------------------------------------------------------------------------------------------
         
+        #region Properties 
+        protected float CurrentSpeed => _currentSpeed;
+        public float Score => score;
+        public bool IsModifyingMovement { get; set; }
+        public bool IsIframe { get; set; } = true;
+        public bool IsDash { get; set; }
+        protected Rigidbody2D Rigid2D => _rigidbody2D;
+        #endregion -------------------------------------------------------------------------------------------------------------
+        
+        #region UnityMethods 
         protected virtual void Awake()
         {
-            SkillMouseLeft?.InitializeSkill(this);
-            SkillMouseRight?.InitializeSkill(this);
-            rigidbody2D = GetComponent<Rigidbody2D>();
-            currentSpeed = maxSpeed;
+            skillLeft?.InitializeSkill(this);
+            skillRight?.InitializeSkill(this);
+            _rigidbody2D = GetComponent<Rigidbody2D>();
+            _currentSpeed = maxSpeed;
         }
         
         protected virtual void Start()
         {
             _animator = GetComponent<Animator>();
-            
-            SkillMouseLeft?.onSkillStart.AddListener((() =>
-            {
-                _animator.SetTrigger("DashTrigger");
-            }));
-            
-            SkillMouseRight?.onSkillStart.AddListener((() =>
-            {
-                _animator.SetTrigger("BlackHoleTrigger");
-            }));
+            skillLeft?.onSkillStart.AddListener(() => _animator.SetTrigger("DashTrigger"));
+            skillRight?.onSkillStart.AddListener(() => _animator.SetTrigger("BlackHoleTrigger"));
         }
         
         protected virtual void Update()
         {
             SkillInputHandler();
-            SkillMouseLeft?.UpdateCooldown();
-            SkillMouseRight?.UpdateCooldown();
-        }
-        
-        [Button]
-        public virtual void Dead(CharacterBase killer, bool dropOxygen = true) 
-        {
-            if (!CanDead) return;
-            if (isDead) return;
-            isDead = true;
-            if (dropOxygen)
-                DropOxygen(score);
-            if (gameObject.CompareTag("Enemy"))
-                Player.Hitcombo += 1;
-            
-            deadFeedback?.PlayFeedbacks();
-            if (killer is CloningCharacter)
-                killer.GetComponent<CloningCharacter>().OwnerCharacter.killFeedback?.PlayFeedbacks();
-            else
-                killer?.killFeedback?.PlayFeedbacks();
-            
-            _animator.SetTrigger("DeadTrigger");
-            _animator.Play("Dead");
-            if (CompareTag("Player")) 
-                rigidbody2D.velocity = Vector2.zero;
-            else
-            {
-                NavMeshAgent navmesh = GetComponent<NavMeshAgent>();
-                navmesh.velocity = Vector3.zero;
-                navmesh.enabled = false;
-            }
-            StartCoroutine(DeadAndDestroy());
-        }
-
-        protected virtual void DropOxygen(float amount)
-        {
-            float sumDrop = 0;
-            foreach (ExpScript drop in RandomSpawnExp.Instance.OxygenAvailable)
-            {
-                while (sumDrop + drop.expAmount <= amount)
-                {
-                    sumDrop += drop.expAmount;
-                    float radius = transform.localScale.x;
-                    Vector2 randomPosition = transform.position + new Vector3(Random.Range(-radius*2, radius*2), Random.Range(-radius*2, radius*2), 0);
-                    ExpScript dropInstant = Instantiate(drop.gameObject, transform.position, Quaternion.identity).GetComponent<ExpScript>();
-                    dropInstant.canPickUp = false;
-                    dropInstant.transform.DOMove(randomPosition, 0.4f).SetEase(Ease.InOutSine).onComplete += () => dropInstant.canPickUp = true;
-                }
-            }
-        }
-        
-        public virtual void SetScore(float score)
-        {
-            this.score = score;
-        }
-        
-        public virtual void AddScore(float score)
-        {
-            this.score += score;
-            
-            switch (score)
-            {
-                case > 0:
-                    break;
-                case < 0:
-                    DropOxygen(Mathf.Abs(score));
-                    break;
-            }
+            skillLeft?.UpdateCooldown();
+            skillRight?.UpdateCooldown();
         }
         
         private IEnumerator DeadAndDestroy()
@@ -132,5 +65,69 @@ namespace Characters
             yield return new WaitUntil(() => _animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1);
             Destroy(gameObject);
         }
+        #endregion ---------------------------------------------------------------------------------------------
+        
+        #region Methods
+        protected abstract void SkillInputHandler();
+        protected virtual void SetScore(float scoreToSet)
+        {
+            score = scoreToSet;
+        }
+
+        protected virtual void AddScore(float scoreToAdd)
+        {
+            score += scoreToAdd;
+            if (scoreToAdd >= 0) return; 
+            DropOxygen(Mathf.Abs(scoreToAdd));
+        }
+        
+        public virtual void Dead(CharacterBase killer, bool dropOxygen = true) 
+        {
+            if (IsIframe) return;
+            if (IsDead) return;
+            
+            IsDead = true;
+            if (dropOxygen)
+                DropOxygen(score);
+            
+            if (CompareTag("Player"))
+                _rigidbody2D.velocity = Vector2.zero;
+            else if (CompareTag("Enemy"))
+            {
+                Player.Hitcombo++;
+                NavMeshAgent navmesh = GetComponent<NavMeshAgent>();
+                navmesh.velocity = Vector3.zero;
+                navmesh.enabled = false;
+            }
+            
+            if (killer is CloningCharacter)
+                killer.GetComponent<CloningCharacter>().OwnerCharacter.killFeedback?.PlayFeedbacks();
+            else
+                killer?.killFeedback?.PlayFeedbacks();
+            
+            _animator.SetTrigger(DeadTrigger);
+            _animator.Play("Dead");
+            deadFeedback?.PlayFeedbacks();
+            StartCoroutine(DeadAndDestroy());
+        }
+        
+        protected virtual void DropOxygen(float amount)
+        {
+            float sumDrop = 0;
+            foreach (Oxygen drop in OxygenSpawnManager.Instance.AllOfOxygenType)
+            {
+                while (sumDrop + drop.expAmount <= amount)
+                {
+                    sumDrop += drop.expAmount;
+                    Transform characterTransform = transform;
+                    float radius = characterTransform.localScale.x;
+                    Vector2 randomPosition = characterTransform.position + new Vector3(Random.Range(-radius*2, radius*2), Random.Range(-radius*2, radius*2), 0);
+                    Instantiate(drop.gameObject, transform.position, Quaternion.identity).TryGetComponent<Oxygen>(out Oxygen oxygenDrop);
+                    oxygenDrop.transform.DOMove(randomPosition, 0.4f).SetEase(Ease.InOutSine).onComplete += () => oxygenDrop.canPickUp = true;
+                    oxygenDrop.canPickUp = false;
+                }
+            }
+        }
+        #endregion -------------------------------------------------------------------------------------------------------------
     }
 }
