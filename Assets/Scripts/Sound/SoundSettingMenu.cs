@@ -27,22 +27,6 @@ public class SoundSettingMenu : MonoBehaviour
 
     private void Update()
     {
-        /*if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            if (Time.timeScale == 0 && toggle)
-            {
-                Time.timeScale = 1;
-                toggle = false;
-                _settingUI.gameObject.SetActive(false);
-            }
-            else if (!toggle)
-            {
-                Time.timeScale = 0;
-                toggle = true;
-                _settingUI.gameObject.SetActive(true);
-            }
-        }*/
-        
         if (toggle && Time.timeScale == 1)
         {
             Time.timeScale = 1;
