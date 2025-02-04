@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using DG.Tweening;
 using MoreMountains.Feedbacks;
@@ -13,7 +14,6 @@ namespace Characters
     public abstract class CharacterBase : MonoBehaviour
     {
         #region Inspectors & Fields
-
         [SerializeField] protected float score;
         [SerializeField] private float maxSpeed = 6f;
         [SerializeField] [BoxGroup("Life")] protected int life = 1;
@@ -25,14 +25,14 @@ namespace Characters
         [SerializeField] [BoxGroup("Feedbacks")] private MMF_Player deadFeedback;
         [BoxGroup("Events")] [PropertyOrder(100f)] public UnityEvent onDead;
         private Rigidbody2D _rigidBody2D;
-        private float _currentSpeed;
         private Animator _animator;
-        protected bool IsDead;
+        private GameObject _cloningParent;
+        private float _currentSpeed;
         private float _lastHitTime;
+        protected bool IsDead;
         private static readonly int DeadTriggerAnimation = Animator.StringToHash("DeadTrigger");
         private static readonly int DashTriggerAnimation = Animator.StringToHash("DashTrigger");
         private static readonly int BlackHoleTriggerAnimation = Animator.StringToHash("BlackHoleTrigger");
-
         #endregion -------------------------------------------------------------------------------------------------------------
         
         #region Properties 
@@ -77,7 +77,7 @@ namespace Characters
         
         #region Methods
         protected abstract void SkillInputHandler();
-        protected virtual void SetScore(float scoreToSet)
+        public virtual void SetScore(float scoreToSet)
         {
             score = scoreToSet;
         }
@@ -141,6 +141,27 @@ namespace Characters
                     oxygenDrop.canPickUp = false;
                 }
             }
+        }
+        
+        public virtual CloningCharacter CreateCloning(float lifeTime, CloningCharacter.LifeTimeType endType)
+        {
+            if (!_cloningParent) _cloningParent = new GameObject("CloningParent");
+            _cloningParent.transform.position = transform.position;
+
+            GameObject newCloning = Instantiate(gameObject, _cloningParent.transform.position, Quaternion.identity, _cloningParent.transform);
+            MonoBehaviour[] scripts = newCloning.GetComponents<MonoBehaviour>();
+            foreach (MonoBehaviour script in scripts) 
+                Destroy(script);
+                
+            CloningCharacter cloneChar = newCloning.AddComponent<CloningCharacter>();
+            if (cloneChar.TryGetComponent<NavMeshAgent>(out NavMeshAgent agent))
+                agent.enabled = false;
+            
+            cloneChar.Initialize(this, lifeTime, endType);
+            /*cloneChar.IsIframe = true;
+            cloneChar.canApplyDamageOnTouch = true;*/
+            cloneChar.SetScore(0);
+            return cloneChar;
         }
         #endregion -------------------------------------------------------------------------------------------------------------
     }

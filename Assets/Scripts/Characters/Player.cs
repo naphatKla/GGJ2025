@@ -18,7 +18,6 @@ namespace Characters
         [SerializeField] [BoxGroup("Feedbacks")] private MMF_Player explodeFeedback;
         [SerializeField] [BoxGroup("Feedbacks")] private MMF_Player mergeFeedback;
         [BoxGroup("Events")] [PropertyOrder(100f)] public UnityEvent onPickUpScore;
-        private GameObject _cloningParent;
         #endregion -------------------------------------------------------------------------------------------------------------
         
         #region Properties 
@@ -117,16 +116,6 @@ namespace Characters
                 col.transform.position += (Vector3)(combinedVector * force * Time.deltaTime);
             }
         }
-
-        private void CreateCloning(int amount = 1)
-        {
-            if (!_cloningParent) _cloningParent = new GameObject("CloningParent");
-            _cloningParent.transform.position = transform.position;
-            GameObject newCloning = Instantiate(gameObject, _cloningParent.transform.position, Quaternion.identity, _cloningParent.transform);
-            
-            
-            CloningCharacter cloneChar = 
-        }
         
         public void ExplodeOut8Direction(float force, float mergeTime)
         {
@@ -155,7 +144,7 @@ namespace Characters
                 _clones.Add(clone);
                 clone.OwnerCharacter = this;
                 clone.IsIframe = true;
-                clone.canApplyDamage = true;
+                clone.canApplyDamageOnTouch = true;
                 clone.SetScore(0);
                 clone.gameObject.SetActive(true);
                 clone.transform.DOMove(position, 0.25f).SetEase(Ease.InOutSine).OnComplete(() =>
