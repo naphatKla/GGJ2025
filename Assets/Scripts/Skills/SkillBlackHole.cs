@@ -1,3 +1,4 @@
+using System;
 using Characters;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -7,10 +8,10 @@ namespace Skills
     public class SkillBlackHole : SkillBase
     {
         [Title("BlackHoleSkill")] [SerializeField] protected float explosionForce = 3f;
-        [SerializeField] protected float MergeTime = 2f;
+        [SerializeField] protected float mergeTime = 2f;
         [SerializeField] protected float cameraPanOutMultiplier = 1.5f;
-        
-        private void Start()
+
+        private void OnEnable()
         {
             if (!IsPlayer) return;
             onSkillStart.AddListener(() =>
@@ -22,14 +23,14 @@ namespace Skills
             onSkillEnd.AddListener(() =>
             {
                 Player.Instance.IsIframe = false;
-                Player.Instance.ResizeCamera();
+                CameraManager.Instance.ResetLensOrthographicSize();
             });
         }
         
         protected override void SkillAction()
         {
             if (!IsPlayer) return;
-            Player.Instance.ExplodeOut8Direction(explosionForce,MergeTime);
+            Player.Instance.ExplodeOut8Direction(explosionForce,mergeTime);
         }
     }
 }

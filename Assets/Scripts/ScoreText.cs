@@ -11,25 +11,28 @@ public class ScoreText : MonoBehaviour
     public TextMeshProUGUI scoreText;
     public float tweenDuration = 0.5f;
     public float scaleAmount = 1.2f;
-    private float _score => Player.Instance.Score;
+    private static float Score => Player.Instance.Score;
 
-    void Start()
+    private void OnEnable()
     {
-        if (scoreText != null) {Player.Instance.onPickUpScore.AddListener(PlayTween);}
+        Player.Instance.onPickUpScore.AddListener(PlayTween);
     }
 
-    private void Update()
+    private void OnDisable()
     {
-        UpdateScoreText();
+        Player.Instance.onPickUpScore.RemoveListener(PlayTween);
     }
 
     private void UpdateScoreText()
     {
-        scoreText.text = "Score " + _score;
+        if (!scoreText) return;
+        scoreText.text = "Score " + Score;
     }
     
     private void PlayTween()
     {
+        if (!scoreText) return;
+        UpdateScoreText();
         scoreText.transform.DOScale(new Vector3(scaleAmount, scaleAmount, 1), tweenDuration)
             .SetEase(Ease.OutBack)
             .OnComplete(() =>

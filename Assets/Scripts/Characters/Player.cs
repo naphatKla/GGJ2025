@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
@@ -29,14 +28,21 @@ namespace Characters
         #endregion -------------------------------------------------------------------------------------------------------------
         
         #region UnityMethods
+
+        private void OnEnable()
+        {
+            onDead?.AddListener(ResetHitCombo);
+        }
+
+        private void OnDisable()
+        {
+            onDead?.RemoveListener(ResetHitCombo);
+        }
+
         protected override void Awake()
         {
             if (!Instance)
-            {
                 Instance = this;
-                onDead?.AddListener(() => HitCombo = 0f);
-            }
-            
             base.Awake();
         }
         
@@ -57,8 +63,8 @@ namespace Characters
             Oxygen oxygen = other.GetComponent<Oxygen>();
             if (!oxygen.canPickUp) return;
             AddScore(oxygen.scoreAmount);
-            onPickUpScore?.Invoke();
             Destroy(other.gameObject);
+            onPickUpScore?.Invoke();
         }
         
         private IEnumerator CloningFollowAndMergedBack(float time)
@@ -86,6 +92,11 @@ namespace Characters
         #endregion ---------------------------------------------------------------------------------------------
 
         #region Methods
+        private void ResetHitCombo()
+        {
+            HitCombo = 0f;
+        }
+        
         private void MovementController()
         {
             if (IsModifyingMovement) return;
@@ -133,6 +144,7 @@ namespace Characters
                 Vector2 position = _cloningParent.transform.position + ((Vector3)directions[i] * (transform.localScale.x + force));
                 Vector2 position2 = _cloningParent.transform.position + ((Vector3)directions[i] * (transform.localScale.x + (force + 2)));
                 GameObject obj = Instantiate(gameObject, _cloningParent.transform.position, Quaternion.identity, _cloningParent.transform);
+                obj.SetActive(false);
                 MonoBehaviour[] scripts = obj.GetComponents<MonoBehaviour>();
                 foreach (MonoBehaviour script in scripts) 
                     Destroy(script);
@@ -146,6 +158,7 @@ namespace Characters
                 clone.IsIframe = true;
                 clone.canApplyDamage = true;
                 clone.SetScore(0);
+                clone.gameObject.SetActive(true);
                 clone.transform.DOMove(position, 0.25f).SetEase(Ease.InOutSine).OnComplete(() =>
                 {
                     clone.transform.DOMove(position2, mergeTime).SetEase(Ease.InOutSine);
@@ -153,12 +166,6 @@ namespace Characters
             }
             
             StartCoroutine(CloningFollowAndMergedBack(mergeTime));
-        }
-        
-        public void ResizeCamera()
-        {
-            float size = CameraManager.Instance.StartOrthographicSize;
-            CameraManager.Instance.SetLensOrthographicSize(size,0.3f);
         }
         
         public override void Dead(CharacterBase killer, bool dropOxygen = true)
