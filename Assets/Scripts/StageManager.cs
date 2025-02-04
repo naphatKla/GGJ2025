@@ -44,7 +44,9 @@ public class StageManager : SerializedMonoBehaviour
     [BoxGroup("Current Data Stage")]
     [SerializeField] private float currentScoreQuota;
     [BoxGroup("Current Data Stage")]
-    [SerializeField] private int currentMaxEnemySpawn;
+    [SerializeField] private int maxEnemySpawn;
+    [BoxGroup("Current Data Stage")]
+    [SerializeField] private int currentMaxEnemySpawnCap;
     [BoxGroup("Current Data Stage")]
     [SerializeField] private int currentEnemySpawn;
     [BoxGroup("Current Data Stage")]
@@ -100,11 +102,11 @@ public class StageManager : SerializedMonoBehaviour
         while (true)
         {
             int currentEnemyCount = GetCurrentEnemyCount();
-            if (currentEnemyCount < currentMaxEnemySpawn)
+            if (currentEnemyCount < maxEnemySpawn)
             {
                 for (int i = 0; i < currentEnemySpawn; i++)
                 {
-                    if (currentEnemyCount < currentMaxEnemySpawn)
+                    if (currentEnemyCount < currentMaxEnemySpawnCap)
                     {
                         stageEvent.onStageEnemySpawn?.Invoke();
                         SpawnEnemy();
@@ -119,7 +121,7 @@ public class StageManager : SerializedMonoBehaviour
     private void SetStage()
     {
         stageEvent.onStageStart?.Invoke();
-        currentMaxEnemySpawn = stageLabels[currentStage].maxEnemySpawnCap;
+        currentMaxEnemySpawnCap = stageLabels[currentStage].maxEnemySpawnCap;
         currentSpawnInterval = stageLabels[currentStage].enemySpawnInterval;
         currentScoreQuota = stageLabels[currentStage].scoreQuota;
         intervalunitScoreQuota = stageLabels[currentStage].decreaseSpawnInterval;
@@ -143,7 +145,7 @@ public class StageManager : SerializedMonoBehaviour
             if (_score >= nextunitScoreQuota)
             {
                 stageEvent.onEnemyQuotaUnitReached?.Invoke();
-                currentEnemySpawn = Mathf.Clamp(currentEnemySpawn + 1, 1, stageLabels[currentStage].maxEnemySpawnCap);
+                currentMaxEnemySpawnCap = Mathf.Clamp(currentMaxEnemySpawnCap + 1, 1, maxEnemySpawn);
                 nextunitScoreQuota += stageLabels[currentStage].unitScoreQuota;
             }
             if (_score >= intervalunitScoreQuota)
