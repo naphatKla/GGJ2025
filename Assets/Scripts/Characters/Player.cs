@@ -18,7 +18,6 @@ namespace Characters
         [SerializeField] [BoxGroup("Feedbacks")] private MMF_Player explodeFeedback;
         [SerializeField] [BoxGroup("Feedbacks")] private MMF_Player mergeFeedback;
         [BoxGroup("Events")] [PropertyOrder(100f)] public UnityEvent onPickUpScore;
-        private readonly List<CloningCharacter> _clones = new List<CloningCharacter>();
         private GameObject _cloningParent;
         #endregion -------------------------------------------------------------------------------------------------------------
         
@@ -50,7 +49,7 @@ namespace Characters
         {
             base.Update();
             MovementController();
-            PickAndPullOxygen();
+            PullOxygen();
         }
         
         protected virtual void OnTriggerStay2D(Collider2D other)
@@ -105,7 +104,7 @@ namespace Characters
             Rigid2D.velocity = Vector2.ClampMagnitude(Rigid2D.velocity, CurrentSpeed);
         }
         
-        private void PickAndPullOxygen()
+        private void PullOxygen()
         {
             Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, (transform.localScale.x / 2) + oxygenDetectionRadius, LayerMask.GetMask("Oxygen"));
             foreach (Collider2D col in colliders)
@@ -119,14 +118,14 @@ namespace Characters
             }
         }
 
-        protected override void SkillInputHandler()
+        private void CreateCloning(int amount = 1)
         {
-            if (Time.timeScale == 0) return;
-            if (Input.GetMouseButtonDown(0))
-                skillLeft.UseSkill();
+            if (!_cloningParent) _cloningParent = new GameObject("CloningParent");
+            _cloningParent.transform.position = transform.position;
+            GameObject newCloning = Instantiate(gameObject, _cloningParent.transform.position, Quaternion.identity, _cloningParent.transform);
             
-            if (Input.GetMouseButtonDown(1))
-                skillRight.UseSkill();
+            
+            CloningCharacter cloneChar = 
         }
         
         public void ExplodeOut8Direction(float force, float mergeTime)
@@ -166,6 +165,16 @@ namespace Characters
             }
             
             StartCoroutine(CloningFollowAndMergedBack(mergeTime));
+        }
+        
+        protected override void SkillInputHandler()
+        {
+            if (Time.timeScale == 0) return;
+            if (Input.GetMouseButtonDown(0))
+                skillLeft.UseSkill();
+            
+            if (Input.GetMouseButtonDown(1))
+                skillRight.UseSkill();
         }
         
         public override void Dead(CharacterBase killer, bool dropOxygen = true)

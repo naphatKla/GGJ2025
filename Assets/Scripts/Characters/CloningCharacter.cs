@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Characters
 {
-    public class CloningCharacter : Player
+    public class CloningCharacter : CharacterBase
     {
         public CharacterBase OwnerCharacter;
         public bool canApplyDamage = false;
