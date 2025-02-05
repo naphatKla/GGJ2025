@@ -77,8 +77,8 @@ public class StageManager : SerializedMonoBehaviour
     #endregion
     
     #region Properties
-    private float _score => Player.Instance.Score;
-    private Player player => Player.Instance;
+    private float _score => PlayerCharacter.Instance.Score;
+    private PlayerCharacter PlayerCharacter => PlayerCharacter.Instance;
     #endregion
 
     #region Method
@@ -185,7 +185,7 @@ public class StageManager : SerializedMonoBehaviour
     
     private Vector2 GetRandomSpawnPosition()
     {
-        if (player == null) { return Vector2.zero; }
+        if (PlayerCharacter == null) { return Vector2.zero; }
         Vector2 spawnPosition;
         do
         {
@@ -193,7 +193,7 @@ public class StageManager : SerializedMonoBehaviour
                 Random.Range(-regionSize.x / 2, regionSize.x / 2),
                 Random.Range(-regionSize.y / 2, regionSize.y / 2)
             );
-        } while (Vector2.Distance(spawnPosition, player.transform.position) < minDistanceFromPlayer);
+        } while (Vector2.Distance(spawnPosition, PlayerCharacter.transform.position) < minDistanceFromPlayer);
 
         return spawnPosition;
     }

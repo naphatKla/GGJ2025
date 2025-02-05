@@ -16,13 +16,13 @@ public class ComboText : MonoBehaviour
     public int comboMultiplyTimeOut = 10;
     public Slider comboTimeoutSlider;
     private bool isCombo = false;
-    private float _score => Player.HitCombo;
+    private float _score => PlayerCharacter.HitCombo;
     public MMF_Player voiceFeedback;
     private int _lastTriggeredScore = -1;
 
     void Start()
     {
-        if (hitText != null) {Player.Instance.onPickUpScore.AddListener(PlayTween);}
+        if (hitText != null) {PlayerCharacter.Instance.onPickUpScore.AddListener(PlayTween);}
     }
 
     private void Update()
@@ -34,7 +34,7 @@ public class ComboText : MonoBehaviour
         if (comboTimeoutSlider.value <= 0)
         {
             isCombo = false;
-            Player.HitCombo = 0;
+            PlayerCharacter.HitCombo = 0;
         }
         
         if (_score > 0 && _score % 5 == 0 && _score != _lastTriggeredScore)

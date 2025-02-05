@@ -16,6 +16,7 @@ public class OxygenSpawnManager : MMSingleton<OxygenSpawnManager>
     #region Inspectors & Fields 
     [SerializeField] private List<OxygenData> oxygenDataList = new List<OxygenData>();
     [SerializeField] private Transform oxygenParent;
+    [SerializeField] private bool spawnMaximumOnStart;
     [SerializeField] private int maxSpawn;
     [SerializeField] private int spawnPerTick;
     [SerializeField] private float timeTick;

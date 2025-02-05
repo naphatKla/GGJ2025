@@ -1,6 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using Characters;
 using UnityEngine;
 using TMPro;
@@ -11,16 +8,16 @@ public class ScoreText : MonoBehaviour
     public TextMeshProUGUI scoreText;
     public float tweenDuration = 0.5f;
     public float scaleAmount = 1.2f;
-    private static float Score => Player.Instance.Score;
+    private static float Score => PlayerCharacter.Instance.Score;
 
     private void OnEnable()
     {
-        Player.Instance.onPickUpScore.AddListener(PlayTween);
+        PlayerCharacter.Instance.onPickUpScore.AddListener(PlayTween);
     }
 
     private void OnDisable()
     {
-        Player.Instance.onPickUpScore.RemoveListener(PlayTween);
+        PlayerCharacter.Instance.onPickUpScore.RemoveListener(PlayTween);
     }
 
     private void UpdateScoreText()

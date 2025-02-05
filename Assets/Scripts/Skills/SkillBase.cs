@@ -1,6 +1,5 @@
 using System.Collections;
 using Characters;
-using DG.Tweening;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.Events;

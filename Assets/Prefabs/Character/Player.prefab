@@ -110,19 +110,33 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   score: 0
   maxSpeed: 6
+  canCollectOxygen: 1
+  dropOxygenOnDead: 0
   life: 3
   iframeAfterHitDuration: 1
   skillLeft: {fileID: 5658484918666970509}
   skillRight: {fileID: 6339041768313023157}
+  oxygenDetectionRadius: 5
+  oxygenMagneticStartForce: 20
+  oxygenMagneticEndForce: 5
   killFeedback: {fileID: 2107775142338170011}
   takeDamageFeedback: {fileID: 114347794673569938}
   deadFeedback: {fileID: 2807276670116948768}
   onDead:
     m_PersistentCalls:
-      m_Calls: []
-  oxygenDetectionRadius: 5
-  oxygenMagneticStartForce: 20
-  oxygenMagneticEndForce: 5
+      m_Calls:
+      - m_Target: {fileID: 0}
+        m_TargetAssemblyTypeName: LoadScene, Assembly-CSharp
+        m_MethodName: PlayerDie
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   onPickUpScore:
     m_PersistentCalls:
       m_Calls:
@@ -2069,7 +2083,7 @@ MonoBehaviour:
     - rid: 7241849256490041347
       type: {class: MMF_LensDistortion_URP, ns: MoreMountains.FeedbacksForThirdParty, asm: MoreMountains.Feedbacks.URP}
       data:
-        Active: 1
+        Active: 0
         UniqueID: -2075582289
         Label: Lens Distortion URP
         ChannelMode: 0
@@ -2712,7 +2726,7 @@ MonoBehaviour:
     - rid: 7241849256490041352
       type: {class: MMF_TimescaleModifier, ns: MoreMountains.Feedbacks, asm: MoreMountains.Feedbacks}
       data:
-        Active: 1
+        Active: 0
         UniqueID: -347154203
         Label: Timescale Modifier
         ChannelMode: 0
@@ -2779,7 +2793,7 @@ MonoBehaviour:
         DebugActive: 0
         Mode: 0
         TimeScale: 0.25
-        TimeScaleDuration: 0.4
+        TimeScaleDuration: 0.25
         ResetTimescaleOnStop: 1
         TimeScaleLerp: 1
         TimescaleLerpMode: 1
@@ -5473,7 +5487,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5026074172752388844, guid: 544e8ceec27b98d498bf78b6537e5636, type: 3}
       propertyPath: cloningDestroyAfterTouch
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5026074172752388844, guid: 544e8ceec27b98d498bf78b6537e5636, type: 3}
       propertyPath: cloningIframeOnPerformingSkill
@@ -5945,7 +5959,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8648041963361168290, guid: 544e8ceec27b98d498bf78b6537e5636, type: 3}
       propertyPath: managedReferences[7241849253592563714].RemapIntensityOne
-      value: 0.52
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8648041963361168290, guid: 544e8ceec27b98d498bf78b6537e5636, type: 3}
+      propertyPath: managedReferences[7241849253592563717].RemapIntensityOne
+      value: 0.75
       objectReference: {fileID: 0}
     - target: {fileID: 8648041963361168290, guid: 544e8ceec27b98d498bf78b6537e5636, type: 3}
       propertyPath: managedReferences[7241849262784905220].AttachToTransform

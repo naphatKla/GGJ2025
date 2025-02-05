@@ -224,7 +224,7 @@ namespace MoreMountains.Feedbacks
 		{
 			PlayFeedbacksInternal(this.transform.position, FeedbacksIntensity);
 		}
-        
+		
 		/// <summary>
 		/// Plays all feedbacks, specifying a position and intensity. The position may be used by each Feedback and taken into account to spark a particle or play a sound for example.
 		/// The feedbacks intensity is a factor that can be used by each Feedback to lower its intensity, usually you'll want to define that attenuation based on time or distance (using a lower 

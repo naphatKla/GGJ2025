@@ -27,10 +27,9 @@ namespace Skills
                 float angle = i * 2 * Mathf.PI / cloningAmount;
                 directions[i] = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
                 Vector2 explodePos = transform.position + ((Vector3)directions[i] * (transform.localScale.x + explosionForce));
-                CloningCharacter clone = OwnerCharacter.CreateCloning(mergeTime, CloningCharacter.LifeTimeType.MergeBack,1);
+                CloningCharacter clone = OwnerCharacter.CreateCloning(mergeTime,
+                    CloningCharacter.LifeTimeType.MergeBack, 1, cloningDealDamageOnTouch, cloningDestroyAfterTouch);
                 clone.IsIframe = cloningIframeOnPerformingSkill;
-                clone.canDealDamageOnTouch = cloningDealDamageOnTouch;
-                clone.destroyAfterTouch = cloningDestroyAfterTouch;
                 clone.transform.DOMove(explodePos, 0.25f).SetEase(Ease.InOutSine).OnComplete(() =>
                 {
                     clone.transform.DOMove(explodePos * 1.15f, mergeTime).SetEase(Ease.InOutSine);

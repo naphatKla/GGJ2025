@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Characters;
+using Enemy;
 using MoreMountains.Tools;
 using Sirenix.OdinInspector;
 using Random = UnityEngine.Random;
@@ -10,7 +11,7 @@ using Random = UnityEngine.Random;
 [System.Serializable]
 public class EnemyData
 {
-    public EnemyManager enemyPrefab;
+    public EnemyCharacter enemyPrefab;
     public float spawnChance;
 }
 public class EnemySpawnManager : SerializedMonoBehaviour
@@ -35,7 +36,7 @@ public class EnemySpawnManager : SerializedMonoBehaviour
     [BoxGroup("Size")] public Vector2 regionSize = Vector2.zero;
     [SerializeField] private float minDistanceFromPlayer = 20f;
 
-    private Player player => Player.Instance;
+    private PlayerCharacter PlayerCharacter => PlayerCharacter.Instance;
 
     private IEnumerator Start()
     {
@@ -105,7 +106,7 @@ public class EnemySpawnManager : SerializedMonoBehaviour
 
     private Vector2 GetRandomSpawnPosition()
     {
-        if (player == null) { return Vector2.zero; }
+        if (PlayerCharacter == null) { return Vector2.zero; }
         Vector2 spawnPosition;
         do
         {
@@ -113,7 +114,7 @@ public class EnemySpawnManager : SerializedMonoBehaviour
                 Random.Range(-regionSize.x / 2, regionSize.x / 2),
                 Random.Range(-regionSize.y / 2, regionSize.y / 2)
             );
-        } while (Vector2.Distance(spawnPosition, player.transform.position) < minDistanceFromPlayer);
+        } while (Vector2.Distance(spawnPosition, PlayerCharacter.transform.position) < minDistanceFromPlayer);
 
         return spawnPosition;
     }

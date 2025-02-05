@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using Enemy;
 using MoreMountains.Tools;
 using Sirenix.OdinInspector;
 using Random = UnityEngine.Random;
@@ -9,7 +10,7 @@ using Random = UnityEngine.Random;
 [System.Serializable]
 public class EnemyData2
 {
-    public EnemyManager enemyPrefab;
+    public EnemyCharacter enemyPrefab;
     public bool setSpawnSize;
     [ShowIf("setSpawnSize")]
     public float minSizeonSpawn;
@@ -31,7 +32,7 @@ public class RandomEnemyRespawn : MMSingleton<RandomEnemyRespawn>
     [Tooltip("Minimum distance from the player to spawn enemies")]
     [SerializeField] private float minDistanceFromPlayer = 5f;
 
-    [ShowInInspector] private List<EnemyManager> enemyList = new List<EnemyManager>();
+    [ShowInInspector] private List<EnemyCharacter> enemyList = new List<EnemyCharacter>();
     [ShowInInspector] public int enemyCount = 0;
 
     private void Start()
@@ -65,10 +66,10 @@ public class RandomEnemyRespawn : MMSingleton<RandomEnemyRespawn>
 
                     GameObject obj = Instantiate(enemy.enemyPrefab.gameObject, spawnPosition, Quaternion.identity);
                     obj.transform.SetParent(enemyParent);
-                    EnemyManager enemyManager = obj.GetComponent<EnemyManager>();
-                    if (enemyManager != null)
+                    EnemyCharacter enemyCharacter = obj.GetComponent<EnemyCharacter>();
+                    if (enemyCharacter != null)
                     {
-                        enemyList.Add(enemyManager);
+                        enemyList.Add(enemyCharacter);
                     }
 
                     if (enemy.setSpawnSize)
@@ -115,10 +116,10 @@ public class RandomEnemyRespawn : MMSingleton<RandomEnemyRespawn>
                         }
                         GameObject obj = Instantiate(enemy.enemyPrefab.gameObject, spawnPosition, Quaternion.identity);
                         obj.transform.SetParent(enemyParent);
-                        EnemyManager enemyManager = obj.GetComponent<EnemyManager>();
-                        if (enemyManager != null)
+                        EnemyCharacter enemyCharacter = obj.GetComponent<EnemyCharacter>();
+                        if (enemyCharacter != null)
                         {
-                            enemyList.Add(enemyManager);
+                            enemyList.Add(enemyCharacter);
                         }
 
                         if (enemy.setSpawnSize)

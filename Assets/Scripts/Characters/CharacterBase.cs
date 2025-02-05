@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using DG.Tweening;
 using MoreMountains.Feedbacks;
@@ -16,14 +15,20 @@ namespace Characters
         #region Inspectors & Fields
         [SerializeField] protected float score;
         [SerializeField] private float maxSpeed = 6f;
+        [SerializeField] protected bool canCollectOxygen;
+        [SerializeField] protected bool dropOxygenOnDead = true;
         [SerializeField] [BoxGroup("Life")] protected int life = 1;
         [SerializeField] [BoxGroup("Life")] protected float iframeAfterHitDuration;
         [SerializeField] [BoxGroup("Skills")] protected SkillBase skillLeft;
         [SerializeField] [BoxGroup("Skills")] protected  SkillBase skillRight;
+        [SerializeField] [ShowIfGroup("PickUpOxygen/"+nameof(canCollectOxygen))] [BoxGroup("PickUpOxygen")] private float oxygenDetectionRadius = 5f;
+        [SerializeField] [ShowIfGroup("PickUpOxygen/"+nameof(canCollectOxygen))] [BoxGroup("PickUpOxygen")] private float oxygenMagneticStartForce = 20f;
+        [SerializeField] [ShowIfGroup("PickUpOxygen/"+nameof(canCollectOxygen))] [BoxGroup("PickUpOxygen")] private float oxygenMagneticEndForce = 5f;
         [SerializeField] [BoxGroup("Feedbacks")] public MMF_Player killFeedback;
         [SerializeField] [BoxGroup("Feedbacks")] private MMF_Player takeDamageFeedback;
         [SerializeField] [BoxGroup("Feedbacks")] private MMF_Player deadFeedback;
         [BoxGroup("Events")] [PropertyOrder(100f)] public UnityEvent onDead;
+        [BoxGroup("Events")] [PropertyOrder(100f)] public UnityEvent onPickUpScore;
         private Rigidbody2D _rigidBody2D;
         private Animator _animator;
         private GameObject _cloningParent;
@@ -35,7 +40,7 @@ namespace Characters
         private static readonly int DeadTriggerAnimation = Animator.StringToHash("DeadTrigger");
         private static readonly int DashTriggerAnimation = Animator.StringToHash("DashTrigger");
         private static readonly int BlackHoleTriggerAnimation = Animator.StringToHash("BlackHoleTrigger");
-        #endregion -------------------------------------------------------------------------------------------------------------
+        #endregion ----------------------------------------------------------------------------------------------------------------------------------------
         
         #region Properties 
         protected float CurrentSpeed => _currentSpeed;
@@ -44,42 +49,51 @@ namespace Characters
         public bool IsModifyingMovement { get; set; }
         public bool IsDash { get; set; }
         protected Rigidbody2D Rigid2D => _rigidBody2D;
-        #endregion -------------------------------------------------------------------------------------------------------------
+        #endregion ----------------------------------------------------------------------------------------------------------------------------------------
         
         #region UnityMethods 
-        protected virtual void Awake()
+        protected virtual void Start()
         {
+            _currentSpeed = maxSpeed;
+            _animator = GetComponent<Animator>();
             skillLeft?.InitializeSkill(this);
             skillRight?.InitializeSkill(this);
             _rigidBody2D = GetComponent<Rigidbody2D>();
-            _currentSpeed = maxSpeed;
-        }
-        
-        protected virtual void Start()
-        {
-            _animator = GetComponent<Animator>();
             skillLeft?.onSkillStart.AddListener(() => _animator.SetTrigger(DashTriggerAnimation));
             skillRight?.onSkillStart.AddListener(() => _animator.SetTrigger(BlackHoleTriggerAnimation));
         }
         
         protected virtual void Update()
         {
+            PullOxygen();
             SkillInputHandler();
             skillLeft?.UpdateCooldown();
             skillRight?.UpdateCooldown();
         }
-        
+
+        protected virtual void OnTriggerStay2D(Collider2D other)
+        {
+            if (!canCollectOxygen) return;
+            if (!other.CompareTag("Oxygen")) return;
+            Oxygen oxygen = other.GetComponent<Oxygen>();
+            if (!oxygen.canPickUp) return;
+            AddScore(oxygen.scoreAmount);
+            Destroy(other.gameObject);
+            onPickUpScore?.Invoke();
+        }
+
         private IEnumerator DeadAndDestroy()
         {
             yield return null;
             yield return new WaitUntil(() => _animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1);
             Destroy(gameObject);
         }
-        #endregion ---------------------------------------------------------------------------------------------
+        #endregion ----------------------------------------------------------------------------------------------------------------------------------------
         
         #region Methods
         protected abstract void SkillInputHandler();
-        public virtual void SetScore(float scoreToSet)
+
+        protected virtual void SetScore(float scoreToSet)
         {
             score = scoreToSet;
         }
@@ -91,40 +105,55 @@ namespace Characters
             DropOxygen(Mathf.Abs(scoreToAdd));
         }
         
-        public virtual void Dead(CharacterBase killer, bool dropOxygen = true) 
+        public virtual void TakeDamage(CharacterBase attacker) 
         {
             if (IsIframe) return;
             if (IsDead) return;
             if (Time.time - _lastHitTime < iframeAfterHitDuration) return;
+            
             life--;
             _lastHitTime = Time.time;
             takeDamageFeedback?.PlayFeedbacks();
             if (life > 0) return;
-            
+            Dead(attacker);
+        }
+
+        protected virtual void Dead(CharacterBase attacker)
+        {
+            if (IsDead) return;
             IsDead = true;
-            if (dropOxygen)
-                DropOxygen(score);
-            
-            if (CompareTag("Player"))
-                _rigidBody2D.velocity = Vector2.zero;
+            if (dropOxygenOnDead) DropOxygen(score);
+            if (CompareTag("Player")) _rigidBody2D.velocity = Vector2.zero;
             else if (CompareTag("Enemy"))
             {
-                Player.HitCombo++;
+                if (attacker && attacker.CompareTag("Player")) PlayerCharacter.HitCombo++;
                 NavMeshAgent navmesh = GetComponent<NavMeshAgent>();
                 navmesh.velocity = Vector3.zero;
                 navmesh.enabled = false;
             }
             
-            if (killer is CloningCharacter)
-                killer.GetComponent<CloningCharacter>().OwnerCharacter.killFeedback?.PlayFeedbacks();
-            else
-                killer?.killFeedback?.PlayFeedbacks();
-            
+            if (attacker is CloningCharacter) attacker.GetComponent<CloningCharacter>().OwnerCharacter.killFeedback?.PlayFeedbacks();
+            else attacker?.killFeedback?.PlayFeedbacks();
             _animator.SetTrigger(DeadTriggerAnimation);
             _animator.Play("Dead");
             deadFeedback?.PlayFeedbacks();
             onDead?.Invoke();
             StartCoroutine(DeadAndDestroy());
+        }
+        
+        protected virtual void PullOxygen()
+        {
+            if (!canCollectOxygen) return;
+            Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, (transform.localScale.x / 2) + oxygenDetectionRadius, LayerMask.GetMask("Oxygen"));
+            foreach (Collider2D col in colliders)
+            {
+                Vector2 direction = (transform.position - col.transform.position).normalized;
+                Vector2 perpendicularRight = new Vector2(direction.y, -direction.x).normalized;
+                Vector2 combinedVector = (direction + perpendicularRight).normalized;
+                float force = oxygenMagneticStartForce - (Time.deltaTime*3);
+                force = Mathf.Clamp(force, oxygenMagneticEndForce, oxygenMagneticStartForce);
+                col.transform.position += (Vector3)(combinedVector * (force * Time.deltaTime));
+            }
         }
         
         protected virtual void DropOxygen(float amount)
@@ -145,26 +174,25 @@ namespace Characters
             }
         }
         
-        public virtual CloningCharacter CreateCloning(float lifeTime, CloningCharacter.LifeTimeType endType, int life)
+        public virtual CloningCharacter CreateCloning(float lifeTime, CloningCharacter.LifeTimeType endType,
+            int cloneLife, bool dealDamageOnTouch, bool destroyOnTouch)
         {
             if (!_cloningParent) _cloningParent = new GameObject("CloningParent");
             _cloningParent.transform.position = transform.position;
-
+            
             GameObject newCloning = Instantiate(gameObject, _cloningParent.transform.position, Quaternion.identity, _cloningParent.transform);
             MonoBehaviour[] scripts = newCloning.GetComponents<MonoBehaviour>();
             foreach (MonoBehaviour script in scripts) 
                 Destroy(script);
-                
-            CloningCharacter cloneChar = newCloning.AddComponent<CloningCharacter>();
-            if (cloneChar.TryGetComponent<NavMeshAgent>(out NavMeshAgent agent))
-                agent.enabled = false;
             
-            cloneChar.Initialize(this, lifeTime, endType, life);
-            /*cloneChar.IsIframe = true;
-            cloneChar.canApplyDamageOnTouch = true;*/
+            CloningCharacter cloneChar = newCloning.AddComponent<CloningCharacter>();
+            if (cloneChar.TryGetComponent<NavMeshAgent>(out NavMeshAgent agent)) 
+                agent.enabled = false;
+            cloneChar.Initialize(this, cloneLife, lifeTime, endType, dealDamageOnTouch, destroyOnTouch, canCollectOxygen);
             cloneChar.SetScore(0);
+            cloneChar.tag = tag;
             return cloneChar;
         }
-        #endregion -------------------------------------------------------------------------------------------------------------
+        #endregion ----------------------------------------------------------------------------------------------------------------------------------------
     }
 }

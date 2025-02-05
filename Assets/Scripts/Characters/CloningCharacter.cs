@@ -1,6 +1,6 @@
 using System.Collections;
+using Enemy;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Characters
 {
@@ -17,9 +17,9 @@ namespace Characters
         public bool canDealDamageOnTouch = false;
         public bool destroyAfterTouch = false;
         public CharacterBase OwnerCharacter => _ownerCharacter;
-        private const float MergeStartForce = 20f;
-        private const float MergeEndForce = 5f;
-        private const float MergeForceDecreasePerSec = 3f;
+        private float _mergeStartForce = 60f;
+        private float _mergeEndForce = 20f;
+        private float _mergeForceDecayRate = 3f;
 
         protected override void Start()
         {
@@ -27,32 +27,35 @@ namespace Characters
             base.Start();
         }
 
-        public void Initialize(CharacterBase owner, float lifeTime, LifeTimeType endType, int life)
+        public void Initialize(CharacterBase owner, int characterLife, float lifeTime, LifeTimeType endType, bool dealDamageOnTouch, bool destroyOnTouch, bool canPickUpOxygen)
         {
             _ownerCharacter = owner;
             _lifeTime = lifeTime;
             _endType = endType;
-            this.life = life;
+            life = characterLife;
+            canDealDamageOnTouch = dealDamageOnTouch;
+            destroyAfterTouch = destroyOnTouch;
+            canCollectOxygen = canPickUpOxygen;
+            transform.localScale = Vector3.one;
+        }
+
+        public void SetMergeForce(float startForce, float endForce, float decayRate)
+        {
+            _mergeStartForce = startForce;
+            _mergeEndForce = endForce;
+            _mergeForceDecayRate = decayRate;
         }
             
         protected override void SkillInputHandler() {}
         
-        protected void OnTriggerStay2D(Collider2D other)
+        protected override void OnTriggerStay2D(Collider2D other)
         {
+            base.OnTriggerStay2D(other);
+            other.TryGetComponent<CharacterBase>(out CharacterBase target);
+            if (!target || target.CompareTag(tag)) return;
+            if (destroyAfterTouch) Dead(target);
             if (!canDealDamageOnTouch) return;
-            if (other.CompareTag("Enemy"))
-            {
-                EnemyManager enemy =  other.GetComponent<EnemyManager>();
-                enemy.Dead(this);
-                if (destroyAfterTouch) 
-                    Dead(enemy);
-            }
-            
-            if (!other.CompareTag("Oxygen")) return;
-            Oxygen exp = other.GetComponent<Oxygen>();
-            if (!exp.canPickUp) return;
-            AddScore(exp.scoreAmount);
-            Destroy(other.gameObject);
+            target.TakeDamage(this);
         }
         
         private IEnumerator LifeTimeHandler()
@@ -63,16 +66,16 @@ namespace Characters
             switch (_endType)
             {
                 case LifeTimeType.Destroy:
-                    Destroy(gameObject);
+                    Dead(null);
                     break;
                 case LifeTimeType.MergeBack:
-                    while (Vector2.Distance(transform.position, _ownerCharacter.transform.position) >= 0.5f && !IsDead)
+                    while (_ownerCharacter && Vector2.Distance(transform.position, _ownerCharacter.transform.position) >= 0.5f && !IsDead)
                     {
                         Vector2 direction = (_ownerCharacter.transform.position-transform.position).normalized;
-                        Vector2 perpendicularRight = new Vector2(direction.y, -direction.x).normalized;
+                        Vector2 perpendicularRight = new Vector2(direction.y,  -direction.x).normalized;
                         Vector2 combinedVector = (direction + perpendicularRight).normalized;
-                        float force = MergeStartForce - Time.deltaTime * MergeForceDecreasePerSec;
-                        force = Mathf.Clamp(force, MergeEndForce, MergeStartForce);
+                        float force = _mergeStartForce - Time.deltaTime * _mergeForceDecayRate;
+                        force = Mathf.Clamp(force, _mergeEndForce, _mergeStartForce);
                         transform.position += (Vector3)(combinedVector * (force * Time.deltaTime));
                         yield return null;
                     }
@@ -80,7 +83,7 @@ namespace Characters
                     Destroy(gameObject);
                     break;
                 default:
-                    Destroy(gameObject);
+                    Dead(null);
                     break;
             }
         }
