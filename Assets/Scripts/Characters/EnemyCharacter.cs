@@ -1,10 +1,9 @@
-using Characters;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.AI;
 using Random = UnityEngine.Random;
 
-namespace Enemy
+namespace Characters
 {
     public class EnemyCharacter : CharacterBase
     {

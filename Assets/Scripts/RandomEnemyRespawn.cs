@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using Enemy;
+using Characters;
 using MoreMountains.Tools;
 using Sirenix.OdinInspector;
 using Random = UnityEngine.Random;
