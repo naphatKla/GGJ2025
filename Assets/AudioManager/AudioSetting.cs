@@ -42,7 +42,7 @@ public class AudioSetting : MonoBehaviour
     {
         foreach (var slider in audioSlider)
         {
-            _mixer.SetFloat(slider.Value.name, Mathf.Log10(slider.Key.value)*20);
+            _mixer.SetFloat(slider.Value.audioName, Mathf.Log10(slider.Key.value)*20);
         }
         
     }

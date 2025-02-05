@@ -20,9 +20,8 @@ namespace Characters
         #endregion -------------------------------------------------------------------------------------------------------------------
 
         #region UnityMethods
-        protected override void Start()
+        protected void Start()
         {
-            base.Start();
             navMesh = GetComponent<NavMeshAgent>();
             navMesh.updateRotation = false;
             navMesh.updateUpAxis = false;

@@ -190,14 +190,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   score: 100
   maxSpeed: 6
+  canCollectOxygen: 0
+  dropOxygenOnDead: 1
+  deadMode: 0
   life: 1
   iframeAfterHitDuration: 0
   skillLeft: {fileID: 23493788028573042}
   skillRight: {fileID: 0}
+  oxygenDetectionRadius: 5
+  oxygenMagneticStartForce: 20
+  oxygenMagneticEndForce: 5
   killFeedback: {fileID: 0}
   takeDamageFeedback: {fileID: 0}
   deadFeedback: {fileID: 0}
   onDead:
+    m_PersistentCalls:
+      m_Calls: []
+  onPickUpScore:
     m_PersistentCalls:
       m_Calls: []
   navMesh: {fileID: 0}

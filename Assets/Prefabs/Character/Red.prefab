@@ -193,6 +193,7 @@ MonoBehaviour:
   maxSpeed: 6
   canCollectOxygen: 0
   dropOxygenOnDead: 1
+  deadMode: 0
   life: 1
   iframeAfterHitDuration: 0
   skillLeft: {fileID: 23493788028573042}
@@ -1161,7 +1162,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5026074172752388844, guid: 544e8ceec27b98d498bf78b6537e5636, type: 3}
       propertyPath: onSkillEnd.m_PersistentCalls.m_Calls.Array.size
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5026074172752388844, guid: 544e8ceec27b98d498bf78b6537e5636, type: 3}
       propertyPath: onSkillEnd.m_PersistentCalls.m_Calls.Array.data[0].m_Mode

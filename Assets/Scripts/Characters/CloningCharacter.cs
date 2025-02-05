@@ -27,12 +27,9 @@ namespace Characters
         #endregion -------------------------------------------------------------------------------------------------------------------
 
         #region UnityMethods
-        protected override void Start()
+        protected void Start()
         {
-            base.Start();
             StartCoroutine(LifeTimeHandler());
-            Animator.Play("Idle");
-            transform.localScale = Vector3.one;
         }
 
         protected override void OnTriggerStay2D(Collider2D other)

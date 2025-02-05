@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using DG.Tweening;
 using MoreMountains.Feedbacks;
@@ -17,6 +18,7 @@ namespace Characters
         [SerializeField] private float maxSpeed = 6f;
         [SerializeField] protected bool canCollectOxygen;
         [SerializeField] protected bool dropOxygenOnDead = true;
+        [SerializeField] protected DeadMode deadMode;
         [SerializeField] [BoxGroup("Life")] protected int life = 1;
         [SerializeField] [BoxGroup("Life")] protected float iframeAfterHitDuration;
         [SerializeField] [BoxGroup("Skills")] protected SkillBase skillLeft;
@@ -47,7 +49,7 @@ namespace Characters
         public UnityEvent onPickUpScore;
 
         private Rigidbody2D _rigidBody2D;
-        protected Animator Animator;
+        private Animator _animator;
         private GameObject _cloningParent;
         private float _currentSpeed;
         private float _lastHitTime;
@@ -57,6 +59,13 @@ namespace Characters
         private static readonly int DeadTriggerAnimation = Animator.StringToHash("DeadTrigger");
         private static readonly int DashTriggerAnimation = Animator.StringToHash("DashTrigger");
         private static readonly int BlackHoleTriggerAnimation = Animator.StringToHash("BlackHoleTrigger");
+
+        [Serializable]
+        public enum DeadMode
+        {
+            DestroyObject,
+            HideObject
+        }
         #endregion -------------------------------------------------------------------------------------------------------------------
 
         #region Properties
@@ -65,21 +74,22 @@ namespace Characters
         public bool IsIframe { get; set; }
         public bool IsModifyingMovement { get; set; }
         public bool IsDash { get; set; }
+        public Animator Animator => _animator;
         protected Rigidbody2D Rigid2D => _rigidBody2D;
         #endregion -------------------------------------------------------------------------------------------------------------------
 
         #region UnityMethods
-        protected virtual void Start()
+        protected virtual void Awake()
         {
             _currentSpeed = maxSpeed;
-            Animator = GetComponent<Animator>();
+            _animator = GetComponent<Animator>();
+            _rigidBody2D = GetComponent<Rigidbody2D>();
             skillLeft?.InitializeSkill(this);
             skillRight?.InitializeSkill(this);
-            _rigidBody2D = GetComponent<Rigidbody2D>();
-            skillLeft?.onSkillStart.AddListener(() => Animator.SetTrigger(DashTriggerAnimation));
-            skillRight?.onSkillStart.AddListener(() => Animator.SetTrigger(BlackHoleTriggerAnimation));
+            skillLeft?.onSkillStart.AddListener(() => _animator.SetTrigger(DashTriggerAnimation));
+            skillRight?.onSkillStart.AddListener(() => _animator.SetTrigger(BlackHoleTriggerAnimation));
         }
-
+        
         protected virtual void Update()
         {
             PullOxygen();
@@ -98,12 +108,20 @@ namespace Characters
             Destroy(other.gameObject);
             onPickUpScore?.Invoke();
         }
-
+        
         private IEnumerator DeadAndDestroy()
         {
             yield return null;
-            yield return new WaitUntil(() => Animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1);
-            Destroy(gameObject);
+            yield return new WaitUntil(() => _animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1);
+            switch (deadMode)
+            {
+                case DeadMode.DestroyObject:
+                    Destroy(gameObject);
+                    break;
+                case DeadMode.HideObject:
+                    gameObject.SetActive(false);
+                    break;
+            }
         }
         #endregion -------------------------------------------------------------------------------------------------------------------
 
@@ -152,8 +170,8 @@ namespace Characters
             if (attacker is CloningCharacter)
                 attacker.GetComponent<CloningCharacter>().OwnerCharacter.killFeedback?.PlayFeedbacks();
             else attacker?.killFeedback?.PlayFeedbacks();
-            Animator.SetTrigger(DeadTriggerAnimation);
-            Animator.Play("Dead");
+            _animator.SetTrigger(DeadTriggerAnimation);
+            _animator.Play("Dead");
             deadFeedback?.PlayFeedbacks();
             onDead?.Invoke();
             StartCoroutine(DeadAndDestroy());

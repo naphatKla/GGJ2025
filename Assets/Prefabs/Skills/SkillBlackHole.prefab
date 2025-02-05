@@ -975,26 +975,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cooldown: 5
   skillDuration: 2.7
+  skillStartFeedback: {fileID: 8648041963361168290}
+  skillEndFeedback: {fileID: 4184271065291911711}
   onSkillStart:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 8648041963361168290}
-        m_TargetAssemblyTypeName: MoreMountains.Feedbacks.MMF_Player, MoreMountains.Feedbacks
-        m_MethodName: PlayFeedbacks
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
   onSkillEnd:
     m_PersistentCalls:
       m_Calls: []
+  cloningAmount: 8
+  mergeTime: 2
   explosionForce: 3
-  MergeTime: 2
+  iframeOnPerformingSkill: 0
+  cloningIframeOnPerformingSkill: 0
+  cloningDealDamageOnTouch: 0
+  cloningDestroyAfterTouch: 0
   cameraPanOutMultiplier: 1.4
 --- !u!1 &4496154635954250683
 GameObject:

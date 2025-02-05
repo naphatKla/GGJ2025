@@ -112,6 +112,7 @@ MonoBehaviour:
   maxSpeed: 6
   canCollectOxygen: 1
   dropOxygenOnDead: 0
+  deadMode: 1
   life: 3
   iframeAfterHitDuration: 1
   skillLeft: {fileID: 5658484918666970509}
@@ -4713,6 +4714,14 @@ PrefabInstance:
       propertyPath: skillDuration
       value: 0.3
       objectReference: {fileID: 0}
+    - target: {fileID: 4819486263925211553, guid: 7cd43370fed8d84469504dc3d00073c5, type: 3}
+      propertyPath: skillStartFeedback
+      value: 
+      objectReference: {fileID: 3059437350051171277}
+    - target: {fileID: 4819486263925211553, guid: 7cd43370fed8d84469504dc3d00073c5, type: 3}
+      propertyPath: onSkillStart.m_PersistentCalls.m_Calls.Array.size
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6978556922848020585, guid: 7cd43370fed8d84469504dc3d00073c5, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -5474,6 +5483,14 @@ PrefabInstance:
       value: 4.5
       objectReference: {fileID: 0}
     - target: {fileID: 5026074172752388844, guid: 544e8ceec27b98d498bf78b6537e5636, type: 3}
+      propertyPath: skillEndFeedback
+      value: 
+      objectReference: {fileID: 2893979952161094214}
+    - target: {fileID: 5026074172752388844, guid: 544e8ceec27b98d498bf78b6537e5636, type: 3}
+      propertyPath: skillStartFeedback
+      value: 
+      objectReference: {fileID: 7655269903834997755}
+    - target: {fileID: 5026074172752388844, guid: 544e8ceec27b98d498bf78b6537e5636, type: 3}
       propertyPath: cameraPanOutMultiplier
       value: 1.125
       objectReference: {fileID: 0}
@@ -5495,7 +5512,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5026074172752388844, guid: 544e8ceec27b98d498bf78b6537e5636, type: 3}
       propertyPath: onSkillEnd.m_PersistentCalls.m_Calls.Array.size
-      value: 1
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5026074172752388844, guid: 544e8ceec27b98d498bf78b6537e5636, type: 3}
+      propertyPath: onSkillStart.m_PersistentCalls.m_Calls.Array.size
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5026074172752388844, guid: 544e8ceec27b98d498bf78b6537e5636, type: 3}
       propertyPath: onSkillEnd.m_PersistentCalls.m_Calls.Array.data[0].m_Mode

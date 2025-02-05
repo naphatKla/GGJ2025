@@ -7,9 +7,12 @@ namespace Skills
 {
     public class SkillDash : SkillBase
     {
+        #region Inspectors & Fields
         [Title("SkillDash")] 
         [SerializeField] private float dashDistance = 8f;
-        
+        #endregion -------------------------------------------------------------------------------------------------------------------
+
+        #region Methods
         protected override void OnSkillStart()
         {
             Vector2 dashPosition;
@@ -24,13 +27,13 @@ namespace Skills
             }
             else
             {
-                OwnerCharacter.TryGetComponent<NavMeshAgent>(out NavMeshAgent agent);
+                OwnerCharacter.TryGetComponent(out NavMeshAgent agent);
                 direction = agent.velocity.normalized;
                 agent.enabled = false;
             }
             
             dashPosition = (Vector2)OwnerCharacter.transform.position + (direction * dashDistance);
-            OwnerCharacter.TryGetComponent<Rigidbody2D>(out Rigidbody2D rigid2D);
+            OwnerCharacter.TryGetComponent(out Rigidbody2D rigid2D);
             rigid2D.velocity = Vector2.zero;
             OwnerCharacter.transform.DOMove(dashPosition, skillDuration).SetEase(Ease.InOutSine);
         }
@@ -40,8 +43,9 @@ namespace Skills
             OwnerCharacter.IsModifyingMovement = false;
             OwnerCharacter.IsDash = false;
             if (IsPlayer) return;
-            OwnerCharacter.TryGetComponent<NavMeshAgent>(out NavMeshAgent agent);
+            OwnerCharacter.TryGetComponent(out NavMeshAgent agent);
             agent.enabled = true;
         }
+        #endregion -------------------------------------------------------------------------------------------------------------------
     }
 }

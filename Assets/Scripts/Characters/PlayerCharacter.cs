@@ -15,13 +15,14 @@ namespace Characters
             onDead?.AddListener(ResetHitCombo);
         }
 
-        private void OnDisable()
+        protected void OnDisable()
         {
             onDead?.RemoveListener(ResetHitCombo);
         }
 
-        protected void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             if (!Instance)
                 Instance = this;
         }
@@ -56,7 +57,7 @@ namespace Characters
             if (IsDash) return;
             base.TakeDamage(attacker);
         }
-
+        
         private static void ResetHitCombo()
         {
             HitCombo = 0f;

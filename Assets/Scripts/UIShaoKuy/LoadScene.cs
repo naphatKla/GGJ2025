@@ -1,9 +1,4 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using MoreMountains.Tools;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 
@@ -80,7 +75,7 @@ public class LoadScene : MonoBehaviour
     public void RestartGame()
     {
         SceneManager.LoadScene("Gameplay");
-        loseUI.SetActive(false);
+        //loseUI.SetActive(false);
     }
 
     public void Exit()
