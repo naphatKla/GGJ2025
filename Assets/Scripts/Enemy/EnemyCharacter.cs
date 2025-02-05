@@ -8,11 +8,19 @@ namespace Enemy
 {
     public class EnemyCharacter : CharacterBase
     {
+        #region Inspectors & Fields
         [SerializeField] private NavMeshAgent navMesh;
-        [BoxGroup("State")] private enum EnemyState {Hunting}
         [SerializeField] private EnemyState currentState = EnemyState.Hunting;
         private float _lastDashTime;
+        
+        [BoxGroup("State")]
+        private enum EnemyState
+        {
+            Hunting
+        }
+        #endregion -------------------------------------------------------------------------------------------------------------------
 
+        #region UnityMethods
         protected override void Start()
         {
             base.Start();
@@ -29,14 +37,17 @@ namespace Enemy
             if (navMesh.enabled) 
                 PerformHunting();
         }
-    
-        private void OnTriggerStay2D(Collider2D other)
+
+        protected override void OnTriggerStay2D(Collider2D other)
         {
+            base.OnTriggerStay2D(other);
             if (IsDead) return;
             if (other.CompareTag("Player") && IsDash)
                 other.GetComponent<CharacterBase>().TakeDamage(this);
         }
+        #endregion -------------------------------------------------------------------------------------------------------------------
 
+        #region Methods
         protected override void SkillInputHandler()
         {
             if (currentState != EnemyState.Hunting) return;
@@ -59,12 +70,13 @@ namespace Enemy
                 }
             }
         }
-    
+
         private void PerformHunting()
         {
             if (currentState != EnemyState.Hunting) return;
             if (!PlayerCharacter.Instance) return;
             navMesh.SetDestination(PlayerCharacter.Instance.transform.position);
         }
+        #endregion -------------------------------------------------------------------------------------------------------------------
     }
 }

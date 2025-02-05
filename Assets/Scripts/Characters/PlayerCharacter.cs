@@ -1,15 +1,14 @@
-using Enemy;
 using UnityEngine;
 
 namespace Characters
 {
     public class PlayerCharacter : CharacterBase
     {
-        #region Properties 
+        #region Properties
         public static float HitCombo;
         public static PlayerCharacter Instance { get; private set; }
-        #endregion ----------------------------------------------------------------------------------------------------------------------------------------
-        
+        #endregion -------------------------------------------------------------------------------------------------------------------
+
         #region UnityMethods
         private void OnEnable()
         {
@@ -26,21 +25,21 @@ namespace Characters
             if (!Instance)
                 Instance = this;
         }
-        
+
         protected override void Update()
         {
             base.Update();
             MovementController();
         }
-        
+
         protected override void OnTriggerStay2D(Collider2D other)
         {
             base.OnTriggerStay2D(other);
             if (IsDead) return;
-            if (other.CompareTag("Enemy") && IsDash) 
+            if (other.CompareTag("Enemy") && IsDash)
                 other.GetComponent<CharacterBase>().TakeDamage(this);
         }
-        #endregion ----------------------------------------------------------------------------------------------------------------------------------------
+        #endregion -------------------------------------------------------------------------------------------------------------------
 
         #region Methods
         protected override void SkillInputHandler()
@@ -51,18 +50,18 @@ namespace Characters
             if (Input.GetMouseButtonDown(1))
                 skillRight.UseSkill();
         }
-        
+
         public override void TakeDamage(CharacterBase attacker)
         {
             if (IsDash) return;
             base.TakeDamage(attacker);
         }
-        
+
         private static void ResetHitCombo()
         {
             HitCombo = 0f;
         }
-        
+
         private void MovementController()
         {
             if (IsModifyingMovement) return;
@@ -70,6 +69,6 @@ namespace Characters
             Rigid2D.AddForce(mouseDirection.normalized * CurrentSpeed);
             Rigid2D.velocity = Vector2.ClampMagnitude(Rigid2D.velocity, CurrentSpeed);
         }
-        #endregion ----------------------------------------------------------------------------------------------------------------------------------------
+        #endregion -------------------------------------------------------------------------------------------------------------------
     }
 }
