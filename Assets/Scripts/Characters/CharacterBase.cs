@@ -30,7 +30,7 @@ namespace Characters
         [BoxGroup("Events")] [PropertyOrder(100f)] public UnityEvent onDead;
         [BoxGroup("Events")] [PropertyOrder(100f)] public UnityEvent onPickUpScore;
         private Rigidbody2D _rigidBody2D;
-        private Animator _animator;
+        protected Animator Animator;
         private GameObject _cloningParent;
         private float _currentSpeed;
         private float _lastHitTime;
@@ -55,12 +55,12 @@ namespace Characters
         protected virtual void Start()
         {
             _currentSpeed = maxSpeed;
-            _animator = GetComponent<Animator>();
+            Animator = GetComponent<Animator>();
             skillLeft?.InitializeSkill(this);
             skillRight?.InitializeSkill(this);
             _rigidBody2D = GetComponent<Rigidbody2D>();
-            skillLeft?.onSkillStart.AddListener(() => _animator.SetTrigger(DashTriggerAnimation));
-            skillRight?.onSkillStart.AddListener(() => _animator.SetTrigger(BlackHoleTriggerAnimation));
+            skillLeft?.onSkillStart.AddListener(() => Animator.SetTrigger(DashTriggerAnimation));
+            skillRight?.onSkillStart.AddListener(() => Animator.SetTrigger(BlackHoleTriggerAnimation));
         }
         
         protected virtual void Update()
@@ -85,7 +85,7 @@ namespace Characters
         private IEnumerator DeadAndDestroy()
         {
             yield return null;
-            yield return new WaitUntil(() => _animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1);
+            yield return new WaitUntil(() => Animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1);
             Destroy(gameObject);
         }
         #endregion ----------------------------------------------------------------------------------------------------------------------------------------
@@ -134,8 +134,8 @@ namespace Characters
             
             if (attacker is CloningCharacter) attacker.GetComponent<CloningCharacter>().OwnerCharacter.killFeedback?.PlayFeedbacks();
             else attacker?.killFeedback?.PlayFeedbacks();
-            _animator.SetTrigger(DeadTriggerAnimation);
-            _animator.Play("Dead");
+            Animator.SetTrigger(DeadTriggerAnimation);
+            Animator.Play("Dead");
             deadFeedback?.PlayFeedbacks();
             onDead?.Invoke();
             StartCoroutine(DeadAndDestroy());

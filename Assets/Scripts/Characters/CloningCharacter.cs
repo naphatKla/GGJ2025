@@ -1,5 +1,4 @@
 using System.Collections;
-using Enemy;
 using UnityEngine;
 
 namespace Characters
@@ -23,8 +22,10 @@ namespace Characters
 
         protected override void Start()
         {
-            StartCoroutine(LifeTimeHandler());
             base.Start();
+            StartCoroutine(LifeTimeHandler());
+            Animator.Play("Idle");
+            transform.localScale = Vector3.one;
         }
 
         public void Initialize(CharacterBase owner, int characterLife, float lifeTime, LifeTimeType endType, bool dealDamageOnTouch, bool destroyOnTouch, bool canPickUpOxygen)
@@ -36,7 +37,6 @@ namespace Characters
             canDealDamageOnTouch = dealDamageOnTouch;
             destroyAfterTouch = destroyOnTouch;
             canCollectOxygen = canPickUpOxygen;
-            transform.localScale = Vector3.one;
         }
 
         public void SetMergeForce(float startForce, float endForce, float decayRate)
