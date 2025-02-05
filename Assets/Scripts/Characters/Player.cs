@@ -1,10 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
-using DG.Tweening;
 using MoreMountains.Feedbacks;
 using Sirenix.OdinInspector;
 using UnityEngine;
-using UnityEngine.AI;
 using UnityEngine.Events;
 
 namespace Characters
@@ -15,15 +11,13 @@ namespace Characters
         [SerializeField] [BoxGroup("PickUpOxygen")] private float oxygenDetectionRadius = 2f;
         [SerializeField] [BoxGroup("PickUpOxygen")] private float oxygenMagneticStartForce = 9f;
         [SerializeField] [BoxGroup("PickUpOxygen")] private float oxygenMagneticEndForce = 2f;
-        [SerializeField] [BoxGroup("Feedbacks")] private MMF_Player explodeFeedback;
-        [SerializeField] [BoxGroup("Feedbacks")] private MMF_Player mergeFeedback;
         [BoxGroup("Events")] [PropertyOrder(100f)] public UnityEvent onPickUpScore;
-        #endregion -------------------------------------------------------------------------------------------------------------
+        #endregion ----------------------------------------------------------------------------------------------------------------------------------------
         
         #region Properties 
         public static float HitCombo;
         public static Player Instance { get; private set; }
-        #endregion -------------------------------------------------------------------------------------------------------------
+        #endregion ----------------------------------------------------------------------------------------------------------------------------------------
         
         #region UnityMethods
 
@@ -64,33 +58,25 @@ namespace Characters
             Destroy(other.gameObject);
             onPickUpScore?.Invoke();
         }
-        
-        private IEnumerator CloningFollowAndMergedBack(float time)
-        {
-            float timeCounter = 0;
-            while (timeCounter < time)
-            {
-                _cloningParent.transform.position = Vector2.Lerp(_cloningParent.transform.position, transform.position, timeCounter / time);
-                timeCounter += Time.deltaTime;
-                yield return null;
-            }
-
-            mergeFeedback?.PlayFeedbacks();
-            foreach (CloningCharacter clone in _clones)
-            {
-                yield return new WaitForSeconds(0.05f);
-                clone.transform.DOMove(transform.position, 0.25f).SetEase(Ease.InOutSine).OnComplete(() =>
-                {
-                    AddScore(clone.Score);
-                    Destroy(clone.gameObject,0.02f);
-                });
-            }
-            yield return new WaitForSeconds(0.8f);
-        }
-        #endregion ---------------------------------------------------------------------------------------------
+        #endregion ----------------------------------------------------------------------------------------------------------------------------------------
 
         #region Methods
-        private void ResetHitCombo()
+        protected override void SkillInputHandler()
+        {
+            if (Time.timeScale == 0) return;
+            if (Input.GetMouseButtonDown(0))
+                skillLeft.UseSkill();
+            if (Input.GetMouseButtonDown(1))
+                skillRight.UseSkill();
+        }
+        
+        public override void Dead(CharacterBase killer, bool dropOxygen = true)
+        {
+            if (IsDash) return;
+            base.Dead(killer, false);
+        }
+        
+        private static void ResetHitCombo()
         {
             HitCombo = 0f;
         }
@@ -113,64 +99,9 @@ namespace Characters
                 Vector2 combinedVector = (direction + perpendicularRight).normalized;
                 float force = oxygenMagneticStartForce - (Time.deltaTime*3);
                 force = Mathf.Clamp(force, oxygenMagneticEndForce, oxygenMagneticStartForce);
-                col.transform.position += (Vector3)(combinedVector * force * Time.deltaTime);
+                col.transform.position += (Vector3)(combinedVector * (force * Time.deltaTime));
             }
         }
-        
-        public void ExplodeOut8Direction(float force, float mergeTime)
-        {
-            Vector2[] directions = new Vector2[8];
-            if (!_cloningParent)
-                _cloningParent = new GameObject("CloningParent");
-            _cloningParent.transform.position = transform.position;
-            explodeFeedback?.PlayFeedbacks();
-            _clones.Clear();
-            
-            for (int i = 0; i < 8; i++)
-            {
-                directions[i] = new Vector2(Mathf.Cos(i * Mathf.PI / 4), Mathf.Sin(i * Mathf.PI / 4));
-                Vector2 position = _cloningParent.transform.position + ((Vector3)directions[i] * (transform.localScale.x + force));
-                Vector2 position2 = _cloningParent.transform.position + ((Vector3)directions[i] * (transform.localScale.x + (force + 2)));
-                GameObject obj = Instantiate(gameObject, _cloningParent.transform.position, Quaternion.identity, _cloningParent.transform);
-                obj.SetActive(false);
-                MonoBehaviour[] scripts = obj.GetComponents<MonoBehaviour>();
-                foreach (MonoBehaviour script in scripts) 
-                    Destroy(script);
-                
-                obj.AddComponent(typeof(CloningCharacter));
-                CloningCharacter clone = obj.GetComponent<CloningCharacter>();
-                NavMeshAgent agent = obj.GetComponent<NavMeshAgent>();
-                if (agent) agent.enabled = false;
-                _clones.Add(clone);
-                clone.OwnerCharacter = this;
-                clone.IsIframe = true;
-                clone.canApplyDamageOnTouch = true;
-                clone.SetScore(0);
-                clone.gameObject.SetActive(true);
-                clone.transform.DOMove(position, 0.25f).SetEase(Ease.InOutSine).OnComplete(() =>
-                {
-                    clone.transform.DOMove(position2, mergeTime).SetEase(Ease.InOutSine);
-                });
-            }
-            
-            StartCoroutine(CloningFollowAndMergedBack(mergeTime));
-        }
-        
-        protected override void SkillInputHandler()
-        {
-            if (Time.timeScale == 0) return;
-            if (Input.GetMouseButtonDown(0))
-                skillLeft.UseSkill();
-            
-            if (Input.GetMouseButtonDown(1))
-                skillRight.UseSkill();
-        }
-        
-        public override void Dead(CharacterBase killer, bool dropOxygen = true)
-        {
-            if (IsDash) return;
-            base.Dead(killer, false);
-        }
-        #endregion ---------------------------------------------------------------------------------------------
+        #endregion ----------------------------------------------------------------------------------------------------------------------------------------
     }
 }

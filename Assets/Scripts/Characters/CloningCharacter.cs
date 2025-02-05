@@ -1,6 +1,6 @@
-using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Characters
 {
@@ -14,29 +14,38 @@ namespace Characters
         private CharacterBase _ownerCharacter;
         private float _lifeTime;
         private LifeTimeType _endType;
-        public bool canApplyDamageOnTouch = false;
+        public bool canDealDamageOnTouch = false;
+        public bool destroyAfterTouch = false;
         public CharacterBase OwnerCharacter => _ownerCharacter;
+        private const float MergeStartForce = 20f;
+        private const float MergeEndForce = 5f;
+        private const float MergeForceDecreasePerSec = 3f;
 
         protected override void Start()
         {
-            StartCoroutine(LifeTimeStart());
+            StartCoroutine(LifeTimeHandler());
             base.Start();
         }
 
-        public void Initialize(CharacterBase owner, float lifeTime, LifeTimeType endType)
+        public void Initialize(CharacterBase owner, float lifeTime, LifeTimeType endType, int life)
         {
             _ownerCharacter = owner;
             _lifeTime = lifeTime;
             _endType = endType;
+            this.life = life;
         }
             
         protected override void SkillInputHandler() {}
-        /*protected override void OnTriggerStay2D(Collider2D other)
+        
+        protected void OnTriggerStay2D(Collider2D other)
         {
-            if (!canApplyDamageOnTouch) return;
+            if (!canDealDamageOnTouch) return;
             if (other.CompareTag("Enemy"))
             {
-                other.GetComponent<EnemyManager>().Dead(this);
+                EnemyManager enemy =  other.GetComponent<EnemyManager>();
+                enemy.Dead(this);
+                if (destroyAfterTouch) 
+                    Dead(enemy);
             }
             
             if (!other.CompareTag("Oxygen")) return;
@@ -44,28 +53,36 @@ namespace Characters
             if (!exp.canPickUp) return;
             AddScore(exp.scoreAmount);
             Destroy(other.gameObject);
-        }*/
-
-        private void EndLifeTime()
+        }
+        
+        private IEnumerator LifeTimeHandler()
         {
+            yield return new WaitForSeconds(_lifeTime);
+            if (IsDead) yield break;
+            
             switch (_endType)
             {
                 case LifeTimeType.Destroy:
                     Destroy(gameObject);
                     break;
                 case LifeTimeType.MergeBack:
-                    
+                    while (Vector2.Distance(transform.position, _ownerCharacter.transform.position) >= 0.5f && !IsDead)
+                    {
+                        Vector2 direction = (_ownerCharacter.transform.position-transform.position).normalized;
+                        Vector2 perpendicularRight = new Vector2(direction.y, -direction.x).normalized;
+                        Vector2 combinedVector = (direction + perpendicularRight).normalized;
+                        float force = MergeStartForce - Time.deltaTime * MergeForceDecreasePerSec;
+                        force = Mathf.Clamp(force, MergeEndForce, MergeStartForce);
+                        transform.position += (Vector3)(combinedVector * (force * Time.deltaTime));
+                        yield return null;
+                    }
+                    OwnerCharacter.AddScore(score);
+                    Destroy(gameObject);
                     break;
                 default:
                     Destroy(gameObject);
                     break;
-            }    
-        }
-        
-        private IEnumerator LifeTimeStart()
-        {
-            yield return new WaitForSeconds(_lifeTime);
-            
+            }
         }
     }
 }

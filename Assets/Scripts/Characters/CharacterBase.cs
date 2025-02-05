@@ -29,6 +29,8 @@ namespace Characters
         private GameObject _cloningParent;
         private float _currentSpeed;
         private float _lastHitTime;
+        private float _iframeDuration;
+        private float _iframeTimeCounter;
         protected bool IsDead;
         private static readonly int DeadTriggerAnimation = Animator.StringToHash("DeadTrigger");
         private static readonly int DashTriggerAnimation = Animator.StringToHash("DashTrigger");
@@ -38,8 +40,8 @@ namespace Characters
         #region Properties 
         protected float CurrentSpeed => _currentSpeed;
         public float Score => score;
-        public bool IsModifyingMovement { get; set; }
         public bool IsIframe { get; set; }
+        public bool IsModifyingMovement { get; set; }
         public bool IsDash { get; set; }
         protected Rigidbody2D Rigid2D => _rigidBody2D;
         #endregion -------------------------------------------------------------------------------------------------------------
@@ -82,7 +84,7 @@ namespace Characters
             score = scoreToSet;
         }
 
-        protected virtual void AddScore(float scoreToAdd)
+        public virtual void AddScore(float scoreToAdd)
         {
             score += scoreToAdd;
             if (scoreToAdd >= 0) return; 
@@ -143,7 +145,7 @@ namespace Characters
             }
         }
         
-        public virtual CloningCharacter CreateCloning(float lifeTime, CloningCharacter.LifeTimeType endType)
+        public virtual CloningCharacter CreateCloning(float lifeTime, CloningCharacter.LifeTimeType endType, int life)
         {
             if (!_cloningParent) _cloningParent = new GameObject("CloningParent");
             _cloningParent.transform.position = transform.position;
@@ -157,7 +159,7 @@ namespace Characters
             if (cloneChar.TryGetComponent<NavMeshAgent>(out NavMeshAgent agent))
                 agent.enabled = false;
             
-            cloneChar.Initialize(this, lifeTime, endType);
+            cloneChar.Initialize(this, lifeTime, endType, life);
             /*cloneChar.IsIframe = true;
             cloneChar.canApplyDamageOnTouch = true;*/
             cloneChar.SetScore(0);

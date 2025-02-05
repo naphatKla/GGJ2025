@@ -1,3 +1,4 @@
+using System.Collections;
 using Characters;
 using DG.Tweening;
 using Sirenix.OdinInspector;
@@ -21,7 +22,8 @@ namespace Skills
         /// <summary>
         /// Override this method to implement the skill logic
         /// </summary>
-        protected abstract void SkillAction();
+        protected abstract void OnSkillStart();
+        protected abstract void OnSkillEnd();
         
         public void InitializeSkill(CharacterBase ownerCharacter)
         {
@@ -41,17 +43,18 @@ namespace Skills
         public virtual void UseSkill()
         {
             if (cooldownCounter > 0) return;
-            
-            SkillAction();
+            OnSkillStart();
             onSkillStart?.Invoke();
             cooldownCounter = cooldown;
-            
-            if (skillDuration <= 0) 
-            {
-                onSkillEnd?.Invoke();
-                return;
-            }
-            DOVirtual.DelayedCall(skillDuration, () => onSkillEnd?.Invoke());
+            StartCoroutine(SkillPerforming());
+        }
+
+        private IEnumerator SkillPerforming()
+        {
+            yield return new WaitForSeconds(skillDuration);
+            if (!gameObject) yield break;
+            OnSkillEnd();
+            onSkillEnd?.Invoke();
         }
     }
 }
