@@ -38,7 +38,7 @@ namespace Characters
 
         [SerializeField] [BoxGroup("Feedbacks")]
         private MMF_Player takeDamageFeedback;
-
+        
         [SerializeField] [BoxGroup("Feedbacks")]
         private MMF_Player deadFeedback;
 
@@ -55,6 +55,7 @@ namespace Characters
         private float _lastHitTime;
         private float _iframeDuration;
         private float _iframeTimeCounter;
+        protected bool IsStun;
         protected bool IsDead;
         private static readonly int DeadTriggerAnimation = Animator.StringToHash("DeadTrigger");
         private static readonly int DashTriggerAnimation = Animator.StringToHash("DashTrigger");
@@ -151,6 +152,31 @@ namespace Characters
             takeDamageFeedback?.PlayFeedbacks();
             if (life > 0) return;
             Dead(attacker);
+        }
+
+        public virtual IEnumerator Stun(float duration)
+        {
+            if (IsIframe) yield break;
+            if (IsDead) yield break;
+            if (IsStun) yield break;
+            if (CompareTag("Player"))
+            {
+                IsStun = true;
+                _rigidBody2D.velocity = Vector2.zero;
+                yield return new WaitForSeconds(duration);
+                IsStun = false;
+            }
+            else if (CompareTag("Enemy"))
+            {
+                if (TryGetComponent(out NavMeshAgent navmesh))
+                {
+                    IsStun = true;
+                    navmesh.enabled = false;
+                    yield return new WaitForSeconds(duration);
+                    navmesh.enabled = true;
+                    IsStun = false;
+                }
+            }
         }
 
         protected virtual void Dead(CharacterBase attacker)

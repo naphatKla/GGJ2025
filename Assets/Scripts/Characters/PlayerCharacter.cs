@@ -46,6 +46,7 @@ namespace Characters
         protected override void SkillInputHandler()
         {
             if (Time.timeScale == 0) return;
+            if (IsStun) return;
             if (Input.GetMouseButtonDown(0))
                 skillLeft.UseSkill();
             if (Input.GetMouseButtonDown(1))
@@ -56,6 +57,9 @@ namespace Characters
         {
             if (IsDash) return;
             base.TakeDamage(attacker);
+            //Tank Stun
+            if (attacker.GetComponent<EnemyCharacter>().currentType == EnemyCharacter.EnemyType.Tank && IsDash)
+                StartCoroutine(Stun(0.5f));
         }
         
         private static void ResetHitCombo()
@@ -66,6 +70,7 @@ namespace Characters
         private void MovementController()
         {
             if (IsModifyingMovement) return;
+            if (IsStun) return;
             Vector2 mouseDirection = Camera.main.ScreenToWorldPoint(Input.mousePosition) - transform.position;
             Rigid2D.AddForce(mouseDirection.normalized * CurrentSpeed);
             Rigid2D.velocity = Vector2.ClampMagnitude(Rigid2D.velocity, CurrentSpeed);

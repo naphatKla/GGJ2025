@@ -10,7 +10,15 @@ namespace Characters
         #region Inspectors & Fields
         [SerializeField] private NavMeshAgent navMesh;
         [SerializeField] private EnemyState currentState = EnemyState.Hunting;
+        [SerializeField] public EnemyType currentType = EnemyType.Normal;
         private float _lastDashTime;
+        
+        [BoxGroup("Enemy type")]
+        public enum EnemyType
+        {
+            Normal,
+            Tank
+        }
         
         [BoxGroup("State")]
         private enum EnemyState
@@ -42,12 +50,15 @@ namespace Characters
             if (IsDead) return;
             if (other.CompareTag("Player") && IsDash)
                 other.GetComponent<CharacterBase>().TakeDamage(this);
+            //Tank Stun
+            if (other.CompareTag("Player") && !IsStun && currentType == EnemyType.Tank) StartCoroutine(Stun(0.5f));
         }
         #endregion -------------------------------------------------------------------------------------------------------------------
 
         #region Methods
         protected override void SkillInputHandler()
         {
+            if (IsStun) return;
             if (currentState != EnemyState.Hunting) return;
             if (Random.value >= 0f) // change this value > 0 to test another skill
             {
@@ -75,6 +86,7 @@ namespace Characters
             if (!PlayerCharacter.Instance) return;
             navMesh.SetDestination(PlayerCharacter.Instance.transform.position);
         }
+        
         #endregion -------------------------------------------------------------------------------------------------------------------
     }
 }
