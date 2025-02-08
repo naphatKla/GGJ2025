@@ -3270,6 +3270,7 @@ MonoBehaviour:
     - {fileID: 318422658666202670, guid: 1427c58cf89ec90408813360c8547586, type: 3}
     - {fileID: 318422658666202670, guid: ff90d5eeb6f2ffc4281564e52f1c9a76, type: 3}
     - {fileID: 318422658666202670, guid: b0a01d9614bc79744b70c57ae20ddd76, type: 3}
+    - {fileID: 318422658666202670, guid: f08ff0b87292bd34dab42d1b1886c45e, type: 3}
     SerializedBytesString: 
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
@@ -3303,7 +3304,7 @@ MonoBehaviour:
       Data: 3|EnemyStruct[], Assembly-CSharp
     - Name: 
       Entry: 12
-      Data: 3
+      Data: 4
     - Name: 
       Entry: 7
       Data: EnemyStruct, Assembly-CSharp
@@ -3312,7 +3313,7 @@ MonoBehaviour:
       Data: 0
     - Name: spawnChance
       Entry: 3
-      Data: 60
+      Data: 0
     - Name: 
       Entry: 8
       Data: 
@@ -3324,7 +3325,7 @@ MonoBehaviour:
       Data: 1
     - Name: spawnChance
       Entry: 3
-      Data: 20
+      Data: 0
     - Name: 
       Entry: 8
       Data: 
@@ -3336,7 +3337,19 @@ MonoBehaviour:
       Data: 2
     - Name: spawnChance
       Entry: 3
-      Data: 20
+      Data: 0
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: EnemyStruct, Assembly-CSharp
+    - Name: enemyPrefab
+      Entry: 10
+      Data: 3
+    - Name: spawnChance
+      Entry: 3
+      Data: 100
     - Name: 
       Entry: 8
       Data: 
@@ -5228,6 +5241,10 @@ PrefabInstance:
       propertyPath: managedReferences[7241849256490041356].ImpulseSource
       value: 
       objectReference: {fileID: 1648103412}
+    - target: {fileID: 4248518986920028902, guid: a77265b9aebe62e42ab5cd27ab605cb7, type: 3}
+      propertyPath: m_BlockingMask.m_Bits
+      value: 3221225527
+      objectReference: {fileID: 0}
     - target: {fileID: 4317072113863429186, guid: a77265b9aebe62e42ab5cd27ab605cb7, type: 3}
       propertyPath: onDead.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 

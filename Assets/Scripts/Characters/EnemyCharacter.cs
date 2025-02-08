@@ -11,6 +11,7 @@ namespace Characters
         [SerializeField] private NavMeshAgent navMesh;
         [SerializeField] private EnemyState currentState = EnemyState.Hunting;
         [SerializeField] public EnemyType currentType = EnemyType.Normal;
+        [SerializeField] private float detectDistance;
         private float _lastDashTime;
         
         [BoxGroup("Enemy type")]
@@ -58,6 +59,7 @@ namespace Characters
         #region Methods
         protected override void SkillInputHandler()
         {
+            if (Vector3.Distance(PlayerCharacter.Instance.transform.position, transform.position) > detectDistance) return;
             if (IsStun) return;
             if (currentState != EnemyState.Hunting) return;
             if (Random.value >= 0f) // change this value > 0 to test another skill
