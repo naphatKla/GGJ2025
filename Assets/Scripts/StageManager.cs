@@ -20,8 +20,6 @@ public struct EnemyStruct
 public class StageClass
 {
     public EnemyStruct[] enemyPrefab;
-    public MonoScript[] challenge;
-    public MonoScript[] unlock;
     public float scoreQuota;
     public int maxEnemySpawnCap;
     public float enemySpawnInterval;

@@ -1,3 +1,5 @@
+using System;
+using System.Collections;
 using Characters;
 using UnityEngine;
 using TMPro;
@@ -10,14 +12,10 @@ public class ScoreText : MonoBehaviour
     public float scaleAmount = 1.2f;
     private static float Score => PlayerCharacter.Instance.Score;
 
-    private void OnEnable()
+    private IEnumerator Start()
     {
+        yield return null;
         PlayerCharacter.Instance.onPickUpScore.AddListener(PlayTween);
-    }
-
-    private void OnDisable()
-    {
-        PlayerCharacter.Instance.onPickUpScore.RemoveListener(PlayTween);
     }
 
     private void UpdateScoreText()

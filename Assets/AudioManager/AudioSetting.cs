@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using Sirenix.OdinInspector;
-using Sirenix.OdinInspector.Editor;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Audio;
