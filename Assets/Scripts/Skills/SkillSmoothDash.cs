@@ -6,10 +6,10 @@ using UnityEngine.AI;
 
 namespace Skills
 {
-    public class SkillDanceDash : SkillBase
+    public class SkillSmoothDash : SkillBase
     {
         #region Inspectors & Fields
-        [Title("SkillPiercerDash")] 
+        [Title("SkillDash")] 
         [SerializeField] private float dashDistance = 8f;
         [SerializeField] private float dashSpeed = 0.15f;
         #endregion -------------------------------------------------------------------------------------------------------------------
@@ -17,11 +17,12 @@ namespace Skills
         #region Methods
         protected override void OnSkillStart()
         {
-            StartCoroutine(DashSequence());
+            StartCoroutine(SmoothDash());
         }
 
-        private IEnumerator DashSequence()
+        private IEnumerator SmoothDash()
         {
+            Vector2 startPosition = OwnerCharacter.transform.position;
             Vector2 dashPosition;
             Vector2 direction;
             OwnerCharacter.IsModifyingMovement = true;
@@ -38,19 +39,12 @@ namespace Skills
                 direction = agent.velocity.normalized;
                 agent.enabled = false;
             }
-
-            float zigzagAngle = 30f;
             
-            for (int i = 0; i < 3; i++)
-            {
-                float angle = (i % 2 == 0) ? zigzagAngle : -zigzagAngle;
-                Vector2 rotatedDirection = Quaternion.Euler(0, 0, angle) * direction;
-                dashPosition = (Vector2)OwnerCharacter.transform.position + (rotatedDirection * (dashDistance / 3f));
-
-                yield return OwnerCharacter.transform.DOMove(dashPosition, dashSpeed).SetEase(Ease.InOutSine).WaitForCompletion();
-            }
-            Vector2 finalDash = (Vector2)OwnerCharacter.transform.position + (direction * (dashDistance * 0.2f));
-            yield return OwnerCharacter.transform.DOMove(finalDash, dashSpeed).SetEase(Ease.InOutSine).WaitForCompletion();
+            float dashSpeed = 0.3f;
+            dashPosition = (Vector2)OwnerCharacter.transform.position + (direction * dashDistance);
+            
+            yield return OwnerCharacter.transform.DOMove(dashPosition, dashSpeed).SetEase(Ease.InOutSine).WaitForCompletion();
+            yield return OwnerCharacter.transform.DOMove(startPosition, dashSpeed).SetEase(Ease.InOutSine).WaitForCompletion();
         }
 
         protected override void OnSkillEnd()

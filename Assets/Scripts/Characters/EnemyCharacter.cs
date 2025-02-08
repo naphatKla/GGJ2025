@@ -18,7 +18,10 @@ namespace Characters
         public enum EnemyType
         {
             Normal,
-            Tank
+            Tank,
+            Piercer,
+            Dancer,
+            Smoother
         }
         
         [BoxGroup("State")]

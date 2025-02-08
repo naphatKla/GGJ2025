@@ -211,8 +211,8 @@ MonoBehaviour:
       m_Calls: []
   navMesh: {fileID: 0}
   currentState: 0
-  currentType: 0
-  detectDistance: 30
+  currentType: 2
+  detectDistance: 20
 --- !u!96 &-7093311364811772289
 TrailRenderer:
   serializedVersion: 3
@@ -440,6 +440,10 @@ PrefabInstance:
     - target: {fileID: -6640003522317764449, guid: f5b71bead05455a4cacae74eab7103ed, type: 3}
       propertyPath: dashSpeed
       value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: -6640003522317764449, guid: f5b71bead05455a4cacae74eab7103ed, type: 3}
+      propertyPath: dashDistance
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 251021742552189559, guid: f5b71bead05455a4cacae74eab7103ed, type: 3}
       propertyPath: m_Name
