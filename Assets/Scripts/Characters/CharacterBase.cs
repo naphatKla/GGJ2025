@@ -153,6 +153,12 @@ namespace Characters
             if (life > 0) return;
             Dead(attacker);
         }
+        
+        public virtual void ForceDead(CharacterBase attacker)
+        {
+            dropOxygenOnDead = false;
+            Dead(attacker);
+        }
 
         public virtual IEnumerator Stun(float duration)
         {

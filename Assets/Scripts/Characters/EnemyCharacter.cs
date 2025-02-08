@@ -21,7 +21,8 @@ namespace Characters
             Tank,
             Piercer,
             Dancer,
-            Smoother
+            Smoother,
+            Pressure
         }
         
         [BoxGroup("State")]
@@ -62,9 +63,12 @@ namespace Characters
         #region Methods
         protected override void SkillInputHandler()
         {
+            if (currentType == EnemyType.Pressure && navMesh.enabled) { PresureDash(); }
             if (Vector3.Distance(PlayerCharacter.Instance.transform.position, transform.position) > detectDistance) return;
             if (IsStun) return;
             if (currentState != EnemyState.Hunting) return;
+            if (currentType == EnemyType.Pressure)
+            { skillLeft.UseSkill(); return;}
             if (Random.value >= 0f) // change this value > 0 to test another skill
             {
                 float random = Random.Range(2f, 5f);
@@ -90,6 +94,12 @@ namespace Characters
             if (currentState != EnemyState.Hunting) return;
             if (!PlayerCharacter.Instance) return;
             navMesh.SetDestination(PlayerCharacter.Instance.transform.position);
+        }
+
+        private void PresureDash()
+        {
+            if (Vector3.Distance(PlayerCharacter.Instance.transform.position, transform.position) < detectDistance) return;
+            skillRight.UseSkill();
         }
         
         #endregion -------------------------------------------------------------------------------------------------------------------
