@@ -41,7 +41,10 @@ namespace Characters
 
         [SerializeField] [BoxGroup("Feedbacks")]
         private MMF_Player deadFeedback;
-
+        
+        [BoxGroup("Events")] [PropertyOrder(100f)]
+        public UnityEvent onHit;
+        
         [BoxGroup("Events")] [PropertyOrder(100f)]
         public UnityEvent onDead;
 
@@ -149,6 +152,7 @@ namespace Characters
             life--;
             _lastHitTime = Time.time;
             takeDamageFeedback?.PlayFeedbacks();
+            onHit?.Invoke();
             if (life > 0) return;
             Dead(attacker);
         }

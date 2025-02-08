@@ -47,7 +47,7 @@ namespace Skills
         protected abstract void OnSkillStart();
         protected abstract void OnSkillEnd();
 
-        public void InitializeSkill(CharacterBase ownerCharacter)
+        public virtual void InitializeSkill(CharacterBase ownerCharacter)
         {
             OwnerCharacter = ownerCharacter;
         }
