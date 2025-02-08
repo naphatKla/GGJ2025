@@ -1,75 +1,68 @@
-using System;
 using System.Collections;
 using Characters;
-using DG.Tweening;
 using Sirenix.OdinInspector;
 using UnityEngine;
-using UnityEngine.AI;
-using VHierarchy.Libs;
 
 namespace Skills
 {
     public class SkillDestruction : SkillBase
     {
         #region Inspectors & Fields
-        [Title("SkillDash")] 
-        [SerializeField] private GameObject bombParticle;
+
+        [Title("SkillDash")] [SerializeField] private ParticleSystem bombParticle;
         [SerializeField] private float bombDistance;
         [SerializeField] private float bombTime;
+        [SerializeField] private bool deadAfterBomb = true;
+
         #endregion -------------------------------------------------------------------------------------------------------------------
 
         #region Methods
-
-        private void Awake()
-        {
-            bombParticle.GetComponent<ParticleSystem>().Stop();
-        }
 
         protected override void OnSkillStart()
         {
             StartCoroutine(Destruction());
         }
-
+        
+        protected override void OnSkillEnd()
+        {
+            OwnerCharacter.StartMovementController();
+            OwnerCharacter.IsDash = false;
+            if (!deadAfterBomb) return;
+            OwnerCharacter.ForceDead(OwnerCharacter);
+        }
+        
         private IEnumerator Destruction()
         {
-            OwnerCharacter.IsModifyingMovement = true;
-            if (!IsPlayer)
-            {
-                OwnerCharacter.TryGetComponent(out NavMeshAgent agent);
-                agent.enabled = false;
-            }
-            OwnerCharacter.TryGetComponent(out Rigidbody2D rigid2D);
-            rigid2D.velocity = Vector2.zero;
-            bombParticle.GetComponent<ParticleSystem>().Play();
-            var timer = 0f;
+            OwnerCharacter.StopMovementController();
+            bombParticle.Play();
+
+            float timer = 0f;
             while (timer < bombTime)
             {
-                if (OwnerCharacter == null)
+                if (!OwnerCharacter)
+                {
+                    ExitSkill();
                     yield break;
+                }
+
                 timer += Time.deltaTime;
                 yield return null;
             }
-            Collider2D[] hitColliders = Physics2D.OverlapCircleAll(OwnerCharacter.transform.position, bombDistance);
+
+            Collider2D[] hitColliders = Physics2D.OverlapCircleAll(OwnerCharacter.transform.position, bombDistance,
+                OwnerCharacter.EnemyLayerMask);
             foreach (Collider2D hit in hitColliders)
             {
-                if (hit.CompareTag("Player"))
-                {
-                    hit.GetComponent<CharacterBase>().TakeDamage(OwnerCharacter);
-                }
+                if (hit.TryGetComponent(out CharacterBase target))
+                    target.TakeDamage(OwnerCharacter);
             }
-        }
 
-        protected override void OnSkillEnd()
-        {
-            OwnerCharacter.IsModifyingMovement = false;
-            OwnerCharacter.IsDash = false;
-            if (IsPlayer) return;
-            OwnerCharacter.ForceDead(OwnerCharacter);
+            ExitSkill();
         }
 
         private void OnDrawGizmos()
         {
-            if (OwnerCharacter != null) return;
+            if (Application.IsPlaying(this)) return;
             Gizmos.color = Color.red;
             Gizmos.DrawWireSphere(transform.position, bombDistance);
         }

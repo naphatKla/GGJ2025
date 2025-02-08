@@ -44,7 +44,7 @@ namespace Characters
         protected override void Update()
         {
             base.Update();
-            if (IsModifyingMovement) return;
+            if (IsStoppingMovementController) return;
             if (navMesh.enabled) 
                 PerformHunting();
         }

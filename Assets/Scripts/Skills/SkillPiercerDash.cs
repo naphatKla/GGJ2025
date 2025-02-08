@@ -1,4 +1,5 @@
 using System.Collections;
+using Characters;
 using DG.Tweening;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -9,63 +10,59 @@ namespace Skills
     public class SkillPiercerDash : SkillBase
     {
         #region Inspectors & Fields
-        [Title("SkillPiercerDash")] 
+
+        [Title("SkillPiercerDash")] [SerializeField]
+        private float chargeTime = 1.5f;
+
         [SerializeField] private float dashDistance = 8f;
         [SerializeField] private float dashSpeed = 0.15f;
+
         #endregion -------------------------------------------------------------------------------------------------------------------
 
         #region Methods
+
         protected override void OnSkillStart()
         {
-            StartCoroutine(Targetlock());
-        }
-
-        private IEnumerator Targetlock()
-        {
-            Vector2 dashPosition;
-            Vector2 direction;
-            OwnerCharacter.IsModifyingMovement = true;
-            OwnerCharacter.IsDash = true;
-
-            var target = GameObject.FindGameObjectWithTag("Player");
-            
-            if (target == null) yield break;
-
-            OwnerCharacter.TryGetComponent(out NavMeshAgent agent);
-            agent.velocity = Vector2.zero;
-            agent.enabled = false;
-            OwnerCharacter.TryGetComponent(out Rigidbody2D rigid2D);
-            rigid2D.velocity = Vector2.zero;
-            direction = agent.velocity.normalized;
-
-            var waitTime = 1.5f;
-            var timer = 0f;
-            while (timer < waitTime)
-            {
-                timer += Time.deltaTime;
-                yield return null;
-            }
-            Vector2 targetPosition = target.transform.position;
-            waitTime = 0.5f;
-            timer = 0f;
-            while (timer < waitTime)
-            {
-                timer += Time.deltaTime;
-                yield return null;
-            }
-            
-            dashPosition = targetPosition + direction * dashDistance;
-            OwnerCharacter.transform.DOMove(dashPosition, dashSpeed).SetEase(Ease.InOutSine);
+            StartCoroutine(TargetLock());
         }
 
         protected override void OnSkillEnd()
         {
-            OwnerCharacter.IsModifyingMovement = false;
+            OwnerCharacter.StartMovementController();
             OwnerCharacter.IsDash = false;
-            if (IsPlayer) return;
-            OwnerCharacter.TryGetComponent(out NavMeshAgent agent);
-            agent.enabled = true;
         }
+
+        private IEnumerator TargetLock()
+        {
+            OwnerCharacter.StopMovementController();
+            OwnerCharacter.IsDash = true;
+            Vector2 direction = GetDashDirection();
+
+            float timer = 0f;
+            while (timer < chargeTime)
+            {
+                timer += Time.deltaTime;
+                yield return null;
+            }
+
+            Vector2 targetPosition = IsPlayer ? direction * dashDistance : PlayerCharacter.Instance.transform.position;
+            Vector2 dashPosition = targetPosition + (direction * dashDistance);
+            OwnerCharacter.transform.DOMove(dashPosition, dashSpeed).SetEase(Ease.InOutSine).OnComplete(ExitSkill);
+        }
+
+        private Vector2 GetDashDirection()
+        {
+            if (IsPlayer)
+            {
+                Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                Vector2 direction = (mousePos - (Vector2)OwnerCharacter.transform.position).normalized;
+                return direction;
+            }
+
+            OwnerCharacter.TryGetComponent(out NavMeshAgent agent);
+            return agent.velocity;
+        }
+
         #endregion -------------------------------------------------------------------------------------------------------------------
     }
 }

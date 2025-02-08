@@ -69,7 +69,7 @@ namespace Characters
 
         private void MovementController()
         {
-            if (IsModifyingMovement) return;
+            if (IsStoppingMovementController) return;
             if (IsStun) return;
             Vector2 mouseDirection = Camera.main.ScreenToWorldPoint(Input.mousePosition) - transform.position;
             Rigid2D.AddForce(mouseDirection.normalized * CurrentSpeed);

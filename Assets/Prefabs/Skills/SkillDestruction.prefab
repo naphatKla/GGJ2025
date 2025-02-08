@@ -47,7 +47,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cooldown: 1
-  skillDuration: 1
   skillStartFeedback: {fileID: 0}
   skillEndFeedback: {fileID: 0}
   onSkillStart:
@@ -623,6 +622,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 6978556922848020585}
     m_Modifications:
+    - target: {fileID: 2078021954338389564, guid: 75a0182eb1b51cf428534d293908e9d6, type: 3}
+      propertyPath: playOnAwake
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2779840451018205629, guid: 75a0182eb1b51cf428534d293908e9d6, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -666,6 +669,10 @@ PrefabInstance:
     - target: {fileID: 2974210351688831785, guid: 75a0182eb1b51cf428534d293908e9d6, type: 3}
       propertyPath: m_Name
       value: BombParticle
+      objectReference: {fileID: 0}
+    - target: {fileID: 4317855797849682644, guid: 75a0182eb1b51cf428534d293908e9d6, type: 3}
+      propertyPath: playOnAwake
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

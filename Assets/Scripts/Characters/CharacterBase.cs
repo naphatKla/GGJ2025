@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using DG.Tweening;
+using GlobalSettings;
 using MoreMountains.Feedbacks;
 using Sirenix.OdinInspector;
 using Skills;
@@ -44,6 +45,9 @@ namespace Characters
         
         [BoxGroup("Events")] [PropertyOrder(100f)]
         public UnityEvent onHit;
+
+        [BoxGroup("Events")] [PropertyOrder(100f)]
+        public UnityEvent onHitWithDamage;
         
         [BoxGroup("Events")] [PropertyOrder(100f)]
         public UnityEvent onDead;
@@ -76,10 +80,11 @@ namespace Characters
         protected float CurrentSpeed => _currentSpeed;
         public float Score => score;
         public bool IsIframe { get; set; }
-        public bool IsModifyingMovement { get; set; }
+        public bool IsStoppingMovementController { get; private set; }
         public bool IsDash { get; set; }
         public Animator Animator => _animator;
         protected Rigidbody2D Rigid2D => _rigidBody2D;
+        public LayerMask EnemyLayerMask => CharacterGlobalSettings.Instance.EnemyLayerDictionary[tag];
         #endregion -------------------------------------------------------------------------------------------------------------------
 
         #region UnityMethods
@@ -146,6 +151,7 @@ namespace Characters
 
         public virtual void TakeDamage(CharacterBase attacker)
         {
+            onHit?.Invoke();
             if (IsIframe) return;
             if (IsDead) return;
             if (Time.time - _lastHitTime < iframeAfterHitDuration) return;
@@ -153,7 +159,7 @@ namespace Characters
             life--;
             _lastHitTime = Time.time;
             takeDamageFeedback?.PlayFeedbacks();
-            onHit?.Invoke();
+            onHitWithDamage?.Invoke();
             if (life > 0) return;
             Dead(attacker);
         }
@@ -164,29 +170,40 @@ namespace Characters
             Dead(attacker);
         }
 
-        public virtual IEnumerator Stun(float duration)
+        public void StartMovementController()
+        {
+            IsStoppingMovementController = false;
+            if (TryGetComponent(out NavMeshAgent navmesh))
+            {
+                navmesh.enabled = true;
+            }
+        }
+
+        public void StopMovementController()
+        {
+            IsStoppingMovementController = true;
+            if (CompareTag("Player"))
+            {
+                _rigidBody2D.velocity = Vector2.zero;
+                return;
+            }
+
+            if (TryGetComponent(out NavMeshAgent navmesh))
+            {
+                navmesh.enabled = false;
+            }
+        }
+        protected virtual IEnumerator Stun(float duration)
         {
             if (IsIframe) yield break;
             if (IsDead) yield break;
             if (IsStun) yield break;
-            if (CompareTag("Player"))
-            {
-                IsStun = true;
-                _rigidBody2D.velocity = Vector2.zero;
-                yield return new WaitForSeconds(duration);
-                IsStun = false;
-            }
-            else if (CompareTag("Enemy"))
-            {
-                if (TryGetComponent(out NavMeshAgent navmesh))
-                {
-                    IsStun = true;
-                    navmesh.enabled = false;
-                    yield return new WaitForSeconds(duration);
-                    navmesh.enabled = true;
-                    IsStun = false;
-                }
-            }
+
+            IsStun = true;
+            StopMovementController();
+            yield return new WaitForSeconds(duration);
+            StartMovementController();
+            IsStun = false;
         }
 
         protected virtual void Dead(CharacterBase attacker)
@@ -272,6 +289,14 @@ namespace Characters
             cloneChar.tag = tag;
             return cloneChar;
         }
+        
+#if UNITY_EDITOR // Editor specific code
+        [PropertyOrder(1000), Title(""), Button(ButtonSizes.Large), GUIColor(0, 1, 0)] 
+        private void OpenGlobalSettings()
+        {
+            Sirenix.OdinInspector.Editor.OdinEditorWindow.InspectObject(CharacterGlobalSettings.Instance);
+        }
+#endif
         #endregion -------------------------------------------------------------------------------------------------------------------
     }
 }

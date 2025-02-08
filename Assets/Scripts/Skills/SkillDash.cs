@@ -8,44 +8,42 @@ namespace Skills
     public class SkillDash : SkillBase
     {
         #region Inspectors & Fields
-        [Title("SkillDash")] 
+
+        [Title("SkillDash")] [SerializeField] private float dashDuration = 0.3f;
         [SerializeField] private float dashDistance = 8f;
+
         #endregion -------------------------------------------------------------------------------------------------------------------
 
         #region Methods
+
         protected override void OnSkillStart()
         {
-            Vector2 dashPosition;
-            Vector2 direction;
-            OwnerCharacter.IsModifyingMovement = true;
             OwnerCharacter.IsDash = true;
-            
-            if (IsPlayer)
-            {
-                dashPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-                direction = (dashPosition - (Vector2)OwnerCharacter.transform.position).normalized;
-            }
-            else
-            {
-                OwnerCharacter.TryGetComponent(out NavMeshAgent agent);
-                direction = agent.velocity.normalized;
-                agent.enabled = false;
-            }
-            
-            dashPosition = (Vector2)OwnerCharacter.transform.position + (direction * dashDistance);
-            OwnerCharacter.TryGetComponent(out Rigidbody2D rigid2D);
-            rigid2D.velocity = Vector2.zero;
-            OwnerCharacter.transform.DOMove(dashPosition, skillDuration).SetEase(Ease.InOutSine);
+            OwnerCharacter.StopMovementController();
+            Vector2 direction = GetDashDirection();
+            Vector2 dashPosition = (Vector2)OwnerCharacter.transform.position + (direction * dashDistance);
+            OwnerCharacter.transform.DOMove(dashPosition, dashDuration).SetEase(Ease.InOutSine).OnComplete(ExitSkill);
         }
 
         protected override void OnSkillEnd()
         {
-            OwnerCharacter.IsModifyingMovement = false;
             OwnerCharacter.IsDash = false;
-            if (IsPlayer) return;
-            OwnerCharacter.TryGetComponent(out NavMeshAgent agent);
-            agent.enabled = true;
+            OwnerCharacter.StartMovementController();
         }
+
+        private Vector2 GetDashDirection()
+        {
+            if (IsPlayer)
+            {
+                Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                Vector2 direction = (mousePos - (Vector2)OwnerCharacter.transform.position).normalized;
+                return direction;
+            }
+
+            OwnerCharacter.TryGetComponent(out NavMeshAgent agent);
+            return agent.velocity;
+        }
+
         #endregion -------------------------------------------------------------------------------------------------------------------
     }
 }
