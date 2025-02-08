@@ -10,7 +10,20 @@ namespace Characters
         #region Inspectors & Fields
         [SerializeField] private NavMeshAgent navMesh;
         [SerializeField] private EnemyState currentState = EnemyState.Hunting;
+        [SerializeField] public EnemyType currentType = EnemyType.Normal;
+        [SerializeField] private float detectDistance;
         private float _lastDashTime;
+        
+        [BoxGroup("Enemy type")]
+        public enum EnemyType
+        {
+            Normal,
+            Tank,
+            Piercer,
+            Dancer,
+            Smoother,
+            Pressure
+        }
         
         [BoxGroup("State")]
         private enum EnemyState
@@ -42,13 +55,20 @@ namespace Characters
             if (IsDead) return;
             if (other.CompareTag("Player") && IsDash)
                 other.GetComponent<CharacterBase>().TakeDamage(this);
+            //Tank Stun
+            if (other.CompareTag("Player") && !IsStun && currentType == EnemyType.Tank) StartCoroutine(Stun(0.5f));
         }
         #endregion -------------------------------------------------------------------------------------------------------------------
 
         #region Methods
         protected override void SkillInputHandler()
         {
+            if (currentType == EnemyType.Pressure && navMesh.enabled) { PresureDash(); }
+            if (Vector3.Distance(PlayerCharacter.Instance.transform.position, transform.position) > detectDistance) return;
+            if (IsStun) return;
             if (currentState != EnemyState.Hunting) return;
+            if (currentType == EnemyType.Pressure)
+            { skillLeft.UseSkill(); return;}
             if (Random.value >= 0f) // change this value > 0 to test another skill
             {
                 float random = Random.Range(2f, 5f);
@@ -75,6 +95,13 @@ namespace Characters
             if (!PlayerCharacter.Instance) return;
             navMesh.SetDestination(PlayerCharacter.Instance.transform.position);
         }
+
+        private void PresureDash()
+        {
+            if (Vector3.Distance(PlayerCharacter.Instance.transform.position, transform.position) < detectDistance) return;
+            skillRight.UseSkill();
+        }
+        
         #endregion -------------------------------------------------------------------------------------------------------------------
     }
 }

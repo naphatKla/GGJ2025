@@ -17,7 +17,7 @@ GameObject:
   - component: {fileID: -7093311364811772289}
   - component: {fileID: 8674218084385261660}
   m_Layer: 0
-  m_Name: Green
+  m_Name: Tank
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -33,7 +33,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8961839628989228019}
@@ -188,13 +188,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 36e9b96967648af42a09b12f448e013b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  score: 100
-  maxSpeed: 6
+  score: 350
+  maxSpeed: 3
   canCollectOxygen: 0
   dropOxygenOnDead: 1
   deadMode: 0
-  life: 1
-  iframeAfterHitDuration: 0
+  life: 3
+  iframeAfterHitDuration: 0.3
   skillLeft: {fileID: 23493788028573042}
   skillRight: {fileID: 0}
   oxygenDetectionRadius: 5
@@ -211,6 +211,8 @@ MonoBehaviour:
       m_Calls: []
   navMesh: {fileID: 0}
   currentState: 0
+  currentType: 1
+  detectDistance: 20
 --- !u!96 &-7093311364811772289
 TrailRenderer:
   serializedVersion: 3
@@ -449,7 +451,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4819486263925211553, guid: 7cd43370fed8d84469504dc3d00073c5, type: 3}
       propertyPath: dashDistance
-      value: 8
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 6978556922848020585, guid: 7cd43370fed8d84469504dc3d00073c5, type: 3}
       propertyPath: m_LocalPosition.x
