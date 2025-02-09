@@ -118,7 +118,7 @@ MonoBehaviour:
   life: 3
   iframeAfterHitDuration: 1
   skillLeft: {fileID: 5658484918666970509}
-  skillRight: {fileID: 6339041768313023157}
+  skillRight: {fileID: 2851245434536287433}
   oxygenDetectionRadius: 5
   oxygenMagneticStartForce: 20
   oxygenMagneticEndForce: 5
@@ -3167,8 +3167,9 @@ MonoBehaviour:
   onSkillEnd:
     m_PersistentCalls:
       m_Calls: []
-  chargeDuration: 3
-  dashDuration: 1
+  chargeDuration: 1.5
+  dashDistance: 100
+  dashDuration: 0.5
   iframeOnCharging: 1
   skillParticle: {fileID: 4396976028034264010}
 --- !u!1 &5650739071098472648
@@ -9920,17 +9921,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 6111266786932833841, guid: 544e8ceec27b98d498bf78b6537e5636, type: 3}
   m_PrefabInstance: {fileID: 1313079888588212313}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &6339041768313023157 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 5026074172752388844, guid: 544e8ceec27b98d498bf78b6537e5636, type: 3}
-  m_PrefabInstance: {fileID: 1313079888588212313}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f2e5bd4d11372fc4e9bcac7b53ae6744, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &7655269903834997755 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8648041963361168290, guid: 544e8ceec27b98d498bf78b6537e5636, type: 3}
@@ -9964,8 +9954,16 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4433211834316289766, guid: 3a2ced5aa082eb849b5a31e85ae2afe3, type: 3}
+      propertyPath: lengthInSec
+      value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4433211834316289766, guid: 3a2ced5aa082eb849b5a31e85ae2afe3, type: 3}
       propertyPath: InitialModule.startSizeY.scalar
       value: 35
+      objectReference: {fileID: 0}
+    - target: {fileID: 4433211834316289766, guid: 3a2ced5aa082eb849b5a31e85ae2afe3, type: 3}
+      propertyPath: InitialModule.startLifetime.scalar
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 6133421956715261829, guid: 3a2ced5aa082eb849b5a31e85ae2afe3, type: 3}
       propertyPath: m_LocalPosition.x
@@ -10012,8 +10010,16 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6936436719910467811, guid: 3a2ced5aa082eb849b5a31e85ae2afe3, type: 3}
+      propertyPath: lengthInSec
+      value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6936436719910467811, guid: 3a2ced5aa082eb849b5a31e85ae2afe3, type: 3}
       propertyPath: InitialModule.startSizeY.scalar
       value: 35
+      objectReference: {fileID: 0}
+    - target: {fileID: 6936436719910467811, guid: 3a2ced5aa082eb849b5a31e85ae2afe3, type: 3}
+      propertyPath: InitialModule.startLifetime.scalar
+      value: 1.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
