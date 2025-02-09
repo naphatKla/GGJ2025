@@ -36,7 +36,7 @@ namespace Skills
         {
             OwnerCharacter.StopMovementController();
             OwnerCharacter.IsDash = true;
-            Vector2 direction = GetDashDirection();
+            Vector2 direction = GetTargetDirection();
 
             float timer = 0f;
             while (timer < chargeTime)
@@ -47,22 +47,9 @@ namespace Skills
 
             Vector2 targetPosition = IsPlayer ? direction * dashDistance : PlayerCharacter.Instance.transform.position;
             Vector2 dashPosition = targetPosition + (direction * dashDistance);
+            dashPosition = OwnerCharacter.ClampMovePositionToBound(dashPosition);
             OwnerCharacter.transform.DOMove(dashPosition, dashSpeed).SetEase(Ease.InOutSine).OnComplete(ExitSkill);
         }
-
-        private Vector2 GetDashDirection()
-        {
-            if (IsPlayer)
-            {
-                Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-                Vector2 direction = (mousePos - (Vector2)OwnerCharacter.transform.position).normalized;
-                return direction;
-            }
-
-            OwnerCharacter.TryGetComponent(out NavMeshAgent agent);
-            return agent.velocity;
-        }
-
         #endregion -------------------------------------------------------------------------------------------------------------------
     }
 }

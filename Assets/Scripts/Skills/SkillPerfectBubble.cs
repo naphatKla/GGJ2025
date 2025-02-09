@@ -76,7 +76,7 @@ namespace Skills
                 Vector2 dashPosition = distance > counterMinDashDistance
                     ? closestEnemy.transform.position
                     : OwnerCharacter.transform.position + (Vector3)direction * counterMinDashDistance;
-                
+                dashPosition = OwnerCharacter.ClampMovePositionToBound(dashPosition);
                 OwnerCharacter.IsDash = true;
                 OwnerCharacter.IsIframe = iframeOnCounterDash;
                 yield return OwnerCharacter.transform.DOMove(dashPosition, counterDashDuration)

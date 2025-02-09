@@ -12,7 +12,7 @@ namespace Skills
 
         [Title("SkillPathStriker")] [SerializeField]
         protected float chargeDuration = 3f;
-        [SerializeField] protected float dashDuration = 0.3f;
+        [SerializeField] protected float dashDuration = 0.5f;
         [SerializeField] protected bool iframeOnCharging = true;
         [SerializeField] private ParticleSystem skillParticle;
         private GameObject particleGroup;

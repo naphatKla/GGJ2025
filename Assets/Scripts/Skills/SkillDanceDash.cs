@@ -47,11 +47,13 @@ namespace Skills
                 Vector2 rotatedDirection = Quaternion.Euler(0, 0, angle) * direction;
                 Vector2 dashPosition = (Vector2)OwnerCharacter.transform.position +
                                        (rotatedDirection * (dashDistance / dashFrequency));
+                dashPosition = OwnerCharacter.ClampMovePositionToBound(dashPosition);
                 yield return OwnerCharacter.transform.DOMove(dashPosition, dashDuration).SetEase(Ease.InOutSine)
                     .WaitForCompletion();
             }
 
             Vector2 finalDash = (Vector2)OwnerCharacter.transform.position + (direction * (dashDistance * 0.2f));
+            finalDash = OwnerCharacter.ClampMovePositionToBound(finalDash);
             yield return OwnerCharacter.transform.DOMove(finalDash, dashDuration).SetEase(Ease.InOutSine)
                 .WaitForCompletion();
             ExitSkill();

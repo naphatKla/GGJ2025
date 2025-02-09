@@ -2,7 +2,6 @@ using System.Collections;
 using DG.Tweening;
 using Sirenix.OdinInspector;
 using UnityEngine;
-using UnityEngine.AI;
 
 namespace Skills
 {
@@ -32,29 +31,17 @@ namespace Skills
         {
             OwnerCharacter.IsDash = true;
             OwnerCharacter.StopMovementController();
-            Vector2 direction = GetDashDirection();
+            Vector2 direction = GetTargetDirection();
             Vector2 startPosition = OwnerCharacter.transform.position;
             Vector2 dashPosition = (Vector2)OwnerCharacter.transform.position + (direction * dashDistance);
+            dashPosition = OwnerCharacter.ClampMovePositionToBound(dashPosition);
             yield return OwnerCharacter.transform.DOMove(dashPosition, dashSpeed).SetEase(Ease.InOutSine)
                 .WaitForCompletion();
             yield return OwnerCharacter.transform.DOMove(startPosition, dashSpeed).SetEase(Ease.InOutSine)
                 .WaitForCompletion();
             ExitSkill();
         }
-
-        private Vector2 GetDashDirection()
-        {
-            if (IsPlayer)
-            {
-                Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-                Vector2 direction = (mousePos - (Vector2)OwnerCharacter.transform.position).normalized;
-                return direction;
-            }
-
-            OwnerCharacter.TryGetComponent(out NavMeshAgent agent);
-            return agent.velocity;
-        }
-
+        
         #endregion -------------------------------------------------------------------------------------------------------------------
     }
 }
