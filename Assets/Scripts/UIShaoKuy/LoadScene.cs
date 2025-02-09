@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
@@ -10,20 +11,18 @@ public class LoadScene : MonoBehaviour
     
     public GameObject playerControllerUI;
     private bool hasStarted = false;
-    
+    private bool _isCutsceneRun = true;
 
     void Start()
     {
         // เริ่มเกมโดยแสดง Player Controller UI และหยุดเวลา
-        playerControllerUI.SetActive(true);
         pauseUI.SetActive(false);
         loseUI.SetActive(false);
-        Time.timeScale = 0;
     }
 
     void Update()
     {
-        if (!hasStarted && Input.GetMouseButtonDown(0) && Time.timeScale == 0)
+        if (!hasStarted && Input.GetMouseButtonDown(0) && Time.timeScale == 0 && _isCutsceneRun == false)
         {
             StartGame();
         }
@@ -88,6 +87,13 @@ public class LoadScene : MonoBehaviour
     {
         loseUI.SetActive(true);
         Time.timeScale = 0.5f;
+    }
+    
+    public void Tutorial()
+    {
+        playerControllerUI.SetActive(true);
+        Time.timeScale = 0;
+        _isCutsceneRun = false;
     }
 
     /*public void OpenSoundSetting()
