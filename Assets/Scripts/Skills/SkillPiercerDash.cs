@@ -12,8 +12,9 @@ namespace Skills
     {
         #region Inspectors & Fields
 
-        [Title("SkillPiercerDash")] [SerializeField]
-        private float chargeTime = 1.5f;
+        [Title("SkillPiercerDash")]
+        [SerializeField] private float chargeTime = 1.5f;
+        [SerializeField] private float fleePlayertime = 0.5f;
 
         [SerializeField] private float dashDistance = 8f;
         [SerializeField] private float dashDuration = 0.15f;
@@ -52,7 +53,7 @@ namespace Skills
             Vector2 targetPosition = PlayerCharacter.Instance.transform.position;
 
             timer = 0;
-            while (timer < 0.5f)
+            while (timer < fleePlayertime)
             {
                 timer += Time.deltaTime;
                 yield return null;
