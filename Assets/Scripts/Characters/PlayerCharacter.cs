@@ -4,6 +4,7 @@ namespace Characters
 {
     public class PlayerCharacter : CharacterBase
     {
+        [SerializeField] private float accelerator = 6;
         #region Properties
         public static float HitCombo;
         public static PlayerCharacter Instance { get; private set; }
@@ -72,7 +73,7 @@ namespace Characters
             if (IsStoppingMovementController) return;
             if (IsStun) return;
             Vector2 mouseDirection = Camera.main.ScreenToWorldPoint(Input.mousePosition) - transform.position;
-            Rigid2D.AddForce(mouseDirection.normalized * CurrentSpeed);
+            Rigid2D.AddForce(mouseDirection.normalized * (accelerator * Time.deltaTime), ForceMode2D.Impulse);
             Rigid2D.velocity = Vector2.ClampMagnitude(Rigid2D.velocity, CurrentSpeed);
         }
         #endregion -------------------------------------------------------------------------------------------------------------------
