@@ -80,6 +80,7 @@ namespace Characters
         public float Score => score;
         public bool IsIframe { get; set; }
         public bool IsStoppingMovementController { get; private set; }
+        public bool IsStoppingSkillController { get; private set; }
         public bool IsDash { get; set; }
         public bool IsDead { get; protected set; }
         public Animator Animator => _animator;
@@ -102,6 +103,7 @@ namespace Characters
         protected virtual void Update()
         {
             PullOxygen();
+            if (IsStoppingSkillController) return;
             SkillInputHandler();
             skillLeft?.UpdateCooldown();
             skillRight?.UpdateCooldown();
@@ -194,6 +196,16 @@ namespace Characters
             }
         }
 
+        public void StartSkillController()
+        {
+            IsStoppingMovementController = true;
+        }
+        
+        public void StopSkillController()
+        {
+            IsStoppingMovementController = false;
+        }
+        
         public Vector2 ClampMovePositionToBound(Vector2 destination)
         {
             Vector2 direction = (destination - (Vector2)transform.position).normalized;
