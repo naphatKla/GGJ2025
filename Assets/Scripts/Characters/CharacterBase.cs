@@ -63,7 +63,6 @@ namespace Characters
         private float _iframeDuration;
         private float _iframeTimeCounter;
         protected bool IsStun;
-        protected bool IsDead;
         private static readonly int DeadTriggerAnimation = Animator.StringToHash("DeadTrigger");
         private static readonly int DashTriggerAnimation = Animator.StringToHash("DashTrigger");
         private static readonly int BlackHoleTriggerAnimation = Animator.StringToHash("BlackHoleTrigger");
@@ -82,6 +81,7 @@ namespace Characters
         public bool IsIframe { get; set; }
         public bool IsStoppingMovementController { get; private set; }
         public bool IsDash { get; set; }
+        public bool IsDead { get; protected set; }
         public Animator Animator => _animator;
         protected Rigidbody2D Rigid2D => _rigidBody2D;
         public LayerMask EnemyLayerMask => CharacterGlobalSettings.Instance.EnemyLayerDictionary[tag];
@@ -106,7 +106,7 @@ namespace Characters
             skillLeft?.UpdateCooldown();
             skillRight?.UpdateCooldown();
         }
-
+        
         protected virtual void OnTriggerStay2D(Collider2D other)
         {
             if (!canCollectOxygen) return;
@@ -193,6 +193,17 @@ namespace Characters
                 navmesh.enabled = false;
             }
         }
+
+        public Vector2 ClampMovePositionToBound(Vector2 destination)
+        {
+            Vector2 direction = (destination - (Vector2)transform.position).normalized;
+            float distance = Vector2.Distance(transform.position, destination);
+            RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, distance, CharacterGlobalSettings.Instance.LevelBoundLayerMask);
+            if (hit.collider) 
+                destination = (Vector2)transform.position + (direction * hit.distance);
+            return destination;
+        }
+        
         protected virtual IEnumerator Stun(float duration)
         {
             if (IsIframe) yield break;

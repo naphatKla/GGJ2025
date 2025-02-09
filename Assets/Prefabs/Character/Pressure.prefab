@@ -175,7 +175,7 @@ Rigidbody2D:
     m_Bits: 0
   m_Interpolate: 1
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 0
 --- !u!114 &5725435335815257894
 MonoBehaviour:
@@ -448,26 +448,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: SkillDestruction
       objectReference: {fileID: 0}
-    - target: {fileID: 4678615229453355220, guid: cfa8cd72c0ee43042af9a7b84cc455db, type: 3}
-      propertyPath: bombTime
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 4678615229453355220, guid: cfa8cd72c0ee43042af9a7b84cc455db, type: 3}
-      propertyPath: cooldown
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4678615229453355220, guid: cfa8cd72c0ee43042af9a7b84cc455db, type: 3}
-      propertyPath: bombDistance
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 4678615229453355220, guid: cfa8cd72c0ee43042af9a7b84cc455db, type: 3}
-      propertyPath: bombParticle
-      value: 
-      objectReference: {fileID: 3085035575243715806}
-    - target: {fileID: 4678615229453355220, guid: cfa8cd72c0ee43042af9a7b84cc455db, type: 3}
-      propertyPath: skillDuration
-      value: 4
-      objectReference: {fileID: 0}
     - target: {fileID: 6978556922848020585, guid: cfa8cd72c0ee43042af9a7b84cc455db, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -529,11 +509,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2913560d711713c4285cb416e8ef0dc1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!198 &3085035575243715806 stripped
-ParticleSystem:
-  m_CorrespondingSourceObject: {fileID: 5319349002786456063, guid: cfa8cd72c0ee43042af9a7b84cc455db, type: 3}
-  m_PrefabInstance: {fileID: 7134300212762408225}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &9211471424478370154
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -2,6 +2,7 @@ using Characters;
 using MoreMountains.Feedbacks;
 using Sirenix.OdinInspector;
 using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.Events;
 
 namespace Skills
@@ -64,13 +65,23 @@ namespace Skills
         /// <summary>
         /// Please call this method on skill end condition
         /// </summary>
-        public virtual void ExitSkill()
+        protected virtual void ExitSkill()
         {
             OnSkillEnd();
             onSkillEnd?.Invoke();
             skillEndFeedback?.PlayFeedbacks();
         }
-
+        
+        protected virtual Vector2 GetTargetDirection()
+        {
+            if (!IsPlayer)
+                return (PlayerCharacter.Instance.transform.position - OwnerCharacter.transform.position).normalized;
+            
+            Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            Vector2 direction = (mousePos - (Vector2)OwnerCharacter.transform.position).normalized;
+            return direction;
+        }
+        
         #endregion -------------------------------------------------------------------------------------------------------------------
     }
 }

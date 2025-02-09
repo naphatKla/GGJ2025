@@ -461,8 +461,8 @@ Transform:
   m_GameObject: {fileID: 149192820}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 18.412823, y: 0.022863388, z: 0}
-  m_LocalScale: {x: 1, y: 21.792343, z: 1}
+  m_LocalPosition: {x: 21.37, y: -0.1702, z: 0}
+  m_LocalScale: {x: 2.2854068, y: 24.58616, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347810667}
@@ -819,6 +819,17 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &249056558 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2851245434536287433, guid: a77265b9aebe62e42ab5cd27ab605cb7, type: 3}
+  m_PrefabInstance: {fileID: 7004209538705113792}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cf426e1a02f9c054e92ad02aee3eb4ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &276433605
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1948,8 +1959,8 @@ Transform:
   m_GameObject: {fileID: 625172790}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -18.407177, y: 0.022863388, z: 0}
-  m_LocalScale: {x: 1, y: 21.792343, z: 1}
+  m_LocalPosition: {x: -21.15, y: -0.2684, z: 0}
+  m_LocalScale: {x: 1.8081113, y: 24.754387, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347810667}
@@ -2816,8 +2827,8 @@ Transform:
   m_GameObject: {fileID: 840419284}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.055877686, y: 10.695764, z: 0}
-  m_LocalScale: {x: 37.92442, y: 0.8516749, z: 1}
+  m_LocalPosition: {x: 0.187, y: 12.88, z: 0}
+  m_LocalScale: {x: 44.622837, y: 1.8227638, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347810667}
@@ -3097,8 +3108,8 @@ Transform:
   m_GameObject: {fileID: 1044010871}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.055877686, y: -10.534237, z: 0}
-  m_LocalScale: {x: 37.92442, y: 0.8516749, z: 1}
+  m_LocalPosition: {x: 0.2014, y: -13.35, z: 0}
+  m_LocalScale: {x: 44.521458, y: 2.5068264, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 347810667}
@@ -5118,7 +5129,7 @@ GameObject:
   - component: {fileID: 2143418775}
   - component: {fileID: 2143418777}
   - component: {fileID: 2143418776}
-  m_Layer: 31
+  m_Layer: 0
   m_Name: Confiner
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5231,7 +5242,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.74506307, g: 0.9716981, b: 0.41709682, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -5261,6 +5272,18 @@ PrefabInstance:
       propertyPath: managedReferences[7241849256490041356].ImpulseSource
       value: 
       objectReference: {fileID: 1648103412}
+    - target: {fileID: 2847451010704159058, guid: a77265b9aebe62e42ab5cd27ab605cb7, type: 3}
+      propertyPath: m_Name
+      value: PlayerBound
+      objectReference: {fileID: 0}
+    - target: {fileID: 2847451010704159058, guid: a77265b9aebe62e42ab5cd27ab605cb7, type: 3}
+      propertyPath: m_Layer
+      value: 29
+      objectReference: {fileID: 0}
+    - target: {fileID: 4317072113863429186, guid: a77265b9aebe62e42ab5cd27ab605cb7, type: 3}
+      propertyPath: skillRight
+      value: 
+      objectReference: {fileID: 249056558}
     - target: {fileID: 4317072113863429186, guid: a77265b9aebe62e42ab5cd27ab605cb7, type: 3}
       propertyPath: onDead.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
@@ -5305,7 +5328,15 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5334563148967617205, guid: a77265b9aebe62e42ab5cd27ab605cb7, type: 3}
+      propertyPath: managedReferences[7241849256490041357].ImpulseSource
+      value: 
+      objectReference: {fileID: 1648103412}
     - target: {fileID: 7655269903834997755, guid: a77265b9aebe62e42ab5cd27ab605cb7, type: 3}
+      propertyPath: managedReferences[7241849256490041357].ImpulseSource
+      value: 
+      objectReference: {fileID: 1648103412}
+    - target: {fileID: 8058940777207140722, guid: a77265b9aebe62e42ab5cd27ab605cb7, type: 3}
       propertyPath: managedReferences[7241849256490041357].ImpulseSource
       value: 
       objectReference: {fileID: 1648103412}

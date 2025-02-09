@@ -11,10 +11,14 @@ namespace GlobalSettings
         [Title("LayerMask")]
         [DictionaryDrawerSettings(KeyLabel = "Tag", ValueLabel = "Enemy Layer")] [OdinSerialize]
         private Dictionary<string, LayerMask> _enemyLayerDictionary = new Dictionary<string, LayerMask>();
+
+        [SerializeField] private LayerMask levelBoundLayerMask;
         #endregion -------------------------------------------------------------------------------------
 
         #region Properties
         public Dictionary<string, LayerMask> EnemyLayerDictionary => _enemyLayerDictionary;
+        public LayerMask LevelBoundLayerMask => levelBoundLayerMask;
+
         #endregion
     }
 }

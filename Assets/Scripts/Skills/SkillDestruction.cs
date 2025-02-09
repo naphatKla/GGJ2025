@@ -39,12 +39,7 @@ namespace Skills
             float timer = 0f;
             while (timer < bombTime)
             {
-                if (!OwnerCharacter)
-                {
-                    ExitSkill();
-                    yield break;
-                }
-
+                if (!OwnerCharacter) yield break;
                 timer += Time.deltaTime;
                 yield return null;
             }

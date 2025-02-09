@@ -2,6 +2,7 @@ using System.Collections;
 using System.Linq;
 using Characters;
 using DG.Tweening;
+using MoreMountains.Feedbacks;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -15,11 +16,15 @@ namespace Skills
         private float iframeDuration = 1f;
 
         [SerializeField] private float counterDashRange = 30f;
-        [SerializeField] private float counterDashDistance = 10f;
+        [SerializeField] private float counterMinDashDistance = 6;
         [SerializeField] private int counterDashTime = 4;
         [SerializeField] private float counterDashDuration = 0.125f;
         [SerializeField] private float restTimePerDash = 0f;
         [SerializeField] private bool iframeOnCounterDash = true;
+
+        [SerializeField] [PropertyOrder(99)]
+        private MMF_Player counterStartFeedback;
+
         private bool _gotHit;
 
         #endregion -------------------------------------------------------------------------------------------------------------------
@@ -47,6 +52,7 @@ namespace Skills
 
             // Counter Dash
             _gotHit = false;
+            counterStartFeedback?.PlayFeedbacks();
             OwnerCharacter.StopMovementController();
             for (int i = 0; i < counterDashTime; i++)
             {
@@ -58,13 +64,18 @@ namespace Skills
                     ExitSkill();
                     yield break;
                 }
-
+                
                 Transform closestEnemy = enemies
-                    .OrderBy(e => Vector2.Distance(OwnerCharacter.transform.position, e.transform.position))
-                    .FirstOrDefault()
-                    ?.transform;
+                    .Where(e => e.TryGetComponent(out CharacterBase character) && !character.IsDead)  
+                    .OrderBy(e => Vector2.Distance(OwnerCharacter.transform.position, e.transform.position))  
+                    .FirstOrDefault()?.transform;
+                
+                if (!closestEnemy) continue;
+                float distance = Vector2.Distance(OwnerCharacter.transform.position, closestEnemy.transform.position);
                 Vector2 direction = (closestEnemy.position - OwnerCharacter.transform.position).normalized;
-                Vector2 dashPosition = (Vector2)OwnerCharacter.transform.position + (direction * counterDashDistance);
+                Vector2 dashPosition = distance > counterMinDashDistance
+                    ? closestEnemy.transform.position
+                    : OwnerCharacter.transform.position + (Vector3)direction * counterMinDashDistance;
                 
                 OwnerCharacter.IsDash = true;
                 OwnerCharacter.IsIframe = iframeOnCounterDash;

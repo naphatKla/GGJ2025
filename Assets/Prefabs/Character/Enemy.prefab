@@ -172,9 +172,9 @@ Rigidbody2D:
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 0
 --- !u!114 &5725435335815257894
 MonoBehaviour:
@@ -190,13 +190,35 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   score: 100
   maxSpeed: 6
-  SkillMouseLeft: {fileID: 23493788028573042}
-  SkillMouseRight: {fileID: 0}
+  canCollectOxygen: 0
+  dropOxygenOnDead: 1
+  deadMode: 0
+  life: 1
+  iframeAfterHitDuration: 0
+  skillLeft: {fileID: 0}
+  skillRight: {fileID: 0}
+  oxygenDetectionRadius: 5
+  oxygenMagneticStartForce: 20
+  oxygenMagneticEndForce: 5
   killFeedback: {fileID: 0}
+  takeDamageFeedback: {fileID: 0}
   deadFeedback: {fileID: 0}
-  rigidbody2D: {fileID: 0}
+  onHit:
+    m_PersistentCalls:
+      m_Calls: []
+  onHitWithDamage:
+    m_PersistentCalls:
+      m_Calls: []
+  onDead:
+    m_PersistentCalls:
+      m_Calls: []
+  onPickUpScore:
+    m_PersistentCalls:
+      m_Calls: []
   navMesh: {fileID: 0}
   currentState: 0
+  currentType: 0
+  detectDistance: 0
 --- !u!96 &-7093311364811772289
 TrailRenderer:
   serializedVersion: 3
@@ -482,17 +504,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7cd43370fed8d84469504dc3d00073c5, type: 3}
---- !u!114 &23493788028573042 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 4819486263925211553, guid: 7cd43370fed8d84469504dc3d00073c5, type: 3}
-  m_PrefabInstance: {fileID: 4805681930735195347}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 434232f2dab170d4abdc17e050c653f6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &2479766839057390778 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6978556922848020585, guid: 7cd43370fed8d84469504dc3d00073c5, type: 3}
