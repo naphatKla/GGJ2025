@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class SoundSettingMenu : MonoBehaviour
 {
@@ -27,12 +28,12 @@ public class SoundSettingMenu : MonoBehaviour
 
     private void Update()
     {
-        if (toggle && Time.timeScale == 1)
-        {
-            Time.timeScale = 1;
-            toggle = false;
-            _settingUI.gameObject.SetActive(false);
-        }
+        // if (toggle && Time.timeScale == 1)
+        // {
+        //     Time.timeScale = 1;
+        //     toggle = false;
+        //     _settingUI.gameObject.SetActive(false);
+        // }
     }
     
     public void ActivateSetting()
@@ -45,7 +46,10 @@ public class SoundSettingMenu : MonoBehaviour
         }
         else
         {
-            Time.timeScale = 0;
+            if (SceneManager.GetActiveScene() != SceneManager.GetSceneByName("MainMenu"))
+            {
+                Time.timeScale = 0;
+            }
             toggle = true;
             _settingUI.gameObject.SetActive(true);
         }
