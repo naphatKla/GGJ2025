@@ -13,6 +13,11 @@ public class CutsceneManager : MonoBehaviour
     {
         Time.timeScale = 0;
     }
+    
+    public void ResumeTheGame()
+    {
+        Time.timeScale = 1;
+    }
 
     public void TimelineSetActiveFalse()
     {
