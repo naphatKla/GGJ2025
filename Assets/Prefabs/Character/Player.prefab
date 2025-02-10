@@ -64,7 +64,7 @@ MonoBehaviour:
   life: 3
   iframeAfterHitDuration: 1
   skillLeft: {fileID: 5658484918666970509}
-  skillRight: {fileID: 6339041768313023157}
+  skillRight: {fileID: 1681567355003045353}
   oxygenDetectionRadius: 5
   oxygenMagneticStartForce: 20
   oxygenMagneticEndForce: 5
@@ -746,15 +746,16 @@ MonoBehaviour:
         m_Calls: []
   DebugActive: 0
   FeedbacksList:
-  - rid: 7241849249656995840
-  - rid: 7241849253592563714
-  - rid: 7241849253592563715
-  - rid: 7241849253592563716
-  - rid: 7241849253592563717
-  - rid: 7241849253592563718
-  - rid: 7241849256490041357
-  - rid: 7241849262784905220
-  - rid: 7241849262784905225
+  - rid: 5982134046409097252
+  - rid: 5982134046409097253
+  - rid: 5982134046409097254
+  - rid: 5982134046409097255
+  - rid: 5982134046409097256
+  - rid: 5982134046409097257
+  - rid: 5982134046409097258
+  - rid: 5982134046409097259
+  - rid: 5982134046409097260
+  - rid: 5982134046409097261
   KeepPlayModeChanges: 0
   PerformanceMode: 0
   StopFeedbacksOnDisable: 0
@@ -762,11 +763,11 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
-    - rid: 7241849249656995840
+    - rid: 5982134046409097252
       type: {class: MMF_ParticlesInstantiation, ns: MoreMountains.Feedbacks, asm: MoreMountains.Feedbacks}
       data:
         Active: 1
-        UniqueID: 730334626
+        UniqueID: 2126946322
         Label: Particles Instantiation
         ChannelMode: 0
         Channel: 0
@@ -849,11 +850,11 @@ MonoBehaviour:
         ApplyScale: 0
         ForceSimulationSpeed: 0
         ForcedSimulationSpeed: {x: 0.1, y: 1}
-    - rid: 7241849253592563714
+    - rid: 5982134046409097253
       type: {class: MMF_LensDistortion_URP, ns: MoreMountains.FeedbacksForThirdParty, asm: MoreMountains.Feedbacks.URP}
       data:
         Active: 1
-        UniqueID: 851270250
+        UniqueID: -340647038
         Label: Lens Distortion URP
         ChannelMode: 0
         Channel: 0
@@ -917,7 +918,7 @@ MonoBehaviour:
         RemapRangeFalloff: {x: 0, y: 1}
         Owner: {fileID: 7655269903834997755}
         DebugActive: 0
-        Duration: 0.8
+        Duration: 1.5
         ResetShakerValuesAfterShake: 1
         ResetTargetValuesAfterShake: 1
         RelativeIntensity: 0
@@ -1019,11 +1020,11 @@ MonoBehaviour:
           m_RotationOrder: 4
         RemapIntensityZero: 0
         RemapIntensityOne: 0.5
-    - rid: 7241849253592563715
+    - rid: 5982134046409097254
       type: {class: MMF_MotionBlur_URP, ns: MoreMountains.FeedbacksForThirdParty, asm: MoreMountains.Feedbacks.URP}
       data:
         Active: 1
-        UniqueID: 1997780446
+        UniqueID: 672669931
         Label: Motion Blur URP
         ChannelMode: 0
         Channel: 0
@@ -1087,7 +1088,7 @@ MonoBehaviour:
         RemapRangeFalloff: {x: 0, y: 1}
         Owner: {fileID: 7655269903834997755}
         DebugActive: 0
-        Duration: 0.2
+        Duration: 1
         ResetShakerValuesAfterShake: 1
         ResetTargetValuesAfterShake: 1
         Intensity:
@@ -1126,11 +1127,11 @@ MonoBehaviour:
         RemapIntensityZero: 0
         RemapIntensityOne: 1
         RelativeIntensity: 0
-    - rid: 7241849253592563716
+    - rid: 5982134046409097255
       type: {class: MMF_ChromaticAberration_URP, ns: MoreMountains.FeedbacksForThirdParty, asm: MoreMountains.Feedbacks.URP}
       data:
         Active: 1
-        UniqueID: 42205239
+        UniqueID: -1691704947
         Label: Chromatic Aberration URP
         ChannelMode: 0
         Channel: 0
@@ -1194,7 +1195,7 @@ MonoBehaviour:
         RemapRangeFalloff: {x: 0, y: 1}
         Owner: {fileID: 7655269903834997755}
         DebugActive: 0
-        Duration: 0.2
+        Duration: 1
         ResetShakerValuesAfterShake: 1
         ResetTargetValuesAfterShake: 1
         RemapIntensityZero: 0
@@ -1234,11 +1235,11 @@ MonoBehaviour:
           m_RotationOrder: 4
         Amplitude: 1
         RelativeIntensity: 0
-    - rid: 7241849253592563717
+    - rid: 5982134046409097256
       type: {class: MMF_Vignette_URP, ns: MoreMountains.FeedbacksForThirdParty, asm: MoreMountains.Feedbacks.URP}
       data:
-        Active: 1
-        UniqueID: 1931187183
+        Active: 0
+        UniqueID: -1428002608
         Label: Vignette URP
         ChannelMode: 0
         Channel: 0
@@ -1302,7 +1303,7 @@ MonoBehaviour:
         RemapRangeFalloff: {x: 0, y: 1}
         Owner: {fileID: 7655269903834997755}
         DebugActive: 0
-        Duration: 0.2
+        Duration: 1
         ResetShakerValuesAfterShake: 1
         ResetTargetValuesAfterShake: 1
         Intensity:
@@ -1311,24 +1312,24 @@ MonoBehaviour:
           - serializedVersion: 3
             time: 0
             value: 0
-            inSlope: 0
-            outSlope: 0
+            inSlope: 2
+            outSlope: 2
             tangentMode: 0
             weightedMode: 0
             inWeight: 0
             outWeight: 0
           - serializedVersion: 3
-            time: 0.4935913
-            value: 0.52401733
-            inSlope: 0
-            outSlope: 0
+            time: 0.27806783
+            value: 1.0003433
+            inSlope: 0.914907
+            outSlope: 0.914907
             tangentMode: 0
             weightedMode: 0
-            inWeight: 0
-            outWeight: 0
+            inWeight: 0.33333334
+            outWeight: 0.33333334
           - serializedVersion: 3
-            time: 1
-            value: 0
+            time: 0.9942627
+            value: -0.0014572144
             inSlope: 0
             outSlope: 0
             tangentMode: 0
@@ -1341,11 +1342,11 @@ MonoBehaviour:
         RemapIntensityZero: 0
         RemapIntensityOne: 0.75
         RelativeIntensity: 0
-    - rid: 7241849253592563718
+    - rid: 5982134046409097257
       type: {class: MMF_Bloom_URP, ns: MoreMountains.FeedbacksForThirdParty, asm: MoreMountains.Feedbacks.URP}
       data:
         Active: 1
-        UniqueID: 828870367
+        UniqueID: -433263691
         Label: Bloom URP
         ChannelMode: 0
         Channel: 0
@@ -1409,7 +1410,7 @@ MonoBehaviour:
         RemapRangeFalloff: {x: 0, y: 1}
         Owner: {fileID: 7655269903834997755}
         DebugActive: 0
-        ShakeDuration: 0.2
+        ShakeDuration: 1
         ResetShakerValuesAfterShake: 1
         ResetTargetValuesAfterShake: 1
         RelativeValues: 1
@@ -1483,11 +1484,11 @@ MonoBehaviour:
           m_RotationOrder: 4
         RemapThresholdZero: 0
         RemapThresholdOne: 0
-    - rid: 7241849256490041357
+    - rid: 5982134046409097258
       type: {class: MMF_CinemachineImpulseSource, ns: MoreMountains.FeedbacksForThirdParty, asm: MoreMountains.Feedbacks.Cinemachine}
       data:
         Active: 1
-        UniqueID: -834016452
+        UniqueID: 2036112117
         Label: Cinemachine Impulse Source
         ChannelMode: 0
         Channel: 0
@@ -1553,12 +1554,298 @@ MonoBehaviour:
         DebugActive: 0
         Velocity: {x: 1, y: 1, z: 1}
         ImpulseSource: {fileID: 0}
-        ClearImpulseOnStop: 0
-    - rid: 7241849262784905220
+        ClearImpulseOnStop: 1
+    - rid: 5982134046409097259
+      type: {class: MMF_ColorAdjustments_URP, ns: MoreMountains.FeedbacksForThirdParty, asm: MoreMountains.Feedbacks.URP}
+      data:
+        Active: 1
+        UniqueID: 778410437
+        Label: Color Adjustments URP
+        ChannelMode: 0
+        Channel: 0
+        MMChannelDefinition: {fileID: 0}
+        Chance: 100
+        DisplayColor: {r: 0, g: 0, b: 0, a: 1}
+        Timing:
+          TimescaleMode: 0
+          ExcludeFromHoldingPauses: 0
+          ContributeToTotalDuration: 1
+          InitialDelay: 0
+          CooldownDuration: 0
+          InterruptsOnStop: 1
+          NumberOfRepeats: 0
+          RepeatForever: 0
+          DelayBetweenRepeats: 1
+          MMFeedbacksDirectionCondition: 0
+          PlayDirection: 0
+          ConstantIntensity: 0
+          UseIntensityInterval: 0
+          IntensityIntervalMin: 0
+          IntensityIntervalMax: 0
+          Sequence: {fileID: 0}
+          TrackID: 0
+          Quantized: 0
+          TargetBPM: 120
+        AutomatedTargetAcquisition:
+          Mode: 0
+          ChildIndex: 0
+        RandomizeOutput: 0
+        RandomMultiplier: {x: 0.8, y: 1}
+        RandomizeDuration: 0
+        RandomDurationMultiplier: {x: 0.5, y: 2}
+        UseRange: 0
+        RangeDistance: 5
+        UseRangeFalloff: 0
+        RangeFalloff:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 1
+            value: 0
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        RemapRangeFalloff: {x: 0, y: 1}
+        Owner: {fileID: 7655269903834997755}
+        DebugActive: 0
+        ShakeDuration: 3.5
+        RelativeIntensity: 1
+        ResetShakerValuesAfterShake: 1
+        ResetTargetValuesAfterShake: 1
+        ShakePostExposure:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 0
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 0.5
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 1
+            value: 0
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        RemapPostExposureZero: 0
+        RemapPostExposureOne: 0
+        ShakeHueShift:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 0
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 0.5
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 1
+            value: 0
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        RemapHueShiftZero: 0
+        RemapHueShiftOne: 0
+        ShakeSaturation:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 0
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 0.5
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 1
+            value: 0
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        RemapSaturationZero: 0
+        RemapSaturationOne: 0
+        ShakeContrast:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 0
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 0.15628004
+            value: 1.001598
+            inSlope: 0.037731748
+            outSlope: 0.037731748
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0.33333334
+            outWeight: 0.05947106
+          - serializedVersion: 3
+            time: 0.7207031
+            value: 0.9985428
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 1
+            value: 0
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        RemapContrastZero: 0
+        RemapContrastOne: 50
+        ColorFilterMode: 0
+        ColorFilterGradient:
+          serializedVersion: 2
+          key0: {r: 1, g: 1, b: 1, a: 1}
+          key1: {r: 1, g: 1, b: 1, a: 1}
+          key2: {r: 0, g: 0, b: 0, a: 0}
+          key3: {r: 0, g: 0, b: 0, a: 0}
+          key4: {r: 0, g: 0, b: 0, a: 0}
+          key5: {r: 0, g: 0, b: 0, a: 0}
+          key6: {r: 0, g: 0, b: 0, a: 0}
+          key7: {r: 0, g: 0, b: 0, a: 0}
+          ctime0: 0
+          ctime1: 65535
+          ctime2: 0
+          ctime3: 0
+          ctime4: 0
+          ctime5: 0
+          ctime6: 0
+          ctime7: 0
+          atime0: 0
+          atime1: 65535
+          atime2: 0
+          atime3: 0
+          atime4: 0
+          atime5: 0
+          atime6: 0
+          atime7: 0
+          m_Mode: 0
+          m_ColorSpace: -1
+          m_NumColorKeys: 2
+          m_NumAlphaKeys: 2
+        ColorFilterDestination: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+        ColorFilterCurve:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 0
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 0.5
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 1
+            value: 0
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+    - rid: 5982134046409097260
       type: {class: MMF_MMSoundManagerSound, ns: MoreMountains.Feedbacks, asm: MoreMountains.Feedbacks.MMTools}
       data:
         Active: 1
-        UniqueID: 435923257
+        UniqueID: 741158582
         Label: MMSoundManager Sound
         ChannelMode: 0
         Channel: 0
@@ -1729,11 +2016,11 @@ MonoBehaviour:
           ButtonText: Debug Stop Sound
         ResetSequentialIndexButton:
           ButtonText: Reset Sequential Index
-    - rid: 7241849262784905225
+    - rid: 5982134046409097261
       type: {class: MMF_MMSoundManagerSound, ns: MoreMountains.Feedbacks, asm: MoreMountains.Feedbacks.MMTools}
       data:
         Active: 1
-        UniqueID: 675217286
+        UniqueID: 444205920
         Label: MMSoundManager Sound
         ChannelMode: 0
         Channel: 0
@@ -2025,14 +2312,13 @@ MonoBehaviour:
         m_Calls: []
   DebugActive: 0
   FeedbacksList:
-  - rid: 5982134033906663424
-  - rid: 7241849253592563714
-  - rid: 7241849253592563715
-  - rid: 7241849253592563716
-  - rid: 7241849253592563717
-  - rid: 7241849253592563718
-  - rid: 7241849256490041357
-  - rid: 7241849262784905220
+  - rid: 5982134046409097264
+  - rid: 5982134046409097265
+  - rid: 5982134046409097266
+  - rid: 5982134046409097267
+  - rid: 5982134046409097268
+  - rid: 5982134046409097269
+  - rid: 5982134046409097270
   KeepPlayModeChanges: 0
   PerformanceMode: 0
   StopFeedbacksOnDisable: 0
@@ -2040,98 +2326,11 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
-    - rid: 5982134033906663424
-      type: {class: MMF_ParticlesInstantiation, ns: MoreMountains.Feedbacks, asm: MoreMountains.Feedbacks}
-      data:
-        Active: 1
-        UniqueID: -2028198004
-        Label: Particles Instantiation
-        ChannelMode: 0
-        Channel: 0
-        MMChannelDefinition: {fileID: 0}
-        Chance: 100
-        DisplayColor: {r: 0, g: 0, b: 0, a: 1}
-        Timing:
-          TimescaleMode: 0
-          ExcludeFromHoldingPauses: 0
-          ContributeToTotalDuration: 1
-          InitialDelay: 0
-          CooldownDuration: 0
-          InterruptsOnStop: 1
-          NumberOfRepeats: 0
-          RepeatForever: 0
-          DelayBetweenRepeats: 1
-          MMFeedbacksDirectionCondition: 0
-          PlayDirection: 0
-          ConstantIntensity: 0
-          UseIntensityInterval: 0
-          IntensityIntervalMin: 0
-          IntensityIntervalMax: 0
-          Sequence: {fileID: 0}
-          TrackID: 0
-          Quantized: 0
-          TargetBPM: 120
-        AutomatedTargetAcquisition:
-          Mode: 0
-          ChildIndex: 0
-        RandomizeOutput: 0
-        RandomMultiplier: {x: 0.8, y: 1}
-        RandomizeDuration: 0
-        RandomDurationMultiplier: {x: 0.5, y: 2}
-        UseRange: 0
-        RangeDistance: 5
-        UseRangeFalloff: 0
-        RangeFalloff:
-          serializedVersion: 2
-          m_Curve:
-          - serializedVersion: 3
-            time: 0
-            value: 1
-            inSlope: 0
-            outSlope: 0
-            tangentMode: 0
-            weightedMode: 0
-            inWeight: 0
-            outWeight: 0
-          - serializedVersion: 3
-            time: 1
-            value: 0
-            inSlope: 0
-            outSlope: 0
-            tangentMode: 0
-            weightedMode: 0
-            inWeight: 0
-            outWeight: 0
-          m_PreInfinity: 2
-          m_PostInfinity: 2
-          m_RotationOrder: 4
-        RemapRangeFalloff: {x: 0, y: 1}
-        Owner: {fileID: 3922370875417826643}
-        DebugActive: 0
-        Mode: 0
-        ObjectPoolSize: 5
-        MutualizePools: 0
-        ParentTransform: {fileID: 0}
-        CachedRecycle: 1
-        ParticlesPrefab: {fileID: 2404041155322657589, guid: d66577318f013fc45bbdf9a5657a0188, type: 3}
-        RandomParticlePrefabs: []
-        ForceSetActiveOnPlay: 0
-        StopOnReset: 0
-        DeclaredDuration: 0
-        PositionMode: 0
-        InstantiateParticlesPosition: {fileID: 5113674581173122664}
-        TargetWorldPosition: {x: 0, y: 0, z: 0}
-        Offset: {x: 0, y: 0, z: 0}
-        NestParticles: 1
-        ApplyRotation: 0
-        ApplyScale: 0
-        ForceSimulationSpeed: 0
-        ForcedSimulationSpeed: {x: 0.1, y: 1}
-    - rid: 7241849253592563714
+    - rid: 5982134046409097264
       type: {class: MMF_LensDistortion_URP, ns: MoreMountains.FeedbacksForThirdParty, asm: MoreMountains.Feedbacks.URP}
       data:
-        Active: 1
-        UniqueID: 851270250
+        Active: 0
+        UniqueID: -1312045605
         Label: Lens Distortion URP
         ChannelMode: 0
         Channel: 0
@@ -2297,11 +2496,11 @@ MonoBehaviour:
           m_RotationOrder: 4
         RemapIntensityZero: 0
         RemapIntensityOne: 0.5
-    - rid: 7241849253592563715
+    - rid: 5982134046409097265
       type: {class: MMF_MotionBlur_URP, ns: MoreMountains.FeedbacksForThirdParty, asm: MoreMountains.Feedbacks.URP}
       data:
         Active: 1
-        UniqueID: 1997780446
+        UniqueID: -823844595
         Label: Motion Blur URP
         ChannelMode: 0
         Channel: 0
@@ -2365,7 +2564,7 @@ MonoBehaviour:
         RemapRangeFalloff: {x: 0, y: 1}
         Owner: {fileID: 3922370875417826643}
         DebugActive: 0
-        Duration: 0.2
+        Duration: 2
         ResetShakerValuesAfterShake: 1
         ResetTargetValuesAfterShake: 1
         Intensity:
@@ -2404,11 +2603,11 @@ MonoBehaviour:
         RemapIntensityZero: 0
         RemapIntensityOne: 1
         RelativeIntensity: 0
-    - rid: 7241849253592563716
+    - rid: 5982134046409097266
       type: {class: MMF_ChromaticAberration_URP, ns: MoreMountains.FeedbacksForThirdParty, asm: MoreMountains.Feedbacks.URP}
       data:
         Active: 1
-        UniqueID: 42205239
+        UniqueID: 477090960
         Label: Chromatic Aberration URP
         ChannelMode: 0
         Channel: 0
@@ -2472,7 +2671,7 @@ MonoBehaviour:
         RemapRangeFalloff: {x: 0, y: 1}
         Owner: {fileID: 3922370875417826643}
         DebugActive: 0
-        Duration: 0.2
+        Duration: 2
         ResetShakerValuesAfterShake: 1
         ResetTargetValuesAfterShake: 1
         RemapIntensityZero: 0
@@ -2512,118 +2711,11 @@ MonoBehaviour:
           m_RotationOrder: 4
         Amplitude: 1
         RelativeIntensity: 0
-    - rid: 7241849253592563717
-      type: {class: MMF_Vignette_URP, ns: MoreMountains.FeedbacksForThirdParty, asm: MoreMountains.Feedbacks.URP}
-      data:
-        Active: 1
-        UniqueID: 1931187183
-        Label: Vignette URP
-        ChannelMode: 0
-        Channel: 0
-        MMChannelDefinition: {fileID: 0}
-        Chance: 100
-        DisplayColor: {r: 0, g: 0, b: 0, a: 1}
-        Timing:
-          TimescaleMode: 0
-          ExcludeFromHoldingPauses: 0
-          ContributeToTotalDuration: 1
-          InitialDelay: 0
-          CooldownDuration: 0
-          InterruptsOnStop: 1
-          NumberOfRepeats: 0
-          RepeatForever: 0
-          DelayBetweenRepeats: 1
-          MMFeedbacksDirectionCondition: 0
-          PlayDirection: 0
-          ConstantIntensity: 0
-          UseIntensityInterval: 0
-          IntensityIntervalMin: 0
-          IntensityIntervalMax: 0
-          Sequence: {fileID: 0}
-          TrackID: 0
-          Quantized: 0
-          TargetBPM: 120
-        AutomatedTargetAcquisition:
-          Mode: 0
-          ChildIndex: 0
-        RandomizeOutput: 0
-        RandomMultiplier: {x: 0.8, y: 1}
-        RandomizeDuration: 0
-        RandomDurationMultiplier: {x: 0.5, y: 2}
-        UseRange: 0
-        RangeDistance: 5
-        UseRangeFalloff: 0
-        RangeFalloff:
-          serializedVersion: 2
-          m_Curve:
-          - serializedVersion: 3
-            time: 0
-            value: 1
-            inSlope: 0
-            outSlope: 0
-            tangentMode: 0
-            weightedMode: 0
-            inWeight: 0
-            outWeight: 0
-          - serializedVersion: 3
-            time: 1
-            value: 0
-            inSlope: 0
-            outSlope: 0
-            tangentMode: 0
-            weightedMode: 0
-            inWeight: 0
-            outWeight: 0
-          m_PreInfinity: 2
-          m_PostInfinity: 2
-          m_RotationOrder: 4
-        RemapRangeFalloff: {x: 0, y: 1}
-        Owner: {fileID: 3922370875417826643}
-        DebugActive: 0
-        Duration: 0.2
-        ResetShakerValuesAfterShake: 1
-        ResetTargetValuesAfterShake: 1
-        Intensity:
-          serializedVersion: 2
-          m_Curve:
-          - serializedVersion: 3
-            time: 0
-            value: 0
-            inSlope: 0
-            outSlope: 0
-            tangentMode: 0
-            weightedMode: 0
-            inWeight: 0
-            outWeight: 0
-          - serializedVersion: 3
-            time: 0.4935913
-            value: 0.52401733
-            inSlope: 0
-            outSlope: 0
-            tangentMode: 0
-            weightedMode: 0
-            inWeight: 0
-            outWeight: 0
-          - serializedVersion: 3
-            time: 1
-            value: 0
-            inSlope: 0
-            outSlope: 0
-            tangentMode: 0
-            weightedMode: 0
-            inWeight: 0
-            outWeight: 0
-          m_PreInfinity: 2
-          m_PostInfinity: 2
-          m_RotationOrder: 4
-        RemapIntensityZero: 0
-        RemapIntensityOne: 0.75
-        RelativeIntensity: 0
-    - rid: 7241849253592563718
+    - rid: 5982134046409097267
       type: {class: MMF_Bloom_URP, ns: MoreMountains.FeedbacksForThirdParty, asm: MoreMountains.Feedbacks.URP}
       data:
         Active: 1
-        UniqueID: 828870367
+        UniqueID: -1976254155
         Label: Bloom URP
         ChannelMode: 0
         Channel: 0
@@ -2687,7 +2779,7 @@ MonoBehaviour:
         RemapRangeFalloff: {x: 0, y: 1}
         Owner: {fileID: 3922370875417826643}
         DebugActive: 0
-        ShakeDuration: 0.2
+        ShakeDuration: 2
         ResetShakerValuesAfterShake: 1
         ResetTargetValuesAfterShake: 1
         RelativeValues: 1
@@ -2725,7 +2817,7 @@ MonoBehaviour:
           m_PostInfinity: 2
           m_RotationOrder: 4
         RemapIntensityZero: 0
-        RemapIntensityOne: 1
+        RemapIntensityOne: 0.25
         ShakeThreshold:
           serializedVersion: 2
           m_Curve:
@@ -2761,11 +2853,118 @@ MonoBehaviour:
           m_RotationOrder: 4
         RemapThresholdZero: 0
         RemapThresholdOne: 0
-    - rid: 7241849256490041357
-      type: {class: MMF_CinemachineImpulseSource, ns: MoreMountains.FeedbacksForThirdParty, asm: MoreMountains.Feedbacks.Cinemachine}
+    - rid: 5982134046409097268
+      type: {class: MMF_Vignette_URP, ns: MoreMountains.FeedbacksForThirdParty, asm: MoreMountains.Feedbacks.URP}
       data:
         Active: 1
-        UniqueID: -834016452
+        UniqueID: 501401191
+        Label: Vignette URP
+        ChannelMode: 0
+        Channel: 0
+        MMChannelDefinition: {fileID: 0}
+        Chance: 100
+        DisplayColor: {r: 0, g: 0, b: 0, a: 1}
+        Timing:
+          TimescaleMode: 0
+          ExcludeFromHoldingPauses: 0
+          ContributeToTotalDuration: 1
+          InitialDelay: 0
+          CooldownDuration: 0
+          InterruptsOnStop: 1
+          NumberOfRepeats: 0
+          RepeatForever: 0
+          DelayBetweenRepeats: 1
+          MMFeedbacksDirectionCondition: 0
+          PlayDirection: 0
+          ConstantIntensity: 0
+          UseIntensityInterval: 0
+          IntensityIntervalMin: 0
+          IntensityIntervalMax: 0
+          Sequence: {fileID: 0}
+          TrackID: 0
+          Quantized: 0
+          TargetBPM: 120
+        AutomatedTargetAcquisition:
+          Mode: 0
+          ChildIndex: 0
+        RandomizeOutput: 0
+        RandomMultiplier: {x: 0.8, y: 1}
+        RandomizeDuration: 0
+        RandomDurationMultiplier: {x: 0.5, y: 2}
+        UseRange: 0
+        RangeDistance: 5
+        UseRangeFalloff: 0
+        RangeFalloff:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 1
+            value: 0
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        RemapRangeFalloff: {x: 0, y: 1}
+        Owner: {fileID: 3922370875417826643}
+        DebugActive: 0
+        Duration: 2
+        ResetShakerValuesAfterShake: 1
+        ResetTargetValuesAfterShake: 1
+        Intensity:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 0
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 0.4935913
+            value: 0.52401733
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 1
+            value: 0
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        RemapIntensityZero: 0
+        RemapIntensityOne: 0.25
+        RelativeIntensity: 1
+    - rid: 5982134046409097269
+      type: {class: MMF_CinemachineImpulseSource, ns: MoreMountains.FeedbacksForThirdParty, asm: MoreMountains.Feedbacks.Cinemachine}
+      data:
+        Active: 0
+        UniqueID: 480799222
         Label: Cinemachine Impulse Source
         ChannelMode: 0
         Channel: 0
@@ -2832,11 +3031,11 @@ MonoBehaviour:
         Velocity: {x: 1, y: 1, z: 1}
         ImpulseSource: {fileID: 0}
         ClearImpulseOnStop: 0
-    - rid: 7241849262784905220
+    - rid: 5982134046409097270
       type: {class: MMF_MMSoundManagerSound, ns: MoreMountains.Feedbacks, asm: MoreMountains.Feedbacks.MMTools}
       data:
         Active: 1
-        UniqueID: 435923257
+        UniqueID: -1312418858
         Label: MMSoundManager Sound
         ChannelMode: 0
         Channel: 0
@@ -4452,12 +4651,13 @@ MonoBehaviour:
         m_Calls: []
   DebugActive: 0
   FeedbacksList:
-  - rid: 7241849256490041346
-  - rid: 5982134044854583296
-  - rid: 5982134044854583297
-  - rid: 5982134044854583298
-  - rid: 5982134044854583299
-  - rid: 7241849262784905221
+  - rid: 5982134046409097245
+  - rid: 5982134046409097246
+  - rid: 5982134046409097247
+  - rid: 5982134046409097248
+  - rid: 5982134046409097249
+  - rid: 5982134046409097250
+  - rid: 5982134046409097251
   KeepPlayModeChanges: 0
   PerformanceMode: 0
   StopFeedbacksOnDisable: 0
@@ -4465,11 +4665,98 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
-    - rid: 5982134044854583296
+    - rid: 5982134046409097245
+      type: {class: MMF_ParticlesInstantiation, ns: MoreMountains.Feedbacks, asm: MoreMountains.Feedbacks}
+      data:
+        Active: 1
+        UniqueID: -848775782
+        Label: Particles Instantiation
+        ChannelMode: 0
+        Channel: 0
+        MMChannelDefinition: {fileID: 0}
+        Chance: 100
+        DisplayColor: {r: 0, g: 0, b: 0, a: 1}
+        Timing:
+          TimescaleMode: 0
+          ExcludeFromHoldingPauses: 0
+          ContributeToTotalDuration: 1
+          InitialDelay: 0
+          CooldownDuration: 0
+          InterruptsOnStop: 1
+          NumberOfRepeats: 0
+          RepeatForever: 0
+          DelayBetweenRepeats: 1
+          MMFeedbacksDirectionCondition: 0
+          PlayDirection: 0
+          ConstantIntensity: 0
+          UseIntensityInterval: 0
+          IntensityIntervalMin: 0
+          IntensityIntervalMax: 0
+          Sequence: {fileID: 0}
+          TrackID: 0
+          Quantized: 0
+          TargetBPM: 120
+        AutomatedTargetAcquisition:
+          Mode: 0
+          ChildIndex: 0
+        RandomizeOutput: 0
+        RandomMultiplier: {x: 0.8, y: 1}
+        RandomizeDuration: 0
+        RandomDurationMultiplier: {x: 0.5, y: 2}
+        UseRange: 0
+        RangeDistance: 5
+        UseRangeFalloff: 0
+        RangeFalloff:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 1
+            value: 0
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        RemapRangeFalloff: {x: 0, y: 1}
+        Owner: {fileID: 2893979952161094214}
+        DebugActive: 0
+        Mode: 1
+        ObjectPoolSize: 5
+        MutualizePools: 0
+        ParentTransform: {fileID: 0}
+        CachedRecycle: 1
+        ParticlesPrefab: {fileID: 5082438276172502402, guid: b9a21588e41ca35458ad953930eb1ac7, type: 3}
+        RandomParticlePrefabs: []
+        ForceSetActiveOnPlay: 0
+        StopOnReset: 0
+        DeclaredDuration: 0
+        PositionMode: 0
+        InstantiateParticlesPosition: {fileID: 6643356541317680833}
+        TargetWorldPosition: {x: 0, y: 0, z: 0}
+        Offset: {x: 0, y: 0, z: 0}
+        NestParticles: 1
+        ApplyRotation: 0
+        ApplyScale: 0
+        ForceSimulationSpeed: 0
+        ForcedSimulationSpeed: {x: 0.1, y: 1}
+    - rid: 5982134046409097246
       type: {class: MMF_MotionBlur_URP, ns: MoreMountains.FeedbacksForThirdParty, asm: MoreMountains.Feedbacks.URP}
       data:
         Active: 1
-        UniqueID: 998105879
+        UniqueID: 1652951107
         Label: Motion Blur URP
         ChannelMode: 0
         Channel: 0
@@ -4572,11 +4859,11 @@ MonoBehaviour:
         RemapIntensityZero: 0
         RemapIntensityOne: 1
         RelativeIntensity: 0
-    - rid: 5982134044854583297
+    - rid: 5982134046409097247
       type: {class: MMF_ChromaticAberration_URP, ns: MoreMountains.FeedbacksForThirdParty, asm: MoreMountains.Feedbacks.URP}
       data:
         Active: 1
-        UniqueID: -682367500
+        UniqueID: 194616114
         Label: Chromatic Aberration URP
         ChannelMode: 0
         Channel: 0
@@ -4640,7 +4927,7 @@ MonoBehaviour:
         RemapRangeFalloff: {x: 0, y: 1}
         Owner: {fileID: 2893979952161094214}
         DebugActive: 0
-        Duration: 0.2
+        Duration: 1
         ResetShakerValuesAfterShake: 1
         ResetTargetValuesAfterShake: 1
         RemapIntensityZero: 0
@@ -4680,11 +4967,11 @@ MonoBehaviour:
           m_RotationOrder: 4
         Amplitude: 1
         RelativeIntensity: 0
-    - rid: 5982134044854583298
+    - rid: 5982134046409097248
       type: {class: MMF_Bloom_URP, ns: MoreMountains.FeedbacksForThirdParty, asm: MoreMountains.Feedbacks.URP}
       data:
         Active: 1
-        UniqueID: 879552909
+        UniqueID: -1668408366
         Label: Bloom URP
         ChannelMode: 0
         Channel: 0
@@ -4748,7 +5035,7 @@ MonoBehaviour:
         RemapRangeFalloff: {x: 0, y: 1}
         Owner: {fileID: 2893979952161094214}
         DebugActive: 0
-        ShakeDuration: 0.2
+        ShakeDuration: 1
         ResetShakerValuesAfterShake: 1
         ResetTargetValuesAfterShake: 1
         RelativeValues: 1
@@ -4822,11 +5109,11 @@ MonoBehaviour:
           m_RotationOrder: 4
         RemapThresholdZero: 0
         RemapThresholdOne: 0
-    - rid: 5982134044854583299
+    - rid: 5982134046409097249
       type: {class: MMF_TimescaleModifier, ns: MoreMountains.Feedbacks, asm: MoreMountains.Feedbacks}
       data:
         Active: 1
-        UniqueID: -67431210
+        UniqueID: -1617417588
         Label: Timescale Modifier
         ChannelMode: 0
         Channel: 0
@@ -4956,98 +5243,11 @@ MonoBehaviour:
             m_RotationOrder: 4
           Initialized: 0
         TimescaleLerpDurationOnReset: 1
-    - rid: 7241849256490041346
-      type: {class: MMF_ParticlesInstantiation, ns: MoreMountains.Feedbacks, asm: MoreMountains.Feedbacks}
-      data:
-        Active: 1
-        UniqueID: -1949333930
-        Label: Particles Instantiation
-        ChannelMode: 0
-        Channel: 0
-        MMChannelDefinition: {fileID: 0}
-        Chance: 100
-        DisplayColor: {r: 0, g: 0, b: 0, a: 1}
-        Timing:
-          TimescaleMode: 0
-          ExcludeFromHoldingPauses: 0
-          ContributeToTotalDuration: 1
-          InitialDelay: 0
-          CooldownDuration: 0
-          InterruptsOnStop: 1
-          NumberOfRepeats: 0
-          RepeatForever: 0
-          DelayBetweenRepeats: 1
-          MMFeedbacksDirectionCondition: 0
-          PlayDirection: 0
-          ConstantIntensity: 0
-          UseIntensityInterval: 0
-          IntensityIntervalMin: 0
-          IntensityIntervalMax: 0
-          Sequence: {fileID: 0}
-          TrackID: 0
-          Quantized: 0
-          TargetBPM: 120
-        AutomatedTargetAcquisition:
-          Mode: 0
-          ChildIndex: 0
-        RandomizeOutput: 0
-        RandomMultiplier: {x: 0.8, y: 1}
-        RandomizeDuration: 0
-        RandomDurationMultiplier: {x: 0.5, y: 2}
-        UseRange: 0
-        RangeDistance: 5
-        UseRangeFalloff: 0
-        RangeFalloff:
-          serializedVersion: 2
-          m_Curve:
-          - serializedVersion: 3
-            time: 0
-            value: 1
-            inSlope: 0
-            outSlope: 0
-            tangentMode: 0
-            weightedMode: 0
-            inWeight: 0
-            outWeight: 0
-          - serializedVersion: 3
-            time: 1
-            value: 0
-            inSlope: 0
-            outSlope: 0
-            tangentMode: 0
-            weightedMode: 0
-            inWeight: 0
-            outWeight: 0
-          m_PreInfinity: 2
-          m_PostInfinity: 2
-          m_RotationOrder: 4
-        RemapRangeFalloff: {x: 0, y: 1}
-        Owner: {fileID: 2893979952161094214}
-        DebugActive: 0
-        Mode: 1
-        ObjectPoolSize: 5
-        MutualizePools: 0
-        ParentTransform: {fileID: 0}
-        CachedRecycle: 1
-        ParticlesPrefab: {fileID: 5082438276172502402, guid: b9a21588e41ca35458ad953930eb1ac7, type: 3}
-        RandomParticlePrefabs: []
-        ForceSetActiveOnPlay: 0
-        StopOnReset: 0
-        DeclaredDuration: 0
-        PositionMode: 0
-        InstantiateParticlesPosition: {fileID: 6643356541317680833}
-        TargetWorldPosition: {x: 0, y: 0, z: 0}
-        Offset: {x: 0, y: 0, z: 0}
-        NestParticles: 1
-        ApplyRotation: 0
-        ApplyScale: 0
-        ForceSimulationSpeed: 0
-        ForcedSimulationSpeed: {x: 0.1, y: 1}
-    - rid: 7241849262784905221
+    - rid: 5982134046409097250
       type: {class: MMF_MMSoundManagerSound, ns: MoreMountains.Feedbacks, asm: MoreMountains.Feedbacks.MMTools}
       data:
         Active: 1
-        UniqueID: 1032172085
+        UniqueID: -1782030950
         Label: MMSoundManager Sound
         ChannelMode: 0
         Channel: 0
@@ -5219,6 +5419,122 @@ MonoBehaviour:
           ButtonText: Debug Stop Sound
         ResetSequentialIndexButton:
           ButtonText: Reset Sequential Index
+    - rid: 5982134046409097251
+      type: {class: MMF_Vignette_URP, ns: MoreMountains.FeedbacksForThirdParty, asm: MoreMountains.Feedbacks.URP}
+      data:
+        Active: 1
+        UniqueID: -394516496
+        Label: Vignette URP
+        ChannelMode: 0
+        Channel: 0
+        MMChannelDefinition: {fileID: 0}
+        Chance: 100
+        DisplayColor: {r: 0, g: 0, b: 0, a: 1}
+        Timing:
+          TimescaleMode: 0
+          ExcludeFromHoldingPauses: 0
+          ContributeToTotalDuration: 1
+          InitialDelay: 0
+          CooldownDuration: 0
+          InterruptsOnStop: 1
+          NumberOfRepeats: 0
+          RepeatForever: 0
+          DelayBetweenRepeats: 1
+          MMFeedbacksDirectionCondition: 0
+          PlayDirection: 0
+          ConstantIntensity: 0
+          UseIntensityInterval: 0
+          IntensityIntervalMin: 0
+          IntensityIntervalMax: 0
+          Sequence: {fileID: 0}
+          TrackID: 0
+          Quantized: 0
+          TargetBPM: 120
+        AutomatedTargetAcquisition:
+          Mode: 0
+          ChildIndex: 0
+        RandomizeOutput: 0
+        RandomMultiplier: {x: 0.8, y: 1}
+        RandomizeDuration: 0
+        RandomDurationMultiplier: {x: 0.5, y: 2}
+        UseRange: 0
+        RangeDistance: 5
+        UseRangeFalloff: 0
+        RangeFalloff:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 1
+            value: 0
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        RemapRangeFalloff: {x: 0, y: 1}
+        Owner: {fileID: 2893979952161094214}
+        DebugActive: 0
+        Duration: 0.75
+        ResetShakerValuesAfterShake: 1
+        ResetTargetValuesAfterShake: 1
+        Intensity:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0.0019493103
+            value: 0.103637695
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 0.10620117
+            value: 0.9956322
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 0.2751234
+            value: 0.9314098
+            inSlope: -1.0569333
+            outSlope: -1.0569333
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0.33333334
+            outWeight: 0.33333334
+          - serializedVersion: 3
+            time: 1
+            value: 0
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        RemapIntensityZero: 0
+        RemapIntensityOne: 0.25
+        RelativeIntensity: 1
 --- !u!1 &3261053121799607814
 GameObject:
   m_ObjectHideFlags: 0
@@ -6963,6 +7279,7 @@ MonoBehaviour:
   - rid: 7241849253592563716
   - rid: 7241849253592563717
   - rid: 7241849253592563718
+  - rid: 5982134046409097262
   - rid: 7241849256490041357
   - rid: 7241849262784905220
   - rid: 5982134009341935616
@@ -7107,6 +7424,292 @@ MonoBehaviour:
             m_RotationOrder: 4
           Initialized: 0
         TimescaleLerpDurationOnReset: 1
+    - rid: 5982134046409097262
+      type: {class: MMF_ColorAdjustments_URP, ns: MoreMountains.FeedbacksForThirdParty, asm: MoreMountains.Feedbacks.URP}
+      data:
+        Active: 1
+        UniqueID: -455862601
+        Label: Color Adjustments URP
+        ChannelMode: 0
+        Channel: 0
+        MMChannelDefinition: {fileID: 0}
+        Chance: 100
+        DisplayColor: {r: 0, g: 0, b: 0, a: 1}
+        Timing:
+          TimescaleMode: 0
+          ExcludeFromHoldingPauses: 0
+          ContributeToTotalDuration: 1
+          InitialDelay: 0
+          CooldownDuration: 0
+          InterruptsOnStop: 1
+          NumberOfRepeats: 0
+          RepeatForever: 0
+          DelayBetweenRepeats: 1
+          MMFeedbacksDirectionCondition: 0
+          PlayDirection: 0
+          ConstantIntensity: 0
+          UseIntensityInterval: 0
+          IntensityIntervalMin: 0
+          IntensityIntervalMax: 0
+          Sequence: {fileID: 0}
+          TrackID: 0
+          Quantized: 0
+          TargetBPM: 120
+        AutomatedTargetAcquisition:
+          Mode: 0
+          ChildIndex: 0
+        RandomizeOutput: 0
+        RandomMultiplier: {x: 0.8, y: 1}
+        RandomizeDuration: 0
+        RandomDurationMultiplier: {x: 0.5, y: 2}
+        UseRange: 0
+        RangeDistance: 5
+        UseRangeFalloff: 0
+        RangeFalloff:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 1
+            value: 0
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        RemapRangeFalloff: {x: 0, y: 1}
+        Owner: {fileID: 5334563148967617205}
+        DebugActive: 0
+        ShakeDuration: 1.5
+        RelativeIntensity: 1
+        ResetShakerValuesAfterShake: 1
+        ResetTargetValuesAfterShake: 1
+        ShakePostExposure:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 0
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 0.5
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 1
+            value: 0
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        RemapPostExposureZero: 0
+        RemapPostExposureOne: 0
+        ShakeHueShift:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 0
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 0.5
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 1
+            value: 0
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        RemapHueShiftZero: 0
+        RemapHueShiftOne: 0
+        ShakeSaturation:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 0
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 0.5
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 1
+            value: 0
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        RemapSaturationZero: 0
+        RemapSaturationOne: 0
+        ShakeContrast:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 0
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 0.15628004
+            value: 1.001598
+            inSlope: 0.037731748
+            outSlope: 0.037731748
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0.33333334
+            outWeight: 0.05947106
+          - serializedVersion: 3
+            time: 0.7207031
+            value: 0.9985428
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 1
+            value: 0
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        RemapContrastZero: 0
+        RemapContrastOne: 50
+        ColorFilterMode: 0
+        ColorFilterGradient:
+          serializedVersion: 2
+          key0: {r: 1, g: 1, b: 1, a: 1}
+          key1: {r: 1, g: 1, b: 1, a: 1}
+          key2: {r: 0, g: 0, b: 0, a: 0}
+          key3: {r: 0, g: 0, b: 0, a: 0}
+          key4: {r: 0, g: 0, b: 0, a: 0}
+          key5: {r: 0, g: 0, b: 0, a: 0}
+          key6: {r: 0, g: 0, b: 0, a: 0}
+          key7: {r: 0, g: 0, b: 0, a: 0}
+          ctime0: 0
+          ctime1: 65535
+          ctime2: 0
+          ctime3: 0
+          ctime4: 0
+          ctime5: 0
+          ctime6: 0
+          ctime7: 0
+          atime0: 0
+          atime1: 65535
+          atime2: 0
+          atime3: 0
+          atime4: 0
+          atime5: 0
+          atime6: 0
+          atime7: 0
+          m_Mode: 0
+          m_ColorSpace: -1
+          m_NumColorKeys: 2
+          m_NumAlphaKeys: 2
+        ColorFilterDestination: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+        ColorFilterCurve:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 0
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 0.5
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 1
+            value: 0
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
     - rid: 7241849249656995840
       type: {class: MMF_ParticlesInstantiation, ns: MoreMountains.Feedbacks, asm: MoreMountains.Feedbacks}
       data:
@@ -7432,7 +8035,7 @@ MonoBehaviour:
         RemapRangeFalloff: {x: 0, y: 1}
         Owner: {fileID: 5334563148967617205}
         DebugActive: 0
-        Duration: 0.2
+        Duration: 1
         ResetShakerValuesAfterShake: 1
         ResetTargetValuesAfterShake: 1
         Intensity:
@@ -7539,7 +8142,7 @@ MonoBehaviour:
         RemapRangeFalloff: {x: 0, y: 1}
         Owner: {fileID: 5334563148967617205}
         DebugActive: 0
-        Duration: 0.2
+        Duration: 1
         ResetShakerValuesAfterShake: 1
         ResetTargetValuesAfterShake: 1
         RemapIntensityZero: 0
@@ -7647,7 +8250,7 @@ MonoBehaviour:
         RemapRangeFalloff: {x: 0, y: 1}
         Owner: {fileID: 5334563148967617205}
         DebugActive: 0
-        Duration: 0.2
+        Duration: 1
         ResetShakerValuesAfterShake: 1
         ResetTargetValuesAfterShake: 1
         Intensity:
@@ -7754,7 +8357,7 @@ MonoBehaviour:
         RemapRangeFalloff: {x: 0, y: 1}
         Owner: {fileID: 5334563148967617205}
         DebugActive: 0
-        ShakeDuration: 0.2
+        ShakeDuration: 1
         ResetShakerValuesAfterShake: 1
         ResetTargetValuesAfterShake: 1
         RelativeValues: 1
@@ -7792,7 +8395,7 @@ MonoBehaviour:
           m_PostInfinity: 2
           m_RotationOrder: 4
         RemapIntensityZero: 0
-        RemapIntensityOne: 1
+        RemapIntensityOne: 0.25
         ShakeThreshold:
           serializedVersion: 2
           m_Curve:
@@ -8616,6 +9219,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 974253106247804394}
   - {fileID: 7956635257290692482}
   m_Father: {fileID: 5076576187161946345}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -9912,7 +10516,7 @@ MonoBehaviour:
   onSkillEnd:
     m_PersistentCalls:
       m_Calls: []
-  iframeDuration: 1
+  iframeDuration: 2
   counterDashRange: 30
   counterMinDashDistance: 6
   counterDashTime: 4
@@ -9920,6 +10524,7 @@ MonoBehaviour:
   restTimePerDash: 0.05
   iframeOnCounterDash: 1
   counterStartFeedback: {fileID: 5334563148967617205}
+  iframeParticle: {fileID: 1017077416042841762}
 --- !u!1 &8130159263438535861
 GameObject:
   m_ObjectHideFlags: 0
@@ -10411,6 +11016,73 @@ MonoBehaviour:
         CurveRemapOne: 1
         DestinationAlpha: 1
         DisableOnStop: 0
+--- !u!1001 &3405209729023311255
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 5709245820449627743}
+    m_Modifications:
+    - target: {fileID: 2505270492086917245, guid: d66577318f013fc45bbdf9a5657a0188, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2505270492086917245, guid: d66577318f013fc45bbdf9a5657a0188, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2505270492086917245, guid: d66577318f013fc45bbdf9a5657a0188, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2505270492086917245, guid: d66577318f013fc45bbdf9a5657a0188, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2505270492086917245, guid: d66577318f013fc45bbdf9a5657a0188, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2505270492086917245, guid: d66577318f013fc45bbdf9a5657a0188, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2505270492086917245, guid: d66577318f013fc45bbdf9a5657a0188, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2505270492086917245, guid: d66577318f013fc45bbdf9a5657a0188, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2505270492086917245, guid: d66577318f013fc45bbdf9a5657a0188, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2505270492086917245, guid: d66577318f013fc45bbdf9a5657a0188, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5078518841840898510, guid: d66577318f013fc45bbdf9a5657a0188, type: 3}
+      propertyPath: m_Name
+      value: IframParticle
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: d66577318f013fc45bbdf9a5657a0188, type: 3}
+--- !u!4 &974253106247804394 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2505270492086917245, guid: d66577318f013fc45bbdf9a5657a0188, type: 3}
+  m_PrefabInstance: {fileID: 3405209729023311255}
+  m_PrefabAsset: {fileID: 0}
+--- !u!198 &1017077416042841762 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 2404041155322657589, guid: d66577318f013fc45bbdf9a5657a0188, type: 3}
+  m_PrefabInstance: {fileID: 3405209729023311255}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &5258057796772609599
 PrefabInstance:
   m_ObjectHideFlags: 0

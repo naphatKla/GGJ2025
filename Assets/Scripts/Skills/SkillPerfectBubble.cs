@@ -24,6 +24,7 @@ namespace Skills
 
         [SerializeField] [PropertyOrder(99)]
         private MMF_Player counterStartFeedback;
+        [SerializeField] private ParticleSystem iframeParticle;
 
         private bool _gotHit;
 
@@ -52,7 +53,6 @@ namespace Skills
 
             // Counter Dash
             _gotHit = false;
-            counterStartFeedback?.PlayFeedbacks();
             OwnerCharacter.StopMovementController();
             for (int i = 0; i < counterDashTime; i++)
             {
@@ -71,6 +71,7 @@ namespace Skills
                     .FirstOrDefault()?.transform;
                 
                 if (!closestEnemy) continue;
+                counterStartFeedback?.PlayFeedbacks();
                 float distance = Vector2.Distance(OwnerCharacter.transform.position, closestEnemy.transform.position);
                 Vector2 direction = (closestEnemy.position - OwnerCharacter.transform.position).normalized;
                 Vector2 dashPosition = distance > counterMinDashDistance
@@ -100,6 +101,7 @@ namespace Skills
         protected override void OnSkillStart()
         {
             _gotHit = false;
+            iframeParticle?.Play();
             StartCoroutine(StartSkill());
         }
 
@@ -107,6 +109,7 @@ namespace Skills
         {
             OwnerCharacter.IsDash = false;
             OwnerCharacter.IsIframe = false;
+            iframeParticle?.Stop();
             OwnerCharacter.StartMovementController();
         }
 

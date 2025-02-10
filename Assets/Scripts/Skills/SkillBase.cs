@@ -16,7 +16,7 @@ namespace Skills
         private float cooldown = 1f; 
 
         [Title("Feedbacks")] [SerializeField] [PropertyOrder(99)]
-        private MMF_Player skillStartFeedback;
+        protected MMF_Player skillStartFeedback;
 
         [SerializeField] [PropertyOrder(99)] private MMF_Player skillEndFeedback;
         [Title("Events")] [PropertyOrder(100)] public UnityEvent onSkillStart;
