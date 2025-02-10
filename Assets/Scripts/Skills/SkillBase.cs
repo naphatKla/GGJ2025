@@ -1,7 +1,8 @@
+using System;
 using Characters;
+using DG.Tweening;
 using MoreMountains.Feedbacks;
 using Sirenix.OdinInspector;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -22,6 +23,7 @@ namespace Skills
         [PropertyOrder(100)] public UnityEvent onSkillEnd;
         protected CharacterBase OwnerCharacter;
         private float _cooldownCounter;
+        private bool _isPerforming;
 
         #endregion -------------------------------------------------------------------------------------------------------------------
 
@@ -57,10 +59,12 @@ namespace Skills
         public virtual void UseSkill()
         {
             if (_cooldownCounter > 0) return;
+            if (_isPerforming) return;
+            OnSkillStart();
             onSkillStart?.Invoke();
             skillStartFeedback?.PlayFeedbacks();
-            OnSkillStart();
             _cooldownCounter = cooldown;
+            _isPerforming = true;
         }
 
         // ReSharper disable Unity.PerformanceAnalysis
@@ -69,6 +73,8 @@ namespace Skills
         /// </summary>
         protected virtual void ExitSkill()
         {
+            if (!_isPerforming) return;
+            _isPerforming = false;
             OnSkillEnd();
             onSkillEnd?.Invoke();
             skillEndFeedback?.PlayFeedbacks();
@@ -83,7 +89,12 @@ namespace Skills
             Vector2 direction = (mousePos - (Vector2)OwnerCharacter.transform.position).normalized;
             return direction;
         }
-        
+
+        private void OnDestroy()
+        {
+            DOTween.Kill(gameObject);
+        }
+
         #endregion -------------------------------------------------------------------------------------------------------------------
     }
 }

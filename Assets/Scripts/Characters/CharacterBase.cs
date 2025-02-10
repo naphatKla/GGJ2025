@@ -138,6 +138,11 @@ namespace Characters
                     break;
             }
         }
+        
+        private void OnDestroy()
+        {
+            DOTween.Kill(gameObject);
+        }
         #endregion -------------------------------------------------------------------------------------------------------------------
 
         #region Methods
