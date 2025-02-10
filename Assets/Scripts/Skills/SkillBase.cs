@@ -57,9 +57,9 @@ namespace Skills
         public virtual void UseSkill()
         {
             if (_cooldownCounter > 0) return;
-            OnSkillStart();
             onSkillStart?.Invoke();
             skillStartFeedback?.PlayFeedbacks();
+            OnSkillStart();
             _cooldownCounter = cooldown;
         }
 
