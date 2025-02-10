@@ -78,6 +78,7 @@ namespace Characters
 
         #region Properties
         protected float CurrentSpeed => _currentSpeed;
+        public int Life => life;
         public float ScoreMultiply => scoreMultiply;
         public float Score => score;
         public bool IsIframe { get; set; }

@@ -26,6 +26,7 @@ namespace Characters
             }
         }
         public static PlayerCharacter Instance { get; private set; }
+        public UnityEvent OnTakeDamage = new UnityEvent();
         #endregion -------------------------------------------------------------------------------------------------------------------
 
         #region UnityMethods
@@ -79,6 +80,7 @@ namespace Characters
             //Tank Stun
             if (attacker.GetComponent<EnemyCharacter>().currentType == EnemyCharacter.EnemyType.Tank && IsDash)
                 StartCoroutine(Stun(0.5f));
+            OnTakeDamage?.Invoke();
         }
 
         private static void ResetHitCombo()

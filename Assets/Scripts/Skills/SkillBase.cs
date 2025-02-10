@@ -1,6 +1,7 @@
 using Characters;
 using MoreMountains.Feedbacks;
 using Sirenix.OdinInspector;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -11,7 +12,7 @@ namespace Skills
         #region Inspectors & Fields
 
         [Title("SkillBase")] [SerializeField] [BoxGroup("Duration")]
-        private float cooldown = 1f;
+        private float cooldown = 1f; 
 
         [Title("Feedbacks")] [SerializeField] [PropertyOrder(99)]
         private MMF_Player skillStartFeedback;
@@ -27,6 +28,8 @@ namespace Skills
         #region Properties
 
         protected bool IsPlayer => OwnerCharacter.CompareTag("Player");
+        public float Cooldown => cooldown;
+        public float CooldownCounter => _cooldownCounter;
 
         #endregion -------------------------------------------------------------------------------------------------------------------
 
