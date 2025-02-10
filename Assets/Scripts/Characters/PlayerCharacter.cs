@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace Characters
 {
@@ -7,6 +8,7 @@ namespace Characters
         #region Properties
         public static float HitCombo;
         public static PlayerCharacter Instance { get; private set; }
+        public UnityEvent OnTakeDamage = new UnityEvent();
         #endregion -------------------------------------------------------------------------------------------------------------------
 
         #region UnityMethods
@@ -56,6 +58,7 @@ namespace Characters
         {
             if (IsDash) return;
             base.TakeDamage(attacker);
+            OnTakeDamage?.Invoke();
         }
         
         private static void ResetHitCombo()

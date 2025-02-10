@@ -4,6 +4,7 @@ using Characters;
 using DG.Tweening;
 using MoreMountains.Feedbacks;
 using Sirenix.OdinInspector;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -13,7 +14,7 @@ namespace Skills
     {
         #region Inspectors & Fields
         [Title("SkillBase")] [SerializeField] [BoxGroup("Duration")]
-        private float cooldown = 1f;
+        private float cooldown = 1f; 
 
         [SerializeField] [BoxGroup("Duration")]
         protected float skillDuration = 1f;
@@ -25,11 +26,13 @@ namespace Skills
         [Title("Events")] [PropertyOrder(100)] public UnityEvent onSkillStart;
         [PropertyOrder(100)] public UnityEvent onSkillEnd;
         protected CharacterBase OwnerCharacter;
-        private float _cooldownCounter;
+        protected float _cooldownCounter;
         #endregion -------------------------------------------------------------------------------------------------------------------
 
         #region Properties
         protected bool IsPlayer => OwnerCharacter.CompareTag("Player");
+        public float Cooldown => cooldown;
+        public float CooldownCounter => _cooldownCounter;
         #endregion -------------------------------------------------------------------------------------------------------------------
 
         #region UnityMethods

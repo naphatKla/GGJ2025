@@ -70,6 +70,7 @@ namespace Characters
 
         #region Properties
         protected float CurrentSpeed => _currentSpeed;
+        public int Life => life;
         public float Score => score;
         public bool IsIframe { get; set; }
         public bool IsModifyingMovement { get; set; }
