@@ -18,6 +18,7 @@ namespace Skills
         [SerializeField] protected float dashDuration = 0.5f;
         [SerializeField] protected bool iframeOnCharging = true;
         [SerializeField] private ParticleSystem skillParticle;
+        [SerializeField] protected ParticleSystem lightningLineParticle;
         [SerializeField] private MMF_Player chargeReleaseFeedback;
         private GameObject _particleGroup;
 
@@ -41,6 +42,7 @@ namespace Skills
         {
             OwnerCharacter.StartMovementController();
             OwnerCharacter.IsIframe = false;
+            lightningLineParticle.Stop();
         }
 
         private IEnumerator ChargeSkill()
@@ -65,6 +67,7 @@ namespace Skills
             dashPosition = OwnerCharacter.ClampMovePositionToBound(dashPosition);
             Collider2D[] enemiesInDashLine = CheckDashCollision();
             chargeReleaseFeedback?.PlayFeedbacks();
+            lightningLineParticle.Play();
             OwnerCharacter.transform.DOMove(dashPosition, dashDuration).SetEase(Ease.InOutSine).OnComplete(() =>
             {
                 foreach (Collider2D enemy in enemiesInDashLine)
