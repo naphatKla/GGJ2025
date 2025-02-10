@@ -317,6 +317,14 @@ namespace Characters
             foreach (MonoBehaviour script in scripts)
                 Destroy(script);
 
+            int childCount = transform.childCount;
+            for (int i = 0; i < childCount; i++)
+            {
+                GameObject obj = newCloning.transform.GetChild(i).gameObject;
+                if (obj.TryGetComponent(out SpriteRenderer _)) continue;
+                Destroy(obj);
+            }
+
             CloningCharacter cloneChar = newCloning.AddComponent<CloningCharacter>();
             if (cloneChar.TryGetComponent(out NavMeshAgent agent))
                 agent.enabled = false;
