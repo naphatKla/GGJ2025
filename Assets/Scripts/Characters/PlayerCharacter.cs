@@ -1,4 +1,7 @@
+using System;
+using Sirenix.OdinInspector;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace Characters
 {
@@ -6,7 +9,22 @@ namespace Characters
     {
         [SerializeField] private float accelerator = 6;
         #region Properties
-        public static float HitCombo;
+        public static UnityEvent OnHitComboChanged = new UnityEvent();
+
+        private static float _hitCombo;
+
+        public static float HitCombo
+        {
+            get => _hitCombo;
+            set
+            {
+                if (_hitCombo != value)
+                {
+                    _hitCombo = value;
+                    OnHitComboChanged?.Invoke();
+                }
+            }
+        }
         public static PlayerCharacter Instance { get; private set; }
         #endregion -------------------------------------------------------------------------------------------------------------------
 
@@ -62,7 +80,7 @@ namespace Characters
             if (attacker.GetComponent<EnemyCharacter>().currentType == EnemyCharacter.EnemyType.Tank && IsDash)
                 StartCoroutine(Stun(0.5f));
         }
-        
+
         private static void ResetHitCombo()
         {
             HitCombo = 0f;

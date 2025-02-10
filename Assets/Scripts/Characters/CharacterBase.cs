@@ -16,6 +16,7 @@ namespace Characters
     {
         #region Inspectors & Fields
         [SerializeField] protected float score;
+        [SerializeField] protected float scoreMultiply = 1f;
         [SerializeField] private float maxSpeed = 6f;
         [SerializeField] protected bool canCollectOxygen;
         [SerializeField] protected bool dropOxygenOnDead = true;
@@ -54,7 +55,7 @@ namespace Characters
 
         [BoxGroup("Events")] [PropertyOrder(100f)]
         public UnityEvent onPickUpScore;
-
+        
         private Rigidbody2D _rigidBody2D;
         private Animator _animator;
         private GameObject _cloningParent;
@@ -77,12 +78,14 @@ namespace Characters
 
         #region Properties
         protected float CurrentSpeed => _currentSpeed;
+        public float ScoreMultiply => scoreMultiply;
         public float Score => score;
         public bool IsIframe { get; set; }
         public bool IsStoppingMovementController { get; private set; }
         public bool IsStoppingSkillController { get; private set; }
         public bool IsDash { get; set; }
         public bool IsDead { get; protected set; }
+        
         public Animator Animator => _animator;
         protected Rigidbody2D Rigid2D => _rigidBody2D;
         public LayerMask EnemyLayerMask => CharacterGlobalSettings.Instance.EnemyLayerDictionary[tag];
@@ -115,7 +118,7 @@ namespace Characters
             if (!other.CompareTag("Oxygen")) return;
             Oxygen oxygen = other.GetComponent<Oxygen>();
             if (!oxygen.canPickUp) return;
-            AddScore(oxygen.scoreAmount);
+            AddScore(Mathf.Round(oxygen.scoreAmount * scoreMultiply));
             Destroy(other.gameObject);
             onPickUpScore?.Invoke();
         }
@@ -149,6 +152,16 @@ namespace Characters
             score += scoreToAdd;
             if (scoreToAdd >= 0) return;
             DropOxygen(Mathf.Abs(scoreToAdd));
+        }
+        
+        public void IncreaseScoreMultiply(float amount, float maxLimit)
+        {
+            scoreMultiply = Mathf.Clamp(scoreMultiply + amount, 1.0f, maxLimit);
+        }
+        
+        public void ResetscoreMultiply()
+        {
+            scoreMultiply = 1.0f;
         }
 
         public virtual void TakeDamage(CharacterBase attacker)

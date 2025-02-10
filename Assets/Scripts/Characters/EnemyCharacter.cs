@@ -68,7 +68,7 @@ namespace Characters
             if (IsStun) return;
             if (currentState != EnemyState.Hunting) return;
             if (currentType == EnemyType.Pressure)
-            { skillLeft.UseSkill(); return;}
+            { navMesh.enabled = false; skillLeft.UseSkill(); return;}
             if (Random.value >= 0f) // change this value > 0 to test another skill
             {
                 float random = Random.Range(2f, 5f);
