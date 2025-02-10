@@ -96,7 +96,7 @@ namespace Characters
         protected virtual void Awake()
         {
             _currentSpeed = maxSpeed;
-            _animator = GetComponent<Animator>();
+            _animator = GetComponentInChildren<Animator>();
             _rigidBody2D = GetComponent<Rigidbody2D>();
             skillLeft?.InitializeSkill(this);
             skillRight?.InitializeSkill(this);
