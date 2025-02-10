@@ -2,7 +2,6 @@ using System;
 using Cinemachine;
 using DG.Tweening;
 using MoreMountains.Tools;
-using UnityEngine;
 
 public class CameraManager : MMSingleton<CameraManager>
 {
