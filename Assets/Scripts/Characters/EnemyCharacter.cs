@@ -13,6 +13,8 @@ namespace Characters
         [SerializeField] public EnemyType currentType = EnemyType.Normal;
         [SerializeField] private float detectDistance;
         private float _lastDashTime;
+        private int _previousLife;
+        private int _maxLife;
         
         [BoxGroup("Enemy type")]
         public enum EnemyType
@@ -39,6 +41,8 @@ namespace Characters
             navMesh.updateRotation = false;
             navMesh.updateUpAxis = false;
             navMesh.speed = CurrentSpeed;
+            _previousLife = life;
+            _maxLife = life;
         }
     
         protected override void Update()
@@ -87,6 +91,22 @@ namespace Characters
                     _lastDashTime = Time.time;
                 }
             }
+        }
+
+        public override void TakeDamage(CharacterBase attacker)
+        {
+            base.TakeDamage(attacker);
+            if (IsDead) return;
+            if (_previousLife == life) return;
+            int lostLife = _previousLife - life;
+            float dropMultiply = (float)lostLife / _maxLife;
+            float scoreDrop = score * dropMultiply;
+            _previousLife = life;
+            Debug.Log($"score = {score}");
+            Debug.Log($"score Drop = {scoreDrop}");
+            score -= scoreDrop;
+            Debug.Log($"score left = {score}");
+            DropOxygen(scoreDrop);
         }
 
         private void PerformHunting()
