@@ -16,6 +16,8 @@ public class ScoreText : MonoBehaviour
     {
         yield return null;
         PlayerCharacter.Instance.onPickUpScore.AddListener(PlayTween);
+        
+        scoreText.text = "Score " + 0;
     }
 
     private void UpdateScoreText()
