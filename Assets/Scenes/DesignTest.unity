@@ -3018,6 +3018,8 @@ MonoBehaviour:
     - {fileID: 11400000, guid: d813fb261940bed498e7b08bbc42442b, type: 2}
     - {fileID: 11400000, guid: b2c9bce325a0c644290149eb71825874, type: 2}
     - {fileID: 11400000, guid: 097faaff3f68af444a7eebcea7a17d2b, type: 2}
+    - {fileID: 11400000, guid: a27b0995fdab462418ca3e13561c8558, type: 2}
+    - {fileID: 11400000, guid: 4716bb028f8fc6044a33afa7f1b5733a, type: 2}
     m_Events:
     - m_PersistentCalls:
         m_Calls: []
@@ -3080,6 +3082,46 @@ MonoBehaviour:
         - m_Target: {fileID: 794947690}
           m_TargetAssemblyTypeName: CutsceneManager, Assembly-CSharp
           m_MethodName: ResumeTheGame
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+    - m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1077688099}
+          m_TargetAssemblyTypeName: StageManager, Assembly-CSharp
+          m_MethodName: StopEnemyspawn
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+        - m_Target: {fileID: 1077688099}
+          m_TargetAssemblyTypeName: StageManager, Assembly-CSharp
+          m_MethodName: ClearEnemy
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+    - m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1077688099}
+          m_TargetAssemblyTypeName: StageManager, Assembly-CSharp
+          m_MethodName: StartEnemyspawn
           m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -5925,6 +5967,8 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 25c5bb1d8351bad42b1671d907b3b44b, type: 2}
     - {fileID: 11400000, guid: ad4ee18e53039224db8dc1c4915fc905, type: 2}
     - {fileID: 11400000, guid: d813fb261940bed498e7b08bbc42442b, type: 2}
+    - {fileID: 11400000, guid: a27b0995fdab462418ca3e13561c8558, type: 2}
+    - {fileID: 11400000, guid: 4716bb028f8fc6044a33afa7f1b5733a, type: 2}
     m_Events:
     - m_PersistentCalls:
         m_Calls:
@@ -6011,6 +6055,46 @@ MonoBehaviour:
         - m_Target: {fileID: 2082371123}
           m_TargetAssemblyTypeName: CutsceneManager, Assembly-CSharp
           m_MethodName: FreezeTheGame
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+    - m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1077688099}
+          m_TargetAssemblyTypeName: StageManager, Assembly-CSharp
+          m_MethodName: StopEnemyspawn
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+        - m_Target: {fileID: 1077688099}
+          m_TargetAssemblyTypeName: StageManager, Assembly-CSharp
+          m_MethodName: ClearEnemy
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+    - m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1077688099}
+          m_TargetAssemblyTypeName: StageManager, Assembly-CSharp
+          m_MethodName: StartEnemyspawn
           m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
