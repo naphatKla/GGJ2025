@@ -99,7 +99,13 @@ namespace Characters
             if (IsDead) return;
             if (_previousLife == life) return;
             int lostLife = _previousLife - life;
-            float scoreDrop = score * (lostLife / _maxLife);
+            float dropMultiply = (float)lostLife / _maxLife;
+            float scoreDrop = score * dropMultiply;
+            _previousLife = life;
+            Debug.Log($"score = {score}");
+            Debug.Log($"score Drop = {scoreDrop}");
+            score -= scoreDrop;
+            Debug.Log($"score left = {score}");
             DropOxygen(scoreDrop);
         }
 
