@@ -30,6 +30,11 @@ namespace Skills
         {
             base.InitializeSkill(ownerCharacter);
             _particleGroup = new GameObject("ParticleGroup");
+            _particleGroup.transform.position = Vector2.zero;
+            _particleGroup.transform.rotation = Quaternion.identity;
+            skillParticle.transform.SetParent(_particleGroup.transform);
+            skillParticle.transform.localRotation = Quaternion.identity;
+            skillParticle.transform.localPosition = Vector3.zero;
         }
 
         protected override void OnSkillStart()
@@ -48,14 +53,12 @@ namespace Skills
 
         private IEnumerator ChargeSkill()
         {
-            OwnerCharacter.IsIframe = iframeOnCharging;
-            skillParticle.transform.SetParent(_particleGroup.transform);
-            skillParticle.transform.localPosition = Vector3.zero;
             skillParticle.Play();
 
             float timer = 0;
             while (timer < chargeDuration)
             {
+                if (iframeOnCharging) OwnerCharacter.IsIframe = iframeOnCharging;
                 _particleGroup.transform.position = transform.position;
                 _particleGroup.transform.up = GetTargetDirection();
                 timer += Time.deltaTime;

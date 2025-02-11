@@ -1,9 +1,6 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using Sirenix.OdinInspector;
-using Sirenix.Serialization;
 using Skills;
 using UnityEngine;
 using UnityEngine.Events;
@@ -73,12 +70,10 @@ namespace Characters
         {
             base.Update();
             MovementController();
-            
-            if (Score >= _nextScoreThreshold)
-            {
-                UnlockRandomSkill();
-                _nextScoreThreshold += _scoreReach;
-            }
+
+            if (!(Score >= _nextScoreThreshold)) return;
+            UnlockRandomSkill();
+            _nextScoreThreshold += _scoreReach;
         }
 
         protected override void OnTriggerStay2D(Collider2D other)

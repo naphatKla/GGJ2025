@@ -23,12 +23,7 @@ namespace Skills
             OwnerCharacter.IsDash = true;
             OwnerCharacter.IsIframe = iframeWhileDashing;
             OwnerCharacter.StopMovementController();
-            Vector2 direction = GetTargetDirection();
-            Vector2 dashPosition = (Vector2)OwnerCharacter.transform.position + (direction * dashDistance);
-            dashPosition = OwnerCharacter.ClampMovePositionToBound(dashPosition);
-            OwnerCharacter.ClampMovePositionToBound(dashPosition);
-            OwnerCharacter.transform.DOMove(dashPosition, dashDuration).SetEase(Ease.InOutSine);
-            StartCoroutine(IframeAfterDash());
+            StartCoroutine(DashPerforming());
         }
 
         protected override void OnSkillEnd()
@@ -37,8 +32,15 @@ namespace Skills
             OwnerCharacter.StartMovementController();
         }
 
-        private IEnumerator IframeAfterDash()
+        private IEnumerator DashPerforming()
         {
+            Vector2 direction = GetTargetDirection();
+            Vector2 dashPosition = (Vector2)OwnerCharacter.transform.position + (direction * dashDistance);
+            dashPosition = OwnerCharacter.ClampMovePositionToBound(dashPosition);
+            OwnerCharacter.ClampMovePositionToBound(dashPosition);
+            
+            yield return OwnerCharacter.transform.DOMove(dashPosition, dashDuration).SetEase(Ease.InOutSine)
+                .WaitForCompletion();
             yield return new WaitForSeconds(iframeAfterDash);
             if (!OwnerCharacter) yield break;
             OwnerCharacter.IsIframe = false;

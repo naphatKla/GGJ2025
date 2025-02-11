@@ -58,6 +58,8 @@ namespace Characters
         {
             base.OnTriggerStay2D(other);
             if (IsDead) return;
+            if (other.CompareTag("Player"))
+                Debug.Log("Hit player");
             if (other.CompareTag("Player") && IsDash)
                 other.GetComponent<CharacterBase>().TakeDamage(this);
             //Tank Stun

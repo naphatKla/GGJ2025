@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
 
@@ -119,7 +117,7 @@ public class AudioFeedback : MonoBehaviour
                 {
                     newSource.outputAudioMixerGroup = outputGroup;
                 }
-
+                
                 newSource.Play();
                 Destroy(newSource, clip.length + 0.1f);
             }
