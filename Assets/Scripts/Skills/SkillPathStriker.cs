@@ -29,6 +29,7 @@ namespace Skills
         public override void InitializeSkill(CharacterBase ownerCharacter)
         {
             base.InitializeSkill(ownerCharacter);
+            if (_particleGroup) return;
             _particleGroup = new GameObject("ParticleGroup");
             _particleGroup.transform.position = Vector2.zero;
             _particleGroup.transform.rotation = Quaternion.identity;
