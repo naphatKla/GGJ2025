@@ -1,6 +1,13 @@
+using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using Sirenix.OdinInspector;
+using Sirenix.Serialization;
+using Skills;
 using UnityEngine;
 using UnityEngine.Events;
+using Random = UnityEngine.Random;
 
 namespace Characters
 {
@@ -10,8 +17,17 @@ namespace Characters
         #region Properties
         public static UnityEvent OnHitComboChanged = new UnityEvent();
 
+        [BoxGroup("Random Skill")] 
+        [SerializeField] private float _scoreReach;
+        [BoxGroup("Random Skill")]
+        [SerializeField] private float _nextScoreThreshold;
+        [BoxGroup("Random Skill")] public SerializableDictionary<string, SkillBase> SkillDictionary = new();
+
         private static float _hitCombo;
         private bool isHitInvoked = false;
+        private float _currentScore;
+        private AudioFeedback _audiofeedback;
+        private SkillBase _currentRandomSkill;
 
         public static float HitCombo
         {
@@ -40,6 +56,12 @@ namespace Characters
             onDead?.RemoveListener(ResetHitCombo);
         }
 
+        private void Start()
+        {
+            _audiofeedback = GetComponent<AudioFeedback>();
+            _currentRandomSkill = skillRight;
+        }
+
         protected override void Awake()
         {
             base.Awake();
@@ -51,6 +73,12 @@ namespace Characters
         {
             base.Update();
             MovementController();
+            
+            if (Score >= _nextScoreThreshold)
+            {
+                UnlockRandomSkill();
+                _nextScoreThreshold += _scoreReach;
+            }
         }
 
         protected override void OnTriggerStay2D(Collider2D other)
@@ -85,6 +113,25 @@ namespace Characters
                 skillLeft.UseSkill();
             if (Input.GetMouseButtonDown(1))
                 skillRight.UseSkill();
+        }
+
+        [Button]
+        private void UnlockRandomSkill()
+        {
+            var availableSkills = SkillDictionary.Where(s => s.Value != _currentRandomSkill).ToList();
+            if (availableSkills.Count == 0) return;
+
+            var randomIndex = Random.Range(0, availableSkills.Count);
+            var selectedSkill = availableSkills[randomIndex];
+
+            _currentRandomSkill = selectedSkill.Value;
+            if (_audiofeedback.soundFeedbacks.ContainsKey(selectedSkill.Key))
+            {
+                _audiofeedback.PlayMultipleAudio(selectedSkill.Key, "Sfx");
+            }
+
+            skillRight = selectedSkill.Value;
+            selectedSkill.Value.InitializeSkill(this);
         }
 
         public override void TakeDamage(CharacterBase attacker)
