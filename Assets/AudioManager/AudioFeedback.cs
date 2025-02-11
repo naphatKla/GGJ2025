@@ -1,4 +1,6 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
 
@@ -19,6 +21,26 @@ public class AudioFeedback : MonoBehaviour
     public AudioMixer audioMixer;
     [Tooltip("Category of the audio clips")]
     [SerializeField] public SerializableDictionary<string, AudioEntryFeedback> soundFeedbacks;
+    
+    [Tooltip("GameObject AudioSource")]
+    public GameObject poolObject;
+
+    private Queue<AudioSource> audioPool = new Queue<AudioSource>();
+    private List<AudioSource> activeSources = new List<AudioSource>();
+
+    private void Start()
+    {
+        if (poolObject != null)
+        {
+            var sources = poolObject.GetComponentsInChildren<AudioSource>();
+            foreach (var source in sources)
+            {
+                source.Stop();
+                source.clip = null;
+                audioPool.Enqueue(source);
+            }
+        }
+    }
 
     /// <summary>
     /// Play audio by category
@@ -82,44 +104,76 @@ public class AudioFeedback : MonoBehaviour
             Debug.LogWarning($"Key not found in soundFeedbacks: {category}");
         }
     }
-    
+
+    private AudioSource GetAudioSource()
+    {
+        foreach (var source in audioPool)
+            if (!source.isPlaying)
+            {
+                source.gameObject.SetActive(true);
+                source.Stop();
+                source.clip = null;
+                audioPool.Dequeue();
+                return source;
+            }
+
+        return null;
+    }
+
+    private void ReturnAudioSource(AudioSource source)
+    {
+        StartCoroutine(WaitForAudioToFinish(source));
+    }
+
+    private IEnumerator WaitForAudioToFinish(AudioSource source)
+    {
+        yield return new WaitUntil(() => !source.isPlaying);
+
+        source.Stop();
+        source.clip = null;
+
+        if (activeSources.Count == 1) poolObject.SetActive(false);
+
+        activeSources.Remove(source);
+        audioPool.Enqueue(source);
+    }
+
     public void PlayMultipleAudio(string category, string outputGroupName = null)
     {
-        if (soundFeedbacks.TryGetValue(category, out AudioEntryFeedback audioEntry))
+        if (soundFeedbacks.TryGetValue(category, out var audioEntry))
         {
             if (audioEntry.clip == null || audioEntry.clip.Length == 0)
             {
                 Debug.LogWarning($"No audio clips assigned for key: {category}");
                 return;
             }
-            
+
             AudioMixerGroup outputGroup = null;
             if (!string.IsNullOrEmpty(outputGroupName) && audioMixer != null)
             {
-                AudioMixerGroup[] groups = audioMixer.FindMatchingGroups(outputGroupName);
+                var groups = audioMixer.FindMatchingGroups(outputGroupName);
                 if (groups.Length > 0)
-                {
                     outputGroup = groups[0];
-                }
                 else
-                {
                     Debug.LogWarning($"AudioMixerGroup '{outputGroupName}' not found!");
-                }
             }
-            
+
+            poolObject.SetActive(true);
+
             foreach (var clip in audioEntry.clip)
             {
-                AudioSource newSource = gameObject.AddComponent<AudioSource>();
-                newSource.clip = clip;
-                newSource.volume = audioEntry.volume;
-                newSource.loop = audioEntry.loop;
-                if (outputGroup != null)
-                {
-                    newSource.outputAudioMixerGroup = outputGroup;
-                }
-                
-                newSource.Play();
-                Destroy(newSource, clip.length + 0.1f);
+                var source = GetAudioSource();
+                if (source == null) continue;
+
+                source.clip = clip;
+                source.volume = audioEntry.volume;
+                source.loop = audioEntry.loop;
+                if (outputGroup != null) source.outputAudioMixerGroup = outputGroup;
+
+                source.Play();
+                activeSources.Add(source);
+
+                StartCoroutine(ReleaseAfterPlay(source, clip.length));
             }
         }
         else
@@ -128,4 +182,9 @@ public class AudioFeedback : MonoBehaviour
         }
     }
 
+    private IEnumerator ReleaseAfterPlay(AudioSource source, float delay)
+    {
+        yield return new WaitUntil(() => !source.isPlaying);
+        ReturnAudioSource(source);
+    }
 }
