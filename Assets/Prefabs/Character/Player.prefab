@@ -554,6 +554,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   dashDuration: 0.3
+  iframeWhileDashing: 1
+  iframeAfterDash: 0.25
   dashDistance: 9
 --- !u!1 &1159091333753614445
 GameObject:
@@ -13042,7 +13044,7 @@ Transform:
   m_GameObject: {fileID: 2702890264367400056}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -0.023636952}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -15371,7 +15373,7 @@ Transform:
   m_GameObject: {fileID: 3261053121799607814}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -0.023636952}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -21861,7 +21863,7 @@ Transform:
   m_GameObject: {fileID: 5385496169589609700}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -0.023636952}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -21897,6 +21899,7 @@ MonoBehaviour:
   dashDuration: 0.3
   iframeOnCharging: 1
   skillParticle: {fileID: 4396976028034264010}
+  lightningLineParticle: {fileID: 5329126859076703700}
   chargeReleaseFeedback: {fileID: 7458018640963955943}
 --- !u!1 &5650739071098472648
 GameObject:
@@ -28455,7 +28458,7 @@ Transform:
   m_GameObject: {fileID: 6147125968338532621}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.20000076, y: 1.375, z: 5.4300003}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -28961,16 +28964,16 @@ MonoBehaviour:
         m_Calls: []
   DebugActive: 0
   FeedbacksList:
-  - rid: 5982134046409097293
-  - rid: 5982134046409097294
-  - rid: 5982134046409097295
-  - rid: 5982134046409097296
-  - rid: 5982134046409097297
-  - rid: 5982134046409097298
-  - rid: 5982134046409097299
-  - rid: 5982134046409097300
-  - rid: 5982134046409097301
-  - rid: 5982134046409097302
+  - rid: 5982134046409097313
+  - rid: 5982134046409097314
+  - rid: 5982134046409097315
+  - rid: 5982134046409097316
+  - rid: 5982134046409097317
+  - rid: 5982134046409097318
+  - rid: 5982134046409097319
+  - rid: 5982134046409097320
+  - rid: 5982134046409097321
+  - rid: 5982134046409097322
   KeepPlayModeChanges: 0
   PerformanceMode: 0
   StopFeedbacksOnDisable: 0
@@ -28978,11 +28981,11 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
-    - rid: 5982134046409097293
+    - rid: 5982134046409097313
       type: {class: MMF_ParticlesInstantiation, ns: MoreMountains.Feedbacks, asm: MoreMountains.Feedbacks}
       data:
         Active: 0
-        UniqueID: -259473299
+        UniqueID: 154273319
         Label: Particles Instantiation
         ChannelMode: 0
         Channel: 0
@@ -29065,11 +29068,11 @@ MonoBehaviour:
         ApplyScale: 0
         ForceSimulationSpeed: 0
         ForcedSimulationSpeed: {x: 0.1, y: 1}
-    - rid: 5982134046409097294
+    - rid: 5982134046409097314
       type: {class: MMF_MotionBlur_URP, ns: MoreMountains.FeedbacksForThirdParty, asm: MoreMountains.Feedbacks.URP}
       data:
         Active: 1
-        UniqueID: 712835043
+        UniqueID: -1459735141
         Label: Motion Blur URP
         ChannelMode: 0
         Channel: 0
@@ -29172,11 +29175,11 @@ MonoBehaviour:
         RemapIntensityZero: 0
         RemapIntensityOne: 1
         RelativeIntensity: 0
-    - rid: 5982134046409097295
+    - rid: 5982134046409097315
       type: {class: MMF_ChromaticAberration_URP, ns: MoreMountains.FeedbacksForThirdParty, asm: MoreMountains.Feedbacks.URP}
       data:
         Active: 1
-        UniqueID: -1134104095
+        UniqueID: -807172442
         Label: Chromatic Aberration URP
         ChannelMode: 0
         Channel: 0
@@ -29280,11 +29283,11 @@ MonoBehaviour:
           m_RotationOrder: 4
         Amplitude: 1
         RelativeIntensity: 0
-    - rid: 5982134046409097296
+    - rid: 5982134046409097316
       type: {class: MMF_Vignette_URP, ns: MoreMountains.FeedbacksForThirdParty, asm: MoreMountains.Feedbacks.URP}
       data:
         Active: 1
-        UniqueID: -1088816743
+        UniqueID: 1871149075
         Label: Vignette URP
         ChannelMode: 0
         Channel: 0
@@ -29387,11 +29390,11 @@ MonoBehaviour:
         RemapIntensityZero: 0
         RemapIntensityOne: 0.75
         RelativeIntensity: 0
-    - rid: 5982134046409097297
+    - rid: 5982134046409097317
       type: {class: MMF_Bloom_URP, ns: MoreMountains.FeedbacksForThirdParty, asm: MoreMountains.Feedbacks.URP}
       data:
         Active: 1
-        UniqueID: -1224475035
+        UniqueID: -1582834880
         Label: Bloom URP
         ChannelMode: 0
         Channel: 0
@@ -29529,11 +29532,11 @@ MonoBehaviour:
           m_RotationOrder: 4
         RemapThresholdZero: 0
         RemapThresholdOne: 0
-    - rid: 5982134046409097298
+    - rid: 5982134046409097318
       type: {class: MMF_CinemachineImpulseSource, ns: MoreMountains.FeedbacksForThirdParty, asm: MoreMountains.Feedbacks.Cinemachine}
       data:
         Active: 1
-        UniqueID: -1861080247
+        UniqueID: 1020665145
         Label: Cinemachine Impulse Source
         ChannelMode: 0
         Channel: 0
@@ -29600,11 +29603,11 @@ MonoBehaviour:
         Velocity: {x: 1, y: 1, z: 1}
         ImpulseSource: {fileID: 0}
         ClearImpulseOnStop: 0
-    - rid: 5982134046409097299
+    - rid: 5982134046409097319
       type: {class: MMF_ColorAdjustments_URP, ns: MoreMountains.FeedbacksForThirdParty, asm: MoreMountains.Feedbacks.URP}
       data:
-        Active: 1
-        UniqueID: -1497946473
+        Active: 0
+        UniqueID: -1463918848
         Label: Color Adjustments URP
         ChannelMode: 0
         Channel: 0
@@ -29886,11 +29889,11 @@ MonoBehaviour:
           m_PreInfinity: 2
           m_PostInfinity: 2
           m_RotationOrder: 4
-    - rid: 5982134046409097300
+    - rid: 5982134046409097320
       type: {class: MMF_MMSoundManagerSound, ns: MoreMountains.Feedbacks, asm: MoreMountains.Feedbacks.MMTools}
       data:
         Active: 1
-        UniqueID: -1176184141
+        UniqueID: -1447043025
         Label: MMSoundManager Sound
         ChannelMode: 0
         Channel: 0
@@ -30061,11 +30064,11 @@ MonoBehaviour:
           ButtonText: Debug Stop Sound
         ResetSequentialIndexButton:
           ButtonText: Reset Sequential Index
-    - rid: 5982134046409097301
+    - rid: 5982134046409097321
       type: {class: MMF_TimescaleModifier, ns: MoreMountains.Feedbacks, asm: MoreMountains.Feedbacks}
       data:
         Active: 1
-        UniqueID: -2131401174
+        UniqueID: 145739511
         Label: Timescale Modifier
         ChannelMode: 0
         Channel: 0
@@ -30195,11 +30198,11 @@ MonoBehaviour:
             m_RotationOrder: 4
           Initialized: 0
         TimescaleLerpDurationOnReset: 1
-    - rid: 5982134046409097302
+    - rid: 5982134046409097322
       type: {class: MMF_LensDistortion_URP, ns: MoreMountains.FeedbacksForThirdParty, asm: MoreMountains.Feedbacks.URP}
       data:
         Active: 1
-        UniqueID: 309901425
+        UniqueID: -1634706045
         Label: Lens Distortion URP
         ChannelMode: 0
         Channel: 0
@@ -31917,10 +31920,11 @@ MonoBehaviour:
       m_Calls: []
   iframeDuration: 2
   counterDashRange: 30
-  counterMinDashDistance: 6
+  counterMinDashDistance: 8
   counterDashTime: 4
   counterDashDuration: 0.2
   restTimePerDash: 0.05
+  iframeDurationAfterCounterDash: 0.5
   iframeOnCounterDash: 1
   counterStartFeedback: {fileID: 5334563148967617205}
   iframeParticle: {fileID: 1017077416042841762}
@@ -31950,7 +31954,7 @@ Transform:
   m_GameObject: {fileID: 8130159263438535861}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.20000076, y: 1.375, z: 5.4300003}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -32048,6 +32052,7 @@ MonoBehaviour:
   - rid: 8877965473690419207
   - rid: 7241849262784905218
   - rid: 7241849262784905224
+  - rid: 5982134055508377600
   KeepPlayModeChanges: 0
   PerformanceMode: 0
   StopFeedbacksOnDisable: 0
@@ -32055,6 +32060,93 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
+    - rid: 5982134055508377600
+      type: {class: MMF_ParticlesInstantiation, ns: MoreMountains.Feedbacks, asm: MoreMountains.Feedbacks}
+      data:
+        Active: 1
+        UniqueID: 1002370533
+        Label: Particles Instantiation
+        ChannelMode: 0
+        Channel: 0
+        MMChannelDefinition: {fileID: 0}
+        Chance: 100
+        DisplayColor: {r: 0, g: 0, b: 0, a: 1}
+        Timing:
+          TimescaleMode: 0
+          ExcludeFromHoldingPauses: 0
+          ContributeToTotalDuration: 1
+          InitialDelay: 0
+          CooldownDuration: 0
+          InterruptsOnStop: 1
+          NumberOfRepeats: 0
+          RepeatForever: 0
+          DelayBetweenRepeats: 1
+          MMFeedbacksDirectionCondition: 0
+          PlayDirection: 0
+          ConstantIntensity: 0
+          UseIntensityInterval: 0
+          IntensityIntervalMin: 0
+          IntensityIntervalMax: 0
+          Sequence: {fileID: 0}
+          TrackID: 0
+          Quantized: 0
+          TargetBPM: 120
+        AutomatedTargetAcquisition:
+          Mode: 0
+          ChildIndex: 0
+        RandomizeOutput: 0
+        RandomMultiplier: {x: 0.8, y: 1}
+        RandomizeDuration: 0
+        RandomDurationMultiplier: {x: 0.5, y: 2}
+        UseRange: 0
+        RangeDistance: 5
+        UseRangeFalloff: 0
+        RangeFalloff:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 1
+            value: 0
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        RemapRangeFalloff: {x: 0, y: 1}
+        Owner: {fileID: 114347794673569938}
+        DebugActive: 0
+        Mode: 1
+        ObjectPoolSize: 5
+        MutualizePools: 0
+        ParentTransform: {fileID: 0}
+        CachedRecycle: 1
+        ParticlesPrefab: {fileID: 714511981422648632, guid: 0560c5f7884fde842b450bd28b21df9c, type: 3}
+        RandomParticlePrefabs: []
+        ForceSetActiveOnPlay: 0
+        StopOnReset: 0
+        DeclaredDuration: 0
+        PositionMode: 0
+        InstantiateParticlesPosition: {fileID: 0}
+        TargetWorldPosition: {x: 0, y: 0, z: 0}
+        Offset: {x: 0, y: 0, z: 0}
+        NestParticles: 1
+        ApplyRotation: 0
+        ApplyScale: 0
+        ForceSimulationSpeed: 0
+        ForcedSimulationSpeed: {x: 0.1, y: 1}
     - rid: 7241849262784905218
       type: {class: MMF_CinemachineImpulseSource, ns: MoreMountains.FeedbacksForThirdParty, asm: MoreMountains.Feedbacks.Cinemachine}
       data:
@@ -32423,6 +32515,78 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 919026097056294205}
     m_Modifications:
+    - target: {fileID: 2404041155322657589, guid: d66577318f013fc45bbdf9a5657a0188, type: 3}
+      propertyPath: ShapeModule.donutRadius
+      value: 0.0001
+      objectReference: {fileID: 0}
+    - target: {fileID: 2404041155322657589, guid: d66577318f013fc45bbdf9a5657a0188, type: 3}
+      propertyPath: NoiseModule.separateAxes
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2404041155322657589, guid: d66577318f013fc45bbdf9a5657a0188, type: 3}
+      propertyPath: ShapeModule.radius.value
+      value: 1.35
+      objectReference: {fileID: 0}
+    - target: {fileID: 2404041155322657589, guid: d66577318f013fc45bbdf9a5657a0188, type: 3}
+      propertyPath: NoiseModule.strength.scalar
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2404041155322657589, guid: d66577318f013fc45bbdf9a5657a0188, type: 3}
+      propertyPath: NoiseModule.strengthY.scalar
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2404041155322657589, guid: d66577318f013fc45bbdf9a5657a0188, type: 3}
+      propertyPath: NoiseModule.strengthZ.scalar
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2404041155322657589, guid: d66577318f013fc45bbdf9a5657a0188, type: 3}
+      propertyPath: VelocityModule.radial.scalar
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2404041155322657589, guid: d66577318f013fc45bbdf9a5657a0188, type: 3}
+      propertyPath: InitialModule.startSize.scalar
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2404041155322657589, guid: d66577318f013fc45bbdf9a5657a0188, type: 3}
+      propertyPath: VelocityModule.orbitalX.scalar
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2404041155322657589, guid: d66577318f013fc45bbdf9a5657a0188, type: 3}
+      propertyPath: VelocityModule.orbitalY.scalar
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2404041155322657589, guid: d66577318f013fc45bbdf9a5657a0188, type: 3}
+      propertyPath: VelocityModule.radial.minMaxState
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2404041155322657589, guid: d66577318f013fc45bbdf9a5657a0188, type: 3}
+      propertyPath: EmissionModule.m_Bursts.Array.data[0].countCurve.scalar
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 2404041155322657589, guid: d66577318f013fc45bbdf9a5657a0188, type: 3}
+      propertyPath: VelocityModule.radial.maxCurve.m_Curve.Array.data[1].time
+      value: 0.10138257
+      objectReference: {fileID: 0}
+    - target: {fileID: 2404041155322657589, guid: d66577318f013fc45bbdf9a5657a0188, type: 3}
+      propertyPath: VelocityModule.radial.maxCurve.m_Curve.Array.data[1].value
+      value: -0.019134521
+      objectReference: {fileID: 0}
+    - target: {fileID: 2404041155322657589, guid: d66577318f013fc45bbdf9a5657a0188, type: 3}
+      propertyPath: VelocityModule.radial.maxCurve.m_Curve.Array.data[0].inSlope
+      value: 9.674892
+      objectReference: {fileID: 0}
+    - target: {fileID: 2404041155322657589, guid: d66577318f013fc45bbdf9a5657a0188, type: 3}
+      propertyPath: VelocityModule.radial.maxCurve.m_Curve.Array.data[2].inSlope
+      value: 0.021291167
+      objectReference: {fileID: 0}
+    - target: {fileID: 2404041155322657589, guid: d66577318f013fc45bbdf9a5657a0188, type: 3}
+      propertyPath: VelocityModule.radial.maxCurve.m_Curve.Array.data[0].outSlope
+      value: 9.674892
+      objectReference: {fileID: 0}
+    - target: {fileID: 2404041155322657589, guid: d66577318f013fc45bbdf9a5657a0188, type: 3}
+      propertyPath: VelocityModule.radial.maxCurve.m_Curve.Array.data[2].outSlope
+      value: 0.021291167
+      objectReference: {fileID: 0}
     - target: {fileID: 2505270492086917245, guid: d66577318f013fc45bbdf9a5657a0188, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

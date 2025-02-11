@@ -16,10 +16,11 @@ namespace Skills
         private float iframeDuration = 1f;
 
         [SerializeField] private float counterDashRange = 30f;
-        [SerializeField] private float counterMinDashDistance = 6;
+        [SerializeField] private float counterMinDashDistance = 8;
         [SerializeField] private int counterDashTime = 4;
         [SerializeField] private float counterDashDuration = 0.125f;
         [SerializeField] private float restTimePerDash = 0f;
+        [SerializeField] private float iframeDurationAfterCounterDash = 0.5f;
         [SerializeField] private bool iframeOnCounterDash = true;
 
         [SerializeField] [PropertyOrder(99)]
@@ -53,6 +54,7 @@ namespace Skills
 
             // Counter Dash
             _gotHit = false;
+            OwnerCharacter.CanUseSkill = false;
             OwnerCharacter.StopMovementController();
             for (int i = 0; i < counterDashTime; i++)
             {
@@ -85,6 +87,8 @@ namespace Skills
                 yield return new WaitForSeconds(restTimePerDash);
             }
 
+            if (iframeOnCounterDash)
+                yield return new WaitForSeconds(iframeDurationAfterCounterDash);
             ExitSkill();
         }
 
@@ -109,6 +113,7 @@ namespace Skills
         {
             OwnerCharacter.IsDash = false;
             OwnerCharacter.IsIframe = false;
+            OwnerCharacter.CanUseSkill = true;
             iframeParticle?.Stop();
             OwnerCharacter.StartMovementController();
         }

@@ -42,6 +42,7 @@ namespace Skills
         {
             OwnerCharacter.StartMovementController();
             OwnerCharacter.IsIframe = false;
+            OwnerCharacter.CanUseSkill = true;
             lightningLineParticle.Stop();
         }
 
@@ -62,6 +63,7 @@ namespace Skills
             }
 
             if (!OwnerCharacter) yield break;
+            OwnerCharacter.CanUseSkill = false;
             Vector2 direction = GetTargetDirection();
             Vector2 dashPosition = OwnerCharacter.transform.position + (Vector3)direction * dashDistance;
             dashPosition = OwnerCharacter.ClampMovePositionToBound(dashPosition);

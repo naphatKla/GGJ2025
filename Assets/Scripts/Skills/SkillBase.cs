@@ -13,8 +13,8 @@ namespace Skills
         #region Inspectors & Fields
 
         [Title("SkillBase")] [SerializeField] [BoxGroup("Duration")]
-        private float cooldown = 1f; 
-
+        private float cooldown = 1f;
+        
         [Title("Feedbacks")] [SerializeField] [PropertyOrder(99)]
         protected MMF_Player skillStartFeedback;
 
@@ -23,7 +23,7 @@ namespace Skills
         [PropertyOrder(100)] public UnityEvent onSkillEnd;
         protected CharacterBase OwnerCharacter;
         private float _cooldownCounter;
-        private bool _isPerforming;
+        private bool _isThisSkillPerforming;
 
         #endregion -------------------------------------------------------------------------------------------------------------------
 
@@ -55,16 +55,18 @@ namespace Skills
 
             _cooldownCounter -= Time.deltaTime;
         }
-
+        
         public virtual void UseSkill()
         {
             if (_cooldownCounter > 0) return;
-            if (_isPerforming) return;
+            if (_isThisSkillPerforming) return;
+            if (!OwnerCharacter.CanUseSkill) return;
+            
             OnSkillStart();
             onSkillStart?.Invoke();
             skillStartFeedback?.PlayFeedbacks();
             _cooldownCounter = cooldown;
-            _isPerforming = true;
+            _isThisSkillPerforming = true;
         }
 
         // ReSharper disable Unity.PerformanceAnalysis
@@ -73,8 +75,8 @@ namespace Skills
         /// </summary>
         protected virtual void ExitSkill()
         {
-            if (!_isPerforming) return;
-            _isPerforming = false;
+            if (!_isThisSkillPerforming) return;
+            _isThisSkillPerforming = false;
             OnSkillEnd();
             onSkillEnd?.Invoke();
             skillEndFeedback?.PlayFeedbacks();
