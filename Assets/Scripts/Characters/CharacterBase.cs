@@ -251,7 +251,11 @@ namespace Characters
             if (CompareTag("Player")) _rigidBody2D.velocity = Vector2.zero;
             else if (CompareTag("Enemy"))
             {
-                if (attacker && attacker.CompareTag("Player")) PlayerCharacter.HitCombo++;
+                if (attacker && attacker.CompareTag("Player"))
+                {
+                    PlayerCharacter.Instance.HitCombo++;
+                    PlayerCharacter.Instance.Kill++;
+                }
                 TryGetComponent(out NavMeshAgent navmesh);
                 navmesh.velocity = Vector3.zero;
                 navmesh.enabled = false;

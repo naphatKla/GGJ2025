@@ -1,5 +1,6 @@
 using System;
 using Sirenix.OdinInspector;
+using Skills;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -7,13 +8,17 @@ namespace Characters
 {
     public class PlayerCharacter : CharacterBase
     {
+        #region Inspectors & Fields
         [SerializeField] private float accelerator = 6;
+        [SerializeField] private float _hitCombo;
+        [SerializeField] private int _kill;
+        #endregion -------------------------------------------------------------------------------------------------------------------
         #region Properties
         public static UnityEvent OnHitComboChanged = new UnityEvent();
+        public SkillBase SkillLeft => skillLeft;
+        public SkillBase SkillRight => skillRight;
 
-        private static float _hitCombo;
-
-        public static float HitCombo
+        public float HitCombo
         {
             get => _hitCombo;
             set
@@ -24,6 +29,16 @@ namespace Characters
                     OnHitComboChanged?.Invoke();
                 }
             }
+        }
+        public int Kill
+        {
+            get => _kill;
+            set => _kill = value;
+        }
+        public float Score
+        {
+            get => score;
+            
         }
         public static PlayerCharacter Instance { get; private set; }
         public UnityEvent OnTakeDamage = new UnityEvent();
@@ -83,7 +98,7 @@ namespace Characters
             OnTakeDamage?.Invoke();
         }
 
-        private static void ResetHitCombo()
+        private void ResetHitCombo()
         {
             HitCombo = 0f;
         }
@@ -96,6 +111,12 @@ namespace Characters
             Rigid2D.AddForce(mouseDirection.normalized * (accelerator * Time.deltaTime), ForceMode2D.Impulse);
             Rigid2D.velocity = Vector2.ClampMagnitude(Rigid2D.velocity, CurrentSpeed);
         }
+
+        public override void AddScore(float scoreToAdd)
+        {
+            base.AddScore(scoreToAdd);
+        }
+        
         #endregion -------------------------------------------------------------------------------------------------------------------
     }
 }

@@ -18,7 +18,7 @@ public class ComboText : MonoBehaviour
     public int maxcomboMultiplyTimeOut = 100;
     public Slider comboTimeoutSlider;
     private bool isCombo = false;
-    private float _score => PlayerCharacter.HitCombo;
+    private float _score => PlayerCharacter.Instance.HitCombo;
     private float _scoreMultiply => PlayerCharacter.Instance.ScoreMultiply;
     [SerializeField] private float maxScoreMultiply;
     public MMF_Player voiceFeedback;
@@ -38,7 +38,7 @@ public class ComboText : MonoBehaviour
         if (comboTimeoutSlider.value <= 0)
         {
             isCombo = false;
-            PlayerCharacter.HitCombo = 0;
+            PlayerCharacter.Instance.HitCombo = 0;
             PlayerCharacter.Instance.ResetscoreMultiply();
         }
         

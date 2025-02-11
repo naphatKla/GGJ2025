@@ -20,6 +20,7 @@ namespace Skills
         [SerializeField] [PropertyOrder(99)] private MMF_Player skillEndFeedback;
         [Title("Events")] [PropertyOrder(100)] public UnityEvent onSkillStart;
         [PropertyOrder(100)] public UnityEvent onSkillEnd;
+        [PropertyOrder(100)] public UnityEvent onCooldownEnd;
         protected CharacterBase OwnerCharacter;
         private float _cooldownCounter;
 
@@ -52,6 +53,7 @@ namespace Skills
             }
 
             _cooldownCounter -= Time.deltaTime;
+            if (_cooldownCounter <= 0) onCooldownEnd?.Invoke();
         }
 
         public virtual void UseSkill()
