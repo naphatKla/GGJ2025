@@ -143,6 +143,7 @@ MonoBehaviour:
   canCollectOxygen: 0
   dropOxygenOnDead: 1
   deadMode: 0
+  damage: 1
   life: 1
   iframeAfterHitDuration: 0
   skillLeft: {fileID: 5927045643224823044}
@@ -971,6 +972,14 @@ PrefabInstance:
     - target: {fileID: 2232423140507098843, guid: 429b4e13e0811ad408340fd6edcbb487, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4377983379914200851, guid: 429b4e13e0811ad408340fd6edcbb487, type: 3}
+      propertyPath: iframeAfterDash
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4377983379914200851, guid: 429b4e13e0811ad408340fd6edcbb487, type: 3}
+      propertyPath: iframeWhileDashing
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 9032030046776433861, guid: 429b4e13e0811ad408340fd6edcbb487, type: 3}
       propertyPath: m_Name

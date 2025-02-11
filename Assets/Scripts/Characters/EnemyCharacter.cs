@@ -15,6 +15,7 @@ namespace Characters
         private float _lastDashTime;
         private int _previousLife;
         private int _maxLife;
+        public bool isHitInvoked = false;
         
         [BoxGroup("Enemy type")]
         public enum EnemyType
@@ -95,6 +96,7 @@ namespace Characters
 
         public override void TakeDamage(CharacterBase attacker)
         {
+            isHitInvoked = true;
             base.TakeDamage(attacker);
             if (IsDead) return;
             if (_previousLife == life) return;
@@ -107,6 +109,12 @@ namespace Characters
             score -= scoreDrop;
             Debug.Log($"score left = {score}");
             DropOxygen(scoreDrop);
+            Invoke(nameof(ResetHit), 0.1f); 
+        }
+        
+        private void ResetHit()
+        {
+            isHitInvoked = false;
         }
 
         private void PerformHunting()

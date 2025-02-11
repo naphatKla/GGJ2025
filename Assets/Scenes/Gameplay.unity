@@ -3637,11 +3637,11 @@ MonoBehaviour:
     SerializedBytes: 
     ReferencedUnityObjects:
     - {fileID: 318422658666202670, guid: 1427c58cf89ec90408813360c8547586, type: 3}
-    - {fileID: 318422658666202670, guid: f08ff0b87292bd34dab42d1b1886c45e, type: 3}
+    - {fileID: 318422658666202670, guid: 5f4af339524b76a4389264169830a197, type: 3}
     - {fileID: 318422658666202670, guid: b0a01d9614bc79744b70c57ae20ddd76, type: 3}
-    - {fileID: 318422658666202670, guid: 5989438d0dce24e4ba90c00b560ddff5, type: 3}
+    - {fileID: 318422658666202670, guid: 63bf5f93c39903f4881d255534484140, type: 3}
     - {fileID: 318422658666202670, guid: ff90d5eeb6f2ffc4281564e52f1c9a76, type: 3}
-    - {fileID: 318422658666202670, guid: f7b04f8b722d9fe4d967c0c170bb6f7b, type: 3}
+    - {fileID: 318422658666202670, guid: 0ca7966b46cc5e74aa52015886a88796, type: 3}
     SerializedBytesString: 
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
@@ -4203,7 +4203,7 @@ MonoBehaviour:
       Data: EnemyStruct, Assembly-CSharp
     - Name: enemyPrefab
       Entry: 10
-      Data: 5
+      Data: 0
     - Name: spawnChance
       Entry: 3
       Data: 100
@@ -4377,7 +4377,7 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
-  currentStage: 6
+  currentStage: 100
   currentSpawnInterval: 1
   currentScoreQuota: 3500
   maxEnemySpawn: 50
@@ -6097,6 +6097,10 @@ PrefabInstance:
       propertyPath: managedReferences[5982134046409097269].ImpulseSource
       value: 
       objectReference: {fileID: 1648103412}
+    - target: {fileID: 4317072113863429186, guid: a77265b9aebe62e42ab5cd27ab605cb7, type: 3}
+      propertyPath: damage
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4317072113863429186, guid: a77265b9aebe62e42ab5cd27ab605cb7, type: 3}
       propertyPath: onDead.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 

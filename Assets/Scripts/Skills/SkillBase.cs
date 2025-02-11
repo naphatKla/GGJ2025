@@ -56,6 +56,11 @@ namespace Skills
             _cooldownCounter -= Time.deltaTime;
         }
         
+        public void SetCooldown(float newCooldown)
+        {
+            cooldown = newCooldown;
+        }
+        
         public virtual void UseSkill()
         {
             if (_cooldownCounter > 0) return;
@@ -67,6 +72,12 @@ namespace Skills
             skillStartFeedback?.PlayFeedbacks();
             _cooldownCounter = cooldown;
             _isThisSkillPerforming = true;
+            
+            if (OwnerCharacter.CompareTag("Player"))
+            {
+                PlayerCharacter player = OwnerCharacter as PlayerCharacter;
+                player.StartCoroutine(player.ResetDashCooldown(0.1f));  
+            }
         }
 
         // ReSharper disable Unity.PerformanceAnalysis

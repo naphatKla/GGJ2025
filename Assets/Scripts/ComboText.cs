@@ -40,13 +40,28 @@ public class ComboText : MonoBehaviour
             isCombo = false;
             PlayerCharacter.HitCombo = 0;
             PlayerCharacter.Instance.ResetscoreMultiply();
+            PlayerCharacter.Instance.ResetDamage(PlayerCharacter.Instance);
         }
-        
+
         if (_score > 0 && _score % 5 == 0 && _score != _lastTriggeredScore)
         {
-            OnEveryFiveHitcombo();
+            if (_score % 25 == 0)
+            {
+                OnEveryTwentyFiveHitCombo();
+            }
+            else if (_score % 15 == 0)
+            {
+                OnEveryFifteenHitCombo();
+            }
+            else if (_score % 5 == 0)
+            {
+                OnEveryFiveHitCombo();
+            }
+    
             _lastTriggeredScore = (int)_score;
         }
+
+
     }
 
     private void UpdateScoreText()
@@ -93,10 +108,24 @@ public class ComboText : MonoBehaviour
     }
     
     
-    private void OnEveryFiveHitcombo()
+    private void OnEveryFiveHitCombo()
     {
-        Debug.Log("Every 5 Hitcombo!");
+        Debug.Log("Every 5 Hits!");
         voiceFeedback.PlayFeedbacks();
         PlayerCharacter.Instance.IncreaseScoreMultiply(0.1f, maxScoreMultiply);
     }
+
+    private void OnEveryFifteenHitCombo()
+    {
+        Debug.Log("Every 15 Hits! Heal");
+        PlayerCharacter.Instance.Heal(PlayerCharacter.Instance);
+    }
+
+    private void OnEveryTwentyFiveHitCombo()
+    {
+        Debug.Log("Every 25 Hits! Damage Boost");
+        voiceFeedback.PlayFeedbacks();
+        PlayerCharacter.Instance.DamageBoost(PlayerCharacter.Instance);
+    }
+
 }

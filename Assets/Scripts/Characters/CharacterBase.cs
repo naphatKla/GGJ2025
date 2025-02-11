@@ -21,6 +21,7 @@ namespace Characters
         [SerializeField] protected bool canCollectOxygen;
         [SerializeField] protected bool dropOxygenOnDead = true;
         [SerializeField] protected DeadMode deadMode;
+        [SerializeField] [BoxGroup("Damage")] protected int damage = 1;
         [SerializeField] [BoxGroup("Life")] protected int life = 1;
         [SerializeField] [BoxGroup("Life")] protected float iframeAfterHitDuration;
         [SerializeField] [BoxGroup("Skills")] protected SkillBase skillLeft;
@@ -177,12 +178,27 @@ namespace Characters
             if (IsDead) return;
             if (Time.time - _lastHitTime < iframeAfterHitDuration) return;
 
-            life--;
+            life -= attacker.damage;
             _lastHitTime = Time.time;
             takeDamageFeedback?.PlayFeedbacks();
             onHitWithDamage?.Invoke();
             if (life > 0) return;
             Dead(attacker);
+        }
+
+        public virtual void Heal(CharacterBase attacker)
+        {
+            life = Mathf.Clamp(life + 1, 0, 3);
+        }
+        
+        public virtual void DamageBoost(CharacterBase attacker)
+        {
+            attacker.damage += 1;
+        }
+        
+        public virtual void ResetDamage(CharacterBase attacker)
+        {
+            attacker.damage = 1;
         }
         
         public virtual void ForceDead(CharacterBase attacker)

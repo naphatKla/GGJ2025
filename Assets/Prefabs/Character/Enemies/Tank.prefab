@@ -535,6 +535,7 @@ MonoBehaviour:
   canCollectOxygen: 0
   dropOxygenOnDead: 1
   deadMode: 0
+  damage: 1
   life: 3
   iframeAfterHitDuration: 0.3
   skillLeft: {fileID: 6561604358533285590}
@@ -974,7 +975,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4377983379914200851, guid: 429b4e13e0811ad408340fd6edcbb487, type: 3}
       propertyPath: dashDistance
-      value: 4
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 4377983379914200851, guid: 429b4e13e0811ad408340fd6edcbb487, type: 3}
+      propertyPath: iframeAfterDash
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4377983379914200851, guid: 429b4e13e0811ad408340fd6edcbb487, type: 3}
+      propertyPath: iframeWhileDashing
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 9032030046776433861, guid: 429b4e13e0811ad408340fd6edcbb487, type: 3}
       propertyPath: m_Name

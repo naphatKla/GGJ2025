@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -10,6 +11,7 @@ namespace Characters
         public static UnityEvent OnHitComboChanged = new UnityEvent();
 
         private static float _hitCombo;
+        private bool isHitInvoked = false;
 
         public static float HitCombo
         {
@@ -56,11 +58,25 @@ namespace Characters
             base.OnTriggerStay2D(other);
             if (IsDead) return;
             if (other.CompareTag("Enemy") && IsDash)
+            {
                 other.GetComponent<CharacterBase>().TakeDamage(this);
+                skillLeft.SetCooldown(0.3f);
+            }
+
         }
         #endregion -------------------------------------------------------------------------------------------------------------------
 
         #region Methods
+        public IEnumerator ResetDashCooldown(float delay)
+        {
+            yield return new WaitForSeconds(delay);
+            if (!isHitInvoked)
+            {
+                skillLeft.SetCooldown(0.5f);
+            }
+            isHitInvoked = false;
+        }
+        
         protected override void SkillInputHandler()
         {
             if (Time.timeScale == 0) return;
@@ -76,7 +92,7 @@ namespace Characters
             if (IsDash) return;
             base.TakeDamage(attacker);
             //Tank Stun
-            if (attacker.GetComponent<EnemyCharacter>().currentType == EnemyCharacter.EnemyType.Tank && IsDash)
+            if (attacker.GetComponent<EnemyCharacter>().currentType == EnemyCharacter.EnemyType.Tank)
                 StartCoroutine(Stun(0.5f));
             OnTakeDamage?.Invoke();
         }
