@@ -38,6 +38,9 @@ namespace Characters
 
         [SerializeField] [BoxGroup("Feedbacks")]
         public MMF_Player killFeedback;
+        
+        [SerializeField] [BoxGroup("Feedbacks")]
+        public MMF_Player randomFeedback;
 
         [SerializeField] [BoxGroup("Feedbacks")]
         private MMF_Player takeDamageFeedback;

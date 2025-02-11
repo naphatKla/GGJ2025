@@ -125,6 +125,7 @@ namespace Characters
             var selectedSkill = availableSkills[randomIndex];
 
             _currentRandomSkill = selectedSkill.Value;
+            randomFeedback.PlayFeedbacks();
             if (_audiofeedback.soundFeedbacks.ContainsKey(selectedSkill.Key))
             {
                 _audiofeedback.PlayMultipleAudio(selectedSkill.Key, "Sfx");
