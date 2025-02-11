@@ -1,6 +1,7 @@
 using System.Collections;
 using Characters;
 using DG.Tweening;
+using MoreMountains.Feedbacks;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -17,6 +18,8 @@ namespace Skills
         [SerializeField] protected float dashDuration = 0.5f;
         [SerializeField] protected bool iframeOnCharging = true;
         [SerializeField] private ParticleSystem skillParticle;
+        [SerializeField] protected ParticleSystem lightningLineParticle;
+        [SerializeField] private MMF_Player chargeReleaseFeedback;
         private GameObject _particleGroup;
 
         #endregion -------------------------------------------------------------------------------------------------------------------
@@ -39,6 +42,8 @@ namespace Skills
         {
             OwnerCharacter.StartMovementController();
             OwnerCharacter.IsIframe = false;
+            OwnerCharacter.CanUseSkill = true;
+            lightningLineParticle.Stop();
         }
 
         private IEnumerator ChargeSkill()
@@ -58,11 +63,13 @@ namespace Skills
             }
 
             if (!OwnerCharacter) yield break;
+            OwnerCharacter.CanUseSkill = false;
             Vector2 direction = GetTargetDirection();
             Vector2 dashPosition = OwnerCharacter.transform.position + (Vector3)direction * dashDistance;
             dashPosition = OwnerCharacter.ClampMovePositionToBound(dashPosition);
             Collider2D[] enemiesInDashLine = CheckDashCollision();
-            Debug.Log(enemiesInDashLine.Length);
+            chargeReleaseFeedback?.PlayFeedbacks();
+            lightningLineParticle.Play();
             OwnerCharacter.transform.DOMove(dashPosition, dashDuration).SetEase(Ease.InOutSine).OnComplete(() =>
             {
                 foreach (Collider2D enemy in enemiesInDashLine)

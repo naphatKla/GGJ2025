@@ -41,8 +41,8 @@ namespace Characters
         protected override void Awake()
         {
             base.Awake();
-            if (!Instance)
-                Instance = this;
+            if (Instance) return;
+            Instance = this;
         }
 
         protected override void Update()

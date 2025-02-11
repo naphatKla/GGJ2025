@@ -86,7 +86,7 @@ namespace Characters
         public bool IsStoppingSkillController { get; private set; }
         public bool IsDash { get; set; }
         public bool IsDead { get; protected set; }
-        
+        public bool CanUseSkill { get; set; } = true;
         public Animator Animator => _animator;
         protected Rigidbody2D Rigid2D => _rigidBody2D;
         public LayerMask EnemyLayerMask => CharacterGlobalSettings.Instance.EnemyLayerDictionary[tag];
@@ -137,6 +137,11 @@ namespace Characters
                     gameObject.SetActive(false);
                     break;
             }
+        }
+        
+        private void OnDestroy()
+        {
+            DOTween.Kill(gameObject);
         }
         #endregion -------------------------------------------------------------------------------------------------------------------
 

@@ -1,7 +1,8 @@
+using System;
 using Characters;
+using DG.Tweening;
 using MoreMountains.Feedbacks;
 using Sirenix.OdinInspector;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -12,16 +13,17 @@ namespace Skills
         #region Inspectors & Fields
 
         [Title("SkillBase")] [SerializeField] [BoxGroup("Duration")]
-        private float cooldown = 1f; 
-
+        private float cooldown = 1f;
+        
         [Title("Feedbacks")] [SerializeField] [PropertyOrder(99)]
-        private MMF_Player skillStartFeedback;
+        protected MMF_Player skillStartFeedback;
 
         [SerializeField] [PropertyOrder(99)] private MMF_Player skillEndFeedback;
         [Title("Events")] [PropertyOrder(100)] public UnityEvent onSkillStart;
         [PropertyOrder(100)] public UnityEvent onSkillEnd;
         protected CharacterBase OwnerCharacter;
         private float _cooldownCounter;
+        private bool _isThisSkillPerforming;
 
         #endregion -------------------------------------------------------------------------------------------------------------------
 
@@ -53,14 +55,18 @@ namespace Skills
 
             _cooldownCounter -= Time.deltaTime;
         }
-
+        
         public virtual void UseSkill()
         {
             if (_cooldownCounter > 0) return;
+            if (_isThisSkillPerforming) return;
+            if (!OwnerCharacter.CanUseSkill) return;
+            
+            OnSkillStart();
             onSkillStart?.Invoke();
             skillStartFeedback?.PlayFeedbacks();
-            OnSkillStart();
             _cooldownCounter = cooldown;
+            _isThisSkillPerforming = true;
         }
 
         // ReSharper disable Unity.PerformanceAnalysis
@@ -69,6 +75,8 @@ namespace Skills
         /// </summary>
         protected virtual void ExitSkill()
         {
+            if (!_isThisSkillPerforming) return;
+            _isThisSkillPerforming = false;
             OnSkillEnd();
             onSkillEnd?.Invoke();
             skillEndFeedback?.PlayFeedbacks();
@@ -83,7 +91,12 @@ namespace Skills
             Vector2 direction = (mousePos - (Vector2)OwnerCharacter.transform.position).normalized;
             return direction;
         }
-        
+
+        private void OnDestroy()
+        {
+            DOTween.Kill(gameObject);
+        }
+
         #endregion -------------------------------------------------------------------------------------------------------------------
     }
 }

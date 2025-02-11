@@ -16,14 +16,16 @@ namespace Skills
         private float iframeDuration = 1f;
 
         [SerializeField] private float counterDashRange = 30f;
-        [SerializeField] private float counterMinDashDistance = 6;
+        [SerializeField] private float counterMinDashDistance = 8;
         [SerializeField] private int counterDashTime = 4;
         [SerializeField] private float counterDashDuration = 0.125f;
         [SerializeField] private float restTimePerDash = 0f;
+        [SerializeField] private float iframeDurationAfterCounterDash = 0.5f;
         [SerializeField] private bool iframeOnCounterDash = true;
 
         [SerializeField] [PropertyOrder(99)]
         private MMF_Player counterStartFeedback;
+        [SerializeField] private ParticleSystem iframeParticle;
 
         private bool _gotHit;
 
@@ -52,7 +54,7 @@ namespace Skills
 
             // Counter Dash
             _gotHit = false;
-            counterStartFeedback?.PlayFeedbacks();
+            OwnerCharacter.CanUseSkill = false;
             OwnerCharacter.StopMovementController();
             for (int i = 0; i < counterDashTime; i++)
             {
@@ -71,6 +73,7 @@ namespace Skills
                     .FirstOrDefault()?.transform;
                 
                 if (!closestEnemy) continue;
+                counterStartFeedback?.PlayFeedbacks();
                 float distance = Vector2.Distance(OwnerCharacter.transform.position, closestEnemy.transform.position);
                 Vector2 direction = (closestEnemy.position - OwnerCharacter.transform.position).normalized;
                 Vector2 dashPosition = distance > counterMinDashDistance
@@ -84,6 +87,8 @@ namespace Skills
                 yield return new WaitForSeconds(restTimePerDash);
             }
 
+            if (iframeOnCounterDash)
+                yield return new WaitForSeconds(iframeDurationAfterCounterDash);
             ExitSkill();
         }
 
@@ -100,6 +105,7 @@ namespace Skills
         protected override void OnSkillStart()
         {
             _gotHit = false;
+            iframeParticle?.Play();
             StartCoroutine(StartSkill());
         }
 
@@ -107,6 +113,8 @@ namespace Skills
         {
             OwnerCharacter.IsDash = false;
             OwnerCharacter.IsIframe = false;
+            OwnerCharacter.CanUseSkill = true;
+            iframeParticle?.Stop();
             OwnerCharacter.StartMovementController();
         }
 
