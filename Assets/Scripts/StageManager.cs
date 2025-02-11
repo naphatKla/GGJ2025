@@ -59,7 +59,7 @@ public class StageManager : SerializedMonoBehaviour
     [ShowInInspector] private bool isStarting = true;
     private bool nextQuotaReached = false;
     private bool intervalQuotaReached = false;
-    
+
     [Header("Stage Events")] [BoxGroup("Events")]
     public StageEvent stageEvent;
     
@@ -97,6 +97,7 @@ public class StageManager : SerializedMonoBehaviour
 
     private IEnumerator CheckSpawnEnemies()
     {
+        if (!isStarting) yield break;
         while (true)
         {
             int currentEnemyCount = GetCurrentEnemyCount();
@@ -160,6 +161,7 @@ public class StageManager : SerializedMonoBehaviour
 
     private void SpawnEnemy()
     {
+        if (!isStarting) return;
         float totalSpawnChance = 0f;
         foreach (var enemyData in stageLabels[currentStage].enemyPrefab)
         {
@@ -207,6 +209,35 @@ public class StageManager : SerializedMonoBehaviour
             }
         }
         return count;
+    }
+
+    [Button("Clear Enemy")]
+    public void ClearEnemy()
+    {
+        foreach (Transform child in enemyParent)
+        {
+            if (child.gameObject.activeInHierarchy)
+            {
+                CharacterBase enemy = child.gameObject.GetComponent<CharacterBase>();
+                enemy.ForceDead(enemy);
+            }
+        }
+    }
+    
+    [Button("Start Enemyspawn")]
+    public void StartEnemyspawn()
+    {
+        isStarting = true;
+        SetStage();
+        StartCoroutine(EnemyQuotaCoroutine());
+        StartCoroutine(CheckSpawnEnemies());
+    }
+    
+    [Button("Stop Enemyspawn")]
+    public void StopEnemyspawn()
+    {
+        ClearEnemy();
+        isStarting = false;
     }
 
     

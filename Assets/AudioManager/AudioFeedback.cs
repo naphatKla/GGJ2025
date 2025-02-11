@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Audio;
 
 [Serializable]
 public class AudioEntryFeedback
@@ -16,9 +17,11 @@ public class AudioEntryFeedback
 
 public class AudioFeedback : MonoBehaviour
 {
+    [Tooltip("Reference to the AudioMixer")]
+    public AudioMixer audioMixer;
     [Tooltip("Category of the audio clips")]
     [SerializeField] public SerializableDictionary<string, AudioEntryFeedback> soundFeedbacks;
-    
+
     /// <summary>
     /// Play audio by category
     /// </summary>
@@ -81,4 +84,50 @@ public class AudioFeedback : MonoBehaviour
             Debug.LogWarning($"Key not found in soundFeedbacks: {category}");
         }
     }
+    
+    public void PlayMultipleAudio(string category, string outputGroupName = null)
+    {
+        if (soundFeedbacks.TryGetValue(category, out AudioEntryFeedback audioEntry))
+        {
+            if (audioEntry.clip == null || audioEntry.clip.Length == 0)
+            {
+                Debug.LogWarning($"No audio clips assigned for key: {category}");
+                return;
+            }
+            
+            AudioMixerGroup outputGroup = null;
+            if (!string.IsNullOrEmpty(outputGroupName) && audioMixer != null)
+            {
+                AudioMixerGroup[] groups = audioMixer.FindMatchingGroups(outputGroupName);
+                if (groups.Length > 0)
+                {
+                    outputGroup = groups[0];
+                }
+                else
+                {
+                    Debug.LogWarning($"AudioMixerGroup '{outputGroupName}' not found!");
+                }
+            }
+            
+            foreach (var clip in audioEntry.clip)
+            {
+                AudioSource newSource = gameObject.AddComponent<AudioSource>();
+                newSource.clip = clip;
+                newSource.volume = audioEntry.volume;
+                newSource.loop = audioEntry.loop;
+                if (outputGroup != null)
+                {
+                    newSource.outputAudioMixerGroup = outputGroup;
+                }
+
+                newSource.Play();
+                Destroy(newSource, clip.length + 0.1f);
+            }
+        }
+        else
+        {
+            Debug.LogWarning($"Key not found in soundFeedbacks: {category}");
+        }
+    }
+
 }
