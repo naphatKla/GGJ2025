@@ -16,7 +16,7 @@ public class CutsceneManager : MonoBehaviour
     [Button("Play Cutscene")]
     public void PlayCutscene()
     {
-        playableDirector.gameObject.SetActive(true);
+        if (playableDirector.gameObject == null) return;
         playableDirector.Play();
     }
 
