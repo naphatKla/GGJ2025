@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 4326812607397302318}
   - component: {fileID: 5465021938853108724}
   - component: {fileID: 3872497456695499680}
+  - component: {fileID: 5549333052695705220}
   m_Layer: 7
   m_Name: Player
   m_TagString: Player
@@ -110,6 +111,7 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
   accelerator: 6
+  _kill: 0
   _scoreReach: 1000
   _nextScoreThreshold: 1000
   SkillDictionary:
@@ -414,6 +416,27 @@ MonoBehaviour:
       loop: 0
       randomize: 0
   poolObject: {fileID: 0}
+--- !u!95 &5549333052695705220
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 479713288450829085}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 0}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &892913073304475509
 GameObject:
   m_ObjectHideFlags: 0
@@ -544,6 +567,9 @@ MonoBehaviour:
   onSkillEnd:
     m_PersistentCalls:
       m_Calls: []
+  onCooldownEnd:
+    m_PersistentCalls:
+      m_Calls: []
   cloningAmount: 8
   mergeWaitTime: 2
   mergeDuration: 2
@@ -605,6 +631,9 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   onSkillEnd:
+    m_PersistentCalls:
+      m_Calls: []
+  onCooldownEnd:
     m_PersistentCalls:
       m_Calls: []
   dashDuration: 0.3
@@ -22881,6 +22910,9 @@ MonoBehaviour:
   onSkillEnd:
     m_PersistentCalls:
       m_Calls: []
+  onCooldownEnd:
+    m_PersistentCalls:
+      m_Calls: []
   chargeDuration: 1.5
   dashDistance: 100
   dashDuration: 0.3
@@ -33281,7 +33313,7 @@ MonoBehaviour:
           m_ImpulseDuration: 0.2
           m_ImpulseType: 3
           m_DissipationRate: 0
-          m_RawSignal: {fileID: 11400000, guid: 69ce8388f6785dd4c8c39915efece2f4, type: 2}
+          m_RawSignal: {fileID: 11400000, guid: 30f4d044146a88643b1346ab4ed013e9, type: 2}
           m_AmplitudeGain: 1
           m_FrequencyGain: 1
           m_RepeatMode: 0
@@ -33309,7 +33341,7 @@ MonoBehaviour:
           m_DissipationMode: 2
           m_DissipationDistance: 100
           m_PropagationSpeed: 343
-        Velocity: {x: 10, y: 10, z: 10}
+        Velocity: {x: 15, y: 15, z: 15}
         ClearImpulseOnStop: 0
 --- !u!1 &8026002913389225763
 GameObject:
@@ -33365,6 +33397,9 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   onSkillEnd:
+    m_PersistentCalls:
+      m_Calls: []
+  onCooldownEnd:
     m_PersistentCalls:
       m_Calls: []
   iframeDuration: 2
