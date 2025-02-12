@@ -6493,11 +6493,11 @@ Transform:
   m_GameObject: {fileID: 324346216}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -10.022583, y: -21.11493, z: -926.99133}
-  m_LocalScale: {x: 0.10694695, y: 0.10694695, z: 0.10694695}
+  m_LocalPosition: {x: 0, y: 0, z: 0.00021419443}
+  m_LocalScale: {x: 1.0008414, y: 1.0008414, z: 1.0008414}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1772753145}
+  m_Father: {fileID: 657264824}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &330756329
 GameObject:
@@ -17761,6 +17761,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 324346218}
   - {fileID: 1188193759}
   - {fileID: 455372795}
   - {fileID: 934213491}
@@ -19552,9 +19553,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1772753144}
-        m_TargetAssemblyTypeName: LevelSelector, Assembly-CSharp
-        m_MethodName: StartPlay
+      - m_Target: {fileID: 324346217}
+        m_TargetAssemblyTypeName: MoreMountains.Feedbacks.MMF_Player, MoreMountains.Feedbacks
+        m_MethodName: PlayFeedbacks
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -23034,8 +23035,7 @@ Transform:
   m_LocalPosition: {x: 1134.2684, y: 549.9532, z: 1016.62524}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 324346218}
+  m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1777063945

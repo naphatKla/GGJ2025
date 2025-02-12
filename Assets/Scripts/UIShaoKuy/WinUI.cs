@@ -8,6 +8,7 @@ using UnityEngine;
 
 public class WinUI : MonoBehaviour
 {
+    [SerializeField] private GameObject[] stars;
     [SerializeField] private GameObject[] items;
     private int _count = 0;
     private float firstTimeOpenTime = 0.01f;
