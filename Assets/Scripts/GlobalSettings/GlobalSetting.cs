@@ -23,7 +23,6 @@ namespace GlobalSettings
                 if (_instance) return _instance;
                 _instance = Resources.Load<T>($"{Path}/{typeof(T).Name}");
 #if UNITY_EDITOR
-                CheckForConflictingFiles();
                 if (_instance) return _instance;
                 _instance = CreateInstance<T>();
                 Debug.LogWarning(
@@ -69,6 +68,13 @@ namespace GlobalSettings
 
             Debug.LogError(
                 $"There are more than one {typeof(T).Name} in the Resources folder. Please make sure there is only one.\nConflicting files:\n{conflictingFiles}");
+        }
+
+        private void OnEnable()
+        {
+            if (!Instance) return;
+            if (Instance != this) return;
+            CheckForConflictingFiles();
         }
 
         [Title("")]
