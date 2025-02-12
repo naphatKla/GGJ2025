@@ -4498,7 +4498,7 @@ Transform:
   m_GameObject: {fileID: 727001501}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.4217777, y: 0.31998998, z: -10}
+  m_LocalPosition: {x: -2.4247491, y: 0.31998998, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -5366,12 +5366,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 901910439}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1077688100}
+  m_Father: {fileID: 1052924953}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &944307399
 GameObject:
@@ -7045,6 +7045,7 @@ Transform:
   m_Children:
   - {fileID: 1935656736}
   - {fileID: 291539830}
+  - {fileID: 901910440}
   - {fileID: 1077688100}
   m_Father: {fileID: 891916740}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -7216,11 +7217,8 @@ MonoBehaviour:
     SerializedBytes: 
     ReferencedUnityObjects:
     - {fileID: 318422658666202670, guid: 1427c58cf89ec90408813360c8547586, type: 3}
-    - {fileID: 318422658666202670, guid: 5f4af339524b76a4389264169830a197, type: 3}
     - {fileID: 318422658666202670, guid: b0a01d9614bc79744b70c57ae20ddd76, type: 3}
-    - {fileID: 318422658666202670, guid: 63bf5f93c39903f4881d255534484140, type: 3}
     - {fileID: 318422658666202670, guid: ff90d5eeb6f2ffc4281564e52f1c9a76, type: 3}
-    - {fileID: 318422658666202670, guid: 0ca7966b46cc5e74aa52015886a88796, type: 3}
     SerializedBytesString: 
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
@@ -7328,8 +7326,8 @@ MonoBehaviour:
       Entry: 7
       Data: EnemyStruct, Assembly-CSharp
     - Name: enemyPrefab
-      Entry: 10
-      Data: 1
+      Entry: 6
+      Data: 
     - Name: spawnChance
       Entry: 3
       Data: 30
@@ -7397,8 +7395,8 @@ MonoBehaviour:
       Entry: 7
       Data: EnemyStruct, Assembly-CSharp
     - Name: enemyPrefab
-      Entry: 10
-      Data: 1
+      Entry: 6
+      Data: 
     - Name: spawnChance
       Entry: 3
       Data: 30
@@ -7410,7 +7408,7 @@ MonoBehaviour:
       Data: EnemyStruct, Assembly-CSharp
     - Name: enemyPrefab
       Entry: 10
-      Data: 2
+      Data: 1
     - Name: spawnChance
       Entry: 3
       Data: 20
@@ -7478,6 +7476,18 @@ MonoBehaviour:
       Entry: 7
       Data: EnemyStruct, Assembly-CSharp
     - Name: enemyPrefab
+      Entry: 6
+      Data: 
+    - Name: spawnChance
+      Entry: 3
+      Data: 20
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: EnemyStruct, Assembly-CSharp
+    - Name: enemyPrefab
       Entry: 10
       Data: 1
     - Name: spawnChance
@@ -7490,20 +7500,8 @@ MonoBehaviour:
       Entry: 7
       Data: EnemyStruct, Assembly-CSharp
     - Name: enemyPrefab
-      Entry: 10
-      Data: 2
-    - Name: spawnChance
-      Entry: 3
-      Data: 20
-    - Name: 
-      Entry: 8
+      Entry: 6
       Data: 
-    - Name: 
-      Entry: 7
-      Data: EnemyStruct, Assembly-CSharp
-    - Name: enemyPrefab
-      Entry: 10
-      Data: 3
     - Name: spawnChance
       Entry: 3
       Data: 20
@@ -7571,6 +7569,18 @@ MonoBehaviour:
       Entry: 7
       Data: EnemyStruct, Assembly-CSharp
     - Name: enemyPrefab
+      Entry: 6
+      Data: 
+    - Name: spawnChance
+      Entry: 3
+      Data: 20
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: EnemyStruct, Assembly-CSharp
+    - Name: enemyPrefab
       Entry: 10
       Data: 1
     - Name: spawnChance
@@ -7583,32 +7593,20 @@ MonoBehaviour:
       Entry: 7
       Data: EnemyStruct, Assembly-CSharp
     - Name: enemyPrefab
+      Entry: 6
+      Data: 
+    - Name: spawnChance
+      Entry: 3
+      Data: 20
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: EnemyStruct, Assembly-CSharp
+    - Name: enemyPrefab
       Entry: 10
       Data: 2
-    - Name: spawnChance
-      Entry: 3
-      Data: 20
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: EnemyStruct, Assembly-CSharp
-    - Name: enemyPrefab
-      Entry: 10
-      Data: 3
-    - Name: spawnChance
-      Entry: 3
-      Data: 20
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: EnemyStruct, Assembly-CSharp
-    - Name: enemyPrefab
-      Entry: 10
-      Data: 4
     - Name: spawnChance
       Entry: 3
       Data: 10
@@ -7676,8 +7674,32 @@ MonoBehaviour:
       Entry: 7
       Data: EnemyStruct, Assembly-CSharp
     - Name: enemyPrefab
+      Entry: 6
+      Data: 
+    - Name: spawnChance
+      Entry: 3
+      Data: 20
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: EnemyStruct, Assembly-CSharp
+    - Name: enemyPrefab
       Entry: 10
       Data: 1
+    - Name: spawnChance
+      Entry: 3
+      Data: 20
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: EnemyStruct, Assembly-CSharp
+    - Name: enemyPrefab
+      Entry: 6
+      Data: 
     - Name: spawnChance
       Entry: 3
       Data: 20
@@ -7692,30 +7714,6 @@ MonoBehaviour:
       Data: 2
     - Name: spawnChance
       Entry: 3
-      Data: 20
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: EnemyStruct, Assembly-CSharp
-    - Name: enemyPrefab
-      Entry: 10
-      Data: 3
-    - Name: spawnChance
-      Entry: 3
-      Data: 20
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: EnemyStruct, Assembly-CSharp
-    - Name: enemyPrefab
-      Entry: 10
-      Data: 4
-    - Name: spawnChance
-      Entry: 3
       Data: 10
     - Name: 
       Entry: 8
@@ -7724,8 +7722,8 @@ MonoBehaviour:
       Entry: 7
       Data: EnemyStruct, Assembly-CSharp
     - Name: enemyPrefab
-      Entry: 10
-      Data: 5
+      Entry: 6
+      Data: 
     - Name: spawnChance
       Entry: 3
       Data: 10
@@ -7979,8 +7977,7 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 901910440}
+  m_Children: []
   m_Father: {fileID: 1052924953}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1092609046
@@ -10634,7 +10631,7 @@ Transform:
   m_GameObject: {fileID: 1648103409}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -2.4217777, y: 0.31998998, z: -10}
+  m_LocalPosition: {x: -3.3, y: 0.32, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:

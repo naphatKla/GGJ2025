@@ -83,6 +83,7 @@ public class StageManager : SerializedMonoBehaviour
     private IEnumerator Start()
     {
         yield return new WaitUntil(() => SceneManager.GetActiveScene().isLoaded);
+        currentStage = FindObjectOfType<LevelSelector>().level;
         if (!isStarting) yield break;
         SetStage();
         StartCoroutine(EnemyQuotaCoroutine());
