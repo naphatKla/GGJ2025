@@ -17,7 +17,7 @@ public class LoadScene : MonoBehaviour
     {
         // เริ่มเกมโดยแสดง Player Controller UI และหยุดเวลา
         pauseUI.SetActive(false);
-        loseUI.SetActive(false);
+        
     }
 
     void Update()
