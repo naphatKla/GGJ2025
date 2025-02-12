@@ -27,7 +27,7 @@ public class ScoreText : MonoBehaviour
         scoreText.text = "Score " + 0;
         
         killTarget.text = _stageManager.stageLabels[_stageManager.currentStage].killQuota.ToString();
-        scoreText.text = _stageManager.stageLabels[_stageManager.currentStage].scoreQuota.ToString();
+        scoreTarget.text = _stageManager.stageLabels[_stageManager.currentStage].scoreQuota.ToString();   
         lifeTarget.text = _stageManager.stageLabels[_stageManager.currentStage].lifeQuota.ToString();
         
         

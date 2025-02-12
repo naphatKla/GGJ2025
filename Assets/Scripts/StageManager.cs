@@ -92,7 +92,8 @@ public class StageManager : SerializedMonoBehaviour
             enemyParent = new GameObject("enemyParent").transform;
         if (currentBackground != null) 
             currentBackground.GetComponent<SpriteRenderer>().sprite = stageLabels[currentStage].background;
-        currentStage = FindObjectOfType<LevelSelector>().level;
+        if (FindObjectOfType<LevelSelector>() != null)
+            currentStage = FindObjectOfType<LevelSelector>().level;
         SetStage();
         yield return new WaitUntil(() => SceneManager.GetActiveScene().isLoaded);
         if (!isStarting) yield break;
