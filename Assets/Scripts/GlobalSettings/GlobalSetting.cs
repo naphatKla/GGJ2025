@@ -9,6 +9,7 @@ namespace GlobalSettings
     {
         private const string Path = "GlobalSettings"; // Path for Resources folder
         private static T _instance;
+        private static bool _isConflictWarning;
 
         /// <summary>
         /// This Instance is scriptable object + singleton.
@@ -72,9 +73,9 @@ namespace GlobalSettings
 
         private void OnEnable()
         {
-            if (!Instance) return;
-            if (Instance != this) return;
+            if(_isConflictWarning) return;
             CheckForConflictingFiles();
+            _isConflictWarning = true;
         }
 
         [Title("")]
