@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Characters;
 using Sirenix.OdinInspector;
+using Sirenix.Serialization;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Events;
@@ -33,7 +34,7 @@ public class StageManager : SerializedMonoBehaviour
 {
     #region Inspector
     [DictionaryDrawerSettings(KeyLabel = "Stage", ValueLabel = "Stage Properties")]
-    public Dictionary<int, StageClass> stageLabels = new Dictionary<int, StageClass>();
+    [OdinSerialize] public Dictionary<int, StageClass> stageLabels = new Dictionary<int, StageClass>();
     
     [BoxGroup("Current Data Stage")]
     [SerializeField] public int currentStage = 1;
@@ -83,6 +84,7 @@ public class StageManager : SerializedMonoBehaviour
     private IEnumerator Start()
     {
         yield return new WaitUntil(() => SceneManager.GetActiveScene().isLoaded);
+        currentStage = FindObjectOfType<LevelSelector>().level;
         if (!isStarting) yield break;
         SetStage();
         StartCoroutine(EnemyQuotaCoroutine());
@@ -224,11 +226,30 @@ public class StageManager : SerializedMonoBehaviour
         }
     }
     
+    [Button("Change Stage")]
+    public void ChangeStage()
+    {
+        StartCoroutine(StageChanging());
+    }
+
+    private IEnumerator StageChanging()
+    {
+        ClearEnemy();
+        StopCoroutine(EnemyQuotaCoroutine());
+        StopCoroutine(CheckSpawnEnemies());
+        isStarting = false;
+        SetStage();
+        yield return new WaitForSeconds(1f);
+        isStarting = true;
+        StartCoroutine(EnemyQuotaCoroutine());
+        StartCoroutine(CheckSpawnEnemies());
+    }
+
     [Button("Start Enemyspawn")]
     public void StartEnemyspawn()
     {
-        isStarting = true;
         SetStage();
+        isStarting = true;
         StartCoroutine(EnemyQuotaCoroutine());
         StartCoroutine(CheckSpawnEnemies());
     }
