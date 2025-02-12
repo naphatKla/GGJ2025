@@ -73,8 +73,12 @@ namespace DG.Tweening
 
         /// <summary>Tweens an Image's alpha color to the given value.
         /// Also stores the image as the tween's target so it can be used for filtered operations</summary>
-        /// <param name="endValue">The end value to reach</param><param name="duration">The duration of the tween</param>
-        public static TweenerCore<Color, Color, ColorOptions> DOFade(this Image target, float endValue, float duration)
+        /// <param name="target"></param>
+        /// <param name="outFlash"></param>
+        /// <param name="endValue">The end value to reach</param>
+        /// <param name="duration">The duration of the tween</param>
+        public static TweenerCore<Color, Color, ColorOptions> DOFade(this Image target, Ease outFlash, float endValue,
+            float duration)
         {
             TweenerCore<Color, Color, ColorOptions> t = DOTween.ToAlpha(() => target.color, x => target.color = x, endValue, duration);
             t.SetTarget(target);
