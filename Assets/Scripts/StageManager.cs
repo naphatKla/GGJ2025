@@ -88,7 +88,7 @@ public class StageManager : SerializedMonoBehaviour
         if (currentBackground != null) 
             currentBackground.GetComponent<SpriteRenderer>().sprite = stageLabels[currentStage].background;
         yield return new WaitUntil(() => SceneManager.GetActiveScene().isLoaded);
-        /*currentStage = FindObjectOfType<LevelSelector>().level;*/
+        currentStage = FindObjectOfType<LevelSelector>().level;
         if (!isStarting) yield break;
         StartEnemyspawn();
     }
@@ -249,6 +249,8 @@ public class StageManager : SerializedMonoBehaviour
     [Button("Start Enemyspawn")]
     public void StartEnemyspawn()
     {
+        if (enemyParent == null)
+            enemyParent = new GameObject("enemyParent").transform;
         SetStage();
         isStarting = true;
         StartCoroutine(EnemyQuotaCoroutine());
