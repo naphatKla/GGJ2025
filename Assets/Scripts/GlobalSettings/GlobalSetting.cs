@@ -22,18 +22,15 @@ namespace GlobalSettings
             {
                 if (_instance) return _instance;
                 _instance = Resources.Load<T>($"{Path}/{typeof(T).Name}");
-
-                if (_instance) return _instance;
 #if UNITY_EDITOR
+                CheckForConflictingFiles();
+                if (_instance) return _instance;
                 _instance = CreateInstance<T>();
                 Debug.LogWarning(
                     $"There is no {typeof(T).Name} in the Resources folder. Creating a new one in Resources/{Path}/{typeof(T).Name}.");
                 CreateNestedFolder("Assets/Resources");
-                CheckForConflictingFiles();
-
                 string savePath = $"Assets/Resources/{Path}/{typeof(T).Name}.asset";
-                Directory.CreateDirectory(System.IO.Path.GetDirectoryName(savePath) ??
-                                          string.Empty); // Ensure directory exists
+                Directory.CreateDirectory(System.IO.Path.GetDirectoryName(savePath) ?? string.Empty); // Ensure directory exist
                 AssetDatabase.CreateAsset(_instance, savePath);
                 AssetDatabase.SaveAssets();
 #endif
@@ -42,7 +39,7 @@ namespace GlobalSettings
         }
 
         // Create the folder structure if it doesn't exist
-        public static void CreateNestedFolder(string path)
+        private static void CreateNestedFolder(string path)
         {
             if (Directory.Exists(path)) return;
 
@@ -62,7 +59,7 @@ namespace GlobalSettings
         private static void CheckForConflictingFiles()
         {
             string[] results = AssetDatabase.FindAssets("t:" + typeof(T).Name);
-
+            
             if (results.Length <= 1) return;
             string conflictingFiles = "";
             foreach (var result in results)
