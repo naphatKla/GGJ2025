@@ -9,24 +9,24 @@ public class HeartUI : MonoBehaviour
 {
     [SerializeField] private GameObject[] heartsUI;
     [SerializeField] private Animator[] animators;
-    [SerializeField] private PlayerCharacter player;
 
     private void OnEnable()
     {
-        player.OnTakeDamage.AddListener(UpdateLife);
+        
+        PlayerCharacter.Instance.onHitWithDamage.AddListener(UpdateLife);
     }
 
     private void OnDisable()
     {
-        player.OnTakeDamage.RemoveListener(UpdateLife);
+        PlayerCharacter.Instance.onHitWithDamage.RemoveListener(UpdateLife);
     }
 
     void UpdateLife()
     {
-        if (animators[player.Life])
+        if (animators[PlayerCharacter.Instance.Life])
         {
-            animators[player.Life].Play("Dead");
-            StartCoroutine(CheckIfAnimationFinished(animators[player.Life]));
+            animators[PlayerCharacter.Instance.Life].Play("Dead");
+            StartCoroutine(CheckIfAnimationFinished(animators[PlayerCharacter.Instance.Life]));
         }
     }
     private IEnumerator CheckIfAnimationFinished(Animator animator)
@@ -37,5 +37,6 @@ public class HeartUI : MonoBehaviour
         }
 
         Destroy(animator.gameObject);
+        yield break;
     }
 }

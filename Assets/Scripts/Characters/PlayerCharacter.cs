@@ -16,6 +16,7 @@ namespace Characters
         #endregion -------------------------------------------------------------------------------------------------------------------
         #region Properties
         public static UnityEvent OnHitComboChanged = new UnityEvent();
+        public static UnityEvent OnRandomNewSkill = new UnityEvent();
         public SkillBase SkillLeft => skillLeft;
         public SkillBase SkillRight => skillRight;
 
@@ -142,6 +143,7 @@ namespace Characters
             }
 
             skillRight = selectedSkill.Value;
+            OnRandomNewSkill?.Invoke();
             selectedSkill.Value.InitializeSkill(this);
         }
 

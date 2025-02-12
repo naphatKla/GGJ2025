@@ -55,7 +55,10 @@ namespace Skills
             }
 
             _cooldownCounter -= Time.deltaTime;
-            if (_cooldownCounter <= 0) onCooldownEnd?.Invoke();
+            if (_cooldownCounter <= 0)
+            {
+                onCooldownEnd?.Invoke();
+            }
         }
         
         public void SetCooldown(float newCooldown)
