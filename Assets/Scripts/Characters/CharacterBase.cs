@@ -236,12 +236,17 @@ namespace Characters
 
         public void StartSkillController()
         {
-            IsStoppingMovementController = true;
+            IsStoppingSkillController = false;
         }
         
         public void StopSkillController()
         {
-            IsStoppingMovementController = false;
+            IsStoppingSkillController = true;
+        }
+
+        public void SetCanCollectOxygen(bool value)
+        {
+            canCollectOxygen = value;
         }
         
         public Vector2 ClampMovePositionToBound(Vector2 destination)
