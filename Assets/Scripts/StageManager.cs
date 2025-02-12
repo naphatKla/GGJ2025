@@ -27,6 +27,7 @@ public class StageClass
     public float unitScoreQuota;
     public int decreaseSpawnInterval;
     public float spawnIntervalCap = 0.5f;
+    public Sprite background;
 }
 #endregion
 
@@ -56,6 +57,7 @@ public class StageManager : SerializedMonoBehaviour
     [SerializeField] private float minDistanceFromPlayer = 20f;
     [BoxGroup("Size")] public Vector2 regionSize = Vector2.zero;
     [SerializeField] public Transform enemyParent;
+    [SerializeField] public Transform currentBackground;
 
     [ShowInInspector] private bool isStarting = true;
     private bool nextQuotaReached = false;
@@ -83,12 +85,12 @@ public class StageManager : SerializedMonoBehaviour
     #region Method
     private IEnumerator Start()
     {
+        if (currentBackground != null) 
+            currentBackground.GetComponent<SpriteRenderer>().sprite = stageLabels[currentStage].background;
         yield return new WaitUntil(() => SceneManager.GetActiveScene().isLoaded);
-        currentStage = FindObjectOfType<LevelSelector>().level;
+        /*currentStage = FindObjectOfType<LevelSelector>().level;*/
         if (!isStarting) yield break;
-        SetStage();
-        StartCoroutine(EnemyQuotaCoroutine());
-        StartCoroutine(CheckSpawnEnemies());
+        StartEnemyspawn();
     }
 
     private void Update()
@@ -127,6 +129,8 @@ public class StageManager : SerializedMonoBehaviour
         currentScoreQuota = stageLabels[currentStage].scoreQuota;
         intervalunitScoreQuota = stageLabels[currentStage].decreaseSpawnInterval;
         nextunitScoreQuota = stageLabels[currentStage].unitScoreQuota;
+        if (currentBackground != null) 
+            currentBackground.GetComponent<SpriteRenderer>().sprite = stageLabels[currentStage].background;
     }
     
     private void CheckScoreStageQuota()
@@ -234,15 +238,12 @@ public class StageManager : SerializedMonoBehaviour
 
     private IEnumerator StageChanging()
     {
-        ClearEnemy();
         StopCoroutine(EnemyQuotaCoroutine());
         StopCoroutine(CheckSpawnEnemies());
-        isStarting = false;
+        StopEnemyspawn();
         SetStage();
         yield return new WaitForSeconds(1f);
-        isStarting = true;
-        StartCoroutine(EnemyQuotaCoroutine());
-        StartCoroutine(CheckSpawnEnemies());
+        StartEnemyspawn();
     }
 
     [Button("Start Enemyspawn")]
@@ -259,6 +260,8 @@ public class StageManager : SerializedMonoBehaviour
     {
         ClearEnemy();
         isStarting = false;
+        StopCoroutine(EnemyQuotaCoroutine());
+        StopCoroutine(CheckSpawnEnemies());
     }
 
     
