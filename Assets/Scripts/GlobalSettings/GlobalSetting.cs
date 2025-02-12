@@ -7,9 +7,10 @@ namespace GlobalSettings
 {
     public abstract class GlobalSetting<T> : SerializedScriptableObject where T : ScriptableObject
     {
-        private const string Path = "Assets/GameData/GlobalSettings";
+        private const string Path = "GlobalSettings"; // Path for Resources folder
         private static T _instance;
-        
+        private static bool _isConflictWarning;
+
         /// <summary>
         /// This Instance is scriptable object + singleton.
         /// It will have an only one instance in the project like singleton pattern.
@@ -21,38 +22,30 @@ namespace GlobalSettings
             get
             {
                 if (_instance) return _instance;
-                
-                string[] results = AssetDatabase.FindAssets("t:" + typeof(T).Name);
-                switch (results.Length)
-                {
-                    case > 1:
-                        string conflictingFiles = "";
-                        foreach (var result in results)
-                            conflictingFiles += AssetDatabase.GUIDToAssetPath(result) + "\n";
-                        Debug.LogError("There are more than one " + typeof(T).Name + " in the project. Please make sure there is only one.\n"
-                                       + "Instance will use the first one found. The conflicting files are:\n" + conflictingFiles);
-                        return null;
-                    case 0:
-                        Debug.LogWarning($"There is no " + typeof(T).Name + $" in the project. Created file at {Path}");
-                        CreateNestedFolder(Path);
-                        _instance = CreateInstance<T>();
-                        AssetDatabase.CreateAsset(_instance, $"{Path}/{typeof(T).Name}.asset");
-                        AssetDatabase.SaveAssets();
-                        return _instance;
-                }
-
-                string assetPath = AssetDatabase.GUIDToAssetPath(results[0]);
-                _instance = AssetDatabase.LoadAssetAtPath<T>(assetPath);
+                _instance = Resources.Load<T>($"{Path}/{typeof(T).Name}");
+#if UNITY_EDITOR
+                if (_instance) return _instance;
+                _instance = CreateInstance<T>();
+                Debug.LogWarning(
+                    $"There is no {typeof(T).Name} in the Resources folder. Creating a new one in Resources/{Path}/{typeof(T).Name}.");
+                CreateNestedFolder("Assets/Resources");
+                string savePath = $"Assets/Resources/{Path}/{typeof(T).Name}.asset";
+                Directory.CreateDirectory(System.IO.Path.GetDirectoryName(savePath) ?? string.Empty); // Ensure directory exist
+                AssetDatabase.CreateAsset(_instance, savePath);
+                AssetDatabase.SaveAssets();
+#endif
                 return _instance;
             }
         }
-        
-        public static void CreateNestedFolder(string path)
+
+        // Create the folder structure if it doesn't exist
+        private static void CreateNestedFolder(string path)
         {
             if (Directory.Exists(path)) return;
+
             string currentPath = "";
-            string[] folders = Path.Split('/');
-    
+            string[] folders = path.Split('/');
+
             foreach (var folder in folders)
             {
                 currentPath = System.IO.Path.Combine(currentPath, folder);
@@ -63,16 +56,42 @@ namespace GlobalSettings
             }
         }
 
-        [Title("")] [HorizontalGroup] [Button(ButtonSizes.Large)]
+        private static void CheckForConflictingFiles()
+        {
+            string[] results = AssetDatabase.FindAssets("t:" + typeof(T).Name);
+            
+            if (results.Length <= 1) return;
+            string conflictingFiles = "";
+            foreach (var result in results)
+            {
+                conflictingFiles += AssetDatabase.GUIDToAssetPath(result) + "\n";
+            }
+
+            Debug.LogError(
+                $"There are more than one {typeof(T).Name} in the Resources folder. Please make sure there is only one.\nConflicting files:\n{conflictingFiles}");
+        }
+
+        private void OnEnable()
+        {
+            if(_isConflictWarning) return;
+            CheckForConflictingFiles();
+            _isConflictWarning = true;
+        }
+
+        [Title("")]
+        [HorizontalGroup]
+        [Button(ButtonSizes.Large)]
         protected void FindInFolder()
         {
-            EditorGUIUtility.PingObject(this as T);
+            EditorGUIUtility.PingObject(this);
         }
-        
-        [Title("")] [HorizontalGroup] [Button(ButtonSizes.Large)]
+
+        [Title("")]
+        [HorizontalGroup]
+        [Button(ButtonSizes.Large)]
         protected void OpenSourceCode()
         {
-            MonoScript script = MonoScript.FromScriptableObject(this as T);
+            MonoScript script = MonoScript.FromScriptableObject(this);
             AssetDatabase.OpenAsset(script);
         }
     }
