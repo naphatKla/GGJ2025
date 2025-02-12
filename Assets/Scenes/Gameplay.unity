@@ -4193,7 +4193,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: -285.99994, y: -138}
+  m_AnchoredPosition: {x: -285.9999, y: -138}
   m_SizeDelta: {x: 450, y: 150}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &643523403
@@ -4498,7 +4498,7 @@ Transform:
   m_GameObject: {fileID: 727001501}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.4217777, y: 0.31998998, z: -10}
+  m_LocalPosition: {x: -2.4316912, y: 0.31998998, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -7218,13 +7218,13 @@ MonoBehaviour:
     ReferencedUnityObjects:
     - {fileID: 318422658666202670, guid: 1427c58cf89ec90408813360c8547586, type: 3}
     - {fileID: 21300000, guid: 11597dcf04f746744a5adb28a0bf745a, type: 3}
-    - {fileID: 318422658666202670, guid: 5f4af339524b76a4389264169830a197, type: 3}
+    - {fileID: 318422658666202670, guid: f08ff0b87292bd34dab42d1b1886c45e, type: 3}
     - {fileID: 318422658666202670, guid: b0a01d9614bc79744b70c57ae20ddd76, type: 3}
     - {fileID: 21300000, guid: fff2843e51e1f7d4283a6f776da72861, type: 3}
-    - {fileID: 318422658666202670, guid: 63bf5f93c39903f4881d255534484140, type: 3}
+    - {fileID: 318422658666202670, guid: 5989438d0dce24e4ba90c00b560ddff5, type: 3}
     - {fileID: 318422658666202670, guid: ff90d5eeb6f2ffc4281564e52f1c9a76, type: 3}
     - {fileID: 21300000, guid: 130b3a3a96caa6644843c28a13ec590b, type: 3}
-    - {fileID: 318422658666202670, guid: 0ca7966b46cc5e74aa52015886a88796, type: 3}
+    - {fileID: 318422658666202670, guid: f7b04f8b722d9fe4d967c0c170bb6f7b, type: 3}
     SerializedBytesString: 
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
@@ -7243,7 +7243,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 12
-      Data: 6
+      Data: 7
     - Name: 
       Entry: 7
       Data: 
@@ -7785,6 +7785,66 @@ MonoBehaviour:
       Entry: 8
       Data: 
     - Name: 
+      Entry: 7
+      Data: 
+    - Name: $k
+      Entry: 3
+      Data: 100
+    - Name: $v
+      Entry: 7
+      Data: 14|StageClass, Assembly-CSharp
+    - Name: enemyPrefab
+      Entry: 7
+      Data: 15|EnemyStruct[], Assembly-CSharp
+    - Name: 
+      Entry: 12
+      Data: 1
+    - Name: 
+      Entry: 7
+      Data: EnemyStruct, Assembly-CSharp
+    - Name: enemyPrefab
+      Entry: 10
+      Data: 0
+    - Name: spawnChance
+      Entry: 3
+      Data: 100
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: scoreQuota
+      Entry: 4
+      Data: 100000
+    - Name: maxEnemySpawnCap
+      Entry: 3
+      Data: 5
+    - Name: enemySpawnInterval
+      Entry: 4
+      Data: 1
+    - Name: unitScoreQuota
+      Entry: 4
+      Data: 50000
+    - Name: decreaseSpawnInterval
+      Entry: 3
+      Data: 50000
+    - Name: spawnIntervalCap
+      Entry: 4
+      Data: 0.5
+    - Name: background
+      Entry: 6
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
       Entry: 13
       Data: 
     - Name: 
@@ -7792,16 +7852,16 @@ MonoBehaviour:
       Data: 
     - Name: stageEvent
       Entry: 7
-      Data: 14|StageManager+StageEvent, Assembly-CSharp
+      Data: 16|StageManager+StageEvent, Assembly-CSharp
     - Name: onStageStart
       Entry: 7
-      Data: 15|UnityEngine.Events.UnityEvent, UnityEngine.CoreModule
+      Data: 17|UnityEngine.Events.UnityEvent, UnityEngine.CoreModule
     - Name: m_PersistentCalls
       Entry: 7
-      Data: 16|UnityEngine.Events.PersistentCallGroup, UnityEngine.CoreModule
+      Data: 18|UnityEngine.Events.PersistentCallGroup, UnityEngine.CoreModule
     - Name: m_Calls
       Entry: 7
-      Data: 17|System.Collections.Generic.List`1[[UnityEngine.Events.PersistentCall,
+      Data: 19|System.Collections.Generic.List`1[[UnityEngine.Events.PersistentCall,
         UnityEngine.CoreModule]], mscorlib
     - Name: 
       Entry: 12
@@ -7820,13 +7880,13 @@ MonoBehaviour:
       Data: 
     - Name: onStageEnemySpawn
       Entry: 7
-      Data: 18|UnityEngine.Events.UnityEvent, UnityEngine.CoreModule
+      Data: 20|UnityEngine.Events.UnityEvent, UnityEngine.CoreModule
     - Name: m_PersistentCalls
       Entry: 7
-      Data: 19|UnityEngine.Events.PersistentCallGroup, UnityEngine.CoreModule
+      Data: 21|UnityEngine.Events.PersistentCallGroup, UnityEngine.CoreModule
     - Name: m_Calls
       Entry: 7
-      Data: 20|System.Collections.Generic.List`1[[UnityEngine.Events.PersistentCall,
+      Data: 22|System.Collections.Generic.List`1[[UnityEngine.Events.PersistentCall,
         UnityEngine.CoreModule]], mscorlib
     - Name: 
       Entry: 12
@@ -7845,13 +7905,13 @@ MonoBehaviour:
       Data: 
     - Name: onStageReached
       Entry: 7
-      Data: 21|UnityEngine.Events.UnityEvent, UnityEngine.CoreModule
+      Data: 23|UnityEngine.Events.UnityEvent, UnityEngine.CoreModule
     - Name: m_PersistentCalls
       Entry: 7
-      Data: 22|UnityEngine.Events.PersistentCallGroup, UnityEngine.CoreModule
+      Data: 24|UnityEngine.Events.PersistentCallGroup, UnityEngine.CoreModule
     - Name: m_Calls
       Entry: 7
-      Data: 23|System.Collections.Generic.List`1[[UnityEngine.Events.PersistentCall,
+      Data: 25|System.Collections.Generic.List`1[[UnityEngine.Events.PersistentCall,
         UnityEngine.CoreModule]], mscorlib
     - Name: 
       Entry: 12
@@ -7870,13 +7930,13 @@ MonoBehaviour:
       Data: 
     - Name: onEnemyQuotaUnitReached
       Entry: 7
-      Data: 24|UnityEngine.Events.UnityEvent, UnityEngine.CoreModule
+      Data: 26|UnityEngine.Events.UnityEvent, UnityEngine.CoreModule
     - Name: m_PersistentCalls
       Entry: 7
-      Data: 25|UnityEngine.Events.PersistentCallGroup, UnityEngine.CoreModule
+      Data: 27|UnityEngine.Events.PersistentCallGroup, UnityEngine.CoreModule
     - Name: m_Calls
       Entry: 7
-      Data: 26|System.Collections.Generic.List`1[[UnityEngine.Events.PersistentCall,
+      Data: 28|System.Collections.Generic.List`1[[UnityEngine.Events.PersistentCall,
         UnityEngine.CoreModule]], mscorlib
     - Name: 
       Entry: 12
@@ -7895,13 +7955,13 @@ MonoBehaviour:
       Data: 
     - Name: onEnemyQuotaIntervalReached
       Entry: 7
-      Data: 27|UnityEngine.Events.UnityEvent, UnityEngine.CoreModule
+      Data: 29|UnityEngine.Events.UnityEvent, UnityEngine.CoreModule
     - Name: m_PersistentCalls
       Entry: 7
-      Data: 28|UnityEngine.Events.PersistentCallGroup, UnityEngine.CoreModule
+      Data: 30|UnityEngine.Events.PersistentCallGroup, UnityEngine.CoreModule
     - Name: m_Calls
       Entry: 7
-      Data: 29|System.Collections.Generic.List`1[[UnityEngine.Events.PersistentCall,
+      Data: 31|System.Collections.Generic.List`1[[UnityEngine.Events.PersistentCall,
         UnityEngine.CoreModule]], mscorlib
     - Name: 
       Entry: 12
@@ -7921,7 +7981,7 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
-  currentStage: 6
+  currentStage: 100
   currentSpawnInterval: 1
   currentScoreQuota: 3500
   maxEnemySpawn: 50
@@ -7931,7 +7991,7 @@ MonoBehaviour:
   intervalunitScoreQuota: 0
   minDistanceFromPlayer: 20
   regionSize: {x: 44, y: 27}
-  enemyParent: {fileID: 901910440}
+  enemyParent: {fileID: 0}
   currentBackground: {fileID: 206366794}
 --- !u!4 &1077688100
 Transform:
@@ -10599,7 +10659,7 @@ Transform:
   m_GameObject: {fileID: 1648103409}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -2.4217777, y: 0.31998998, z: -10}
+  m_LocalPosition: {x: -2.4316912, y: 0.31998998, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
