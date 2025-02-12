@@ -42,7 +42,7 @@ namespace Skills
                 CloningCharacter clone = OwnerCharacter.CreateCloning(mergeWaitTime,
                     CloningCharacter.LifeTimeType.MergeBack, 1, cloningDealDamageOnTouch, cloningDestroyAfterTouch);
                 clone.IsIframe = cloningIframeOnPerformingSkill;
-                clone.Animator.Play("BackHole");
+                clone.Animator.Play("BlackHole");
                 clone.transform.DOMove(explodePos, 0.25f).SetEase(Ease.InOutSine).OnComplete(() =>
                 {
                     clone.transform.DOMove(explodePos * 1.15f, mergeDuration).SetEase(Ease.InOutSine)

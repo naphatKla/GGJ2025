@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Linq;
 using DG.Tweening;
 using GlobalSettings;
 using MoreMountains.Feedbacks;
@@ -100,12 +101,13 @@ namespace Characters
         protected virtual void Awake()
         {
             _currentSpeed = maxSpeed;
-            _animator = GetComponentInChildren<Animator>();
+            _animator = GetComponentsInChildren<Animator>().First(t => t.gameObject != gameObject);
             _rigidBody2D = GetComponent<Rigidbody2D>();
             skillLeft?.InitializeSkill(this);
             skillRight?.InitializeSkill(this);
             skillLeft?.onSkillStart.AddListener(() => _animator.SetTrigger(DashTriggerAnimation));
             skillRight?.onSkillStart.AddListener(() => _animator.SetTrigger(BlackHoleTriggerAnimation));
+            Debug.Log(_animator.gameObject.name);
         }
         
         protected virtual void Update()
