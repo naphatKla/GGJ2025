@@ -127,7 +127,7 @@ namespace Characters
             Destroy(other.gameObject);
             onPickUpScore?.Invoke();
         }
-        
+
         private IEnumerator DeadAndDestroy()
         {
             yield return null;

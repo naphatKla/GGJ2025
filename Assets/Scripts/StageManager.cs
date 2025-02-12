@@ -224,11 +224,30 @@ public class StageManager : SerializedMonoBehaviour
         }
     }
     
+    [Button("Change Stage")]
+    public void ChangeStage()
+    {
+        StartCoroutine(StageChanging());
+    }
+
+    private IEnumerator StageChanging()
+    {
+        ClearEnemy();
+        StopCoroutine(EnemyQuotaCoroutine());
+        StopCoroutine(CheckSpawnEnemies());
+        isStarting = false;
+        SetStage();
+        yield return new WaitForSeconds(1f);
+        isStarting = true;
+        StartCoroutine(EnemyQuotaCoroutine());
+        StartCoroutine(CheckSpawnEnemies());
+    }
+
     [Button("Start Enemyspawn")]
     public void StartEnemyspawn()
     {
-        isStarting = true;
         SetStage();
+        isStarting = true;
         StartCoroutine(EnemyQuotaCoroutine());
         StartCoroutine(CheckSpawnEnemies());
     }

@@ -27,6 +27,7 @@ public class ComboText : MonoBehaviour
     void Start()
     {
         if (hitText != null) {PlayerCharacter.OnHitComboChanged.AddListener(PlayTween);}
+        if (hitText != null) {PlayerCharacter.Instance.OnTakeDamage.AddListener(ResetCombo);}
     }
 
     private void Update()
@@ -37,10 +38,7 @@ public class ComboText : MonoBehaviour
         
         if (comboTimeoutSlider.value <= 0)
         {
-            isCombo = false;
-            PlayerCharacter.Instance.HitCombo = 0;
-            PlayerCharacter.Instance.ResetscoreMultiply();
-            PlayerCharacter.Instance.ResetDamage(PlayerCharacter.Instance);
+            ResetCombo();
         }
 
         if (_score > 0 && _score % 5 == 0 && _score != _lastTriggeredScore)
@@ -53,15 +51,21 @@ public class ComboText : MonoBehaviour
             {
                 OnEveryFifteenHitCombo();
             }
-            else if (_score % 5 == 0)
+            else if (_score % 10 == 0)
             {
-                OnEveryFiveHitCombo();
+                OnEveryTenHitCombo();
             }
     
             _lastTriggeredScore = (int)_score;
         }
+    }
 
-
+    public void ResetCombo()
+    {
+        isCombo = false;
+        PlayerCharacter.Instance.HitCombo = 0;
+        PlayerCharacter.Instance.ResetscoreMultiply();
+        PlayerCharacter.Instance.ResetDamage(PlayerCharacter.Instance);
     }
 
     private void UpdateScoreText()
@@ -108,7 +112,7 @@ public class ComboText : MonoBehaviour
     }
     
     
-    private void OnEveryFiveHitCombo()
+    private void OnEveryTenHitCombo()
     {
         Debug.Log("Every 5 Hits!");
         voiceFeedback.PlayFeedbacks();
