@@ -22,6 +22,8 @@ public class StageClass
 {
     public EnemyStruct[] enemyPrefab;
     public float scoreQuota;
+    public int killQuota;
+    public int lifeQuota;
     public int maxEnemySpawnCap;
     public float enemySpawnInterval;
     public float unitScoreQuota;
@@ -58,6 +60,7 @@ public class StageManager : SerializedMonoBehaviour
     [BoxGroup("Size")] public Vector2 regionSize = Vector2.zero;
     [SerializeField] public Transform enemyParent;
     [SerializeField] public Transform currentBackground;
+    [SerializeField] public GameObject winUI;
 
     [ShowInInspector] private bool isStarting = true;
     private bool nextQuotaReached = false;
@@ -85,10 +88,13 @@ public class StageManager : SerializedMonoBehaviour
     #region Method
     private IEnumerator Start()
     {
+        if (enemyParent == null)
+            enemyParent = new GameObject("enemyParent").transform;
         if (currentBackground != null) 
             currentBackground.GetComponent<SpriteRenderer>().sprite = stageLabels[currentStage].background;
-        yield return new WaitUntil(() => SceneManager.GetActiveScene().isLoaded);
         currentStage = FindObjectOfType<LevelSelector>().level;
+        SetStage();
+        yield return new WaitUntil(() => SceneManager.GetActiveScene().isLoaded);
         if (!isStarting) yield break;
         StartEnemyspawn();
     }
@@ -138,6 +144,7 @@ public class StageManager : SerializedMonoBehaviour
         if (_score >= currentScoreQuota)
         {
             isStarting = false;
+            winUI.SetActive(true);
             Debug.Log("Score Quota Reached");
             stageEvent.onStageReached?.Invoke();
         }
@@ -233,7 +240,10 @@ public class StageManager : SerializedMonoBehaviour
     [Button("Change Stage")]
     public void ChangeStage()
     {
-        StartCoroutine(StageChanging());
+        LevelSelector levelSelector = FindObjectOfType<LevelSelector>();
+        Mathf.Clamp(levelSelector.level++, 1, 6);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        //StartCoroutine(StageChanging());
     }
 
     private IEnumerator StageChanging()
