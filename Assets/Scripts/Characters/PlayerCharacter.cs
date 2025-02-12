@@ -12,7 +12,6 @@ namespace Characters
     {
         #region Inspectors & Fields
         [SerializeField] private float accelerator = 6;
-        [SerializeField] private float _hitCombo;
         [SerializeField] private int _kill;
         #endregion -------------------------------------------------------------------------------------------------------------------
         #region Properties
@@ -32,7 +31,7 @@ namespace Characters
         private AudioFeedback _audiofeedback;
         private SkillBase _currentRandomSkill;
 
-        public static float HitCombo
+        public float HitCombo
         {
             get => _hitCombo;
             set
