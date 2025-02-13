@@ -142,13 +142,14 @@ public class StageManager : SerializedMonoBehaviour
     
     private void CheckScoreStageQuota()
     {
-        if (_score >= currentScoreQuota)
-        {
-            isStarting = false;
-            winUI.SetActive(true);
-            Debug.Log("Score Quota Reached");
-            stageEvent.onStageReached?.Invoke();
-        }
+        if (!(_score >= currentScoreQuota)) return;
+        Debug.Log("Score Quota Reached");
+        isStarting = false;
+        winUI.SetActive(true);
+        stageEvent.onStageReached?.Invoke();
+        PlayerCharacter.Instance.StopMovementController();
+        PlayerCharacter.Instance.StopSkillController();
+        ClearEnemy();
     }
     
     private IEnumerator EnemyQuotaCoroutine()
