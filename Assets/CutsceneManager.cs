@@ -5,10 +5,19 @@ using UnityEngine.Playables;
 public class CutsceneManager : MonoBehaviour
 {
     public PlayableDirector playableDirector;
+    public PlayableDirector fastIntro;
+    private static bool _isPlayOnce;
 
     private void Awake()
     {
+        if (_isPlayOnce)
+        {
+            fastIntro.Play();
+            return;
+        }
+        
         playableDirector.Play();
+        _isPlayOnce = true;
     }
 
     [Button("Play Cutscene")]
