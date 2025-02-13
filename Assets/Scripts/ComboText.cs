@@ -25,7 +25,7 @@ public class ComboText : MonoBehaviour
     void Start()
     {
         if (hitText != null) {PlayerCharacter.OnHitComboChanged.AddListener(PlayTween);}
-        if (hitText != null) {PlayerCharacter.Instance.onHitWithDamage.AddListener(ResetCombo);}
+        //if (hitText != null) {PlayerCharacter.Instance.onHitWithDamage.AddListener(ResetCombo);}
         comboTimeoutSlider.maxValue = comboTimeOut;
         comboTimeoutSlider.value = comboTimeOut;
     }

@@ -1,9 +1,6 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using Characters;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 public class HeartUI : MonoBehaviour
 {
@@ -23,11 +20,9 @@ public class HeartUI : MonoBehaviour
 
     void UpdateLife()
     {
-        if (animators[PlayerCharacter.Instance.Life])
-        {
-            animators[PlayerCharacter.Instance.Life].Play("Dead");
-            StartCoroutine(CheckIfAnimationFinished(animators[PlayerCharacter.Instance.Life]));
-        }
+        if (!animators[PlayerCharacter.Instance.Life]) return;
+        animators[PlayerCharacter.Instance.Life].Play("Dead");
+        StartCoroutine(CheckIfAnimationFinished(animators[PlayerCharacter.Instance.Life]));
     }
     private IEnumerator CheckIfAnimationFinished(Animator animator)
     {
