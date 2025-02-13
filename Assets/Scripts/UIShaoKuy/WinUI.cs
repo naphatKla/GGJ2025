@@ -16,6 +16,8 @@ public class WinUI : MonoBehaviour
     [SerializeField] private MMF_Player starsSound;
     [SerializeField] private MMF_Player scoreSound;
     [SerializeField] private MMF_Player bubbleSound;
+    [SerializeField] private MMF_Player winSound;
+    [SerializeField] private MMF_Player loseSound;
     [SerializeField] private StageManager _stageManager;
     private int starCount = 0;
 
@@ -37,8 +39,13 @@ public class WinUI : MonoBehaviour
 
         if (PlayerCharacter.Instance.Score >= LevelQuota.scoreQuota)
         {
+            winSound.PlayFeedbacks();
             starCount++;
             Debug.Log("Score Quota Reached");
+        }
+        else
+        {
+            loseSound.PlayFeedbacks();
         }
         if (PlayerCharacter.Instance.Kill >= LevelQuota.killQuota)
         {
