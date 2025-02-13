@@ -29,7 +29,7 @@ namespace Characters
         [SerializeField] private float _nextScoreThreshold;
         [BoxGroup("Random Skill")] public SerializableDictionary<string, SkillBase> SkillDictionary = new();
 
-        private static int _hitCombo;
+        private  int _hitCombo;
         private bool isHitInvoked = false;
         private float _currentScore;
         private AudioFeedback _audiofeedback;
