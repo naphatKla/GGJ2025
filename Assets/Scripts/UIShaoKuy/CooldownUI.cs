@@ -22,12 +22,15 @@ public class CooldownUI : MonoBehaviour
         bg.material = rgbMat;
         NewSkill();
         PlayerCharacter.OnRandomNewSkill.AddListener(NewSkill);
-        PlayerCharacter.Instance.SkillRight.onCooldownEnd.AddListener(PlayCooldown);
-        PlayerCharacter.Instance.SkillRight.onSkillStart.AddListener(() =>
+        foreach (var skill in PlayerCharacter.Instance.SkillDictionary)
         {
-            bg.material = null;
-            bg.color = new Color(0f, 56f / 255f, 60f / 255f, 255f / 255f);
-        });
+            skill.Value.onCooldownEnd.AddListener(PlayCooldown);
+            skill.Value.onSkillStart.AddListener(() =>
+            {
+                bg.material = null;
+                bg.color = new Color(0f, 56f / 255f, 60f / 255f, 255f / 255f);
+            });
+        }
     }
 
     private void NewSkill(SkillBase arg0)
