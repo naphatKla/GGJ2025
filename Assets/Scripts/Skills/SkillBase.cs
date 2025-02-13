@@ -44,6 +44,7 @@ namespace Skills
         public virtual void InitializeSkill(CharacterBase ownerCharacter)
         {
             OwnerCharacter = ownerCharacter;
+            _cooldownCounter = 0f;
         }
 
         public void UpdateCooldown()

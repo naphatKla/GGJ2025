@@ -3833,7 +3833,7 @@ MonoBehaviour:
   tweenDuration: 0.1
   scaleAmount: 1.2
   maxScoreMultiply: 5
-  comboTimeOut: 3
+  comboTimeOut: 4.5
   voiceFeedback: {fileID: 630453615}
 --- !u!114 &504144865
 MonoBehaviour:
@@ -4989,7 +4989,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: -285.99994, y: -138}
+  m_AnchoredPosition: {x: 293, y: -138}
   m_SizeDelta: {x: 450, y: 150}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &643523403
@@ -8394,7 +8394,7 @@ MonoBehaviour:
       Data: 3000
     - Name: killQuota
       Entry: 3
-      Data: 50
+      Data: 25
     - Name: lifeQuota
       Entry: 3
       Data: 1
@@ -8469,10 +8469,10 @@ MonoBehaviour:
       Data: 
     - Name: scoreQuota
       Entry: 4
-      Data: 3500
+      Data: 5000
     - Name: killQuota
       Entry: 3
-      Data: 70
+      Data: 35
     - Name: lifeQuota
       Entry: 3
       Data: 1
@@ -8559,10 +8559,10 @@ MonoBehaviour:
       Data: 
     - Name: scoreQuota
       Entry: 4
-      Data: 3750
+      Data: 8000
     - Name: killQuota
       Entry: 3
-      Data: 100
+      Data: 50
     - Name: lifeQuota
       Entry: 3
       Data: 1
@@ -8661,10 +8661,10 @@ MonoBehaviour:
       Data: 
     - Name: scoreQuota
       Entry: 4
-      Data: 3750
+      Data: 11000
     - Name: killQuota
       Entry: 3
-      Data: 100
+      Data: 50
     - Name: lifeQuota
       Entry: 3
       Data: 1
@@ -8775,10 +8775,10 @@ MonoBehaviour:
       Data: 
     - Name: scoreQuota
       Entry: 4
-      Data: 4000
+      Data: 14000
     - Name: killQuota
       Entry: 3
-      Data: 100
+      Data: 50
     - Name: lifeQuota
       Entry: 3
       Data: 2
@@ -8901,10 +8901,10 @@ MonoBehaviour:
       Data: 
     - Name: scoreQuota
       Entry: 4
-      Data: 5000
+      Data: 18000
     - Name: killQuota
       Entry: 3
-      Data: 100
+      Data: 80
     - Name: lifeQuota
       Entry: 3
       Data: 3
@@ -9135,7 +9135,7 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
-  currentStage: 1
+  currentStage: 6
   currentSpawnInterval: 1
   currentScoreQuota: 3500
   maxEnemySpawn: 50
@@ -11144,7 +11144,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 515, y: -711}
+  m_AnchoredPosition: {x: 515, y: -381}
   m_SizeDelta: {x: 200, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!210 &1587687651
@@ -15046,6 +15046,10 @@ PrefabInstance:
       propertyPath: managedReferences[5982134046409097269].ImpulseSource
       value: 
       objectReference: {fileID: 1648103412}
+    - target: {fileID: 4317072113863429186, guid: a77265b9aebe62e42ab5cd27ab605cb7, type: 3}
+      propertyPath: accelerator
+      value: 15
+      objectReference: {fileID: 0}
     - target: {fileID: 4317072113863429186, guid: a77265b9aebe62e42ab5cd27ab605cb7, type: 3}
       propertyPath: onDead.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 

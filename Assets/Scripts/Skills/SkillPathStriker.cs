@@ -81,6 +81,8 @@ namespace Skills
                     if (!enemy) continue;
                     if (!enemy.TryGetComponent(out CharacterBase target)) continue;
                     target.TakeDamage(OwnerCharacter);
+                    target.TakeDamage(OwnerCharacter);
+                    target.TakeDamage(OwnerCharacter);
                 }
 
                 ExitSkill();

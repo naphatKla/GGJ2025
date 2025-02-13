@@ -24,11 +24,18 @@ public class CooldownUI : MonoBehaviour
         PlayerCharacter.OnRandomNewSkill.AddListener(NewSkill);
         foreach (var skill in PlayerCharacter.Instance.SkillDictionary)
         {
-            skill.Value.onCooldownEnd.AddListener(PlayCooldown);
+            skill.Value.onCooldownEnd.AddListener(() =>
+            {
+                if (PlayerCharacter.Instance.SkillRight == skill.Value)
+                    PlayCooldown();
+            });
             skill.Value.onSkillStart.AddListener(() =>
             {
-                bg.material = null;
-                bg.color = new Color(0f, 56f / 255f, 60f / 255f, 255f / 255f);
+                if (PlayerCharacter.Instance.SkillRight == skill.Value)
+                {
+                    bg.material = null;
+                    bg.color = new Color(0f, 56f / 255f, 60f / 255f, 255f / 255f);
+                }
             });
         }
     }

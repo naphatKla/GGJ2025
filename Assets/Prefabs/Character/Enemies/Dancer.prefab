@@ -153,11 +153,15 @@ MonoBehaviour:
   killFeedback: {fileID: 0}
   randomFeedback: {fileID: 0}
   takeDamageFeedback: {fileID: 6044571182254484273}
+  healFeedback: {fileID: 0}
   deadFeedback: {fileID: 0}
   onHit:
     m_PersistentCalls:
       m_Calls: []
   onHitWithDamage:
+    m_PersistentCalls:
+      m_Calls: []
+  onHealthChanged:
     m_PersistentCalls:
       m_Calls: []
   onDead:
@@ -169,7 +173,7 @@ MonoBehaviour:
   navMesh: {fileID: 0}
   currentState: 0
   currentType: 3
-  detectDistance: 20
+  detectDistance: 15
   isHitInvoked: 0
 --- !u!96 &-7093311364811772289
 TrailRenderer:

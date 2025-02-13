@@ -75,6 +75,7 @@ namespace Characters
         private float _iframeDuration;
         private float _iframeTimeCounter;
         protected bool IsStun;
+        private int _previousLife;
         private static readonly int DeadTriggerAnimation = Animator.StringToHash("DeadTrigger");
         private static readonly int DashTriggerAnimation = Animator.StringToHash("DashTrigger");
         private static readonly int BlackHoleTriggerAnimation = Animator.StringToHash("BlackHoleTrigger");
@@ -113,7 +114,7 @@ namespace Characters
             skillRight?.InitializeSkill(this);
             skillLeft?.onSkillStart.AddListener(() => _animator.SetTrigger(DashTriggerAnimation));
             skillRight?.onSkillStart.AddListener(() => _animator.SetTrigger(BlackHoleTriggerAnimation));
-            Debug.Log(_animator.gameObject.name);
+            _previousLife = life;
         }
         
         protected virtual void Update()
@@ -199,11 +200,10 @@ namespace Characters
 
         public virtual void AddHealth(int value)
         {
-            int healthAdjust = life + value;
             if (value == 0) return;
-            if (healthAdjust < 0 || healthAdjust > 3) return;
-
-            life = healthAdjust;
+            life += value;
+            life = (int)Mathf.Clamp(life, 0f, 3f);
+            if (_previousLife == life) return;
             onHealthChanged?.Invoke();
             if(value > 0) healFeedback?.PlayFeedbacks();
         }
