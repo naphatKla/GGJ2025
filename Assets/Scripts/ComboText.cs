@@ -1,33 +1,33 @@
-using System.Collections;
-using System.Collections.Generic;
 using Characters;
 using DG.Tweening;
 using MoreMountains.Feedbacks;
+using Sirenix.OdinInspector;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class ComboText : MonoBehaviour
 {
-    public TextMeshProUGUI hitText;
-    public TextMeshProUGUI scoreMultiplyText;
-    public float tweenDuration = 0.1f;
-    public float scaleAmount = 1.2f;
-    public int comboTimeOut = 100;
-    public int comboMultiplyTimeOut = 10;
-    public int maxcomboMultiplyTimeOut = 100;
-    public Slider comboTimeoutSlider;
+    [FoldoutGroup("UI")] public TextMeshProUGUI hitText;
+    [FoldoutGroup("UI")] public TextMeshProUGUI scoreMultiplyText;
+    [FoldoutGroup("UI")] public Slider comboTimeoutSlider;
+    [FoldoutGroup("UI")] public float tweenDuration = 0.1f;
+    [FoldoutGroup("UI")] public float scaleAmount = 1.2f;
+    [SerializeField] private float maxScoreMultiply;
+    [SerializeField] [Unit(Units.Second)] private float comboTimeOut = 3f;
+    public MMF_Player voiceFeedback;
+    private int _lastTriggeredScore = -1;
     private bool isCombo = false;
     private float _score => PlayerCharacter.Instance.HitCombo;
     private float _scoreMultiply => PlayerCharacter.Instance.ScoreMultiply;
-    [SerializeField] private float maxScoreMultiply;
-    public MMF_Player voiceFeedback;
-    private int _lastTriggeredScore = -1;
 
     void Start()
     {
         if (hitText != null) {PlayerCharacter.OnHitComboChanged.AddListener(PlayTween);}
-        if (hitText != null) {PlayerCharacter.Instance.OnTakeDamage.AddListener(ResetCombo);}
+        if (hitText != null) {PlayerCharacter.Instance.onHitWithDamage.AddListener(ResetCombo);}
+        comboTimeoutSlider.maxValue = comboTimeOut;
+        comboTimeoutSlider.value = comboTimeOut;
     }
 
     private void Update()
@@ -41,7 +41,7 @@ public class ComboText : MonoBehaviour
             ResetCombo();
         }
 
-        if (_score > 0 && _score % 5 == 0 && _score != _lastTriggeredScore)
+        if (_score > 0 && _score % 1 == 0 && _score != _lastTriggeredScore)
         {
             if (_score % 25 == 0)
             {
@@ -51,9 +51,9 @@ public class ComboText : MonoBehaviour
             {
                 OnEveryFifteenHitCombo();
             }
-            else if (_score % 10 == 0)
+            else if (_score % 1 == 0)
             {
-                OnEveryTenHitCombo();
+                OnEveryHitCombo();
             }
     
             _lastTriggeredScore = (int)_score;
@@ -71,15 +71,14 @@ public class ComboText : MonoBehaviour
     private void UpdateScoreText()
     {
         hitText.text = "Hit " + _score;
-        scoreMultiplyText.text = "Score x " + _scoreMultiply;
+        scoreMultiplyText.text = $"Score x {_scoreMultiply:F2}";
     }
     
     private void UpdateComboTime()
     {
         if (isCombo)
         {
-            float decayRate = Mathf.Clamp(comboMultiplyTimeOut + (_score * 0.5f), 1, maxcomboMultiplyTimeOut);
-            comboTimeoutSlider.value -= decayRate * Time.deltaTime;
+            comboTimeoutSlider.value -= Time.deltaTime;
         }
     }
 
@@ -112,9 +111,8 @@ public class ComboText : MonoBehaviour
     }
     
     
-    private void OnEveryTenHitCombo()
+    private void OnEveryHitCombo()
     {
-        Debug.Log("Every 5 Hits!");
         voiceFeedback.PlayFeedbacks();
         PlayerCharacter.Instance.IncreaseScoreMultiply(0.1f, maxScoreMultiply);
     }

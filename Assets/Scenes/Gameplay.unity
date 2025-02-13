@@ -3829,13 +3829,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   hitText: {fileID: 630453614}
   scoreMultiplyText: {fileID: 1056248021}
+  comboTimeoutSlider: {fileID: 1446889664}
   tweenDuration: 0.1
   scaleAmount: 1.2
-  comboTimeOut: 100
-  comboMultiplyTimeOut: 1
-  maxcomboMultiplyTimeOut: 50
-  comboTimeoutSlider: {fileID: 1446889664}
-  maxScoreMultiply: 3
+  maxScoreMultiply: 5
+  comboTimeOut: 3
   voiceFeedback: {fileID: 630453615}
 --- !u!114 &504144865
 MonoBehaviour:
@@ -4991,7 +4989,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: -285.9999, y: -138}
+  m_AnchoredPosition: {x: -285.99994, y: -138}
   m_SizeDelta: {x: 450, y: 150}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &643523403
@@ -5296,7 +5294,7 @@ Transform:
   m_GameObject: {fileID: 727001501}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3.3, y: 0.32, z: -10}
+  m_LocalPosition: {x: -2.4217777, y: 0.31998998, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -10808,9 +10806,9 @@ MonoBehaviour:
   m_HandleRect: {fileID: 244902431}
   m_Direction: 0
   m_MinValue: 0
-  m_MaxValue: 100
+  m_MaxValue: 1
   m_WholeNumbers: 0
-  m_Value: 100
+  m_Value: 1
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -11355,7 +11353,7 @@ Transform:
   m_GameObject: {fileID: 1648103409}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -3.3, y: 0.32, z: -10}
+  m_LocalPosition: {x: -2.4217777, y: 0.31998998, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -13121,10 +13119,22 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 1681567355003045353, guid: a77265b9aebe62e42ab5cd27ab605cb7, type: 3}
+      propertyPath: cooldown
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1681567355003045353, guid: a77265b9aebe62e42ab5cd27ab605cb7, type: 3}
+      propertyPath: iframeDuration
+      value: 1.5
+      objectReference: {fileID: 0}
     - target: {fileID: 2107775142338170011, guid: a77265b9aebe62e42ab5cd27ab605cb7, type: 3}
       propertyPath: managedReferences[7241849256490041356].ImpulseSource
       value: 
       objectReference: {fileID: 1648103412}
+    - target: {fileID: 2851245434536287433, guid: a77265b9aebe62e42ab5cd27ab605cb7, type: 3}
+      propertyPath: cooldown
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 3872497456695499680, guid: a77265b9aebe62e42ab5cd27ab605cb7, type: 3}
       propertyPath: poolObject
       value: 
@@ -13181,6 +13191,10 @@ PrefabInstance:
       propertyPath: managedReferences[7241849256490041357].ImpulseSource
       value: 
       objectReference: {fileID: 1648103412}
+    - target: {fileID: 6339041768313023157, guid: a77265b9aebe62e42ab5cd27ab605cb7, type: 3}
+      propertyPath: cooldown
+      value: 7.5
+      objectReference: {fileID: 0}
     - target: {fileID: 6833577563592577651, guid: a77265b9aebe62e42ab5cd27ab605cb7, type: 3}
       propertyPath: m_isRichText
       value: 1
