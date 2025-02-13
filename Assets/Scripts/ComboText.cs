@@ -37,7 +37,6 @@ public class ComboText : MonoBehaviour
         UpdateComboTime();
         UpdateComboUI();
         
-        Debug.Log(comboTimeoutSlider.value);
         if (_comboTimeCounter <= 0 && PlayerCharacter.Instance.HitCombo > 0)
         {
             ResetCombo();
