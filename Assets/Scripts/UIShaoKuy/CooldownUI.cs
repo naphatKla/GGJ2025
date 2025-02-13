@@ -1,11 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
 using Characters;
 using DG.Tweening;
 using Skills;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class CooldownUI : MonoBehaviour
@@ -32,6 +28,11 @@ public class CooldownUI : MonoBehaviour
             bg.material = null;
             bg.color = new Color(0f, 56f / 255f, 60f / 255f, 255f / 255f);
         });
+    }
+
+    private void NewSkill(SkillBase arg0)
+    {
+        throw new System.NotImplementedException();
     }
 
     // Update is called once per frame
@@ -78,6 +79,4 @@ public class CooldownUI : MonoBehaviour
 
         PlayCooldown();
     }
-
-    
 }

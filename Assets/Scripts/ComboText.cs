@@ -51,6 +51,10 @@ public class ComboText : MonoBehaviour
             {
                 OnEveryFifteenHitCombo();
             }
+            else if (_score % 10 == 0)
+            {
+                voiceFeedback.PlayFeedbacks();
+            }
             else if (_score % 1 == 0)
             {
                 OnEveryHitCombo();
@@ -113,14 +117,14 @@ public class ComboText : MonoBehaviour
     
     private void OnEveryHitCombo()
     {
-        voiceFeedback.PlayFeedbacks();
         PlayerCharacter.Instance.IncreaseScoreMultiply(0.1f, maxScoreMultiply);
     }
 
+    [Button]
     private void OnEveryFifteenHitCombo()
     {
         Debug.Log("Every 15 Hits! Heal");
-        PlayerCharacter.Instance.Heal(PlayerCharacter.Instance);
+        PlayerCharacter.Instance.AddHealth(1);
     }
 
     private void OnEveryTwentyFiveHitCombo()

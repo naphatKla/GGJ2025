@@ -45,6 +45,9 @@ namespace Characters
 
         [SerializeField] [BoxGroup("Feedbacks")]
         private MMF_Player takeDamageFeedback;
+
+        [SerializeField] [BoxGroup("Feedbacks")]
+        protected MMF_Player healFeedback;
         
         [SerializeField] [BoxGroup("Feedbacks")]
         private MMF_Player deadFeedback;
@@ -54,6 +57,9 @@ namespace Characters
 
         [BoxGroup("Events")] [PropertyOrder(100f)]
         public UnityEvent onHitWithDamage;
+
+        [BoxGroup("Events")] [PropertyOrder(100f)]
+        public UnityEvent onHealthChanged;
         
         [BoxGroup("Events")] [PropertyOrder(100f)]
         public UnityEvent onDead;
@@ -183,7 +189,7 @@ namespace Characters
             if (IsDead) return;
             if (Time.time - _lastHitTime < iframeAfterHitDuration) return;
 
-            life -= attacker.damage;
+            AddHealth(-attacker.damage);
             _lastHitTime = Time.time;
             takeDamageFeedback?.PlayFeedbacks();
             onHitWithDamage?.Invoke();
@@ -191,9 +197,15 @@ namespace Characters
             Dead(attacker);
         }
 
-        public virtual void Heal(CharacterBase attacker)
+        public virtual void AddHealth(int value)
         {
-            life = Mathf.Clamp(life + 1, 0, 3);
+            int healthAdjust = life + value;
+            if (value == 0) return;
+            if (healthAdjust < 0 || healthAdjust > 3) return;
+
+            life = healthAdjust;
+            onHealthChanged?.Invoke();
+            if(value > 0) healFeedback?.PlayFeedbacks();
         }
         
         public virtual void DamageBoost(CharacterBase attacker)
