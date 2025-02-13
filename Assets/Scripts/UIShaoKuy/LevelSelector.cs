@@ -1,12 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using MoreMountains.Feedbacks;
-using Unity.VisualScripting;
-using UnityEditor.SceneManagement;
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using UnityEngine.SocialPlatforms.Impl;
-using UnityEngine.UI;
 
 public class LevelSelector : MonoBehaviour
 {
@@ -27,15 +20,6 @@ private void Awake()
         {
             Destroy(gameObject); // ถ้ามี instance อยู่แล้ว ให้ทำลายตัวใหม่
         }
-    }
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
     }
 
     public void SetLevel(LevelSelectorButton button)

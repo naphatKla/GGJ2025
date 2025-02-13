@@ -20,6 +20,7 @@ public class ComboText : MonoBehaviour
     private bool isCombo = false;
     private float _score => PlayerCharacter.Instance.HitCombo;
     private float _scoreMultiply => PlayerCharacter.Instance.ScoreMultiply;
+    private float _comboTimeCounter;
 
     void Start()
     {
@@ -27,6 +28,7 @@ public class ComboText : MonoBehaviour
         //if (hitText != null) {PlayerCharacter.Instance.onHitWithDamage.AddListener(ResetCombo);}
         comboTimeoutSlider.maxValue = comboTimeOut;
         comboTimeoutSlider.value = comboTimeOut;
+        _comboTimeCounter = comboTimeOut;
     }
 
     private void Update()
@@ -35,7 +37,8 @@ public class ComboText : MonoBehaviour
         UpdateComboTime();
         UpdateComboUI();
         
-        if (comboTimeoutSlider.value <= 0)
+        Debug.Log(comboTimeoutSlider.value);
+        if (_comboTimeCounter <= 0 && PlayerCharacter.Instance.HitCombo > 0)
         {
             ResetCombo();
         }
@@ -81,7 +84,8 @@ public class ComboText : MonoBehaviour
     {
         if (isCombo)
         {
-            comboTimeoutSlider.value -= Time.deltaTime;
+            _comboTimeCounter -= Time.deltaTime;
+            comboTimeoutSlider.value = _comboTimeCounter;
         }
     }
 
@@ -104,6 +108,7 @@ public class ComboText : MonoBehaviour
         {
             isCombo = true;
             comboTimeoutSlider.value = comboTimeOut;
+            _comboTimeCounter = comboTimeOut;
         }
         hitText.transform.DOScale(new Vector3(scaleAmount, scaleAmount, 1), tweenDuration)
             .SetEase(Ease.OutBack)

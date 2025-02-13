@@ -38,6 +38,7 @@ namespace GlobalSettings
             }
         }
 
+#if UNITY_EDITOR
         // Create the folder structure if it doesn't exist
         private static void CreateNestedFolder(string path)
         {
@@ -94,5 +95,6 @@ namespace GlobalSettings
             MonoScript script = MonoScript.FromScriptableObject(this);
             AssetDatabase.OpenAsset(script);
         }
+#endif
     }
 }
