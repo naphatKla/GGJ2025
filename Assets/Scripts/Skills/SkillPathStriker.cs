@@ -40,7 +40,6 @@ namespace Skills
 
         protected override void OnSkillStart()
         {
-            OwnerCharacter.StopMovementController();
             StartCoroutine(ChargeSkill());
         }
 
@@ -59,7 +58,8 @@ namespace Skills
             float timer = 0;
             while (timer < chargeDuration)
             {
-                if (iframeOnCharging) OwnerCharacter.IsIframe = iframeOnCharging;
+                OwnerCharacter.StopMovementController();
+                if (iframeOnCharging) OwnerCharacter.IsIframe = true;
                 _particleGroup.transform.position = transform.position;
                 _particleGroup.transform.up = GetTargetDirection();
                 timer += Time.deltaTime;

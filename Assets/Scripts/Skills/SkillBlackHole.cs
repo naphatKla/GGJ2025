@@ -31,7 +31,6 @@ namespace Skills
 
         protected override void OnSkillStart()
         {
-            OwnerCharacter.IsIframe = iframeOnPerformingSkill;
             Vector2[] directions = new Vector2[cloningAmount];
             for (int i = 0; i < cloningAmount; i++)
             {
@@ -43,9 +42,17 @@ namespace Skills
                     CloningCharacter.LifeTimeType.MergeBack, 1, cloningDealDamageOnTouch, cloningDestroyAfterTouch);
                 clone.IsIframe = cloningIframeOnPerformingSkill;
                 clone.Animator.Play("BlackHole");
-                clone.transform.DOMove(explodePos, 0.25f).SetEase(Ease.InOutSine).OnComplete(() =>
+                clone.transform.DOMove(explodePos, 0.25f).SetEase(Ease.InOutSine).OnUpdate(() =>
                 {
-                    clone.transform.DOMove(explodePos * 1.15f, mergeDuration).SetEase(Ease.InOutSine)
+                    if (iframeOnPerformingSkill)
+                        OwnerCharacter.IsIframe = true;
+                }) .OnComplete(() =>
+                {
+                    clone.transform.DOMove(explodePos * 1.15f, mergeDuration).SetEase(Ease.InOutSine).OnUpdate(() =>
+                        {
+                            if (iframeOnPerformingSkill)
+                                OwnerCharacter.IsIframe = true;
+                        })
                         .OnComplete(ExitSkill);
                 });
             }

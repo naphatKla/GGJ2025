@@ -31,7 +31,8 @@ public class WinUI : MonoBehaviour
     private void Start()
     {
         dd = StartCoroutine(PlayGameObject());
-        
+        LevelSelector levelSelector =
+            FindObjectOfType<LevelSelector>();
         StageClass LevelQuota = _stageManager.stageLabels[_stageManager.currentStage];
         scoreQuota.text = LevelQuota.scoreQuota.ToString();
         killQuota.text = LevelQuota.killQuota.ToString();
@@ -57,10 +58,10 @@ public class WinUI : MonoBehaviour
             starCount++;
             Debug.Log("Life Quota Reached");
         }
-        if (starCount == 0)
+    
+        if (starCount == 0 || levelSelector.level >= 6)
             nextLevelButton.SetActive(false);
-        LevelSelector levelSelector =
-            FindObjectOfType<LevelSelector>();
+        
         levelSelector.SetScoreOnLevel(_stageManager.currentStage-1, starCount);
 
         StartCoroutine(StarScore());

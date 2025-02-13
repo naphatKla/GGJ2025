@@ -81,9 +81,12 @@ namespace Skills
                     : OwnerCharacter.transform.position + (Vector3)direction * counterMinDashDistance;
                 dashPosition = OwnerCharacter.ClampMovePositionToBound(dashPosition);
                 OwnerCharacter.IsDash = true;
-                OwnerCharacter.IsIframe = iframeOnCounterDash;
                 yield return OwnerCharacter.transform.DOMove(dashPosition, counterDashDuration)
-                    .SetEase(Ease.InOutSine).WaitForCompletion();
+                    .SetEase(Ease.InOutSine).OnUpdate(() =>
+                    {
+                        if (iframeOnCounterDash)
+                            OwnerCharacter.IsIframe = true;
+                    }) .WaitForCompletion();
                 yield return new WaitForSeconds(restTimePerDash);
             }
 

@@ -243,7 +243,7 @@ public class StageManager : SerializedMonoBehaviour
     public void ChangeStage()
     {
         LevelSelector levelSelector = FindObjectOfType<LevelSelector>();
-        Mathf.Clamp(levelSelector.level++, 1, 6);
+        levelSelector.level = Mathf.Clamp(levelSelector.level + 1, 1, 6);
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         //StartCoroutine(StageChanging());
     }

@@ -104,10 +104,7 @@ namespace Characters
             float dropMultiply = (float)lostLife / _maxLife;
             float scoreDrop = score * dropMultiply;
             _previousLife = life;
-            Debug.Log($"score = {score}");
-            Debug.Log($"score Drop = {scoreDrop}");
             score -= scoreDrop;
-            Debug.Log($"score left = {score}");
             DropOxygen(scoreDrop);
             Invoke(nameof(ResetHit), 0.1f); 
         }
