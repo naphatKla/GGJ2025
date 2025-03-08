@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections.Generic;
+using System.Collections;
 
 public class LoadScene : MonoBehaviour
 {
@@ -16,13 +17,16 @@ public class LoadScene : MonoBehaviour
     private bool hasStarted = false;
     private bool _isCutsceneRun = true;
 
+    [Header("Cutscene Settings")]
+    public float cutsceneDelay = 2f;
+
     void Start()
     {
         pauseUI.SetActive(false);
         
         if (tutorialSteps.Count > 0)
         {
-            ShowTutorialStep(0);
+            StartCoroutine(StartTutorialWithDelay());
         }
         else
         {
@@ -103,7 +107,7 @@ public class LoadScene : MonoBehaviour
         Time.timeScale = 0;
         _isCutsceneRun = false;
     }
-    
+
     public void ShowTutorialStep(int step)
     {
         foreach (var stepUI in tutorialSteps)
@@ -140,5 +144,11 @@ public class LoadScene : MonoBehaviour
         isTutorialRunning = false;
         Time.timeScale = 1;
         hasStarted = true;
+    }
+    
+    private IEnumerator StartTutorialWithDelay()
+    {
+        yield return new WaitForSeconds(cutsceneDelay);
+        ShowTutorialStep(0);
     }
 }
