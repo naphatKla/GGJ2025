@@ -11,10 +11,10 @@ public class LoadScene : MonoBehaviour
 
     [Header("Tutorial")]
     public List<GameObject> tutorialSteps;
-    private int currentStep = 0;
-    private bool isTutorialRunning = false;
-    private bool hasStarted = false;
-    private bool tutorialCompleted = false; // เพิ่มตัวแปรป้องกันการ Reset
+    private int currentStep;
+    private bool isTutorialRunning;
+    private bool hasStarted;
+    private static bool tutorialCompleted; // เพิ่มตัวแปรป้องกันการ Reset
 
     [Header("Cutscene Settings")]
     public float cutsceneDelay = 2f;
@@ -22,32 +22,30 @@ public class LoadScene : MonoBehaviour
     void Start()
     {
         pauseUI.SetActive(false);
-
-        if (tutorialSteps.Count > 0)
-        {
-            isTutorialRunning = true;
-            tutorialCompleted = false;
-            StartCoroutine(StartTutorialWithDelay());
-        }
     }
+    
 
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Backslash))
+        {
+            currentStep = 0;
+            tutorialCompleted = false;
+        }
+        
         if (isTutorialRunning && Input.GetMouseButtonDown(0))
         {
             NextTutorialStep();
         }
 
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (!Input.GetKeyDown(KeyCode.Escape)) return;
+        if (Time.timeScale == 0 && hasStarted)
         {
-            if (Time.timeScale == 0 && hasStarted)
-            {
-                ResumeGame();
-            }
-            else if (hasStarted)
-            {
-                PauseGame();
-            }
+            ResumeGame();
+        }
+        else if (hasStarted)
+        {
+            PauseGame();
         }
     }
 
@@ -99,7 +97,16 @@ public class LoadScene : MonoBehaviour
         Time.timeScale = 0.5f;
     }
 
-    public void ShowTutorialStep(int step)
+    public void StartTutorials()
+    {
+        if (tutorialCompleted) return;
+        if (tutorialSteps.Count <= 0) return;
+        isTutorialRunning = true;
+        tutorialCompleted = false;
+        ShowTutorialStep(0);
+    }
+    
+    private void ShowTutorialStep(int step)
     {
         if (tutorialCompleted) return;
         Time.timeScale = 0;
@@ -116,7 +123,7 @@ public class LoadScene : MonoBehaviour
         }
     }
 
-    public void NextTutorialStep()
+    private void NextTutorialStep()
     {
         if (!isTutorialRunning || tutorialCompleted) return;
 
@@ -130,7 +137,7 @@ public class LoadScene : MonoBehaviour
         }
     }
 
-    public void EndTutorial()
+    private void EndTutorial()
     {
         if (!isTutorialRunning) return;
 
@@ -146,12 +153,5 @@ public class LoadScene : MonoBehaviour
         }
 
         Debug.Log("Tutorial จบแล้ว");
-    }
-
-    private IEnumerator StartTutorialWithDelay()
-    {
-        yield return new WaitForSeconds(cutsceneDelay);
-        yield return null;
-        ShowTutorialStep(0);
     }
 }
