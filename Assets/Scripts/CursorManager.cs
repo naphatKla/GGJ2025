@@ -1,22 +1,67 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
+using DG.Tweening;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class CursorManager : MonoBehaviour
 {
-    [SerializeField] private Texture2D cursorTexture;
-    
-    private Vector2 cursorHotspot;
-    // Start is called before the first frame update
-    void Start()
+    [SerializeField] private Image cursorUI;
+    [SerializeField] private Canvas canvas;
+    private RectTransform _canvasRectTransform;
+    private Tween _clickTween;
+
+    private void Start()
     {
-        cursorHotspot = new Vector2(cursorTexture.width / 2, cursorTexture.height / 2);
-        Cursor.SetCursor(cursorTexture, cursorHotspot, CursorMode.Auto);
+        _canvasRectTransform = canvas.GetComponent<RectTransform>();
     }
 
-    // Update is called once per frame
-    void Update()
+    private void OnEnable()
     {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    private void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+        Cursor.visible = true;
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        Cursor.visible = false;
+    }
+
+    private void OnApplicationFocus(bool hasFocus)
+    {
+        Cursor.visible = false; 
+    }
+
+    private void Update()
+    {
+        //PlayClickTween();
+        UICursorFollowMousePosition();
+    }
+
+    private void UICursorFollowMousePosition()
+    {
+        Vector2 mousePosition = Input.mousePosition;
         
+        Vector2 localPosition;
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            _canvasRectTransform ,  // The RectTransform of the Canvas
+            mousePosition,                        // The screen position of the mouse
+            canvas.worldCamera,                   // Camera used by the Canvas
+            out localPosition                      // The resulting local position
+        );
+        
+        cursorUI.rectTransform.anchoredPosition = localPosition;
+    }
+
+    private void PlayClickTween()
+    {
+        if (_clickTween.IsActive()) return;
+        if (!Input.GetMouseButtonDown(0)) return;
+        _clickTween = cursorUI.transform.DOScale(Vector2.one * 1.35f, 0.25f).SetLoops(2, LoopType.Yoyo);
     }
 }

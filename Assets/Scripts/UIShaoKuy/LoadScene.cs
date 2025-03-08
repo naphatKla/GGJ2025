@@ -1,49 +1,59 @@
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.Serialization;
+using System.Collections.Generic;
+using System.Collections;
+using MoreMountains.Tools;
 
-public class LoadScene : MonoBehaviour
+public class LoadScene : MMSingleton<LoadScene>
 {
-    [FormerlySerializedAs("soundSetting")] [Header("UI")]
+    [Header("UI")]
     public GameObject pauseUI;
     public GameObject loseUI;
-    
-    public GameObject playerControllerUI;
-    private bool hasStarted = false;
-    private bool _isCutsceneRun = true;
+
+    [Header("Tutorial")]
+    public List<GameObject> tutorialSteps;
+    private int currentStep;
+    private bool isTutorialRunning;
+    public bool hasStarted;
+    private static bool tutorialCompleted; // เพิ่มตัวแปรป้องกันการ Reset
+
+    [Header("Cutscene Settings")]
+    public float cutsceneDelay = 2f;
 
     void Start()
     {
-        // เริ่มเกมโดยแสดง Player Controller UI และหยุดเวลา
         pauseUI.SetActive(false);
-        
     }
+    
 
     void Update()
     {
-        if (!hasStarted && Input.GetMouseButtonDown(0) && Time.timeScale == 0 && _isCutsceneRun == false)
+        if (Input.GetKeyDown(KeyCode.Backslash))
         {
-            StartGame();
+            currentStep = 0;
+            tutorialCompleted = false;
         }
         
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (isTutorialRunning && Input.GetMouseButtonDown(0))
         {
-            if (Time.timeScale == 0 && hasStarted)
-            {
-                ResumeGame();
-            }
-            else if (hasStarted)
-            {
-                PauseGame();
-            }
+            NextTutorialStep();
+        }
+
+        if (!Input.GetKeyDown(KeyCode.Escape)) return;
+        if (Time.timeScale == 0 && hasStarted)
+        {
+            ResumeGame();
+        }
+        else if (hasStarted)
+        {
+            PauseGame();
         }
     }
-    
+
     public void ResumeGame()
     {
         pauseUI.SetActive(false);
-         Debug.Log("Resume");
+        Debug.Log("Resume");
         Time.timeScale = 1;
     }
 
@@ -52,10 +62,9 @@ public class LoadScene : MonoBehaviour
         pauseUI.SetActive(true);
         Time.timeScale = 0;
     }
-    
+
     public void StartGame()
     {
-        playerControllerUI.SetActive(false);
         Time.timeScale = 1;
         hasStarted = true;
     }
@@ -71,11 +80,10 @@ public class LoadScene : MonoBehaviour
         Time.timeScale = 1;
         SceneManager.LoadScene("Credits");
     }
-    
+
     public void RestartGame()
     {
         SceneManager.LoadScene("Gameplay");
-        //loseUI.SetActive(false);
     }
 
     public void Exit()
@@ -83,49 +91,72 @@ public class LoadScene : MonoBehaviour
         Application.Quit();
         Debug.Log("Exit");
     }
-    
+
     public void PlayerDie()
     {
         loseUI.SetActive(true);
         Time.timeScale = 0.5f;
     }
-    
-    public void Tutorial()
+
+    public void StartTutorials()
     {
-        playerControllerUI.SetActive(true);
+        if (tutorialCompleted)
+        {
+            hasStarted = true;
+            return;
+        }
+        if (tutorialSteps.Count <= 0) return;
+        isTutorialRunning = true;
+        tutorialCompleted = false;
+        ShowTutorialStep(0);
+    }
+    
+    private void ShowTutorialStep(int step)
+    {
+        if (tutorialCompleted) return;
         Time.timeScale = 0;
-        _isCutsceneRun = false;
+        foreach (var stepUI in tutorialSteps)
+        {
+            stepUI.SetActive(false);
+        }
+
+        if (step < tutorialSteps.Count)
+        {
+            tutorialSteps[step].SetActive(true);
+            currentStep = step;
+            Debug.Log($"แสดง Tutorial Step {step}"); // Debug
+        }
     }
 
-    /*public void OpenSoundSetting()
+    private void NextTutorialStep()
     {
-        StartCoroutine(ToggleUI());
-        pauseUI.SetActive(false);
-    }*/
+        if (!isTutorialRunning || tutorialCompleted) return;
 
-    /*private IEnumerator ToggleUI()
-    {
-        bool wasActive = openUI.activeSelf;
-        openUI.SetActive(!wasActive); // สลับสถานะ
-        yield return null; // รอ 1 frame เพื่อให้ Unity อัปเดต
-
-        // ตรวจสอบและรีเซ็ต Canvas หากจำเป็น
-        Canvas canvas = openUI.GetComponentInParent<Canvas>();
-        if (canvas != null)
+        if (currentStep < tutorialSteps.Count - 1)
         {
-            if (!wasActive) // ถ้าเปิดครั้งแรก
-            {
-                canvas.enabled = false;
-                yield return null; // รออีก 1 frame
-                canvas.enabled = true;
-            }
+            ShowTutorialStep(currentStep + 1);
         }
-    }*/
+        else
+        {
+            EndTutorial();
+        }
+    }
 
-    /*private IEnumerator DelayDisableUI()
+    private void EndTutorial()
     {
-        yield return new WaitForSeconds(0.5f);
-        openUI.SetActive(false);
-    }*/
+        if (!isTutorialRunning) return;
 
+        isTutorialRunning = false;
+        tutorialCompleted = true;
+        Time.timeScale = 1;
+        hasStarted = true;
+
+        // ปิดทุก UI ของ Tutorial
+        foreach (var stepUI in tutorialSteps)
+        {
+            stepUI.SetActive(false);
+        }
+
+        Debug.Log("Tutorial จบแล้ว");
+    }
 }
