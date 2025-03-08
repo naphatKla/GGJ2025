@@ -101,10 +101,8 @@ public class LoadScene : MonoBehaviour
 
     public void ShowTutorialStep(int step)
     {
-        // ถ้า Tutorial จบแล้ว ไม่ต้องทำอะไร
         if (tutorialCompleted) return;
-
-        // ปิดทุกขั้นตอนก่อนแสดงขั้นตอนใหม่
+        Time.timeScale = 0;
         foreach (var stepUI in tutorialSteps)
         {
             stepUI.SetActive(false);
