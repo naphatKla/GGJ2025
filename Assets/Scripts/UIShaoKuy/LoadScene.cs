@@ -2,8 +2,9 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections.Generic;
 using System.Collections;
+using MoreMountains.Tools;
 
-public class LoadScene : MonoBehaviour
+public class LoadScene : MMSingleton<LoadScene>
 {
     [Header("UI")]
     public GameObject pauseUI;
@@ -13,7 +14,7 @@ public class LoadScene : MonoBehaviour
     public List<GameObject> tutorialSteps;
     private int currentStep;
     private bool isTutorialRunning;
-    private bool hasStarted;
+    public bool hasStarted;
     private static bool tutorialCompleted; // เพิ่มตัวแปรป้องกันการ Reset
 
     [Header("Cutscene Settings")]
@@ -99,7 +100,11 @@ public class LoadScene : MonoBehaviour
 
     public void StartTutorials()
     {
-        if (tutorialCompleted) return;
+        if (tutorialCompleted)
+        {
+            hasStarted = true;
+            return;
+        }
         if (tutorialSteps.Count <= 0) return;
         isTutorialRunning = true;
         tutorialCompleted = false;

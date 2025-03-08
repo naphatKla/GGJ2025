@@ -33,6 +33,7 @@ public class ComboText : MonoBehaviour
 
     private void Update()
     {
+        if (!LoadScene.Instance.hasStarted) return;
         UpdateScoreText();
         UpdateComboTime();
         UpdateComboUI();
