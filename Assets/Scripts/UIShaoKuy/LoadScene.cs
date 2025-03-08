@@ -12,10 +12,9 @@ public class LoadScene : MonoBehaviour
     [Header("Tutorial")]
     public List<GameObject> tutorialSteps;
     private int currentStep = 0;
-    private bool isTutorialRunning = true;
-
+    private bool isTutorialRunning = false;
     private bool hasStarted = false;
-    private bool _isCutsceneRun = true;
+    private bool tutorialCompleted = false; // เพิ่มตัวแปรป้องกันการ Reset
 
     [Header("Cutscene Settings")]
     public float cutsceneDelay = 2f;
@@ -23,14 +22,12 @@ public class LoadScene : MonoBehaviour
     void Start()
     {
         pauseUI.SetActive(false);
-        
+
         if (tutorialSteps.Count > 0)
         {
+            isTutorialRunning = true;
+            tutorialCompleted = false;
             StartCoroutine(StartTutorialWithDelay());
-        }
-        else
-        {
-            isTutorialRunning = false;
         }
     }
 
@@ -102,53 +99,61 @@ public class LoadScene : MonoBehaviour
         Time.timeScale = 0.5f;
     }
 
-    public void Tutorial()
-    {
-        Time.timeScale = 0;
-        _isCutsceneRun = false;
-    }
-
     public void ShowTutorialStep(int step)
     {
+        // ถ้า Tutorial จบแล้ว ไม่ต้องทำอะไร
+        if (tutorialCompleted) return;
+
+        // ปิดทุกขั้นตอนก่อนแสดงขั้นตอนใหม่
         foreach (var stepUI in tutorialSteps)
         {
             stepUI.SetActive(false);
         }
-        
+
         if (step < tutorialSteps.Count)
         {
             tutorialSteps[step].SetActive(true);
             currentStep = step;
-        }
-        else
-        {
-            EndTutorial();
+            Debug.Log($"แสดง Tutorial Step {step}"); // Debug
         }
     }
-    
+
     public void NextTutorialStep()
     {
+        if (!isTutorialRunning || tutorialCompleted) return;
+
         if (currentStep < tutorialSteps.Count - 1)
         {
             ShowTutorialStep(currentStep + 1);
         }
         else
         {
-            tutorialSteps[currentStep].SetActive(false);
             EndTutorial();
         }
     }
-    
+
     public void EndTutorial()
     {
+        if (!isTutorialRunning) return;
+
         isTutorialRunning = false;
+        tutorialCompleted = true;
         Time.timeScale = 1;
         hasStarted = true;
+
+        // ปิดทุก UI ของ Tutorial
+        foreach (var stepUI in tutorialSteps)
+        {
+            stepUI.SetActive(false);
+        }
+
+        Debug.Log("Tutorial จบแล้ว");
     }
-    
+
     private IEnumerator StartTutorialWithDelay()
     {
         yield return new WaitForSeconds(cutsceneDelay);
+        yield return null;
         ShowTutorialStep(0);
     }
 }
