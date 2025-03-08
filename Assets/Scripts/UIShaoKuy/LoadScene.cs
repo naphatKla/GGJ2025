@@ -1,32 +1,44 @@
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.Serialization;
+using System.Collections.Generic;
 
 public class LoadScene : MonoBehaviour
 {
-    [FormerlySerializedAs("soundSetting")] [Header("UI")]
+    [Header("UI")]
     public GameObject pauseUI;
     public GameObject loseUI;
-    
-    public GameObject playerControllerUI;
+
+    [Header("Tutorial")]
+    public List<GameObject> tutorialSteps; // เก็บ UI ของ Tutorial ทีละขั้น
+    private int currentStep = 0; // เก็บว่ากำลังอยู่ที่ Tutorial อันไหน
+    private bool isTutorialRunning = true; // ตรวจสอบว่า Tutorial กำลังทำงานหรือไม่
+
     private bool hasStarted = false;
     private bool _isCutsceneRun = true;
 
     void Start()
     {
-        // เริ่มเกมโดยแสดง Player Controller UI และหยุดเวลา
         pauseUI.SetActive(false);
-        
+
+        // เริ่มเกมโดยแสดง UI ของ Tutorial ขั้นแรก (ถ้ามี)
+        if (tutorialSteps.Count > 0)
+        {
+            ShowTutorialStep(0);
+        }
+        else
+        {
+            isTutorialRunning = false;
+        }
     }
 
     void Update()
     {
-        if (!hasStarted && Input.GetMouseButtonDown(0) && Time.timeScale == 0 && _isCutsceneRun == false)
+        // ถ้า Tutorial กำลังทำงาน และผู้เล่นคลิกเมาส์
+        if (isTutorialRunning && Input.GetMouseButtonDown(0))
         {
-            StartGame();
+            NextTutorialStep();
         }
-        
+
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             if (Time.timeScale == 0 && hasStarted)
@@ -39,11 +51,11 @@ public class LoadScene : MonoBehaviour
             }
         }
     }
-    
+
     public void ResumeGame()
     {
         pauseUI.SetActive(false);
-         Debug.Log("Resume");
+        Debug.Log("Resume");
         Time.timeScale = 1;
     }
 
@@ -52,10 +64,9 @@ public class LoadScene : MonoBehaviour
         pauseUI.SetActive(true);
         Time.timeScale = 0;
     }
-    
+
     public void StartGame()
     {
-        playerControllerUI.SetActive(false);
         Time.timeScale = 1;
         hasStarted = true;
     }
@@ -71,11 +82,10 @@ public class LoadScene : MonoBehaviour
         Time.timeScale = 1;
         SceneManager.LoadScene("Credits");
     }
-    
+
     public void RestartGame()
     {
         SceneManager.LoadScene("Gameplay");
-        //loseUI.SetActive(false);
     }
 
     public void Exit()
@@ -83,49 +93,54 @@ public class LoadScene : MonoBehaviour
         Application.Quit();
         Debug.Log("Exit");
     }
-    
+
     public void PlayerDie()
     {
         loseUI.SetActive(true);
         Time.timeScale = 0.5f;
     }
-    
+
     public void Tutorial()
     {
-        playerControllerUI.SetActive(true);
         Time.timeScale = 0;
         _isCutsceneRun = false;
     }
-
-    /*public void OpenSoundSetting()
+    
+    public void ShowTutorialStep(int step)
     {
-        StartCoroutine(ToggleUI());
-        pauseUI.SetActive(false);
-    }*/
-
-    /*private IEnumerator ToggleUI()
-    {
-        bool wasActive = openUI.activeSelf;
-        openUI.SetActive(!wasActive); // สลับสถานะ
-        yield return null; // รอ 1 frame เพื่อให้ Unity อัปเดต
-
-        // ตรวจสอบและรีเซ็ต Canvas หากจำเป็น
-        Canvas canvas = openUI.GetComponentInParent<Canvas>();
-        if (canvas != null)
+        foreach (var stepUI in tutorialSteps)
         {
-            if (!wasActive) // ถ้าเปิดครั้งแรก
-            {
-                canvas.enabled = false;
-                yield return null; // รออีก 1 frame
-                canvas.enabled = true;
-            }
+            stepUI.SetActive(false);
         }
-    }*/
-
-    /*private IEnumerator DelayDisableUI()
+        
+        if (step < tutorialSteps.Count)
+        {
+            tutorialSteps[step].SetActive(true);
+            currentStep = step;
+        }
+        else
+        {
+            EndTutorial();
+        }
+    }
+    
+    public void NextTutorialStep()
     {
-        yield return new WaitForSeconds(0.5f);
-        openUI.SetActive(false);
-    }*/
-
+        if (currentStep < tutorialSteps.Count - 1)
+        {
+            ShowTutorialStep(currentStep + 1);
+        }
+        else
+        {
+            tutorialSteps[currentStep].SetActive(false);
+            EndTutorial();
+        }
+    }
+    
+    public void EndTutorial()
+    {
+        isTutorialRunning = false;
+        Time.timeScale = 1;
+        hasStarted = true;
+    }
 }
