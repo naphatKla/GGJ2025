@@ -9,9 +9,9 @@ public class LoadScene : MonoBehaviour
     public GameObject loseUI;
 
     [Header("Tutorial")]
-    public List<GameObject> tutorialSteps; // เก็บ UI ของ Tutorial ทีละขั้น
-    private int currentStep = 0; // เก็บว่ากำลังอยู่ที่ Tutorial อันไหน
-    private bool isTutorialRunning = true; // ตรวจสอบว่า Tutorial กำลังทำงานหรือไม่
+    public List<GameObject> tutorialSteps;
+    private int currentStep = 0;
+    private bool isTutorialRunning = true;
 
     private bool hasStarted = false;
     private bool _isCutsceneRun = true;
@@ -19,8 +19,7 @@ public class LoadScene : MonoBehaviour
     void Start()
     {
         pauseUI.SetActive(false);
-
-        // เริ่มเกมโดยแสดง UI ของ Tutorial ขั้นแรก (ถ้ามี)
+        
         if (tutorialSteps.Count > 0)
         {
             ShowTutorialStep(0);
@@ -33,7 +32,6 @@ public class LoadScene : MonoBehaviour
 
     void Update()
     {
-        // ถ้า Tutorial กำลังทำงาน และผู้เล่นคลิกเมาส์
         if (isTutorialRunning && Input.GetMouseButtonDown(0))
         {
             NextTutorialStep();
