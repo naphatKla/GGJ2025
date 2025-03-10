@@ -62,7 +62,7 @@ namespace Skills
             Vector2 dashPosition = targetPosition + (direction * dashDistance);
             dashPosition = OwnerCharacter.ClampMovePositionToBound(dashPosition);
             Collider2D[] enemiesInDashLine = CheckDashCollision(direction);
-            Debug.Log(enemiesInDashLine.Length);
+            //Debug.Log(enemiesInDashLine.Length);
             OwnerCharacter.transform.DOMove(dashPosition, dashDuration).SetEase(Ease.InOutSine).OnComplete(() =>
             {
                 foreach (Collider2D enemy in enemiesInDashLine)

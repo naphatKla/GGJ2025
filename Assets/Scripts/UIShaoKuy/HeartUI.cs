@@ -12,10 +12,12 @@ public class HeartUI : MonoBehaviour
     private void Start()
     {
         PlayerCharacter.Instance.onHealthChanged.AddListener(UpdateLife);
+        UpdateLife();
     }
     
     void UpdateLife()
     {
+        Debug.Log($"Update Life : ");
         for (int i = 0; i < heartsUI.Length; i++)
         {
             bool activeCondition = i < PlayerCharacter.Instance.Life;
@@ -29,16 +31,17 @@ public class HeartUI : MonoBehaviour
                 animators[i].Play("Dead");
                 StartCoroutine(CheckIfAnimationFinished(animators[i]));
             }
+            Debug.Log($"Heart {i} {activeCondition} ");
+            Debug.Log($"Life {PlayerCharacter.Instance.Life} ");
         }
     }
     private IEnumerator CheckIfAnimationFinished(Animator animator)
     {
-        yield return null;
-        while (animator.GetCurrentAnimatorStateInfo(0).normalizedTime < 1)
+        //yield return null;
+        while (animator.GetCurrentAnimatorStateInfo(0).normalizedTime <= 1)
         {
             yield return null;
         }
-
         animator.gameObject.SetActive(false);
     }
 }

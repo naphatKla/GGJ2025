@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections.Generic;
 using System.Collections;
+using MoreMountains.Feedbacks;
 using MoreMountains.Tools;
 
 public class LoadScene : MMSingleton<LoadScene>
@@ -9,6 +10,12 @@ public class LoadScene : MMSingleton<LoadScene>
     [Header("UI")]
     public GameObject pauseUI;
     public GameObject loseUI;
+
+    [Header("ChangeSceneFeedbacks")] 
+    public MMF_Player mmfGameplay;
+    public MMF_Player mmfPlay;
+    public MMF_Player mmfCloseLevel;
+    public MMF_Player mmfCredits;
 
     [Header("Tutorial")]
     public List<GameObject> tutorialSteps;
@@ -78,7 +85,7 @@ public class LoadScene : MMSingleton<LoadScene>
     public void Credits()
     {
         Time.timeScale = 1;
-        SceneManager.LoadScene("Credits");
+        mmfCredits.PlayFeedbacks();
     }
 
     public void RestartGame()

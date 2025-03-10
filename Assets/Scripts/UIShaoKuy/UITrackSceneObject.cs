@@ -5,7 +5,7 @@ using UnityEngine;
 using Vector2 = UnityEngine.Vector2;
 using Vector3 = UnityEngine.Vector3;
 
-public class UITrack3DObject : MonoBehaviour
+public class UITrackSceneObject : MonoBehaviour
 {
     [SerializeField] private Transform objectInScene;
     [SerializeField] private GameObject UiObj;

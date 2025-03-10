@@ -203,7 +203,7 @@ namespace Characters
             if (value == 0) return;
             life += value;
             life = (int)Mathf.Clamp(life, 0f, 3f);
-            if (_previousLife == life) return;
+            if (life == 3) return;
             onHealthChanged?.Invoke();
             if(value > 0) healFeedback?.PlayFeedbacks();
         }
