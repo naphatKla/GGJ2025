@@ -201,9 +201,9 @@ namespace Characters
         public virtual void AddHealth(int value)
         {
             if (value == 0) return;
+            _previousLife = life;
             life += value;
             life = (int)Mathf.Clamp(life, 0f, 3f);
-            if (life == 3) return;
             onHealthChanged?.Invoke();
             if(value > 0) healFeedback?.PlayFeedbacks();
         }
