@@ -6,15 +6,25 @@ using UnityEngine.UI;
 
 public class CooldownUI : MonoBehaviour
 {
+    #region Inspectors & Fields
+    [Header("UI Elements")]
     [SerializeField] private Image mask;
     [SerializeField] private Image icon;
-    private Image bg;
     [SerializeField] private Image flash;
+    [SerializeField] private GameObject mouse;
+    [Header("SkillsSprite")]
     [SerializeField] private Sprite blackHole;
     [SerializeField] private Sprite perfectBubble;
     [SerializeField] private Sprite pathStriker;
+    [Header("Materials")]
     [SerializeField] private Material rgbMat;
+    #endregion -------------------------------------------------------------------------------------------------------------------
     
+    #region Properties
+    private Image bg;
+    #endregion -------------------------------------------------------------------------------------------------------------------
+    
+    #region UnityMethods
     void Start()
     {
         bg = GetComponent<Image>();
@@ -39,13 +49,7 @@ public class CooldownUI : MonoBehaviour
             });
         }
     }
-
-    private void NewSkill(SkillBase arg0)
-    {
-        throw new System.NotImplementedException();
-    }
-
-    // Update is called once per frame
+    
     void Update()
     {
         float cooldownNormalize =
@@ -54,16 +58,25 @@ public class CooldownUI : MonoBehaviour
         if (cooldownNormalize == 0)
         {
             mask.color = Color.clear;
+            mouse.SetActive(true);
         }
         else
         {
             mask.color = new Color(0f, 0f, 0f, 172f / 255f);
+            mouse.SetActive(false);
         }
+    }
+    #endregion -------------------------------------------------------------------------------------------------------------------
+    #region Methods
+    private void NewSkill(SkillBase arg0)
+    {
+        throw new System.NotImplementedException();
     }
 
     void PlayCooldown()
     {
         flash.DOFade(1, 0.5f).SetEase(Ease.InQuint).OnComplete(() => flash.DOFade(0, 0.3f).SetEase(Ease.OutQuint));
+        mouse.SetActive(true);
         bg.color = Color.white;
         bg.material = rgbMat;
     }
@@ -89,4 +102,11 @@ public class CooldownUI : MonoBehaviour
 
         PlayCooldown();
     }
+    #endregion -------------------------------------------------------------------------------------------------------------------
+
+    
+    // Update is called once per frame
+    
+
+    
 }
