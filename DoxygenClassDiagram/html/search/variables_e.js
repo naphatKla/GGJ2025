@@ -1,0 +1,25 @@
+var searchData=
+[
+  ['scaleamount_0',['scaleAmount',['../class_combo_text.html#aaaa7a2a0bac27a31b3abf63ea68a3cab',1,'ComboText.scaleAmount'],['../class_score_text.html#a7d38593ded2374a0bceb34d1cfe7c280',1,'ScoreText.scaleAmount']]],
+  ['score_1',['score',['../class_characters_1_1_character_base.html#a0a7c4f91acb1312ca5407044f9ede9dd',1,'Characters::CharacterBase']]],
+  ['scoreamount_2',['scoreAmount',['../class_oxygen.html#ada597e5d6b210d6de597ab05c2f09671',1,'Oxygen']]],
+  ['scoremultiply_3',['scoreMultiply',['../class_characters_1_1_character_base.html#a8629412b360efe991f7c104c26bb5e5a',1,'Characters::CharacterBase']]],
+  ['scoremultiplytext_4',['scoreMultiplyText',['../class_combo_text.html#ace4fbd2096d10f20c8f5a7d65f97d1b2',1,'ComboText']]],
+  ['scorequota_5',['scoreQuota',['../class_stage_class.html#a8a7d1efbcdf0689fd4add71bba352477',1,'StageClass']]],
+  ['scoretext_6',['scoreText',['../class_score_text.html#aaf718d0798fc0df5893775730333345e',1,'ScoreText']]],
+  ['scrollspeed_7',['scrollSpeed',['../class_credits.html#aae03c6529bdaac929c52cd0f995f6fcb',1,'Credits']]],
+  ['setspawnsize_8',['setSpawnSize',['../class_enemy_data2.html#a6733344bc13510dd32529c6e0d59eea3',1,'EnemyData2']]],
+  ['settingmenu_9',['settingMenu',['../class_sound_manager.html#a5c5cbe5d2532992eeae366b283d1c20f',1,'SoundManager']]],
+  ['sfxslider_10',['sfxSlider',['../class_sound_manager.html#a2e2acb33894b2c58571fad7fa2c3df15',1,'SoundManager']]],
+  ['skilldictionary_11',['SkillDictionary',['../class_characters_1_1_player_character.html#a526f247b3cc717853044132f89d3d60d',1,'Characters::PlayerCharacter']]],
+  ['skillduration_12',['skillDuration',['../class_skills_1_1_skill_vortex_impact.html#ad4378ad56e9c5237dc33e3742388ce81',1,'Skills::SkillVortexImpact']]],
+  ['skillleft_13',['skillLeft',['../class_characters_1_1_character_base.html#ae2b6aa11204d2fdd343387f41c6140eb',1,'Characters::CharacterBase']]],
+  ['skillright_14',['skillRight',['../class_characters_1_1_character_base.html#a3083c27d1a4aaf6401de1ca697dc1ec6',1,'Characters::CharacterBase']]],
+  ['skillstartfeedback_15',['skillStartFeedback',['../class_skills_1_1_skill_base.html#a1e231030039bc2eb32faba78b9fadbd1',1,'Skills::SkillBase']]],
+  ['soundsetting_16',['soundSetting',['../class_sound_setting.html#a385ad6e97db0e71f814088e7a9ee6e04',1,'SoundSetting']]],
+  ['spawnchance_17',['spawnChance',['../class_enemy_data.html#ae01134fff0239fd2a5287b60a7acaf04',1,'EnemyData.spawnChance'],['../class_oxygen_data.html#ab53d90f1afc723776823e65246732bb5',1,'OxygenData.spawnChance'],['../struct_enemy_struct.html#a8cdbba33308dba6c02d52a0d81b937ce',1,'EnemyStruct.spawnChance']]],
+  ['spawnintervalcap_18',['spawnIntervalCap',['../class_stage_class.html#aa7180c4031b8baca584928d73572808b',1,'StageClass']]],
+  ['stageevent_19',['stageEvent',['../class_stage_manager.html#a965dc65744b05226e09b5005ebc0750b',1,'StageManager']]],
+  ['stagelabels_20',['stageLabels',['../class_stage_manager.html#aa2eeaab02b2f10dc86cc4557d9b1a034',1,'StageManager']]],
+  ['startradius_21',['startRadius',['../class_skills_1_1_skill_vortex_impact.html#a99c6b45beaf1558458250a5c5c034dc3',1,'Skills::SkillVortexImpact']]]
+];

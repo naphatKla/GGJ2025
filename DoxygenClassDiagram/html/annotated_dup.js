@@ -1,0 +1,58 @@
+var annotated_dup =
+[
+    [ "Characters", "namespace_characters.html", [
+      [ "CharacterBase", "class_characters_1_1_character_base.html", "class_characters_1_1_character_base" ],
+      [ "CloningCharacter", "class_characters_1_1_cloning_character.html", "class_characters_1_1_cloning_character" ],
+      [ "EnemyCharacter", "class_characters_1_1_enemy_character.html", "class_characters_1_1_enemy_character" ],
+      [ "PlayerCharacter", "class_characters_1_1_player_character.html", "class_characters_1_1_player_character" ]
+    ] ],
+    [ "GlobalSettings", "namespace_global_settings.html", [
+      [ "CharacterGlobalSettings", "class_global_settings_1_1_character_global_settings.html", "class_global_settings_1_1_character_global_settings" ],
+      [ "GlobalSetting< T >", "class_global_settings_1_1_global_setting-1-g.html", "class_global_settings_1_1_global_setting-1-g" ]
+    ] ],
+    [ "Skills", "namespace_skills.html", [
+      [ "SkillBase", "class_skills_1_1_skill_base.html", "class_skills_1_1_skill_base" ],
+      [ "SkillBlackHole", "class_skills_1_1_skill_black_hole.html", "class_skills_1_1_skill_black_hole" ],
+      [ "SkillDanceDash", "class_skills_1_1_skill_dance_dash.html", "class_skills_1_1_skill_dance_dash" ],
+      [ "SkillDash", "class_skills_1_1_skill_dash.html", "class_skills_1_1_skill_dash" ],
+      [ "SkillDestruction", "class_skills_1_1_skill_destruction.html", "class_skills_1_1_skill_destruction" ],
+      [ "SkillPathStriker", "class_skills_1_1_skill_path_striker.html", "class_skills_1_1_skill_path_striker" ],
+      [ "SkillPerfectBubble", "class_skills_1_1_skill_perfect_bubble.html", "class_skills_1_1_skill_perfect_bubble" ],
+      [ "SkillPiercerDash", "class_skills_1_1_skill_piercer_dash.html", "class_skills_1_1_skill_piercer_dash" ],
+      [ "SkillSmoothDash", "class_skills_1_1_skill_smooth_dash.html", "class_skills_1_1_skill_smooth_dash" ],
+      [ "SkillVortexImpact", "class_skills_1_1_skill_vortex_impact.html", "class_skills_1_1_skill_vortex_impact" ]
+    ] ],
+    [ "AddNumberLoop", "class_add_number_loop.html", "class_add_number_loop" ],
+    [ "ButtonEffect", "class_button_effect.html", "class_button_effect" ],
+    [ "CameraManager", "class_camera_manager.html", "class_camera_manager" ],
+    [ "ComboText", "class_combo_text.html", "class_combo_text" ],
+    [ "CooldownUI", "class_cooldown_u_i.html", null ],
+    [ "Credits", "class_credits.html", "class_credits" ],
+    [ "CursorManager", "class_cursor_manager.html", null ],
+    [ "EnemyData", "class_enemy_data.html", "class_enemy_data" ],
+    [ "EnemyData2", "class_enemy_data2.html", "class_enemy_data2" ],
+    [ "EnemySpawnManager", "class_enemy_spawn_manager.html", "class_enemy_spawn_manager" ],
+    [ "EnemyStruct", "struct_enemy_struct.html", "struct_enemy_struct" ],
+    [ "FireflyBlink", "class_firefly_blink.html", null ],
+    [ "HeartUI", "class_heart_u_i.html", null ],
+    [ "LevelSelector", "class_level_selector.html", "class_level_selector" ],
+    [ "LevelSelectorButton", "class_level_selector_button.html", "class_level_selector_button" ],
+    [ "LoadScene", "class_load_scene.html", "class_load_scene" ],
+    [ "LogoAnimation", "class_logo_animation.html", "class_logo_animation" ],
+    [ "MenuManager", "class_menu_manager.html", null ],
+    [ "Oxygen", "class_oxygen.html", "class_oxygen" ],
+    [ "OxygenData", "class_oxygen_data.html", "class_oxygen_data" ],
+    [ "OxygenSpawnManager", "class_oxygen_spawn_manager.html", "class_oxygen_spawn_manager" ],
+    [ "RandomEnemyRespawn", "class_random_enemy_respawn.html", "class_random_enemy_respawn" ],
+    [ "ScoreText", "class_score_text.html", "class_score_text" ],
+    [ "SoundManager", "class_sound_manager.html", "class_sound_manager" ],
+    [ "SoundSetting", "class_sound_setting.html", "class_sound_setting" ],
+    [ "SoundSettingMenu", "class_sound_setting_menu.html", "class_sound_setting_menu" ],
+    [ "SoundTest", "class_sound_test.html", "class_sound_test" ],
+    [ "SoundTester", "class_sound_tester.html", "class_sound_tester" ],
+    [ "StageClass", "class_stage_class.html", "class_stage_class" ],
+    [ "StageManager", "class_stage_manager.html", "class_stage_manager" ],
+    [ "UITrack3DObject", "class_u_i_track3_d_object.html", null ],
+    [ "VideoPlayerController", "class_video_player_controller.html", "class_video_player_controller" ],
+    [ "WinUI", "class_win_u_i.html", null ]
+];
