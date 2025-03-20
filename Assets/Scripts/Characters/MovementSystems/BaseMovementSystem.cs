@@ -45,10 +45,10 @@ namespace Characters.MovementSystems
         /// <param name="position">The target position to move towards.</param>
         /// <param name="duration">The time it takes to reach the target position.</param>
         /// <param name="ease">The easing function that determines the movement behavior.</param>
-        public virtual void TryMoveToPositionOverTime(Vector2 position, float duration, Ease ease = Ease.InOutSine)
+        public virtual Tween  TryMoveToPositionOverTime(Vector2 position, float duration, Ease ease = Ease.InOutSine)
         {
-            if (!_canMove) return;
-            MoveToPositionOverTime(position, duration, ease);
+            if (!_canMove) return null;
+            return MoveToPositionOverTime(position, duration, ease);
         }
 
         /// <summary>
@@ -76,7 +76,7 @@ namespace Characters.MovementSystems
         /// <param name="position">The target position to reach.</param>
         /// <param name="duration">The time taken to reach the target.</param>
         /// <param name="ease">The easing function applied to the movement.</param>
-        protected abstract void MoveToPositionOverTime(Vector2 position, float duration, Ease ease = Ease.InOutSine);
+        protected abstract Tween  MoveToPositionOverTime(Vector2 position, float duration, Ease ease = Ease.InOutSine);
 
         #endregion
     }

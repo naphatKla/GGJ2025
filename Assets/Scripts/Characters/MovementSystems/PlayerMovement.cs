@@ -35,9 +35,9 @@ namespace Characters.MovementSystems
         /// <param name="position">The target position to reach.</param>
         /// <param name="duration">The time it takes to reach the target position.</param>
         /// <param name="ease">The easing function applied to the movement.</param>
-        protected override void MoveToPositionOverTime(Vector2 position, float duration, Ease ease = Ease.InOutSine)
+        protected override Tween MoveToPositionOverTime(Vector2 position, float duration, Ease ease = Ease.InOutSine)
         {
-            rb2D.DOMove(position, duration).SetEase(ease);
+            return rb2D.DOMove(position, duration).SetEase(ease);
         }
 
         #endregion

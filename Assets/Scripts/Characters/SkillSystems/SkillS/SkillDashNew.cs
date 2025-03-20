@@ -10,18 +10,24 @@ namespace Characters.SkillSystems.SkillS
     {
         [Title("SkillDash")] [SerializeField] private float dashDuration = 0.3f;
         [SerializeField] private float dashDistance = 8f;
-        
-        protected override void OnSkillStart(BaseController owner, Vector2 direction)
+
+        protected override void OnSkillStart()
         {
-            owner.ToggleMovementInputController(false);
-            Vector2 dashPosition = (Vector2)owner.transform.position + (direction * dashDistance);
-            owner.movementSystem.TryMoveToPositionOverTime(dashPosition, dashDuration);
-            DOVirtual.DelayedCall(dashDuration, () => owner.ToggleMovementInputController(true));
+            throw new System.NotImplementedException();
         }
 
-        protected override IEnumerator OnSkillUpdate(BaseController owner, Vector2 direction)
+        protected override Tween OnSkillUpdate(BaseController owner, Vector2 direction)
         {
-            yield return null;
+            DOVirtual.DelayedCall(2, () => { });
+            owner.ToggleMovementInputController(false);
+            Vector2 dashPosition = (Vector2)owner.transform.position + (direction * dashDistance);
+
+            return owner.movementSystem.TryMoveToPositionOverTime(dashPosition, dashDuration);
+        }
+
+        protected override void OnSkillExit()
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

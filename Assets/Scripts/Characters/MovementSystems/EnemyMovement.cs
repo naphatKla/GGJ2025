@@ -39,22 +39,20 @@ namespace Characters.MovementSystems
 
         /// <summary>
         /// Moves the enemy toward the target position over a specified duration.
-        /// Adjusts movement speed dynamically to ensure arrival within the given time.
         /// </summary>
         /// <param name="position">The target position to reach.</param>
         /// <param name="duration">The time it takes to reach the target position.</param>
         /// <param name="ease">The easing function applied to the movement.</param>
-        protected override void MoveToPositionOverTime(Vector2 position, float duration, Ease ease = Ease.InOutSine)
+        protected override Tween MoveToPositionOverTime(Vector2 position, float duration, Ease ease = Ease.InOutSine)
         {
             agent.ResetPath();
             
-            DOVirtual.Vector2(transform.position, position, duration, (pos) =>
+            return DOVirtual.Vector2(transform.position, position, duration, (pos) =>
             {
                 Vector2 deltaPos = pos - (Vector2)agent.transform.position;
                 agent.Move(deltaPos);
             }).SetEase(ease);
         }
-
         #endregion
     }
 }
