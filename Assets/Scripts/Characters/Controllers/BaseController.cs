@@ -1,4 +1,3 @@
-using System;
 using Characters.InputSystems.Interface;
 using Characters.MovementSystems;
 using Characters.SkillSystems;
@@ -9,9 +8,11 @@ namespace Characters.Controllers
     public abstract class BaseController : MonoBehaviour
     {
         #region Inspectors & Fields
+
         public BaseMovementSystem movementSystem;
         [SerializeField] private SkillSystem skillSystem;
         private ICharacterInput _inputSystem;
+
         #endregion
 
         #region Unity Methods
@@ -25,27 +26,28 @@ namespace Characters.Controllers
         {
             if (_inputSystem == null && !TryGetComponent(out _inputSystem))
                 Debug.Log("Error Input Reader is required, Please Add Input Reader Component");
-            
-            EnableMovementInputController(true);
-            EnableSkillInputController(true);
+
+            ToggleMovementInputController(true);
+            ToggleSkillInputController(true);
         }
 
         private void OnDisable()
         {
-            EnableMovementInputController(false);
-            EnableSkillInputController(false);
+            ToggleMovementInputController(false);
+            ToggleSkillInputController(false);
         }
+
         #endregion
 
-        public void EnableMovementInputController(bool isEnable)
+        public void ToggleMovementInputController(bool isToggle)
         {
-            if (isEnable) _inputSystem.OnMove += movementSystem.TryMove;
+            if (isToggle) _inputSystem.OnMove += movementSystem.TryMove;
             else _inputSystem.OnMove -= movementSystem.TryMove;
         }
 
-        public void EnableSkillInputController(bool isEnable)
+        public void ToggleSkillInputController(bool isToggle)
         {
-            if (isEnable)  _inputSystem.OnPrimarySkillPerform += skillSystem.PerformPrimarySkill;
+            if (isToggle) _inputSystem.OnPrimarySkillPerform += skillSystem.PerformPrimarySkill;
             else _inputSystem.OnPrimarySkillPerform -= skillSystem.PerformPrimarySkill;
         }
     }

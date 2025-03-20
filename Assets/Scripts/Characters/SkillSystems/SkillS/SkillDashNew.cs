@@ -13,10 +13,10 @@ namespace Characters.SkillSystems.SkillS
         
         protected override void OnSkillStart(BaseController owner, Vector2 direction)
         {
-            owner.EnableMovementInputController(false);
+            owner.ToggleMovementInputController(false);
             Vector2 dashPosition = (Vector2)owner.transform.position + (direction * dashDistance);
             owner.movementSystem.TryMoveToPositionOverTime(dashPosition, dashDuration);
-            DOVirtual.DelayedCall(dashDuration, () => owner.EnableMovementInputController(true));
+            DOVirtual.DelayedCall(dashDuration, () => owner.ToggleMovementInputController(true));
         }
 
         protected override IEnumerator OnSkillUpdate(BaseController owner, Vector2 direction)
