@@ -1,13 +1,16 @@
 using UnityEngine;
 
-namespace Characters.MovementSystem
+namespace Characters.MovementSystems
 {
     public abstract class BaseMovementSystem : MonoBehaviour
     {
+        #region Inspectors & Variables
         protected float maxSpeed = 6f;
         protected float currentSpeed = 6f;
         private bool _canMove = true;
-        
+        #endregion
+
+        #region Methods
         /// <summary>
         /// Try moving with the 'can move' condition.
         /// </summary>
@@ -23,5 +26,6 @@ namespace Characters.MovementSystem
         /// </summary>
         /// <param name="position"></param>
         protected abstract void Move(Vector2 position);
+        #endregion
     }
 }

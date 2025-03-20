@@ -7,13 +7,16 @@ namespace Characters.InputSystems
 {
     public class PlayerInputReader : MonoBehaviour, PlayerInputAction.IGameplayActions, ICharacterInput
     {
+        #region Inspectors & Variables
         public Action<Vector2> OnMove { get; set; }
         public Action OnPrimarySkillPerform { get; set; }
         public Action OnSecondarySKillPerform { get; set; }
         
         private PlayerInputAction _playerInputAction;
         private Vector2 _movePosition;
-        
+        #endregion
+
+        #region Unity Methods
         private void OnEnable()
         {
             if (_playerInputAction == null)
@@ -34,7 +37,9 @@ namespace Characters.InputSystems
         {
             OnMove?.Invoke(_movePosition);
         }
+        #endregion
 
+        #region Methods
         public void OnMovement(InputAction.CallbackContext context)
         {
             _movePosition = Camera.main.ScreenToWorldPoint(context.ReadValue<Vector2>());
@@ -49,5 +54,6 @@ namespace Characters.InputSystems
         {
             OnSecondarySKillPerform?.Invoke();
         }
+        #endregion
     }
 }
