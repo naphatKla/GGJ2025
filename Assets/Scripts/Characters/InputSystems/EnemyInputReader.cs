@@ -80,10 +80,13 @@ namespace Characters.InputSystems
             while (true)
             {
                 yield return new WaitForSeconds(timeTick);
-
+                
                 // Move enemy toward the player's position
                 if (!PlayerController.Instant) continue;
+                Vector2 sightDirection = (PlayerController.Instant.transform.position - transform.position).normalized;
                 OnMove?.Invoke(PlayerController.Instant.transform.position);
+                OnPrimarySkillPerform?.Invoke(sightDirection);
+                OnSecondarySkillPerform?.Invoke(sightDirection);
             }
         }
 

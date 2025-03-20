@@ -47,8 +47,16 @@ namespace Characters.Controllers
 
         public void ToggleSkillInputController(bool isToggle)
         {
-            if (isToggle) _inputSystem.OnPrimarySkillPerform += skillSystem.PerformPrimarySkill;
-            else _inputSystem.OnPrimarySkillPerform -= skillSystem.PerformPrimarySkill;
+            if (isToggle)
+            {
+                _inputSystem.OnPrimarySkillPerform += skillSystem.PerformPrimarySkill;
+                _inputSystem.OnSecondarySkillPerform += skillSystem.PerformSecondarySkill;
+            }
+            else 
+            {
+                _inputSystem.OnPrimarySkillPerform -= skillSystem.PerformPrimarySkill;
+                _inputSystem.OnSecondarySkillPerform -= skillSystem.PerformSecondarySkill;
+            }
         }
     }
 }

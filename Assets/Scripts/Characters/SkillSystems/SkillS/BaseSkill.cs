@@ -6,11 +6,10 @@ namespace Characters.SkillSystems.SkillS
 {
     public abstract class BaseSkill : MonoBehaviour
     {
-        [SerializeField] private float cooldownDuration;
+        public float cooldownDuration;
         
         public void PerformSkill(BaseController owner, Vector2 direction)
         {
-            Debug.Log("Perform");
             OnSkillStart(owner, direction);
             StartCoroutine(OnSkillUpdate(owner, direction));
         }

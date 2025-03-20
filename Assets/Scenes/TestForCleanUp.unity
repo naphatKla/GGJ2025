@@ -698,7 +698,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 135179768b01554498a9dd47f81e64ee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cooldownDuration: 0
+  cooldownDuration: 0.5
   dashDuration: 0.3
   dashDistance: 8
 --- !u!1 &2107089418
@@ -716,6 +716,7 @@ GameObject:
   - component: {fileID: 2107089423}
   - component: {fileID: 2107089428}
   - component: {fileID: 2107089427}
+  - component: {fileID: 2107089429}
   - component: {fileID: 2107089424}
   - component: {fileID: 2107089426}
   m_Layer: 6
@@ -910,7 +911,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0de63d556ce2eea4ca302cf09c1f9e61, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  primarySkill: {fileID: 0}
+  primarySkill: {fileID: 2107089429}
   secondarySkill: {fileID: 0}
 --- !u!114 &2107089428
 MonoBehaviour:
@@ -925,6 +926,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 10
+--- !u!114 &2107089429
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2107089418}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 135179768b01554498a9dd47f81e64ee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cooldownDuration: 0.5
+  dashDuration: 0.3
+  dashDistance: 8
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
