@@ -1,10 +1,8 @@
-using System;
-using Characters.MovementSystems;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.AI;
 
-namespace Characters.MovementSystem
+namespace Characters.MovementSystems
 {
     public class EnemyMovement : BaseMovementSystem
     {

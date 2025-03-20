@@ -1,9 +1,12 @@
+using Characters.SkillSystems.SkillS;
 using UnityEngine;
 
 namespace Characters.SkillSystems
 {
     public class SkillSystem : MonoBehaviour
     {
+        [SerializeField] private BaseSkill primarySkill;
+        [SerializeField] private BaseSkill secondarySkill;
         private float _primarySkillCooldown;
         private float _secondarySkillCooldown;
 

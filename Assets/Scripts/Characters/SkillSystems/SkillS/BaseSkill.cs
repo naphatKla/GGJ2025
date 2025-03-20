@@ -1,20 +1,37 @@
-using MoreMountains.Tools;
+using System;
 using UnityEngine;
 
 namespace Characters.SkillSystems.SkillS
 {
     public abstract class BaseSkill : ScriptableObject
     {
-        // Start is called before the first frame update
-        void Start()
-        {
+        #region Inspectors & Variables
+        [SerializeField] private float cooldownDuration;
+        public Action OnSkillActivated { get; set; }
+        public Action OnSkillUpdated { get; set; }
+        public Action OnSkillDeactivated { get; set; }
+        #endregion
         
+        public virtual void ActivateSkill()
+        {
+            OnSkillActivated?.Invoke();
+            HandleSkillStart();
         }
 
-        // Update is called once per frame
-        void Update()
+        public virtual void UpdateSkill()
         {
-        
+            OnSkillUpdated?.Invoke();
+            HandleSkillUpdate();
         }
+
+        public virtual void DeactivateSkill()
+        {
+            OnSkillDeactivated?.Invoke();
+            HandleSkillEnd();
+        }
+        
+        protected abstract void HandleSkillStart();
+        protected abstract void HandleSkillUpdate();
+        protected abstract void HandleSkillEnd();
     }
 }
