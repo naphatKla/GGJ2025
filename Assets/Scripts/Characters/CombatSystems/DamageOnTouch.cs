@@ -10,20 +10,18 @@ namespace Characters.CombatSystems
         #region Inspectors & Variables
         public bool isEnableDamage;
         public float damage;
-        private LayerMask TargetLayer => CharacterGlobalSettings.Instance.EnemyLayerDictionary[tag];
         #endregion
         
         #region Unity Methods
+        /// <summary>
+        /// Damage is applied to targets based on the Layer Matrix settings (Project Settings → Physics2D)
+        /// </summary>
+        /// <param name="other"></param>
         private void OnTriggerEnter2D(Collider2D other)
         {
             if (!isEnableDamage) return;
-            if (other.gameObject.layer != TargetLayer) return;
-            if (TryGetComponent(out HealthSystem targetHealth))
-            {
-                Debug.LogWarning($"{targetHealth.gameObject.name} can't take damage. Health system not found");
-            }
-            
-            targetHealth.TakeDamage(1);
+            if (!TryGetComponent(out HealthSystem targetHealth)) return;
+            targetHealth.TakeDamage(damage);
         }
         #endregion
     }
