@@ -10,6 +10,7 @@ namespace Characters.SkillSystems.SkillS
         
         public void PerformSkill(BaseController owner, Vector2 direction)
         {
+            Debug.Log("Perform");
             OnSkillStart(owner, direction);
             StartCoroutine(OnSkillUpdate(owner, direction));
         }

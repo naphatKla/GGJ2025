@@ -1,3 +1,4 @@
+using System;
 using Characters.InputSystems.Interface;
 using Characters.MovementSystems;
 using Characters.SkillSystems;
@@ -9,11 +10,17 @@ namespace Characters.Controllers
     {
         #region Inspectors & Fields
         public BaseMovementSystem movementSystem;
-        private SkillSystem _skillSystem;
+        [SerializeField] private SkillSystem skillSystem;
         private ICharacterInput _inputSystem;
         #endregion
 
         #region Unity Methods
+
+        private void Start()
+        {
+            skillSystem.Initialize(this);
+        }
+
         private void OnEnable()
         {
             if (_inputSystem == null && !TryGetComponent(out _inputSystem))
@@ -38,8 +45,8 @@ namespace Characters.Controllers
 
         public void EnableSkillInputController(bool isEnable)
         {
-            if (isEnable)  _inputSystem.OnPrimarySkillPerform += _skillSystem.PerformPrimarySkill;
-            _inputSystem.OnPrimarySkillPerform -= _skillSystem.PerformPrimarySkill;
+            if (isEnable)  _inputSystem.OnPrimarySkillPerform += skillSystem.PerformPrimarySkill;
+            else _inputSystem.OnPrimarySkillPerform -= skillSystem.PerformPrimarySkill;
         }
     }
 }

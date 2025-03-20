@@ -457,6 +457,7 @@ GameObject:
   - component: {fileID: 1537051328}
   - component: {fileID: 1537051327}
   - component: {fileID: 1537051329}
+  - component: {fileID: 1537051330}
   - component: {fileID: 1537051320}
   - component: {fileID: 1537051323}
   m_Layer: 7
@@ -643,6 +644,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   movementSystem: {fileID: 1537051325}
+  skillSystem: {fileID: 1537051327}
 --- !u!114 &1537051327
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -655,6 +657,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0de63d556ce2eea4ca302cf09c1f9e61, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  primarySkill: {fileID: 1537051330}
+  secondarySkill: {fileID: 0}
 --- !u!114 &1537051328
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -682,6 +686,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isEnableDamage: 1
   damage: 1
+--- !u!114 &1537051330
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1537051317}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 135179768b01554498a9dd47f81e64ee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cooldownDuration: 0
+  dashDuration: 0.3
+  dashDistance: 8
 --- !u!1 &2107089418
 GameObject:
   m_ObjectHideFlags: 0
@@ -833,6 +852,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   movementSystem: {fileID: 2107089423}
+  skillSystem: {fileID: 2107089427}
 --- !u!61 &2107089426
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -890,6 +910,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0de63d556ce2eea4ca302cf09c1f9e61, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  primarySkill: {fileID: 0}
+  secondarySkill: {fileID: 0}
 --- !u!114 &2107089428
 MonoBehaviour:
   m_ObjectHideFlags: 0

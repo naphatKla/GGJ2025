@@ -14,6 +14,7 @@ namespace Characters.InputSystems
 
         private PlayerInputAction _playerInputAction;
         private Vector2 _movePosition;
+        private Vector2 _sightDirection;
         #endregion
 
         #region Unity Methods
@@ -47,12 +48,16 @@ namespace Characters.InputSystems
 
         public void OnUsePrimarySkill(InputAction.CallbackContext context)
         {
-            OnPrimarySkillPerform?.Invoke(_movePosition);
+            if (!context.performed) return;
+            _sightDirection = (_movePosition - (Vector2)transform.position).normalized;
+            OnPrimarySkillPerform?.Invoke(_sightDirection);
         }
 
         public void OnUseSecondarySkill(InputAction.CallbackContext context)
         {
-            OnSecondarySKillPerform?.Invoke(_movePosition);
+            if (!context.performed) return;
+            _sightDirection = (_movePosition - (Vector2)transform.position).normalized;
+            OnSecondarySKillPerform?.Invoke(_sightDirection);
         }
         #endregion
     }

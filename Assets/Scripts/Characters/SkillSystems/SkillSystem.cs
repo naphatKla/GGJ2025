@@ -22,7 +22,6 @@ namespace Characters.SkillSystems
             primarySkill.PerformSkill(_owner, direction);
         }
         
-        
         public void ResetCooldown(bool primary = true, bool secondary = true)
         {
             if (primary) _primarySkillCooldown = 0;
