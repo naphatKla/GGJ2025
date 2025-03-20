@@ -1,6 +1,6 @@
 namespace Characters.Controllers
 {
-    public class EnemyController : CharacterController
+    public class EnemyController : BaseController
     {
     
     }

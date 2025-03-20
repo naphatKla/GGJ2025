@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Characters.Controllers
 {
-    public abstract class CharacterController : MonoBehaviour
+    public abstract class BaseController : MonoBehaviour
     {
         #region Inspectors & Fields
         [SerializeField] private BaseMovementSystem movementSystem;

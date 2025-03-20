@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Characters.Controllers
 {
-    public class PlayerController : CharacterController
+    public class PlayerController : BaseController
     {
         public static PlayerController Instant { get; private set; }
 

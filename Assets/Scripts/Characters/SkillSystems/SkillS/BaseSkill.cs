@@ -1,37 +1,20 @@
-using System;
+using System.Collections;
+using Characters.Controllers;
 using UnityEngine;
 
 namespace Characters.SkillSystems.SkillS
 {
-    public abstract class BaseSkill : ScriptableObject
+    public abstract class BaseSkill : MonoBehaviour
     {
-        #region Inspectors & Variables
         [SerializeField] private float cooldownDuration;
-        public Action OnSkillActivated { get; set; }
-        public Action OnSkillUpdated { get; set; }
-        public Action OnSkillDeactivated { get; set; }
-        #endregion
         
-        public virtual void ActivateSkill()
+        public void PerformSkill(BaseController owner)
         {
-            OnSkillActivated?.Invoke();
-            HandleSkillStart();
-        }
-
-        public virtual void UpdateSkill()
-        {
-            OnSkillUpdated?.Invoke();
-            HandleSkillUpdate();
-        }
-
-        public virtual void DeactivateSkill()
-        {
-            OnSkillDeactivated?.Invoke();
-            HandleSkillEnd();
+            OnSkillStart(owner);
+            StartCoroutine(OnSkillUpdate(owner));
         }
         
-        protected abstract void HandleSkillStart();
-        protected abstract void HandleSkillUpdate();
-        protected abstract void HandleSkillEnd();
+        protected abstract void OnSkillStart(BaseController owner);
+        protected abstract IEnumerator OnSkillUpdate(BaseController owner);
     }
 }
