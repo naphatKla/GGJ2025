@@ -12,7 +12,7 @@ public class ScoreText : MonoBehaviour
     public float scaleAmount = 1.2f;
     private static float Score => PlayerCharacter.Instance.Score;
     [SerializeField] private TextMeshProUGUI levelText;
-    [SerializeField] private StageManager _stageManager;
+    /*[SerializeField] private StageManager _stageManager;*/
 
     [SerializeField] private TextMeshProUGUI killTarget;
     [SerializeField] private TextMeshProUGUI scoreTarget;
@@ -23,12 +23,12 @@ public class ScoreText : MonoBehaviour
     {
         yield return null;
         PlayerCharacter.Instance.onPickUpScore.AddListener(PlayTween);
-        levelText.text = $"Level {_stageManager.currentStage}";
+        /*levelText.text = $"Level {_stageManager.currentStage}";
         scoreText.text = "Score " + 0;
         
         killTarget.text = _stageManager.stageLabels[_stageManager.currentStage].killQuota.ToString();
         scoreTarget.text = _stageManager.stageLabels[_stageManager.currentStage].scoreQuota.ToString();   
-        lifeTarget.text = _stageManager.stageLabels[_stageManager.currentStage].lifeQuota.ToString();
+        lifeTarget.text = _stageManager.stageLabels[_stageManager.currentStage].lifeQuota.ToString();*/
         
         
     }

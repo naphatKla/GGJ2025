@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb20b7afc201d4d46b649b6ac3009fa4, type: 3}
+  m_Name: Level 1
+  m_EditorClassIdentifier: 
+  enemies:
+  - {fileID: 11400000, guid: b265bf836edd1ac4da7615dd3c48c4ac, type: 2}
+  spawnTypes:
+  - {fileID: 11400000, guid: 956f31f33dad1cb4a91cba339c2d8f9f, type: 2}
+  scoreQuota: 1000
+  maxEnemySpawnCap: 50
+  currentMaxEnemySpawn: 5
+  enemySpawnInterval: 1
+  spawnIntervalCap: 0.5
+  background: {fileID: 0}
+  unitScoreQuota: 1000
+  decreaseSpawnInterval: 1000
