@@ -1,6 +1,6 @@
 using Characters.InputSystems.Interface;
-using Characters.MovementSystem;
 using Characters.MovementSystems;
+using Characters.SkillSystems;
 using UnityEngine;
 
 namespace Characters.Controllers
@@ -8,7 +8,8 @@ namespace Characters.Controllers
     public abstract class BaseController : MonoBehaviour
     {
         #region Inspectors & Fields
-        [SerializeField] private BaseMovementSystem movementSystem;
+        public BaseMovementSystem movementSystem;
+        private SkillSystem _skillSystem;
         private ICharacterInput _inputSystem;
         #endregion
 
@@ -18,13 +19,27 @@ namespace Characters.Controllers
             if (_inputSystem == null && !TryGetComponent(out _inputSystem))
                 Debug.Log("Error Input Reader is required, Please Add Input Reader Component");
             
-            _inputSystem.OnMove += movementSystem.TryMove;
+            EnableMovementInputController(true);
+            EnableSkillInputController(true);
         }
 
         private void OnDisable()
         {
-            _inputSystem.OnMove -= movementSystem.TryMove;
+            EnableMovementInputController(false);
+            EnableSkillInputController(false);
         }
         #endregion
+
+        public void EnableMovementInputController(bool isEnable)
+        {
+            if (isEnable) _inputSystem.OnMove += movementSystem.TryMove;
+            else _inputSystem.OnMove -= movementSystem.TryMove;
+        }
+
+        public void EnableSkillInputController(bool isEnable)
+        {
+            if (isEnable)  _inputSystem.OnPrimarySkillPerform += _skillSystem.PerformPrimarySkill;
+            _inputSystem.OnPrimarySkillPerform -= _skillSystem.PerformPrimarySkill;
+        }
     }
 }

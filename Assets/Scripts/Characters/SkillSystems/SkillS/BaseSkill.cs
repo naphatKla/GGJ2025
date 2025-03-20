@@ -8,13 +8,13 @@ namespace Characters.SkillSystems.SkillS
     {
         [SerializeField] private float cooldownDuration;
         
-        public void PerformSkill(BaseController owner)
+        public void PerformSkill(BaseController owner, Vector2 direction)
         {
-            OnSkillStart(owner);
-            StartCoroutine(OnSkillUpdate(owner));
+            OnSkillStart(owner, direction);
+            StartCoroutine(OnSkillUpdate(owner, direction));
         }
         
-        protected abstract void OnSkillStart(BaseController owner);
-        protected abstract IEnumerator OnSkillUpdate(BaseController owner);
+        protected abstract void OnSkillStart(BaseController owner, Vector2 direction);
+        protected abstract IEnumerator OnSkillUpdate(BaseController owner, Vector2 direction);
     }
 }

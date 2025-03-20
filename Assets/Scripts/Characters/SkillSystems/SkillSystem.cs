@@ -17,9 +17,9 @@ namespace Characters.SkillSystems
             _owner = owner;
         }
         
-        public void PerformPrimarySkill()
+        public void PerformPrimarySkill(Vector2 direction)
         {
-            primarySkill.PerformSkill(_owner);
+            primarySkill.PerformSkill(_owner, direction);
         }
         
         

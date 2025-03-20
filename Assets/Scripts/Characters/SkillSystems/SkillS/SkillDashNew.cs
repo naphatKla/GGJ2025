@@ -10,14 +10,15 @@ namespace Characters.SkillSystems.SkillS
         [Title("SkillDash")] [SerializeField] private float dashDuration = 0.3f;
         [SerializeField] private float dashDistance = 8f;
         
-        protected override void OnSkillStart(BaseController owner)
+        protected override void OnSkillStart(BaseController owner, Vector2 direction)
         {
-               
+            owner.EnableMovementInputController(false);
+            owner.movementSystem
         }
 
-        protected override IEnumerator OnSkillUpdate(BaseController owner)
+        protected override IEnumerator OnSkillUpdate(BaseController owner, Vector2 direction)
         {
-            yield return null;
+            throw new System.NotImplementedException();
         }
     }
 }

@@ -9,8 +9,8 @@ namespace Characters.InputSystems
     public class EnemyInputReader : MonoBehaviour, ICharacterInput
     {
         public Action<Vector2> OnMove { get; set; }
-        public Action OnPrimarySkillPerform { get; set; }
-        public Action OnSecondarySKillPerform { get; set; }
+        public Action<Vector2> OnPrimarySkillPerform { get; set; }
+        public Action<Vector2> OnSecondarySKillPerform { get; set; }
         private Coroutine updateTickCoroutine;
         private float timeTick = 0.2f;
 
