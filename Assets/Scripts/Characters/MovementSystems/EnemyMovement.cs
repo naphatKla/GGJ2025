@@ -46,14 +46,13 @@ namespace Characters.MovementSystems
         /// <param name="ease">The easing function applied to the movement.</param>
         protected override void MoveToPositionOverTime(Vector2 position, float duration, Ease ease = Ease.InOutSine)
         {
-            float distance = Vector3.Distance(agent.transform.position, position);
-            float speed = distance / duration; // Adjusts speed dynamically
-
-            agent.speed = speed;
-            agent.SetDestination(position);
-
-            // Resets speed after reaching destination
-            DOVirtual.DelayedCall(duration, ResetSpeed);
+            agent.ResetPath();
+            
+            DOVirtual.Vector2(transform.position, position, duration, (pos) =>
+            {
+                Vector2 deltaPos = pos - (Vector2)agent.transform.position;
+                agent.Move(deltaPos);
+            }).SetEase(ease);
         }
 
         #endregion

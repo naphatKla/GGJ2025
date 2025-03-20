@@ -16,7 +16,6 @@ namespace Characters.SkillSystems
         {
             ModifyPrimarySkillCooldown(_primarySkillCooldown - Time.deltaTime);
             ModifySecondarySkillCooldown(_secondarySkillCooldown - Time.deltaTime);
-            Debug.Log(_primarySkillCooldown);
         }
 
         public void Initialize(BaseController owner)
