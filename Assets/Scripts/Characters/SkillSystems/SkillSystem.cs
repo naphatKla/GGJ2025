@@ -4,16 +4,16 @@ namespace Characters.SkillSystems
 {
     public class SkillSystem : MonoBehaviour
     {
-        // Start is called before the first frame update
-        void Start()
-        {
-        
-        }
+        private float _primarySkillCooldown;
+        private float _secondarySkillCooldown;
 
-        // Update is called once per frame
-        void Update()
-        {
         
+        public void ResetCooldown(bool resetPrimary = true, bool resetSecondary = true)
+        {
+            if (resetPrimary)
+                _primarySkillCooldown = 0;
+            if (resetSecondary)
+                _secondarySkillCooldown = 0;
         }
     }
 }
