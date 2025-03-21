@@ -1,5 +1,6 @@
+using System.Collections;
 using Characters.Controllers;
-using DG.Tweening;
+using ProjectExtensions;
 using UnityEngine;
 
 namespace Characters.SkillSystems.SkillS
@@ -8,13 +9,18 @@ namespace Characters.SkillSystems.SkillS
     {
         public float cooldownDuration;
         private bool _isPerforming;
+        protected BaseController owner;
+        protected Vector2 aimDirection;
+        
         
         public void PerformSkill(BaseController owner, Vector2 direction)
         {
             if (_isPerforming) return;
+            this.owner = owner;
+            aimDirection = direction;
+            
             HandleSkillStart();
-            Tween skillTween = OnSkillUpdate(owner, direction).OnComplete(HandleSkillExit);
-            if (skillTween == null) HandleSkillExit();
+            StartCoroutine(OnSkillUpdate().WithCallback(HandleSkillExit));
         }
         
         protected virtual void HandleSkillStart()
@@ -25,13 +31,13 @@ namespace Characters.SkillSystems.SkillS
         
         protected virtual void HandleSkillExit()
         {
-            Debug.Log("EXIT");
             _isPerforming = false;
             OnSkillExit();
         }
 
         protected abstract void OnSkillStart();
-        protected abstract Tween OnSkillUpdate(BaseController owner, Vector2 direction);
+        protected abstract IEnumerator OnSkillUpdate();
         protected abstract void OnSkillExit();
+        
     }
 }

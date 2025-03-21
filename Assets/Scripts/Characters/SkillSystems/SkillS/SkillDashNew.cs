@@ -1,5 +1,4 @@
 using System.Collections;
-using Characters.Controllers;
 using DG.Tweening;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -13,21 +12,18 @@ namespace Characters.SkillSystems.SkillS
 
         protected override void OnSkillStart()
         {
-            throw new System.NotImplementedException();
+            owner.ToggleMovementInputController(false);
         }
 
-        protected override Tween OnSkillUpdate(BaseController owner, Vector2 direction)
+        protected override IEnumerator OnSkillUpdate()
         {
-            DOVirtual.DelayedCall(2, () => { });
-            owner.ToggleMovementInputController(false);
-            Vector2 dashPosition = (Vector2)owner.transform.position + (direction * dashDistance);
-
-            return owner.movementSystem.TryMoveToPositionOverTime(dashPosition, dashDuration);
+            Vector2 dashPosition = (Vector2)transform.position + aimDirection * dashDistance;
+            yield return owner.movementSystem.TryMoveToPositionOverTime(dashPosition, dashDuration).WaitForCompletion();
         }
 
         protected override void OnSkillExit()
         {
-            throw new System.NotImplementedException();
+            owner.ToggleMovementInputController(true);
         }
     }
 }
