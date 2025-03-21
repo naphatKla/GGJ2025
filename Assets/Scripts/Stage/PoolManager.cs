@@ -3,41 +3,56 @@ using UnityEngine;
 
 public class PoolManager
 {
-    public static PoolManager Instance { get; private set; } = new();
-    private readonly Dictionary<GameObject, Queue<GameObject>> pools = new();
+    public static PoolManager Instance { get; } = new PoolManager();
+    private readonly Queue<GameObject> _pool = new();
 
+    /// <summary>
+    /// Spawns an object from pool or creates new if none available
+    /// </summary>
     public GameObject Spawn(GameObject prefab, Vector3 position, Quaternion rotation)
     {
-        if (!pools.ContainsKey(prefab)) pools[prefab] = new Queue<GameObject>();
-        GameObject obj;
-        if (pools[prefab].Count > 0)
-        { obj = pools[prefab].Dequeue(); }
-        else
-        { obj = Object.Instantiate(prefab); }
+        if (prefab == null) return null;
 
-        var pooled = obj.GetComponent<PooledObject>();
-        if (pooled == null) pooled = obj.AddComponent<PooledObject>();
-        pooled.OriginalPrefab = prefab;
-        obj.SetActive(true);
-        obj.transform.position = position;
-        obj.transform.rotation = rotation;
+        GameObject obj = _pool.Count > 0 
+            ? _pool.Dequeue() 
+            : InstantiateNewObject(prefab);
+
+        SetupObject(obj, position, rotation);
         return obj;
     }
 
+    /// <summary>
+    /// Returns an object to the pool
+    /// </summary>
     public void Despawn(GameObject obj)
     {
         if (obj == null) return;
+
         obj.SetActive(false);
-        var pooled = obj.GetComponent<PooledObject>();
-        var key = pooled != null ? pooled.OriginalPrefab : obj;
-        if (key == null) { return; }
-
-        if (!pools.ContainsKey(key)) pools[key] = new Queue<GameObject>();
-        pools[key].Enqueue(obj);
+        _pool.Enqueue(obj);
     }
-}
 
-public class PooledObject : MonoBehaviour
-{
-    public GameObject OriginalPrefab { get; set; }
+    /// <summary>
+    /// Clears the pool and destroys all pooled objects
+    /// </summary>
+    public void ClearPool()
+    {
+        while (_pool.Count > 0)
+        {
+            GameObject obj = _pool.Dequeue();
+            Object.Destroy(obj);
+        }
+    }
+
+    private GameObject InstantiateNewObject(GameObject prefab)
+    {
+        return Object.Instantiate(prefab);
+    }
+
+    private void SetupObject(GameObject obj, Vector3 position, Quaternion rotation)
+    {
+        obj.SetActive(true);
+        obj.transform.position = position;
+        obj.transform.rotation = rotation;
+    }
 }

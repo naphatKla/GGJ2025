@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public interface IEnemySpawnerView
@@ -26,6 +27,8 @@ public class EnemySpawner
     public int CurrentMaxEnemySpawn { get; private set; }
     private float nextUnitScoreQuota;
     private float nextIntervalScoreQuota;
+    
+    public readonly List<GameObject> enemies = new();
 
     #endregion
 

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Characters;
 using Sirenix.OdinInspector;
@@ -14,14 +15,13 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     [SerializeField] private Transform currentBackground;
     [SerializeField] private Vector2 regionSize = Vector2.zero;
     [SerializeField] private float minDistanceFromPlayer = 20f;
-
-    private readonly List<GameObject> enemies = new();
+    
     private EnemySpawner spawner;
 
     private StageDataSO CurrentStage => stageData.Count > 0 && currentStageIndex < stageData.Count
         ? stageData[currentStageIndex]
         : null;
-
+    
     #endregion
 
     #region Initialization
@@ -84,15 +84,15 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     public void SpawnEnemy(GameObject prefab, Vector2 position, Quaternion rotation, Transform parent)
     {
         var enemy = PoolManager.Instance.Spawn(prefab, position, rotation);
-        enemies.Add(enemy);
+        spawner.enemies.Add(enemy);
     }
     
     /// <summary>
     ///     Remove from enemy list
     /// </summary>
-    public void RemoveEnemy(GameObject enemy)
+    public void RemoveListEnemy(GameObject enemy)
     {
-        if (enemies.Contains(enemy)) { enemies.Remove(enemy); }
+        if (spawner.enemies.Contains(enemy)) { spawner.enemies.Remove(enemy); }
     }
 
     /// <summary>
@@ -108,7 +108,7 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     /// </summary>
     public int GetCurrentEnemyCount()
     {
-        return enemies.Count(e => e != null && e.activeInHierarchy);
+        return spawner.enemies.Count(e => e != null && e.activeInHierarchy);
     }
 
     /// <summary>
@@ -221,10 +221,15 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     [Button]
     public void ClearEnemies()
     {
-        foreach (var enemy in enemies)
+        foreach (var enemy in spawner.enemies)
             if (enemy != null)
+            {
                 PoolManager.Instance.Despawn(enemy);
-        enemies.Clear();
+                PoolManager.Instance.ClearPool();
+                EnemyPoolCreated();
+            }
+        
+        spawner.enemies.Clear();
     }
 
     #endregion
