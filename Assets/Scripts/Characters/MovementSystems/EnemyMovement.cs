@@ -26,7 +26,7 @@ namespace Characters.MovementSystems
 
         #endregion
 
-        #region Protected Methods
+        #region Methods
 
         /// <summary>
         /// Moves the enemy directly toward the specified position.

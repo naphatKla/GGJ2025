@@ -12,7 +12,7 @@ namespace Characters.SkillSystems.SkillS
     /// </summary>
     public abstract class BaseSkill : MonoBehaviour
     {
-        #region Inspectors & Variables
+        #region Inspector & Variables
 
         /// <summary>
         /// The cooldown duration of the skill after use.

@@ -7,51 +7,41 @@ using UnityEngine;
 namespace Characters.InputSystems
 {
     /// <summary>
-    /// Handles AI-controlled input for enemies, simulating player-like movement and skill usage.
-    /// Implements `ICharacterInput` to integrate with the movement and skill systems.
+    /// Simulates input for AI-controlled enemies.
+    /// Implements <see cref="ICharacterInput"/> to integrate with the movement and skill systems,
+    /// mimicking player input behavior on a timed loop.
     /// </summary>
     public class EnemyInputReader : MonoBehaviour, ICharacterInput
     {
-        #region Events
+        #region Inspector & Variables
 
         /// <summary>
-        /// Event triggered to move the enemy.
-        /// The Vector2 parameter represents the movement direction or target position.
-        /// </summary>
-        public Action<Vector2> OnMove { get; set; }
-
-        /// <summary>
-        /// Event triggered when the enemy performs the primary skill.
-        /// The Vector2 parameter represents the target direction.
-        /// </summary>
-        public Action<Vector2> OnPrimarySkillPerform { get; set; }
-
-        /// <summary>
-        /// Event triggered when the enemy performs the secondary skill.
-        /// The Vector2 parameter represents the target direction.
-        /// </summary>
-        public Action<Vector2> OnSecondarySkillPerform { get; set; }
-
-        #endregion
-
-        #region Variables
-
-        /// <summary>
-        /// Coroutine responsible for updating AI movement at a fixed interval.
+        /// Coroutine that periodically updates AI behavior.
         /// </summary>
         private Coroutine updateTickCoroutine;
 
         /// <summary>
-        /// Time interval (in seconds) between AI movement updates.
+        /// Interval (in seconds) between AI update ticks.
+        /// Controls how often movement and skill inputs are simulated.
         /// </summary>
         private float timeTick = 0.2f;
+
+        /// <inheritdoc/>
+        public Action<Vector2> OnMove { get; set; }
+
+        /// <inheritdoc/>
+        public Action<Vector2> OnPrimarySkillPerform { get; set; }
+
+        /// <inheritdoc/>
+        public Action<Vector2> OnSecondarySkillPerform { get; set; }
 
         #endregion
 
         #region Unity Methods
 
         /// <summary>
-        /// Called when the script is enabled. Starts the AI update tick coroutine.
+        /// Unity event called when the object becomes enabled and active.
+        /// Starts the AI update coroutine.
         /// </summary>
         private void OnEnable()
         {
@@ -59,7 +49,8 @@ namespace Characters.InputSystems
         }
 
         /// <summary>
-        /// Called when the script is disabled. Stops the AI update tick coroutine.
+        /// Unity event called when the object becomes disabled or inactive.
+        /// Stops the AI update coroutine.
         /// </summary>
         private void OnDisable()
         {
@@ -69,21 +60,23 @@ namespace Characters.InputSystems
 
         #endregion
 
-        #region AI Logic
+        #region Methods
 
         /// <summary>
-        /// Continuously updates the AI movement at fixed time intervals.
-        /// The enemy moves towards the player's position every `timeTick` seconds.
+        /// Periodically updates AI behavior every <c>timeTick</c> seconds.
+        /// Simulates movement toward the player and triggers skill input.
         /// </summary>
         private IEnumerator UpdateTick()
         {
             while (true)
             {
                 yield return new WaitForSeconds(timeTick);
-                
-                // Move enemy toward the player's position
+
                 if (!PlayerController.Instant) continue;
+
                 Vector2 sightDirection = (PlayerController.Instant.transform.position - transform.position).normalized;
+
+                // Simulate inputs
                 OnMove?.Invoke(PlayerController.Instant.transform.position);
                 OnPrimarySkillPerform?.Invoke(sightDirection);
                 OnSecondarySkillPerform?.Invoke(sightDirection);

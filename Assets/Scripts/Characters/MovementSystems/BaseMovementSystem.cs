@@ -8,7 +8,7 @@ namespace Characters.MovementSystems
     /// </summary>
     public abstract class BaseMovementSystem : MonoBehaviour
     {
-        #region Variables
+        #region Inspector & Variables
 
         /// <summary>
         /// Default movement speed of the entity.
@@ -27,7 +27,7 @@ namespace Characters.MovementSystems
 
         #endregion
 
-        #region Public Methods
+        #region Methods
 
         /// <summary>
         /// Attempts to move the entity if movement is allowed.

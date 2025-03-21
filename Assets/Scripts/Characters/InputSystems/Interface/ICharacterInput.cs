@@ -3,24 +3,28 @@ using UnityEngine;
 
 namespace Characters.InputSystems.Interface
 {
+    /// <summary>
+    /// Interface for handling character input events such as movement and skill usage.
+    /// Implemented by input readers for both player and AI-controlled characters.
+    /// </summary>
     public interface ICharacterInput
     {
         /// <summary>
-        /// Event triggered when the player or entity moves.
-        /// The Vector2 parameter represents the movement position.
+        /// Invoked when a movement input is received.
+        /// The Vector2 parameter represents the movement direction or position.
         /// </summary>
-        public Action<Vector2> OnMove { get; set; }
+        Action<Vector2> OnMove { get; set; }
 
         /// <summary>
-        /// Event triggered when the primary skill is performed.
-        /// The Vector2 parameter represents the target direction of the skill.
+        /// Invoked when the primary skill input is triggered.
+        /// The Vector2 parameter represents the direction or aim of the skill.
         /// </summary>
-        public Action<Vector2> OnPrimarySkillPerform { get; set; }
+        Action<Vector2> OnPrimarySkillPerform { get; set; }
 
         /// <summary>
-        /// Event triggered when the secondary skill is performed.
-        /// The Vector2 parameter represents the target direction of the skill.
+        /// Invoked when the secondary skill input is triggered.
+        /// The Vector2 parameter represents the direction or aim of the skill.
         /// </summary>
-        public Action<Vector2> OnSecondarySkillPerform { get; set; }
+        Action<Vector2> OnSecondarySkillPerform { get; set; }
     }
 }
