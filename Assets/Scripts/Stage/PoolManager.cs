@@ -3,8 +3,14 @@ using UnityEngine;
 
 public class PoolManager
 {
+    #region Properties
+
     public static PoolManager Instance { get; } = new PoolManager();
     private readonly Queue<GameObject> _pool = new();
+
+    #endregion
+
+    #region Methods
 
     /// <summary>
     /// Spawns an object from pool or creates new if none available
@@ -55,4 +61,5 @@ public class PoolManager
         obj.transform.position = position;
         obj.transform.rotation = rotation;
     }
+    #endregion
 }

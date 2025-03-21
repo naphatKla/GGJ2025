@@ -32,10 +32,19 @@ public class EnemySpawner
 
     #endregion
 
-    #region Initialization
+    #region Unity Methods
+
+    public void Update()
+    {
+        currentState?.Update(this);
+    }
+    
+    #endregion
+
+    #region Methods
 
     /// <summary>
-    ///     Sets up the spawner with view, stage data, area size, and player distance. Starts stopped.
+    ///  Initialization Sets up the spawner with view, stage data, area size, and player distance. Starts stopped.
     /// </summary>
     public EnemySpawner(IEnemySpawnerView view, StageDataSO stageData, Vector2 regionSize, float minDistanceFromPlayer)
     {
@@ -51,11 +60,7 @@ public class EnemySpawner
         CalculateTotalSpawnTypeChance();
         SetState(new StopState());
     }
-
-    #endregion
-
-    #region State Management
-
+    
     /// <summary>
     ///     Starts spawning enemies and logs it.
     /// </summary>
@@ -82,29 +87,7 @@ public class EnemySpawner
         Debug.Log("Pause Spawning");
         SetState(new PausedState());
     }
-
-    /// <summary>
-    ///     Switches to a new state, running exit and enter steps.
-    /// </summary>
-    private void SetState(ISpawnState newState)
-    {
-        currentState?.Exit(this);
-        currentState = newState;
-        currentState.Enter(this);
-    }
-
-    #endregion
-
-    #region Spawning Logic
-
-    /// <summary>
-    ///     Updates the current state (e.g., spawns enemies if active).
-    /// </summary>
-    public void Update()
-    {
-        currentState?.Update(this);
-    }
-
+    
     /// <summary>
     ///     Checks if more enemies can spawn based on the limit.
     /// </summary>
@@ -124,11 +107,7 @@ public class EnemySpawner
         view.SpawnEnemy(enemyData.EnemyPrefab, spawnPosition, Quaternion.identity, view.GetEnemyParent());
         spawnType.OnSpawned();
     }
-
-    #endregion
-
-    #region Quota Management
-
+    
     /// <summary>
     ///     Updates spawn limits and speed based on player score.
     /// </summary>
@@ -150,10 +129,16 @@ public class EnemySpawner
         }
     }
 
-    #endregion
-
-    #region Random Selection
-
+    /// <summary>
+    ///     Switches to a new state, running exit and enter steps.
+    /// </summary>
+    private void SetState(ISpawnState newState)
+    {
+        currentState?.Exit(this);
+        currentState = newState;
+        currentState.Enter(this);
+    }
+    
     /// <summary>
     ///     Calculates total chance for picking enemies randomly.
     /// </summary>
@@ -187,10 +172,10 @@ public class EnemySpawner
         {
             cumulativeChance += enemy.SpawnChance;
             if (randomValue <= cumulativeChance)
-                return enemy;
+                return enemy.EnemyData;
         }
 
-        return stageData.Enemies[0];
+        return stageData.Enemies[0].EnemyData;
     }
 
     /// <summary>

@@ -13,14 +13,15 @@ MonoBehaviour:
   m_Name: Level 1
   m_EditorClassIdentifier: 
   enemies:
-  - {fileID: 11400000, guid: b265bf836edd1ac4da7615dd3c48c4ac, type: 2}
+  - EnemyData: {fileID: 11400000, guid: b265bf836edd1ac4da7615dd3c48c4ac, type: 2}
+    SpawnChance: 1
   spawnTypes:
   - {fileID: 11400000, guid: 956f31f33dad1cb4a91cba339c2d8f9f, type: 2}
   scoreQuota: 1000
+  startMaxEnemySpawn: 1
   maxEnemySpawnCap: 20
-  currentMaxEnemySpawn: 10
-  enemySpawnInterval: 1
-  spawnIntervalCap: 0.5
-  background: {fileID: 0}
   unitScoreQuota: 1000
+  startSpawnInterval: 1
+  spawnIntervalCap: 0.5
   decreaseSpawnInterval: 1000
+  background: {fileID: 0}

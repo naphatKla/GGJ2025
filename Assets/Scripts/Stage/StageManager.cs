@@ -7,68 +7,44 @@ using System.Linq;
 
 public class StageManager : MonoBehaviour, IEnemySpawnerView
 {
-    #region Variable
-
+    #region Inspector & Variable
+    [Title("Stage Data")] [Tooltip("You can add more than 1 stage and change by Function Set Stage or Next Stage.")]
     [SerializeField] private List<StageDataSO> stageData = new();
+    [Title("Stage Current Setting")] [Tooltip("The index of the current stage in the stageData list.")]
     [SerializeField] private int currentStageIndex;
+    [Tooltip("The current background image.")]
+    [SerializeField] private Sprite currentBackground;
+    [Tooltip("Parent of the enemy to spawn prefab.")]
     [SerializeField] private Transform enemyParent;
-    [SerializeField] private Transform currentBackground;
+    [Title("Stage Area Setting")] 
+    [Tooltip("Region of the spawn area.")]
     [SerializeField] private Vector2 regionSize = Vector2.zero;
+    [Tooltip("Minimum spawn area from the player.")]
     [SerializeField] private float minDistanceFromPlayer = 20f;
     
     private EnemySpawner spawner;
-
     private StageDataSO CurrentStage => stageData.Count > 0 && currentStageIndex < stageData.Count
         ? stageData[currentStageIndex]
         : null;
     
     #endregion
 
-    #region Initialization
-
-    /// <summary>
-    ///     Sets up enemy parent and spawner with the current stage.
-    /// </summary>
+    #region Unity Methods
+    
     private void Awake()
     {
+        //Sets up enemy parent and spawner with the current stage.
         if (enemyParent == null) enemyParent = new GameObject("EnemyParent").transform;
         if (stageData.Count == 0 || CurrentStage == null || CurrentStage.SpawnTypes.Length == 0) return;
         EnemyPoolCreated();
         spawner = new EnemySpawner(this, CurrentStage, regionSize, minDistanceFromPlayer);
     }
-
-    /// <summary>
-    ///     Starts spawning and sets the current stage’s background.
-    /// </summary>
+    
     private void Start()
     {
         spawner.StartSpawning();
-        if (currentBackground != null && CurrentStage != null)
-            currentBackground.GetComponent<SpriteRenderer>().sprite = CurrentStage.Background;
+        SetBackground(currentBackground);
     }
-
-    #endregion
-    
-    #region Created Enemy Pool
-    private void EnemyPoolCreated()
-    {
-        var prewarmedEnemies = new List<GameObject>();
-        foreach (var enemyData in stageData[currentStageIndex].Enemies)
-            for (var i = 0; i < stageData[currentStageIndex].MaxEnemySpawnCap; i++)
-            {
-                var enemy = PoolManager.Instance.Spawn(enemyData.EnemyPrefab, Vector3.zero, Quaternion.identity);
-                enemy.transform.SetParent(enemyParent);
-                prewarmedEnemies.Add(enemy);
-            }
-        foreach (var enemy in prewarmedEnemies) PoolManager.Instance.Despawn(enemy);
-    }
-    #endregion
-
-    #region Update
-
-    /// <summary>
-    ///     Updates the spawner every frame.
-    /// </summary>
     private void Update()
     {
         spawner?.Update();
@@ -76,8 +52,7 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
 
     #endregion
 
-    #region IEnemySpawner Implementation
-
+    #region Methods
     /// <summary>
     ///     Creates an enemy and adds it to the list.
     /// </summary>
@@ -133,7 +108,25 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     public void SetBackground(Sprite sprite)
     {
         if (currentBackground != null)
-            currentBackground.GetComponent<SpriteRenderer>().sprite = sprite;
+            currentBackground = stageData[currentStageIndex].Background;
+    }
+    
+    /// <summary>
+    ///     Setting up the enemy pool
+    /// </summary>
+    private void EnemyPoolCreated()
+    {
+        var prewarmedEnemies = new List<GameObject>();
+        foreach (var enemyData in stageData[currentStageIndex].Enemies)
+        {
+            for (var i = 0; i < stageData[currentStageIndex].MaxEnemySpawnCap; i++)
+            {
+                var enemy = PoolManager.Instance.Spawn(enemyData.EnemyData.EnemyPrefab, Vector3.zero, Quaternion.identity);
+                enemy.transform.SetParent(enemyParent);
+                prewarmedEnemies.Add(enemy);
+            }
+        }
+        foreach (var enemy in prewarmedEnemies) PoolManager.Instance.Despawn(enemy);
     }
 
     #endregion
@@ -159,8 +152,6 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     [Button]
     public void StartSpawning()
     {
-        ClearEnemies();
-        EnemyPoolCreated();
         spawner?.StartSpawning();
     }
 
@@ -210,6 +201,20 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
 
         currentStageIndex++;
         ClearEnemies();
+        EnemyPoolCreated();
+        spawner = new EnemySpawner(this, CurrentStage, regionSize, minDistanceFromPlayer);
+        spawner.StartSpawning();
+        SetBackground(CurrentStage.Background);
+    }
+    
+    /// <summary>
+    ///     Reset the stage and starts spawning.
+    /// </summary>
+    [Button]
+    public void ResetStage()
+    {
+        ClearEnemies();
+        EnemyPoolCreated();
         spawner = new EnemySpawner(this, CurrentStage, regionSize, minDistanceFromPlayer);
         spawner.StartSpawning();
         SetBackground(CurrentStage.Background);
