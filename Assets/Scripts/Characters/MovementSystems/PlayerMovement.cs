@@ -15,7 +15,7 @@ namespace Characters.MovementSystems
         /// </summary>
         [Required] [SerializeField] private Rigidbody2D rb2D;
 
-        #region Movement Implementation
+        #region Protected Methods
 
         /// <summary>
         /// Moves the player continuously toward the specified position using Rigidbody2D.

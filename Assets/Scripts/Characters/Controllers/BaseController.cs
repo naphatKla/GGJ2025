@@ -39,6 +39,8 @@ namespace Characters.Controllers
 
         #endregion
 
+        #region Methods
+        
         public void ToggleMovementInputController(bool isToggle)
         {
             if (isToggle) _inputSystem.OnMove += movementSystem.TryMove;
@@ -58,5 +60,7 @@ namespace Characters.Controllers
                 _inputSystem.OnSecondarySkillPerform -= skillSystem.PerformSecondarySkill;
             }
         }
+        
+        #endregion
     }
 }
