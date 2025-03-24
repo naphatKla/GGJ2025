@@ -58,6 +58,7 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     /// </summary>
     public void SpawnEnemy(GameObject prefab, Vector2 position, Quaternion rotation, Transform parent)
     {
+        
         var enemy = PoolManager.Instance.Spawn(prefab, position, rotation);
         spawner.enemies.Add(enemy);
     }
@@ -116,17 +117,15 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     /// </summary>
     private void EnemyPoolCreated()
     {
-        var prewarmedEnemies = new List<GameObject>();
         foreach (var enemyData in stageData[currentStageIndex].Enemies)
         {
             for (var i = 0; i < stageData[currentStageIndex].MaxEnemySpawnCap; i++)
             {
-                var enemy = PoolManager.Instance.Spawn(enemyData.EnemyData.EnemyPrefab, Vector3.zero, Quaternion.identity);
+                var enemy = PoolManager.Instance.Spawn(enemyData.EnemyData.EnemyPrefab, Vector3.zero, Quaternion.identity, true); // forceNew = true
                 enemy.transform.SetParent(enemyParent);
-                prewarmedEnemies.Add(enemy);
+                PoolManager.Instance.Despawn(enemy);
             }
         }
-        foreach (var enemy in prewarmedEnemies) PoolManager.Instance.Despawn(enemy);
     }
 
     #endregion

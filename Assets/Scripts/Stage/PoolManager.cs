@@ -15,13 +15,13 @@ public class PoolManager
     /// <summary>
     /// Spawns an object from pool or creates new if none available
     /// </summary>
-    public GameObject Spawn(GameObject prefab, Vector3 position, Quaternion rotation)
+    public GameObject Spawn(GameObject prefab, Vector3 position, Quaternion rotation, bool forceNew = false)
     {
         if (prefab == null) return null;
 
-        GameObject obj = _pool.Count > 0 
-            ? _pool.Dequeue() 
-            : InstantiateNewObject(prefab);
+        GameObject obj = (forceNew || _pool.Count == 0) 
+            ? InstantiateNewObject(prefab) 
+            : _pool.Dequeue();
 
         SetupObject(obj, position, rotation);
         return obj;
