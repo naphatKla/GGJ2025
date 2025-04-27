@@ -9,7 +9,7 @@ namespace Characters.MovementSystems
     /// Handles enemy movement using Unity's NavMeshAgent.
     /// Inherits from `BaseMovementSystem` and implements movement logic for AI-controlled entities.
     /// </summary>
-    public class EnemyMovement : BaseMovementSystem
+    public class EnemyMovementSystem : BaseMovementSystem
     {
         /// <summary>
         /// The NavMeshAgent component responsible for pathfinding and movement.

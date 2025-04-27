@@ -8,7 +8,7 @@ namespace Characters.MovementSystems
     /// Handles player movement using Rigidbody2D.
     /// Inherits from `BaseMovementSystem` and provides movement logic for player-controlled entities.
     /// </summary>
-    public class PlayerMovement : BaseMovementSystem
+    public class PlayerMovementSystem : BaseMovementSystem
     {
         /// <summary>
         /// The Rigidbody2D component used for physics-based movement.
