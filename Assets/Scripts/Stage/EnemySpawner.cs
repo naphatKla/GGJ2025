@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public interface IEnemySpawnerView
 {
@@ -16,10 +18,15 @@ public class EnemySpawner
 {
     #region Properties
 
-    private readonly IEnemySpawnerView view;
-    private readonly StageDataSO stageData;
-    private readonly Vector2 regionSize;
-    private readonly float minDistanceFromPlayer;
+    private const int MaxSpawnPositionAttempts = 10;
+    
+    private readonly IEnemySpawnerView _spawnerView;
+    private readonly StageDataSO _stageData;
+    private readonly Vector2 _regionSize;
+    private readonly float _minDistanceFromPlayer;
+    private readonly Vector2 _screenSize;
+    private readonly List<Vector2> _spawnPositionsPool = new List<Vector2>();
+    private readonly List<IWorldEvent> _availableEventsPool = new List<IWorldEvent>();
 
     private ISpawnState currentState;
     private float totalEnemySpawnChance;
@@ -27,7 +34,7 @@ public class EnemySpawner
 
     public float CurrentSpawnInterval { get; private set; }
     public int CurrentMaxEnemySpawn { get; private set; }
-    public float EventIntervalCheck => stageData.EventIntervalCheck;
+    public float EventIntervalCheck => _stageData.EventIntervalCheck;
     private float nextUnitScoreQuota;
     private float nextIntervalScoreQuota;
     
@@ -52,14 +59,18 @@ public class EnemySpawner
     /// </summary>
     public EnemySpawner(IEnemySpawnerView view, StageDataSO stageData, Vector2 regionSize, float minDistanceFromPlayer)
     {
-        this.view = view;
-        this.stageData = stageData;
-        this.regionSize = regionSize;
-        this.minDistanceFromPlayer = minDistanceFromPlayer;
+        _spawnerView = view ?? throw new ArgumentNullException(nameof(view));
+        _stageData = stageData ?? throw new ArgumentNullException(nameof(stageData));
+        _regionSize = regionSize;
+        _minDistanceFromPlayer = minDistanceFromPlayer;
+        _screenSize = CalculateScreenSize(Camera.main);
+        
         CurrentSpawnInterval = stageData.EnemySpawnInterval;
         CurrentMaxEnemySpawn = stageData.CurrentMaxEnemySpawn;
+        
         nextUnitScoreQuota = stageData.UnitScoreQuota;
         nextIntervalScoreQuota = stageData.DecreaseSpawnInterval;
+        
         CalculateTotalEnemySpawnChance();
         CalculateTotalEventChance();
         SetState(new StopState());
@@ -72,6 +83,7 @@ public class EnemySpawner
     {
         Debug.Log("Start Spawning");
         SetState(new SpawningState());
+        TriggerWorldEvent(true);
     }
 
     /// <summary>
@@ -97,19 +109,18 @@ public class EnemySpawner
     /// </summary>
     public bool CanSpawn()
     {
-        return view.GetCurrentEnemyCount() < CurrentMaxEnemySpawn;
+        return _spawnerView.GetCurrentEnemyCount() < CurrentMaxEnemySpawn;
     }
 
     /// <summary>
-    /// Spawns a single normal enemy at a random position.
+    /// Spawns a single normal enemy at a random position if spawning is allowed.
     /// </summary>
     public void SpawnNormalEnemy()
     {
         if (!CanSpawn()) return;
-
         var enemyData = GetRandomEnemy();
-        var spawnPosition = GetRandomSpawnPosition(view.GetPlayerPosition());
-        view.SpawnEnemy(enemyData.EnemyPrefab, spawnPosition, Quaternion.identity, view.GetEnemyParent());
+        var spawnPosition = GetRandomSpawnPosition(_spawnerView.GetPlayerPosition());
+        _spawnerView.SpawnEnemy(enemyData.EnemyPrefab, spawnPosition, Quaternion.identity, _spawnerView.GetEnemyParent());
     }
 
     /// <summary>
@@ -118,23 +129,18 @@ public class EnemySpawner
     public void TriggerWorldEvent(bool bypassCooldown = false)
     {
         var worldEvent = GetRandomWorldEvent(bypassCooldown);
-        if (worldEvent == null)
-        {
-            Debug.Log("No WorldEvent triggered (no available events)");
-            return;
-        }
+        if (worldEvent == null) { return; }
 
-        var spawnPositions = new List<Vector2>();
-        worldEvent.GetSpawnPositions(view.GetPlayerPosition(), regionSize, minDistanceFromPlayer, 0, spawnPositions);
+        _spawnPositionsPool.Clear();
+        worldEvent.GetSpawnPositions(_spawnerView.GetPlayerPosition(), _regionSize, _minDistanceFromPlayer, 0, _spawnPositionsPool);
 
-        foreach (var position in spawnPositions)
+        foreach (var position in _spawnPositionsPool)
         {
             var enemyData = GetRandomRaidEnemy(worldEvent.RaidEnemies);
-            view.SpawnEnemy(enemyData.EnemyPrefab, position, Quaternion.identity, view.GetEnemyParent(), isWorldEventEnemy: true);
+            _spawnerView.SpawnEnemy(enemyData.EnemyPrefab, position, Quaternion.identity, _spawnerView.GetEnemyParent(), isWorldEventEnemy: true);
         }
-
+        Debug.Log($"WorldEvent: {((WorldEventSO)worldEvent).Type}, Cooldown Active: {worldEvent.IsCooldownActive(Time.time)}, Chance: {worldEvent.Chance}");
         worldEvent.OnSpawned();
-        Debug.Log($"WorldEvent triggered with {spawnPositions.Count} enemies");
     }
     
     /// <summary>
@@ -142,19 +148,18 @@ public class EnemySpawner
     /// </summary>
     public void UpdateQuota()
     {
-        var score = view.GetPlayerScore();
+        var score = _spawnerView.GetPlayerScore();
 
         if (score >= nextUnitScoreQuota)
         {
-            CurrentMaxEnemySpawn = Mathf.Clamp(CurrentMaxEnemySpawn + 1, 1, stageData.MaxEnemySpawnCap);
-            nextUnitScoreQuota += stageData.UnitScoreQuota;
+            CurrentMaxEnemySpawn = Mathf.Clamp(CurrentMaxEnemySpawn + 1, 1, _stageData.MaxEnemySpawnCap);
+            nextUnitScoreQuota += _stageData.UnitScoreQuota;
         }
 
         if (score >= nextIntervalScoreQuota)
         {
-            CurrentSpawnInterval =
-                Mathf.Clamp(CurrentSpawnInterval - 0.1f, stageData.SpawnIntervalCap, CurrentSpawnInterval);
-            nextIntervalScoreQuota += stageData.DecreaseSpawnInterval;
+            CurrentSpawnInterval = Mathf.Clamp(CurrentSpawnInterval - 0.1f, _stageData.SpawnIntervalCap, CurrentSpawnInterval);
+            nextIntervalScoreQuota += _stageData.DecreaseSpawnInterval;
         }
     }
 
@@ -174,7 +179,7 @@ public class EnemySpawner
     private void CalculateTotalEnemySpawnChance()
     {
         totalEnemySpawnChance = 0f;
-        foreach (var enemy in stageData.Enemies)
+        foreach (var enemy in _stageData.Enemies)
             totalEnemySpawnChance += enemy.SpawnChance;
     }
 
@@ -184,7 +189,7 @@ public class EnemySpawner
     private void CalculateTotalEventChance()
     {
         totalEventChance = 0f;
-        foreach (var worldEvent in stageData.WorldEvents)
+        foreach (var worldEvent in _stageData.WorldEvents)
             if (!worldEvent.IsCooldownActive(Time.time))
                 totalEventChance += worldEvent.Chance;
     }
@@ -197,14 +202,14 @@ public class EnemySpawner
         var randomValue = Random.Range(0, totalEnemySpawnChance);
         var cumulativeChance = 0f;
 
-        foreach (var enemy in stageData.Enemies)
+        foreach (var enemy in _stageData.Enemies)
         {
             cumulativeChance += enemy.SpawnChance;
             if (randomValue <= cumulativeChance)
                 return enemy.EnemyData;
         }
 
-        return stageData.Enemies[0].EnemyData;
+        return _stageData.Enemies[0].EnemyData;
     }
 
     /// <summary>
@@ -224,57 +229,47 @@ public class EnemySpawner
     private IWorldEvent GetRandomWorldEvent(bool bypassCooldown)
     {
         var availableEvents = new List<IWorldEvent>();
-        foreach (var worldEvent in stageData.WorldEvents)
+        foreach (var worldEvent in _stageData.WorldEvents)
         {
             bool isCooldownActive = worldEvent.IsCooldownActive(Time.time);
             if (bypassCooldown || !isCooldownActive)
                 availableEvents.Add(worldEvent);
-            Debug.Log($"WorldEvent: {((WorldEventSO)worldEvent).Type}, Cooldown Active: {isCooldownActive}, Chance: {worldEvent.Chance}");
         }
-
-        Debug.Log($"Available WorldEvents: {availableEvents.Count}");
-        if (availableEvents.Count == 0)
-        {
-            Debug.LogWarning("No WorldEvents available. Check StageDataSO.worldEvent array or cooldown settings.");
-            return null;
-        }
-
+        
+        if (availableEvents.Count == 0) { return null; }
         return availableEvents[Random.Range(0, availableEvents.Count)];
     }
 
-    /// <summary>
-    /// Generates a random spawn position around the player, ensuring it's off-screen and not too close.
-    /// </summary>
     private Vector2 GetRandomSpawnPosition(Vector2 playerPosition)
     {
-        var mainCamera = Camera.main;
-        var screenHeight = mainCamera.orthographicSize * 2f;
-        var screenWidth = screenHeight * mainCamera.aspect;
-        var screenSize = new Vector2(screenWidth, screenHeight);
-
+        var spawnPosition = CalculateOffScreenPosition(playerPosition);
+        return ClampToRegionBounds(spawnPosition);
+    }
+    
+    private Vector2 CalculateOffScreenPosition(Vector2 playerPosition)
+    {
         Vector2 spawnPosition;
         var attempts = 0;
-        const int maxAttempts = 10;
 
         do
         {
-            // Random angle and radius for spawning around the player
             var angle = Random.Range(0f, 2f * Mathf.PI);
-            var radius = Random.Range(minDistanceFromPlayer, minDistanceFromPlayer + screenWidth);
+            var radius = Random.Range(_minDistanceFromPlayer, _minDistanceFromPlayer + _screenSize.x);
             spawnPosition = playerPosition + new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * radius;
             attempts++;
-        } while (IsPositionOnScreen(spawnPosition, playerPosition, screenSize) && attempts < maxAttempts);
-
-        // Clamp to region bounds
-        spawnPosition.x = Mathf.Clamp(spawnPosition.x, -regionSize.x / 2, regionSize.x / 2);
-        spawnPosition.y = Mathf.Clamp(spawnPosition.y, -regionSize.y / 2, regionSize.y / 2);
+        } while (IsPositionOnScreen(spawnPosition, playerPosition, _screenSize) && attempts < MaxSpawnPositionAttempts);
 
         return spawnPosition;
     }
 
-    /// <summary>
-    /// Checks if a position is within the camera's view.
-    /// </summary>
+    private Vector2 ClampToRegionBounds(Vector2 position)
+    {
+        return new Vector2(
+            Mathf.Clamp(position.x, -_regionSize.x / 2, _regionSize.x / 2),
+            Mathf.Clamp(position.y, -_regionSize.y / 2, _regionSize.y / 2)
+        );
+    }
+
     private bool IsPositionOnScreen(Vector2 position, Vector2 playerPosition, Vector2 screenSize)
     {
         var screenMin = playerPosition - screenSize / 2;
@@ -283,5 +278,13 @@ public class EnemySpawner
                position.y >= screenMin.y && position.y <= screenMax.y;
     }
 
+    private Vector2 CalculateScreenSize(Camera camera)
+    {
+        if (camera == null) return Vector2.zero;
+        var screenHeight = camera.orthographicSize * 2f;
+        var screenWidth = screenHeight * camera.aspect;
+        return new Vector2(screenWidth, screenHeight);
+    }
+    
     #endregion
 }
