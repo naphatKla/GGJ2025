@@ -18,7 +18,7 @@ public class StageDataSO : ScriptableObject
     [Title("Enemy Data")] [Tooltip("Data of the enemies scriptable object (Random by chance)")]
     [SerializeField] private EnemyProperties[] enemies;
     [Space][Title("Spawn Type")] [Tooltip("Data of the spawn type scriptable object (Random)")]
-    [SerializeField] private SpawnTypeSO[] spawnTypes;
+    [SerializeField] private WorldEventSO[] worldEvent;
     [Space][Title("Stage Properties")]
     [Tooltip("Quota of the score to end the game")]
     [SerializeField] private float scoreQuota;
@@ -31,13 +31,17 @@ public class StageDataSO : ScriptableObject
     [Tooltip("Max enemy will increase by this quota")]
     [SerializeField] private float unitScoreQuota;
     
-    [Space][Title("Enemy spawn Timer")]
+    [Space][Title("Enemy Spawn Timer")]
     [Tooltip("Start enemy spawn interval")]
     [SerializeField] private float startSpawnInterval;
     [Tooltip("Enemy spawn interval Cap")]
     [SerializeField] private float spawnIntervalCap = 0.5f;
     [Tooltip("Enemy spawn interval will increase by this quota")]
     [SerializeField] private float decreaseSpawnInterval;
+    
+    [Space][Title("World Event Timer")]
+    [Tooltip("Interval to check for world event triggers")]
+    [SerializeField] private float eventIntervalCheck = 1f;
     
     [Space]
     [SerializeField] private Sprite background;
@@ -46,7 +50,7 @@ public class StageDataSO : ScriptableObject
     #region Properties
     
     public EnemyProperties[] Enemies => enemies;
-    public ISpawnType[] SpawnTypes => spawnTypes;
+    public IWorldEvent[] WorldEvents => worldEvent;
     public float ScoreQuota => scoreQuota;
     public int MaxEnemySpawnCap => maxEnemySpawnCap;
     public int CurrentMaxEnemySpawn => startMaxEnemySpawn;
@@ -55,6 +59,7 @@ public class StageDataSO : ScriptableObject
     public Sprite Background => background;
     public float UnitScoreQuota => unitScoreQuota;
     public float DecreaseSpawnInterval => decreaseSpawnInterval;
+    public float EventIntervalCheck => eventIntervalCheck;
     
     #endregion
 }

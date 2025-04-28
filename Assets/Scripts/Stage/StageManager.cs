@@ -33,9 +33,9 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     
     private void Awake()
     {
-        //Sets up enemy parent and spawner with the current stage.
+        // Sets up enemy parent and spawner with the current stage.
         if (enemyParent == null) enemyParent = new GameObject("EnemyParent").transform;
-        if (stageData.Count == 0 || CurrentStage == null || CurrentStage.SpawnTypes.Length == 0) return;
+        if (stageData.Count == 0 || CurrentStage == null) return;
         EnemyPoolCreated();
         spawner = new EnemySpawner(this, CurrentStage, regionSize, minDistanceFromPlayer);
     }
@@ -54,25 +54,39 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
 
     #region Methods
     /// <summary>
-    ///     Creates an enemy and adds it to the list.
+    /// Creates an enemy and adds it to the appropriate list.
     /// </summary>
-    public void SpawnEnemy(GameObject prefab, Vector2 position, Quaternion rotation, Transform parent)
+    public void SpawnEnemy(GameObject prefab, Vector2 position, Quaternion rotation, Transform parent, bool isWorldEventEnemy = false)
     {
-        
         var enemy = PoolManager.Instance.Spawn(prefab, position, rotation);
-        spawner.enemies.Add(enemy);
+        if (isWorldEventEnemy)
+            spawner.eventEnemies.Add(enemy);
+        else
+            spawner.enemies.Add(enemy);
     }
     
     /// <summary>
-    ///     Remove from enemy list
+    /// Adds a WorldEvent enemy to the eventEnemies list.
     /// </summary>
-    public void RemoveListEnemy(GameObject enemy)
+    public void AddWorldEventEnemy(GameObject enemy)
     {
-        if (spawner.enemies.Contains(enemy)) { spawner.enemies.Remove(enemy); }
+        if (!spawner.eventEnemies.Contains(enemy))
+            spawner.eventEnemies.Add(enemy);
     }
 
     /// <summary>
-    ///     Returns the parent object for enemies.
+    /// Remove from enemy or event enemy list.
+    /// </summary>
+    public void RemoveListEnemy(GameObject enemy)
+    {
+        if (spawner.enemies.Contains(enemy))
+            spawner.enemies.Remove(enemy);
+        else if (spawner.eventEnemies.Contains(enemy))
+            spawner.eventEnemies.Remove(enemy);
+    }
+
+    /// <summary>
+    /// Returns the parent object for enemies.
     /// </summary>
     public Transform GetEnemyParent()
     {
@@ -80,7 +94,7 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     }
 
     /// <summary>
-    ///     Counts active enemies in the scene.
+    /// Counts active normal enemies in the scene (excludes WorldEvent enemies).
     /// </summary>
     public int GetCurrentEnemyCount()
     {
@@ -88,7 +102,7 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     }
 
     /// <summary>
-    ///     Gets the player’s current position.
+    /// Gets the player’s current position.
     /// </summary>
     public Vector2 GetPlayerPosition()
     {
@@ -96,7 +110,7 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     }
 
     /// <summary>
-    ///     Gets the player’s current score.
+    /// Gets the player’s current score.
     /// </summary>
     public float GetPlayerScore()
     {
@@ -104,7 +118,7 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     }
 
     /// <summary>
-    ///     Sets the background image.
+    /// Sets the background image.
     /// </summary>
     public void SetBackground(Sprite sprite)
     {
@@ -113,7 +127,7 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     }
     
     /// <summary>
-    ///     Setting up the enemy pool
+    /// Setting up the enemy pool.
     /// </summary>
     private void EnemyPoolCreated()
     {
@@ -121,9 +135,22 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
         {
             for (var i = 0; i < stageData[currentStageIndex].MaxEnemySpawnCap; i++)
             {
-                var enemy = PoolManager.Instance.Spawn(enemyData.EnemyData.EnemyPrefab, Vector3.zero, Quaternion.identity, true); // forceNew = true
+                var enemy = PoolManager.Instance.Spawn(enemyData.EnemyData.EnemyPrefab, Vector3.zero, Quaternion.identity, true);
                 enemy.transform.SetParent(enemyParent);
                 PoolManager.Instance.Despawn(enemy);
+            }
+        }
+    
+        foreach (var worldEvent in stageData[currentStageIndex].WorldEvents)
+        {
+            foreach (var enemyData in worldEvent.RaidEnemies)
+            {
+                for (var i = 0; i < ((WorldEventSO)worldEvent).EnemyWorldEventCount; i++)
+                {
+                    var enemy = PoolManager.Instance.Spawn(enemyData.EnemyPrefab, Vector3.zero, Quaternion.identity, true);
+                    enemy.transform.SetParent(enemyParent);
+                    PoolManager.Instance.Despawn(enemy);
+                }
             }
         }
     }
@@ -133,7 +160,7 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     #region Gizmos
 
     /// <summary>
-    ///     Draws a red box in the editor for the spawn area.
+    /// Draws a red box in the editor for the spawn area.
     /// </summary>
     private void OnDrawGizmos()
     {
@@ -146,7 +173,7 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     #region Control Methods
 
     /// <summary>
-    ///     Starts enemy spawning.
+    /// Starts enemy spawning.
     /// </summary>
     [Button]
     public void StartSpawning()
@@ -155,7 +182,7 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     }
 
     /// <summary>
-    ///     Stops enemy spawning.
+    /// Stops enemy spawning.
     /// </summary>
     [Button]
     public void StopSpawning()
@@ -164,7 +191,7 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     }
 
     /// <summary>
-    ///     Pauses enemy spawning.
+    /// Pauses enemy spawning.
     /// </summary>
     [Button]
     public void PauseSpawning()
@@ -173,7 +200,7 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     }
 
     /// <summary>
-    ///     Switches to a specific stage and starts spawning.
+    /// Switches to a specific stage and starts spawning.
     /// </summary>
     [Button]
     public void SetStage(int stageIndex)
@@ -187,7 +214,7 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     }
 
     /// <summary>
-    ///     Moves to the next stage and starts spawning.
+    /// Moves to the next stage and starts spawning.
     /// </summary>
     [Button]
     public void NextStage()
@@ -207,7 +234,7 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     }
     
     /// <summary>
-    ///     Reset the stage and starts spawning.
+    /// Reset the stage and starts spawning.
     /// </summary>
     [Button]
     public void ResetStage()
@@ -218,22 +245,40 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
         spawner.StartSpawning();
         SetBackground(CurrentStage.Background);
     }
+    
+    /// <summary>
+    /// Triggers a world event immediately.
+    /// </summary>
+    [Button]
+    public void TriggerWorldEvent()
+    {
+        if (spawner == null)
+        {
+            Debug.LogWarning("Cannot trigger WorldEvent: Spawner is not initialized.");
+            return;
+        }
+        Debug.Log("Manually triggering WorldEvent via button.");
+        spawner.TriggerWorldEvent(true); 
+    }
 
     /// <summary>
-    ///     Deletes all enemies and clears the list.
+    /// Deletes all enemies and clears both lists.
     /// </summary>
     [Button]
     public void ClearEnemies()
     {
         foreach (var enemy in spawner.enemies)
             if (enemy != null)
-            {
                 PoolManager.Instance.Despawn(enemy);
-                PoolManager.Instance.ClearPool();
-                EnemyPoolCreated();
-            }
+        
+        foreach (var enemy in spawner.eventEnemies)
+            if (enemy != null)
+                PoolManager.Instance.Despawn(enemy);
         
         spawner.enemies.Clear();
+        spawner.eventEnemies.Clear();
+        PoolManager.Instance.ClearPool();
+        EnemyPoolCreated();
     }
 
     #endregion

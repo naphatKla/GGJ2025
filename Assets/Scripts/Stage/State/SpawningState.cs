@@ -24,22 +24,34 @@ public class StopState : ISpawnState
 
 public class SpawningState : ISpawnState
 {
-    private float spawnTimer;
-    private float interval;
+    private float normalSpawnTimer;
+    private float eventCheckTimer;
+    private float normalSpawnInterval;
 
     public void Enter(EnemySpawner spawner)
     {
-        interval = spawner.CurrentSpawnInterval;
-        spawnTimer = 0f;
+        normalSpawnInterval = spawner.CurrentSpawnInterval;
+        normalSpawnTimer = 0f;
+        eventCheckTimer = 0f;
     }
 
     public void Update(EnemySpawner spawner)
     {
-        spawnTimer += Time.deltaTime;
-        if (spawnTimer >= interval && spawner.CanSpawn())
+        // Normal enemy spawning
+        normalSpawnTimer += Time.deltaTime;
+        if (normalSpawnTimer >= normalSpawnInterval && spawner.CanSpawn())
         {
-            spawner.Spawn();
-            spawnTimer = 0f;
+            spawner.SpawnNormalEnemy();
+            normalSpawnTimer = 0f;
+            normalSpawnInterval = spawner.CurrentSpawnInterval;
+        }
+
+        // World event triggering
+        eventCheckTimer += Time.deltaTime;
+        if (eventCheckTimer >= spawner.EventIntervalCheck)
+        {
+            spawner.TriggerWorldEvent();
+            eventCheckTimer = 0f;
         }
 
         spawner.UpdateQuota();
