@@ -25,9 +25,6 @@ public interface IWorldEvent
     bool IsCooldownActive(float currentTime);
 }
 
-/// <summary>
-///     Defines a world event, such as an enemy raid, with configurable spawn positions and cooldown.
-/// </summary>
 [CreateAssetMenu(fileName = "WorldEvent", menuName = "Game/WorldEvent", order = 1)]
 public class WorldEventSO : ScriptableObject, IWorldEvent
 {
@@ -36,7 +33,7 @@ public class WorldEventSO : ScriptableObject, IWorldEvent
     [SerializeField] private float _cooldown = 5f;
     [SerializeField] private List<EnemyDataSO> _raidEnemies;
     [SerializeField] private int _enemyCount = 16;
-    [SerializeField] private readonly RaidSpawnStrategy _spawnStrategy = new();
+    private readonly RaidSpawnStrategy _spawnStrategy = new();
 
     private float _lastSpawnTime = -Mathf.Infinity;
 

@@ -30,7 +30,6 @@ public class EnemySpawner
 
     private ISpawnState currentState;
     private float totalEnemySpawnChance;
-    private float totalEventChance;
 
     public float CurrentSpawnInterval { get; private set; }
     public int CurrentMaxEnemySpawn { get; private set; }
@@ -72,7 +71,6 @@ public class EnemySpawner
         nextIntervalScoreQuota = stageData.DecreaseSpawnInterval;
         
         CalculateTotalEnemySpawnChance();
-        CalculateTotalEventChance();
         SetState(new StopState());
     }
     
@@ -128,9 +126,9 @@ public class EnemySpawner
     /// </summary>
     public void TriggerWorldEvent(bool bypassCooldown = false)
     {
-        var worldEvent = GetRandomWorldEvent(bypassCooldown);
+        var worldEvent = SelectRandomWorldEvent(bypassCooldown);
         if (worldEvent == null) { return; }
-
+        
         _spawnPositionsPool.Clear();
         worldEvent.GetSpawnPositions(_spawnerView.GetPlayerPosition(), _regionSize, _minDistanceFromPlayer, 0, _spawnPositionsPool);
 
@@ -184,17 +182,6 @@ public class EnemySpawner
     }
 
     /// <summary>
-    /// Calculates total chance for picking world events randomly.
-    /// </summary>
-    private void CalculateTotalEventChance()
-    {
-        totalEventChance = 0f;
-        foreach (var worldEvent in _stageData.WorldEvents)
-            if (!worldEvent.IsCooldownActive(Time.time))
-                totalEventChance += worldEvent.Chance;
-    }
-
-    /// <summary>
     /// Picks a random enemy based on their chances.
     /// </summary>
     private IEnemyData GetRandomEnemy()
@@ -224,21 +211,26 @@ public class EnemySpawner
     }
 
     /// <summary>
-    /// Picks a random world event, optionally bypassing cooldown.
+    /// Picks a world event, optionally bypassing cooldown.
     /// </summary>
-    private IWorldEvent GetRandomWorldEvent(bool bypassCooldown)
+    private IWorldEvent SelectRandomWorldEvent(bool bypassCooldown)
     {
-        var availableEvents = new List<IWorldEvent>();
+        _availableEventsPool.Clear();
         foreach (var worldEvent in _stageData.WorldEvents)
         {
+            float randomChance = Random.Range(0f, 100f);
+            if (randomChance > worldEvent.Chance) { return null; }
+            
             bool isCooldownActive = worldEvent.IsCooldownActive(Time.time);
             if (bypassCooldown || !isCooldownActive)
-                availableEvents.Add(worldEvent);
+                _availableEventsPool.Add(worldEvent);
         }
-        
-        if (availableEvents.Count == 0) { return null; }
-        return availableEvents[Random.Range(0, availableEvents.Count)];
+
+        if (_availableEventsPool.Count == 0) { return null; }
+
+        return _availableEventsPool[Random.Range(0, _availableEventsPool.Count)];
     }
+	
 
     private Vector2 GetRandomSpawnPosition(Vector2 playerPosition)
     {
