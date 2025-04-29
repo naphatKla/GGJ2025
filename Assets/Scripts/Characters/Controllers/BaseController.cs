@@ -33,7 +33,13 @@ namespace Characters.Controllers
         /// Fallbacks to auto-fetching via <c>TryGetComponent</c> if not manually assigned.
         /// </summary>
         [OdinSerialize] private ICharacterInput _inputSystem;
-        
+
+        /// <summary>
+        /// Reference to the movement system used to control character motion.
+        /// Should be assigned via Inspector or at runtime.
+        /// </summary>
+        public BaseMovementSystem MovementSystem => movementSystem;
+
         #endregion
 
         #region Unity Methods

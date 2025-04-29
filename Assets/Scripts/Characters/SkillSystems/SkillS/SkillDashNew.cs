@@ -44,7 +44,7 @@ namespace Characters.SkillSystems.SkillS
             Vector2 dashPosition = (Vector2)transform.position + aimDirection * dashDistance;
 
             // Start dash movement and wait until finished (via Tween)
-            yield return owner.movementSystem
+            yield return owner.MovementSystem
                 .TryMoveToPositionOverTime(dashPosition, dashDuration)
                 .WaitForCompletion();
         }
