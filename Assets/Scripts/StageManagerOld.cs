@@ -33,7 +33,7 @@ public class StageClass
 }
 #endregion
 
-public class StageManager : SerializedMonoBehaviour
+public class StageManagerOld : SerializedMonoBehaviour
 {
     #region Inspector
     [DictionaryDrawerSettings(KeyLabel = "Stage", ValueLabel = "Stage Properties")]

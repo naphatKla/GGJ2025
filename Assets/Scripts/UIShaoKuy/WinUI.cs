@@ -18,7 +18,7 @@ public class WinUI : MonoBehaviour
     [SerializeField] private MMF_Player bubbleSound;
     [SerializeField] private MMF_Player winSound;
     [SerializeField] private MMF_Player loseSound;
-    [SerializeField] private StageManager _stageManager;
+    /*[SerializeField] private StageManager _stageManager;*/
     private int starCount = 0;
 
     [SerializeField] private TextMeshProUGUI scoreQuota;
@@ -28,7 +28,7 @@ public class WinUI : MonoBehaviour
 
     private Coroutine dd;
     // Update is called once per frame
-    private void Start()
+    /*private void Start()
     {
         dd = StartCoroutine(PlayGameObject());
         LevelSelector levelSelector =
@@ -65,7 +65,7 @@ public class WinUI : MonoBehaviour
         levelSelector.SetScoreOnLevel(_stageManager.currentStage-1, starCount);
 
         StartCoroutine(StarScore());
-    }
+    }*/
 
     void Update()
     {
