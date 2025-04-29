@@ -7,6 +7,7 @@ public interface ISpawnState
     void Exit(EnemySpawner spawner);
 }
 
+
 public class StopState : ISpawnState
 {
     public void Enter(EnemySpawner spawner)
@@ -53,6 +54,7 @@ public class SpawningState : ISpawnState
             spawner.TriggerWorldEvent();
             eventCheckTimer = 0f;
         }
+
 
         spawner.UpdateQuota();
     }

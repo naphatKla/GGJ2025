@@ -22,7 +22,8 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     [Tooltip("Minimum spawn area from the player.")]
     [SerializeField] private float minDistanceFromPlayer = 20f;
     
-    private EnemySpawner spawner;
+    private EnemySpawner _enemySpawner;
+    
     private StageDataSO CurrentStage => stageData.Count > 0 && currentStageIndex < stageData.Count
         ? stageData[currentStageIndex]
         : null;
@@ -37,17 +38,17 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
         if (enemyParent == null) enemyParent = new GameObject("EnemyParent").transform;
         if (stageData.Count == 0 || CurrentStage == null) return;
         EnemyPoolCreated();
-        spawner = new EnemySpawner(this, CurrentStage, regionSize, minDistanceFromPlayer);
+        _enemySpawner = new EnemySpawner(this, CurrentStage, regionSize, minDistanceFromPlayer);
     }
     
     private void Start()
     {
-        spawner.StartSpawning();
+        _enemySpawner.StartSpawning();
         SetBackground(currentBackground);
     }
     private void Update()
     {
-        spawner?.Update();
+        _enemySpawner?.Update();
     }
 
     #endregion
@@ -60,9 +61,9 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     {
         var enemy = PoolManager.Instance.Spawn(prefab, position, rotation);
         if (isWorldEventEnemy)
-            spawner.eventEnemies.Add(enemy);
+            _enemySpawner.eventEnemies.Add(enemy);
         else
-            spawner.enemies.Add(enemy);
+            _enemySpawner.enemies.Add(enemy);
     }
     
     /// <summary>
@@ -70,8 +71,8 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     /// </summary>
     public void AddWorldEventEnemy(GameObject enemy)
     {
-        if (!spawner.eventEnemies.Contains(enemy))
-            spawner.eventEnemies.Add(enemy);
+        if (!_enemySpawner.eventEnemies.Contains(enemy))
+            _enemySpawner.eventEnemies.Add(enemy);
     }
 
     /// <summary>
@@ -79,10 +80,10 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     /// </summary>
     public void RemoveListEnemy(GameObject enemy)
     {
-        if (spawner.enemies.Contains(enemy))
-            spawner.enemies.Remove(enemy);
-        else if (spawner.eventEnemies.Contains(enemy))
-            spawner.eventEnemies.Remove(enemy);
+        if (_enemySpawner.enemies.Contains(enemy))
+            _enemySpawner.enemies.Remove(enemy);
+        else if (_enemySpawner.eventEnemies.Contains(enemy))
+            _enemySpawner.eventEnemies.Remove(enemy);
     }
 
     /// <summary>
@@ -98,7 +99,7 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     /// </summary>
     public int GetCurrentEnemyCount()
     {
-        return spawner.enemies.Count(e => e != null && e.activeInHierarchy);
+        return _enemySpawner.enemies.Count(e => e != null && e.activeInHierarchy);
     }
 
     /// <summary>
@@ -178,7 +179,7 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     [Button]
     public void StartSpawning()
     {
-        spawner?.StartSpawning();
+        _enemySpawner?.StartSpawning();
     }
 
     /// <summary>
@@ -187,7 +188,7 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     [Button]
     public void StopSpawning()
     {
-        spawner?.StopSpawning();
+        _enemySpawner?.StopSpawning();
     }
 
     /// <summary>
@@ -196,7 +197,7 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     [Button]
     public void PauseSpawning()
     {
-        spawner?.PauseSpawning();
+        _enemySpawner?.PauseSpawning();
     }
 
     /// <summary>
@@ -208,8 +209,8 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
         if (stageIndex < 0 || stageIndex >= stageData.Count) return;
         currentStageIndex = stageIndex;
         ClearEnemies();
-        spawner = new EnemySpawner(this, CurrentStage, regionSize, minDistanceFromPlayer);
-        spawner.StartSpawning();
+        _enemySpawner = new EnemySpawner(this, CurrentStage, regionSize, minDistanceFromPlayer);
+        _enemySpawner.StartSpawning();
         SetBackground(CurrentStage.Background);
     }
 
@@ -228,8 +229,8 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
         currentStageIndex++;
         ClearEnemies();
         EnemyPoolCreated();
-        spawner = new EnemySpawner(this, CurrentStage, regionSize, minDistanceFromPlayer);
-        spawner.StartSpawning();
+        _enemySpawner = new EnemySpawner(this, CurrentStage, regionSize, minDistanceFromPlayer);
+        _enemySpawner.StartSpawning();
         SetBackground(CurrentStage.Background);
     }
     
@@ -241,8 +242,8 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     {
         ClearEnemies();
         EnemyPoolCreated();
-        spawner = new EnemySpawner(this, CurrentStage, regionSize, minDistanceFromPlayer);
-        spawner.StartSpawning();
+        _enemySpawner = new EnemySpawner(this, CurrentStage, regionSize, minDistanceFromPlayer);
+        _enemySpawner.StartSpawning();
         SetBackground(CurrentStage.Background);
     }
     
@@ -252,13 +253,8 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     [Button]
     public void TriggerWorldEvent()
     {
-        if (spawner == null)
-        {
-            Debug.LogWarning("Cannot trigger WorldEvent: Spawner is not initialized.");
-            return;
-        }
-        Debug.Log("Manually triggering WorldEvent via button.");
-        spawner.TriggerWorldEvent(true); 
+        if (_enemySpawner == null) return;
+        _enemySpawner.TriggerWorldEvent(true); 
     }
 
     /// <summary>
@@ -267,16 +263,16 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     [Button]
     public void ClearEnemies()
     {
-        foreach (var enemy in spawner.enemies)
+        foreach (var enemy in _enemySpawner.enemies)
             if (enemy != null)
                 PoolManager.Instance.Despawn(enemy);
         
-        foreach (var enemy in spawner.eventEnemies)
+        foreach (var enemy in _enemySpawner.eventEnemies)
             if (enemy != null)
                 PoolManager.Instance.Despawn(enemy);
         
-        spawner.enemies.Clear();
-        spawner.eventEnemies.Clear();
+        _enemySpawner.enemies.Clear();
+        _enemySpawner.eventEnemies.Clear();
         PoolManager.Instance.ClearPool();
         EnemyPoolCreated();
     }

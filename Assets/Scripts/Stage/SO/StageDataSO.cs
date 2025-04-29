@@ -17,7 +17,7 @@ public class StageDataSO : ScriptableObject
     #region Inspector & Variable
     [Title("Enemy Data")] [Tooltip("Data of the enemies scriptable object (Random by chance)")]
     [SerializeField] private EnemyProperties[] enemies;
-    [Space][Title("Spawn Type")] [Tooltip("Data of the spawn type scriptable object (Random)")]
+    [Space][Title("World Event")] [Tooltip("Data of world event scriptable object")]
     [SerializeField] private WorldEventSO[] worldEvent;
     [Space][Title("Stage Properties")]
     [Tooltip("Quota of the score to end the game")]

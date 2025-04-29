@@ -4,7 +4,8 @@ using Sirenix.OdinInspector;
 
 public enum EventType
 {
-    EnemyRaid
+    EnemyRaid,
+    EnemyRush
 }
 
 public interface ISpawnPositionStrategy
@@ -54,13 +55,12 @@ public class WorldEventSO : ScriptableObject, IWorldEvent
 
     #region Properties
 
-    public void GetSpawnPositions(Vector2 playerPosition, Vector2 regionSize, float minDistanceFromPlayer,
-        int enemyCount, List<Vector2> spawnPositions)
+    public void GetSpawnPositions(Vector2 playerPosition, Vector2 regionSize, float minDistanceFromPlayer, int enemyCount, List<Vector2> spawnPositions)
     {
-        _spawnStrategy.CalculatePositions(playerPosition, regionSize, minDistanceFromPlayer,
+        var strategy = GetStrategy();
+        strategy.CalculatePositions(playerPosition, regionSize, minDistanceFromPlayer,
             enemyCount > 0 ? enemyCount : _enemyCount, spawnPositions);
     }
-
     public void OnSpawned()
     {
         _lastSpawnTime = Time.time;
@@ -69,6 +69,16 @@ public class WorldEventSO : ScriptableObject, IWorldEvent
     public bool IsCooldownActive(float currentTime)
     {
         return currentTime < _lastSpawnTime + _cooldown;
+    }
+    
+    private ISpawnPositionStrategy GetStrategy()
+    {
+        return _type switch
+        {
+            EventType.EnemyRaid => new RaidSpawnStrategy(),
+            EventType.EnemyRush => new RushSpawnStrategy(),
+            _ => new RaidSpawnStrategy()
+        };
     }
     
     #endregion
@@ -132,6 +142,60 @@ public class RaidSpawnStrategy : ISpawnPositionStrategy
         return new Vector2(
             Mathf.Clamp(position.x, -regionSize.x / 2, regionSize.x / 2),
             Mathf.Clamp(position.y, -regionSize.y / 2, regionSize.y / 2)
+        );
+    }
+}
+
+public class RushSpawnStrategy : ISpawnPositionStrategy
+{
+    public void CalculatePositions(Vector2 playerPosition, Vector2 regionSize, float minDistanceFromPlayer,
+        int enemyCount, List<Vector2> spawnPositions)
+    {
+        var mainCamera = Camera.main;
+        var screenHeight = mainCamera.orthographicSize * 2f;
+        var screenWidth = screenHeight * mainCamera.aspect;
+
+        var direction = Random.Range(0, 4);
+        Vector2 basePos = Vector2.zero;
+        float step;
+
+        switch (direction)
+        {
+            case 0: // Top
+                basePos = new Vector2(playerPosition.x - screenWidth / 2, playerPosition.y + screenHeight / 2 + minDistanceFromPlayer);
+                step = screenWidth / enemyCount;
+                for (int i = 0; i < enemyCount; i++)
+                    spawnPositions.Add(Clamp(new Vector2(basePos.x + step * i, basePos.y), regionSize));
+                break;
+
+            case 1: // Bottom
+                basePos = new Vector2(playerPosition.x - screenWidth / 2, playerPosition.y - screenHeight / 2 - minDistanceFromPlayer);
+                step = screenWidth / enemyCount;
+                for (int i = 0; i < enemyCount; i++)
+                    spawnPositions.Add(Clamp(new Vector2(basePos.x + step * i, basePos.y), regionSize));
+                break;
+
+            case 2: // Left
+                basePos = new Vector2(playerPosition.x - screenWidth / 2 - minDistanceFromPlayer, playerPosition.y - screenHeight / 2);
+                step = screenHeight / enemyCount;
+                for (int i = 0; i < enemyCount; i++)
+                    spawnPositions.Add(Clamp(new Vector2(basePos.x, basePos.y + step * i), regionSize));
+                break;
+
+            case 3: // Right
+                basePos = new Vector2(playerPosition.x + screenWidth / 2 + minDistanceFromPlayer, playerPosition.y - screenHeight / 2);
+                step = screenHeight / enemyCount;
+                for (int i = 0; i < enemyCount; i++)
+                    spawnPositions.Add(Clamp(new Vector2(basePos.x, basePos.y + step * i), regionSize));
+                break;
+        }
+    }
+
+    private Vector2 Clamp(Vector2 pos, Vector2 regionSize)
+    {
+        return new Vector2(
+            Mathf.Clamp(pos.x, -regionSize.x / 2, regionSize.x / 2),
+            Mathf.Clamp(pos.y, -regionSize.y / 2, regionSize.y / 2)
         );
     }
 }
