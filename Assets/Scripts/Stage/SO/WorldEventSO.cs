@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using Sirenix.OdinInspector;
 
 public enum EventType
 {
@@ -25,23 +26,33 @@ public interface IWorldEvent
     bool IsCooldownActive(float currentTime);
 }
 
-[CreateAssetMenu(fileName = "WorldEvent", menuName = "Game/WorldEvent", order = 1)]
+[CreateAssetMenu(fileName = "[WE] Stage-Level-x", menuName = "Game/WorldEventData", order = 1)]
 public class WorldEventSO : ScriptableObject, IWorldEvent
 {
+    #region Inspector & Variable
     [SerializeField] private EventType _type;
+    [Title("Event Properties")] [Tooltip("Chance of world event")] [Range(0, 100)]
     [SerializeField] private float _chance = 1f;
+    [Tooltip("Cooldown after spawning enemy")]
     [SerializeField] private float _cooldown = 5f;
+    [Title("Enemy Data")] [Tooltip("Data of the enemies scriptable object (Random by chance)")]
     [SerializeField] private List<EnemyDataSO> _raidEnemies;
+    [Tooltip("The count of enemies to spawn in the raid")]
     [SerializeField] private int _enemyCount = 16;
     private readonly RaidSpawnStrategy _spawnStrategy = new();
 
     private float _lastSpawnTime = -Mathf.Infinity;
+    #endregion
 
+    #region Properties
     public EventType Type => _type;
     public float Chance => _chance;
     public float EnemyWorldEventCount => _enemyCount;
     public float Cooldown => _cooldown;
     public List<IEnemyData> RaidEnemies => _raidEnemies.ConvertAll(data => (IEnemyData)data);
+    #endregion
+
+    #region Properties
 
     public void GetSpawnPositions(Vector2 playerPosition, Vector2 regionSize, float minDistanceFromPlayer,
         int enemyCount, List<Vector2> spawnPositions)
@@ -59,6 +70,8 @@ public class WorldEventSO : ScriptableObject, IWorldEvent
     {
         return currentTime < _lastSpawnTime + _cooldown;
     }
+    
+    #endregion
 }
 
 public class RaidSpawnStrategy : ISpawnPositionStrategy

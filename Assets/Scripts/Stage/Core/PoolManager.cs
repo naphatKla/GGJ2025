@@ -13,7 +13,7 @@ public class PoolManager
     #region Methods
 
     /// <summary>
-    ///     Spawns a GameObject from the pool or creates a new one if none available.
+    /// Spawns a GameObject from the pool or creates a new one if none available.
     /// </summary>
     /// <param name="prefab">The prefab to spawn.</param>
     /// <param name="position">The spawn position.</param>
