@@ -11,15 +11,13 @@ public interface IEnemySpawnerView
     Vector2 GetPlayerPosition();
     void SetBackground(Sprite sprite);
     float GetPlayerScore();
-    void AddWorldEventEnemy(GameObject enemy);
 }
 
 public class EnemySpawner
 {
-    #region Properties
+    #region Inspector & Variable
 
     private const int MaxSpawnPositionAttempts = 10;
-    
     private readonly IEnemySpawnerView _spawnerView;
     private readonly StageDataSO _stageData;
     private readonly Vector2 _regionSize;
@@ -30,18 +28,20 @@ public class EnemySpawner
 
     private ISpawnState currentState;
     private float totalEnemySpawnChance;
-
-    public float CurrentSpawnInterval { get; private set; }
-    public int CurrentMaxEnemySpawn { get; private set; }
-    public float EventIntervalCheck => _stageData.EventIntervalCheck;
     private float nextUnitScoreQuota;
     private float nextIntervalScoreQuota;
     
     public readonly List<GameObject> enemies = new();
     public readonly List<GameObject> eventEnemies = new();
-
+    
     #endregion
 
+    #region Properties
+    public float CurrentSpawnInterval { get; private set; }
+    public int CurrentMaxEnemySpawn { get; private set; }
+    public float EventIntervalCheck => _stageData.EventIntervalCheck;
+    #endregion
+    
     #region Unity Methods
 
     public void Update()
