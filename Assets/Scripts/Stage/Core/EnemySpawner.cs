@@ -24,16 +24,17 @@ public class EnemySpawner
     private readonly float _minDistanceFromPlayer;
     private readonly Vector2 _screenSize;
     private readonly List<Vector2> _spawnPositionsPool = new List<Vector2>();
-    private readonly List<IWorldEvent> _availableEventsPool = new List<IWorldEvent>();
 
     private ISpawnState currentState;
     private float totalEnemySpawnChance;
     private float nextUnitScoreQuota;
     private float nextIntervalScoreQuota;
-    
+
     public readonly List<GameObject> enemies = new();
     public readonly List<GameObject> eventEnemies = new();
-    
+
+    private readonly WorldEventManager _worldEventManager;
+
     #endregion
 
     #region Properties
@@ -41,14 +42,14 @@ public class EnemySpawner
     public int CurrentMaxEnemySpawn { get; private set; }
     public float EventIntervalCheck => _stageData.EventIntervalCheck;
     #endregion
-    
+
     #region Unity Methods
 
     public void Update()
     {
         currentState?.Update(this);
     }
-    
+
     #endregion
 
     #region Methods
@@ -63,17 +64,19 @@ public class EnemySpawner
         _regionSize = regionSize;
         _minDistanceFromPlayer = minDistanceFromPlayer;
         _screenSize = CalculateScreenSize(Camera.main);
-        
+
         CurrentSpawnInterval = stageData.EnemySpawnInterval;
         CurrentMaxEnemySpawn = stageData.CurrentMaxEnemySpawn;
-        
+
         nextUnitScoreQuota = stageData.UnitScoreQuota;
         nextIntervalScoreQuota = stageData.DecreaseSpawnInterval;
-        
+
+        _worldEventManager = new WorldEventManager(view, stageData, regionSize, minDistanceFromPlayer);
+
         CalculateTotalEnemySpawnChance();
         SetState(new StopState());
     }
-    
+
     /// <summary>
     /// Starts spawning enemies and logs it.
     /// </summary>
@@ -101,7 +104,7 @@ public class EnemySpawner
         Debug.Log("Pause Spawning");
         SetState(new PausedState());
     }
-    
+
     /// <summary>
     /// Checks if more normal enemies can spawn based on the limit.
     /// </summary>
@@ -122,25 +125,13 @@ public class EnemySpawner
     }
 
     /// <summary>
-    /// Triggers a world event, spawning multiple enemies based on the event's configuration.
+    /// Triggers a world event using the WorldEventManager.
     /// </summary>
     public void TriggerWorldEvent(bool bypassCooldown = false)
     {
-        var worldEvent = SelectRandomWorldEvent(bypassCooldown);
-        if (worldEvent == null) { return; }
-        
-        _spawnPositionsPool.Clear();
-        worldEvent.GetSpawnPositions(_spawnerView.GetPlayerPosition(), _regionSize, _minDistanceFromPlayer, 0, _spawnPositionsPool);
-
-        foreach (var position in _spawnPositionsPool)
-        {
-            var enemyData = GetRandomRaidEnemy(worldEvent.RaidEnemies);
-            _spawnerView.SpawnEnemy(enemyData.EnemyPrefab, position, Quaternion.identity, _spawnerView.GetEnemyParent(), isWorldEventEnemy: true);
-        }
-        Debug.Log($"WorldEvent: {((WorldEventSO)worldEvent).Type}, Cooldown Active: {worldEvent.IsCooldownActive(Time.time)}, Chance: {worldEvent.Chance}");
-        worldEvent.OnSpawned();
+        _worldEventManager.TriggerWorldEvent(bypassCooldown, eventEnemies);
     }
-    
+
     /// <summary>
     /// Updates spawn limits and speed based on player score.
     /// </summary>
@@ -170,7 +161,7 @@ public class EnemySpawner
         currentState = newState;
         currentState.Enter(this);
     }
-    
+
     /// <summary>
     /// Calculates total chance for picking enemies randomly.
     /// </summary>
@@ -199,45 +190,12 @@ public class EnemySpawner
         return _stageData.Enemies[0].EnemyData;
     }
 
-    /// <summary>
-    /// Picks a random enemy from the raid enemies list.
-    /// </summary>
-    private IEnemyData GetRandomRaidEnemy(List<IEnemyData> raidEnemies)
-    {
-        if (raidEnemies == null || raidEnemies.Count == 0)
-            return GetRandomEnemy();
-
-        return raidEnemies[Random.Range(0, raidEnemies.Count)];
-    }
-
-    /// <summary>
-    /// Picks a world event, optionally bypassing cooldown.
-    /// </summary>
-    private IWorldEvent SelectRandomWorldEvent(bool bypassCooldown)
-    {
-        _availableEventsPool.Clear();
-        foreach (var worldEvent in _stageData.WorldEvents)
-        {
-            float randomChance = Random.Range(0f, 100f);
-            if (randomChance > worldEvent.Chance) { return null; }
-            
-            bool isCooldownActive = worldEvent.IsCooldownActive(Time.time);
-            if (bypassCooldown || !isCooldownActive)
-                _availableEventsPool.Add(worldEvent);
-        }
-
-        if (_availableEventsPool.Count == 0) { return null; }
-
-        return _availableEventsPool[Random.Range(0, _availableEventsPool.Count)];
-    }
-	
-
     private Vector2 GetRandomSpawnPosition(Vector2 playerPosition)
     {
         var spawnPosition = CalculateOffScreenPosition(playerPosition);
         return ClampToRegionBounds(spawnPosition);
     }
-    
+
     private Vector2 CalculateOffScreenPosition(Vector2 playerPosition)
     {
         Vector2 spawnPosition;
@@ -277,6 +235,6 @@ public class EnemySpawner
         var screenWidth = screenHeight * camera.aspect;
         return new Vector2(screenWidth, screenHeight);
     }
-    
+
     #endregion
 }
