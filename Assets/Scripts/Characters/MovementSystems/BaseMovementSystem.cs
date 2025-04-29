@@ -1,4 +1,5 @@
 using DG.Tweening;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace Characters.MovementSystems
@@ -11,24 +12,40 @@ namespace Characters.MovementSystems
         #region Inspector & Variables
 
         /// <summary>
-        /// Default movement speed of the entity.
+        /// The default speed value used as the base for movement speed calculations.
         /// </summary>
-        private float normalSpeed = 6f;
+        private float _baseSpeed;
 
         /// <summary>
         /// The current movement speed of the entity.
+        /// Modify this value to increase or decrease speed of the entity.
         /// </summary>
-        protected float currentSpeed = 6f;
+        [ShowInInspector, ReadOnly]
+        [ShowIf("@UnityEngine.Application.isPlaying")]
+        protected float currentSpeed;
 
         /// <summary>
         /// Determines whether the entity is allowed to move.
         /// </summary>
+        [ShowInInspector, ReadOnly]
+        [ShowIf("@UnityEngine.Application.isPlaying")]
         private bool _canMove = true;
-
+        
         #endregion
 
         #region Methods
 
+        /// <summary>
+        /// Assigns the speed data for the character.
+        /// This method is typically called by the character controller during initialization.
+        /// </summary>
+        /// <param name="baseSpeed">The default speed value to assign.</param>
+        public virtual void AssignMovementData(float baseSpeed)
+        {
+            _baseSpeed = baseSpeed;
+            currentSpeed = baseSpeed;
+        }
+        
         /// <summary>
         /// Attempts to move the entity if movement is allowed.
         /// </summary>
@@ -52,11 +69,21 @@ namespace Characters.MovementSystems
         }
 
         /// <summary>
-        /// Resets the current speed to the default normal speed.
+        /// Sets whether the movement system is allowed to move.
+        /// Passing false will completely lock movement.
         /// </summary>
-        protected void ResetSpeed()
+        /// <param name="canMove">Whether movement is enabled.</param>
+        public void SetCanMove(bool canMove)
         {
-            currentSpeed = normalSpeed;
+            _canMove = canMove;
+        }
+        
+        /// <summary>
+        /// Resets the current speed to the default base speed.
+        /// </summary>
+        protected void ResetSpeedToDefault()
+        {
+            currentSpeed = _baseSpeed;
         }
 
         #endregion

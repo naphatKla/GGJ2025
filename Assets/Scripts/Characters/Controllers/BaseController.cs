@@ -1,6 +1,9 @@
+using Characters.CombatSystems;
+using Characters.HeathSystems;
 using Characters.InputSystems.Interface;
 using Characters.MovementSystems;
 using Characters.SkillSystems;
+using Characters.SO.CharacterDataSO;
 using Sirenix.Serialization;
 using UnityEngine;
 
@@ -23,9 +26,26 @@ namespace Characters.Controllers
 
         /// <summary>
         /// Reference to the character's skill system, responsible for executing primary and secondary skills.
-        /// Automatically initialized at runtime.
+        /// Should be assigned via Inspector or at runtime, Automatically initialized
         /// </summary>
         [SerializeField] private SkillSystem skillSystem;
+
+        /// <summary>
+        /// Reference to the health system.
+        /// Should be assigned via Inspector or at runtime.
+        /// </summary>
+        [SerializeField] private HealthSystem healthSystem;
+
+        /// <summary>
+        /// Reference to the Damage on touch system.
+        /// Should be assigned via Inspector or at runtime.
+        /// </summary>
+        [SerializeField] private DamageOnTouch damageOnTouch;
+
+        /// <summary>
+        /// ScriptableObject containing base character stats used to initialize systems.
+        /// </summary>
+        [SerializeField] private CharacterDataSo characterData;
 
         /// <summary>
         /// Character input handler implementing <see cref="ICharacterInput"/>.
@@ -45,12 +65,15 @@ namespace Characters.Controllers
         #region Unity Methods
 
         /// <summary>
-        /// Called on the first frame after the script is enabled.
-        /// Initializes the skill system by passing this controller as its owner.
+        /// Initializes core systems for the character on the first frame,
+        /// using data provided from the assigned <see cref="characterData"/>.
         /// </summary>
         private void Start()
         {
             skillSystem.Initialize(this);
+            movementSystem?.AssignMovementData(characterData.BaseSpeed);
+            healthSystem?.AssignHealthData(characterData.MaxHealth);
+            damageOnTouch?.AssignDamageOnTouchData(characterData.BaseDamage);
         }
 
         /// <summary>

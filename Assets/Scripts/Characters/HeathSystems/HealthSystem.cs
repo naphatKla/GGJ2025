@@ -1,4 +1,5 @@
 using System;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace Characters.HeathSystems
@@ -14,21 +15,29 @@ namespace Characters.HeathSystems
         /// <summary>
         /// The maximum health the character can have.
         /// </summary>
-        [SerializeField] private float maxHealth;
+        [ShowInInspector, ReadOnly]
+        [ShowIf("@UnityEngine.Application.isPlaying")]
+        private float _maxHealth;
 
         /// <summary>
         /// The current health of the character.
         /// </summary>
+        [ShowInInspector, ReadOnly]
+        [ShowIf("@UnityEngine.Application.isPlaying")]
         private float _currentHealth;
 
         /// <summary>
         /// Determines if the character is temporarily invincible.
         /// </summary>
+        [ShowInInspector, ReadOnly]
+        [ShowIf("@UnityEngine.Application.isPlaying")]
         private bool _isInvincible;
 
         /// <summary>
         /// Indicates whether the character is dead.
         /// </summary>
+        [ShowInInspector, ReadOnly]
+        [ShowIf("@UnityEngine.Application.isPlaying")]
         private bool _isDead;
 
         /// <summary>
@@ -53,21 +62,19 @@ namespace Characters.HeathSystems
         public Action<bool> OnInvincible { get; set; }
 
         #endregion
-
-        #region Unity Methods
-
-        /// <summary>
-        /// Initializes the health system by resetting health to maximum.
-        /// </summary>
-        private void Start()
-        {
-            ResetHealth();
-        }
-
-        #endregion
-
+        
         #region Methods
 
+        /// <summary>
+        /// Assigns the health data for the character.
+        /// This method is typically called by the character controller during initialization.
+        /// </summary>
+        /// <param name="maxHealth">maximum health to assign.</param>
+        public void AssignHealthData(float maxHealth)
+        {
+            _maxHealth = maxHealth;
+        }
+        
         /// <summary>
         /// Reduces the character's health by the given damage amount.
         /// Prevents damage if the character is invincible or already dead.
@@ -112,7 +119,7 @@ namespace Characters.HeathSystems
         /// </summary>
         public void ResetHealth()
         {
-            _currentHealth = maxHealth;
+            _currentHealth = _maxHealth;
             _isDead = false;
         }
 
@@ -124,7 +131,7 @@ namespace Characters.HeathSystems
         private void ModifyHealth(float value)
         {
             _currentHealth += value;
-            _currentHealth = Mathf.Clamp(_currentHealth, 0, maxHealth);
+            _currentHealth = Mathf.Clamp(_currentHealth, 0, _maxHealth);
         }
 
         /// <summary>

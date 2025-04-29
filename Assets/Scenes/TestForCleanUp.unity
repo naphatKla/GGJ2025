@@ -645,6 +645,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   movementSystem: {fileID: 1537051325}
   skillSystem: {fileID: 1537051327}
+  healthSystem: {fileID: 1537051328}
+  damageOnTouch: {fileID: 1537051329}
+  characterData: {fileID: 11400000, guid: 177277e9c5cd29143b05e5f2f4d0bae0, type: 2}
 --- !u!114 &1537051327
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -671,7 +674,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5dd45224fe3c4d4ca1bd168263f9430, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 10
 --- !u!114 &1537051329
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -684,8 +686,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 369ce1c8fe5d39046ab3c21f688fc897, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isEnableDamage: 1
-  damage: 1
 --- !u!114 &1537051330
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -716,6 +716,7 @@ GameObject:
   - component: {fileID: 2107089423}
   - component: {fileID: 2107089428}
   - component: {fileID: 2107089427}
+  - component: {fileID: 2107089430}
   - component: {fileID: 2107089429}
   - component: {fileID: 2107089424}
   - component: {fileID: 2107089426}
@@ -854,6 +855,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   movementSystem: {fileID: 2107089423}
   skillSystem: {fileID: 2107089427}
+  healthSystem: {fileID: 2107089428}
+  damageOnTouch: {fileID: 2107089430}
+  characterData: {fileID: 11400000, guid: c1d07ea341b30b24fb5d44940eefa14e, type: 2}
 --- !u!61 &2107089426
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -925,7 +929,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5dd45224fe3c4d4ca1bd168263f9430, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 10
 --- !u!114 &2107089429
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -941,6 +944,18 @@ MonoBehaviour:
   cooldownDuration: 1
   dashDuration: 0.3
   dashDistance: 8
+--- !u!114 &2107089430
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2107089418}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 369ce1c8fe5d39046ab3c21f688fc897, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

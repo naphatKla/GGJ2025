@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Characters.SO.CharacterDataSO
 {
@@ -6,8 +7,8 @@ namespace Characters.SO.CharacterDataSO
     public class CharacterDataSo : ScriptableObject
     {
         [SerializeField] private float maxHealth;
-        [SerializeField] private float speed;
-        [SerializeField] private float attackDamage;
+        [SerializeField] private float baseSpeed;
+        [SerializeField] private float baseDamage;
 
         /// <summary>
         /// The maximum health value for the character.
@@ -17,11 +18,11 @@ namespace Characters.SO.CharacterDataSO
         /// <summary>
         /// The base movement speed of the character.
         /// </summary>
-        public float Speed => speed;
+        public float BaseSpeed => baseSpeed;
 
         /// <summary>
         /// The base attack damage of the character.
         /// </summary>
-        public float AttackDamage => attackDamage;
+        public float BaseDamage => baseDamage;
     }
 }
