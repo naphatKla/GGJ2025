@@ -19,7 +19,7 @@ namespace Characters.Controllers
         /// Reference to the movement system used to control character motion.
         /// Should be assigned via Inspector or at runtime.
         /// </summary>
-        public BaseMovementSystem movementSystem;
+        [SerializeField] private BaseMovementSystem movementSystem;
 
         /// <summary>
         /// Reference to the character's skill system, responsible for executing primary and secondary skills.
@@ -33,7 +33,7 @@ namespace Characters.Controllers
         /// Fallbacks to auto-fetching via <c>TryGetComponent</c> if not manually assigned.
         /// </summary>
         [OdinSerialize] private ICharacterInput _inputSystem;
-
+        
         #endregion
 
         #region Unity Methods
