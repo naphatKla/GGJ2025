@@ -8,6 +8,7 @@ public class ConnectionRenderer : MonoBehaviour
     private Canvas canvas;
     private float lastContentScale = 1f;
     private readonly List<UILineRenderer> uiLineRenderers = new();
+    private GameObject lineParent;
 
     /// <summary>
     /// Caches the Canvas component from the parent of the content RectTransform.
@@ -15,6 +16,8 @@ public class ConnectionRenderer : MonoBehaviour
     private void Awake()
     {
         canvas = content.GetComponentInParent<Canvas>();
+        lineParent = new GameObject("LineParent");
+        lineParent.transform.SetParent(content, false);
     }
 
     /// <summary>
@@ -23,7 +26,7 @@ public class ConnectionRenderer : MonoBehaviour
     public void DrawLine(RectTransform startRect, RectTransform endRect, Color color, float baseThickness = 10f)
     {
         var lineObj = new GameObject("UIConnectionLine", typeof(RectTransform), typeof(UILineRenderer), typeof(Canvas));
-        lineObj.transform.SetParent(content, false);
+        lineObj.transform.SetParent(lineParent.transform, false);
 
         var rect = lineObj.GetComponent<RectTransform>();
         rect.anchorMin = new Vector2(0, 1);

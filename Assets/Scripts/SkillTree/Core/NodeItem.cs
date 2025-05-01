@@ -13,11 +13,9 @@ using Sirenix.OdinInspector;
 
 public class NodeItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
-    [ColorUsage(false, true)]
-    public Color colorNotUnlock = new Color(0.5f, 0.5f, 0.5f, 1f);
-    [ColorUsage(false, true)]
-    public Color colorUnlock = new Color(0f, 1f, 0f, 1f);
-    
+    [ColorUsage(false, true)] public Color colorNotUnlock = new(0.5f, 0.5f, 0.5f, 1f);
+    [ColorUsage(false, true)] public Color colorUnlock = new(0f, 1f, 0f, 1f);
+
     [SerializeField] private SkillNodeSO skillNode;
     private Button button;
     private Image image;
@@ -103,7 +101,7 @@ public class NodeItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 
         if (hoverTween != null && hoverTween.IsActive())
             hoverTween.Kill();
-        
+
         hoverTween = DOTween.Sequence()
             .Append(transform.DOScale(1.1f, 0.3f).SetEase(Ease.InOutSine))
             .Join(transform.DORotate(new Vector3(0, 0, 5), 0.3f).SetEase(Ease.InOutSine))
@@ -122,7 +120,7 @@ public class NodeItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
             hoverTween.Kill();
             hoverTween = null;
         }
-        
+
         transform.localScale = Vector3.one;
         transform.rotation = Quaternion.identity;
     }
@@ -132,11 +130,11 @@ public class NodeItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     [Button("Create Connected Node")]
     private void CreateConnectedNode()
     {
-        var manager = Application.isPlaying 
-            ? SkillTreeManager.Instance 
+        var manager = Application.isPlaying
+            ? SkillTreeManager.Instance
             : FindObjectOfType<SkillTreeManager>();
-        if (skillNode == null) { return; }
-        if (manager == null) { return; }
+        if (skillNode == null) return;
+        if (manager == null) return;
 
         // Create new SkillNodeSO
         var newNode = ScriptableObject.CreateInstance<SkillNodeSO>();
@@ -165,7 +163,7 @@ public class NodeItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 
         //Instantiate NodeItem prefab
         var prefab = manager.NodePrefab;
-        if (prefab == null) { return; }
+        if (prefab == null) return;
 
         var content = manager.Content;
         var newNodeGO = (GameObject)PrefabUtility.InstantiatePrefab(prefab, content);
@@ -183,17 +181,17 @@ public class NodeItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         newItem.Initialize(manager);
         newItem.colorUnlock = colorUnlock;
         newItem.colorNotUnlock = colorNotUnlock;
-        
+
         manager.RefreshAll();
     }
-    
+
     [Button("Delete This Node")]
     private void DeleteThisNode()
     {
         if (EditorUtility.DisplayDialog("Delete Node", $"Delete node: {skillNode.NodeName}?", "Yes", "Cancel"))
         {
-            var manager = Application.isPlaying 
-                ? SkillTreeManager.Instance 
+            var manager = Application.isPlaying
+                ? SkillTreeManager.Instance
                 : FindObjectOfType<SkillTreeManager>();
 
             if (manager != null && skillNode != null)
@@ -205,13 +203,13 @@ public class NodeItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
                 AssetDatabase.SaveAssets();
                 AssetDatabase.Refresh();
             }
-            
+
             DestroyImmediate(gameObject);
         }
     }
-    
+
 #endif
-    
+
     private void OnDrawGizmos()
     {
         if (skillNode == null || skillNode.Connections == null)
@@ -231,6 +229,9 @@ public class NodeItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
             var endNode = allNodes.FirstOrDefault(n => n.SkillNode == connection);
             if (endNode != null)
             {
+                if (endNode.rectTransform == null)
+                    endNode.rectTransform = endNode.GetComponent<RectTransform>();
+
                 var endPos = endNode.rectTransform.anchoredPosition;
                 var startWorldPos = canvas.transform.TransformPoint(startPos);
                 var endWorldPos = canvas.transform.TransformPoint(endPos);
