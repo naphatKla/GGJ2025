@@ -73,6 +73,7 @@ namespace Characters.HeathSystems
         public void AssignHealthData(float maxHealth)
         {
             _maxHealth = maxHealth;
+            ResetHealth();
         }
         
         /// <summary>
@@ -143,6 +144,7 @@ namespace Characters.HeathSystems
             if (_isDead) return;
             _isDead = true;
             OnDead?.Invoke();
+            gameObject.SetActive(false);
         }
 
         #endregion

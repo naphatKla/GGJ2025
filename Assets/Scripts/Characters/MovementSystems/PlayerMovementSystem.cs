@@ -16,7 +16,7 @@ namespace Characters.MovementSystems
         [Required] [SerializeField] private Rigidbody2D rb2D;
 
         #region Methods
-
+        
         /// <summary>
         /// Moves the entity smoothly toward the specified position using Rigidbody2D physics.
         /// Applies gradual acceleration and turning inertia based on configured movement rates.

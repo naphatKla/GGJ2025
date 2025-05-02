@@ -29,6 +29,21 @@ namespace Characters.MovementSystems
         #region Methods
 
         /// <summary>
+        /// Assigns base movement data to the character, including speed and acceleration settings.
+        /// Typically called by the character controller during initialization to configure movement behavior.
+        /// </summary>
+        /// <param name="baseSpeed">The base movement speed of the character.</param>
+        /// <param name="moveAccelerationRate">The rate at which the character accelerates toward its movement speed.</param>
+        /// <param name="turnAccelerationRate">The rate at which the character changes its movement direction.</param>
+        public override void AssignMovementData(float baseSpeed, float moveAccelerationRate, float turnAccelerationRate)
+        {
+            base.AssignMovementData(baseSpeed, moveAccelerationRate, turnAccelerationRate);
+            agent.speed = baseSpeed;
+            agent.acceleration = moveAccelerationRate;
+            agent.angularSpeed = turnAccelerationRate * 180f;
+        }
+        
+        /// <summary>
         /// Moves the enemy directly toward the specified position.
         /// </summary>
         /// <param name="position">The target position to move towards.</param>

@@ -14,8 +14,7 @@ namespace Characters.CombatSystems
         /// <summary>
         /// Indicates whether this object is currently allowed to deal damage on contact.
         /// </summary>
-        [ShowInInspector, ReadOnly]
-        [ShowIf("@UnityEngine.Application.isPlaying")] 
+        [ShowInInspector, ReadOnly] [ShowIf("@UnityEngine.Application.isPlaying")]
         private bool _isEnableDamage;
         
         /// <summary>
