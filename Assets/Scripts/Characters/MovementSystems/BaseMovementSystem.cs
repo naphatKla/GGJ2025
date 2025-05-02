@@ -25,6 +25,34 @@ namespace Characters.MovementSystems
         protected float currentSpeed;
 
         /// <summary>
+        /// Controls how quickly the entity accelerates toward its maximum movement speed in a straight line.
+        /// Higher values result in quicker speed buildup during forward motion.
+        /// </summary>
+        [ShowInInspector, ReadOnly]
+        [ShowIf("@UnityEngine.Application.isPlaying")]
+        protected float moveAccelerationRate;
+
+        /// <summary>
+        /// Controls how quickly the entity changes its movement direction when turning.
+        /// Higher values result in more responsive and sharper directional adjustments.
+        /// </summary>
+        [ShowInInspector, ReadOnly]
+        [ShowIf("@UnityEngine.Application.isPlaying")]
+        protected float turnAccelerationRate;
+
+        /// <summary>
+        /// The current velocity of the entity movement.
+        /// Typically updated per frame and applied to Rigidbody2D for physical motion.
+        /// </summary>
+        protected Vector2 currentVelocity;
+
+        /// <summary>
+        /// The current normalized movement direction of the entity.
+        /// Used to determine the facing or desired movement direction over time.
+        /// </summary>
+        protected Vector2 currentDirection;
+
+        /// <summary>
         /// Determines whether the entity is allowed to move.
         /// </summary>
         [ShowInInspector, ReadOnly]
@@ -36,24 +64,29 @@ namespace Characters.MovementSystems
         #region Methods
 
         /// <summary>
-        /// Assigns the speed data for the character.
-        /// This method is typically called by the character controller during initialization.
+        /// Assigns base movement data to the character, including speed and acceleration settings.
+        /// Typically called by the character controller during initialization to configure movement behavior.
         /// </summary>
-        /// <param name="baseSpeed">The default speed value to assign.</param>
-        public virtual void AssignMovementData(float baseSpeed)
+        /// <param name="baseSpeed">The base movement speed of the character.</param>
+        /// <param name="moveAccelerationRate">The rate at which the character accelerates toward its movement speed.</param>
+        /// <param name="turnAccelerationRate">The rate at which the character changes its movement direction.</param>
+        public virtual void AssignMovementData(float baseSpeed, float moveAccelerationRate, float turnAccelerationRate)
         {
             _baseSpeed = baseSpeed;
             currentSpeed = baseSpeed;
+            this.moveAccelerationRate = moveAccelerationRate;
+            this.turnAccelerationRate = turnAccelerationRate;
         }
         
         /// <summary>
-        /// Attempts to move the entity if movement is allowed.
+        /// Attempts to apply inertia-based movement toward the given position if movement is currently allowed.
+        /// Commonly called by input systems or AI controllers to trigger motion with acceleration and turning behavior.
         /// </summary>
-        /// <param name="position">The target position to move towards.</param>
-        public virtual void TryMove(Vector2 position)
+        /// <param name="position">The target world-space position to move toward.</param>
+        public virtual void TryMoveWithInertia(Vector2 position)
         {
             if (!_canMove) return;
-            Move(position);
+            MoveWithInertia(position);
         }
 
         /// <summary>
@@ -62,7 +95,7 @@ namespace Characters.MovementSystems
         /// <param name="position">The target position to move towards.</param>
         /// <param name="duration">The time it takes to reach the target position.</param>
         /// <param name="ease">The easing function that determines the movement behavior.</param>
-        public virtual Tween  TryMoveToPositionOverTime(Vector2 position, float duration, Ease ease = Ease.InOutSine)
+        public virtual Tween TryMoveToPositionOverTime(Vector2 position, float duration, Ease ease = Ease.InOutSine)
         {
             if (!_canMove) return null;
             return MoveToPositionOverTime(position, duration, ease);
@@ -95,7 +128,7 @@ namespace Characters.MovementSystems
         /// This method should be called in FixedUpdate.
         /// </summary>
         /// <param name="position">The target position to move towards.</param>
-        protected abstract void Move(Vector2 position);
+        protected abstract void MoveWithInertia(Vector2 position);
 
         /// <summary>
         /// Moves toward the target position over a specified duration using easing.

@@ -18,15 +18,20 @@ namespace Characters.MovementSystems
         #region Methods
 
         /// <summary>
-        /// Moves the player continuously toward the specified position using Rigidbody2D.
-        /// This method should be called in FixedUpdate.
+        /// Moves the entity smoothly toward the specified position using Rigidbody2D physics.
+        /// Applies gradual acceleration and turning inertia based on configured movement rates.
+        /// This method should be called in <c>FixedUpdate</c>.
         /// </summary>
-        /// <param name="position">The target position to move towards.</param>
-        protected override void Move(Vector2 position)
+        /// <param name="position">The world position the entity should move toward.</param>
+
+        protected override void MoveWithInertia(Vector2 position)
         {
-            Vector2 direction = position - (Vector2)transform.position;
-            Vector2 newPos = (Vector2)transform.position + direction.normalized * (currentSpeed * Time.fixedDeltaTime);
-            rb2D.MovePosition(newPos);
+            Vector2 rawDirection = (position - (Vector2)transform.position).normalized;
+            currentDirection = Vector2.Lerp(currentDirection, rawDirection, turnAccelerationRate * Time.fixedDeltaTime);
+            
+            Vector2 desiredVelocity = currentDirection * currentSpeed;
+            currentVelocity = Vector2.Lerp(currentVelocity, desiredVelocity, moveAccelerationRate * Time.fixedDeltaTime);
+            rb2D.velocity = currentVelocity;
         }
 
         /// <summary>

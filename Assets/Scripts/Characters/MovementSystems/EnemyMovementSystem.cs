@@ -32,7 +32,7 @@ namespace Characters.MovementSystems
         /// Moves the enemy directly toward the specified position.
         /// </summary>
         /// <param name="position">The target position to move towards.</param>
-        protected override void Move(Vector2 position)
+        protected override void MoveWithInertia(Vector2 position)
         {
             agent.SetDestination(position);
         }
