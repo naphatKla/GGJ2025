@@ -30,6 +30,8 @@ public class StageDataSO : ScriptableObject
     [SerializeField] private int maxEnemySpawnCap;
     [Tooltip("Max enemy will increase by this quota")]
     [SerializeField] private float unitScoreQuota;
+    [Tooltip("Pre-spawn enemy parent (How many enemy should created on enemyparent to use with pooling)")]
+    [SerializeField] private int preSpawnEnemyCap;
     
     [Space][Title("Enemy Spawn Timer")]
     [Tooltip("Start enemy spawn interval")]
@@ -55,6 +57,7 @@ public class StageDataSO : ScriptableObject
     public int MaxEnemySpawnCap => maxEnemySpawnCap;
     public int CurrentMaxEnemySpawn => startMaxEnemySpawn;
     public float EnemySpawnInterval => startSpawnInterval;
+    public float EnemyPreCreated => preSpawnEnemyCap;
     public float SpawnIntervalCap => spawnIntervalCap;
     public Sprite Background => background;
     public float UnitScoreQuota => unitScoreQuota;

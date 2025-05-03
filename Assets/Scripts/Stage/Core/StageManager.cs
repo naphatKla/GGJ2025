@@ -134,9 +134,9 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     {
         foreach (var enemyData in stageData[currentStageIndex].Enemies)
         {
-            for (var i = 0; i < stageData[currentStageIndex].MaxEnemySpawnCap; i++)
+            for (var i = 0; i < stageData[currentStageIndex].EnemyPreCreated; i++)
             {
-                var enemy = PoolManager.Instance.Spawn(enemyData.EnemyData.EnemyPrefab, Vector3.zero, Quaternion.identity, true);
+                var enemy = PoolManager.Instance.Spawn(enemyData.EnemyData.EnemyPrefab, Vector3.zero, Quaternion.identity, enemyParent, true);
                 enemy.transform.SetParent(enemyParent);
                 PoolManager.Instance.Despawn(enemy);
             }
@@ -148,7 +148,7 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
             {
                 for (var i = 0; i < ((WorldEventSO)worldEvent).EnemyWorldEventCount; i++)
                 {
-                    var enemy = PoolManager.Instance.Spawn(enemyData.EnemyPrefab, Vector3.zero, Quaternion.identity, true);
+                    var enemy = PoolManager.Instance.Spawn(enemyData.EnemyPrefab, Vector3.zero, Quaternion.identity, enemyParent, true);
                     enemy.transform.SetParent(enemyParent);
                     PoolManager.Instance.Despawn(enemy);
                 }
@@ -273,7 +273,7 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
         
         _enemySpawner.enemies.Clear();
         _enemySpawner.eventEnemies.Clear();
-        PoolManager.Instance.ClearPool();
+        PoolManager.Instance.ClearPool(enemyParent);
         EnemyPoolCreated();
     }
 
