@@ -106,19 +106,30 @@ namespace Characters.MovementSystems
         /// Passing false will completely lock movement.
         /// </summary>
         /// <param name="canMove">Whether movement is enabled.</param>
-        public void SetCanMove(bool canMove)
+        public virtual void SetCanMove(bool canMove)
         {
             _canMove = canMove;
+            
+            if (!_canMove)
+                StopMovement();
+        }
+        
+        /// <summary>
+        /// Stop the entity movement. Set speed to zero.
+        /// </summary>
+        public virtual void StopMovement()
+        {
+            currentSpeed = 0;
         }
         
         /// <summary>
         /// Resets the current speed to the default base speed.
         /// </summary>
-        protected void ResetSpeedToDefault()
+        public void ResetSpeedToDefault()
         {
             currentSpeed = _baseSpeed;
         }
-
+        
         #endregion
 
         #region Abstract Methods

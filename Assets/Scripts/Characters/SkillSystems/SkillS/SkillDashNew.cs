@@ -33,7 +33,9 @@ namespace Characters.SkillSystems.SkillS
         /// </summary>
         protected override void OnSkillStart()
         {
+            owner.MovementSystem.StopMovement();
             owner.ToggleMovementInputController(false);
+            owner.MovementSystem.ResetSpeedToDefault();
         }
 
         /// <summary>
