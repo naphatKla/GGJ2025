@@ -1,27 +1,34 @@
+using System.Collections.Generic;
 using Characters.Controllers;
 using Characters.SkillSystems.SkillRuntimes;
+using Characters.SO.SkillDataSo;
+using Sirenix.OdinInspector;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Characters.SkillSystems
 {
     /// <summary>
     /// Controls and manages the execution and cooldowns of primary and secondary skills.
-    /// Handles cooldown countdown, skill assignment, and skill triggering with direction input.
+    /// Handles cooldown countdowns, skill assignment, and triggering logic with directional input.
+    /// Skill data and their associated runtime behaviours are paired automatically at runtime.
     /// </summary>
     public class SkillSystem : MonoBehaviour
     {
         #region Inspector & Variables
 
-        /// <summary>
-        /// The default primary skill assigned to this character.
-        /// </summary>
-        [FormerlySerializedAs("primarySkillRuntimes")] [FormerlySerializedAs("primarySkill")] [SerializeField] private BaseSkillRuntime primarySkillRuntime;
+        [SerializeField, InfoBox("Default list of skill data. [0] is primary, [1] is secondary.")]
+        private List<BaseSkillDataSo> allAvailableSkillData;
 
         /// <summary>
-        /// The default secondary skill assigned to this character.
+        /// Stores instantiated runtime components for each skill data.
         /// </summary>
-        [FormerlySerializedAs("secondarySkillRuntimes")] [FormerlySerializedAs("secondarySkill")] [SerializeField] private BaseSkillRuntime secondarySkillRuntime;
+        private Dictionary<BaseSkillDataSo, BaseSkillRuntime> _skillDictionary = new();
+
+        private BaseSkillDataSo _primarySkillData;
+        private BaseSkillDataSo _secondarySkillData;
+
+        private BaseSkillRuntime _primarySkillRuntime;
+        private BaseSkillRuntime _secondarySkillRuntime;
 
         /// <summary>
         /// Remaining cooldown time for the primary skill.
@@ -34,7 +41,7 @@ namespace Characters.SkillSystems
         private float _secondarySkillCooldown;
 
         /// <summary>
-        /// Reference to the owning controller (usually the player or enemy).
+        /// Reference to the character who owns this skill system.
         /// </summary>
         private BaseController _owner;
 
@@ -54,114 +61,127 @@ namespace Characters.SkillSystems
         #endregion
 
         #region Methods
-        
+
         /// <summary>
-        /// Initializes the skill system with a given owner and sets default skills.
+        /// Initializes the skill system with the owning controller, instantiates and pairs runtime components with skill data,
+        /// and assigns the default primary/secondary skills.
         /// </summary>
-        /// <param name="owner">The character that owns this skill system.</param>
+        /// <param name="owner">The controller (e.g., player or enemy) that owns this skill system.</param>
         public void Initialize(BaseController owner)
         {
             _owner = owner;
-            SetPrimarySkill(primarySkillRuntime);
-            SetSecondarySkill(secondarySkillRuntime);
+
+            foreach (BaseSkillDataSo skillData in allAvailableSkillData)
+            {
+                BaseSkillRuntime skillRuntime = (BaseSkillRuntime)gameObject.AddComponent(skillData.SkillRuntime);
+
+                // Assign skill data to the instantiated runtime
+                (skillRuntime as BaseSkillRuntime<BaseSkillDataSo>)?.AssignSkillData(skillData);
+                _skillDictionary.Add(skillData, skillRuntime);
+            }
+
+            switch (allAvailableSkillData.Count)
+            {
+                case <= 0:
+                    Debug.LogWarning($"⚠️ [SkillSystem] No skill data assigned on {gameObject.name}.");
+                    return;
+                case 1:
+                    Debug.LogWarning($"⚠️ [SkillSystem] Only one skill assigned on {gameObject.name}. Secondary will be empty.");
+                    SetPrimarySkill(allAvailableSkillData[0]);
+                    return;
+                default:
+                    SetPrimarySkill(allAvailableSkillData[0]);
+                    SetSecondarySkill(allAvailableSkillData[1]);
+                    break;
+            }
         }
-        
+
         /// <summary>
-        /// Triggers the primary skill if it is available and not on cooldown.
+        /// Executes the primary skill if not on cooldown and the system is initialized.
         /// </summary>
         /// <param name="direction">The direction to perform the skill toward.</param>
         public void PerformPrimarySkill(Vector2 direction)
         {
-            if (!primarySkillRuntime) return;
-            if (_primarySkillCooldown > 0) return;
+            if (!_primarySkillRuntime || _primarySkillCooldown > 0) return;
             if (!_owner)
             {
-                Debug.LogWarning("⚠️ [SkillSystem] Missing skill owner! Call Initialize(owner) before performing skills.");
+                Debug.LogWarning("⚠️ [SkillSystem] Missing skill owner. Call Initialize(owner) before performing skills.");
                 return;
             }
 
-            primarySkillRuntime.PerformSkill(_owner, direction);
-            ModifyPrimarySkillCooldown(primarySkillRuntime.cooldownDuration);
+            _primarySkillRuntime.PerformSkill(_owner, direction);
+            ModifyPrimarySkillCooldown(_primarySkillData.Cooldown);
         }
 
         /// <summary>
-        /// Triggers the secondary skill if it is available and not on cooldown.
+        /// Executes the secondary skill if not on cooldown and the system is initialized.
         /// </summary>
         /// <param name="direction">The direction to perform the skill toward.</param>
         public void PerformSecondarySkill(Vector2 direction)
         {
-            if (!secondarySkillRuntime) return;
-            if (_secondarySkillCooldown > 0) return;
+            if (!_secondarySkillRuntime || _secondarySkillCooldown > 0) return;
             if (!_owner)
             {
-                Debug.LogWarning("⚠️ [SkillSystem] Missing skill owner! Call Initialize(owner) before performing skills.");
+                Debug.LogWarning("⚠️ [SkillSystem] Missing skill owner. Call Initialize(owner) before performing skills.");
                 return;
             }
 
-            secondarySkillRuntime.PerformSkill(_owner, direction);
-            ModifySecondarySkillCooldown(secondarySkillRuntime.cooldownDuration);
+            _secondarySkillRuntime.PerformSkill(_owner, direction);
+            ModifySecondarySkillCooldown(_secondarySkillData.Cooldown);
         }
-        
+
         /// <summary>
-        /// Updates the cooldown value for the primary skill, clamped to its max duration.
+        /// Modifies and clamps the remaining cooldown time for the primary skill.
         /// </summary>
-        /// <param name="value">The new cooldown value.</param>
+        /// <param name="value">New cooldown time (will be clamped between 0 and max cooldown).</param>
         public void ModifyPrimarySkillCooldown(float value)
         {
-            if (!primarySkillRuntime) return;
-
-            _primarySkillCooldown =
-                Mathf.Clamp(value, 0, primarySkillRuntime.cooldownDuration);
+            if (!_primarySkillRuntime) return;
+            _primarySkillCooldown = Mathf.Clamp(value, 0, _primarySkillData.Cooldown);
         }
 
         /// <summary>
-        /// Updates the cooldown value for the secondary skill, clamped to its max duration.
+        /// Modifies and clamps the remaining cooldown time for the secondary skill.
         /// </summary>
-        /// <param name="value">The new cooldown value.</param>
+        /// <param name="value">New cooldown time (will be clamped between 0 and max cooldown).</param>
         public void ModifySecondarySkillCooldown(float value)
         {
-            if (!secondarySkillRuntime) return;
-
-            _secondarySkillCooldown =
-                Mathf.Clamp(value, 0, secondarySkillRuntime.cooldownDuration);
+            if (!_secondarySkillRuntime) return;
+            _secondarySkillCooldown = Mathf.Clamp(value, 0, _secondarySkillData.Cooldown);
         }
 
         /// <summary>
-        /// Instantly resets the primary skill's cooldown to 0.
+        /// Instantly resets the primary skill's cooldown.
         /// </summary>
-        public void ResetPrimarySkillCooldown()
-        {
-            _primarySkillCooldown = 0;
-        }
+        public void ResetPrimarySkillCooldown() => _primarySkillCooldown = 0;
 
         /// <summary>
-        /// Instantly resets the secondary skill's cooldown to 0.
+        /// Instantly resets the secondary skill's cooldown.
         /// </summary>
-        public void ResetSecondarySkillCooldown()
-        {
-            _secondarySkillCooldown = 0;
-        }
-        
+        public void ResetSecondarySkillCooldown() => _secondarySkillCooldown = 0;
+
         /// <summary>
-        /// Assigns a new primary skill and resets its cooldown.
+        /// Assigns a new primary skill by referencing its runtime from the dictionary and resets cooldown.
         /// </summary>
-        /// <param name="newSkillRuntimes">The new skill to assign as primary.</param>
-        public void SetPrimarySkill(BaseSkillRuntime newSkillRuntime)
+        /// <param name="newSkillData">The skill data to assign as primary.</param>
+        public void SetPrimarySkill(BaseSkillDataSo newSkillData)
         {
-            primarySkillRuntime = newSkillRuntime;
+            _primarySkillData = newSkillData;
+            _primarySkillRuntime = _skillDictionary[_primarySkillData];
             ResetPrimarySkillCooldown();
         }
 
         /// <summary>
-        /// Assigns a new secondary skill and resets its cooldown.
+        /// Assigns a new secondary skill by referencing its runtime from the dictionary and resets cooldown.
         /// </summary>
-        /// <param name="newSkillRuntimes">The new skill to assign as secondary.</param>
-        public void SetSecondarySkill(BaseSkillRuntime newSkillRuntime)
+        /// <param name="newSkillData">The skill data to assign as secondary.</param>
+        public void SetSecondarySkill(BaseSkillDataSo newSkillData)
         {
-            secondarySkillRuntime = newSkillRuntime;
+            _secondarySkillData = newSkillData;
+            _secondarySkillRuntime = _skillDictionary[_secondarySkillData];
             ResetSecondarySkillCooldown();
         }
-        
+
         #endregion
     }
 }

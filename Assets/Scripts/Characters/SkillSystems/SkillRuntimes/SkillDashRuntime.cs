@@ -1,35 +1,22 @@
 using System.Collections;
 using Characters.SO.SkillDataSo;
 using DG.Tweening;
-using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace Characters.SkillSystems.SkillRuntimes
 {
     /// <summary>
-    /// A dash skill that moves the character quickly in a given direction over a short distance.
-    /// Disables movement input during the dash and re-enables it after completion.
+    /// Runtime logic for the dash skill.
+    /// Moves the character quickly in the aimed direction for a short duration and distance.
+    /// Uses tweening for smooth motion and temporarily disables player input during execution.
     /// </summary>
     public class SkillDashRuntime : BaseSkillRuntime<SkillDashDataSo>
     {
-        #region Inspector & Variables
-
-        /// <summary>
-        /// The duration (in seconds) of the dash movement.
-        /// </summary>
-        [Title("SkillDash")] [SerializeField] private float dashDuration = 0.3f;
-
-        /// <summary>
-        /// The total distance the character will dash.
-        /// </summary>
-        [SerializeField] private float dashDistance = 8f;
-
-        #endregion
-
         #region Methods
 
         /// <summary>
-        /// Called at the start of the dash skill. Disables player movement input.
+        /// Called at the beginning of the dash skill.
+        /// Stops movement and disables player input to prevent interference during dash.
         /// </summary>
         protected override void OnSkillStart()
         {
@@ -39,21 +26,22 @@ namespace Characters.SkillSystems.SkillRuntimes
         }
 
         /// <summary>
-        /// Executes the dash movement using the movement system and waits for it to complete.
+        /// Executes the dash movement by moving toward the calculated dash position.
+        /// Waits for the tween to complete before finishing the skill.
         /// </summary>
-        /// <returns>Coroutine that yields until dash is completed.</returns>
+        /// <returns>A coroutine that yields until the dash movement completes.</returns>
         protected override IEnumerator OnSkillUpdate()
         {
-            Vector2 dashPosition = (Vector2)transform.position + aimDirection * dashDistance;
+            Vector2 dashPosition = (Vector2)transform.position + aimDirection * skillData.DashDistance;
 
-            // Start dash movement and wait until finished (via Tween)
             yield return owner.MovementSystem
-                .TryMoveToPositionOverTime(dashPosition, dashDuration)
+                .TryMoveToPositionOverTime(dashPosition, skillData.DashDuration)
                 .WaitForCompletion();
         }
 
         /// <summary>
-        /// Called after the dash ends. Re-enables movement input.
+        /// Called after the dash skill finishes.
+        /// Re-enables movement input so the player can move again.
         /// </summary>
         protected override void OnSkillExit()
         {

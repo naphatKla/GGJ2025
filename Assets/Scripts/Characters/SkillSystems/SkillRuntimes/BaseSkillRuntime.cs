@@ -7,59 +7,74 @@ using UnityEngine;
 namespace Characters.SkillSystems.SkillRuntimes
 {
     /// <summary>
-    /// Base class for all skills that can be performed by characters.
-    /// Handles the skill execution flow including start, update (runtime logic), and exit.
-    /// Prevents re-execution while a skill is already performing.
+    /// Abstract base class for all skill runtime behaviours.
+    /// Provides a unified interface for executing skills during gameplay.
     /// </summary>
-    public abstract class BaseSkillRuntime<T> : MonoBehaviour where T : BaseSkillDataSo
+    public abstract class BaseSkillRuntime : MonoBehaviour
+    {
+        /// <summary>
+        /// Executes the skill using the provided owner and input direction.
+        /// Should be overridden in a generic subclass to implement full behavior.
+        /// </summary>
+        /// <param name="owner">The character who is performing the skill.</param>
+        /// <param name="direction">The direction in which the skill is being cast.</param>
+        public abstract void PerformSkill(BaseController owner, Vector2 direction);
+    }
+
+    /// <summary>
+    /// Generic base class for skill runtime execution, parameterized by its associated skill data type.
+    /// Encapsulates lifecycle logic such as skill start, update (coroutine), and exit phases.
+    /// </summary>
+    /// <typeparam name="T">The specific skill data type (inherited from <see cref="BaseSkillDataSo"/>).</typeparam>
+    public abstract class BaseSkillRuntime<T> : BaseSkillRuntime where T : BaseSkillDataSo
     {
         #region Inspector & Variables
 
         /// <summary>
-        /// 
+        /// The skill data containing configuration values for this runtime behavior.
         /// </summary>
         protected T skillData;
-        
+
         /// <summary>
-        /// The owner of the skill. Usually the character or entity casting the skill.
+        /// The controller that owns and performs this skill (e.g., player or enemy).
         /// </summary>
         protected BaseController owner;
 
         /// <summary>
-        /// The aiming direction in which the skill is performed.
+        /// The direction in which the skill should be executed (e.g., toward target).
         /// </summary>
         protected Vector2 aimDirection;
 
         /// <summary>
-        /// Flag to indicate whether the skill is currently being performed.
-        /// Prevents skill spamming or reactivation during its execution.
+        /// Indicates whether this skill is currently active or executing.
+        /// Prevents the skill from being retriggered while already in use.
         /// </summary>
         private bool _isPerforming;
 
-        /// <summary>
-        /// 
-        /// </summary>
-        public T SkillData => skillData;
-        
         #endregion
 
         #region Methods
 
         /// <summary>
-        /// 
+        /// Injects the skill data into this runtime behavior.
+        /// Called during skill initialization.
         /// </summary>
+        /// <param name="skillData">The data asset associated with this runtime skill.</param>
         public void AssignSkillData(T skillData)
         {
             this.skillData = skillData;
         }
-        
+
         /// <summary>
-        /// Starts the skill execution process if it's not already performing.
-        /// It triggers the start phase, runs the update coroutine, and finally calls the exit phase.
+        /// Begins the full execution flow of the skill:
+        /// 1. Assigns owner and direction
+        /// 2. Starts the skill (OnSkillStart)
+        /// 3. Executes coroutine (OnSkillUpdate)
+        /// 4. Cleans up (OnSkillExit)
         /// </summary>
-        /// <param name="owner">The entity performing the skill.</param>
-        /// <param name="direction">The direction in which the skill is aimed or cast.</param>
-        public void PerformSkill(BaseController owner, Vector2 direction)
+        /// <param name="owner">The character who is casting this skill.</param>
+        /// <param name="direction">The direction to aim or move during the skill.</param>
+        public override void PerformSkill(BaseController owner, Vector2 direction)
         {
             if (_isPerforming) return;
             this.owner = owner;
@@ -70,8 +85,8 @@ namespace Characters.SkillSystems.SkillRuntimes
         }
 
         /// <summary>
-        /// Internally handles the beginning of the skill execution and marks it as active.
-        /// Calls the abstract method <see cref="OnSkillStart"/> implemented in derived classes.
+        /// Handles pre-execution logic and sets the skill as currently performing.
+        /// Triggers the OnSkillStart phase.
         /// </summary>
         protected virtual void HandleSkillStart()
         {
@@ -80,8 +95,8 @@ namespace Characters.SkillSystems.SkillRuntimes
         }
 
         /// <summary>
-        /// Internally handles the end of the skill execution and resets the performing flag.
-        /// Calls the abstract method <see cref="OnSkillExit"/> implemented in derived classes.
+        /// Handles post-execution logic and resets the performing flag.
+        /// Triggers the OnSkillExit phase.
         /// </summary>
         protected virtual void HandleSkillExit()
         {
@@ -94,20 +109,21 @@ namespace Characters.SkillSystems.SkillRuntimes
         #region Abstract Methods
 
         /// <summary>
-        /// Called when the skill starts. To be implemented by derived skill classes.
-        /// This is where you initialize animations, effects, or logic before execution.
+        /// Called immediately before the skill logic begins.
+        /// Use this to play animations, disable input, etc.
         /// </summary>
         protected abstract void OnSkillStart();
 
         /// <summary>
-        /// Coroutine that contains the main logic of the skill execution.
-        /// Runs during the skill's active phase and allows for time-based behavior.
+        /// Coroutine containing the main execution logic for the skill (e.g., dashing, charging).
+        /// Can yield over time or wait for conditions.
         /// </summary>
-        /// <returns>An IEnumerator used as a coroutine.</returns>
+        /// <returns>Coroutine IEnumerator controlling skill duration or logic.</returns>
         protected abstract IEnumerator OnSkillUpdate();
 
         /// <summary>
-        /// Called when the skill ends. Used for cleanup or resetting states.
+        /// Called once the skill finishes execution.
+        /// Use this for re-enabling control or stopping effects.
         /// </summary>
         protected abstract void OnSkillExit();
 

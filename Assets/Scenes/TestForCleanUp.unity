@@ -459,7 +459,6 @@ GameObject:
   - component: {fileID: 1537051329}
   - component: {fileID: 1537051320}
   - component: {fileID: 1537051323}
-  - component: {fileID: 1537051330}
   m_Layer: 7
   m_Name: TestPlayer
   m_TagString: Player
@@ -660,8 +659,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0de63d556ce2eea4ca302cf09c1f9e61, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  primarySkillRuntime: {fileID: 1537051330}
-  secondarySkillRuntime: {fileID: 1537051330}
+  allAvailableSkillData:
+  - {fileID: 11400000, guid: 0e1b5bdaf3cd54043a42bec2bc82dcb1, type: 2}
 --- !u!114 &1537051328
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -686,21 +685,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 369ce1c8fe5d39046ab3c21f688fc897, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &1537051330
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1537051317}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 135179768b01554498a9dd47f81e64ee, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  cooldownDuration: 1
-  dashDuration: 0.2
-  dashDistance: 8
 --- !u!1 &2107089418
 GameObject:
   m_ObjectHideFlags: 0
@@ -915,8 +899,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0de63d556ce2eea4ca302cf09c1f9e61, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  primarySkillRuntime: {fileID: 2107089429}
-  secondarySkillRuntime: {fileID: 2107089429}
+  allAvailableSkillData:
+  - {fileID: 11400000, guid: 2c6a7ebc0acf3df43bf62e2b9e100044, type: 2}
 --- !u!114 &2107089428
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -941,9 +925,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 135179768b01554498a9dd47f81e64ee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cooldownDuration: 5
   dashDuration: 0.3
-  dashDistance: 5
+  dashDistance: 8
 --- !u!114 &2107089430
 MonoBehaviour:
   m_ObjectHideFlags: 0
