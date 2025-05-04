@@ -1,4 +1,5 @@
 using System.Collections;
+using Characters.SO.SkillDataSo;
 using DG.Tweening;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -9,7 +10,7 @@ namespace Characters.SkillSystems.SkillRuntimes
     /// A dash skill that moves the character quickly in a given direction over a short distance.
     /// Disables movement input during the dash and re-enables it after completion.
     /// </summary>
-    public class SkillDashRuntime : BaseSkillRuntime
+    public class SkillDashRuntime : BaseSkillRuntime<SkillDashDataSo>
     {
         #region Inspector & Variables
 

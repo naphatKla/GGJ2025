@@ -1,5 +1,6 @@
 using System.Collections;
 using Characters.Controllers;
+using Characters.SO.SkillDataSo;
 using ProjectExtensions;
 using UnityEngine;
 
@@ -10,15 +11,15 @@ namespace Characters.SkillSystems.SkillRuntimes
     /// Handles the skill execution flow including start, update (runtime logic), and exit.
     /// Prevents re-execution while a skill is already performing.
     /// </summary>
-    public abstract class BaseSkillRuntime : MonoBehaviour
+    public abstract class BaseSkillRuntime<T> : MonoBehaviour where T : BaseSkillDataSo
     {
         #region Inspector & Variables
 
         /// <summary>
-        /// The cooldown duration of the skill after use.
+        /// 
         /// </summary>
-        public float cooldownDuration;
-
+        protected T skillData;
+        
         /// <summary>
         /// The owner of the skill. Usually the character or entity casting the skill.
         /// </summary>
@@ -35,10 +36,23 @@ namespace Characters.SkillSystems.SkillRuntimes
         /// </summary>
         private bool _isPerforming;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public T SkillData => skillData;
+        
         #endregion
 
         #region Methods
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public void AssignSkillData(T skillData)
+        {
+            this.skillData = skillData;
+        }
+        
         /// <summary>
         /// Starts the skill execution process if it's not already performing.
         /// It triggers the start phase, runs the update coroutine, and finally calls the exit phase.

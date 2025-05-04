@@ -13,9 +13,9 @@ namespace Characters.SO.SkillDataSo
         [PropertyTooltip("The cooldown duration (in seconds) before the skill can be used again.")]
         [SerializeField] private float cooldown = 1f;
         
-        [Title("")] [ShowInInspector] [PropertyOrder(10000)]
         [PropertyTooltip("")]
-        [TypeDrawerSettings(BaseType = typeof(BaseSkillRuntime))]
+        [Title("")] [ShowInInspector] [PropertyOrder(10000)]
+        [TypeDrawerSettings(BaseType = typeof(BaseSkillRuntime<>))]
         private Type _skillRuntime;
 
         /// <summary>
