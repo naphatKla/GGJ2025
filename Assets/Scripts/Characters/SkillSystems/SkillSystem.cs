@@ -1,6 +1,7 @@
 using Characters.Controllers;
-using Characters.SkillSystems.SkillS;
+using Characters.SkillSystems.SkillRuntimes;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Characters.SkillSystems
 {
@@ -15,12 +16,12 @@ namespace Characters.SkillSystems
         /// <summary>
         /// The default primary skill assigned to this character.
         /// </summary>
-        [SerializeField] private BaseSkill primarySkill;
+        [FormerlySerializedAs("primarySkillRuntimes")] [FormerlySerializedAs("primarySkill")] [SerializeField] private BaseSkillRuntime primarySkillRuntime;
 
         /// <summary>
         /// The default secondary skill assigned to this character.
         /// </summary>
-        [SerializeField] private BaseSkill secondarySkill;
+        [FormerlySerializedAs("secondarySkillRuntimes")] [FormerlySerializedAs("secondarySkill")] [SerializeField] private BaseSkillRuntime secondarySkillRuntime;
 
         /// <summary>
         /// Remaining cooldown time for the primary skill.
@@ -61,8 +62,8 @@ namespace Characters.SkillSystems
         public void Initialize(BaseController owner)
         {
             _owner = owner;
-            SetPrimarySkill(primarySkill);
-            SetSecondarySkill(secondarySkill);
+            SetPrimarySkill(primarySkillRuntime);
+            SetSecondarySkill(secondarySkillRuntime);
         }
         
         /// <summary>
@@ -71,7 +72,7 @@ namespace Characters.SkillSystems
         /// <param name="direction">The direction to perform the skill toward.</param>
         public void PerformPrimarySkill(Vector2 direction)
         {
-            if (!primarySkill) return;
+            if (!primarySkillRuntime) return;
             if (_primarySkillCooldown > 0) return;
             if (!_owner)
             {
@@ -79,8 +80,8 @@ namespace Characters.SkillSystems
                 return;
             }
 
-            primarySkill.PerformSkill(_owner, direction);
-            ModifyPrimarySkillCooldown(primarySkill.cooldownDuration);
+            primarySkillRuntime.PerformSkill(_owner, direction);
+            ModifyPrimarySkillCooldown(primarySkillRuntime.cooldownDuration);
         }
 
         /// <summary>
@@ -89,7 +90,7 @@ namespace Characters.SkillSystems
         /// <param name="direction">The direction to perform the skill toward.</param>
         public void PerformSecondarySkill(Vector2 direction)
         {
-            if (!secondarySkill) return;
+            if (!secondarySkillRuntime) return;
             if (_secondarySkillCooldown > 0) return;
             if (!_owner)
             {
@@ -97,8 +98,8 @@ namespace Characters.SkillSystems
                 return;
             }
 
-            secondarySkill.PerformSkill(_owner, direction);
-            ModifySecondarySkillCooldown(secondarySkill.cooldownDuration);
+            secondarySkillRuntime.PerformSkill(_owner, direction);
+            ModifySecondarySkillCooldown(secondarySkillRuntime.cooldownDuration);
         }
         
         /// <summary>
@@ -107,10 +108,10 @@ namespace Characters.SkillSystems
         /// <param name="value">The new cooldown value.</param>
         public void ModifyPrimarySkillCooldown(float value)
         {
-            if (!primarySkill) return;
+            if (!primarySkillRuntime) return;
 
             _primarySkillCooldown =
-                Mathf.Clamp(value, 0, primarySkill.cooldownDuration);
+                Mathf.Clamp(value, 0, primarySkillRuntime.cooldownDuration);
         }
 
         /// <summary>
@@ -119,10 +120,10 @@ namespace Characters.SkillSystems
         /// <param name="value">The new cooldown value.</param>
         public void ModifySecondarySkillCooldown(float value)
         {
-            if (!secondarySkill) return;
+            if (!secondarySkillRuntime) return;
 
             _secondarySkillCooldown =
-                Mathf.Clamp(value, 0, secondarySkill.cooldownDuration);
+                Mathf.Clamp(value, 0, secondarySkillRuntime.cooldownDuration);
         }
 
         /// <summary>
@@ -144,20 +145,20 @@ namespace Characters.SkillSystems
         /// <summary>
         /// Assigns a new primary skill and resets its cooldown.
         /// </summary>
-        /// <param name="newSkill">The new skill to assign as primary.</param>
-        public void SetPrimarySkill(BaseSkill newSkill)
+        /// <param name="newSkillRuntimes">The new skill to assign as primary.</param>
+        public void SetPrimarySkill(BaseSkillRuntime newSkillRuntime)
         {
-            primarySkill = newSkill;
+            primarySkillRuntime = newSkillRuntime;
             ResetPrimarySkillCooldown();
         }
 
         /// <summary>
         /// Assigns a new secondary skill and resets its cooldown.
         /// </summary>
-        /// <param name="newSkill">The new skill to assign as secondary.</param>
-        public void SetSecondarySkill(BaseSkill newSkill)
+        /// <param name="newSkillRuntimes">The new skill to assign as secondary.</param>
+        public void SetSecondarySkill(BaseSkillRuntime newSkillRuntime)
         {
-            secondarySkill = newSkill;
+            secondarySkillRuntime = newSkillRuntime;
             ResetSecondarySkillCooldown();
         }
         

@@ -3,14 +3,14 @@ using Characters.Controllers;
 using ProjectExtensions;
 using UnityEngine;
 
-namespace Characters.SkillSystems.SkillS
+namespace Characters.SkillSystems.SkillRuntimes
 {
     /// <summary>
     /// Base class for all skills that can be performed by characters.
     /// Handles the skill execution flow including start, update (runtime logic), and exit.
     /// Prevents re-execution while a skill is already performing.
     /// </summary>
-    public abstract class BaseSkill : MonoBehaviour
+    public abstract class BaseSkillRuntime : MonoBehaviour
     {
         #region Inspector & Variables
 
