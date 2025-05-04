@@ -13,6 +13,13 @@ namespace Characters.SkillSystems.SkillRuntimes
     public abstract class BaseSkillRuntime : MonoBehaviour
     {
         /// <summary>
+        /// Injects the skill data into this runtime behavior.
+        /// Called during skill initialization.
+        /// </summary>
+        /// <param name="skillData">The data asset associated with this runtime skill.</param>
+        public abstract void AssignSkillData(BaseSkillDataSo skillData); 
+        
+        /// <summary>
         /// Executes the skill using the provided owner and input direction.
         /// Should be overridden in a generic subclass to implement full behavior.
         /// </summary>
@@ -60,9 +67,10 @@ namespace Characters.SkillSystems.SkillRuntimes
         /// Called during skill initialization.
         /// </summary>
         /// <param name="skillData">The data asset associated with this runtime skill.</param>
-        public void AssignSkillData(T skillData)
+        public override void AssignSkillData(BaseSkillDataSo skillData)
         {
-            this.skillData = skillData;
+            this.skillData = skillData as T;
+            Debug.Log("Skill Assign");
         }
 
         /// <summary>

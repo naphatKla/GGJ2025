@@ -74,9 +74,7 @@ namespace Characters.SkillSystems
             foreach (BaseSkillDataSo skillData in allAvailableSkillData)
             {
                 BaseSkillRuntime skillRuntime = (BaseSkillRuntime)gameObject.AddComponent(skillData.SkillRuntime);
-
-                // Assign skill data to the instantiated runtime
-                (skillRuntime as BaseSkillRuntime<BaseSkillDataSo>)?.AssignSkillData(skillData);
+                skillRuntime.AssignSkillData(skillData);
                 _skillDictionary.Add(skillData, skillRuntime);
             }
 
