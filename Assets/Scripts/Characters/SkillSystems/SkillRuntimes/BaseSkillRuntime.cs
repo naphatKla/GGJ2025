@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using Characters.Controllers;
 using Characters.SO.SkillDataSo;
@@ -104,7 +105,14 @@ namespace Characters.SkillSystems.SkillRuntimes
             }
             
             HandleSkillStart();
-            await OnSkillUpdate(_cts.Token);
+            try
+            {
+                await OnSkillUpdate(_cts.Token);
+            }
+            catch (OperationCanceledException)
+            {
+                //Debug.LogWarning($"{GetType()} was cancelled");
+            }
             HandleSkillExit();
         }
 
