@@ -1,22 +1,22 @@
-using System.Collections;
+using System.Threading;
 using Characters.SO.SkillDataSo;
-using DG.Tweening;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 namespace Characters.SkillSystems.SkillRuntimes
 {
     /// <summary>
-    /// Runtime logic for the dash skill.
-    /// Moves the character quickly in the aimed direction for a short duration and distance.
-    /// Uses tweening for smooth motion and temporarily disables player input during execution.
+    /// Runtime implementation of a dash skill.
+    /// Executes a quick burst movement in the aimed direction using DOTween,
+    /// while temporarily disabling movement input and respecting skill lifetime and cancellation.
     /// </summary>
     public class SkillDashRuntime : BaseSkillRuntime<SkillDashDataSo>
     {
         #region Methods
 
         /// <summary>
-        /// Called at the beginning of the dash skill.
-        /// Stops movement and disables player input to prevent interference during dash.
+        /// Called when the dash skill begins.
+        /// Disables character input and resets speed to base before performing the dash.
         /// </summary>
         protected override void OnSkillStart()
         {
@@ -26,22 +26,23 @@ namespace Characters.SkillSystems.SkillRuntimes
         }
 
         /// <summary>
-        /// Executes the dash movement by moving toward the calculated dash position.
-        /// Waits for the tween to complete before finishing the skill.
+        /// Performs the dash by moving the character toward a target position over time.
+        /// Supports cancellation via token, allowing skill interruption if required.
         /// </summary>
-        /// <returns>A coroutine that yields until the dash movement completes.</returns>
-        protected override IEnumerator OnSkillUpdate()
+        /// <param name="cancelToken">Token used to cancel the dash early (e.g., on interrupt or skill timeout).</param>
+        /// <returns>A UniTask that completes when the dash tween ends or is cancelled.</returns>
+        protected override UniTask OnSkillUpdate(CancellationToken cancelToken)
         {
             Vector2 dashPosition = (Vector2)transform.position + aimDirection * skillData.DashDistance;
 
-            yield return owner.MovementSystem
+            return owner.MovementSystem
                 .TryMoveToPositionOverTime(dashPosition, skillData.DashDuration)
-                .WaitForCompletion();
+                .WithCancellation(cancelToken);
         }
 
         /// <summary>
-        /// Called after the dash skill finishes.
-        /// Re-enables movement input so the player can move again.
+        /// Called when the dash completes or is cancelled.
+        /// Re-enables movement input to return control to the character.
         /// </summary>
         protected override void OnSkillExit()
         {

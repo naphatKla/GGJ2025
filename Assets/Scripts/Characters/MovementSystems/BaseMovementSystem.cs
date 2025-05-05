@@ -6,6 +6,8 @@ namespace Characters.MovementSystems
 {
     /// <summary>
     /// Base class for handling movement logic of an entity.
+    /// Includes support for inertia-based movement and tweened movement toward a specific target.
+    /// Meant to be extended by character or enemy movement classes.
     /// </summary>
     public abstract class BaseMovementSystem : MonoBehaviour
     {
@@ -42,23 +44,30 @@ namespace Characters.MovementSystems
 
         /// <summary>
         /// The current velocity of the entity movement.
-        /// Typically updated per frame and applied to Rigidbody2D for physical motion.
+        /// Typically updated per frame and applied to Rigidbody2D or NavMeshAgent.
         /// </summary>
         protected Vector2 currentVelocity;
 
         /// <summary>
         /// The current normalized movement direction of the entity.
-        /// Used to determine the facing or desired movement direction over time.
+        /// Used to determine the facing or intended direction.
         /// </summary>
         protected Vector2 currentDirection;
 
         /// <summary>
         /// Determines whether the entity is allowed to move.
+        /// If false, movement commands will be ignored.
         /// </summary>
         [ShowInInspector, ReadOnly]
         [ShowIf("@UnityEngine.Application.isPlaying")]
         private bool _canMove = true;
-        
+
+        /// <summary>
+        /// Reference to the active tween used for movement over time (via DOTween).
+        /// If a new tween is triggered, this one will be killed to avoid overlap.
+        /// </summary>
+        private Tween _moveOverTimeTween;
+
         #endregion
 
         #region Methods
@@ -77,7 +86,7 @@ namespace Characters.MovementSystems
             this.moveAccelerationRate = moveAccelerationRate;
             this.turnAccelerationRate = turnAccelerationRate;
         }
-        
+
         /// <summary>
         /// Attempts to apply inertia-based movement toward the given position if movement is currently allowed.
         /// Commonly called by input systems or AI controllers to trigger motion with acceleration and turning behavior.
@@ -91,63 +100,72 @@ namespace Characters.MovementSystems
 
         /// <summary>
         /// Attempts to smoothly move the entity to a specified position over a set duration, if movement is allowed.
+        /// Cancels any existing tween before starting a new one.
         /// </summary>
         /// <param name="position">The target position to move towards.</param>
         /// <param name="duration">The time it takes to reach the target position.</param>
         /// <param name="ease">The easing function that determines the movement behavior.</param>
+        /// <returns>The active tween used for movement.</returns>
         public virtual Tween TryMoveToPositionOverTime(Vector2 position, float duration, Ease ease = Ease.InOutSine)
         {
             if (!_canMove) return null;
-            return MoveToPositionOverTime(position, duration, ease);
+            _moveOverTimeTween?.Kill();
+            _moveOverTimeTween = MoveToPositionOverTime(position, duration, ease);
+            return _moveOverTimeTween;
         }
 
         /// <summary>
         /// Sets whether the movement system is allowed to move.
-        /// Passing false will completely lock movement.
+        /// Passing false will stop movement immediately.
         /// </summary>
         /// <param name="canMove">Whether movement is enabled.</param>
         public virtual void SetCanMove(bool canMove)
         {
             _canMove = canMove;
-            
+
             if (!_canMove)
                 StopMovement();
         }
-        
+
         /// <summary>
-        /// Stop the entity movement. Set speed to zero.
+        /// Immediately stops the entity's movement and cancels any ongoing tween.
+        /// Also resets speed to zero.
         /// </summary>
         public virtual void StopMovement()
         {
+            _moveOverTimeTween?.Kill();
             currentSpeed = 0;
         }
-        
+
         /// <summary>
         /// Resets the current speed to the default base speed.
+        /// Useful after temporary speed modifications.
         /// </summary>
         public void ResetSpeedToDefault()
         {
             currentSpeed = _baseSpeed;
         }
-        
+
         #endregion
 
         #region Abstract Methods
 
         /// <summary>
-        /// Moves continuously with the current speed to the new position.
-        /// This method should be called in FixedUpdate.
+        /// Moves continuously toward the specified position with acceleration and inertia.
+        /// Called in FixedUpdate for consistent physics-based updates.
         /// </summary>
-        /// <param name="position">The target position to move towards.</param>
+        /// <param name="position">The target position to move toward.</param>
         protected abstract void MoveWithInertia(Vector2 position);
 
         /// <summary>
-        /// Moves toward the target position over a specified duration using easing.
+        /// Tweened movement toward a target position over time, with an easing curve.
+        /// Subclasses should implement this using Rigidbody2D.MovePosition or transform-based motion.
         /// </summary>
-        /// <param name="position">The target position to reach.</param>
-        /// <param name="duration">The time taken to reach the target.</param>
-        /// <param name="ease">The easing function applied to the movement.</param>
-        protected abstract Tween  MoveToPositionOverTime(Vector2 position, float duration, Ease ease = Ease.InOutSine);
+        /// <param name="position">The destination position in world space.</param>
+        /// <param name="duration">Time (in seconds) to reach the destination.</param>
+        /// <param name="ease">The easing function to use during the tween.</param>
+        /// <returns>The DOTween Tween that handles the movement.</returns>
+        protected abstract Tween MoveToPositionOverTime(Vector2 position, float duration, Ease ease = Ease.InOutSine);
 
         #endregion
     }

@@ -1,7 +1,7 @@
-using System.Collections;
+using System.Threading;
 using Characters.Controllers;
 using Characters.SO.SkillDataSo;
-using ProjectExtensions;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 namespace Characters.SkillSystems.SkillRuntimes
@@ -26,13 +26,16 @@ namespace Characters.SkillSystems.SkillRuntimes
         /// <param name="owner">The character who is performing the skill.</param>
         /// <param name="direction">The direction in which the skill is being cast.</param>
         public abstract void PerformSkill(BaseController owner, Vector2 direction);
+
+        public abstract void CancelSkill(int milliSecondDelay = 0);
     }
 
     /// <summary>
-    /// Generic base class for skill runtime execution, parameterized by its associated skill data type.
-    /// Encapsulates lifecycle logic such as skill start, update (coroutine), and exit phases.
+    /// Generic base class for runtime skill execution using async UniTask and cancellation support.
+    /// Handles the complete lifecycle of a skill: initialization, execution, cancellation, and cleanup.
+    /// Derived classes implement the specific logic via OnSkillStart, OnSkillUpdate, and OnSkillExit.
     /// </summary>
-    /// <typeparam name="T">The specific skill data type (inherited from <see cref="BaseSkillDataSo"/>).</typeparam>
+    /// <typeparam name="T">Skill data type associated with this runtime behavior.</typeparam>
     public abstract class BaseSkillRuntime<T> : BaseSkillRuntime where T : BaseSkillDataSo
     {
         #region Inspector & Variables
@@ -58,6 +61,11 @@ namespace Characters.SkillSystems.SkillRuntimes
         /// </summary>
         private bool _isPerforming;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        private CancellationTokenSource _cts;
+
         #endregion
 
         #region Methods
@@ -74,22 +82,42 @@ namespace Characters.SkillSystems.SkillRuntimes
         }
 
         /// <summary>
-        /// Begins the full execution flow of the skill:
-        /// 1. Assigns owner and direction
-        /// 2. Starts the skill (OnSkillStart)
-        /// 3. Executes coroutine (OnSkillUpdate)
-        /// 4. Cleans up (OnSkillExit)
+        /// Starts the skill execution process asynchronously.
+        /// Binds the owner and direction, creates a new CancellationTokenSource,
+        /// and executes the skill logic using a cancellable UniTask.
+        /// If the skill has a configured lifetime, it schedules automatic cancellation after the specified duration.
         /// </summary>
-        /// <param name="owner">The character who is casting this skill.</param>
-        /// <param name="direction">The direction to aim or move during the skill.</param>
-        public override void PerformSkill(BaseController owner, Vector2 direction)
+        /// <param name="owner">The character executing the skill.</param>
+        /// <param name="direction">The direction to aim or move in.</param>
+        public override async void PerformSkill(BaseController owner, Vector2 direction)
         {
             if (_isPerforming) return;
             this.owner = owner;
             aimDirection = direction;
 
+            _cts = new CancellationTokenSource();
+            
+            if (skillData.HasLifeTime)
+            {
+                int milliSecondLifeTime = (int)(skillData.LifeTime * 1000);
+                CancelSkill(milliSecondLifeTime);
+            }
+            
             HandleSkillStart();
-            StartCoroutine(OnSkillUpdate().WithCallback(HandleSkillExit));
+            await OnSkillUpdate(_cts.Token);
+            HandleSkillExit();
+        }
+
+        /// <summary>
+        /// Cancels the currently running skill if active.
+        /// Can be called manually or automatically after a delay (e.g., lifetime expiry).
+        /// </summary>
+        /// <param name="milliSecondDelay">Optional delay in milliseconds before canceling.</param>
+        public override async void CancelSkill(int milliSecondDelay = 0)
+        {
+            await UniTask.Delay(milliSecondDelay);
+            if (!_isPerforming) return;
+            _cts?.Cancel();
         }
 
         /// <summary>
@@ -127,7 +155,7 @@ namespace Characters.SkillSystems.SkillRuntimes
         /// Can yield over time or wait for conditions.
         /// </summary>
         /// <returns>Coroutine IEnumerator controlling skill duration or logic.</returns>
-        protected abstract IEnumerator OnSkillUpdate();
+        protected abstract UniTask OnSkillUpdate(CancellationToken cancelToken);
 
         /// <summary>
         /// Called once the skill finishes execution.
