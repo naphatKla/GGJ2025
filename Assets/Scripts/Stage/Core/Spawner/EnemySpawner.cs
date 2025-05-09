@@ -3,34 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public interface IEnemySpawnerView
-{
-    /// <summary>
-    /// Gets the parent transform for spawned enemies.
-    /// </summary>
-    Transform GetEnemyParent();
-
-    /// <summary>
-    /// Gets the current number of active enemies.
-    /// </summary>
-    int GetCurrentEnemyCount();
-
-    /// <summary>
-    /// Gets the player's current position.
-    /// </summary>
-    Vector2 GetPlayerPosition();
-
-    /// <summary>
-    /// Sets the background sprite.
-    /// </summary>
-    void SetBackground(Sprite sprite);
-
-    /// <summary>
-    /// Gets the player's current score.
-    /// </summary>
-    float GetPlayerScore();
-}
-
 public class EnemySpawner
 {
     #region Fields
@@ -48,11 +20,14 @@ public class EnemySpawner
     private float _totalEnemySpawnChance;
     private float _nextUnitScoreQuota;
     private float _nextIntervalScoreQuota;
+    
+    private readonly EnemySpawnLogic _spawnLogic;
+    private readonly ISpawnerService _spawnerService = new ObjectPoolSpawnerService();
 
     /// <summary>
     /// List of active normal enemies.
     /// </summary>
-    public readonly List<GameObject> enemies = new();
+    private readonly HashSet<GameObject> enemies = new();
 
     /// <summary>
     /// List of active event enemies.
@@ -77,6 +52,9 @@ public class EnemySpawner
     /// Gets the interval for checking world events.
     /// </summary>
     public float EventIntervalCheck => _stageData.EventIntervalCheck;
+    
+    public event Action<GameObject> OnEnemySpawned;
+    public event Action<GameObject> OnEnemyDespawned;
 
     #endregion
 
@@ -167,19 +145,34 @@ public class EnemySpawner
     /// <summary>
     /// Spawns a single normal enemy at a random off-screen position.
     /// </summary>
-    public void SpawnNormalEnemy()
+    public void SpawnEnemy()
     {
         if (!CanSpawn()) return;
 
         var enemyData = GetRandomEnemy();
         var spawnPosition = GetRandomSpawnPosition(_spawnerView.GetPlayerPosition());
-        var enemy = PoolManager.Instance.Spawn(
+        var enemy = _spawnerService.Spawn(
             enemyData.EnemyPrefab,
             spawnPosition,
             Quaternion.identity,
             _spawnerView.GetEnemyParent()
         );
         enemies.Add(enemy);
+        OnEnemySpawned?.Invoke(enemy);
+    }
+    
+    /// <summary>
+    /// Despawn Enemy and remove from list
+    /// </summary>
+    /// <param name="enemy"></param>
+    public void DespawnEnemy(GameObject enemy)
+    {
+        if (enemies.Contains(enemy))
+        {
+            enemies.Remove(enemy);
+            _spawnerService.Despawn(enemy);
+            OnEnemyDespawned?.Invoke(enemy);
+        }
     }
 
     /// <summary>
@@ -224,10 +217,12 @@ public class EnemySpawner
         {
             if (enemy.EnemyData?.EnemyPrefab != null)
             {
-                PoolManager.Instance.PreWarm(enemy.EnemyData.EnemyPrefab, _stageData.MaxEnemySpawnCap, _spawnerView.GetEnemyParent());
+                _spawnerService.Spawn(enemy.EnemyData.EnemyPrefab, Vector3.zero, Quaternion.identity, _spawnerView.GetEnemyParent(), true);
+                _spawnerService.ClearPool(_spawnerView.GetEnemyParent());
             }
         }
     }
+
 
     /// <summary>
     /// Transitions to a new spawn state, handling exit and entry.
@@ -277,7 +272,7 @@ public class EnemySpawner
     private Vector2 GetRandomSpawnPosition(Vector2 playerPosition)
     {
         var spawnPosition = CalculateOffScreenPosition(playerPosition);
-        return ClampToRegionBounds(spawnPosition);
+        return SpawnUtility.ClampToBounds(spawnPosition, _regionSize);
     }
 
     /// <summary>
@@ -296,37 +291,9 @@ public class EnemySpawner
             var radius = UnityEngine.Random.Range(_minDistanceFromPlayer, _minDistanceFromPlayer + _screenSize.x);
             spawnPosition = playerPosition + new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * radius;
             attempts++;
-        } while (IsPositionOnScreen(spawnPosition, playerPosition, _screenSize) && attempts < MaxSpawnPositionAttempts);
+        } while (SpawnUtility.IsOnScreen(spawnPosition, playerPosition, _screenSize) && attempts < MaxSpawnPositionAttempts);
 
         return spawnPosition;
-    }
-
-    /// <summary>
-    /// Clamps a position to the spawn region bounds.
-    /// </summary>
-    /// <param name="position">The position to clamp.</param>
-    /// <returns>The clamped position.</returns>
-    private Vector2 ClampToRegionBounds(Vector2 position)
-    {
-        return new Vector2(
-            Mathf.Clamp(position.x, -_regionSize.x / 2, _regionSize.x / 2),
-            Mathf.Clamp(position.y, -_regionSize.y / 2, _regionSize.y / 2)
-        );
-    }
-
-    /// <summary>
-    /// Checks if a position is within the screen bounds.
-    /// </summary>
-    /// <param name="position">The position to check.</param>
-    /// <param name="playerPosition">The player's position.</param>
-    /// <param name="screenSize">The screen size.</param>
-    /// <returns>True if the position is on-screen.</returns>
-    private bool IsPositionOnScreen(Vector2 position, Vector2 playerPosition, Vector2 screenSize)
-    {
-        var screenMin = playerPosition - screenSize / 2;
-        var screenMax = playerPosition + screenSize / 2;
-        return position.x >= screenMin.x && position.x <= screenMax.x &&
-               position.y >= screenMin.y && position.y <= screenMax.y;
     }
 
     /// <summary>

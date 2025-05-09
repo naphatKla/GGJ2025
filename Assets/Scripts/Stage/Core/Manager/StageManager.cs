@@ -132,28 +132,7 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     /// </summary>
     private void EnemyPoolCreated()
     {
-        foreach (var enemyData in stageData[currentStageIndex].Enemies)
-        {
-            for (var i = 0; i < stageData[currentStageIndex].EnemyPreCreated; i++)
-            {
-                var enemy = PoolManager.Instance.Spawn(enemyData.EnemyData.EnemyPrefab, Vector3.zero, Quaternion.identity, enemyParent, true);
-                enemy.transform.SetParent(enemyParent);
-                PoolManager.Instance.Despawn(enemy);
-            }
-        }
-    
-        foreach (var worldEvent in stageData[currentStageIndex].WorldEvents)
-        {
-            foreach (var enemyData in worldEvent.RaidEnemies)
-            {
-                for (var i = 0; i < ((WorldEventSO)worldEvent).EnemyWorldEventCount; i++)
-                {
-                    var enemy = PoolManager.Instance.Spawn(enemyData.EnemyPrefab, Vector3.zero, Quaternion.identity, enemyParent, true);
-                    enemy.transform.SetParent(enemyParent);
-                    PoolManager.Instance.Despawn(enemy);
-                }
-            }
-        }
+        EnemyPoolInitializer.Prewarm(CurrentStage, enemyParent);
     }
 
     #endregion
@@ -176,7 +155,7 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     /// <summary>
     /// Starts enemy spawning.
     /// </summary>
-    [Button]
+    [FoldoutGroup("Stage Control"), Button]
     public void StartSpawning()
     {
         _enemySpawner?.StartSpawning();
@@ -185,7 +164,7 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     /// <summary>
     /// Stops enemy spawning.
     /// </summary>
-    [Button]
+    [FoldoutGroup("Stage Control"), Button]
     public void StopSpawning()
     {
         _enemySpawner?.StopSpawning();
@@ -194,7 +173,7 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     /// <summary>
     /// Pauses enemy spawning.
     /// </summary>
-    [Button]
+    [FoldoutGroup("Stage Control"), Button]
     public void PauseSpawning()
     {
         _enemySpawner?.PauseSpawning();
@@ -203,7 +182,7 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     /// <summary>
     /// Switches to a specific stage and starts spawning.
     /// </summary>
-    [Button]
+    [FoldoutGroup("Stage Control"), Button]
     public void SetStage(int stageIndex)
     {
         if (stageIndex < 0 || stageIndex >= stageData.Count) return;
@@ -217,7 +196,7 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     /// <summary>
     /// Moves to the next stage and starts spawning.
     /// </summary>
-    [Button]
+    [FoldoutGroup("Stage Control"), Button]
     public void NextStage()
     {
         if (stageData.Count == 0 || currentStageIndex >= stageData.Count - 1)
@@ -237,7 +216,7 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     /// <summary>
     /// Reset the stage and starts spawning.
     /// </summary>
-    [Button]
+    [FoldoutGroup("Stage Control"), Button]
     public void ResetStage()
     {
         ClearEnemies();
@@ -250,7 +229,7 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     /// <summary>
     /// Triggers a world event immediately.
     /// </summary>
-    [Button]
+    [FoldoutGroup("Stage Control"), Button]
     public void TriggerWorldEvent()
     {
         if (_enemySpawner == null) return;
@@ -260,7 +239,7 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     /// <summary>
     /// Deletes all enemies and clears both lists.
     /// </summary>
-    [Button]
+    [FoldoutGroup("Stage Control"), Button]
     public void ClearEnemies()
     {
         foreach (var enemy in _enemySpawner.enemies)

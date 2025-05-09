@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Cysharp.Threading.Tasks;
 using MoreMountains.Tools;
 using Sirenix.OdinInspector;
@@ -51,10 +52,28 @@ public class OxygenSpawnManagerNew : MMSingleton<OxygenSpawnManagerNew>
     /// List of currently active oxygen GameObjects.
     /// </summary>
     private readonly List<GameObject> _oxygenGO = new();
+    
+    /// <summary>
+    /// Cancellation token source for controlling spawning loop
+    /// </summary>
+    private CancellationTokenSource _spawningCts;
+    
+    /// <summary>
+    /// Tracks if spawning is currently active
+    /// </summary>
+    private bool _isSpawning;
+    private readonly ISpawnerService _spawnerService = new ObjectPoolSpawnerService();
+
+    #endregion
+
+    #region Properties
+
+    private bool CanSpawnMore => _oxygenGO.Count < maxSpawn;
 
     #endregion
 
     #region Unity Methods
+    
 
     /// <summary>
     /// Initializes the spawn manager, sets up the object pool, and starts spawning.
@@ -62,12 +81,31 @@ public class OxygenSpawnManagerNew : MMSingleton<OxygenSpawnManagerNew>
     private async UniTaskVoid Start()
     {
         SetupPool();
+        _spawningCts = new CancellationTokenSource();
 
         if (spawnMaximumOnStart)
             PreSpawnToMax();
 
         await UniTask.Delay(TimeSpan.FromSeconds(1));
         await StartSpawningLoop();
+    }
+    
+    /// <summary>
+    /// Cleans up cancellation token source on destroy
+    /// </summary>
+    private void OnDestroy()
+    {
+        ResetToken();
+    }
+    
+    /// <summary>
+    /// Reset token
+    /// </summary>
+    private void ResetToken()
+    {
+        _spawningCts?.Cancel();
+        _spawningCts?.Dispose();
+        _spawningCts = null;
     }
 
     /// <summary>
@@ -116,7 +154,7 @@ public class OxygenSpawnManagerNew : MMSingleton<OxygenSpawnManagerNew>
     {
         for (var i = 0; i < maxSpawn; i++)
         {
-            if (!CanSpawn()) break;
+            if (!CanSpawnMore) break;
             var data = GetRandomOxygen();
             var pos = GetRandomPosition();
             SpawnOxygen(data.oxygenPrefab.gameObject, pos, Quaternion.identity);
@@ -126,21 +164,33 @@ public class OxygenSpawnManagerNew : MMSingleton<OxygenSpawnManagerNew>
     /// <summary>
     /// Starts an asynchronous loop to spawn oxygen objects at regular intervals.
     /// </summary>
+    /// <summary>
+    /// Starts an asynchronous loop to spawn oxygen objects at regular intervals.
+    /// </summary>
     private async UniTask StartSpawningLoop()
     {
-        while (gameObject.activeInHierarchy)
+        _isSpawning = true;
+        while (gameObject.activeInHierarchy && !_spawningCts.Token.IsCancellationRequested)
         {
-            if (CanSpawn())
+            try
             {
-                for (var i = 0; i < spawnPerTick && CanSpawn(); i++)
+                if (CanSpawnMore)
                 {
-                    var data = GetRandomOxygen();
-                    var pos = GetRandomPosition();
-                    SpawnOxygen(data.oxygenPrefab.gameObject, pos, Quaternion.identity);
+                    for (var i = 0; i < spawnPerTick && CanSpawnMore; i++)
+                    {
+                        var data = GetRandomOxygen();
+                        var pos = GetRandomPosition();
+                        SpawnOxygen(data.oxygenPrefab.gameObject, pos, Quaternion.identity);
+                    }
                 }
+                await UniTask.Delay(TimeSpan.FromSeconds(timeTick), cancellationToken: _spawningCts.Token);
             }
-            await UniTask.Delay(TimeSpan.FromSeconds(timeTick), cancellationToken: this.GetCancellationTokenOnDestroy());
+            catch (OperationCanceledException)
+            {
+                break;
+            }
         }
+        _isSpawning = false;
     }
 
     /// <summary>
@@ -184,19 +234,23 @@ public class OxygenSpawnManagerNew : MMSingleton<OxygenSpawnManagerNew>
     private void SpawnOxygen(GameObject prefab, Vector3 position, Quaternion rotation)
     {
         if (prefab == null) return;
-        var obj = PoolManager.Instance.Spawn(prefab, position, rotation, oxygenParent);
+        var obj = _spawnerService.Spawn(prefab, position, rotation, oxygenParent);
         _oxygenGO.Add(obj);
     }
-
+    
     /// <summary>
-    /// Checks if more oxygen objects can be spawned.
+    /// Despawn Oxygen to pool and remove from list
     /// </summary>
-    /// <returns>True if the current number of oxygen objects is below the maximum limit.</returns>
-    private bool CanSpawn()
+    /// <param name="oxygen"></param>
+    public void DespawnOxygen(GameObject oxygen)
     {
-        return _oxygenGO.Count < maxSpawn;
+        if (_oxygenGO.Contains(oxygen))
+        {
+            _oxygenGO.Remove(oxygen);
+            PoolManager.Instance.Despawn(oxygen);
+        }
     }
-
+    
     #endregion
 
     #region Public Methods
@@ -215,8 +269,32 @@ public class OxygenSpawnManagerNew : MMSingleton<OxygenSpawnManagerNew>
             }
         }
         _oxygenGO.Clear();
-        PoolManager.Instance.ClearPool(oxygenParent);
+        _spawnerService.ClearPool(oxygenParent);
         SetupPool();
+    }
+    
+    /// <summary>
+    /// Starts the spawning process
+    /// </summary>
+    [Button]
+    public void StartSpawning()
+    {
+        if (_isSpawning) return;
+        
+        _spawningCts?.Cancel();
+        _spawningCts?.Dispose();
+        _spawningCts = new CancellationTokenSource();
+        StartSpawningLoop().Forget();
+    }
+
+    /// <summary>
+    /// Stops the spawning process
+    /// </summary>
+    [Button]
+    public void StopSpawning()
+    {
+        if (!_isSpawning) return;
+        _spawningCts?.Cancel();
     }
 
     #endregion

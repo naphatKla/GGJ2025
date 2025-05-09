@@ -12,6 +12,9 @@ public class WorldEventManager
 
     private readonly List<Vector2> _spawnPositionsPool = new();
     private readonly List<IWorldEvent> _availableEventsPool = new();
+    
+    private readonly EnemySpawnLogic _spawnLogic;
+    private readonly ISpawnerService _spawnerService = new ObjectPoolSpawnerService();
 
     #endregion
 
@@ -46,7 +49,7 @@ public class WorldEventManager
         {
             var enemyData = GetRandomEventEnemy(worldEvent.RaidEnemies);
             if (enemyData == null) continue;
-            var enemy = PoolManager.Instance.Spawn(enemyData.EnemyPrefab, position, Quaternion.identity);
+            var enemy = _spawnerService.Spawn(enemyData.EnemyPrefab, position, Quaternion.identity);
             if (enemy != null)
             {
                 enemy.transform.SetParent(_spawnerView.GetEnemyParent());

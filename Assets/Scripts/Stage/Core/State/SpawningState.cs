@@ -42,7 +42,7 @@ public class SpawningState : ISpawnState
         normalSpawnTimer += Time.deltaTime;
         if (normalSpawnTimer >= normalSpawnInterval && spawner.CanSpawn())
         {
-            spawner.SpawnNormalEnemy();
+            spawner.SpawnEnemy();
             normalSpawnTimer = 0f;
             normalSpawnInterval = spawner.CurrentSpawnInterval;
         }
