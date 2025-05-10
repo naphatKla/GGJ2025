@@ -27,7 +27,7 @@ public class EnemySpawner
     /// <summary>
     /// List of active normal enemies.
     /// </summary>
-    private readonly HashSet<GameObject> enemies = new();
+    public readonly HashSet<GameObject> enemies = new();
 
     /// <summary>
     /// List of active event enemies.
