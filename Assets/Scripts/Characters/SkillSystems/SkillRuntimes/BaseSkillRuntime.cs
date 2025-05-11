@@ -3,6 +3,7 @@ using System.Threading;
 using Characters.Controllers;
 using Characters.SO.SkillDataSo;
 using Cysharp.Threading.Tasks;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace Characters.SkillSystems.SkillRuntimes
@@ -115,11 +116,13 @@ namespace Characters.SkillSystems.SkillRuntimes
             HandleSkillExit();
         }
 
+
         /// <summary>
         /// Cancels the currently running skill if active.
         /// Can be called manually or automatically after a delay (e.g., lifetime expiry).
         /// </summary>
         /// <param name="milliSecondDelay">Optional delay in milliseconds before canceling.</param>
+        [Button]
         public override async void CancelSkill(int milliSecondDelay = 0)
         {
             await UniTask.Delay(milliSecondDelay);

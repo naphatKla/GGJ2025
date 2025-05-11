@@ -131,6 +131,7 @@ namespace Characters.MovementSystems
         /// Immediately stops the entity's movement and cancels any ongoing tween.
         /// Also resets speed to zero.
         /// </summary>
+        [Button]
         public virtual void StopMovement()
         {
             _moveOverTimeTween?.Kill();

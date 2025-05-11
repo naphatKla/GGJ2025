@@ -31,13 +31,10 @@ namespace Characters.SkillSystems.SkillRuntimes
         /// </summary>
         /// <param name="cancelToken">Token used to cancel the dash early (e.g., on interrupt or skill timeout).</param>
         /// <returns>A UniTask that completes when the dash tween ends or is cancelled.</returns>
-        protected override UniTask OnSkillUpdate(CancellationToken cancelToken)
+        protected override async UniTask OnSkillUpdate(CancellationToken cancelToken)
         {
             Vector2 dashPosition = (Vector2)transform.position + aimDirection * skillData.DashDistance;
-
-            return owner.MovementSystem
-                .TryMoveToPositionOverTime(dashPosition, skillData.DashDuration)
-                .WithCancellation(cancelToken);
+            await owner.MovementSystem.TryMoveToPositionOverTime(dashPosition, skillData.DashDuration).WithCancellation(cancelToken);
         }
 
         /// <summary>
