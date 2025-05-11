@@ -8,7 +8,7 @@ public static class EnemyPoolInitializer
     public static void Prewarm(StageDataSO stageData, Transform enemyParent)
     {
         foreach (var enemyData in stageData.Enemies)
-            for (var i = 0; i < stageData.EnemyPreCreated; i++)
+            for (var i = 0; i < enemyData.PreObjectSpawn; i++)
             {
                 var enemy = PoolManager.Instance.Spawn(enemyData.EnemyData.EnemyPrefab, Vector3.zero,
                     Quaternion.identity, enemyParent, true);

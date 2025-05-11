@@ -15,12 +15,13 @@ MonoBehaviour:
   enemies:
   - EnemyData: {fileID: 11400000, guid: b265bf836edd1ac4da7615dd3c48c4ac, type: 2}
     SpawnChance: 1
-  worldEvent: []
+    PreObjectSpawn: 10
+  worldEvent:
+  - {fileID: 11400000, guid: 87da7dea88505604794eabd946defb2a, type: 2}
   scoreQuota: 5000
   startMaxEnemySpawn: 10
   maxEnemySpawnCap: 20
   unitScoreQuota: 1000
-  preSpawnEnemyCap: 20
   startSpawnInterval: 1
   spawnIntervalCap: 0.5
   decreaseSpawnInterval: 0.1

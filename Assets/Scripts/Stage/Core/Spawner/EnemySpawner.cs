@@ -21,7 +21,6 @@ public class EnemySpawner
     private float _nextUnitScoreQuota;
     private float _nextIntervalScoreQuota;
     
-    private readonly EnemySpawnLogic _spawnLogic;
     private readonly ISpawnerService _spawnerService = new ObjectPoolSpawnerService();
 
     /// <summary>
@@ -32,7 +31,7 @@ public class EnemySpawner
     /// <summary>
     /// List of active event enemies.
     /// </summary>
-    public readonly List<GameObject> eventEnemies = new();
+    public readonly HashSet<GameObject> eventEnemies = new();
 
     #endregion
 
@@ -85,7 +84,6 @@ public class EnemySpawner
         _worldEventManager = new WorldEventManager(view, stageData, regionSize, minDistanceFromPlayer);
 
         CalculateTotalEnemySpawnChance();
-        PreWarmPools();
         SetState(new StopState());
     }
 
@@ -208,21 +206,7 @@ public class EnemySpawner
 
     #region Private Methods
 
-    /// <summary>
-    /// Pre-warms the object pool for all enemy prefabs.
-    /// </summary>
-    private void PreWarmPools()
-    {
-        foreach (var enemy in _stageData.Enemies)
-        {
-            if (enemy.EnemyData?.EnemyPrefab != null)
-            {
-                _spawnerService.Spawn(enemy.EnemyData.EnemyPrefab, Vector3.zero, Quaternion.identity, _spawnerView.GetEnemyParent(), true);
-                _spawnerService.ClearPool(_spawnerView.GetEnemyParent());
-            }
-        }
-    }
-
+  
 
     /// <summary>
     /// Transitions to a new spawn state, handling exit and entry.

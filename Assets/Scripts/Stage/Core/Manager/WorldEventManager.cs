@@ -13,7 +13,6 @@ public class WorldEventManager
     private readonly List<Vector2> _spawnPositionsPool = new();
     private readonly List<IWorldEvent> _availableEventsPool = new();
     
-    private readonly EnemySpawnLogic _spawnLogic;
     private readonly ISpawnerService _spawnerService = new ObjectPoolSpawnerService();
 
     #endregion
@@ -36,7 +35,7 @@ public class WorldEventManager
     /// <summary>
     ///     Triggers a random world event, spawning enemies if conditions are met.
     /// </summary>
-    public void TriggerWorldEvent(bool bypassCooldown = false, List<GameObject> eventEnemies = null)
+    public void TriggerWorldEvent(bool bypassCooldown = false, HashSet<GameObject> eventEnemies = null)
     {
         var worldEvent = SelectRandomWorldEvent(bypassCooldown);
         if (worldEvent == null) return;
@@ -44,6 +43,18 @@ public class WorldEventManager
         _spawnPositionsPool.Clear();
         worldEvent.GetSpawnPositions(_spawnerView.GetPlayerPosition(), _regionSize, _minDistanceFromPlayer, 0,
             _spawnPositionsPool);
+        
+        int availableEnemies = 0;
+        foreach (var enemyData in worldEvent.RaidEnemies)
+        {
+            if (enemyData?.EnemyPrefab != null)
+            {
+                availableEnemies += PoolManager.Instance.GetPoolCount(enemyData.EnemyPrefab.name);
+            }
+        }
+        
+        if (availableEnemies < _spawnPositionsPool.Count)
+        { return; }
 
         foreach (var position in _spawnPositionsPool)
         {
