@@ -44,14 +44,34 @@ namespace Characters.MovementSystems
         }
 
         /// <summary>
-        /// Smoothly moves the player to the specified position over a set duration using DOTween.
+        /// Smoothly moves the entity to a destination using DOTween over a specified duration.
+        /// Supports custom curved motion by applying lateral offset based on an AnimationCurve.
+        /// This can simulate arcing, waving, or slashing-style paths for richer skill effects.
         /// </summary>
-        /// <param name="position">The target position to reach.</param>
-        /// <param name="duration">The time it takes to reach the target position.</param>
-        /// <param name="ease">The easing function applied to the movement.</param>
-        protected override Tween MoveToPositionOverTime(Vector2 position, float duration, Ease ease = Ease.InOutSine)
+        /// <param name="position">Target position to move toward.</param>
+        /// <param name="duration">Time in seconds to reach the position.</param>
+        /// <param name="ease">Easing applied to the tween’s time progression (e.g. Ease.InOutSine).</param>
+        /// <param name="moveCurve">Optional AnimationCurve to offset movement path perpendicularly.</param>
+        /// <returns>A Tween instance managing interpolated motion.</returns>
+
+        protected override Tween MoveToPositionOverTime(Vector2 position, float duration, Ease ease = Ease.Linear, AnimationCurve moveCurve = null)
         {
-            return rb2D.DOMove(position, duration).SetEase(ease);
+            Vector2 startPos = rb2D.position;
+            Vector2 direction = (position - startPos).normalized;
+            Vector2 perpendicular = Vector2.Perpendicular(direction); // แนวตั้งฉากกับทิศทางหลัก
+
+            return DOTween.To(() => 0f, t =>
+                {
+                    float linearT = Mathf.Clamp01(t);
+                    Vector2 basePos = Vector2.Lerp(startPos, position, linearT);
+
+                    // คำนวณ offset จาก curve
+                    float offset = moveCurve?.Evaluate(linearT) ?? 0f;
+
+                    Vector2 curvedPos = basePos + perpendicular * offset;
+                    rb2D.MovePosition(curvedPos);
+                },
+                1f, duration).SetEase(ease);
         }
 
         #endregion

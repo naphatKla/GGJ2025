@@ -28,6 +28,8 @@ namespace Characters.SO.SkillDataSo
         [PropertyTooltip("Easing function that controls how the dash speed interpolates over time.")]
         [SerializeField] private Ease easeType;
 
+        [SerializeField] private AnimationCurve dashCurve;
+
         /// <summary>
         /// Duration of the dash movement in seconds.
         /// </summary>
@@ -52,5 +54,7 @@ namespace Characters.SO.SkillDataSo
         /// Easing curve that defines the acceleration and deceleration behavior of the dash.
         /// </summary>
         public Ease EaseType => easeType;
+        
+        public AnimationCurve DashCurve => dashCurve;
     }
 }

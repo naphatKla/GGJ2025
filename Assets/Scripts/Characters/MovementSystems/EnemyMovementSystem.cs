@@ -62,26 +62,38 @@ namespace Characters.MovementSystems
         }
 
         /// <summary>
-        /// Smoothly moves the enemy toward a specified position over a set duration using DOTween interpolation.
-        /// This method uses NavMeshAgent.Move with delta position calculated per frame.
-        /// 
-        /// ⚠️ Note: For 2D games, make sure the NavMeshAgent's Base Offset is set to 0 
-        /// to prevent unwanted vertical displacement.
+        /// Smoothly moves the entity to a destination using DOTween over a specified duration.
+        /// Supports custom curved motion by applying lateral offset based on an AnimationCurve.
+        /// This can simulate arcing, waving, or slashing-style paths for richer skill effects.
         /// </summary>
-        /// <param name="position">The world position the agent should reach.</param>
-        /// <param name="duration">The time in seconds it should take to reach the destination.</param>
-        /// <param name="ease">The easing curve used to interpolate the movement.</param>
-        /// <returns>A Tween representing the interpolated movement operation.</returns>
+        /// <param name="position">Target position to move toward.</param>
+        /// <param name="duration">Time in seconds to reach the position.</param>
+        /// <param name="ease">Easing applied to the tween’s time progression (e.g. Ease.InOutSine).</param>
+        /// <param name="moveCurve">Optional AnimationCurve to offset movement path perpendicularly.</param>
+        /// <returns>A Tween instance managing interpolated motion.</returns>
 
-        protected override Tween MoveToPositionOverTime(Vector2 position, float duration, Ease ease = Ease.InOutSine)
+        protected override Tween MoveToPositionOverTime(Vector2 position, float duration, Ease ease = Ease.Linear, AnimationCurve moveCurve = null)
         {
             agent.ResetPath();
-            
-            return DOVirtual.Vector2(transform.position, position, duration, (pos) =>
-            {
-                Vector2 deltaPos = pos - (Vector2)agent.transform.position;
-                agent.Move(deltaPos);
-            }).SetEase(ease);
+
+            Vector2 startPos = agent.transform.position;
+            Vector2 direction = (position - startPos).normalized;
+            Vector2 perpendicular = Vector2.Perpendicular(direction);
+
+            return DOTween.To(() => 0f, t =>
+                {
+                    float linearT = Mathf.Clamp01(t);
+                    Vector2 basePos = Vector2.Lerp(startPos, position, linearT);
+
+                    float offset = moveCurve?.Evaluate(linearT) ?? 0f;
+                    Vector2 curvedPos = basePos + perpendicular * offset;
+
+                    Vector2 delta = curvedPos - (Vector2)agent.transform.position;
+                    agent.Move(delta);
+                },
+                1f,
+                duration
+            ).SetEase(ease);
         }
         #endregion
     }

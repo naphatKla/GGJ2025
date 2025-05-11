@@ -110,17 +110,19 @@ namespace Characters.MovementSystems
 
         /// <summary>
         /// Attempts to smoothly move the entity to a specified position over a set duration, if movement is allowed.
-        /// Cancels any existing tween before starting a new one.
+        /// Cancels any existing tween before starting a new one. Supports optional custom AnimationCurve for curved motion.
         /// </summary>
         /// <param name="position">The target position to move towards.</param>
         /// <param name="duration">The time it takes to reach the target position.</param>
-        /// <param name="ease">The easing function that determines the movement behavior.</param>
-        /// <returns>The active tween used for movement.</returns>
-        public virtual Tween TryMoveToPositionOverTime(Vector2 position, float duration, Ease ease = Ease.InOutSine)
+        /// <param name="ease">The DOTween easing function applied to the tween timer.</param>
+        /// <param name="moveCurve">Optional animation curve used to apply offset-based curved motion.</param>
+        /// <returns>The DOTween tween used for this movement.</returns>
+
+        public virtual Tween TryMoveToPositionOverTime(Vector2 position, float duration, Ease ease = Ease.InOutSine, AnimationCurve moveCurve = null)
         {
             if (!_canMove) return null;
             _moveOverTimeTween?.Kill();
-            _moveOverTimeTween = MoveToPositionOverTime(position, duration, ease);
+            _moveOverTimeTween = MoveToPositionOverTime(position, duration, ease, moveCurve);
             return _moveOverTimeTween;
         }
 
@@ -174,16 +176,19 @@ namespace Characters.MovementSystems
         /// </summary>
         /// <param name="position">The target world-space position to move to.</param>
         protected abstract void MoveToPosition(Vector2 position);
-
+        
         /// <summary>
-        /// Tweened movement toward a target position over time, with an easing curve.
-        /// Subclasses should implement this using Rigidbody2D.MovePosition or transform-based motion.
+        /// Smoothly moves the entity to a destination using DOTween over a specified duration.
+        /// Supports custom curved motion by applying lateral offset based on an AnimationCurve.
+        /// This can simulate arcing, waving, or slashing-style paths for richer skill effects.
         /// </summary>
-        /// <param name="position">The destination position in world space.</param>
-        /// <param name="duration">Time (in seconds) to reach the destination.</param>
-        /// <param name="ease">The easing function to use during the tween.</param>
-        /// <returns>The DOTween Tween that handles the movement.</returns>
-        protected abstract Tween MoveToPositionOverTime(Vector2 position, float duration, Ease ease = Ease.InOutSine);
+        /// <param name="position">Target position to move toward.</param>
+        /// <param name="duration">Time in seconds to reach the position.</param>
+        /// <param name="ease">Easing applied to the tween’s time progression (e.g. Ease.InOutSine).</param>
+        /// <param name="moveCurve">Optional AnimationCurve to offset movement path perpendicularly.</param>
+        /// <returns>A Tween instance managing interpolated motion.</returns>
+
+        protected abstract Tween MoveToPositionOverTime(Vector2 position, float duration, Ease ease = Ease.Linear, AnimationCurve moveCurve = null);
 
         #endregion
     }
