@@ -79,7 +79,6 @@ namespace Characters.SkillSystems.SkillRuntimes
         public override void AssignSkillData(BaseSkillDataSo skillData)
         {
             this.skillData = skillData as T;
-            Debug.Log("Skill Assign");
         }
 
         /// <summary>
