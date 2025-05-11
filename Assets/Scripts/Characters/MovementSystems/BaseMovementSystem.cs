@@ -99,6 +99,16 @@ namespace Characters.MovementSystems
         }
 
         /// <summary>
+        /// Attempts to move the raw position of the entity.
+        /// </summary>
+        /// <param name="position"></param>
+        public virtual void TryMoveRawPosition(Vector2 position)
+        {
+            if (!_canMove) return;
+            MoveToPosition(position);
+        }
+
+        /// <summary>
         /// Attempts to smoothly move the entity to a specified position over a set duration, if movement is allowed.
         /// Cancels any existing tween before starting a new one.
         /// </summary>
@@ -157,6 +167,13 @@ namespace Characters.MovementSystems
         /// </summary>
         /// <param name="position">The target position to move toward.</param>
         protected abstract void MoveWithInertia(Vector2 position);
+
+        /// <summary>
+        /// Instantly moves the entity to the specified world-space position.
+        /// This method should be implemented differently depending on the movement system (e.g., Rigidbody2D, NavMeshAgent).
+        /// </summary>
+        /// <param name="position">The target world-space position to move to.</param>
+        protected abstract void MoveToPosition(Vector2 position);
 
         /// <summary>
         /// Tweened movement toward a target position over time, with an easing curve.

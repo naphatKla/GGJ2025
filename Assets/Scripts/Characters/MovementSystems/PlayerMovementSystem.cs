@@ -35,6 +35,15 @@ namespace Characters.MovementSystems
         }
 
         /// <summary>
+        /// Instantly moves the entity's Rigidbody2D to the specified position using physics-based movement.
+        /// </summary>
+        /// <param name="position">The target position to move to.</param>
+        protected override void MoveToPosition(Vector2 position)
+        {
+            rb2D.MovePosition(position);
+        }
+
+        /// <summary>
         /// Smoothly moves the player to the specified position over a set duration using DOTween.
         /// </summary>
         /// <param name="position">The target position to reach.</param>

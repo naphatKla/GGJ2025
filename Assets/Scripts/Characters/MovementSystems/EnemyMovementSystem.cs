@@ -44,12 +44,21 @@ namespace Characters.MovementSystems
         }
         
         /// <summary>
-        /// Moves the enemy directly toward the specified position.
+        /// Moves the enemy and path finding to the target's position with inertia, using naveMeshAgent
         /// </summary>
         /// <param name="position">The target position to move towards.</param>
         protected override void MoveWithInertia(Vector2 position)
         {
             agent.SetDestination(position);
+        }
+
+        /// <summary>
+        /// Instantly warps the NavMeshAgent to the specified position, bypassing pathfinding and obstacle avoidance.
+        /// </summary>
+        /// <param name="position">The destination position to warp the agent to.</param>
+        protected override void MoveToPosition(Vector2 position)
+        {
+            agent.Warp(position);
         }
 
         /// <summary>
