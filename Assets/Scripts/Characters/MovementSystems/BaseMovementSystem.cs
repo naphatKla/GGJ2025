@@ -190,6 +190,8 @@ namespace Characters.MovementSystems
 
         protected abstract Tween MoveToPositionOverTime(Vector2 position, float duration, Ease ease = Ease.Linear, AnimationCurve moveCurve = null);
 
+        protected abstract Tween MoveToTargetOverTime(Transform target, float duration, Ease ease = Ease.Linear, AnimationCurve moveCurve = null);
+
         #endregion
     }
 }

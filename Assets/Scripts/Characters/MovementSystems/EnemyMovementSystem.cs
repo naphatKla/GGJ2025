@@ -95,6 +95,42 @@ namespace Characters.MovementSystems
                 duration
             ).SetEase(ease);
         }
+
+        /// <summary>
+        /// Smoothly moves the enemy's NavMeshAgent toward a dynamic target over time using delta position and DOTween.
+        /// Continuously follows the target's real-time position while optionally applying a perpendicular motion curve.
+        /// </summary>
+        /// <param name="target">The target Transform to move toward during the tween.</param>
+        /// <param name="duration">Duration (in seconds) of the movement.</param>
+        /// <param name="ease">Easing function applied to time progression.</param>
+        /// <param name="moveCurve">Optional curve that offsets the path perpendicularly.</param>
+        /// <returns>The Tween that handles interpolated movement.</returns>
+        protected override Tween MoveToTargetOverTime(Transform target, float duration, Ease ease = Ease.Linear, AnimationCurve moveCurve = null)
+        {
+            agent.ResetPath();
+
+            Vector2 startPos = agent.transform.position;
+
+            return DOTween.To(() => 0f, t =>
+                {
+                    float linearT = Mathf.Clamp01(t);
+                    Vector2 currentTargetPos = target.position;
+                    Vector2 basePos = Vector2.Lerp(startPos, currentTargetPos, linearT);
+
+                    Vector2 direction = (currentTargetPos - startPos).normalized;
+                    Vector2 perpendicular = Vector2.Perpendicular(direction);
+
+                    float offset = moveCurve?.Evaluate(linearT) ?? 0f;
+                    Vector2 curvedPos = basePos + perpendicular * offset;
+
+                    Vector2 delta = curvedPos - (Vector2)agent.transform.position;
+                    agent.Move(delta);
+                },
+                1f,
+                duration
+            ).SetEase(Ease.Linear); // ใช้ Linear เพื่อให้ AnimationCurve ทำงานตรงตามเส้นโค้ง
+        }
+
         #endregion
     }
 }

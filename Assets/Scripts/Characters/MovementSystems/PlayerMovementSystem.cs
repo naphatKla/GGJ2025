@@ -73,6 +73,38 @@ namespace Characters.MovementSystems
                 1f, duration).SetEase(ease);
         }
 
+        /// <summary>
+        /// Smoothly moves the entity toward a moving target Transform over a duration using Rigidbody2D and DOTween.
+        /// Updates the target position every frame and supports optional curve-based perpendicular offset.
+        /// </summary>
+        /// <param name="target">The target Transform to follow during the tween.</param>
+        /// <param name="duration">Total movement duration in seconds.</param>
+        /// <param name="ease">Easing function applied to time progression.</param>
+        /// <param name="moveCurve">Optional animation curve used to create arcing or wave-like paths.</param>
+        /// <returns>The DOTween Tween handling the movement.</returns>
+        protected override Tween MoveToTargetOverTime(Transform target, float duration, Ease ease = Ease.Linear, AnimationCurve moveCurve = null)
+        {
+            Vector2 startPos = rb2D.position;
+
+            return DOTween.To(() => 0f, t =>
+                {
+                    float linearT = Mathf.Clamp01(t);
+                    Vector2 currentTargetPos = target.position;
+                    Vector2 basePos = Vector2.Lerp(startPos, currentTargetPos, linearT);
+
+                    Vector2 direction = (currentTargetPos - startPos).normalized;
+                    Vector2 perpendicular = Vector2.Perpendicular(direction);
+
+                    float offset = moveCurve?.Evaluate(linearT) ?? 0f;
+                    Vector2 curvedPos = basePos + perpendicular * offset;
+
+                    rb2D.MovePosition(curvedPos);
+                },
+                1f,
+                duration
+            ).SetEase(ease);
+        }
+
         #endregion
     }
 }
