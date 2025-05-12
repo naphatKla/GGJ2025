@@ -44,14 +44,21 @@ namespace Characters.SkillSystems.SkillRuntimes
             {
                 float angle = i * 2 * Mathf.PI / skillData.CloneAmount;
                 Vector2 direction = new(Mathf.Cos(angle), Mathf.Sin(angle));
-                Vector2 explosionPos = (Vector2)_cloneObjectPool[i].transform.position + direction * skillData.ExplosionDistance;
+                Vector2 explosionPos = (Vector2)_cloneObjectPool[i].transform.position +
+                                       direction * skillData.ExplosionDistance;
 
-                _cloneObjectPool[i].TryMoveToPositionOverTime(explosionPos, skillData.ExplosionSpeed, moveCurve: skillData.ExplosionCurve);
+                int lastIndex = skillData.CloneAmount - 1;
+                if (i == lastIndex)
+                {
+                    await _cloneObjectPool[i].TryMoveToPositionOverTime(explosionPos, skillData.ExplosionSpeed,
+                        skillData.ExplosionEaseCurve, skillData.ExplosionMoveCurve);
+                    break;
+                }
+                
+                _cloneObjectPool[i].TryMoveToPositionOverTime(explosionPos, skillData.ExplosionSpeed,
+                    skillData.ExplosionEaseCurve, skillData.ExplosionMoveCurve);
             }
-
-            // Wait for skill duration
-            await UniTask.Delay((int)(skillData.SkillDuration * 1000), cancellationToken: cancelToken);
-
+            
             // Phase 2: Return to caster
             for (int i = 0; i < _cloneObjectPool.Count; i++)
             {
@@ -60,13 +67,16 @@ namespace Characters.SkillSystems.SkillRuntimes
 
                 if (i == lastIndex)
                 {
-                    await clone.TryMoveToTargetOverTime(transform, skillData.MergeInSpeed, moveCurve: skillData.MergeInCurve);
+                    await clone.TryMoveToTargetOverTime(transform, skillData.MergeInSpeed, skillData.MergeInEaseCurve,
+                        skillData.MergeInMoveCurve);
                     break;
                 }
 
-                clone.TryMoveToTargetOverTime(transform, skillData.MergeInSpeed, moveCurve: skillData.MergeInCurve)
+                clone.TryMoveToTargetOverTime(transform, skillData.MergeInSpeed, skillData.MergeInEaseCurve,
+                        skillData.MergeInMoveCurve)
                     .OnComplete(() => clone.gameObject.SetActive(false));
 
+                
                 await UniTask.Delay(50, cancellationToken: cancelToken);
             }
         }

@@ -58,48 +58,51 @@ namespace Characters.MovementSystems
 
         /// <summary>
         /// Smoothly moves the entity to a destination using DOTween over a specified duration.
-        /// Supports custom curved motion by applying lateral offset based on an AnimationCurve.
-        /// This can simulate arcing, waving, or slashing-style paths for richer skill effects.
+        /// The movement speed is controlled by an optional easing AnimationCurve, and the path can be offset perpendicularly using a second curve.
+        /// This allows for customizable speed and motion effects like arcs, slashes, or waves.
+        /// If no easing curve is provided, Ease.InOutSine is used as the default.
         /// </summary>
         /// <param name="position">Target position to move toward.</param>
-        /// <param name="duration">Time in seconds to reach the position.</param>
-        /// <param name="ease">Easing applied to the tween’s time progression (e.g. Ease.InOutSine).</param>
-        /// <param name="moveCurve">Optional AnimationCurve to offset movement path perpendicularly.</param>
-        /// <returns>A Tween instance managing interpolated motion.</returns>
-
-        protected override Tween MoveToPositionOverTime(Vector2 position, float duration, Ease ease = Ease.InOutSine, AnimationCurve moveCurve = null)
+        /// <param name="duration">Time in seconds to reach the target position.</param>
+        /// <param name="easeCurve">Optional AnimationCurve that defines how interpolation progresses over time. Defaults to Ease.InOutSine if null.</param>
+        /// <param name="moveCurve">Optional AnimationCurve to apply perpendicular offset for curved or styled motion.</param>
+        /// <returns>A Tween instance managing the interpolated motion over time.</returns>
+        protected override Tween MoveToPositionOverTime(Vector2 position, float duration, AnimationCurve easeCurve = null, AnimationCurve moveCurve = null)
         {
             Vector2 startPos = rb2D.position;
             Vector2 direction = (position - startPos).normalized;
-            Vector2 perpendicular = Vector2.Perpendicular(direction); // แนวตั้งฉากกับทิศทางหลัก
+            Vector2 perpendicular = Vector2.Perpendicular(direction);
 
-            return DOTween.To(() => 0f, t =>
-                {
-                    float linearT = Mathf.Clamp01(t);
-                    Vector2 basePos = Vector2.Lerp(startPos, position, linearT);
-                    
-                    float offset = moveCurve?.Evaluate(linearT) ?? 0f;
+            var tween = DOTween.To(() => 0f, t =>
+            {
+                float linearT = Mathf.Clamp01(t);
+                Vector2 basePos = Vector2.Lerp(startPos, position, linearT);
 
-                    Vector2 curvedPos = basePos + perpendicular * offset;
-                    rb2D.MovePosition(curvedPos);
-                },
-                1f, duration).SetEase(ease);
+                float offset = moveCurve?.Evaluate(linearT) ?? 0f;
+                Vector2 curvedPos = basePos + perpendicular * offset;
+
+                rb2D.MovePosition(curvedPos);
+            }, 1f, duration);
+
+            return easeCurve != null? tween.SetEase(easeCurve) : tween.SetEase(Ease.InOutSine);
         }
+
 
         /// <summary>
         /// Smoothly moves the entity toward a moving target Transform over a duration using Rigidbody2D and DOTween.
-        /// Updates the target position every frame and supports optional curve-based perpendicular offset.
+        /// The movement speed is controlled by an optional easing AnimationCurve, and the path can be offset using a lateral curve.
+        /// This allows for fully customizable motion in both speed and shape, such as arcing or wave-like trajectories.
         /// </summary>
-        /// <param name="target">The target Transform to follow during the tween.</param>
-        /// <param name="duration">Total movement duration in seconds.</param>
-        /// <param name="ease">Easing function applied to time progression.</param>
-        /// <param name="moveCurve">Optional animation curve used to create arcing or wave-like paths.</param>
-        /// <returns>The DOTween Tween handling the movement.</returns>
-        protected override Tween MoveToTargetOverTime(Transform target, float duration, Ease ease = Ease.InOutSine, AnimationCurve moveCurve = null)
+        /// <param name="target">The Transform to follow during the tween.</param>
+        /// <param name="duration">Total time (in seconds) to reach the target.</param>
+        /// <param name="easeCurve">Optional AnimationCurve to control speed over time (replaces Ease). Defaults to Ease.InOutSine if null.</param>
+        /// <param name="moveCurve">Optional AnimationCurve to apply perpendicular displacement, such as arcs or waves.</param>
+        /// <returns>The DOTween Tween handling the movement over time.</returns>
+        protected override Tween MoveToTargetOverTime(Transform target, float duration, AnimationCurve easeCurve = null, AnimationCurve moveCurve = null)
         {
             Vector2 startPos = rb2D.position;
 
-            return DOTween.To(() => 0f, t =>
+            var tween = DOTween.To(() => 0f, t =>
                 {
                     float linearT = Mathf.Clamp01(t);
                     Vector2 currentTargetPos = target.position;
@@ -115,9 +118,11 @@ namespace Characters.MovementSystems
                 },
                 1f,
                 duration
-            ).SetEase(ease);
+            );
+            
+            return easeCurve != null ? tween.SetEase(easeCurve) : tween.SetEase(Ease.InOutSine);
         }
-
+        
         #endregion
     }
 }

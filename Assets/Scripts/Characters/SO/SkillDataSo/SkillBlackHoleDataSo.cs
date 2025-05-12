@@ -1,5 +1,6 @@
 using Sirenix.OdinInspector;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Characters.SO.SkillDataSo
 {
@@ -14,25 +15,25 @@ namespace Characters.SO.SkillDataSo
         [Unit(Units.Second)]
         [SerializeField] private float explosionSpeed;
 
-        [SerializeField] private AnimationCurve explosionCurve;
-        
-        [Space] [Unit(Units.Second)]
-        [SerializeField] private float skillDuration;
+        [SerializeField] private AnimationCurve explosionEaseCurve;
+        [SerializeField] private AnimationCurve explosionMoveCurve;
         
         [Space] [Unit(Units.Second)]
         [SerializeField] private float mergeInSpeed;
 
-        [SerializeField] private AnimationCurve mergeInCurve;
+        [SerializeField] private AnimationCurve mergeInEaseCurve;
+        [SerializeField] private AnimationCurve mergeInMoveCurve;
 
         public int CloneAmount => cloneAmount;
         public float CloneDamage => cloneDamage;
         public float ExplosionDistance => explosionDistance;
         public float ExplosionSpeed => explosionSpeed;
 
-        public AnimationCurve ExplosionCurve => explosionCurve;
-        public float SkillDuration => skillDuration;
+        public AnimationCurve ExplosionEaseCurve => explosionEaseCurve;
+        public AnimationCurve ExplosionMoveCurve => explosionMoveCurve;
         public float MergeInSpeed => mergeInSpeed;
 
-        public AnimationCurve MergeInCurve => mergeInCurve;
+        public AnimationCurve MergeInEaseCurve => mergeInEaseCurve;
+        public AnimationCurve MergeInMoveCurve => mergeInMoveCurve;
     }
 }

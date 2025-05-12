@@ -110,39 +110,42 @@ namespace Characters.MovementSystems
 
         /// <summary>
         /// Attempts to smoothly move the entity to a specified position over a set duration, if movement is allowed.
-        /// Cancels any existing tween before starting a new one. Supports optional custom AnimationCurve for curved motion.
+        /// Cancels any existing tween before starting a new one. Uses an optional easing AnimationCurve to control speed progression,
+        /// and a separate motion curve to apply perpendicular motion for effects like arcs or slashes.
         /// </summary>
         /// <param name="position">The target position to move towards.</param>
         /// <param name="duration">The time it takes to reach the target position.</param>
-        /// <param name="ease">The DOTween easing function applied to the tween timer.</param>
-        /// <param name="moveCurve">Optional animation curve used to apply offset-based curved motion.</param>
+        /// <param name="easeCurve">Optional AnimationCurve controlling easing over time. Defaults to Ease.InOutSine if null or invalid.</param>
+        /// <param name="moveCurve">Optional AnimationCurve used to apply offset-based curved motion.</param>
         /// <returns>The DOTween tween used for this movement.</returns>
-
-        public virtual Tween TryMoveToPositionOverTime(Vector2 position, float duration, Ease ease = Ease.InOutSine, AnimationCurve moveCurve = null)
+        public virtual Tween TryMoveToPositionOverTime(Vector2 position, float duration, AnimationCurve easeCurve = null, AnimationCurve moveCurve = null)
         {
             if (!_canMove) return null;
             _moveOverTimeTween?.Kill();
-            _moveOverTimeTween = MoveToPositionOverTime(position, duration, ease, moveCurve);
+            _moveOverTimeTween = MoveToPositionOverTime(position, duration, easeCurve, moveCurve);
             return _moveOverTimeTween;
         }
 
         /// <summary>
         /// Attempts to move the entity smoothly toward a dynamic target Transform over the specified duration.
-        /// Cancels any existing movement tween before starting a new one. Supports motion offset via an optional AnimationCurve.
+        /// Cancels any existing movement tween before starting a new one.
+        /// Uses an optional easing AnimationCurve to control speed, and a separate motion curve to apply perpendicular offset.
         /// </summary>
         /// <param name="target">The Transform to move toward (can be moving).</param>
         /// <param name="duration">Time (in seconds) it should take to reach the target.</param>
-        /// <param name="ease">Easing function that defines how the interpolation progresses.</param>
+        /// <param name="easeCurve">Optional AnimationCurve to control easing/speed progression. If null, defaults to Ease.InOutSine.</param>
         /// <param name="moveCurve">Optional AnimationCurve used to apply perpendicular motion during travel.</param>
         /// <returns>The Tween handling the movement operation, or null if movement is disabled.</returns>
-        public virtual Tween TryMoveToTargetOverTime(Transform target, float duration, Ease ease = Ease.InOutSine, AnimationCurve moveCurve = null)
+        public virtual Tween TryMoveToTargetOverTime(Transform target, float duration, AnimationCurve easeCurve = null, AnimationCurve moveCurve = null)
         {
             if (!_canMove) return null;
+
             _moveOverTimeTween?.Kill();
-            _moveOverTimeTween = MoveToTargetOverTime(target, duration, ease, moveCurve);
+            _moveOverTimeTween = MoveToTargetOverTime(target, duration, easeCurve, moveCurve);
+
             return _moveOverTimeTween;
         }
-
+        
         /// <summary>
         /// Sets whether the movement system is allowed to move.
         /// Passing false will stop movement immediately.
@@ -196,28 +199,27 @@ namespace Characters.MovementSystems
         
         /// <summary>
         /// Smoothly moves the entity to a destination using DOTween over a specified duration.
-        /// Supports custom curved motion by applying lateral offset based on an AnimationCurve.
-        /// This can simulate arcing, waving, or slashing-style paths for richer skill effects.
+        /// The movement speed is controlled by an optional easing AnimationCurve, and the path can be offset perpendicularly using a second curve.
+        /// This allows for customizable speed and motion effects like arcs, slashes, or waves.
+        /// If no easing curve is provided, Ease.InOutSine is used as the default.
         /// </summary>
         /// <param name="position">Target position to move toward.</param>
-        /// <param name="duration">Time in seconds to reach the position.</param>
-        /// <param name="ease">Easing applied to the tween’s time progression (e.g. Ease.InOutSine).</param>
-        /// <param name="moveCurve">Optional AnimationCurve to offset movement path perpendicularly.</param>
-        /// <returns>A Tween instance managing interpolated motion.</returns>
-
-        protected abstract Tween MoveToPositionOverTime(Vector2 position, float duration, Ease ease = Ease.InOutSine, AnimationCurve moveCurve = null);
+        /// <param name="duration">Time in seconds to reach the target position.</param>
+        /// <param name="easeCurve">Optional AnimationCurve that defines how interpolation progresses over time. Defaults to Ease.InOutSine if null.</param>
+        /// <param name="moveCurve">Optional AnimationCurve to apply perpendicular offset for curved or styled motion.</param>
+        /// <returns>A Tween instance managing the interpolated motion over time.</returns>
+        protected abstract Tween MoveToPositionOverTime(Vector2 position, float duration, AnimationCurve easeCurve = null, AnimationCurve moveCurve = null);
 
         /// <summary>
         /// Smoothly moves the entity toward a dynamic Transform target over a given duration using DOTween.
-        /// The target's position is evaluated in real time, allowing the entity to follow moving targets.
-        /// Optionally applies a lateral offset using an AnimationCurve to create arcing or wavy motion.
+        /// Supports custom AnimationCurve for both speed (ease) and lateral movement.
         /// </summary>
         /// <param name="target">The Transform that the entity should follow.</param>
-        /// <param name="duration">The time in seconds it takes to reach the target.</param>
-        /// <param name="ease">Easing function applied to the tween's progress.</param>
-        /// <param name="moveCurve">Optional AnimationCurve to apply perpendicular displacement along the path.</param>
-        /// <returns>A DOTween Tween that interpolates the entity's movement toward the dynamic target.</returns>
-        protected abstract Tween MoveToTargetOverTime(Transform target, float duration, Ease ease = Ease.InOutSine, AnimationCurve moveCurve = null);
+        /// <param name="duration">Duration in seconds.</param>
+        /// <param name="easeCurve">Optional curve to control easing/speed progression.</param>
+        /// <param name="moveCurve">Optional curve to control lateral offset.</param>
+        /// <returns>A DOTween Tween that moves the entity over time.</returns>
+        protected abstract Tween MoveToTargetOverTime(Transform target, float duration, AnimationCurve easeCurve = null, AnimationCurve moveCurve = null);
 
         #endregion
     }

@@ -115,8 +115,7 @@ namespace Characters.SkillSystems.SkillRuntimes
             }
             HandleSkillExit();
         }
-
-
+        
         /// <summary>
         /// Cancels the currently running skill if active.
         /// Can be called manually or automatically after a delay (e.g., lifetime expiry).

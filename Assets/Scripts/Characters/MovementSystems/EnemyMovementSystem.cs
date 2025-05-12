@@ -63,16 +63,16 @@ namespace Characters.MovementSystems
 
         /// <summary>
         /// Smoothly moves the entity to a destination using DOTween over a specified duration.
-        /// Supports custom curved motion by applying lateral offset based on an AnimationCurve.
-        /// This can simulate arcing, waving, or slashing-style paths for richer skill effects.
+        /// The movement speed is controlled by an optional easing AnimationCurve, and the path can be offset perpendicularly using a second curve.
+        /// This allows for customizable speed and motion effects like arcs, slashes, or waves.
+        /// If no easing curve is provided, Ease.InOutSine is used as the default.
         /// </summary>
         /// <param name="position">Target position to move toward.</param>
-        /// <param name="duration">Time in seconds to reach the position.</param>
-        /// <param name="ease">Easing applied to the tween’s time progression (e.g. Ease.InOutSine).</param>
-        /// <param name="moveCurve">Optional AnimationCurve to offset movement path perpendicularly.</param>
-        /// <returns>A Tween instance managing interpolated motion.</returns>
-
-        protected override Tween MoveToPositionOverTime(Vector2 position, float duration, Ease ease = Ease.Linear, AnimationCurve moveCurve = null)
+        /// <param name="duration">Time in seconds to reach the target position.</param>
+        /// <param name="easeCurve">Optional AnimationCurve that defines how interpolation progresses over time. Defaults to Ease.InOutSine if null.</param>
+        /// <param name="moveCurve">Optional AnimationCurve to apply perpendicular offset for curved or styled motion.</param>
+        /// <returns>A Tween instance managing the interpolated motion over time.</returns>
+        protected override Tween MoveToPositionOverTime(Vector2 position, float duration, AnimationCurve easeCurve = null, AnimationCurve moveCurve = null)
         {
             agent.ResetPath();
 
@@ -80,38 +80,37 @@ namespace Characters.MovementSystems
             Vector2 direction = (position - startPos).normalized;
             Vector2 perpendicular = Vector2.Perpendicular(direction);
 
-            return DOTween.To(() => 0f, t =>
-                {
-                    float linearT = Mathf.Clamp01(t);
-                    Vector2 basePos = Vector2.Lerp(startPos, position, linearT);
+            var tween = DOTween.To(() => 0f, t =>
+            {
+                float linearT = Mathf.Clamp01(t);
+                Vector2 basePos = Vector2.Lerp(startPos, position, linearT);
 
-                    float offset = moveCurve?.Evaluate(linearT) ?? 0f;
-                    Vector2 curvedPos = basePos + perpendicular * offset;
+                float offset = moveCurve?.Evaluate(linearT) ?? 0f;
+                Vector2 curvedPos = basePos + perpendicular * offset;
 
-                    Vector2 delta = curvedPos - (Vector2)agent.transform.position;
-                    agent.Move(delta);
-                },
-                1f,
-                duration
-            ).SetEase(ease);
+                Vector2 delta = curvedPos - (Vector2)agent.transform.position;
+                agent.Move(delta);
+            }, 1f, duration);
+            
+            return easeCurve != null? tween.SetEase(easeCurve) : tween.SetEase(Ease.InOutSine);
         }
 
         /// <summary>
-        /// Smoothly moves the enemy's NavMeshAgent toward a dynamic target over time using delta position and DOTween.
-        /// Continuously follows the target's real-time position while optionally applying a perpendicular motion curve.
+        /// Smoothly moves the enemy's NavMeshAgent toward a dynamic target over time using DOTween.
+        /// Continuously follows the target's real-time position while optionally applying custom easing and perpendicular motion.
         /// </summary>
         /// <param name="target">The target Transform to move toward during the tween.</param>
         /// <param name="duration">Duration (in seconds) of the movement.</param>
-        /// <param name="ease">Easing function applied to time progression.</param>
+        /// <param name="easeCurve">Optional curve to control easing/speed progression.</param>
         /// <param name="moveCurve">Optional curve that offsets the path perpendicularly.</param>
         /// <returns>The Tween that handles interpolated movement.</returns>
-        protected override Tween MoveToTargetOverTime(Transform target, float duration, Ease ease = Ease.Linear, AnimationCurve moveCurve = null)
+        protected override Tween MoveToTargetOverTime(Transform target, float duration, AnimationCurve easeCurve = null, AnimationCurve moveCurve = null)
         {
             agent.ResetPath();
 
             Vector2 startPos = agent.transform.position;
 
-            return DOTween.To(() => 0f, t =>
+            var tween = DOTween.To(() => 0f, t =>
                 {
                     float linearT = Mathf.Clamp01(t);
                     Vector2 currentTargetPos = target.position;
@@ -128,9 +127,11 @@ namespace Characters.MovementSystems
                 },
                 1f,
                 duration
-            ).SetEase(Ease.Linear); // ใช้ Linear เพื่อให้ AnimationCurve ทำงานตรงตามเส้นโค้ง
+            );
+            
+            return easeCurve != null ? tween.SetEase(easeCurve) : tween.SetEase(Ease.InOutSine);
         }
-
+        
         #endregion
     }
 }
