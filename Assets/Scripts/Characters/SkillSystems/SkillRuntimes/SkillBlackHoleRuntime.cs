@@ -9,23 +9,20 @@ using UnityEngine;
 namespace Characters.SkillSystems.SkillRuntimes
 {
     /// <summary>
-    /// A skill that creates multiple clone objects and performs an "explosion and reabsorb" motion.
-    /// Clones are scattered outward from the caster, stay for a period, and return back to the caster.
-    /// Useful for visual-heavy skills like black holes or illusions.
+    /// Executes a black hole skill by creating multiple clones that explode outward and then return to the caster.
+    /// Useful for visual-heavy effects like illusions or area disruption.
     /// </summary>
     public class SkillBlackHoleRuntime : BaseSkillRuntime<SkillBlackHoleDataSo>
     {
         /// <summary>
-        /// Pool of reusable clone objects to reduce runtime instantiation costs.
-        /// Each clone uses RigidbodyMovementSystem for movement control.
+        /// Object pool for clone instances to reduce instantiation overhead.
         /// </summary>
         private readonly List<RigidbodyMovementSystem> _cloneObjectPool = new();
 
         #region Base Methods
 
         /// <summary>
-        /// Called at the beginning of the skill.
-        /// Prepares and activates clones at the caster's position.
+        /// Initializes and activates clone objects at the start of the skill.
         /// </summary>
         protected override void OnSkillStart()
         {
@@ -34,56 +31,46 @@ namespace Characters.SkillSystems.SkillRuntimes
         }
 
         /// <summary>
-        /// Main update logic for the skill.
-        /// Clones move outward, wait, then return to the caster with animation curves.
+        /// Handles the two-phase skill sequence: outward explosion and reabsorption.
         /// </summary>
         protected override async UniTask OnSkillUpdate(CancellationToken cancelToken)
         {
-            // Phase 1: Explosion (outward movement)
+            // Phase 1: Explosion
             for (int i = 0; i < skillData.CloneAmount; i++)
             {
                 float angle = i * 2 * Mathf.PI / skillData.CloneAmount;
                 Vector2 direction = new(Mathf.Cos(angle), Mathf.Sin(angle));
-                Vector2 explosionPos = (Vector2)_cloneObjectPool[i].transform.position +
-                                       direction * skillData.ExplosionDistance;
+                Vector2 explosionPos = (Vector2)_cloneObjectPool[i].transform.position + direction * skillData.ExplosionDistance;
 
-                int lastIndex = skillData.CloneAmount - 1;
-                if (i == lastIndex)
-                {
-                    await _cloneObjectPool[i].TryMoveToPositionOverTime(explosionPos, skillData.ExplosionSpeed,
-                        skillData.ExplosionEaseCurve, skillData.ExplosionMoveCurve);
-                    break;
-                }
-                
-                _cloneObjectPool[i].TryMoveToPositionOverTime(explosionPos, skillData.ExplosionSpeed,
+                var clone = _cloneObjectPool[i];
+                Tween tween = clone.TryMoveToPositionOverTime(explosionPos, skillData.ExplosionDuration,
                     skillData.ExplosionEaseCurve, skillData.ExplosionMoveCurve);
+
+                if (i == skillData.CloneAmount - 1)
+                    await tween.AsyncWaitForCompletion();
             }
-            
-            // Phase 2: Return to caster
+
+            // Phase 2: Merge
             for (int i = 0; i < _cloneObjectPool.Count; i++)
             {
                 var clone = _cloneObjectPool[i];
-                int lastIndex = _cloneObjectPool.Count - 1;
+                Tween tween = clone.TryMoveToTargetOverTime(transform, skillData.MergeDuration,
+                    skillData.MergeEaseCurve, skillData.MergeMoveCurve);
 
-                if (i == lastIndex)
+                if (i == _cloneObjectPool.Count - 1)
                 {
-                    await clone.TryMoveToTargetOverTime(transform, skillData.MergeInSpeed, skillData.MergeInEaseCurve,
-                        skillData.MergeInMoveCurve);
-                    break;
+                    await tween.AsyncWaitForCompletion();
                 }
-
-                clone.TryMoveToTargetOverTime(transform, skillData.MergeInSpeed, skillData.MergeInEaseCurve,
-                        skillData.MergeInMoveCurve)
-                    .OnComplete(() => clone.gameObject.SetActive(false));
-
-                
-                await UniTask.Delay(50, cancellationToken: cancelToken);
+                else
+                {
+                    tween.OnComplete(() => clone.gameObject.SetActive(false));
+                    await UniTask.Delay(50, cancellationToken: cancelToken);
+                }
             }
         }
 
         /// <summary>
-        /// Called when the skill ends.
-        /// Hides all clone objects and resets their position.
+        /// Resets clone states when the skill ends.
         /// </summary>
         protected override void OnSkillExit()
         {
@@ -95,31 +82,34 @@ namespace Characters.SkillSystems.SkillRuntimes
         #region Clone Management
 
         /// <summary>
-        /// Ensures the object pool has enough clones based on skillData.CloneAmount.
-        /// Destroys or creates as needed.
+        /// Ensures the pool matches the desired clone count by adding or removing clones as needed.
         /// </summary>
         private void InitializedSkill()
         {
-            int amountToCreate = skillData.CloneAmount - _cloneObjectPool.Count;
+            int difference = skillData.CloneAmount - _cloneObjectPool.Count;
 
-            for (int i = 0; i < Mathf.Abs(amountToCreate); i++)
+            if (difference > 0)
             {
-                if (amountToCreate < 0)
+                for (int i = 0; i < difference; i++)
                 {
-                    Destroy(_cloneObjectPool[i]);
-                    _cloneObjectPool.RemoveAt(i);
-                    continue;
+                    var clone = CreateCharacterClone(gameObject);
+                    clone.transform.position = owner.transform.position;
+                    clone.gameObject.SetActive(false);
+                    _cloneObjectPool.Add(clone);
                 }
-
-                var clone = CreateCharacterClone(gameObject);
-                clone.transform.position = owner.transform.position;
-                clone.gameObject.SetActive(false);
-                _cloneObjectPool.Add(clone);
+            }
+            else if (difference < 0)
+            {
+                for (int i = 0; i < -difference; i++)
+                {
+                    Destroy(_cloneObjectPool[^1]);
+                    _cloneObjectPool.RemoveAt(_cloneObjectPool.Count - 1);
+                }
             }
         }
 
         /// <summary>
-        /// Resets all clones to the caster's position and sets their active state.
+        /// Sets all clones to the caster's position and toggles their active state.
         /// </summary>
         private void ResetCharacterClone(bool isActive)
         {
@@ -135,7 +125,7 @@ namespace Characters.SkillSystems.SkillRuntimes
         #region Clone Copy Methods
 
         /// <summary>
-        /// Creates a new clone GameObject that copies key components from the original GameObject.
+        /// Instantiates a clone object and copies relevant components from the original GameObject.
         /// </summary>
         private RigidbodyMovementSystem CreateCharacterClone(GameObject original)
         {
@@ -158,10 +148,8 @@ namespace Characters.SkillSystems.SkillRuntimes
         }
 
         /// <summary>
-        /// Copies the SpriteRenderer component from the original to the clone.
+        /// Duplicates the SpriteRenderer component.
         /// </summary>
-        /// <param name="original">The source GameObject.</param>
-        /// <param name="clone">The target clone GameObject.</param>
         private void CopySpriteRenderer(GameObject original, GameObject clone)
         {
             var src = original.GetComponent<SpriteRenderer>();
@@ -177,10 +165,8 @@ namespace Characters.SkillSystems.SkillRuntimes
         }
 
         /// <summary>
-        /// Copies the Animator component from the original to the clone.
+        /// Duplicates the Animator component.
         /// </summary>
-        /// <param name="original">The source GameObject.</param>
-        /// <param name="clone">The target clone GameObject.</param>
         private void CopyAnimator(GameObject original, GameObject clone)
         {
             var src = original.GetComponent<Animator>();
@@ -195,11 +181,8 @@ namespace Characters.SkillSystems.SkillRuntimes
         }
 
         /// <summary>
-        /// Copies Collider2D component settings from the original to the clone.
-        /// Supports BoxCollider2D and CircleCollider2D.
+        /// Copies supported Collider2D settings to the clone.
         /// </summary>
-        /// <param name="original">The source GameObject.</param>
-        /// <param name="clone">The target clone GameObject.</param>
         private void CopyCollider2D(GameObject original, GameObject clone)
         {
             var src = original.GetComponent<Collider2D>();
@@ -224,11 +207,8 @@ namespace Characters.SkillSystems.SkillRuntimes
         }
 
         /// <summary>
-        /// Copies Rigidbody2D settings from the original to the clone.
-        /// Sets defaults if the original has no Rigidbody2D.
+        /// Duplicates Rigidbody2D settings, applying defaults if missing.
         /// </summary>
-        /// <param name="original">The source GameObject.</param>
-        /// <param name="clone">The target clone GameObject.</param>
         private void CopyRigidbody2D(GameObject original, GameObject clone)
         {
             var src = original.GetComponent<Rigidbody2D>();
