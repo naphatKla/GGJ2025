@@ -1,61 +1,97 @@
-using System;
 using System.Collections.Generic;
 using System.Threading;
+using Characters.MovementSystems;
 using Characters.SO.SkillDataSo;
 using Cysharp.Threading.Tasks;
+using DG.Tweening;
 using UnityEngine;
 
 namespace Characters.SkillSystems.SkillRuntimes
 {
+    /// <summary>
+    /// A skill that creates multiple clone objects and performs an "explosion and reabsorb" motion.
+    /// Clones are scattered outward from the caster, stay for a period, and return back to the caster.
+    /// Useful for visual-heavy skills like black holes or illusions.
+    /// </summary>
     public class SkillBlackHoleRuntime : BaseSkillRuntime<SkillBlackHoleDataSo>
     {
-        private List<GameObject> _cloneObjectPool = new List<GameObject>();
-        
-        #region Methods
+        /// <summary>
+        /// Pool of reusable clone objects to reduce runtime instantiation costs.
+        /// Each clone uses RigidbodyMovementSystem for movement control.
+        /// </summary>
+        private readonly List<RigidbodyMovementSystem> _cloneObjectPool = new();
+
+        #region Base Methods
+
+        /// <summary>
+        /// Called at the beginning of the skill.
+        /// Prepares and activates clones at the caster's position.
+        /// </summary>
         protected override void OnSkillStart()
         {
             InitializedSkill();
             ResetCharacterClone(true);
         }
 
+        /// <summary>
+        /// Main update logic for the skill.
+        /// Clones move outward, wait, then return to the caster with animation curves.
+        /// </summary>
         protected override async UniTask OnSkillUpdate(CancellationToken cancelToken)
         {
+            // Phase 1: Explosion (outward movement)
             for (int i = 0; i < skillData.CloneAmount; i++)
             {
                 float angle = i * 2 * Mathf.PI / skillData.CloneAmount;
-                Vector2 directions = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
-                Vector2 explosionPosition = (Vector2)_cloneObjectPool[i].transform.position + directions * skillData.ExplosionDistance;
-                FollowTarget(_cloneObjectPool[i].transform, explosionPosition, skillData.ExplosionSpeed, cancelToken).Forget();
-            }
-            
-            int skillDurationMillisecond = (int)(skillData.SkillDuration * 1000);
-            await UniTask.Delay(skillDurationMillisecond, cancellationToken: cancelToken);
+                Vector2 direction = new(Mathf.Cos(angle), Mathf.Sin(angle));
+                Vector2 explosionPos = (Vector2)_cloneObjectPool[i].transform.position + direction * skillData.ExplosionDistance;
 
+                _cloneObjectPool[i].TryMoveToPositionOverTime(explosionPos, skillData.ExplosionSpeed, moveCurve: skillData.ExplosionCurve);
+            }
+
+            // Wait for skill duration
+            await UniTask.Delay((int)(skillData.SkillDuration * 1000), cancellationToken: cancelToken);
+
+            // Phase 2: Return to caster
             for (int i = 0; i < _cloneObjectPool.Count; i++)
             {
                 var clone = _cloneObjectPool[i];
                 int lastIndex = _cloneObjectPool.Count - 1;
-                
+
                 if (i == lastIndex)
                 {
-                    await FollowTarget(clone.transform, transform, skillData.MergeInSpeed, cancelToken);
+                    await clone.TryMoveToTargetOverTime(transform, skillData.MergeInSpeed, moveCurve: skillData.MergeInCurve);
                     break;
                 }
-                
-                FollowTarget(clone.transform, transform, skillData.MergeInSpeed, cancelToken).Forget();
+
+                clone.TryMoveToTargetOverTime(transform, skillData.MergeInSpeed, moveCurve: skillData.MergeInCurve)
+                    .OnComplete(() => clone.gameObject.SetActive(false));
+
                 await UniTask.Delay(50, cancellationToken: cancelToken);
             }
         }
 
+        /// <summary>
+        /// Called when the skill ends.
+        /// Hides all clone objects and resets their position.
+        /// </summary>
         protected override void OnSkillExit()
         {
             ResetCharacterClone(false);
         }
-        
+
+        #endregion
+
+        #region Clone Management
+
+        /// <summary>
+        /// Ensures the object pool has enough clones based on skillData.CloneAmount.
+        /// Destroys or creates as needed.
+        /// </summary>
         private void InitializedSkill()
         {
             int amountToCreate = skillData.CloneAmount - _cloneObjectPool.Count;
-            
+
             for (int i = 0; i < Mathf.Abs(amountToCreate); i++)
             {
                 if (amountToCreate < 0)
@@ -64,145 +100,147 @@ namespace Characters.SkillSystems.SkillRuntimes
                     _cloneObjectPool.RemoveAt(i);
                     continue;
                 }
-                
-                GameObject cloneObj = CreateCharacterClone(gameObject);
-                cloneObj.SetActive(false);
-                cloneObj.transform.position = owner.transform.position;
-                _cloneObjectPool.Add(cloneObj);
+
+                var clone = CreateCharacterClone(gameObject);
+                clone.transform.position = owner.transform.position;
+                clone.gameObject.SetActive(false);
+                _cloneObjectPool.Add(clone);
             }
         }
 
+        /// <summary>
+        /// Resets all clones to the caster's position and sets their active state.
+        /// </summary>
         private void ResetCharacterClone(bool isActive)
         {
-            foreach (GameObject cloneObj in _cloneObjectPool)
+            foreach (var clone in _cloneObjectPool)
             {
-                cloneObj.transform.position = owner.transform.position;
-                cloneObj.SetActive(isActive);
+                clone.transform.position = owner.transform.position;
+                clone.gameObject.SetActive(isActive);
             }
         }
-        
-        private async UniTask FollowTarget(Transform follower, Transform target, float duration, CancellationToken ct)
+
+        #endregion
+
+        #region Clone Copy Methods
+
+        /// <summary>
+        /// Creates a new clone GameObject that copies key components from the original GameObject.
+        /// </summary>
+        private RigidbodyMovementSystem CreateCharacterClone(GameObject original)
         {
-            float elapsed = 0f;
-            float t = 0f;
-            Vector3 startPos = follower.position;
-
-            // คำนวณ vector ทิศทางหลัก
-            Vector3 mainDirection = (target.position - startPos).normalized;
-
-            // หา vector แนวตั้งฉากเพื่อเบี่ยงเส้นทาง
-            Vector3 perpendicular = Vector3.Cross(mainDirection, Vector3.forward).normalized;
-            float noiseAmplitude = 10f; // ความสูงของคลื่น
-            float frequency = 1f;        // ความถี่
-
-            while (elapsed < duration && !ct.IsCancellationRequested)
+            GameObject clone = new("CharacterClone")
             {
-                elapsed += Time.deltaTime;
-                t = Mathf.Clamp01(elapsed / duration);
-
-                Vector3 basePosition = Vector3.Lerp(startPos, target.position, t);
-                float offset = Mathf.Sin(t * Mathf.PI * frequency) * noiseAmplitude;
-
-                follower.position = basePosition + perpendicular * offset;
-
-                await UniTask.Yield(PlayerLoopTiming.Update, ct);
-            }
-
-            follower.position = target.position;
-            follower.gameObject.SetActive(false);
-        }
-        
-        private async UniTask FollowTarget(Transform follower, Vector2 targetPosition, float duration, CancellationToken ct)
-        {
-            float elapsed = 0f;
-            float t = 0f;
-            Vector3 startPos = follower.position;
-            Vector3 targetPos = targetPosition;
-
-            // คำนวณ vector ทิศทางหลัก
-            Vector3 mainDirection = (targetPos - startPos).normalized;
-
-            // หา vector แนวตั้งฉากเพื่อเบี่ยงเส้นทาง
-            Vector3 perpendicular = Vector3.Cross(mainDirection, Vector3.forward).normalized;
-            float noiseAmplitude = 2f; // ความสูงของคลื่น
-            float frequency = 1f;        // ความถี่
-
-            while (elapsed < duration && !ct.IsCancellationRequested)
-            {
-                elapsed += Time.deltaTime;
-                t = Mathf.Clamp01(elapsed / duration);
-
-                Vector3 basePosition = Vector3.Lerp(startPos, targetPos, t);
-                float offset = Mathf.Sin(t * Mathf.PI * frequency) * noiseAmplitude;
-
-                follower.position = basePosition + perpendicular * offset;
-
-                await UniTask.Yield(PlayerLoopTiming.Update, ct);
-            }
-
-            follower.position = targetPos;
-            //follower.gameObject.SetActive(false);
-        }
-
-        private GameObject CreateCharacterClone(GameObject original)
-        {
-            GameObject clone = new GameObject("CharacterClone");
-
-            // Copy Transform
-            clone.transform.position = original.transform.position;
-            clone.transform.rotation = original.transform.rotation;
-            clone.transform.localScale = original.transform.localScale;
-
-            // Copy SpriteRenderer
-            SpriteRenderer originalSprite = original.GetComponent<SpriteRenderer>();
-            if (originalSprite != null)
-            {
-                SpriteRenderer cloneSprite = clone.AddComponent<SpriteRenderer>();
-                cloneSprite.sprite = originalSprite.sprite;
-                cloneSprite.color = originalSprite.color;
-                cloneSprite.flipX = originalSprite.flipX;
-                cloneSprite.flipY = originalSprite.flipY;
-                cloneSprite.sortingLayerID = originalSprite.sortingLayerID;
-                cloneSprite.sortingOrder = originalSprite.sortingOrder;
-            }
-
-            // Copy Animator
-            Animator originalAnimator = original.GetComponent<Animator>();
-            if (originalAnimator != null)
-            {
-                Animator cloneAnimator = clone.AddComponent<Animator>();
-                cloneAnimator.runtimeAnimatorController = originalAnimator.runtimeAnimatorController;
-                cloneAnimator.avatar = originalAnimator.avatar;
-                cloneAnimator.applyRootMotion = originalAnimator.applyRootMotion;
-                cloneAnimator.updateMode = originalAnimator.updateMode;
-                cloneAnimator.cullingMode = originalAnimator.cullingMode;
-            }
-
-            // Copy Collider2D 
-            Collider2D originalCollider = original.GetComponent<Collider2D>();
-            if (originalCollider != null)
-            {
-                Type colliderType = originalCollider.GetType();
-                Collider2D cloneCollider = (Collider2D)clone.AddComponent(colliderType);
-
-                // Copy common properties
-                if (originalCollider is BoxCollider2D oBox && cloneCollider is BoxCollider2D cBox)
+                transform =
                 {
+                    position = original.transform.position,
+                    rotation = original.transform.rotation,
+                    localScale = original.transform.localScale
+                }
+            };
+
+            CopySpriteRenderer(original, clone);
+            CopyAnimator(original, clone);
+            CopyCollider2D(original, clone);
+            CopyRigidbody2D(original, clone);
+
+            return clone.AddComponent<RigidbodyMovementSystem>();
+        }
+
+        /// <summary>
+        /// Copies the SpriteRenderer component from the original to the clone.
+        /// </summary>
+        /// <param name="original">The source GameObject.</param>
+        /// <param name="clone">The target clone GameObject.</param>
+        private void CopySpriteRenderer(GameObject original, GameObject clone)
+        {
+            var src = original.GetComponent<SpriteRenderer>();
+            if (!src) return;
+
+            var dst = clone.AddComponent<SpriteRenderer>();
+            dst.sprite = src.sprite;
+            dst.color = src.color;
+            dst.flipX = src.flipX;
+            dst.flipY = src.flipY;
+            dst.sortingLayerID = src.sortingLayerID;
+            dst.sortingOrder = src.sortingOrder;
+        }
+
+        /// <summary>
+        /// Copies the Animator component from the original to the clone.
+        /// </summary>
+        /// <param name="original">The source GameObject.</param>
+        /// <param name="clone">The target clone GameObject.</param>
+        private void CopyAnimator(GameObject original, GameObject clone)
+        {
+            var src = original.GetComponent<Animator>();
+            if (!src) return;
+
+            var dst = clone.AddComponent<Animator>();
+            dst.runtimeAnimatorController = src.runtimeAnimatorController;
+            dst.avatar = src.avatar;
+            dst.applyRootMotion = src.applyRootMotion;
+            dst.updateMode = src.updateMode;
+            dst.cullingMode = src.cullingMode;
+        }
+
+        /// <summary>
+        /// Copies Collider2D component settings from the original to the clone.
+        /// Supports BoxCollider2D and CircleCollider2D.
+        /// </summary>
+        /// <param name="original">The source GameObject.</param>
+        /// <param name="clone">The target clone GameObject.</param>
+        private void CopyCollider2D(GameObject original, GameObject clone)
+        {
+            var src = original.GetComponent<Collider2D>();
+            if (!src) return;
+
+            var dst = (Collider2D)clone.AddComponent(src.GetType());
+
+            switch (src)
+            {
+                case BoxCollider2D oBox when dst is BoxCollider2D cBox:
                     cBox.offset = oBox.offset;
                     cBox.size = oBox.size;
                     cBox.isTrigger = oBox.isTrigger;
-                }
-                else if (originalCollider is CircleCollider2D oCircle && cloneCollider is CircleCollider2D cCircle)
-                {
+                    break;
+
+                case CircleCollider2D oCircle when dst is CircleCollider2D cCircle:
                     cCircle.offset = oCircle.offset;
                     cCircle.radius = oCircle.radius;
                     cCircle.isTrigger = oCircle.isTrigger;
-                }
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Copies Rigidbody2D settings from the original to the clone.
+        /// Sets defaults if the original has no Rigidbody2D.
+        /// </summary>
+        /// <param name="original">The source GameObject.</param>
+        /// <param name="clone">The target clone GameObject.</param>
+        private void CopyRigidbody2D(GameObject original, GameObject clone)
+        {
+            var src = original.GetComponent<Rigidbody2D>();
+            var dst = clone.AddComponent<Rigidbody2D>();
+
+            if (!src)
+            {
+                dst.gravityScale = 0f;
+                dst.constraints = RigidbodyConstraints2D.FreezeRotation;
+                return;
             }
 
-            return clone;
+            dst.bodyType = src.bodyType;
+            dst.mass = src.mass;
+            dst.drag = src.drag;
+            dst.angularDrag = src.angularDrag;
+            dst.gravityScale = src.gravityScale;
+            dst.interpolation = src.interpolation;
+            dst.collisionDetectionMode = src.collisionDetectionMode;
+            dst.constraints = src.constraints;
         }
-        
+
         #endregion
     }
 }

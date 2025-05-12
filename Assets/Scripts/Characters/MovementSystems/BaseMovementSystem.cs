@@ -135,7 +135,7 @@ namespace Characters.MovementSystems
         /// <param name="ease">Easing function that defines how the interpolation progresses.</param>
         /// <param name="moveCurve">Optional AnimationCurve used to apply perpendicular motion during travel.</param>
         /// <returns>The Tween handling the movement operation, or null if movement is disabled.</returns>
-        public virtual Tween TryMoveToTargetOverTime(Transform target, float duration, Ease ease = Ease.Linear, AnimationCurve moveCurve = null)
+        public virtual Tween TryMoveToTargetOverTime(Transform target, float duration, Ease ease = Ease.InOutSine, AnimationCurve moveCurve = null)
         {
             if (!_canMove) return null;
             _moveOverTimeTween?.Kill();
@@ -205,7 +205,7 @@ namespace Characters.MovementSystems
         /// <param name="moveCurve">Optional AnimationCurve to offset movement path perpendicularly.</param>
         /// <returns>A Tween instance managing interpolated motion.</returns>
 
-        protected abstract Tween MoveToPositionOverTime(Vector2 position, float duration, Ease ease = Ease.Linear, AnimationCurve moveCurve = null);
+        protected abstract Tween MoveToPositionOverTime(Vector2 position, float duration, Ease ease = Ease.InOutSine, AnimationCurve moveCurve = null);
 
         /// <summary>
         /// Smoothly moves the entity toward a dynamic Transform target over a given duration using DOTween.
@@ -217,7 +217,7 @@ namespace Characters.MovementSystems
         /// <param name="ease">Easing function applied to the tween's progress.</param>
         /// <param name="moveCurve">Optional AnimationCurve to apply perpendicular displacement along the path.</param>
         /// <returns>A DOTween Tween that interpolates the entity's movement toward the dynamic target.</returns>
-        protected abstract Tween MoveToTargetOverTime(Transform target, float duration, Ease ease = Ease.Linear, AnimationCurve moveCurve = null);
+        protected abstract Tween MoveToTargetOverTime(Transform target, float duration, Ease ease = Ease.InOutSine, AnimationCurve moveCurve = null);
 
         #endregion
     }

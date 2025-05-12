@@ -14,26 +14,25 @@ namespace Characters.SO.SkillDataSo
         [Unit(Units.Second)]
         [SerializeField] private float explosionSpeed;
 
-        [SerializeField] private float explosionNoiseAmplitude;
-        [SerializeField] private float explosionFrequency;
-
+        [SerializeField] private AnimationCurve explosionCurve;
+        
         [Space] [Unit(Units.Second)]
         [SerializeField] private float skillDuration;
         
         [Space] [Unit(Units.Second)]
         [SerializeField] private float mergeInSpeed;
-        [SerializeField] private float mergeInNoiseAmplitude;
-        [SerializeField] private float mergeInFrequency;
+
+        [SerializeField] private AnimationCurve mergeInCurve;
 
         public int CloneAmount => cloneAmount;
         public float CloneDamage => cloneDamage;
         public float ExplosionDistance => explosionDistance;
         public float ExplosionSpeed => explosionSpeed;
-        public float ExplosionNoiseAmplitude => explosionNoiseAmplitude;
-        public float ExplosionFrequency => explosionFrequency;
+
+        public AnimationCurve ExplosionCurve => explosionCurve;
         public float SkillDuration => skillDuration;
         public float MergeInSpeed => mergeInSpeed;
-        public float MergeInNoiseAmplitude => mergeInNoiseAmplitude;
-        public float MergeInFrequency => mergeInFrequency;
+
+        public AnimationCurve MergeInCurve => mergeInCurve;
     }
 }

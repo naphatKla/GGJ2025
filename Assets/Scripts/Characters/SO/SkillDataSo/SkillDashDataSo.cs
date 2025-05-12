@@ -19,9 +19,6 @@ namespace Characters.SO.SkillDataSo
         [PropertyTooltip("Total distance the character will dash forward.")]
         [SerializeField] private float dashDistance = 8f;
         
-        [PropertyTooltip("Easing function that controls how the dash speed interpolates over time.")]
-        [SerializeField] private Ease easeType;
-        
         [PropertyTooltip("AnimationCurve that applies lateral displacement during the dash allowing for custom arcing or wave-like motion paths instead of straight-line dashing.")]
         [SerializeField] private AnimationCurve dashCurve;
 
@@ -34,11 +31,6 @@ namespace Characters.SO.SkillDataSo
         /// Total distance the character will dash forward.
         /// </summary>
         public float DashDistance => dashDistance;
-        
-        /// <summary>
-        /// Easing curve that defines the acceleration and deceleration behavior of the dash.
-        /// </summary>
-        public Ease EaseType => easeType;
         
         /// <summary>
         /// Optional AnimationCurve that applies lateral displacement during the dash,

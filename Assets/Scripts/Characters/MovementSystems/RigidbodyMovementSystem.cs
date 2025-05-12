@@ -1,3 +1,4 @@
+using System;
 using DG.Tweening;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -5,15 +6,27 @@ using UnityEngine;
 namespace Characters.MovementSystems
 {
     /// <summary>
-    /// Handles player movement using Rigidbody2D.
-    /// Inherits from `BaseMovementSystem` and provides movement logic for player-controlled entities.
+    /// Handles 2D movement logic for physics-based entities using <see cref="Rigidbody2D"/>.
+    /// Supports instant, inertia-based, and tweened movement, including curved paths and dynamic target following.
+    /// Inherits from <see cref="BaseMovementSystem"/> and can be used for both player-controlled and AI-driven objects.
     /// </summary>
-    public class PlayerMovementSystem : BaseMovementSystem
+    public class RigidbodyMovementSystem : BaseMovementSystem
     {
         /// <summary>
         /// The Rigidbody2D component used for physics-based movement.
+        /// Automatically assigned from the GameObject if not manually set via inspector.
         /// </summary>
         [Required] [SerializeField] private Rigidbody2D rb2D;
+
+        /// <summary>
+        /// Ensures that the Rigidbody2D component is assigned at runtime.
+        /// If not already set via the inspector, it will attempt to retrieve it from the current GameObject.
+        /// </summary>
+        private void Awake()
+        {
+            if (rb2D) return;
+            rb2D = GetComponent<Rigidbody2D>();
+        }
 
         #region Methods
         
@@ -54,7 +67,7 @@ namespace Characters.MovementSystems
         /// <param name="moveCurve">Optional AnimationCurve to offset movement path perpendicularly.</param>
         /// <returns>A Tween instance managing interpolated motion.</returns>
 
-        protected override Tween MoveToPositionOverTime(Vector2 position, float duration, Ease ease = Ease.Linear, AnimationCurve moveCurve = null)
+        protected override Tween MoveToPositionOverTime(Vector2 position, float duration, Ease ease = Ease.InOutSine, AnimationCurve moveCurve = null)
         {
             Vector2 startPos = rb2D.position;
             Vector2 direction = (position - startPos).normalized;
@@ -82,7 +95,7 @@ namespace Characters.MovementSystems
         /// <param name="ease">Easing function applied to time progression.</param>
         /// <param name="moveCurve">Optional animation curve used to create arcing or wave-like paths.</param>
         /// <returns>The DOTween Tween handling the movement.</returns>
-        protected override Tween MoveToTargetOverTime(Transform target, float duration, Ease ease = Ease.Linear, AnimationCurve moveCurve = null)
+        protected override Tween MoveToTargetOverTime(Transform target, float duration, Ease ease = Ease.InOutSine, AnimationCurve moveCurve = null)
         {
             Vector2 startPos = rb2D.position;
 
