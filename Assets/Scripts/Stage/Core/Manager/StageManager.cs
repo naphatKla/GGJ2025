@@ -8,15 +8,20 @@ using System.Linq;
 public class StageManager : MonoBehaviour, IEnemySpawnerView
 {
     #region Inspector & Variable
-    [Title("Stage Data")] [Tooltip("You can add more than 1 stage and change by Function Set Stage or Next Stage.")]
-    [SerializeField] private List<StageDataSO> stageData = new();
-    [Title("Stage Current Setting")] [Tooltip("The index of the current stage in the stageData list.")]
-    [SerializeField] private int currentStageIndex;
+    [Title("Map Data")] [Tooltip("You can add more than 1 stage and change by Function Set Stage or Next Stage.")]
+    [SerializeField] private List<MapDataSO> mapDataList = new();
+    [Space]
+    [Tooltip("The index of the current map in the mapData list.")]
+    [SerializeField] private int currentMapIndex;
     [Tooltip("The current background image.")]
     [SerializeField] private Sprite currentBackground;
+    
+    [Title("Map Current Setting")] [Tooltip("The index of the current stage in the stageData list.")]
+    [SerializeField] private int currentStageIndexInMap;
     [Tooltip("Parent of the enemy to spawn prefab.")]
     [SerializeField] private Transform enemyParent;
-    [Title("Stage Area Setting")] 
+    
+    [Title("Map Area Setting")] 
     [Tooltip("Region of the spawn area.")]
     [SerializeField] private Vector2 regionSize = Vector2.zero;
     [Tooltip("Minimum spawn area from the player.")]
@@ -24,9 +29,16 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     
     private EnemySpawner _enemySpawner;
     
-    private StageDataSO CurrentStage => stageData.Count > 0 && currentStageIndex < stageData.Count
-        ? stageData[currentStageIndex]
-        : null;
+    private MapDataSO CurrentMap => 
+        mapDataList.Count > 0 && currentMapIndex < mapDataList.Count
+            ? mapDataList[currentMapIndex]
+            : null;
+
+    private StageDataSO CurrentStage => 
+        CurrentMap != null && currentStageIndexInMap < CurrentMap.stages.Count
+            ? CurrentMap.stages[currentStageIndexInMap]
+            : null;
+
     
     #endregion
 
@@ -36,7 +48,7 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     {
         // Sets up enemy parent and spawner with the current stage.
         if (enemyParent == null) enemyParent = new GameObject("EnemyParent").transform;
-        if (stageData.Count == 0 || CurrentStage == null) return;
+        if (CurrentMap.stages.Count == 0 || CurrentStage == null) return;
         EnemyPoolCreated();
         _enemySpawner = new EnemySpawner(this, CurrentStage, regionSize, minDistanceFromPlayer);
     }
@@ -134,7 +146,7 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     public void SetBackground(Sprite sprite)
     {
         if (currentBackground != null)
-            currentBackground = stageData[currentStageIndex].Background;
+            currentBackground = CurrentMap.background;
     }
     
     /// <summary>
@@ -143,6 +155,17 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     private void EnemyPoolCreated()
     {
         EnemyPoolInitializer.Prewarm(CurrentStage, enemyParent);
+    }
+    
+    /// <summary>
+    /// Reload the stage
+    /// </summary>
+    private void ReloadStage()
+    {
+        ClearEnemies();
+        _enemySpawner = new EnemySpawner(this, CurrentStage, regionSize, minDistanceFromPlayer);
+        _enemySpawner.StartSpawning();
+        SetBackground(CurrentMap?.background);
     }
 
     #endregion
@@ -165,7 +188,7 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     /// <summary>
     /// Starts enemy spawning.
     /// </summary>
-    [FoldoutGroup("Stage Control"), Button]
+    [FoldoutGroup("Enemy Control"), Button(ButtonSizes.Large), GUIColor(0, 1, 0)]
     public void StartSpawning()
     {
         _enemySpawner?.StartSpawning();
@@ -174,7 +197,7 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     /// <summary>
     /// Stops enemy spawning.
     /// </summary>
-    [FoldoutGroup("Stage Control"), Button]
+    [FoldoutGroup("Enemy Control"), Button(ButtonSizes.Large), GUIColor(1, 0, 0)]
     public void StopSpawning()
     {
         _enemySpawner?.StopSpawning();
@@ -183,73 +206,68 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     /// <summary>
     /// Pauses enemy spawning.
     /// </summary>
-    [FoldoutGroup("Stage Control"), Button]
+    [FoldoutGroup("Enemy Control"), Button(ButtonSizes.Large), GUIColor(1, 1, 0)]
     public void PauseSpawning()
     {
         _enemySpawner?.PauseSpawning();
     }
-
-    /// <summary>
-    /// Switches to a specific stage and starts spawning.
-    /// </summary>
-    [FoldoutGroup("Stage Control"), Button]
-    public void SetStage(int stageIndex)
-    {
-        if (stageIndex < 0 || stageIndex >= stageData.Count) return;
-        currentStageIndex = stageIndex;
-        ClearEnemies();
-        _enemySpawner = new EnemySpawner(this, CurrentStage, regionSize, minDistanceFromPlayer);
-        _enemySpawner.StartSpawning();
-        SetBackground(CurrentStage.Background);
-    }
-
-    /// <summary>
-    /// Moves to the next stage and starts spawning.
-    /// </summary>
-    [FoldoutGroup("Stage Control"), Button]
-    public void NextStage()
-    {
-        if (stageData.Count == 0 || currentStageIndex >= stageData.Count - 1)
-        {
-            StopSpawning();
-            return;
-        }
-
-        currentStageIndex++;
-        ClearEnemies();
-        EnemyPoolCreated();
-        _enemySpawner = new EnemySpawner(this, CurrentStage, regionSize, minDistanceFromPlayer);
-        _enemySpawner.StartSpawning();
-        SetBackground(CurrentStage.Background);
-    }
     
     /// <summary>
-    /// Reset the stage and starts spawning.
+    /// Chanage the map index
     /// </summary>
-    [FoldoutGroup("Stage Control"), Button]
-    public void ResetStage()
+    /// <param name="mapIndex"></param>
+    [FoldoutGroup("Map Control"), Button(ButtonSizes.Large), GUIColor(0, 1, 1)]
+    public void SetMap(int mapIndex)
     {
-        ClearEnemies();
-        EnemyPoolCreated();
-        _enemySpawner = new EnemySpawner(this, CurrentStage, regionSize, minDistanceFromPlayer);
-        _enemySpawner.StartSpawning();
-        SetBackground(CurrentStage.Background);
-    }
-    
-    /// <summary>
-    /// Triggers a world event immediately.
-    /// </summary>
-    [FoldoutGroup("Stage Control"), Button]
-    public void TriggerWorldEvent()
-    {
-        if (_enemySpawner == null) return;
-        _enemySpawner.TriggerWorldEvent(true); 
+        if (mapIndex < 0 || mapIndex >= mapDataList.Count) return;
+
+        currentMapIndex = mapIndex;
+        currentStageIndexInMap = 0;
+        ReloadStage();
     }
 
+    /// <summary>
+    /// Increase map index by 1
+    /// </summary>
+    [FoldoutGroup("Map Control"), Button(ButtonSizes.Large), GUIColor(0, 1, 0)]
+    public void NextMap()
+    {
+        if (mapDataList.Count == 0 || currentMapIndex >= mapDataList.Count - 1) return;
+
+        currentMapIndex++;
+        currentStageIndexInMap = 0;
+        ReloadStage();
+    }
+
+    /// <summary>
+    /// Set current of stage index
+    /// </summary>
+    /// <param name="stageIndex"></param>
+    [FoldoutGroup("Stage Control"), Button(ButtonSizes.Large), GUIColor(0, 1, 1)]
+    public void SetStageInMap(int stageIndex)
+    {
+        if (CurrentMap == null || stageIndex < 0 || stageIndex >= CurrentMap.stages.Count) return;
+
+        currentStageIndexInMap = stageIndex;
+        ReloadStage();
+    }
+
+    /// <summary>
+    /// Increase stage index by 1
+    /// </summary>
+    [FoldoutGroup("Stage Control"), Button(ButtonSizes.Large), GUIColor(0, 1, 0)]
+    public void NextStageInMap()
+    {
+        if (CurrentMap == null || currentStageIndexInMap >= CurrentMap.stages.Count - 1) return;
+
+        currentStageIndexInMap++;
+        ReloadStage();
+    }
+    
     /// <summary>
     /// Deletes all enemies and clears both lists.
     /// </summary>
-    [FoldoutGroup("Stage Control"), Button]
+    [Button(ButtonSizes.Large), GUIColor(1, 0, 0)]
     public void ClearEnemies()
     {
         foreach (var enemy in _enemySpawner.enemies)
@@ -265,6 +283,15 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
         PoolManager.Instance.ClearPool(enemyParent);
         EnemyPoolCreated();
     }
-
+    
+    /// <summary>
+    /// Triggers a world event immediately.
+    /// </summary>
+    [Button(ButtonSizes.Large), GUIColor(0.4f, 0.8f, 1)]
+    public void TriggerWorldEvent()
+    {
+        if (_enemySpawner == null) return;
+        _enemySpawner.TriggerWorldEvent(true); 
+    }
     #endregion
 }

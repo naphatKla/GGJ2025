@@ -10,11 +10,23 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 949804a7f0718af4491ee54c5ccd8ca9, type: 3}
-  m_Name: '[WE] Stage-Level-x'
+  m_Name: '[WE] Stage-Level-1'
   m_EditorClassIdentifier: 
-  _type: 0
   _chance: 40
   _cooldown: 30
+  _spawnDelay: 0.2
+  _enemyCount: 8
   _raidEnemies:
   - {fileID: 11400000, guid: b265bf836edd1ac4da7615dd3c48c4ac, type: 2}
-  _enemyCount: 8
+  _spawnStrategy:
+    rid: 3868164647163265027
+  _eventFeedback: []
+  _spawnEffectPrefab: {fileID: 0}
+  _customConditions: []
+  _customEffects: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 3868164647163265027
+      type: {class: RushSpawnStrategy, ns: , asm: Assembly-CSharp}
+      data: 
