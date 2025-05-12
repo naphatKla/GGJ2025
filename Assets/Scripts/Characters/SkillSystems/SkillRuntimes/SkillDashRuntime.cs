@@ -34,7 +34,9 @@ namespace Characters.SkillSystems.SkillRuntimes
         protected override async UniTask OnSkillUpdate(CancellationToken cancelToken)
         {
             Vector2 dashPosition = (Vector2)transform.position + aimDirection * skillData.DashDistance;
-            await owner.MovementSystem.TryMoveToPositionOverTime(dashPosition, skillData.DashDuration, moveCurve: skillData.DashCurve).WithCancellation(cancelToken);
+            await owner.MovementSystem
+                .TryMoveToPositionOverTime(dashPosition, skillData.DashDuration, skillData.DashEaseCurve,
+                    skillData.DashMoveCurve).WithCancellation(cancelToken);
         }
 
         /// <summary>

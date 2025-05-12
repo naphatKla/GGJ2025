@@ -35,44 +35,47 @@ MonoBehaviour:
   lifeTime: 0.3
   dashDuration: 0.3
   dashDistance: 8
-  dashNoiseAmplitude: 0
-  dashNoiseFrequency: 0
-  easeType: 1
-  dashCurve:
+  dashEaseCurve:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
-      time: -0.0038610038
-      value: -0.0021833777
-      inSlope: 7.8869276
-      outSlope: 7.8869276
+      time: 0
+      value: 0
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  dashMoveCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
       tangentMode: 34
       weightedMode: 0
       inWeight: 0
       outWeight: 0.33333334
     - serializedVersion: 3
-      time: 0.25
-      value: 2
-      inSlope: -3.1391869
-      outSlope: -3.1391869
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 0.53238016
-      value: -2
-      inSlope: -4.928712
-      outSlope: -4.928712
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 0.996139
-      value: -0.0021833777
-      inSlope: 4.307878
-      outSlope: 4.307878
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
       tangentMode: 34
       weightedMode: 0
       inWeight: 0.33333334
