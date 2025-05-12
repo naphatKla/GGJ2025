@@ -30,7 +30,7 @@ namespace Characters.SkillSystems.SkillRuntimes
             ResetCharacterClone(true);
         }
 
-        /// <summary>
+         /// <summary>
         /// Handles the two-phase skill sequence: outward explosion and reabsorption.
         /// </summary>
         protected override async UniTask OnSkillUpdate(CancellationToken cancelToken)
@@ -46,8 +46,16 @@ namespace Characters.SkillSystems.SkillRuntimes
                 Tween tween = clone.TryMoveToPositionOverTime(explosionPos, skillData.ExplosionDuration,
                     skillData.ExplosionEaseCurve, skillData.ExplosionMoveCurve);
 
-                if (i == skillData.CloneAmount - 1)
+                if (i == _cloneObjectPool.Count - 1)
+                {
                     await tween.AsyncWaitForCompletion();
+                }
+                else
+                {
+                    float t = i / (float)(skillData.CloneAmount - 1);
+                    float delayTime = skillData.ExplosionPerCloneCurve.Evaluate(t) * skillData.ExplosionDelayPerClone;
+                    await UniTask.Delay((int)(delayTime * 1000), cancellationToken: cancelToken);
+                }
             }
 
             // Phase 2: Merge
@@ -64,7 +72,9 @@ namespace Characters.SkillSystems.SkillRuntimes
                 else
                 {
                     tween.OnComplete(() => clone.gameObject.SetActive(false));
-                    await UniTask.Delay(50, cancellationToken: cancelToken);
+                    float t = i / (float)(_cloneObjectPool.Count - 1);
+                    float delayTime = skillData.MergePerCloneCurve.Evaluate(t) * skillData.MergeDelayPerClone;
+                    await UniTask.Delay((int)(delayTime * 1000), cancellationToken: cancelToken);
                 }
             }
         }
