@@ -127,6 +127,23 @@ namespace Characters.MovementSystems
         }
 
         /// <summary>
+        /// Attempts to move the entity smoothly toward a dynamic target Transform over the specified duration.
+        /// Cancels any existing movement tween before starting a new one. Supports motion offset via an optional AnimationCurve.
+        /// </summary>
+        /// <param name="target">The Transform to move toward (can be moving).</param>
+        /// <param name="duration">Time (in seconds) it should take to reach the target.</param>
+        /// <param name="ease">Easing function that defines how the interpolation progresses.</param>
+        /// <param name="moveCurve">Optional AnimationCurve used to apply perpendicular motion during travel.</param>
+        /// <returns>The Tween handling the movement operation, or null if movement is disabled.</returns>
+        public virtual Tween TryMoveToTargetOverTime(Transform target, float duration, Ease ease = Ease.Linear, AnimationCurve moveCurve = null)
+        {
+            if (!_canMove) return null;
+            _moveOverTimeTween?.Kill();
+            _moveOverTimeTween = MoveToTargetOverTime(target, duration, ease, moveCurve);
+            return _moveOverTimeTween;
+        }
+
+        /// <summary>
         /// Sets whether the movement system is allowed to move.
         /// Passing false will stop movement immediately.
         /// </summary>
@@ -190,6 +207,16 @@ namespace Characters.MovementSystems
 
         protected abstract Tween MoveToPositionOverTime(Vector2 position, float duration, Ease ease = Ease.Linear, AnimationCurve moveCurve = null);
 
+        /// <summary>
+        /// Smoothly moves the entity toward a dynamic Transform target over a given duration using DOTween.
+        /// The target's position is evaluated in real time, allowing the entity to follow moving targets.
+        /// Optionally applies a lateral offset using an AnimationCurve to create arcing or wavy motion.
+        /// </summary>
+        /// <param name="target">The Transform that the entity should follow.</param>
+        /// <param name="duration">The time in seconds it takes to reach the target.</param>
+        /// <param name="ease">Easing function applied to the tween's progress.</param>
+        /// <param name="moveCurve">Optional AnimationCurve to apply perpendicular displacement along the path.</param>
+        /// <returns>A DOTween Tween that interpolates the entity's movement toward the dynamic target.</returns>
         protected abstract Tween MoveToTargetOverTime(Transform target, float duration, Ease ease = Ease.Linear, AnimationCurve moveCurve = null);
 
         #endregion
