@@ -36,25 +36,25 @@ MonoBehaviour:
   cloneAmount: 4
   cloneDamage: 1
   explosionDistance: 3
-  explosionDuration: 1.25
-  explosionDelayPerClone: 0.025
-  explosionPerCloneCurve:
+  explosionEntireDuration: 1
+  explosionStartDuration: 0.1
+  explosionStartCurve:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 1
-      inSlope: -4.431618
-      outSlope: -4.431618
+      value: 0
+      inSlope: 2
+      outSlope: 2
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
-      outWeight: 0.010939511
+      outWeight: 0
     - serializedVersion: 3
       time: 1
-      value: 0
-      inSlope: -2
-      outSlope: -2
+      value: 1
+      inSlope: 0
+      outSlope: 0
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
@@ -128,20 +128,20 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  mergeDuration: 0.35
-  mergeDelayPerClone: 0.25
-  mergePerCloneCurve:
+  mergeEntireDuration: 0.8
+  mergeStartDuration: 0.625
+  mergeStartCurve:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
       time: 0
       value: 1
-      inSlope: -4.431618
-      outSlope: -4.431618
+      inSlope: 0
+      outSlope: 0
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
-      outWeight: 0.010939511
+      outWeight: 0
     - serializedVersion: 3
       time: 1
       value: 0

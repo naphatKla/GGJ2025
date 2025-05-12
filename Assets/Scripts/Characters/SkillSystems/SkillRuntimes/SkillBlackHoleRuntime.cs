@@ -30,55 +30,79 @@ namespace Characters.SkillSystems.SkillRuntimes
             ResetCharacterClone(true);
         }
 
-         /// <summary>
-        /// Handles the two-phase skill sequence: outward explosion and reabsorption.
-        /// </summary>
         protected override async UniTask OnSkillUpdate(CancellationToken cancelToken)
         {
-            // Phase 1: Explosion
-            for (int i = 0; i < skillData.CloneAmount; i++)
+            int cloneCount = _cloneObjectPool.Count;
+
+            // --- Phase 1: Explosion ---
+            float explosionDuration = skillData.ExplosionEntireDuration;
+            float explosionStagger = skillData.ExplosionStartDuration;
+
+            // Step 1: Normalize curve weights
+            float[] explosionWeights = new float[cloneCount];
+            float explosionWeightSum = 0f;
+
+            for (int i = 0; i < cloneCount; i++)
             {
-                float angle = i * 2 * Mathf.PI / skillData.CloneAmount;
-                Vector2 direction = new(Mathf.Cos(angle), Mathf.Sin(angle));
-                Vector2 explosionPos = (Vector2)_cloneObjectPool[i].transform.position + direction * skillData.ExplosionDistance;
-
-                var clone = _cloneObjectPool[i];
-                Tween tween = clone.TryMoveToPositionOverTime(explosionPos, skillData.ExplosionDuration,
-                    skillData.ExplosionEaseCurve, skillData.ExplosionMoveCurve);
-
-                if (i == _cloneObjectPool.Count - 1)
-                {
-                    await tween.AsyncWaitForCompletion();
-                }
-                else
-                {
-                    float t = i / (float)(skillData.CloneAmount - 1);
-                    float delayTime = skillData.ExplosionPerCloneCurve.Evaluate(t) * skillData.ExplosionDelayPerClone;
-                    await UniTask.Delay((int)(delayTime * 1000), cancellationToken: cancelToken);
-                }
+                float t = i / (float)(cloneCount - 1);
+                explosionWeights[i] = Mathf.Clamp01(skillData.ExplosionStartCurve.Evaluate(t));
+                explosionWeightSum += explosionWeights[i];
             }
 
-            // Phase 2: Merge
-            for (int i = 0; i < _cloneObjectPool.Count; i++)
+            // Step 2: Launch clones with staggered delay
+            for (int i = 0; i < cloneCount; i++)
+            {
+                float angle = i * 2 * Mathf.PI / cloneCount;
+                Vector2 direction = new(Mathf.Cos(angle), Mathf.Sin(angle));
+                Vector2 explosionPos = (Vector2)_cloneObjectPool[i].transform.position +
+                                       direction * skillData.ExplosionDistance;
+
+                float delay = (explosionWeights[i] / explosionWeightSum) * explosionStagger;
+                float actualMoveDuration = Mathf.Clamp(explosionDuration - delay, 0.05f, explosionDuration);
+                explosionDuration -= delay;
+
+                var clone = _cloneObjectPool[i];
+                clone.TryMoveToPositionOverTime(explosionPos, actualMoveDuration,
+                    skillData.ExplosionEaseCurve, skillData.ExplosionMoveCurve);
+                
+                await UniTask.Delay((int)(delay * 1000), cancellationToken: cancelToken);
+            }
+            
+            // Wait for the last clone to finish
+            await UniTask.Delay((int)(explosionDuration * 1000), cancellationToken: cancelToken);
+
+            // --- Phase 2: Merge ---
+            float mergeDuration = skillData.MergeEntireDuration;
+            float mergeStagger = skillData.MergeStartDuration;
+
+            float[] mergeWeights = new float[cloneCount];
+            float mergeWeightSum = 0f;
+
+            for (int i = 0; i < cloneCount; i++)
+            {
+                float t = i / (float)(cloneCount - 1);
+                mergeWeights[i] = Mathf.Clamp01(skillData.MergeStartCurve.Evaluate(t));
+                mergeWeightSum += mergeWeights[i];
+            }
+
+            for (int i = 0; i < cloneCount; i++)
             {
                 var clone = _cloneObjectPool[i];
-                Tween tween = clone.TryMoveToTargetOverTime(transform, skillData.MergeDuration,
+                float delay = (mergeWeights[i] / mergeWeightSum) * mergeStagger;
+                float actualMoveDuration = Mathf.Clamp(mergeDuration - delay, 0.05f, mergeDuration);
+                mergeDuration -= delay;
+
+                Tween tween = clone.TryMoveToTargetOverTime(transform, actualMoveDuration,
                     skillData.MergeEaseCurve, skillData.MergeMoveCurve);
 
-                if (i == _cloneObjectPool.Count - 1)
-                {
-                    await tween.AsyncWaitForCompletion();
-                }
-                else
-                {
-                    tween.OnComplete(() => clone.gameObject.SetActive(false));
-                    float t = i / (float)(_cloneObjectPool.Count - 1);
-                    float delayTime = skillData.MergePerCloneCurve.Evaluate(t) * skillData.MergeDelayPerClone;
-                    await UniTask.Delay((int)(delayTime * 1000), cancellationToken: cancelToken);
-                }
-            }
-        }
+                tween.OnComplete(() => clone.gameObject.SetActive(false));
 
+                await UniTask.Delay((int)(delay * 1000), cancellationToken: cancelToken);
+            }
+            
+            await UniTask.Delay((int)(mergeDuration * 1000), cancellationToken: cancelToken);
+        }
+        
         /// <summary>
         /// Resets clone states when the skill ends.
         /// </summary>
