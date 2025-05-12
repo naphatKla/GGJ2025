@@ -18,16 +18,11 @@ namespace Characters.SO.SkillDataSo
 
         [PropertyTooltip("Total distance the character will dash forward.")]
         [SerializeField] private float dashDistance = 8f;
-
-        [PropertyTooltip("Amplitude of the sinusoidal noise applied during dash (adds wavy offset). Set to 0 for straight dash.")]
-        [SerializeField] private float dashNoiseAmplitude;
-
-        [PropertyTooltip("Frequency of the sinusoidal noise pattern applied during dash.")]
-        [SerializeField] private float dashNoiseFrequency;
-
+        
         [PropertyTooltip("Easing function that controls how the dash speed interpolates over time.")]
         [SerializeField] private Ease easeType;
-
+        
+        [PropertyTooltip("AnimationCurve that applies lateral displacement during the dash allowing for custom arcing or wave-like motion paths instead of straight-line dashing.")]
         [SerializeField] private AnimationCurve dashCurve;
 
         /// <summary>
@@ -39,22 +34,16 @@ namespace Characters.SO.SkillDataSo
         /// Total distance the character will dash forward.
         /// </summary>
         public float DashDistance => dashDistance;
-
-        /// <summary>
-        /// Amplitude of dash movement noise. Higher values produce more lateral deviation.
-        /// </summary>
-        public float DashNoiseAmplitude => dashNoiseAmplitude;
-
-        /// <summary>
-        /// Frequency of dash movement noise. Controls the number of oscillations during dash.
-        /// </summary>
-        public float DashNoiseFrequency => dashNoiseFrequency;
-
+        
         /// <summary>
         /// Easing curve that defines the acceleration and deceleration behavior of the dash.
         /// </summary>
         public Ease EaseType => easeType;
         
+        /// <summary>
+        /// Optional AnimationCurve that applies lateral displacement during the dash,
+        /// allowing for custom arcing or wave-like motion paths instead of straight-line dashing.
+        /// </summary>
         public AnimationCurve DashCurve => dashCurve;
     }
 }

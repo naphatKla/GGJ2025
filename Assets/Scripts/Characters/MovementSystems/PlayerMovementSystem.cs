@@ -64,8 +64,7 @@ namespace Characters.MovementSystems
                 {
                     float linearT = Mathf.Clamp01(t);
                     Vector2 basePos = Vector2.Lerp(startPos, position, linearT);
-
-                    // คำนวณ offset จาก curve
+                    
                     float offset = moveCurve?.Evaluate(linearT) ?? 0f;
 
                     Vector2 curvedPos = basePos + perpendicular * offset;
