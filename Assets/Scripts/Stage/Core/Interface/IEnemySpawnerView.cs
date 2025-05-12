@@ -28,4 +28,16 @@ public interface IEnemySpawnerView
     /// Gets the player's current score.
     /// </summary>
     float GetPlayerScore();
+    
+    /// <summary>
+    /// Get region size
+    /// </summary>
+    /// <returns></returns>
+    Vector2 GetRegionSize();
+    
+    /// <summary>
+    /// Get Distance from player
+    /// </summary>
+    /// <returns></returns>
+    float GetMinDistanceFromPlayer();
 }

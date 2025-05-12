@@ -118,6 +118,16 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
         return PlayerCharacter.Instance != null ? PlayerCharacter.Instance.Score : 0f;
     }
 
+    public Vector2 GetRegionSize()
+    {
+        return regionSize;
+    }
+
+    public float GetMinDistanceFromPlayer()
+    {
+        return minDistanceFromPlayer;
+    }
+
     /// <summary>
     /// Sets the background image.
     /// </summary>

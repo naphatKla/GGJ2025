@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class WorldEventManager
 {
     #region Variables
@@ -40,34 +41,7 @@ public class WorldEventManager
         var worldEvent = SelectRandomWorldEvent(bypassCooldown);
         if (worldEvent == null) return;
 
-        _spawnPositionsPool.Clear();
-        worldEvent.GetSpawnPositions(_spawnerView.GetPlayerPosition(), _regionSize, _minDistanceFromPlayer, 0,
-            _spawnPositionsPool);
-        
-        int availableEnemies = 0;
-        foreach (var enemyData in worldEvent.RaidEnemies)
-        {
-            if (enemyData?.EnemyPrefab != null)
-            {
-                availableEnemies += PoolManager.Instance.GetPoolCount(enemyData.EnemyPrefab.name);
-            }
-        }
-        
-        if (availableEnemies < _spawnPositionsPool.Count)
-        { return; }
-
-        foreach (var position in _spawnPositionsPool)
-        {
-            var enemyData = GetRandomEventEnemy(worldEvent.RaidEnemies);
-            if (enemyData == null) continue;
-            var enemy = _spawnerService.Spawn(enemyData.EnemyPrefab, position, Quaternion.identity);
-            if (enemy != null)
-            {
-                enemy.transform.SetParent(_spawnerView.GetEnemyParent());
-                eventEnemies?.Add(enemy);
-            }
-        }
-        worldEvent.OnSpawned();
+        worldEvent.Trigger(_spawnerView, eventEnemies);
     }
 
     /// <summary>
