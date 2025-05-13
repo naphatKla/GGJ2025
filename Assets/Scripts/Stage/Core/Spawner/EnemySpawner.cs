@@ -177,9 +177,9 @@ public class EnemySpawner
     /// Triggers a world event, optionally bypassing the cooldown.
     /// </summary>
     /// <param name="bypassCooldown">If true, ignores the event cooldown.</param>
-    public void TriggerWorldEvent(bool bypassCooldown = false)
+    public void TriggerWorldEvent(bool bypassCooldown = false, bool noChance = false)
     {
-        _worldEventManager.TriggerWorldEvent(bypassCooldown, eventEnemies);
+        _worldEventManager.TriggerWorldEvent(bypassCooldown, eventEnemies, noChance);
     }
 
     /// <summary>
@@ -200,6 +200,23 @@ public class EnemySpawner
             CurrentSpawnInterval = Mathf.Clamp(CurrentSpawnInterval - 0.1f, _stageData.SpawnIntervalCap, CurrentSpawnInterval);
             _nextIntervalScoreQuota += _stageData.DecreaseSpawnInterval;
         }
+    }
+    
+    /// <summary>
+    /// check state of spawner and return
+    /// </summary>
+    /// <returns></returns>
+    public bool IsStoppedOrPaused()
+    {
+        return _currentState is StopState || _currentState is PausedState;
+    }
+    
+    /// <summary>
+    /// Updates the timer triggers in the world event manager.
+    /// </summary>
+    public void UpdateTimerTriggers()
+    {
+        _worldEventManager.UpdateTimerTriggers(eventEnemies);
     }
 
     #endregion

@@ -28,6 +28,7 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     [SerializeField] private float minDistanceFromPlayer = 20f;
     
     private EnemySpawner _enemySpawner;
+    private Timer globalTimer;
     
     private MapDataSO CurrentMap => 
         mapDataList.Count > 0 && currentMapIndex < mapDataList.Count
@@ -38,8 +39,6 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
         CurrentMap != null && currentStageIndexInMap < CurrentMap.stages.Count
             ? CurrentMap.stages[currentStageIndexInMap]
             : null;
-
-    
     #endregion
 
     #region Unity Methods
@@ -47,6 +46,7 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     private void Awake()
     {
         // Sets up enemy parent and spawner with the current stage.
+        if (globalTimer == null) globalTimer = GetComponent<Timer>();
         if (enemyParent == null) enemyParent = new GameObject("EnemyParent").transform;
         if (CurrentMap.stages.Count == 0 || CurrentStage == null) return;
         EnemyPoolCreated();
@@ -66,6 +66,18 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     #endregion
 
     #region Methods
+    
+    /// <summary>
+    /// Check stop or pause state
+    /// </summary>
+    /// <returns></returns>
+    public bool IsSpawningStoppedOrPaused()
+    {
+        if (_enemySpawner == null) return true;
+        // ตรวจสอบสถานะของ EnemySpawner
+        return _enemySpawner.IsStoppedOrPaused();
+    }
+    
     /// <summary>
     /// Creates an enemy and adds it to the appropriate list.
     /// </summary>
@@ -166,6 +178,7 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
         _enemySpawner = new EnemySpawner(this, CurrentStage, regionSize, minDistanceFromPlayer);
         _enemySpawner.StartSpawning();
         SetBackground(CurrentMap?.background);
+        Timer.Instance.ResetTimer();
     }
 
     #endregion
@@ -291,7 +304,7 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     public void TriggerWorldEvent()
     {
         if (_enemySpawner == null) return;
-        _enemySpawner.TriggerWorldEvent(true); 
+        _enemySpawner.TriggerWorldEvent(true, true); 
     }
     #endregion
 }

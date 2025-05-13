@@ -54,8 +54,8 @@ public class SpawningState : ISpawnState
             spawner.TriggerWorldEvent();
             eventCheckTimer = 0f;
         }
-
-
+        
+        spawner.UpdateTimerTriggers();
         spawner.UpdateQuota();
     }
 

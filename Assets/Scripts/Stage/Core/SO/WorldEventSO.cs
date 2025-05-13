@@ -54,6 +54,10 @@ public class WorldEventSO : ScriptableObject, IWorldEvent
 
     [Tooltip("Optional list of effects to apply when this event is triggered")]
     [SerializeReference] private List<IWorldEventEffect> _customEffects;
+    
+    [Title("Timer Trigger")]
+    [Tooltip("Event can be triggered by global timer (start at index 0)")]
+    [SerializeField] public List<float> timerTrigger;
 
     #endregion
 
