@@ -3,6 +3,7 @@ using System.Threading;
 using Characters.Controllers;
 using Characters.SO.SkillDataSo;
 using Cysharp.Threading.Tasks;
+using Manager;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -136,6 +137,7 @@ namespace Characters.SkillSystems.SkillRuntimes
         protected virtual void HandleSkillStart()
         {
             _isPerforming = true;
+            EventManager<FeedbackName>.TriggerEvent(EventKey.PlayFeedback, skillData.StartFeedback);
             OnSkillStart();
         }
 
@@ -146,6 +148,7 @@ namespace Characters.SkillSystems.SkillRuntimes
         protected virtual void HandleSkillExit()
         {
             _isPerforming = false;
+            EventManager<FeedbackName>.TriggerEvent(EventKey.StopFeedback, skillData.StartFeedback);
             OnSkillExit();
         }
 

@@ -1,5 +1,6 @@
 using System;
 using Characters.SkillSystems.SkillRuntimes;
+using Manager;
 using Sirenix.OdinInspector;
 using Sirenix.Serialization;
 using UnityEngine;
@@ -8,54 +9,75 @@ namespace Characters.SO.SkillDataSo
 {
     /// <summary>
     /// Abstract base class for all ScriptableObjects used to define static skill configuration data.
-    /// Includes general properties such as cooldown, lifetime duration, and the corresponding runtime type.
-    /// Derived classes should extend this to define specific parameters unique to each skill.
+    /// Includes general-purpose properties like cooldown, optional lifetime, feedback triggers, and runtime binding.
+    /// Derived skill data classes should inherit from this and add their specific configuration parameters.
     /// </summary>
     public abstract class BaseSkillDataSo : SerializedScriptableObject
     {
+        // ---------------- Cooldown ----------------
+
         [Unit(Units.Second)]
-        [PropertyTooltip("The cooldown duration (in seconds) before this skill can be used again.")]
-        [SerializeField] private float cooldown = 1f;
+        [PropertyTooltip("Cooldown duration (in seconds) before the skill can be used again after activation.")]
+        [SerializeField] 
+        private float cooldown = 1f;
+
+        // ---------------- Life Time ----------------
 
         [Title("Life Time")]
-        [PropertyTooltip("Whether the skill has a limited lifetime after activation. If enabled, the skill will auto-exit after the specified time.")]
+
+        [PropertyTooltip("If enabled, the skill will automatically exit after a set time.")]
         [PropertyOrder(9999)]
-        [SerializeField] private bool hasLifeTime;
+        [SerializeField] 
+        private bool hasLifeTime;
 
         [Unit(Units.Second)]
-        [PropertyTooltip("The active duration of the skill (in seconds) before it forcefully exits. Only used if 'HasLifeTime' is enabled.")]
+        [PropertyTooltip("Total active time (in seconds) before the skill automatically exits. Used only if 'Has Life Time' is enabled.")]
         [PropertyOrder(9999)]
         [EnableIf(nameof(hasLifeTime))]
-        [SerializeField] private float lifeTime;
+        [SerializeField] 
+        private float lifeTime;
+
+        [PropertyTooltip("The global feedback to trigger when the skill begins execution (e.g., visual or sound).")]
+        [PropertyOrder(9999)]
+        [SerializeField] 
+        private FeedbackName startFeedback;
+
+        // ---------------- Runtime Binding ----------------
 
         [Title("Runtime Binding")]
-        [PropertyTooltip("The MonoBehaviour runtime class responsible for executing this skill during gameplay. Must inherit from BaseSkillRuntime<T>.")]
+
+        [PropertyTooltip("The MonoBehaviour runtime class that will execute this skill. Must inherit from BaseSkillRuntime<T>.")]
         [ShowInInspector, OdinSerialize, PropertyOrder(10000)]
         [TypeDrawerSettings(BaseType = typeof(BaseSkillRuntime<>))]
         private Type _skillRuntime;
 
+        // ---------------- Properties ----------------
+
         /// <summary>
-        /// Gets the cooldown duration (in seconds) for this skill.
-        /// Used by the skill system to determine when the skill can be reused.
+        /// Cooldown duration (in seconds) before the skill can be re-used.
         /// </summary>
         public float Cooldown => cooldown;
 
         /// <summary>
-        /// Gets the runtime class type responsible for executing the skill logic.
-        /// This should be a subclass of <see cref="BaseSkillRuntime{T}"/> matching this skill data type.
+        /// The runtime MonoBehaviour class that handles this skill’s logic. 
+        /// Must inherit from <see cref="BaseSkillRuntime{T}"/>.
         /// </summary>
         public Type SkillRuntime => _skillRuntime;
 
         /// <summary>
-        /// Indicates whether this skill has a limited active duration after activation.
-        /// If true, the skill system will auto-cancel it after <see cref="LifeTime"/>.
+        /// Whether this skill automatically ends after a set lifetime.
         /// </summary>
         public bool HasLifeTime => hasLifeTime;
 
         /// <summary>
-        /// Gets the maximum lifetime of the skill in seconds before it auto-exits.
-        /// Only relevant if <see cref="HasLifeTime"/> is true.
+        /// Maximum active time (in seconds) before the skill auto-cancels.
+        /// Only used if <see cref="HasLifeTime"/> is true.
         /// </summary>
         public float LifeTime => lifeTime;
+
+        /// <summary>
+        /// The global feedback identifier to trigger when the skill begins.
+        /// </summary>
+        public FeedbackName StartFeedback => startFeedback;
     }
 }
