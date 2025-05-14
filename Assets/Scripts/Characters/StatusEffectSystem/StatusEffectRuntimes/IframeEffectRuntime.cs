@@ -4,12 +4,9 @@ namespace Characters.StatusEffectSystem.StatusEffectRuntimes
 {
     public class IframeEffectRuntime : BaseStatusEffectRuntime
     {
-        public IframeEffectRuntime(float duration)
-        {
-            EffectName = StatusEffectName.Iframe;
-            this.duration = duration;
-        }
-
+        [SerializeField] private float testForDash1;
+        [SerializeField] private float testForDash2;
+        
         public override void OnStart(GameObject owner)
         {
             // Set iframe flag, play effect, etc.
@@ -17,7 +14,6 @@ namespace Characters.StatusEffectSystem.StatusEffectRuntimes
 
         public override void OnTick(GameObject owner, float deltaTime)
         {
-            duration -= deltaTime;
         }
 
         public override void OnEnd(GameObject owner)
