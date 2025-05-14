@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using Characters.StatusEffectSystem;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -20,6 +22,8 @@ namespace Characters.SO.SkillDataSo
 
         [PropertyTooltip(" ")]
         [SerializeField] private bool dealDamageOnTouch;
+        
+        public List<SkillStatusEffectConfig> statusEffects;
         
         [PropertyTooltip("AnimationCurve controlling the dash's easing over time. Used to shape the dash speed progression (e.g., accelerate then decelerate).")]
         [SerializeField] private AnimationCurve dashEaseCurve;

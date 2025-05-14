@@ -1,8 +1,8 @@
 using UnityEngine;
 
-namespace Characters.StatusEffectSystem.StatusEffectRuntimes
+namespace Characters.StatusEffectSystem.StatusEffects
 {
-    public abstract class BaseStatusEffectRuntime : MonoBehaviour
+    public abstract class BaseStatusEffect
     {
         public float currentDuration;
         public bool IsDone => currentDuration <= 0f;

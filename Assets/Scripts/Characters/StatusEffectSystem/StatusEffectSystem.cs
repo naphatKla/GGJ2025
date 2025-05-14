@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using Characters.SO.StatusEffectMetaSO;
-using Characters.StatusEffectSystem.StatusEffectRuntimes;
+using Characters.StatusEffectSystem.DrawerSettings;
+using Characters.StatusEffectSystem.StatusEffects;
 using ProjectExtensions;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace Characters.StatusEffectSystem
@@ -11,14 +13,41 @@ namespace Characters.StatusEffectSystem
     {
         Iframe,
         Slow,
-        Burn
+        Stun
         // Add more statuses here
+    }
+    
+    [Serializable]
+    public class SkillStatusEffectConfig
+    {
+        [OnValueChanged(nameof(UpdateEffectInstance))]
+        [LabelText("Effect Meta")]
+        public StatusEffectMetaDataSo meta;
+
+        [ShowIf(nameof(meta)), SerializeReference, InlineProperty]
+        [StatusEffectParamDrawer]
+        public BaseStatusEffect effectParams;
+
+        private void UpdateEffectInstance()
+        {
+#if UNITY_EDITOR
+            if (meta == null || meta.ClassType == null) return;
+
+            if (effectParams == null || effectParams.GetType() != meta.ClassType)
+            {
+                if (typeof(BaseStatusEffect).IsAssignableFrom(meta.ClassType))
+                {
+                    effectParams = (BaseStatusEffect)Activator.CreateInstance(meta.ClassType);
+                }
+            }
+#endif
+        }
     }
     
    public class StatusEffectSystem : MonoBehaviour
     {
         private readonly Dictionary<StatusEffectName, BoolRequestFlag> _statusFlags = new();
-        private readonly Dictionary<StatusEffectName, BaseStatusEffectRuntime> _activeEffects = new();
+        private readonly Dictionary<StatusEffectName, BaseStatusEffect> _activeEffects = new();
         private readonly Dictionary<StatusEffectName, StatusEffectMetaDataSo> _activeEffectMetaData = new();
 
         private void Awake()
@@ -47,7 +76,7 @@ namespace Characters.StatusEffectSystem
 
         public bool IsStatusActive(StatusEffectName statusEffect) => _statusFlags[statusEffect].IsActive;
 
-        public void ApplyEffect(BaseStatusEffectRuntime effect, StatusEffectMetaDataSo meta)
+        public void ApplyEffect(BaseStatusEffect effect, StatusEffectMetaDataSo meta)
         {
             StatusEffectName effectName = meta.EffectName;
 

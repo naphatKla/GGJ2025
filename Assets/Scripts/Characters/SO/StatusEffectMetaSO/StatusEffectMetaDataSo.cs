@@ -4,7 +4,7 @@ using UnityEditor;
 using System;
 using System.Linq;
 using Characters.StatusEffectSystem;
-using Characters.StatusEffectSystem.StatusEffectRuntimes;
+using Characters.StatusEffectSystem.StatusEffects;
 using Sirenix.OdinInspector;
 using Sirenix.Serialization;
 using UnityEngine;
@@ -18,16 +18,16 @@ namespace Characters.SO.StatusEffectMetaSO
         [SerializeField] private StatusEffectName effectName;
         [SerializeField] [TextArea] private string description;
 
-        [Title("Runtime Binding")]
+        [Title("Type Binding")]
         [PropertyTooltip(" ")]
         [ShowInInspector, OdinSerialize, PropertyOrder(10000)]
-        [TypeDrawerSettings(BaseType = typeof(BaseStatusEffectRuntime))]
-        private Type _runtime;
+        [TypeDrawerSettings(BaseType = typeof(BaseStatusEffect))]
+        private Type _classType;
 
         public Sprite Icon => icon;
         public StatusEffectName EffectName => effectName;
         public string Description => description;
-        public Type Runtime => _runtime;
+        public Type ClassType => _classType;
 
 #if UNITY_EDITOR
         private void OnValidate()
@@ -44,9 +44,9 @@ namespace Characters.SO.StatusEffectMetaSO
                     Debug.LogError($"[DUPLICATE ENUM] {EffectName} already used in: {AssetDatabase.GetAssetPath(meta)}");
                 }
 
-                if (meta.Runtime == Runtime && Runtime != null)
+                if (meta.ClassType == ClassType && ClassType != null)
                 {
-                    Debug.LogError($"[DUPLICATE RUNTIME] {Runtime.Name} already used in: {AssetDatabase.GetAssetPath(meta)}");
+                    Debug.LogError($"[DUPLICATE RUNTIME] {ClassType.Name} already used in: {AssetDatabase.GetAssetPath(meta)}");
                 }
             }
         }

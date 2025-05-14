@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using Characters.StatusEffectSystem;
-using Characters.StatusEffectSystem.StatusEffectRuntimes;
 using Characters.SO.StatusEffectMetaSO;
+using Characters.StatusEffectSystem.StatusEffects;
 using UnityEngine;
 
 namespace Manager
@@ -26,7 +26,7 @@ namespace Manager
                 return;
             }
 
-            if (!(Activator.CreateInstance(meta.Runtime) is BaseStatusEffectRuntime runtime))
+            if (!(Activator.CreateInstance(meta.ClassType) is BaseStatusEffect runtime))
             {
                 Debug.LogError($"[StatusEffectManager] Could not create runtime for {name}");
                 return;

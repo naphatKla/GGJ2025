@@ -2,48 +2,49 @@
 using System;
 using System.Linq;
 using Characters.SO.StatusEffectMetaSO;
-using Characters.StatusEffectSystem.StatusEffectRuntimes;
+using Characters.StatusEffectSystem.DrawerSettings;
+using Characters.StatusEffectSystem.StatusEffects;
 using Sirenix.OdinInspector.Editor;
 using Sirenix.Utilities.Editor;
-using UnityEditor;
 using UnityEngine;
 
-namespace Characters.StatusEffectSystem.DrawerSettings
+public class StatusEffectParamDrawerAttributeDrawer : OdinAttributeDrawer<StatusEffectParamDrawerAttribute, BaseStatusEffect>
 {
-    public class StatusEffectParamDrawerAttributeDrawer : OdinAttributeDrawer<StatusEffectParamDrawerAttribute, BaseStatusEffectRuntime>
+    private Type lastClassType = null;
+
+    protected override void DrawPropertyLayout(GUIContent label)
     {
-        protected override void DrawPropertyLayout(GUIContent label)
+        var parent = this.Property.Parent;
+        var metaProp = parent.Children.FirstOrDefault(p => p.Name == "meta");
+
+        if (metaProp?.ValueEntry?.WeakSmartValue is not StatusEffectMetaDataSo meta)
         {
-            var parent = this.Property.Parent;
-            var metaProp = parent.Children.FirstOrDefault(p => p.Name == "statusEffectMeta");
-
-            if (metaProp?.ValueEntry?.WeakSmartValue is not StatusEffectMetaDataSo meta)
-            {
-                SirenixEditorGUI.ErrorMessageBox("Select a valid StatusEffectMetaDataSo first.");
-                return;
-            }
-
-            var runtimeType = meta.Runtime;
-
-            if (runtimeType == null || !typeof(BaseStatusEffectRuntime).IsAssignableFrom(runtimeType))
-            {
-                SirenixEditorGUI.ErrorMessageBox("Invalid or missing Runtime Type in MetaData.");
-                return;
-            }
-
-            if (runtimeType.IsAbstract || runtimeType.GetConstructor(Type.EmptyTypes) == null)
-            {
-                SirenixEditorGUI.ErrorMessageBox($"Runtime type {runtimeType.Name} must be instantiable (concrete + no-arg constructor).\"");
-                return;
-            }
-
-            if (Property.ValueEntry.WeakSmartValue == null || Property.ValueEntry.TypeOfValue != runtimeType)
-            {
-                Property.ValueEntry.WeakSmartValue = Activator.CreateInstance(runtimeType);
-            }
-
-            CallNextDrawer(label);
+            SirenixEditorGUI.ErrorMessageBox("Select a valid StatusEffectMetaDataSo first.");
+            return;
         }
+
+        var classType = meta.ClassType;
+
+        if (classType == null || !typeof(BaseStatusEffect).IsAssignableFrom(classType))
+        {
+            SirenixEditorGUI.ErrorMessageBox("Invalid or missing Class Type in MetaData.");
+            return;
+        }
+
+        if (classType.IsAbstract || classType.GetConstructor(Type.EmptyTypes) == null)
+        {
+            SirenixEditorGUI.ErrorMessageBox($"Runtime type {classType.Name} must be instantiable (concrete + no-arg constructor).\"");
+            return;
+        }
+
+        // Auto-create or update effectParams when meta changes
+        if (lastClassType != classType || Property.ValueEntry.WeakSmartValue == null || Property.ValueEntry.TypeOfValue != classType)
+        {
+            Property.ValueEntry.WeakSmartValue = Activator.CreateInstance(classType);
+            lastClassType = classType;
+        }
+
+        this.CallNextDrawer(label);
     }
 }
 #endif
