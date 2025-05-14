@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using Characters.SO.StatusEffectMetaSO;
 using Characters.StatusEffectSystem.StatusEffectRuntimes;
 using ProjectExtensions;
 using UnityEngine;
@@ -9,17 +11,19 @@ namespace Characters.StatusEffectSystem
     {
         Iframe,
         Slow,
+        Burn
         // Add more statuses here
     }
     
-    public class StatusEffectSystem : MonoBehaviour
+   public class StatusEffectSystem : MonoBehaviour
     {
         private readonly Dictionary<StatusEffectName, BoolRequestFlag> _statusFlags = new();
         private readonly Dictionary<StatusEffectName, BaseStatusEffectRuntime> _activeEffects = new();
+        private readonly Dictionary<StatusEffectName, StatusEffectMetaDataSo> _activeEffectMetaData = new();
 
         private void Awake()
         {
-            foreach (StatusEffectName status in System.Enum.GetValues(typeof(StatusEffectName)))
+            foreach (StatusEffectName status in Enum.GetValues(typeof(StatusEffectName)))
                 _statusFlags[status] = new BoolRequestFlag();
         }
 
@@ -32,7 +36,7 @@ namespace Characters.StatusEffectSystem
             {
                 var effect = pair.Value;
                 effect.OnTick(gameObject, deltaTime);
-                effect.duration -= deltaTime;
+                effect.currentDuration -= deltaTime;
                 if (!effect.IsDone) continue;
                 toRemove.Add(pair.Key);
             }
@@ -43,16 +47,19 @@ namespace Characters.StatusEffectSystem
 
         public bool IsStatusActive(StatusEffectName statusEffect) => _statusFlags[statusEffect].IsActive;
 
-        public void ApplyEffect(BaseStatusEffectRuntime effect)
+        public void ApplyEffect(BaseStatusEffectRuntime effect, StatusEffectMetaDataSo meta)
         {
-            StatusEffectName effectName = effect.EffectName;
+            StatusEffectName effectName = meta.EffectName;
 
-            if (!_activeEffects.TryGetValue(effectName, out var existing)) return;
-            if (existing.duration >= effect.duration) return;
-            RemoveEffect(effectName); // Remove weaker effect
-            
+            if (_activeEffects.TryGetValue(effectName, out var existing))
+            {
+                if (existing.currentDuration >= effect.currentDuration) return;
+                RemoveEffect(effectName);
+            }
+
             _statusFlags[effectName].Request(effect);
             _activeEffects[effectName] = effect;
+            _activeEffectMetaData[effectName] = meta;
             effect.OnStart(gameObject);
         }
 
@@ -62,6 +69,12 @@ namespace Characters.StatusEffectSystem
             effect.OnEnd(gameObject);
             _statusFlags[effectName].Release(effect);
             _activeEffects.Remove(effectName);
+            _activeEffectMetaData.Remove(effectName);
+        }
+
+        public StatusEffectMetaDataSo GetMetaData(StatusEffectName effectName)
+        {
+            return _activeEffectMetaData.GetValueOrDefault(effectName);
         }
     }
 }
