@@ -60,6 +60,11 @@ namespace Characters.Controllers
         /// </summary>
         public BaseMovementSystem MovementSystem => movementSystem;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public DamageOnTouch DamageOnTouch => damageOnTouch;
+
         #endregion
 
         #region Unity Methods

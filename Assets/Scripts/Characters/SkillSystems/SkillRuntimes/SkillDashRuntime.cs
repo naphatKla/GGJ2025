@@ -1,7 +1,6 @@
 using System.Threading;
 using Characters.SO.SkillDataSo;
 using Cysharp.Threading.Tasks;
-using Manager;
 using UnityEngine;
 
 namespace Characters.SkillSystems.SkillRuntimes
@@ -24,6 +23,7 @@ namespace Characters.SkillSystems.SkillRuntimes
             owner.MovementSystem.StopMovement();
             owner.ToggleMovementInputController(false);
             owner.MovementSystem.ResetSpeedToDefault();
+            owner.DamageOnTouch.EnableDamage(true);
         }
 
         /// <summary>
@@ -47,6 +47,7 @@ namespace Characters.SkillSystems.SkillRuntimes
         protected override void OnSkillExit()
         {
             owner.ToggleMovementInputController(true);
+            owner.DamageOnTouch.EnableDamage(false);
         }
 
         #endregion
