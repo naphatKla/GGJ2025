@@ -63,8 +63,8 @@ namespace Manager
     /// </summary>
     public enum FeedbackName
     {
-        None,
-        PlayerDash,
-        EnemyDash
+        None = 0,
+        PlayerDash = 1,
+        EnemyDash = 2,
     }
 }
