@@ -43,8 +43,8 @@ public class StageDataSO : ScriptableObject
     [Tooltip("Enemy spawn interval will increase by this quota")]
     [SerializeField] private float decreaseSpawnInterval;
     
-    [Space][Title("World Event Timer")]
-    [Tooltip("Interval to check for world event triggers")]
+    [Space][Title("Spawn Event Timer")]
+    [Tooltip("Interval to check for spawn event triggers")]
     [SerializeField] private float eventIntervalCheck = 1f;
     
     [Space]

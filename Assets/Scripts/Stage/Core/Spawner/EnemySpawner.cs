@@ -110,7 +110,7 @@ public class EnemySpawner
     {
         Debug.Log("Start Spawning");
         SetState(new SpawningState());
-        TriggerWorldEvent(true);
+        TriggerSpawnEvent(true);
     }
 
     /// <summary>
@@ -170,6 +170,7 @@ public class EnemySpawner
             enemies.Remove(enemy);
             _spawnerService.Despawn(enemy);
             OnEnemyDespawned?.Invoke(enemy);
+            _spawnEventManager.onDespawntrigger?.Invoke();
         }
     }
 
@@ -177,9 +178,9 @@ public class EnemySpawner
     /// Triggers a world event, optionally bypassing the cooldown.
     /// </summary>
     /// <param name="bypassCooldown">If true, ignores the event cooldown.</param>
-    public void TriggerWorldEvent(bool bypassCooldown = false, bool noChance = false)
+    public void TriggerSpawnEvent(bool bypassCooldown = false, bool noChance = false)
     {
-        _spawnEventManager.TriggerWorldEvent(bypassCooldown, eventEnemies, noChance);
+        _spawnEventManager.TriggerSpawnEvent(bypassCooldown, eventEnemies, noChance);
     }
 
     /// <summary>
@@ -212,11 +213,19 @@ public class EnemySpawner
     }
     
     /// <summary>
-    /// Updates the timer triggers in the world event manager.
+    /// Updates the timer triggers in the spawn event manager.
     /// </summary>
     public void UpdateTimerTriggers()
     {
         _spawnEventManager.UpdateTimerTriggers(eventEnemies);
+    }
+    
+    /// <summary>
+    /// Updates the kill triggers in the spawn event manager.
+    /// </summary>
+    public void UpdateKillTriggers()
+    {
+        _spawnEventManager.UpdateKillTriggers(eventEnemies);
     }
 
     #endregion

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Events;
 
 
 public class SpawnEventManager
@@ -17,8 +18,11 @@ public class SpawnEventManager
     private readonly ISpawnerService _spawnerService = new ObjectPoolSpawnerService();
     
     private float _currentTime => Timer.Instance.GlobalTimer;
+    private float killTrigger;
     private readonly Dictionary<ISpawnEvent, int> _eventTriggerIndices = new();
 
+    public UnityEvent onDespawntrigger;
+    
     #endregion
 
     #region Constructor
@@ -72,11 +76,30 @@ public class SpawnEventManager
                 }
         }
     }
+    
+    /// <summary>
+    /// Updates the kill and checks for killTrigger events.
+    /// </summary>
+    public void UpdateKillTriggers(HashSet<GameObject> eventEnemies)
+    {
+        foreach (var spawnEvent in _stageData.SpawnEvents)
+        {
+            if (!_eventTriggerIndices.ContainsKey(spawnEvent)) continue;
+
+            var currentIndex = _eventTriggerIndices[spawnEvent];
+            if (spawnEvent is SpawnEventSO eventSO && currentIndex < eventSO.killTrigger.Count)
+                if (_currentTime <= eventSO.killTrigger[currentIndex])
+                {
+                    spawnEvent.Trigger(_spawnerView, eventEnemies);
+                    _eventTriggerIndices[spawnEvent] = currentIndex + 1;
+                }
+        }
+    }
 
     /// <summary>
     ///     Triggers a random world event, spawning enemies if conditions are met.
     /// </summary>
-    public void TriggerWorldEvent(bool bypassCooldown = false, HashSet<GameObject> eventEnemies = null, bool noChance = false)
+    public void TriggerSpawnEvent(bool bypassCooldown = false, HashSet<GameObject> eventEnemies = null, bool noChance = false)
     {
         var worldEvent = SelectRandomWorldEvent(bypassCooldown, noChance);
         if (worldEvent == null) return;
@@ -117,6 +140,15 @@ public class SpawnEventManager
             return null;
 
         return raidEnemies[Random.Range(0, raidEnemies.Count)];
+    }
+
+    /// <summary>
+    /// Update kill count
+    /// </summary>
+    private void UpdateKillCount()
+    {
+        onDespawntrigger?.Invoke();
+        killTrigger += 1;
     }
 
     #endregion

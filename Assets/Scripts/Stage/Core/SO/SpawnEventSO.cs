@@ -55,6 +55,10 @@ public class SpawnEventSO : ScriptableObject, ISpawnEvent
     [Title("Timer Trigger")]
     [Tooltip("Event can be triggered by global timer (start at index 0)")]
     [SerializeField] public List<float> timerTrigger;
+    
+    [Title("Kill Trigger")]
+    [Tooltip("Event can be triggered by global kill (start at index 0)")]
+    [SerializeField] public List<float> killTrigger;
 
     #endregion
 
