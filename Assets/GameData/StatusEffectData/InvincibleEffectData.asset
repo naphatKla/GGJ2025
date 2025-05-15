@@ -9,8 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 292e32517fe92914a9e85b7b76a37261, type: 3}
-  m_Name: IframeEffectData
+  m_Script: {fileID: 11500000, guid: addd15a635c8ed041862419f6ceab4c0, type: 3}
+  m_Name: InvincibleEffectData
   m_EditorClassIdentifier: 
   serializationData:
     SerializedFormat: 2
@@ -21,15 +21,17 @@ MonoBehaviour:
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
     SerializationNodes:
-    - Name: _classType
+    - Name: _effectType
       Entry: 7
       Data: 0|System.RuntimeType, mscorlib
     - Name: 
       Entry: 1
-      Data: Characters.StatusEffectSystem.StatusEffects.IframeEffect, Assembly-CSharp
+      Data: Characters.StatusEffectSystem.StatusEffects.InvincibleEffect, Assembly-CSharp
     - Name: 
       Entry: 8
       Data: 
   icon: {fileID: 0}
   effectName: 0
   description: 
+  defaultDuration: 0.5
+  level: 1

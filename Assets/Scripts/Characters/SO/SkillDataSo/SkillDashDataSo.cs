@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using Characters.StatusEffectSystem;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -19,11 +17,6 @@ namespace Characters.SO.SkillDataSo
 
         [PropertyTooltip("Total distance the character will dash forward.")]
         [SerializeField] private float dashDistance = 8f;
-
-        [PropertyTooltip(" ")]
-        [SerializeField] private bool dealDamageOnTouch;
-        
-        public List<SkillStatusEffectConfig> statusEffects;
         
         [PropertyTooltip("AnimationCurve controlling the dash's easing over time. Used to shape the dash speed progression (e.g., accelerate then decelerate).")]
         [SerializeField] private AnimationCurve dashEaseCurve;
@@ -42,12 +35,7 @@ namespace Characters.SO.SkillDataSo
         /// The dash moves the character forward by this amount in world space.
         /// </summary>
         public float DashDistance => dashDistance;
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public bool DealDamageOnTouch => dealDamageOnTouch;
-
+        
         /// <summary>
         /// AnimationCurve controlling the dash's easing over time.
         /// Defines how the speed changes across the dash duration (e.g., ease in/out).
