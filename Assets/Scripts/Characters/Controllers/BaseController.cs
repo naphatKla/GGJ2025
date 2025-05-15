@@ -60,6 +60,11 @@ namespace Characters.Controllers
         /// </summary>
         public BaseMovementSystem MovementSystem => movementSystem;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public DamageOnTouch DamageOnTouch => damageOnTouch;
+
         #endregion
 
         #region Unity Methods
@@ -71,7 +76,7 @@ namespace Characters.Controllers
         private void Start()
         {
             skillSystem.Initialize(this);
-            movementSystem?.AssignMovementData(characterData.BaseSpeed);
+            movementSystem?.AssignMovementData(characterData.BaseSpeed, characterData.MoveAccelerationRate, characterData.TurnAccelerationRate);
             healthSystem?.AssignHealthData(characterData.MaxHealth);
             damageOnTouch?.AssignDamageOnTouchData(characterData.BaseDamage);
         }
@@ -115,9 +120,9 @@ namespace Characters.Controllers
         public void ToggleMovementInputController(bool isToggle)
         {
             if (isToggle)
-                _inputSystem.OnMove += movementSystem.TryMove;
+                _inputSystem.OnMove += movementSystem.TryMoveWithInertia;
             else
-                _inputSystem.OnMove -= movementSystem.TryMove;
+                _inputSystem.OnMove -= movementSystem.TryMoveWithInertia;
         }
 
         /// <summary>

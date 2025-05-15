@@ -1,64 +1,59 @@
+using System;
 using DG.Tweening;
 using Sirenix.OdinInspector;
 using UnityEngine;
-using UnityEngine.AI;
 
 namespace Characters.MovementSystems
 {
     /// <summary>
-    /// Handles enemy movement using Unity's NavMeshAgent.
-    /// Inherits from `BaseMovementSystem` and implements movement logic for AI-controlled entities.
+    /// Handles 2D movement logic for physics-based entities using <see cref="Rigidbody2D"/>.
+    /// Supports instant, inertia-based, and tweened movement, including curved paths and dynamic target following.
+    /// Inherits from <see cref="BaseMovementSystem"/> and can be used for both player-controlled and AI-driven objects.
     /// </summary>
-    public class EnemyMovementSystem : BaseMovementSystem
+    public class RigidbodyMovementSystem : BaseMovementSystem
     {
         /// <summary>
-        /// The NavMeshAgent component responsible for pathfinding and movement.
+        /// The Rigidbody2D component used for physics-based movement.
+        /// Automatically assigned from the GameObject if not manually set via inspector.
         /// </summary>
-        [Required] [SerializeField] private NavMeshAgent agent;
+        [Required] [SerializeField] private Rigidbody2D rb2D;
 
-        #region Unity Methods
-        
-        private void Start()
+        /// <summary>
+        /// Ensures that the Rigidbody2D component is assigned at runtime.
+        /// If not already set via the inspector, it will attempt to retrieve it from the current GameObject.
+        /// </summary>
+        private void Awake()
         {
-            agent.updateRotation = false;
-            agent.updateUpAxis = false;
+            if (rb2D) return;
+            rb2D = GetComponent<Rigidbody2D>();
         }
-
-        #endregion
 
         #region Methods
-
-        /// <summary>
-        /// Assigns base movement data to the character, including speed and acceleration settings.
-        /// Typically called by the character controller during initialization to configure movement behavior.
-        /// </summary>
-        /// <param name="baseSpeed">The base movement speed of the character.</param>
-        /// <param name="moveAccelerationRate">The rate at which the character accelerates toward its movement speed.</param>
-        /// <param name="turnAccelerationRate">The rate at which the character changes its movement direction.</param>
-        public override void AssignMovementData(float baseSpeed, float moveAccelerationRate, float turnAccelerationRate)
-        {
-            base.AssignMovementData(baseSpeed, moveAccelerationRate, turnAccelerationRate);
-            agent.speed = baseSpeed;
-            agent.acceleration = moveAccelerationRate;
-            agent.angularSpeed = turnAccelerationRate * 180f;
-        }
         
         /// <summary>
-        /// Moves the enemy and path finding to the target's position with inertia, using naveMeshAgent
+        /// Moves the entity smoothly toward the specified position using Rigidbody2D physics.
+        /// Applies gradual acceleration and turning inertia based on configured movement rates.
+        /// This method should be called in <c>FixedUpdate</c>.
         /// </summary>
-        /// <param name="position">The target position to move towards.</param>
+        /// <param name="position">The world position the entity should move toward.</param>
+
         protected override void MoveWithInertia(Vector2 position)
         {
-            agent.SetDestination(position);
+            Vector2 rawDirection = (position - (Vector2)transform.position).normalized;
+            currentDirection = Vector2.Lerp(currentDirection, rawDirection, turnAccelerationRate * Time.fixedDeltaTime);
+            
+            Vector2 desiredVelocity = currentDirection * currentSpeed;
+            currentVelocity = Vector2.Lerp(currentVelocity, desiredVelocity, moveAccelerationRate * Time.fixedDeltaTime);
+            rb2D.velocity = currentVelocity;
         }
 
         /// <summary>
-        /// Instantly warps the NavMeshAgent to the specified position, bypassing pathfinding and obstacle avoidance.
+        /// Instantly moves the entity's Rigidbody2D to the specified position using physics-based movement.
         /// </summary>
-        /// <param name="position">The destination position to warp the agent to.</param>
+        /// <param name="position">The target position to move to.</param>
         protected override void MoveToPosition(Vector2 position)
         {
-            agent.Warp(position);
+            rb2D.MovePosition(position);
         }
 
         /// <summary>
@@ -74,9 +69,7 @@ namespace Characters.MovementSystems
         /// <returns>A Tween instance managing the interpolated motion over time.</returns>
         protected override Tween MoveToPositionOverTime(Vector2 position, float duration, AnimationCurve easeCurve = null, AnimationCurve moveCurve = null)
         {
-            agent.ResetPath();
-
-            Vector2 startPos = agent.transform.position;
+            Vector2 startPos = rb2D.position;
             Vector2 direction = (position - startPos).normalized;
             Vector2 perpendicular = Vector2.Perpendicular(direction);
 
@@ -88,27 +81,26 @@ namespace Characters.MovementSystems
                 float offset = moveCurve?.Evaluate(linearT) ?? 0f;
                 Vector2 curvedPos = basePos + perpendicular * offset;
 
-                Vector2 delta = curvedPos - (Vector2)agent.transform.position;
-                agent.Move(delta);
+                rb2D.MovePosition(curvedPos);
             }, 1f, duration);
-            
+
             return easeCurve != null? tween.SetEase(easeCurve) : tween.SetEase(Ease.InOutSine);
         }
 
+
         /// <summary>
-        /// Smoothly moves the enemy's NavMeshAgent toward a dynamic target over time using DOTween.
-        /// Continuously follows the target's real-time position while optionally applying custom easing and perpendicular motion.
+        /// Smoothly moves the entity toward a moving target Transform over a duration using Rigidbody2D and DOTween.
+        /// The movement speed is controlled by an optional easing AnimationCurve, and the path can be offset using a lateral curve.
+        /// This allows for fully customizable motion in both speed and shape, such as arcing or wave-like trajectories.
         /// </summary>
-        /// <param name="target">The target Transform to move toward during the tween.</param>
-        /// <param name="duration">Duration (in seconds) of the movement.</param>
-        /// <param name="easeCurve">Optional curve to control easing/speed progression.</param>
-        /// <param name="moveCurve">Optional curve that offsets the path perpendicularly.</param>
-        /// <returns>The Tween that handles interpolated movement.</returns>
+        /// <param name="target">The Transform to follow during the tween.</param>
+        /// <param name="duration">Total time (in seconds) to reach the target.</param>
+        /// <param name="easeCurve">Optional AnimationCurve to control speed over time (replaces Ease). Defaults to Ease.InOutSine if null.</param>
+        /// <param name="moveCurve">Optional AnimationCurve to apply perpendicular displacement, such as arcs or waves.</param>
+        /// <returns>The DOTween Tween handling the movement over time.</returns>
         protected override Tween MoveToTargetOverTime(Transform target, float duration, AnimationCurve easeCurve = null, AnimationCurve moveCurve = null)
         {
-            agent.ResetPath();
-
-            Vector2 startPos = agent.transform.position;
+            Vector2 startPos = rb2D.position;
 
             var tween = DOTween.To(() => 0f, t =>
                 {
@@ -122,8 +114,7 @@ namespace Characters.MovementSystems
                     float offset = moveCurve?.Evaluate(linearT) ?? 0f;
                     Vector2 curvedPos = basePos + perpendicular * offset;
 
-                    Vector2 delta = curvedPos - (Vector2)agent.transform.position;
-                    agent.Move(delta);
+                    rb2D.MovePosition(curvedPos);
                 },
                 1f,
                 duration
