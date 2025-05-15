@@ -8,11 +8,10 @@ using Sirenix.OdinInspector;
 public class Timer : MMSingleton<Timer>
 {
     #region Inspector & Fleid
-
     [SerializeField] private TMP_Text timerText;
     [SerializeField] private float startTimer;
     private StageManager stageManager;
-
+    
     private float currentTimer;
     private bool isPaused = false;
     private bool isRunning = false;
@@ -22,12 +21,13 @@ public class Timer : MMSingleton<Timer>
     #region Properties
     
     public float GlobalTimer => currentTimer;
+    public float StartTimer => startTimer;
     
-    [FoldoutGroup("Stage Control"), Button(ButtonSizes.Large), GUIColor(1, 1, 0)]
+    [FoldoutGroup("Time Control"), Button(ButtonSizes.Large), GUIColor(1, 1, 0)]
     public void PauseTimer() => isPaused = true;
-    [FoldoutGroup("Stage Control"), Button(ButtonSizes.Large), GUIColor(0, 1, 0)]
+    [FoldoutGroup("Time Control"), Button(ButtonSizes.Large), GUIColor(0, 1, 0)]
     public void ResumeTimer() => isPaused = false;
-    [FoldoutGroup("Stage Control"), Button(ButtonSizes.Large), GUIColor(1, 0, 0)]
+    [FoldoutGroup("Time Control"), Button(ButtonSizes.Large), GUIColor(1, 0, 0)]
     public void ResetTimer() => currentTimer = startTimer;
     public void TogglePause() => isPaused = !isPaused;
     public bool IsPaused() => isPaused;
@@ -42,7 +42,6 @@ public class Timer : MMSingleton<Timer>
         ResetTimer();
         StartCountdownAsync().Forget();
     }
-
     #endregion
 
     #region Methods

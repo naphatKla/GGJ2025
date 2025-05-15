@@ -280,6 +280,7 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     /// <summary>
     /// Deletes all enemies and clears both lists.
     /// </summary>
+    [PropertySpace(SpaceBefore = 30)]
     [Button(ButtonSizes.Large), GUIColor(1, 0, 0)]
     public void ClearEnemies()
     {

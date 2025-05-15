@@ -258,7 +258,7 @@ public class OxygenSpawnManagerNew : MMSingleton<OxygenSpawnManagerNew>
     /// <summary>
     /// Despawns all active oxygen objects, clears the tracking list, and resets the pool.
     /// </summary>
-    [Button]
+    [FoldoutGroup("Oxygen Control"), Button(ButtonSizes.Large), GUIColor(1, 0, 0)]
     public void ClearAll()
     {
         foreach (var obj in _oxygenGO)
@@ -276,7 +276,7 @@ public class OxygenSpawnManagerNew : MMSingleton<OxygenSpawnManagerNew>
     /// <summary>
     /// Starts the spawning process
     /// </summary>
-    [Button]
+    [FoldoutGroup("Oxygen Control"), Button(ButtonSizes.Large), GUIColor(0, 1, 0)]
     public void StartSpawning()
     {
         if (_isSpawning) return;
@@ -290,7 +290,7 @@ public class OxygenSpawnManagerNew : MMSingleton<OxygenSpawnManagerNew>
     /// <summary>
     /// Stops the spawning process
     /// </summary>
-    [Button]
+    [FoldoutGroup("Oxygen Control"), Button(ButtonSizes.Large), GUIColor(1, 1, 0)]
     public void StopSpawning()
     {
         if (!_isSpawning) return;
