@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface IWorldEvent
+public interface ISpawnEvent
 {
     float Chance { get; }
     float Cooldown { get; }

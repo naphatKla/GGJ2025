@@ -8,13 +8,13 @@ using Sirenix.OdinInspector;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-[CreateAssetMenu(fileName = "[WE] Stage-Level-x", menuName = "Game/WorldEventData", order = 1)]
-public class WorldEventSO : ScriptableObject, IWorldEvent
+[CreateAssetMenu(fileName = "[SE] Stage-Level-x", menuName = "Game/SpawnEventData", order = 1)]
+public class SpawnEventSO : ScriptableObject, ISpawnEvent
 {
     #region Inspector: Event Properties
 
     [Title("Event Properties")]
-    [Tooltip("Chance of this world event being selected (0–100%)")]
+    [Tooltip("Chance of this speed event being selected (0–100%)")]
     [Range(0, 100)]
     [SerializeField] private float _chance = 1f;
 
@@ -51,9 +51,6 @@ public class WorldEventSO : ScriptableObject, IWorldEvent
     [Title("Custom Logic")]
     [Tooltip("Optional list of conditions that must be met before this event can be triggered")]
     [SerializeReference] private List<IEventCondition> _customConditions;
-
-    [Tooltip("Optional list of effects to apply when this event is triggered")]
-    [SerializeReference] private List<IWorldEventEffect> _customEffects;
     
     [Title("Timer Trigger")]
     [Tooltip("Event can be triggered by global timer (start at index 0)")]
@@ -72,7 +69,7 @@ public class WorldEventSO : ScriptableObject, IWorldEvent
 
     public float Chance => _chance;
     public float Cooldown => _cooldown;
-    public float EnemyWorldEventCount => _enemyCount;
+    public float EnemySpawnEventCount => _enemyCount;
     public List<IEnemyData> RaidEnemies => _raidEnemies?.ConvertAll(e => (IEnemyData)e);
 
     #endregion
@@ -103,9 +100,6 @@ public class WorldEventSO : ScriptableObject, IWorldEvent
             SpawnEnemiesWithDelayAsync(spawnerView, spawnPositions, eventEnemies).Forget();
         else
             SpawnEnemies(spawnerView, spawnPositions, eventEnemies);
-
-        foreach (var effect in _customEffects ?? Enumerable.Empty<IWorldEventEffect>())
-            effect.ApplyEffect();
     }
 
     #endregion

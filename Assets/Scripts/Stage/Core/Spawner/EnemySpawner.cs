@@ -14,7 +14,7 @@ public class EnemySpawner
     private readonly float _minDistanceFromPlayer;
     private readonly Vector2 _screenSize;
     private readonly List<Vector2> _spawnPositionsPool = new();
-    private readonly WorldEventManager _worldEventManager;
+    private readonly SpawnEventManager _spawnEventManager;
 
     private ISpawnState _currentState;
     private float _totalEnemySpawnChance;
@@ -81,7 +81,7 @@ public class EnemySpawner
         _nextUnitScoreQuota = stageData.UnitScoreQuota;
         _nextIntervalScoreQuota = stageData.DecreaseSpawnInterval;
 
-        _worldEventManager = new WorldEventManager(view, stageData, regionSize, minDistanceFromPlayer);
+        _spawnEventManager = new SpawnEventManager(view, stageData, regionSize, minDistanceFromPlayer);
 
         CalculateTotalEnemySpawnChance();
         SetState(new StopState());
@@ -179,7 +179,7 @@ public class EnemySpawner
     /// <param name="bypassCooldown">If true, ignores the event cooldown.</param>
     public void TriggerWorldEvent(bool bypassCooldown = false, bool noChance = false)
     {
-        _worldEventManager.TriggerWorldEvent(bypassCooldown, eventEnemies, noChance);
+        _spawnEventManager.TriggerWorldEvent(bypassCooldown, eventEnemies, noChance);
     }
 
     /// <summary>
@@ -216,7 +216,7 @@ public class EnemySpawner
     /// </summary>
     public void UpdateTimerTriggers()
     {
-        _worldEventManager.UpdateTimerTriggers(eventEnemies);
+        _spawnEventManager.UpdateTimerTriggers(eventEnemies);
     }
 
     #endregion

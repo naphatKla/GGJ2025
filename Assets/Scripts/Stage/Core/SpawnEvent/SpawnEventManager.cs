@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 
 
-public class WorldEventManager
+public class SpawnEventManager
 {
     #region Variables
 
@@ -13,17 +13,17 @@ public class WorldEventManager
     private readonly float _minDistanceFromPlayer;
 
     private readonly List<Vector2> _spawnPositionsPool = new();
-    private readonly List<IWorldEvent> _availableEventsPool = new();
+    private readonly List<ISpawnEvent> _availableEventsPool = new();
     private readonly ISpawnerService _spawnerService = new ObjectPoolSpawnerService();
     
     private float _currentTime => Timer.Instance.GlobalTimer;
-    private readonly Dictionary<IWorldEvent, int> _eventTriggerIndices = new();
+    private readonly Dictionary<ISpawnEvent, int> _eventTriggerIndices = new();
 
     #endregion
 
     #region Constructor
 
-    public WorldEventManager(IEnemySpawnerView spawnerView, StageDataSO stageData, Vector2 regionSize,
+    public SpawnEventManager(IEnemySpawnerView spawnerView, StageDataSO stageData, Vector2 regionSize,
         float minDistanceFromPlayer)
     {
         _spawnerView = spawnerView;
@@ -43,13 +43,13 @@ public class WorldEventManager
     /// </summary>
     private void InitializeTimerTriggers()
     {
-        foreach (var worldEvent in _stageData.WorldEvents)
+        foreach (var spawnEvent in _stageData.SpawnEvents)
         {
-            if (worldEvent is WorldEventSO eventSO && eventSO.timerTrigger != null && eventSO.timerTrigger.Count > 0)
+            if (spawnEvent is SpawnEventSO eventSO && eventSO.timerTrigger != null && eventSO.timerTrigger.Count > 0)
             {
                 eventSO.timerTrigger.Sort();
                 eventSO.timerTrigger.Reverse();
-                _eventTriggerIndices[worldEvent] = 0;
+                _eventTriggerIndices[spawnEvent] = 0;
             }
         }
     }
@@ -59,16 +59,16 @@ public class WorldEventManager
     /// </summary>
     public void UpdateTimerTriggers(HashSet<GameObject> eventEnemies)
     {
-        foreach (var worldEvent in _stageData.WorldEvents)
+        foreach (var spawnEvent in _stageData.SpawnEvents)
         {
-            if (!_eventTriggerIndices.ContainsKey(worldEvent)) continue;
+            if (!_eventTriggerIndices.ContainsKey(spawnEvent)) continue;
 
-            var currentIndex = _eventTriggerIndices[worldEvent];
-            if (worldEvent is WorldEventSO eventSO && currentIndex < eventSO.timerTrigger.Count)
+            var currentIndex = _eventTriggerIndices[spawnEvent];
+            if (spawnEvent is SpawnEventSO eventSO && currentIndex < eventSO.timerTrigger.Count)
                 if (_currentTime <= eventSO.timerTrigger[currentIndex])
                 {
-                    worldEvent.Trigger(_spawnerView, eventEnemies);
-                    _eventTriggerIndices[worldEvent] = currentIndex + 1;
+                    spawnEvent.Trigger(_spawnerView, eventEnemies);
+                    _eventTriggerIndices[spawnEvent] = currentIndex + 1;
                 }
         }
     }
@@ -87,11 +87,11 @@ public class WorldEventManager
     /// <summary>
     ///     Selects a random world event based on chance and cooldown.
     /// </summary>
-    private IWorldEvent SelectRandomWorldEvent(bool bypassCooldown, bool noChance = false)
+    private ISpawnEvent SelectRandomWorldEvent(bool bypassCooldown, bool noChance = false)
     {
         _availableEventsPool.Clear();
 
-        foreach (var worldEvent in _stageData.WorldEvents)
+        foreach (var worldEvent in _stageData.SpawnEvents)
         {
             if (!noChance)
             {
