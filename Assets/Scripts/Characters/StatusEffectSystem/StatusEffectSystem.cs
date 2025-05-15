@@ -11,9 +11,9 @@ namespace Characters.StatusEffectSystem
 {
     public enum StatusEffectName
     {
-        Iframe,
-        Slow,
-        Stun
+        Iframe = 0,
+        Slow = 1,
+        Stun = 2,
         // Add more statuses here
     }
     
