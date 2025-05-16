@@ -4,37 +4,26 @@ namespace Characters.StatusEffectSystem.StatusEffects
 {
     public abstract class BaseStatusEffect
     {
-        [SerializeField] private bool isOverrideDuration;
-        [SerializeField] private float currentDuration;
-
-        public bool IsOverrideDuration => isOverrideDuration;
-        public float CurrentDuration => currentDuration;
-        public bool IsDone => currentDuration <= 0f;
-
-
-        protected abstract void OnStart(GameObject owner);
-        protected abstract void OnUpdate(GameObject owner, float deltaTime);
-        protected abstract void OnExit(GameObject owner);
-
-        public void HandleStart(GameObject owner)
-        {
-            OnStart(owner);
-        }
-
-        public void HandleUpdate(GameObject owner, float deltaTime)
-        {
-            currentDuration -= deltaTime;
-            OnUpdate(owner, deltaTime);
-        }
-
-        public void HandleExit(GameObject owner)
-        {
-            OnExit(owner);
-        }
+        private StatusEffectName _effectName;
+        private float _currentDuration;
+        private int _level;
         
-        public void ClearEffect()
+        public StatusEffectName EffectName => _effectName;
+        public float CurrentDuration { get; set; }
+        public int Level => _level;
+        public bool IsDone => _currentDuration <= 0f;
+        
+        public abstract void OnStart(GameObject owner);
+        public abstract void OnUpdate(float deltaTime);
+        public abstract void OnExit();
+
+        public void AssignEffectData(StatusEffectName effectName, float duration, int level)
         {
-            currentDuration = 0;
+            _effectName = effectName;
+            _currentDuration = duration;
+            _level = level;
         }
+
+        public void ClearThisEffect() => _currentDuration = 0;
     }
 }

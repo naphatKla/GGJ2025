@@ -7,24 +7,21 @@ using UnityEngine;
 
 namespace Characters.SO.StatusEffectSO
 {
-    [CreateAssetMenu(fileName = "StatusEffect", menuName = "GameData/StatusEffect/Base")]
     public abstract class BaseStatusEffectDataSo : SerializedScriptableObject
     {
         [Title("Status Effect Preview")]
         [PreviewField(Alignment = ObjectFieldAlignment.Center, Height = 128)]
         [HideLabel, Space(10)]
-        [SerializeField] private Sprite icon;
+        [SerializeField]
+        private Sprite icon;
 
-        [Title("Details")]
-        [SerializeField] private StatusEffectName effectName;
+        [Title("Details")] [SerializeField] private StatusEffectName effectName;
 
-        [MultiLineProperty]
-        [SerializeField] private string description;
-        
+        [MultiLineProperty] [SerializeField] private string description;
+
         [SerializeField] private float defaultDuration;
 
-        [Range(1, 4)]
-        [SerializeField] private int level;
+        [Range(1, 4)] [SerializeField] private int level;
 
         [Space(10)]
         [Title("Type Binding")]

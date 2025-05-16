@@ -5,24 +5,24 @@ namespace Characters.StatusEffectSystem.StatusEffects
 {
     public class InvincibleEffect : BaseStatusEffect
     {
-        private HealthSystem _healthSystem;
+        private HealthSystem _ownerHealthSystem;
         
-        protected override void OnStart(GameObject owner)
+        public override void OnStart(GameObject owner)
         {
-            if (owner.TryGetComponent<HealthSystem>(out _healthSystem))
+            if (owner.TryGetComponent(out _ownerHealthSystem))
             {
-                ClearEffect();
+                ClearThisEffect();
                 return;
             }   
             
-            _healthSystem.SetInvincible(true);
+            _ownerHealthSystem.SetInvincible(true);
         }
         
-        protected override void OnUpdate(GameObject owner, float deltaTime) { }
+        public override void OnUpdate(float deltaTime) {}
 
-        protected override void OnExit(GameObject owner)
+        public override void OnExit()
         {
-            _healthSystem.SetInvincible(false);
+            _ownerHealthSystem.SetInvincible(false);
         }
     }
 }
