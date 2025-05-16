@@ -9,7 +9,13 @@ namespace Characters.StatusEffectSystem.StatusEffects
         private int _level;
         
         public StatusEffectName EffectName => _effectName;
-        public float CurrentDuration { get; set; }
+
+        public float CurrentDuration
+        {
+            get => _currentDuration;
+            set => _currentDuration = value;
+        }
+        
         public int Level => _level;
         public bool IsDone => _currentDuration <= 0f;
         

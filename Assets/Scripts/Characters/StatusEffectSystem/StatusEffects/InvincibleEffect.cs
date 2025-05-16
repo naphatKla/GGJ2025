@@ -9,12 +9,13 @@ namespace Characters.StatusEffectSystem.StatusEffects
         
         public override void OnStart(GameObject owner)
         {
-            if (owner.TryGetComponent(out _ownerHealthSystem))
+            if (!owner.TryGetComponent(out _ownerHealthSystem))
             {
                 ClearThisEffect();
                 return;
             }   
             
+            Debug.Log($"Start Iframe {CurrentDuration} sec, Level {Level}");
             _ownerHealthSystem.SetInvincible(true);
         }
         
@@ -23,6 +24,7 @@ namespace Characters.StatusEffectSystem.StatusEffects
         public override void OnExit()
         {
             _ownerHealthSystem.SetInvincible(false);
+            Debug.Log("End Iframe");
         }
     }
 }
