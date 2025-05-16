@@ -58,13 +58,8 @@ namespace Characters.StatusEffectSystem
         {
             if (_activeEffects.TryGetValue(newEffect.EffectName, out var oldEffect))
             {
-                bool levelCondition = newEffect.Level >= oldEffect.Level;
-                bool durationCondition = newEffect.CurrentDuration >= oldEffect.CurrentDuration;
-
-                if (!levelCondition) return;
-                if (!durationCondition) return;
-
-                _activeEffects.Remove(newEffect.EffectName);
+                if (IsWeakerThan(newEffect, oldEffect)) return;
+                _activeEffects.Remove(oldEffect.EffectName);
             }
 
             _activeEffects[newEffect.EffectName] = newEffect;
@@ -89,5 +84,12 @@ namespace Characters.StatusEffectSystem
         {
             return _activeEffects.TryGetValue(effectName, out effect);
         }
+        
+        private bool IsWeakerThan(BaseStatusEffect newEffect, BaseStatusEffect oldEffect)
+        {
+            if (newEffect.Level < oldEffect.Level) return true;
+            return newEffect.Level == oldEffect.Level && newEffect.CurrentDuration < oldEffect.CurrentDuration;
+        }
+
     }
 }
