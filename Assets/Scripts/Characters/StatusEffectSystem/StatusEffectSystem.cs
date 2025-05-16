@@ -46,7 +46,11 @@ namespace Characters.StatusEffectSystem
             }
 
             while (_toRemovesQueue.Count > 0)
-                _toRemovesQueue.Dequeue().OnExit();
+            {
+                var effect = _toRemovesQueue.Dequeue();
+                effect.OnExit();
+                _activeEffects.Remove(effect.EffectName);
+            }
         }
 
         // Call from manager
