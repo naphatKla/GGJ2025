@@ -31,8 +31,8 @@ public class SpawnEventSO : ScriptableObject, ISpawnEvent
     [SerializeField] private List<EnemyDataSO> _raidEnemies;
 
     [Tooltip("The strategy that controls how enemy positions are calculated")]
-    [SerializeReference] private ISpawnPositionStrategy _spawnStrategy;
-
+    [SerializeReference] private ISpawnPositionStrategy _spawnStrategy = new ConfigurableSpawnStrategy();
+    
     #endregion
 
     #region Inspector: Visual & Feedback
@@ -70,7 +70,7 @@ public class SpawnEventSO : ScriptableObject, ISpawnEvent
     #endregion
 
     #region Properties
-
+    
     public float Chance => _chance;
     public float Cooldown => _cooldown;
     public float EnemySpawnEventCount => _enemyCount;
@@ -128,8 +128,8 @@ public class SpawnEventSO : ScriptableObject, ISpawnEvent
     {
         if (_eventFeedback != null)
         {
-            foreach (var feedback in _eventFeedback)
-                feedback.PlayFeedbacks();
+            /*foreach (var feedback in _eventFeedback)
+                feedback.PlayFeedbacks();*/
         }
     }
 
@@ -139,7 +139,7 @@ public class SpawnEventSO : ScriptableObject, ISpawnEvent
     private List<Vector2> CalculateSpawnPositions(IEnemySpawnerView spawnerView)
     {
         var spawnPositions = new List<Vector2>();
-        var strategy = _spawnStrategy ?? new RaidSpawnStrategy(); // fallback if not assigned
+        var strategy = _spawnStrategy ?? new ConfigurableSpawnStrategy();
 
         strategy.CalculatePositions(
             spawnerView.GetPlayerPosition(),
@@ -220,4 +220,43 @@ public class SpawnEventSO : ScriptableObject, ISpawnEvent
     }
 
     #endregion
+
+    #region Drawbutton
+#if UNITY_EDITOR
+    [Button("Preview Spawn Area")]
+    private void PreviewSpawnArea()
+    {
+        Vector2 playerPos = Vector2.zero;
+        Vector2 regionSize = new Vector2(20, 20);
+        float minDistance = 3f;
+        int count = _enemyCount;
+
+        var strategy = _spawnStrategy ?? new ConfigurableSpawnStrategy();
+        var spawnPositions = new List<Vector2>();
+
+        strategy.CalculatePositions(playerPos, regionSize, minDistance, count, spawnPositions);
+
+        foreach (var pos in spawnPositions)
+        {
+            DrawDebugBox(pos, 0.6f, Color.red, 5f);
+        }
+    }
+    
+    private void DrawDebugBox(Vector2 center, float size, Color color, float duration)
+    {
+        float half = size / 2f;
+
+        Vector3 topLeft = new Vector3(center.x - half, center.y + half, 0);
+        Vector3 topRight = new Vector3(center.x + half, center.y + half, 0);
+        Vector3 bottomLeft = new Vector3(center.x - half, center.y - half, 0);
+        Vector3 bottomRight = new Vector3(center.x + half, center.y - half, 0);
+
+        Debug.DrawLine(topLeft, topRight, color, duration);
+        Debug.DrawLine(topRight, bottomRight, color, duration);
+        Debug.DrawLine(bottomRight, bottomLeft, color, duration);
+        Debug.DrawLine(bottomLeft, topLeft, color, duration);
+    }
+#endif
+    #endregion
+
 }
