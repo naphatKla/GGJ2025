@@ -78,6 +78,16 @@ namespace Characters.SkillSystems
                 _skillDictionary.Add(skillData, skillRuntime);
             }
 
+            AssignDefaultSkill();
+        }
+
+        /// <summary>
+        /// Assigns default primary and secondary skills based on the available skill list.
+        /// If only one skill exists, assigns it to primary and leaves secondary empty.
+        /// Logs warnings if no or only one skill is available.
+        /// </summary>
+        private void AssignDefaultSkill()
+        {
             switch (allAvailableSkillData.Count)
             {
                 case <= 0:
@@ -178,6 +188,18 @@ namespace Characters.SkillSystems
             _secondarySkillData = newSkillData;
             _secondarySkillRuntime = _skillDictionary[_secondarySkillData];
             ResetSecondarySkillCooldown();
+        }
+
+        /// <summary>
+        /// Resets the skill system to its initial/default state.
+        /// Cancels any running skills, reassigns default skills, and resets skill cooldowns.
+        /// Typically used during events like respawn, revive, or full state reset.
+        /// </summary>
+        public void ResetSkillSystem()
+        {
+            _primarySkillRuntime?.CancelSkill();
+            _secondarySkillRuntime?.CancelSkill();
+            AssignDefaultSkill();
         }
 
         #endregion

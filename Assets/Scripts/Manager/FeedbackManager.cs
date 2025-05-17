@@ -13,11 +13,17 @@ namespace Manager
     /// </summary>
     public class FeedbackManager : SerializedMonoBehaviour
     {
+        #region Inspector & Variables
+        
         [PropertyTooltip("Maps a feedback name to its corresponding MMF_Player instance. Used for playing/stopping feedbacks via event triggers.")]
         [DictionaryDrawerSettings(KeyLabel = "Feedback Name", ValueLabel = "MMF_Player Reference")]
         [OdinSerialize] 
         private Dictionary<FeedbackName, MMF_Player> _feedbackList;
+        
+        #endregion
 
+        #region Unity Methods
+        
         /// <summary>
         /// Registers event listeners for playing and stopping feedbacks on enable.
         /// </summary>
@@ -35,7 +41,11 @@ namespace Manager
             EventManager<FeedbackName>.UnRegisterEvent(EventKey.PlayFeedback, PlayFeedback);
             EventManager<FeedbackName>.UnRegisterEvent(EventKey.StopFeedback, StopFeedback);
         }
+        
+        #endregion
 
+        #region Methods
+        
         /// <summary>
         /// Plays the MMF_Player associated with the provided feedback name.
         /// </summary>
@@ -55,6 +65,8 @@ namespace Manager
             if (!_feedbackList.ContainsKey(feedbackName)) return;
             _feedbackList[feedbackName]?.StopFeedbacks();
         }
+        
+        #endregion
     }
 
     /// <summary>

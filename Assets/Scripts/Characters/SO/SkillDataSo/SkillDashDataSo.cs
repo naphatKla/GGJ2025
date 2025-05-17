@@ -11,6 +11,8 @@ namespace Characters.SO.SkillDataSo
     [CreateAssetMenu(fileName = "SkillDashData", menuName = "GameData/SkillData/SkillDashData")]
     public class SkillDashDataSo : BaseSkillDataSo
     {
+        #region Inspector & Variables
+        
         [Unit(Units.Second)]
         [PropertyTooltip("Duration of the dash movement in seconds.")]
         [SerializeField] private float dashDuration = 0.3f;
@@ -47,5 +49,7 @@ namespace Characters.SO.SkillDataSo
         /// Allows curved, arcing, or wave-like motion paths instead of a straight line.
         /// </summary>
         public AnimationCurve DashMoveCurve => dashMoveCurve;
+        
+        #endregion
     }
 }

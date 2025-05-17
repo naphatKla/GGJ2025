@@ -14,6 +14,8 @@ namespace Characters.StatusEffectSystem
     [Serializable]
     public class StatusEffectDataPayload
     {
+        #region Inspector & Variables
+        
         [PropertyTooltip("The base ScriptableObject data for this status effect.")]
         [SerializeField]
         private BaseStatusEffectDataSo effectData;
@@ -42,6 +44,8 @@ namespace Characters.StatusEffectSystem
         /// Gets the overridden duration for the effect if enabled.
         /// </summary>
         public float OverrideDuration => overrideDuration;
+        
+        #endregion
     }
 
     /// <summary>
@@ -61,6 +65,8 @@ namespace Characters.StatusEffectSystem
     /// </summary>
     public class StatusEffectSystem : MonoBehaviour
     {
+        #region Inspector & Variables
+        
         /// <summary>
         /// The dictionary of currently active effects mapped by their enum identifier.
         /// </summary>
@@ -71,6 +77,10 @@ namespace Characters.StatusEffectSystem
         /// </summary>
         private readonly Queue<BaseStatusEffect> _toRemovesQueue = new Queue<BaseStatusEffect>();
 
+        #endregion
+
+        #region Unity Methods
+        
         /// <summary>
         /// Updates all active effects and schedules removal for completed ones.
         /// </summary>
@@ -93,7 +103,11 @@ namespace Characters.StatusEffectSystem
                 _activeEffects.Remove(effect.EffectName);
             }
         }
+        
+        #endregion
 
+        #region Methods
+        
         /// <summary>
         /// Adds or replaces an effect on the character. 
         /// If an existing effect is weaker, it will be overridden.
@@ -141,7 +155,7 @@ namespace Characters.StatusEffectSystem
         {
             return _activeEffects.TryGetValue(effectName, out effect);
         }
-
+        
         /// <summary>
         /// Compares two effects and determines if the new one is weaker.
         /// </summary>
@@ -153,5 +167,16 @@ namespace Characters.StatusEffectSystem
             if (newEffect.Level < oldEffect.Level) return true;
             return newEffect.Level == oldEffect.Level && newEffect.CurrentDuration < oldEffect.CurrentDuration;
         }
+        
+        /// <summary>
+        /// Resets the status effect system by removing all currently applied effects.
+        /// Typically used during full character resets such as respawn or revive.
+        /// </summary>
+        public void ResetStatusEffectSystem()
+        {
+            RemoveAllEffect();
+        }
+        
+        #endregion
     }
 }

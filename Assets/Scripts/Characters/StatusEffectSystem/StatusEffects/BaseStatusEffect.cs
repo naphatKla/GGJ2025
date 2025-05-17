@@ -9,6 +9,8 @@ namespace Characters.StatusEffectSystem.StatusEffects
     /// </summary>
     public abstract class BaseStatusEffect
     {
+        #region Inspector & Variables
+        
         /// <summary>
         /// The type of status effect represented by an enum value.
         /// </summary>
@@ -47,7 +49,11 @@ namespace Characters.StatusEffectSystem.StatusEffects
         /// Gets whether the effect is finished and should be removed.
         /// </summary>
         public bool IsDone => currentDuration <= 0f;
-
+        
+        #endregion
+        
+        #region Methods
+        
         /// <summary>
         /// Assigns the effect data and optionally overrides its duration.
         /// Must be called before using the effect.
@@ -77,6 +83,8 @@ namespace Characters.StatusEffectSystem.StatusEffects
         /// Immediately marks the effect as finished by setting its duration to zero.
         /// </summary>
         public void ClearThisEffect() => currentDuration = 0;
+        
+        #endregion
     }
 
     /// <summary>
@@ -85,11 +93,17 @@ namespace Characters.StatusEffectSystem.StatusEffects
     /// <typeparam name="T">The type of ScriptableObject used to define this effect.</typeparam>
     public abstract class BaseStatusEffect<T> : BaseStatusEffect where T : BaseStatusEffectDataSo
     {
+        #region Inspector & Variables
+        
         /// <summary>
         /// Strongly-typed reference to the effect's ScriptableObject data.
         /// </summary>
         protected T effectData;
+        
+        #endregion
 
+        #region Methods
+        
         /// <summary>
         /// Assigns the typed effect data and initializes key properties such as name, duration, and level.
         /// </summary>
@@ -102,5 +116,7 @@ namespace Characters.StatusEffectSystem.StatusEffects
             currentDuration = duration;
             level = effectData.Level;
         }
+        
+        #endregion
     }
 }

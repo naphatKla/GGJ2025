@@ -10,12 +10,18 @@ namespace Manager
     /// <typeparam name="TEventArgs">The argument type passed to the subscribed event handlers.</typeparam>
     public static class EventManager<TEventArgs>
     {
+        #region Inspector & Variables
+        
         /// <summary>
         /// Internal dictionary storing event handlers associated with specific event keys.
         /// </summary>
         private static readonly Dictionary<EventKey, Action<TEventArgs>> _eventDictionary =
             new Dictionary<EventKey, Action<TEventArgs>>();
-
+        
+        #endregion
+        
+        #region Methods
+        
         /// <summary>
         /// Subscribes a handler to the specified event key.
         /// </summary>
@@ -53,6 +59,8 @@ namespace Manager
             if (!_eventDictionary.ContainsKey(eventKey)) return;
             _eventDictionary[eventKey]?.Invoke(eventArgs);
         }
+        
+        #endregion
     }
 
     /// <summary>

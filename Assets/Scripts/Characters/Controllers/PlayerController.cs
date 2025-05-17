@@ -9,12 +9,18 @@ namespace Characters.Controllers
     /// </summary>
     public class PlayerController : BaseController
     {
+        #region Inspector & Variables
+        
         /// <summary>
         /// A global static reference to the current player instance.
         /// Allows other systems to easily access the active player in the scene.
         /// </summary>
         public static PlayerController Instant { get; private set; }
+        
+        #endregion
 
+        #region Unity Methods
+        
         /// <summary>
         /// Called when the script instance is being loaded.
         /// Ensures that only one instance of PlayerController exists in the scene.
@@ -30,5 +36,7 @@ namespace Characters.Controllers
 
             Destroy(gameObject);
         }
+        
+        #endregion
     }
 }

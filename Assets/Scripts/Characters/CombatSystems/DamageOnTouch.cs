@@ -80,6 +80,14 @@ namespace Characters.CombatSystems
             _currentDamage = damage;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public void ResetDamageOnTouch()
+        {
+            EnableDamage(false);
+        }
+
         #endregion
     }
 }

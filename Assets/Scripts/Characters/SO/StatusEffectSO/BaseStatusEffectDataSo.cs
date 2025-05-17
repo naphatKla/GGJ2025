@@ -14,6 +14,8 @@ namespace Characters.SO.StatusEffectSO
     /// </summary>
     public abstract class BaseStatusEffectDataSo : SerializedScriptableObject
     {
+        #region Inspector & Variables
+        
         [Title("Status Effect Preview")]
         [PreviewField(Alignment = ObjectFieldAlignment.Center, Height = 128)]
         [HideLabel, Space(10)]
@@ -76,5 +78,7 @@ namespace Characters.SO.StatusEffectSO
         /// Must inherit from BaseStatusEffect.
         /// </summary>
         public Type EffectType => _effectType;
+        
+        #endregion
     }
 }

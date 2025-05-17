@@ -75,7 +75,7 @@ namespace Characters.HeathSystems
         public void AssignHealthData(float maxHealth)
         {
             _maxHealth = maxHealth;
-            ResetHealth();
+            ResetHealthSystem();
         }
         
         /// <summary>
@@ -120,9 +120,10 @@ namespace Characters.HeathSystems
         /// <summary>
         /// Resets the character's health to maximum and revives them if they were dead.
         /// </summary>
-        public void ResetHealth()
+        public void ResetHealthSystem()
         {
             _currentHealth = _maxHealth;
+             SetInvincible(false);
             _isDead = false;
         }
 

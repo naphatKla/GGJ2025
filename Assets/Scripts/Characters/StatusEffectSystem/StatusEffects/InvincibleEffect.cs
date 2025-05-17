@@ -10,11 +10,17 @@ namespace Characters.StatusEffectSystem.StatusEffects
     /// </summary>
     public class InvincibleEffect : BaseStatusEffect<InvincibleEffectDataSo>
     {
+        #region Inspector & Variables
+        
         /// <summary>
         /// Cached reference to the target's HealthSystem for toggling invincibility.
         /// </summary>
         private HealthSystem _ownerHealthSystem;
-
+        
+        #endregion
+        
+        #region Methods
+        
         /// <summary>
         /// Called when the effect is applied to a GameObject.
         /// Enables invincibility via the HealthSystem. If not found, the effect is cleared immediately.
@@ -44,5 +50,7 @@ namespace Characters.StatusEffectSystem.StatusEffects
         {
             _ownerHealthSystem.SetInvincible(false);
         }
+        
+        #endregion
     }
 }

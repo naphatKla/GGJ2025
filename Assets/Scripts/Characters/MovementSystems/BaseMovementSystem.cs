@@ -178,6 +178,17 @@ namespace Characters.MovementSystems
             currentSpeed = _baseSpeed;
         }
 
+        /// <summary>
+        /// Resets the movement system to its default state, as it was at start.
+        /// Commonly used during events like respawn or revive.
+        /// </summary>
+        public void ResetMovementSystem()
+        {
+            _moveOverTimeTween?.Kill();
+            ResetSpeedToDefault();
+            SetCanMove(true);
+        }
+
         #endregion
 
         #region Abstract Methods

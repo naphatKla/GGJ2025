@@ -6,6 +6,8 @@ namespace Characters.SO.CharacterDataSO
     [CreateAssetMenu(fileName = "CharacterData", menuName = "GameData/CharacterData")]
     public class CharacterDataSo : ScriptableObject
     {
+        #region Inspector & Variables
+        
         [Title("Health Data", TitleAlignment = TitleAlignments.Centered)]
         [PropertyTooltip("The maximum health value the character can have.")]
         [SerializeField] private float maxHealth;
@@ -52,5 +54,7 @@ namespace Characters.SO.CharacterDataSO
         /// The base attack damage of the character.
         /// </summary>
         public float BaseDamage => baseDamage;
+        
+        #endregion
     }
 }

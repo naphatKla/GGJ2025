@@ -37,6 +37,12 @@ namespace Characters.Controllers
         [SerializeField] private HealthSystem healthSystem;
 
         /// <summary>
+        /// Reference to the status effect system.
+        /// Should be assigned via Inspector or at runtime.
+        /// </summary>
+        [SerializeField] private StatusEffectSystem.StatusEffectSystem statusEffectSystem;
+
+        /// <summary>
         /// Reference to the Damage on touch system.
         /// Should be assigned via Inspector or at runtime.
         /// </summary>
@@ -149,6 +155,19 @@ namespace Characters.Controllers
                 _inputSystem.OnPrimarySkillPerform -= skillSystem.PerformPrimarySkill;
                 _inputSystem.OnSecondarySkillPerform -= skillSystem.PerformSecondarySkill;
             }
+        }
+
+        /// <summary>
+        /// Resets the damage-on-touch system by disabling its damage output.
+        /// Commonly used during respawn, state reset, or when temporarily disabling attack interactions.
+        /// </summary>
+        public void ResetAllDependentBehavior()
+        {
+            movementSystem?.ResetMovementSystem();
+            skillSystem?.ResetSkillSystem();
+            healthSystem?.ResetHealthSystem();
+            statusEffectSystem?.ResetStatusEffectSystem();
+            damageOnTouch?.ResetDamageOnTouch();
         }
 
         #endregion

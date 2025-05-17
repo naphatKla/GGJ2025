@@ -13,6 +13,8 @@ namespace Manager
     /// </summary>
     public static class StatusEffectManager
     {
+        #region Methods
+        
         /// <summary>
         /// Applies a single status effect to the specified GameObject using the given payload.
         /// Automatically determines duration (override or default) and instantiates the runtime class.
@@ -71,5 +73,7 @@ namespace Manager
             if (!target.TryGetComponent(out StatusEffectSystem targetSystem)) return;
             targetSystem.RemoveAllEffect();
         }
+        
+        #endregion
     }
 }

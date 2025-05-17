@@ -16,6 +16,8 @@ namespace Characters.SO.SkillDataSo
     /// </summary>
     public abstract class BaseSkillDataSo : SerializedScriptableObject
     {
+        #region Inspector & Variables
+        
         // ---------------- Cooldown ----------------
 
         [Unit(Units.Second)]
@@ -97,5 +99,7 @@ namespace Characters.SO.SkillDataSo
         /// Must inherit from <see cref="BaseSkillRuntime{T}"/>.
         /// </summary>
         public Type SkillRuntime => _skillRuntime;
+        
+        #endregion
     }
 }

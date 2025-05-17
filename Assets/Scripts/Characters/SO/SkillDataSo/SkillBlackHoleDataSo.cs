@@ -12,6 +12,8 @@ namespace Characters.SO.SkillDataSo
     [CreateAssetMenu(fileName = "SkillBlackHoleData", menuName = "GameData/SkillData/SkillBlackHoleData")]
     public class SkillBlackHoleDataSo : BaseSkillDataSo
     {
+        #region Inspector & Variables
+        
         // ------------------ Clone Settings ------------------
 
         [BoxGroup("Clones", showLabel: true)]
@@ -143,5 +145,7 @@ namespace Characters.SO.SkillDataSo
 
         /// <summary>Curve that offsets the path of clones for merge movement (e.g., arcs or waves).</summary>
         public AnimationCurve MergeMoveCurve => mergeMoveCurve;
+        
+        #endregion
     }
 }
