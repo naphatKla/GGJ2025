@@ -51,9 +51,11 @@ namespace Characters.HeathSystems
         public Action OnHeal { get; set; }
 
         /// <summary>
-        /// Event triggered when the character dies.
+        /// Event triggered when this character dies.
+        /// The parameter is the GameObject of the character that died,
+        /// allowing external systems (e.g., spawners) to handle cleanup or respawn logic.
         /// </summary>
-        public Action<GameObject> OnDead { get; set; }
+        public Action<GameObject> OnThisCharacterDead { get; set; }
 
         /// <summary>
         /// Event triggered when the invincibility state changes.
@@ -143,7 +145,7 @@ namespace Characters.HeathSystems
         {
             if (_isDead) return;
             _isDead = true;
-            OnDead?.Invoke(gameObject);
+            OnThisCharacterDead?.Invoke(gameObject);
             gameObject.SetActive(false);
         }
 

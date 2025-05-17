@@ -161,7 +161,7 @@ public class EnemySpawner
         var controller = enemy.GetComponent<EnemyController>();
         if (controller != null)
         {
-            controller.HealthSystem.OnDead += DespawnEnemy;
+            controller.HealthSystem.OnThisCharacterDead += DespawnEnemy;
         }
         enemies.Add(enemy);
         OnEnemySpawned?.Invoke(enemy);
