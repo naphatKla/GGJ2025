@@ -47,15 +47,16 @@ public class SpawningState : ISpawnState
             normalSpawnInterval = spawner.CurrentSpawnInterval;
         }
 
-        // World event triggering
+        // Spawn event triggering
         eventCheckTimer += Time.deltaTime;
         if (eventCheckTimer >= spawner.EventIntervalCheck)
         {
-            spawner.TriggerWorldEvent();
+            spawner.TriggerSpawnEvent();
             eventCheckTimer = 0f;
         }
         
         spawner.UpdateTimerTriggers();
+        spawner.UpdateKillTriggers();
         spawner.UpdateQuota();
     }
 

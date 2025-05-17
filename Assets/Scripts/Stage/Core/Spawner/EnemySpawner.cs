@@ -14,7 +14,7 @@ public class EnemySpawner
     private readonly float _minDistanceFromPlayer;
     private readonly Vector2 _screenSize;
     private readonly List<Vector2> _spawnPositionsPool = new();
-    private readonly WorldEventManager _worldEventManager;
+    private readonly SpawnEventManager _spawnEventManager;
 
     private ISpawnState _currentState;
     private float _totalEnemySpawnChance;
@@ -81,7 +81,7 @@ public class EnemySpawner
         _nextUnitScoreQuota = stageData.UnitScoreQuota;
         _nextIntervalScoreQuota = stageData.DecreaseSpawnInterval;
 
-        _worldEventManager = new WorldEventManager(view, stageData, regionSize, minDistanceFromPlayer);
+        _spawnEventManager = new SpawnEventManager(view, stageData, regionSize, minDistanceFromPlayer);
 
         CalculateTotalEnemySpawnChance();
         SetState(new StopState());
@@ -110,7 +110,7 @@ public class EnemySpawner
     {
         Debug.Log("Start Spawning");
         SetState(new SpawningState());
-        TriggerWorldEvent(true);
+        TriggerSpawnEvent(true);
     }
 
     /// <summary>
@@ -170,6 +170,7 @@ public class EnemySpawner
             enemies.Remove(enemy);
             _spawnerService.Despawn(enemy);
             OnEnemyDespawned?.Invoke(enemy);
+            _spawnEventManager.onDespawntrigger?.Invoke();
         }
     }
 
@@ -177,9 +178,9 @@ public class EnemySpawner
     /// Triggers a world event, optionally bypassing the cooldown.
     /// </summary>
     /// <param name="bypassCooldown">If true, ignores the event cooldown.</param>
-    public void TriggerWorldEvent(bool bypassCooldown = false, bool noChance = false)
+    public void TriggerSpawnEvent(bool bypassCooldown = false, bool noChance = false)
     {
-        _worldEventManager.TriggerWorldEvent(bypassCooldown, eventEnemies, noChance);
+        _spawnEventManager.TriggerSpawnEvent(bypassCooldown, eventEnemies, noChance);
     }
 
     /// <summary>
@@ -212,11 +213,19 @@ public class EnemySpawner
     }
     
     /// <summary>
-    /// Updates the timer triggers in the world event manager.
+    /// Updates the timer triggers in the spawn event manager.
     /// </summary>
     public void UpdateTimerTriggers()
     {
-        _worldEventManager.UpdateTimerTriggers(eventEnemies);
+        _spawnEventManager.UpdateTimerTriggers(eventEnemies);
+    }
+    
+    /// <summary>
+    /// Updates the kill triggers in the spawn event manager.
+    /// </summary>
+    public void UpdateKillTriggers()
+    {
+        _spawnEventManager.UpdateKillTriggers(eventEnemies);
     }
 
     #endregion

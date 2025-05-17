@@ -1,9 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Events;
 
 
-public class WorldEventManager
+public class SpawnEventManager
 {
     #region Variables
 
@@ -13,17 +14,20 @@ public class WorldEventManager
     private readonly float _minDistanceFromPlayer;
 
     private readonly List<Vector2> _spawnPositionsPool = new();
-    private readonly List<IWorldEvent> _availableEventsPool = new();
+    private readonly List<ISpawnEvent> _availableEventsPool = new();
     private readonly ISpawnerService _spawnerService = new ObjectPoolSpawnerService();
     
     private float _currentTime => Timer.Instance.GlobalTimer;
-    private readonly Dictionary<IWorldEvent, int> _eventTriggerIndices = new();
+    private float killTrigger;
+    private readonly Dictionary<ISpawnEvent, int> _eventTriggerIndices = new();
 
+    public UnityEvent onDespawntrigger;
+    
     #endregion
 
     #region Constructor
 
-    public WorldEventManager(IEnemySpawnerView spawnerView, StageDataSO stageData, Vector2 regionSize,
+    public SpawnEventManager(IEnemySpawnerView spawnerView, StageDataSO stageData, Vector2 regionSize,
         float minDistanceFromPlayer)
     {
         _spawnerView = spawnerView;
@@ -43,13 +47,13 @@ public class WorldEventManager
     /// </summary>
     private void InitializeTimerTriggers()
     {
-        foreach (var worldEvent in _stageData.WorldEvents)
+        foreach (var spawnEvent in _stageData.SpawnEvents)
         {
-            if (worldEvent is WorldEventSO eventSO && eventSO.timerTrigger != null && eventSO.timerTrigger.Count > 0)
+            if (spawnEvent is SpawnEventSO eventSO && eventSO.timerTrigger != null && eventSO.timerTrigger.Count > 0)
             {
                 eventSO.timerTrigger.Sort();
                 eventSO.timerTrigger.Reverse();
-                _eventTriggerIndices[worldEvent] = 0;
+                _eventTriggerIndices[spawnEvent] = 0;
             }
         }
     }
@@ -59,16 +63,35 @@ public class WorldEventManager
     /// </summary>
     public void UpdateTimerTriggers(HashSet<GameObject> eventEnemies)
     {
-        foreach (var worldEvent in _stageData.WorldEvents)
+        foreach (var spawnEvent in _stageData.SpawnEvents)
         {
-            if (!_eventTriggerIndices.ContainsKey(worldEvent)) continue;
+            if (!_eventTriggerIndices.ContainsKey(spawnEvent)) continue;
 
-            var currentIndex = _eventTriggerIndices[worldEvent];
-            if (worldEvent is WorldEventSO eventSO && currentIndex < eventSO.timerTrigger.Count)
+            var currentIndex = _eventTriggerIndices[spawnEvent];
+            if (spawnEvent is SpawnEventSO eventSO && currentIndex < eventSO.timerTrigger.Count)
                 if (_currentTime <= eventSO.timerTrigger[currentIndex])
                 {
-                    worldEvent.Trigger(_spawnerView, eventEnemies);
-                    _eventTriggerIndices[worldEvent] = currentIndex + 1;
+                    spawnEvent.Trigger(_spawnerView, eventEnemies);
+                    _eventTriggerIndices[spawnEvent] = currentIndex + 1;
+                }
+        }
+    }
+    
+    /// <summary>
+    /// Updates the kill and checks for killTrigger events.
+    /// </summary>
+    public void UpdateKillTriggers(HashSet<GameObject> eventEnemies)
+    {
+        foreach (var spawnEvent in _stageData.SpawnEvents)
+        {
+            if (!_eventTriggerIndices.ContainsKey(spawnEvent)) continue;
+
+            var currentIndex = _eventTriggerIndices[spawnEvent];
+            if (spawnEvent is SpawnEventSO eventSO && currentIndex < eventSO.killTrigger.Count)
+                if (_currentTime <= eventSO.killTrigger[currentIndex])
+                {
+                    spawnEvent.Trigger(_spawnerView, eventEnemies);
+                    _eventTriggerIndices[spawnEvent] = currentIndex + 1;
                 }
         }
     }
@@ -76,7 +99,7 @@ public class WorldEventManager
     /// <summary>
     ///     Triggers a random world event, spawning enemies if conditions are met.
     /// </summary>
-    public void TriggerWorldEvent(bool bypassCooldown = false, HashSet<GameObject> eventEnemies = null, bool noChance = false)
+    public void TriggerSpawnEvent(bool bypassCooldown = false, HashSet<GameObject> eventEnemies = null, bool noChance = false)
     {
         var worldEvent = SelectRandomWorldEvent(bypassCooldown, noChance);
         if (worldEvent == null) return;
@@ -87,11 +110,11 @@ public class WorldEventManager
     /// <summary>
     ///     Selects a random world event based on chance and cooldown.
     /// </summary>
-    private IWorldEvent SelectRandomWorldEvent(bool bypassCooldown, bool noChance = false)
+    private ISpawnEvent SelectRandomWorldEvent(bool bypassCooldown, bool noChance = false)
     {
         _availableEventsPool.Clear();
 
-        foreach (var worldEvent in _stageData.WorldEvents)
+        foreach (var worldEvent in _stageData.SpawnEvents)
         {
             if (!noChance)
             {
@@ -117,6 +140,15 @@ public class WorldEventManager
             return null;
 
         return raidEnemies[Random.Range(0, raidEnemies.Count)];
+    }
+
+    /// <summary>
+    /// Update kill count
+    /// </summary>
+    private void UpdateKillCount()
+    {
+        onDespawntrigger?.Invoke();
+        killTrigger += 1;
     }
 
     #endregion

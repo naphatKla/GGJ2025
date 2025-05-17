@@ -299,13 +299,13 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     }
     
     /// <summary>
-    /// Triggers a world event immediately.
+    /// Triggers a spawn event immediately.
     /// </summary>
     [Button(ButtonSizes.Large), GUIColor(0.4f, 0.8f, 1)]
-    public void TriggerWorldEvent()
+    public void TriggerSpawnEvent()
     {
         if (_enemySpawner == null) return;
-        _enemySpawner.TriggerWorldEvent(true, true); 
+        _enemySpawner.TriggerSpawnEvent(true, true); 
     }
     #endregion
 }

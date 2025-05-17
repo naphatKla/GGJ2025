@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 [Serializable]
 public class EnemyProperties
@@ -20,8 +21,8 @@ public class StageDataSO : ScriptableObject
     #region Inspector & Variable
     [Title("Enemy Data")] [Tooltip("Data of the enemies scriptable object (Random by chance)")]
     [SerializeField] private EnemyProperties[] enemies;
-    [Space][Title("World Event")] [Tooltip("Data of world event scriptable object")]
-    [SerializeField] private WorldEventSO[] worldEvent;
+    [Space][Title("Spawn Event")] [Tooltip("Data of world event scriptable object")]
+    [SerializeField] private SpawnEventSO[] spawnEvent;
     [Space][Title("Stage Properties")]
     [Tooltip("Quota of the score to end the game")]
     [SerializeField] private float scoreQuota;
@@ -42,8 +43,8 @@ public class StageDataSO : ScriptableObject
     [Tooltip("Enemy spawn interval will increase by this quota")]
     [SerializeField] private float decreaseSpawnInterval;
     
-    [Space][Title("World Event Timer")]
-    [Tooltip("Interval to check for world event triggers")]
+    [Space][Title("Spawn Event Timer")]
+    [Tooltip("Interval to check for spawn event triggers")]
     [SerializeField] private float eventIntervalCheck = 1f;
     
     [Space]
@@ -53,7 +54,7 @@ public class StageDataSO : ScriptableObject
     #region Properties
     
     public EnemyProperties[] Enemies => enemies;
-    public IWorldEvent[] WorldEvents => worldEvent;
+    public ISpawnEvent[] SpawnEvents => spawnEvent;
     public float ScoreQuota => scoreQuota;
     public int MaxEnemySpawnCap => maxEnemySpawnCap;
     public int CurrentMaxEnemySpawn => startMaxEnemySpawn;

@@ -15,9 +15,9 @@ public static class EnemyPoolInitializer
                 PoolManager.Instance.Despawn(enemy);
             }
 
-        foreach (var worldEvent in stageData.WorldEvents)
-        foreach (var enemyData in worldEvent.RaidEnemies)
-            for (var i = 0; i < ((WorldEventSO)worldEvent).EnemyWorldEventCount; i++)
+        foreach (var spawnEvent in stageData.SpawnEvents)
+        foreach (var enemyData in spawnEvent.RaidEnemies)
+            for (var i = 0; i < ((SpawnEventSO)spawnEvent).EnemySpawnEventCount; i++)
             {
                 var enemy = PoolManager.Instance.Spawn(enemyData.EnemyPrefab, Vector3.zero, Quaternion.identity,
                     enemyParent, true);
