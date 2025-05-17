@@ -137,6 +137,7 @@ namespace Characters.SkillSystems.SkillRuntimes
         protected virtual void HandleSkillStart()
         {
             _isPerforming = true;
+            StatusEffectManager.ApplyEffectTo(owner.gameObject, skillData.StatusEffectOnSkillStart);
             EventManager<FeedbackName>.TriggerEvent(EventKey.PlayFeedback, skillData.StartFeedback);
             OnSkillStart();
         }
