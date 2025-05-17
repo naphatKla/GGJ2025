@@ -61,7 +61,14 @@ namespace Characters.Controllers
         public BaseMovementSystem MovementSystem => movementSystem;
 
         /// <summary>
-        /// 
+        /// Reference to the health system.
+        /// Should be assigned via Inspector or at runtime.
+        /// </summary>
+        public HealthSystem HealthSystem => healthSystem;
+
+        /// <summary>
+        /// Reference to the Damage on touch system.
+        /// Should be assigned via Inspector or at runtime.
         /// </summary>
         public DamageOnTouch DamageOnTouch => damageOnTouch;
 
