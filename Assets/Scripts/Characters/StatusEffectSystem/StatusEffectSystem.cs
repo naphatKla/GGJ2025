@@ -15,14 +15,18 @@ namespace Characters.StatusEffectSystem
     public class StatusEffectDataPayload
     {
         [PropertyTooltip("The base ScriptableObject data for this status effect.")]
-        [SerializeField] private BaseStatusEffectDataSo effectData;
-
+        [SerializeField]
+        private BaseStatusEffectDataSo effectData;
+        
         [PropertyTooltip("Whether to override the default duration defined in the effect data.")]
-        [SerializeField] private bool isOverrideDuration;
+        [SerializeField] [HorizontalGroup("OverrideDuration", LabelWidth = 105f)]
+        [LabelText("OverrideDuration")]
+        private bool isOverrideDuration;
 
-        [PropertyTooltip("Custom duration to override the default value. Used only if override is enabled.")]
         [EnableIf(nameof(isOverrideDuration))]
-        [SerializeField] private float overrideDuration;
+        [PropertyTooltip("Custom duration to override the default value. Used only if override is enabled.")]
+        [SerializeField] [HorizontalGroup("OverrideDuration")] [HideLabel]
+        private float overrideDuration;
 
         /// <summary>
         /// Gets the ScriptableObject data of the status effect.

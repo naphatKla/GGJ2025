@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using Characters.SkillSystems.SkillRuntimes;
+using Characters.StatusEffectSystem;
 using Manager;
 using Sirenix.OdinInspector;
 using Sirenix.Serialization;
@@ -9,8 +11,8 @@ namespace Characters.SO.SkillDataSo
 {
     /// <summary>
     /// Abstract base class for all ScriptableObjects used to define static skill configuration data.
-    /// Includes general-purpose properties like cooldown, optional lifetime, feedback triggers, and runtime binding.
-    /// Derived skill data classes should inherit from this and add their specific configuration parameters.
+    /// Includes cooldown control, optional lifetime behavior, feedback events, status effect triggers, 
+    /// and runtime MonoBehaviour binding. Subclasses should extend with their own configuration fields.
     /// </summary>
     public abstract class BaseSkillDataSo : SerializedScriptableObject
     {
@@ -30,22 +32,32 @@ namespace Characters.SO.SkillDataSo
         [SerializeField] 
         private bool hasLifeTime;
 
-        [Unit(Units.Second)]
+        [EnableIf(nameof(hasLifeTime))] [Unit(Units.Second)]
         [PropertyTooltip("Total active time (in seconds) before the skill automatically exits. Used only if 'Has Life Time' is enabled.")]
         [PropertyOrder(9999)]
-        [EnableIf(nameof(hasLifeTime))]
         [SerializeField] 
         private float lifeTime;
 
+        // ---------------- Feedbacks ----------------
+        [Title("Feedbacks")]
+        
         [PropertyTooltip("The global feedback to trigger when the skill begins execution (e.g., visual or sound).")]
         [PropertyOrder(9999)]
         [SerializeField] 
         private FeedbackName startFeedback;
+        
+        // ---------------- Status Effects ----------------
+        [Title("Status Effects")]
+        
+        [PropertyTooltip("Status effects that will be applied to the user or others when this skill starts.")]
+        [PropertyOrder(9999)]
+        [SerializeField] 
+        private List<StatusEffectDataPayload> statusEffectOnSkillStart;
 
         // ---------------- Runtime Binding ----------------
 
         [Title("Runtime Binding")]
-
+        
         [PropertyTooltip("The MonoBehaviour runtime class that will execute this skill. Must inherit from BaseSkillRuntime<T>.")]
         [ShowInInspector, OdinSerialize, PropertyOrder(10000)]
         [TypeDrawerSettings(BaseType = typeof(BaseSkillRuntime<>))]
@@ -57,12 +69,6 @@ namespace Characters.SO.SkillDataSo
         /// Cooldown duration (in seconds) before the skill can be re-used.
         /// </summary>
         public float Cooldown => cooldown;
-
-        /// <summary>
-        /// The runtime MonoBehaviour class that handles this skill’s logic. 
-        /// Must inherit from <see cref="BaseSkillRuntime{T}"/>.
-        /// </summary>
-        public Type SkillRuntime => _skillRuntime;
 
         /// <summary>
         /// Whether this skill automatically ends after a set lifetime.
@@ -79,5 +85,17 @@ namespace Characters.SO.SkillDataSo
         /// The global feedback identifier to trigger when the skill begins.
         /// </summary>
         public FeedbackName StartFeedback => startFeedback;
+
+        /// <summary>
+        /// List of status effects to apply when this skill starts.
+        /// Can target the skill user, allies, or enemies depending on implementation.
+        /// </summary>
+        public List<StatusEffectDataPayload> StatusEffectOnSkillStart => statusEffectOnSkillStart;
+
+        /// <summary>
+        /// The runtime MonoBehaviour class that handles this skill’s logic. 
+        /// Must inherit from <see cref="BaseSkillRuntime{T}"/>.
+        /// </summary>
+        public Type SkillRuntime => _skillRuntime;
     }
 }
