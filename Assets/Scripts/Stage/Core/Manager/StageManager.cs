@@ -74,20 +74,7 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     public bool IsSpawningStoppedOrPaused()
     {
         if (_enemySpawner == null) return true;
-        // ตรวจสอบสถานะของ EnemySpawner
         return _enemySpawner.IsStoppedOrPaused();
-    }
-    
-    /// <summary>
-    /// Creates an enemy and adds it to the appropriate list.
-    /// </summary>
-    public void SpawnEnemy(GameObject prefab, Vector2 position, Quaternion rotation, Transform parent, bool isWorldEventEnemy = false)
-    {
-        var enemy = PoolManager.Instance.Spawn(prefab, position, rotation);
-        if (isWorldEventEnemy)
-            _enemySpawner.eventEnemies.Add(enemy);
-        else
-            _enemySpawner.enemies.Add(enemy);
     }
     
     /// <summary>

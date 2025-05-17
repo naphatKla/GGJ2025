@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Characters.Controllers;
+using Manager;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class EnemySpawner
@@ -90,7 +93,7 @@ public class EnemySpawner
     #endregion
 
     #region Unity Methods
-
+    
     /// <summary>
     /// Updates the current spawn state.
     /// </summary>
@@ -155,6 +158,11 @@ public class EnemySpawner
             Quaternion.identity,
             _spawnerView.GetEnemyParent()
         );
+        var controller = enemy.GetComponent<EnemyController>();
+        if (controller != null)
+        {
+            controller.HealthSystem.OnDead += DespawnEnemy;
+        }
         enemies.Add(enemy);
         OnEnemySpawned?.Invoke(enemy);
     }

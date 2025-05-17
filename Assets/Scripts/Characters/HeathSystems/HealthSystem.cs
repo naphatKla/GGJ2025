@@ -53,7 +53,7 @@ namespace Characters.HeathSystems
         /// <summary>
         /// Event triggered when the character dies.
         /// </summary>
-        public Action OnDead { get; set; }
+        public Action<GameObject> OnDead { get; set; }
 
         /// <summary>
         /// Event triggered when the invincibility state changes.
@@ -143,7 +143,7 @@ namespace Characters.HeathSystems
         {
             if (_isDead) return;
             _isDead = true;
-            OnDead?.Invoke();
+            OnDead?.Invoke(gameObject);
             gameObject.SetActive(false);
         }
 
