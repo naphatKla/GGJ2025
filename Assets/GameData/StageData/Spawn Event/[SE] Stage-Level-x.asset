@@ -14,12 +14,39 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _chance: 50
   _cooldown: 5
-  _spawnDelay: 0.2
+  _spawnDelayAll: 0.2
+  spawnDelayPerEnemy: 0
+  minDelay: 0.01
+  maxDelay: 0.05
+  perEnemyDelayCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   _enemyCount: 16
   _raidEnemies:
   - {fileID: 11400000, guid: b265bf836edd1ac4da7615dd3c48c4ac, type: 2}
   _spawnStrategy:
-    rid: 3868164720004956169
+    rid: 3868164761998852097
   _eventFeedback:
   - {fileID: 0}
   _spawnEffectPrefab: {fileID: 0}
@@ -29,12 +56,12 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
-    - rid: 3868164720004956169
+    - rid: 3868164761998852097
       type: {class: ConfigurableSpawnStrategy, ns: , asm: Assembly-CSharp}
       data:
         pattern: 0
-        baseMinDistance: 8
+        baseMinDistance: 5
         randomDistanceOffset: 0
         spreadFactor: 1
         randomAngleOffset: 0
-        lineDirections: 1
+        lineDirections: 0
