@@ -6,7 +6,6 @@ public class ObjectPoolSpawnerService : ISpawnerService
     {
         return PoolManager.Instance.Spawn(prefab, position, rotation, parent, forceInstantiate);
     }
-
     public void Despawn(GameObject obj)
     {
         PoolManager.Instance.Despawn(obj);

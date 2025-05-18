@@ -1,16 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
+using Characters.Controllers;
 using UnityEngine;
 
 public interface IEnemyData
 {
-    GameObject EnemyPrefab { get; }
+    EnemyController EnemyController { get; }
 }
 
 [CreateAssetMenu(fileName = "EnemyData", menuName = "Game/EnemyData", order = 1)]
 public class EnemyDataSO : ScriptableObject, IEnemyData
 {
-    
-    [SerializeField] private GameObject enemyPrefab;
-    public GameObject EnemyPrefab => enemyPrefab;
+    [SerializeField] private EnemyController enemyPrefab;
+    public EnemyController EnemyController => enemyPrefab;
 }

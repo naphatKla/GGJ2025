@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Characters.Controllers;
 using Cysharp.Threading.Tasks;
 using MoreMountains.Feedbacks;
 using Sirenix.OdinInspector;
@@ -97,12 +98,12 @@ public class SpawnEventSO : ScriptableObject, ISpawnEvent
     public float Chance => _chance;
     public float Cooldown => _cooldown;
     public float EnemySpawnEventCount => _enemyCount;
-    public List<IEnemyData> RaidEnemies => _raidEnemies?.ConvertAll(e => (IEnemyData)e);
+    public List<IEnemyData> EventEnemies => _raidEnemies?.ConvertAll(e => (IEnemyData)e);
 
     #endregion
 
     #region Public API
-
+    
     /// <summary>
     ///     Checks if this event is still in cooldown.
     /// </summary>
@@ -114,11 +115,18 @@ public class SpawnEventSO : ScriptableObject, ISpawnEvent
     /// <summary>
     ///     Triggers the event: evaluates conditions, spawns enemies, plays feedbacks, and runs effects.
     /// </summary>
-    public void Trigger(IEnemySpawnerView spawnerView, HashSet<GameObject> eventEnemies)
+    public void Trigger(IEnemySpawnerView spawnerView, HashSet<EnemyController> eventEnemies)
     {
         _lastSpawnTime = Time.time;
 
         if (!PassCustomConditions()) return;
+        
+        int inactiveCount = eventEnemies.Count(e => !e.gameObject.activeInHierarchy);
+        if (inactiveCount < _enemyCount)
+        {
+            Debug.LogWarning($"[SpawnEvent] Not enough inactive EventEnemies in pool. Required: {_enemyCount}, Available: {inactiveCount}");
+            return;
+        }
 
         var spawnPositions = CalculateSpawnPositions(spawnerView);
         TriggerJuicyEffects();
@@ -173,12 +181,6 @@ public class SpawnEventSO : ScriptableObject, ISpawnEvent
             _enemyCount,
             spawnPositions
         );
-
-        // Trim positions if not enough enemies are available in pool
-        var available = _raidEnemies.Sum(e => PoolManager.Instance.GetPoolCount(e.EnemyPrefab.name));
-        if (available < spawnPositions.Count)
-            spawnPositions = spawnPositions.Take(available).ToList();
-
         return spawnPositions;
     }
 
@@ -186,7 +188,7 @@ public class SpawnEventSO : ScriptableObject, ISpawnEvent
     ///     Spawns enemies at given positions immediately.
     /// </summary>
     private async UniTask SpawnEnemiesAsync(IEnemySpawnerView spawnerView, List<Vector2> positions,
-        HashSet<GameObject> eventEnemies, AnimationCurve delayCurve, float minDelay, float maxDelay)
+        HashSet<EnemyController> eventEnemies, AnimationCurve delayCurve, float minDelay, float maxDelay)
     {
         var count = positions.Count;
 
@@ -199,11 +201,10 @@ public class SpawnEventSO : ScriptableObject, ISpawnEvent
                 _spawnerService.Spawn(_spawnEffectPrefab, pos, Quaternion.identity);
 
             var enemy = _spawnerService.Spawn(
-                enemyData.EnemyPrefab, pos, Quaternion.identity, spawnerView.GetEnemyParent());
+                enemyData.EnemyController.gameObject, pos, Quaternion.identity, spawnerView.GetEnemyParent());
 
-            if (enemy != null)
-                eventEnemies.Add(enemy);
-
+            if (enemy != null && enemy.TryGetComponent(out EnemyController enemyController))
+            { eventEnemies.Add(enemyController); }
             var t = (float)i / Mathf.Max(1, count - 1);
             var delay = Mathf.Lerp(minDelay, maxDelay, delayCurve.Evaluate(t));
             await UniTask.Delay(TimeSpan.FromSeconds(delay));
@@ -226,7 +227,7 @@ public class SpawnEventSO : ScriptableObject, ISpawnEvent
     ///     Spawns enemies one by one with a delay between each spawn.
     /// </summary>
     private async UniTaskVoid SpawnEnemiesWithDelayAsync(IEnemySpawnerView spawnerView, List<Vector2> spawnPositions,
-        HashSet<GameObject> eventEnemies, AnimationCurve delayCurve, float minDelay, float maxDelay
+        HashSet<EnemyController> eventEnemies, AnimationCurve delayCurve, float minDelay, float maxDelay
     )
     {
         await UniTask.Delay(TimeSpan.FromSeconds(_spawnDelayAll));
@@ -241,10 +242,10 @@ public class SpawnEventSO : ScriptableObject, ISpawnEvent
                 _spawnerService.Spawn(_spawnEffectPrefab, pos, Quaternion.identity);
 
             var enemy = _spawnerService.Spawn(
-                enemyData.EnemyPrefab, pos, Quaternion.identity, spawnerView.GetEnemyParent());
+                enemyData.EnemyController.gameObject, pos, Quaternion.identity, spawnerView.GetEnemyParent());
 
-            if (enemy != null)
-                eventEnemies.Add(enemy);
+            if (enemy != null && enemy.TryGetComponent(out EnemyController enemyController))
+            { eventEnemies.Add(enemyController); }
 
             var t = (float)i / Mathf.Max(1, count - 1);
             var delay = Mathf.Lerp(minDelay, maxDelay, delayCurve.Evaluate(t));

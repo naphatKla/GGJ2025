@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Characters.Controllers;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -61,7 +62,7 @@ public class SpawnEventManager
     /// <summary>
     /// Updates the timer and checks for timerTrigger events.
     /// </summary>
-    public void UpdateTimerTriggers(HashSet<GameObject> eventEnemies)
+    public void UpdateTimerTriggers(HashSet<EnemyController> eventEnemies)
     {
         foreach (var spawnEvent in _stageData.SpawnEvents)
         {
@@ -80,7 +81,7 @@ public class SpawnEventManager
     /// <summary>
     /// Updates the kill and checks for killTrigger events.
     /// </summary>
-    public void UpdateKillTriggers(HashSet<GameObject> eventEnemies)
+    public void UpdateKillTriggers(HashSet<EnemyController> eventEnemies)
     {
         foreach (var spawnEvent in _stageData.SpawnEvents)
         {
@@ -99,7 +100,7 @@ public class SpawnEventManager
     /// <summary>
     ///     Triggers a random world event, spawning enemies if conditions are met.
     /// </summary>
-    public void TriggerSpawnEvent(bool bypassCooldown = false, HashSet<GameObject> eventEnemies = null, bool noChance = false)
+    public void TriggerSpawnEvent(bool bypassCooldown = false, HashSet<EnemyController> eventEnemies = null, bool noChance = false)
     {
         var worldEvent = SelectRandomWorldEvent(bypassCooldown, noChance);
         if (worldEvent == null) return;

@@ -28,12 +28,7 @@ public class EnemySpawner
     /// <summary>
     /// List of active normal enemies.
     /// </summary>
-    public readonly HashSet<GameObject> enemies = new();
-
-    /// <summary>
-    /// List of active event enemies.
-    /// </summary>
-    public readonly HashSet<GameObject> eventEnemies = new();
+    public readonly HashSet<EnemyController> enemies = new();
 
     #endregion
 
@@ -54,8 +49,9 @@ public class EnemySpawner
     /// </summary>
     public float EventIntervalCheck => _stageData.EventIntervalCheck;
     
-    public event Action<GameObject> OnEnemySpawned;
-    public event Action<GameObject> OnEnemyDespawned;
+    public event Action<EnemyController> OnEnemySpawned;
+    
+    public event Action<EnemyController> OnEnemyDespawned;
 
     #endregion
 
@@ -112,7 +108,6 @@ public class EnemySpawner
     {
         Debug.Log("Start Spawning");
         SetState(new SpawningState());
-        TriggerSpawnEvent(true);
     }
 
     /// <summary>
@@ -139,8 +134,9 @@ public class EnemySpawner
     /// <returns>True if the enemy count is below the maximum limit.</returns>
     public bool CanSpawn()
     {
-        return _spawnerView.GetCurrentEnemyCount() < CurrentMaxEnemySpawn;
+        return enemies.Count(e => e.gameObject.activeInHierarchy) < CurrentMaxEnemySpawn;
     }
+
 
     /// <summary>
     /// Spawns a single normal enemy at a random off-screen position.
@@ -148,41 +144,50 @@ public class EnemySpawner
     public void SpawnEnemy()
     {
         if (!CanSpawn()) return;
-
         var enemyData = GetRandomEnemy();
         var spawnPosition = GetRandomSpawnPosition(_spawnerView.GetPlayerPosition());
-        var enemy = _spawnerService.Spawn(
-            enemyData.EnemyPrefab,
+        var enemyObj = _spawnerService.Spawn(
+            enemyData.EnemyController.gameObject,
             spawnPosition,
             Quaternion.identity,
             _spawnerView.GetEnemyParent()
         );
 
-        if (enemy.TryGetComponent(out EnemyController enemyController))
-            enemyController.HealthSystem.OnThisCharacterDead += DespawnEnemy;
-        
-        enemies.Add(enemy);
-        OnEnemySpawned?.Invoke(enemy);
+        if (!enemyObj.TryGetComponent(out EnemyController enemyController)) { return; }
+        enemies.Add(enemyController);
+        enemyController.HealthSystem.OnThisCharacterDead += () => DespawnEnemy(enemyController);
+        OnEnemySpawned?.Invoke(enemyController);
     }
     
     /// <summary>
     /// Despawn Enemy and remove from list
     /// </summary>
     /// <param name="enemy"></param>
-    public void DespawnEnemy(GameObject enemy)
+    public void DespawnEnemy(EnemyController enemy)
     {
         if (!enemies.Contains(enemy)) return;
-
-        if (enemy.TryGetComponent(out EnemyController enemyController))
-        {
-            enemyController.HealthSystem.OnThisCharacterDead -= DespawnEnemy;
-            enemyController.ResetAllDependentBehavior();
-        }
-        
+        enemy.HealthSystem.OnThisCharacterDead -= () => DespawnEnemy(enemy);
+        enemy.ResetAllDependentBehavior();
         enemies.Remove(enemy);
-        _spawnerService.Despawn(enemy);
+        _spawnerService.Despawn(enemy.gameObject);
         OnEnemyDespawned?.Invoke(enemy);
         _spawnEventManager.onDespawntrigger?.Invoke();
+    }
+    
+    /// <summary>
+    /// Setting up the enemy pool.
+    /// </summary>
+    public void Prewarm(StageDataSO stageData, Transform enemyParent)
+    {
+        foreach (var enemyData in stageData.Enemies)
+            for (var i = 0; i < enemyData.PreObjectSpawn; i++)
+            {
+                var enemy = _spawnerService.Spawn(enemyData.EnemyData.EnemyController.gameObject, Vector3.zero,
+                    Quaternion.identity, enemyParent, true);
+                if (!enemy.TryGetComponent(out EnemyController enemyController)) { return; }
+                enemies.Add(enemyController);
+                _spawnerService.Despawn(enemy);
+            }
     }
 
     /// <summary>
@@ -191,7 +196,7 @@ public class EnemySpawner
     /// <param name="bypassCooldown">If true, ignores the event cooldown.</param>
     public void TriggerSpawnEvent(bool bypassCooldown = false, bool noChance = false)
     {
-        _spawnEventManager.TriggerSpawnEvent(bypassCooldown, eventEnemies, noChance);
+        _spawnEventManager.TriggerSpawnEvent(bypassCooldown, enemies, noChance);
     }
 
     /// <summary>
@@ -228,7 +233,7 @@ public class EnemySpawner
     /// </summary>
     public void UpdateTimerTriggers()
     {
-        _spawnEventManager.UpdateTimerTriggers(eventEnemies);
+        _spawnEventManager.UpdateTimerTriggers(enemies);
     }
     
     /// <summary>
@@ -236,7 +241,7 @@ public class EnemySpawner
     /// </summary>
     public void UpdateKillTriggers()
     {
-        _spawnEventManager.UpdateKillTriggers(eventEnemies);
+        _spawnEventManager.UpdateKillTriggers(enemies);
     }
 
     #endregion
