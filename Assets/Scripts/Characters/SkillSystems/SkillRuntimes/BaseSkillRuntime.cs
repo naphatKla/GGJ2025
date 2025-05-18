@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using Characters.Controllers;
+using Characters.FeedbackSystem;
 using Characters.SO.SkillDataSo;
 using Cysharp.Threading.Tasks;
 using Manager;
@@ -138,7 +139,7 @@ namespace Characters.SkillSystems.SkillRuntimes
         {
             _isPerforming = true;
             StatusEffectManager.ApplyEffectTo(owner.gameObject, skillData.StatusEffectOnSkillStart);
-            EventManager<FeedbackName>.TriggerEvent(EventKey.PlayFeedback, skillData.StartFeedback);
+            owner.FeedbackSystem.PlayFeedback(FeedbackName.Dash);
             OnSkillStart();
         }
 
@@ -149,7 +150,6 @@ namespace Characters.SkillSystems.SkillRuntimes
         protected virtual void HandleSkillExit()
         {
             _isPerforming = false;
-            EventManager<FeedbackName>.TriggerEvent(EventKey.StopFeedback, skillData.StartFeedback);
             OnSkillExit();
         }
 

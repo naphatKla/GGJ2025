@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
+using Characters.FeedbackSystem;
 using Characters.SkillSystems.SkillRuntimes;
 using Characters.StatusEffectSystem;
 using Manager;
 using Sirenix.OdinInspector;
 using Sirenix.Serialization;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Characters.SO.SkillDataSo
 {
@@ -39,14 +41,6 @@ namespace Characters.SO.SkillDataSo
         [PropertyOrder(9999)]
         [SerializeField] 
         private float lifeTime;
-
-        // ---------------- Feedbacks ----------------
-        [Title("Feedbacks")]
-        
-        [PropertyTooltip("The global feedback to trigger when the skill begins execution (e.g., visual or sound).")]
-        [PropertyOrder(9999)]
-        [SerializeField] 
-        private FeedbackName startFeedback;
         
         // ---------------- Status Effects ----------------
         [Title("Status Effects")]
@@ -82,12 +76,7 @@ namespace Characters.SO.SkillDataSo
         /// Only used if <see cref="HasLifeTime"/> is true.
         /// </summary>
         public float LifeTime => lifeTime;
-
-        /// <summary>
-        /// The global feedback identifier to trigger when the skill begins.
-        /// </summary>
-        public FeedbackName StartFeedback => startFeedback;
-
+        
         /// <summary>
         /// List of status effects to apply when this skill starts.
         /// Can target the skill user, allies, or enemies depending on implementation.

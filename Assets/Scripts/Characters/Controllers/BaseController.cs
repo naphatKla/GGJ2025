@@ -49,6 +49,12 @@ namespace Characters.Controllers
         [SerializeField] private DamageOnTouch damageOnTouch;
 
         /// <summary>
+        /// Reference to the feedback system
+        /// Should be assigned via Inspector or at runtime.
+        /// </summary>
+        [SerializeField] private FeedbackSystem.FeedbackSystem _feedbackSystem;
+
+        /// <summary>
         /// ScriptableObject containing base character stats used to initialize systems.
         /// </summary>
         [SerializeField] private CharacterDataSo characterData;
@@ -77,6 +83,12 @@ namespace Characters.Controllers
         /// Should be assigned via Inspector or at runtime.
         /// </summary>
         public DamageOnTouch DamageOnTouch => damageOnTouch;
+
+        /// <summary>
+        /// Reference to the feedback system
+        /// Should be assigned via Inspector or at runtime.
+        /// </summary>
+        public FeedbackSystem.FeedbackSystem FeedbackSystem => _feedbackSystem;
 
         #endregion
 
