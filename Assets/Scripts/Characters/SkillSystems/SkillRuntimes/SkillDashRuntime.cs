@@ -20,7 +20,6 @@ namespace Characters.SkillSystems.SkillRuntimes
         /// </summary>
         protected override void OnSkillStart()
         {
-            owner.MovementSystem.StopMovement();
             owner.DamageOnTouch.EnableDamage(true);
         }
 
@@ -44,7 +43,6 @@ namespace Characters.SkillSystems.SkillRuntimes
         /// </summary>
         protected override void OnSkillExit()
         {
-            owner.MovementSystem.ResetSpeedToDefault();
             owner.DamageOnTouch.EnableDamage(false);
         }
 
