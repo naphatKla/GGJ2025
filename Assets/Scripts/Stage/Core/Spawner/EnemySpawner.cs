@@ -16,7 +16,6 @@ public class EnemySpawner
     private readonly Vector2 _regionSize;
     private readonly float _minDistanceFromPlayer;
     private readonly Vector2 _screenSize;
-    private readonly List<Vector2> _spawnPositionsPool = new();
     private readonly SpawnEventManager _spawnEventManager;
 
     private ISpawnState _currentState;
@@ -158,12 +157,10 @@ public class EnemySpawner
             Quaternion.identity,
             _spawnerView.GetEnemyParent()
         );
-        var controller = enemy.GetComponent<EnemyController>();
-        if (controller != null)
-        {
-            controller.HealthSystem.OnThisCharacterDead += DespawnEnemy;
-            controller.ResetAllDependentBehavior();
-        }
+
+        if (enemy.TryGetComponent(out EnemyController enemyController))
+            enemyController.HealthSystem.OnThisCharacterDead += DespawnEnemy;
+        
         enemies.Add(enemy);
         OnEnemySpawned?.Invoke(enemy);
     }
@@ -174,13 +171,18 @@ public class EnemySpawner
     /// <param name="enemy"></param>
     public void DespawnEnemy(GameObject enemy)
     {
-        if (enemies.Contains(enemy))
+        if (!enemies.Contains(enemy)) return;
+
+        if (enemy.TryGetComponent(out EnemyController enemyController))
         {
-            enemies.Remove(enemy);
-            _spawnerService.Despawn(enemy);
-            OnEnemyDespawned?.Invoke(enemy);
-            _spawnEventManager.onDespawntrigger?.Invoke();
+            enemyController.HealthSystem.OnThisCharacterDead -= DespawnEnemy;
+            enemyController.ResetAllDependentBehavior();
         }
+        
+        enemies.Remove(enemy);
+        _spawnerService.Despawn(enemy);
+        OnEnemyDespawned?.Invoke(enemy);
+        _spawnEventManager.onDespawntrigger?.Invoke();
     }
 
     /// <summary>
