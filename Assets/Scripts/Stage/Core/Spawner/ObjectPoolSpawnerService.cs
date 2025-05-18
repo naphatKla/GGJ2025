@@ -15,4 +15,9 @@ public class ObjectPoolSpawnerService : ISpawnerService
     {
         PoolManager.Instance.ClearPool(parent);
     }
+    
+    public int CountAvailable(GameObject prefab)
+    {
+        return PoolManager.Instance.GetPoolCount(prefab.name);
+    }
 }

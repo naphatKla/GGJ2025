@@ -70,13 +70,18 @@ public class SpawnEventManager
 
             var currentIndex = _eventTriggerIndices[spawnEvent];
             if (spawnEvent is SpawnEventSO eventSO && currentIndex < eventSO.timerTrigger.Count)
-                if (_currentTime <= eventSO.timerTrigger[currentIndex])
+            {
+                if (_currentTime <= eventSO.timerTrigger[currentIndex] && eventSO.CanTrigger())
                 {
-                    spawnEvent.Trigger(_spawnerView, eventEnemies);
+                    eventSO.MarkTriggered();
+                    var data = eventSO.CreateSpawnData(_spawnerView);
+                    _spawnerView.SpawnEventEnemies(data);
                     _eventTriggerIndices[spawnEvent] = currentIndex + 1;
                 }
+            }
         }
     }
+
     
     /// <summary>
     /// Updates the kill and checks for killTrigger events.
@@ -89,11 +94,15 @@ public class SpawnEventManager
 
             var currentIndex = _eventTriggerIndices[spawnEvent];
             if (spawnEvent is SpawnEventSO eventSO && currentIndex < eventSO.killTrigger.Count)
-                if (_currentTime <= eventSO.killTrigger[currentIndex])
+            {
+                if (_currentTime <= eventSO.timerTrigger[currentIndex] && eventSO.CanTrigger())
                 {
-                    spawnEvent.Trigger(_spawnerView, eventEnemies);
+                    eventSO.MarkTriggered();
+                    var data = eventSO.CreateSpawnData(_spawnerView);
+                    _spawnerView.SpawnEventEnemies(data);
                     _eventTriggerIndices[spawnEvent] = currentIndex + 1;
                 }
+            }
         }
     }
 
@@ -104,9 +113,35 @@ public class SpawnEventManager
     {
         var spawnEvent = SelectRandomWorldEvent(bypassCooldown, noChance);
         if (spawnEvent == null) return;
-        spawnEvent.Trigger(_spawnerView, eventEnemies);
-    }
 
+        if (spawnEvent is not SpawnEventSO eventSO) return;
+
+        if (!eventSO.CanTrigger()) return;
+        
+        int availableCount = CountAvailableEnemiesInPool(eventSO);
+        if (availableCount < eventSO.EnemyCount) { return; }
+        
+        eventSO.MarkTriggered();
+        var data = eventSO.CreateSpawnData(_spawnerView);
+        _spawnerView.SpawnEventEnemies(data);
+    }
+    
+    /// <summary>
+    /// Count Enemies
+    /// </summary>
+    /// <param name="eventSO"></param>
+    /// <returns></returns>
+    private int CountAvailableEnemiesInPool(SpawnEventSO eventSO)
+    {
+        int count = 0;
+        foreach (var enemyData in eventSO.EventEnemies)
+        {
+            GameObject prefab = enemyData.EnemyController.gameObject;
+            count += _spawnerService.CountAvailable(prefab);
+        }
+        return count;
+    }
+    
     /// <summary>
     ///     Selects a random world event based on chance and cooldown.
     /// </summary>
@@ -121,27 +156,15 @@ public class SpawnEventManager
                 var randomChance = Random.Range(0f, 100f);
                 if (randomChance > worldEvent.Chance) continue;
             }
-            
+
             if (bypassCooldown || !worldEvent.IsCooldownActive(Time.time))
                 _availableEventsPool.Add(worldEvent);
         }
 
         if (_availableEventsPool.Count == 0) return null;
-
         return _availableEventsPool[Random.Range(0, _availableEventsPool.Count)];
     }
-
-    /// <summary>
-    ///     Gets a random raid enemy from a list.
-    /// </summary>
-    private IEnemyData GetRandomEventEnemy(List<IEnemyData> raidEnemies)
-    {
-        if (raidEnemies == null || raidEnemies.Count == 0)
-            return null;
-
-        return raidEnemies[Random.Range(0, raidEnemies.Count)];
-    }
-
+    
     /// <summary>
     /// Update kill count
     /// </summary>

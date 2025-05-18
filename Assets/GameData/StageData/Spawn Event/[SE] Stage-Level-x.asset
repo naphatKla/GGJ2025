@@ -14,8 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _chance: 0
   _cooldown: 5
+  _enemyCount: 16
   _spawnDelayAll: 0.2
-  spawnDelayPerEnemy: 0
+  spawnDelayPerEnemy: 1
   minDelay: 0.01
   maxDelay: 0.05
   perEnemyDelayCurve:
@@ -42,14 +43,11 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  _enemyCount: 16
-  _raidEnemies:
+  _spawnEnemies:
   - {fileID: 11400000, guid: e8bf0e8ec6b32e344a0ddff289ef5d98, type: 2}
+  _spawnEffectPrefab: {fileID: 0}
   _spawnStrategy:
     rid: 3868164761998852097
-  _eventFeedback:
-  - {fileID: 0}
-  _spawnEffectPrefab: {fileID: 0}
   _customConditions: []
   timerTrigger: []
   killTrigger: []

@@ -8,6 +8,5 @@ public interface ISpawnEvent
     float Chance { get; }
     float Cooldown { get; }
     List<IEnemyData> EventEnemies { get; }
-    void Trigger(IEnemySpawnerView spawnerView, HashSet<EnemyController> eventEnemies);
     bool IsCooldownActive(float currentTime);
 }

@@ -3,15 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using Characters.Controllers;
 using Cysharp.Threading.Tasks;
-using Manager;
-using Unity.VisualScripting;
 using UnityEngine;
-using Random = Unity.Mathematics.Random;
 
 public class EnemySpawner
 {
     #region Fields
 
+    // Core data and config references
     private const int MaxSpawnPositionAttempts = 10;
     private readonly IEnemySpawnerView _spawnerView;
     private readonly StageDataSO _stageData;
@@ -20,39 +18,32 @@ public class EnemySpawner
     private readonly Vector2 _screenSize;
     private readonly SpawnEventManager _spawnEventManager;
 
+    // Spawn state and progression tracking
     private ISpawnState _currentState;
     private float _totalEnemySpawnChance;
     private float _nextUnitScoreQuota;
     private float _nextIntervalScoreQuota;
-    
+
+    // Spawning interface
     private readonly ISpawnerService _spawnerService = new ObjectPoolSpawnerService();
 
-    /// <summary>
-    /// List of active normal enemies.
-    /// </summary>
+    // Active enemies in the world
     public readonly HashSet<EnemyController> enemies = new();
 
     #endregion
 
     #region Properties
 
-    /// <summary>
-    /// Gets or sets the current spawn interval for normal enemies.
-    /// </summary>
+    // Current delay between normal spawns
     public float CurrentSpawnInterval { get; private set; }
 
-    /// <summary>
-    /// Gets or sets the maximum number of normal enemies that can spawn.
-    /// </summary>
+    // Limit of how many enemies can be alive at once
     public int CurrentMaxEnemySpawn { get; private set; }
 
-    /// <summary>
-    /// Gets the interval for checking world events.
-    /// </summary>
+    // Time between event trigger checks
     public float EventIntervalCheck => _stageData.EventIntervalCheck;
-    
+
     public event Action<EnemyController> OnEnemySpawned;
-    
     public event Action<EnemyController> OnEnemyDespawned;
 
     #endregion
@@ -60,13 +51,8 @@ public class EnemySpawner
     #region Constructor
 
     /// <summary>
-    /// Initializes the enemy spawner with view, stage data, region size, and minimum player distance.
+    /// Initializes all required spawn parameters and default state.
     /// </summary>
-    /// <param name="view">The view interface for spawning enemies.</param>
-    /// <param name="stageData">The stage data containing enemy and spawn settings.</param>
-    /// <param name="regionSize">The size of the spawn region.</param>
-    /// <param name="minDistanceFromPlayer">The minimum distance from the player for spawning.</param>
-    /// <exception cref="ArgumentNullException">Thrown if view or stageData is null.</exception>
     public EnemySpawner(IEnemySpawnerView view, StageDataSO stageData, Vector2 regionSize, float minDistanceFromPlayer)
     {
         _spawnerView = view ?? throw new ArgumentNullException(nameof(view));
@@ -82,29 +68,47 @@ public class EnemySpawner
         _nextIntervalScoreQuota = stageData.DecreaseSpawnInterval;
 
         _spawnEventManager = new SpawnEventManager(view, stageData, regionSize, minDistanceFromPlayer, _spawnerService);
-    
+
         CalculateTotalEnemySpawnChance();
         SetState(new StopState());
     }
 
     #endregion
 
-    #region Unity Methods
-    
+    #region State Handling
+
     /// <summary>
-    /// Updates the current spawn state.
+    /// Called each frame to update spawn behavior based on state.
     /// </summary>
     public void Update()
     {
         _currentState?.Update(this);
     }
 
-    #endregion
-
-    #region Public Methods
+    /// <summary>
+    /// Change the active spawning state, calling exit/enter lifecycle.
+    /// </summary>
+    private void SetState(ISpawnState newState)
+    {
+        _currentState?.Exit(this);
+        _currentState = newState;
+        _currentState.Enter(this);
+    }
 
     /// <summary>
-    /// Starts spawning enemies and triggers the initial world event.
+    /// Returns true if the spawner is not actively spawning.
+    /// </summary>
+    public bool IsStoppedOrPaused()
+    {
+        return _currentState is StopState || _currentState is PausedState;
+    }
+
+    #endregion
+
+    #region Spawn Control
+
+    /// <summary>
+    /// Begin spawning loop via SpawningState.
     /// </summary>
     public void StartSpawning()
     {
@@ -113,7 +117,7 @@ public class EnemySpawner
     }
 
     /// <summary>
-    /// Stops spawning enemies.
+    /// Stop all spawning via StopState.
     /// </summary>
     public void StopSpawning()
     {
@@ -122,7 +126,7 @@ public class EnemySpawner
     }
 
     /// <summary>
-    /// Pauses spawning enemies.
+    /// Pause spawn activity without clearing state.
     /// </summary>
     public void PauseSpawning()
     {
@@ -131,138 +135,23 @@ public class EnemySpawner
     }
 
     /// <summary>
-    /// Checks if more normal enemies can be spawned based on the current limit.
+    /// Determines if current number of enemies allows more to spawn.
     /// </summary>
-    /// <returns>True if the enemy count is below the maximum limit.</returns>
     public bool CanSpawn()
     {
         return enemies.Count(e => e.gameObject.activeInHierarchy) < CurrentMaxEnemySpawn;
     }
-    
-    public async void SpawnEventEnemies(SpawnEventSO.SpawnEventData spawnData, Action<EnemyController> onEnemySpawned)
-    {
-        if (spawnData == null || spawnData.Enemies == null || spawnData.Enemies.Count == 0) { return; }
-        if (spawnData.SpawnDelayAll > 0)
-            await UniTask.Delay(TimeSpan.FromSeconds(spawnData.SpawnDelayAll));
-
-        var count = Math.Min(spawnData.Positions.Count, spawnData.EnemyCount);
-        for (var i = 0; i < count; i++)
-        {
-            var pos = spawnData.Positions[i];
-            var enemyData = spawnData.Enemies[UnityEngine.Random.Range(0, spawnData.Enemies.Count)];
-
-            if (enemyData == null) continue;
-            
-            if (spawnData.SpawnEffectPrefab != null)
-                _spawnerService.Spawn(spawnData.SpawnEffectPrefab, pos, Quaternion.identity);
-            
-            var enemyObj = _spawnerService.Spawn(
-                enemyData.EnemyController.gameObject,
-                pos,
-                Quaternion.identity,
-                _spawnerView.GetEnemyParent(),
-                false
-            );
-
-            if (enemyObj != null && enemyObj.TryGetComponent(out EnemyController enemyController))
-            {
-                enemyController.ResetAllDependentBehavior();
-                enemies.Add(enemyController);
-                enemyController.HealthSystem.OnThisCharacterDead += () => DespawnEnemy(enemyController);
-                OnEnemySpawned?.Invoke(enemyController);
-            }
-
-            if (spawnData.SpawnDelayPerEnemy)
-            {
-                var t = (float)i / Mathf.Max(1, count - 1);
-                var delay = Mathf.Lerp(spawnData.MinDelay, spawnData.MaxDelay, spawnData.DelayCurve.Evaluate(t));
-                await UniTask.Delay(TimeSpan.FromSeconds(delay));
-            }
-        }
-    }
-
 
     /// <summary>
-    /// Spawns a single normal enemy at a random off-screen position.
+    /// Triggers an event-based spawn from the event manager.
     /// </summary>
-    public void SpawnEnemy()
-    {
-        if (!CanSpawn()) return;
-        var enemyData = GetRandomEnemy();
-        var spawnPosition = GetRandomSpawnPosition(_spawnerView.GetPlayerPosition());
-        var enemyObj = _spawnerService.Spawn(
-            enemyData.EnemyController.gameObject,
-            spawnPosition,
-            Quaternion.identity,
-            _spawnerView.GetEnemyParent()
-        );
-
-        if (!enemyObj.TryGetComponent(out EnemyController enemyController)) { return; }
-        enemies.Add(enemyController);
-        enemyController.HealthSystem.OnThisCharacterDead += () => DespawnEnemy(enemyController);
-        OnEnemySpawned?.Invoke(enemyController);
-    }
-  
-    /// <summary>
-    /// Despawn Enemy and remove from list
-    /// </summary>
-    /// <param name="enemy"></param>
-    public void DespawnEnemy(EnemyController enemy)
-    {
-        if (!enemies.Contains(enemy)) return;
-        enemy.HealthSystem.OnThisCharacterDead -= () => DespawnEnemy(enemy);
-        enemy.ResetAllDependentBehavior();
-        enemies.Remove(enemy);
-        _spawnerService.Despawn(enemy.gameObject);
-        OnEnemyDespawned?.Invoke(enemy);
-        _spawnEventManager.onDespawntrigger?.Invoke();
-    }
-    
-    /// <summary>
-    /// Setting up the enemy pool.
-    /// </summary>
-    // ใน EnemySpawner.cs, แก้ไข Prewarm
-    public void Prewarm(StageDataSO stageData, Transform enemyParent)
-    {
-        foreach (var enemyData in stageData.Enemies)
-        {
-            for (var i = 0; i < enemyData.PreObjectSpawn; i++)
-            {
-                var enemy = _spawnerService.Spawn(enemyData.EnemyData.EnemyController.gameObject, Vector3.zero,
-                    Quaternion.identity, enemyParent, true);
-                if (!enemy.TryGetComponent(out EnemyController enemyController)) return;
-                enemies.Add(enemyController);
-                _spawnerService.Despawn(enemy);
-            }
-        }
-
-        foreach (var spawnEvent in stageData.SpawnEvents)
-            if (spawnEvent is SpawnEventSO eventSO)
-                foreach (var enemyData in spawnEvent.EventEnemies)
-                {
-                    var count = eventSO.EnemySpawnEventCount;
-                    for (var i = 0; i < count; i++)
-                    {
-                        var enemy = _spawnerService.Spawn(enemyData.EnemyController.gameObject, Vector3.zero,
-                            Quaternion.identity, enemyParent, true);
-                        if (!enemy.TryGetComponent(out EnemyController enemyController)) return;
-                        enemies.Add(enemyController);
-                        _spawnerService.Despawn(enemy);
-                    }
-                }
-    }
-
-    /// <summary>
-    /// Triggers a world event, optionally bypassing the cooldown.
-    /// </summary>
-    /// <param name="bypassCooldown">If true, ignores the event cooldown.</param>
     public void TriggerSpawnEvent(bool bypassCooldown = false, bool noChance = false)
     {
         _spawnEventManager.TriggerSpawnEvent(bypassCooldown, enemies, noChance);
     }
 
     /// <summary>
-    /// Updates spawn limits and interval based on the player's score.
+    /// Increase max enemies and reduce delay based on score.
     /// </summary>
     public void UpdateQuota()
     {
@@ -280,26 +169,17 @@ public class EnemySpawner
             _nextIntervalScoreQuota += _stageData.DecreaseSpawnInterval;
         }
     }
-    
+
     /// <summary>
-    /// check state of spawner and return
-    /// </summary>
-    /// <returns></returns>
-    public bool IsStoppedOrPaused()
-    {
-        return _currentState is StopState || _currentState is PausedState;
-    }
-    
-    /// <summary>
-    /// Updates the timer triggers in the spawn event manager.
+    /// Check timer-based event trigger points.
     /// </summary>
     public void UpdateTimerTriggers()
     {
         _spawnEventManager.UpdateTimerTriggers(enemies);
     }
-    
+
     /// <summary>
-    /// Updates the kill triggers in the spawn event manager.
+    /// Check kill-count-based event trigger points.
     /// </summary>
     public void UpdateKillTriggers()
     {
@@ -308,23 +188,164 @@ public class EnemySpawner
 
     #endregion
 
-    #region Private Methods
-
-  
+    #region Enemy Spawning
 
     /// <summary>
-    /// Transitions to a new spawn state, handling exit and entry.
+    /// Handles full async spawn process for an event.
     /// </summary>
-    /// <param name="newState">The new state to enter.</param>
-    private void SetState(ISpawnState newState)
+    public async void SpawnEventEnemies(SpawnEventSO.SpawnEventData spawnData)
     {
-        _currentState?.Exit(this);
-        _currentState = newState;
-        _currentState.Enter(this);
+        if (!ValidateSpawnData(spawnData)) return;
+        await ApplyInitialDelay(spawnData);
+        await LoopSpawnEnemies(spawnData);
     }
 
     /// <summary>
-    /// Calculates the total spawn chance for all enemies.
+    /// Ensures event spawn data is valid.
+    /// </summary>
+    private bool ValidateSpawnData(SpawnEventSO.SpawnEventData data)
+    {
+        return data != null && data.Enemies != null && data.Enemies.Count > 0;
+    }
+
+    /// <summary>
+    /// Waits for delay before spawning any enemies.
+    /// </summary>
+    private async UniTask ApplyInitialDelay(SpawnEventSO.SpawnEventData data)
+    {
+        if (data.SpawnDelayAll > 0)
+            await UniTask.Delay(TimeSpan.FromSeconds(data.SpawnDelayAll));
+    }
+
+    /// <summary>
+    /// Spawns multiple enemies in sequence with optional per-enemy delay.
+    /// </summary>
+    private async UniTask LoopSpawnEnemies(SpawnEventSO.SpawnEventData data)
+    {
+        int count = Mathf.Min(data.Positions.Count, data.EnemyCount);
+
+        for (int i = 0; i < count; i++)
+        {
+            Vector2 pos = data.Positions[i];
+            IEnemyData enemyData = data.Enemies[UnityEngine.Random.Range(0, data.Enemies.Count)];
+
+            if (enemyData == null) continue;
+
+            SpawnSingleEnemy(enemyData, pos, data);
+
+            if (data.SpawnDelayPerEnemy)
+            {
+                float delay = CalculatePerEnemyDelay(i, count, data);
+                await UniTask.Delay(TimeSpan.FromSeconds(delay));
+            }
+        }
+    }
+
+    /// <summary>
+    /// Spawns 1 enemy at position with visual effect and setup.
+    /// </summary>
+    private void SpawnSingleEnemy(IEnemyData enemyData, Vector2 position, SpawnEventSO.SpawnEventData data)
+    {
+        if (data.SpawnEffectPrefab != null)
+            _spawnerService.Spawn(data.SpawnEffectPrefab, position, Quaternion.identity);
+
+        var enemyObj = _spawnerService.Spawn(
+            enemyData.EnemyController.gameObject,
+            position,
+            Quaternion.identity,
+            _spawnerView.GetEnemyParent()
+        );
+
+        if (enemyObj == null || !enemyObj.TryGetComponent(out EnemyController enemyController)) return;
+
+        enemies.Add(enemyController);
+        enemyController.HealthSystem.OnThisCharacterDead += () => DespawnEnemy(enemyController);
+        OnEnemySpawned?.Invoke(enemyController);
+    }
+
+    /// <summary>
+    /// Computes delay between each spawned enemy.
+    /// </summary>
+    private float CalculatePerEnemyDelay(int index, int total, SpawnEventSO.SpawnEventData data)
+    {
+        float t = (float)index / Mathf.Max(1, total - 1);
+        return Mathf.Lerp(data.MinDelay, data.MaxDelay, data.DelayCurve.Evaluate(t));
+    }
+
+    /// <summary>
+    /// Spawns a single normal enemy at random off-screen position.
+    /// </summary>
+    public void SpawnEnemy()
+    {
+        if (!CanSpawn()) return;
+        var enemyData = GetRandomEnemy();
+        var spawnPosition = GetRandomSpawnPosition(_spawnerView.GetPlayerPosition());
+        var enemyObj = _spawnerService.Spawn(
+            enemyData.EnemyController.gameObject,
+            spawnPosition,
+            Quaternion.identity,
+            _spawnerView.GetEnemyParent()
+        );
+
+        if (!enemyObj.TryGetComponent(out EnemyController enemyController)) return;
+        enemies.Add(enemyController);
+        enemyController.HealthSystem.OnThisCharacterDead += () => DespawnEnemy(enemyController);
+        OnEnemySpawned?.Invoke(enemyController);
+    }
+
+    /// <summary>
+    /// Removes enemy from world and pool.
+    /// </summary>
+    public void DespawnEnemy(EnemyController enemy)
+    {
+        if (!enemies.Contains(enemy)) return;
+        enemy.HealthSystem.OnThisCharacterDead -= () => DespawnEnemy(enemy);
+        enemy.ResetAllDependentBehavior();
+        enemies.Remove(enemy);
+        _spawnerService.Despawn(enemy.gameObject);
+        OnEnemyDespawned?.Invoke(enemy);
+        _spawnEventManager.onDespawntrigger?.Invoke();
+    }
+
+    /// <summary>
+    /// Instantiates and despawns enemies into the pool ahead of time.
+    /// </summary>
+    public void Prewarm(StageDataSO stageData, Transform enemyParent)
+    {
+        foreach (var enemyData in stageData.Enemies)
+        {
+            for (var i = 0; i < enemyData.PreObjectSpawn; i++)
+            {
+                var enemy = _spawnerService.Spawn(enemyData.EnemyData.EnemyController.gameObject, Vector3.zero,
+                    Quaternion.identity, enemyParent, true);
+                if (!enemy.TryGetComponent(out EnemyController enemyController)) return;
+                enemies.Add(enemyController);
+                _spawnerService.Despawn(enemy);
+            }
+        }
+
+        foreach (var spawnEvent in stageData.SpawnEvents)
+            if (spawnEvent is SpawnEventSO eventSO)
+                foreach (var enemyData in eventSO.EventEnemies)
+                {
+                    var count = eventSO.EnemyCount;
+                    for (var i = 0; i < count; i++)
+                    {
+                        var enemy = _spawnerService.Spawn(enemyData.EnemyController.gameObject, Vector3.zero,
+                            Quaternion.identity, enemyParent, true);
+                        if (!enemy.TryGetComponent(out EnemyController enemyController)) return;
+                        enemies.Add(enemyController);
+                        _spawnerService.Despawn(enemy);
+                    }
+                }
+    }
+
+    #endregion
+
+    #region Utility Methods
+
+    /// <summary>
+    /// Calculates total chance sum used in weighted selection.
     /// </summary>
     private void CalculateTotalEnemySpawnChance()
     {
@@ -332,9 +353,8 @@ public class EnemySpawner
     }
 
     /// <summary>
-    /// Selects a random enemy based on spawn chance weights.
+    /// Selects a random enemy based on weighted probability.
     /// </summary>
-    /// <returns>The selected enemy data.</returns>
     private IEnemyData GetRandomEnemy()
     {
         if (_totalEnemySpawnChance <= 0) return _stageData.Enemies[0].EnemyData;
@@ -353,10 +373,8 @@ public class EnemySpawner
     }
 
     /// <summary>
-    /// Generates a random off-screen spawn position.
+    /// Chooses a spawn position outside player's view.
     /// </summary>
-    /// <param name="playerPosition">The player's current position.</param>
-    /// <returns>A random spawn position outside the screen.</returns>
     private Vector2 GetRandomSpawnPosition(Vector2 playerPosition)
     {
         var spawnPosition = CalculateOffScreenPosition(playerPosition);
@@ -364,10 +382,8 @@ public class EnemySpawner
     }
 
     /// <summary>
-    /// Calculates an off-screen position for spawning.
+    /// Finds an off-screen position using random angle and distance.
     /// </summary>
-    /// <param name="playerPosition">The player's current position.</param>
-    /// <returns>An off-screen position.</returns>
     private Vector2 CalculateOffScreenPosition(Vector2 playerPosition)
     {
         Vector2 spawnPosition;
@@ -385,10 +401,8 @@ public class EnemySpawner
     }
 
     /// <summary>
-    /// Calculates the screen size based on the camera's properties.
+    /// Returns the camera's current screen size in world units.
     /// </summary>
-    /// <param name="camera">The camera to use.</param>
-    /// <returns>The screen size in world units.</returns>
     private Vector2 CalculateScreenSize(Camera camera)
     {
         if (camera == null) return Vector2.zero;

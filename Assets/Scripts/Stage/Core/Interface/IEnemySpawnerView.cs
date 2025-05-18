@@ -48,5 +48,5 @@ public interface IEnemySpawnerView
     /// </summary>
     /// <param name="spawnData"></param>
     /// <param name="onEnemySpawned"></param>
-    void SpawnEventEnemies(SpawnEventSO.SpawnEventData spawnData, Action<EnemyController> onEnemySpawned);
+    void SpawnEventEnemies(SpawnEventSO.SpawnEventData spawnData);
 }

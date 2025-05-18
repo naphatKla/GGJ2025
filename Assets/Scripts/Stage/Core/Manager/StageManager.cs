@@ -120,9 +120,9 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
         return minDistanceFromPlayer;
     }
 
-    public void SpawnEventEnemies(SpawnEventSO.SpawnEventData spawnData, Action<EnemyController> onEnemySpawned)
+    public void SpawnEventEnemies(SpawnEventSO.SpawnEventData spawnData)
     {
-        _enemySpawner.SpawnEventEnemies(spawnData, onEnemySpawned);
+        _enemySpawner.SpawnEventEnemies(spawnData);
     }
 
     /// <summary>
