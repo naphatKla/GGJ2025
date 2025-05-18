@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using Characters.Controllers;
 using UnityEngine;
 
 public interface IEnemySpawnerView
@@ -40,4 +42,11 @@ public interface IEnemySpawnerView
     /// </summary>
     /// <returns></returns>
     float GetMinDistanceFromPlayer();
+    
+    /// <summary>
+    /// Spawns event enemies
+    /// </summary>
+    /// <param name="spawnData"></param>
+    /// <param name="onEnemySpawned"></param>
+    void SpawnEventEnemies(SpawnEventSO.SpawnEventData spawnData, Action<EnemyController> onEnemySpawned);
 }

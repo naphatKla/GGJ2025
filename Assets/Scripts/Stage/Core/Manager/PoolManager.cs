@@ -132,7 +132,12 @@ public class PoolManager
 
         _pools.Remove(poolKey);
     }
-
+    
+    public void LogPoolStatus(string poolKey)
+    {
+        var count = GetPoolCount(poolKey);
+        Debug.Log($"Pool {poolKey} has {count} objects.");
+    }
     #endregion
 }
 

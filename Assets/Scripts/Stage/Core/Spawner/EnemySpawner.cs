@@ -2,9 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Characters.Controllers;
+using Cysharp.Threading.Tasks;
 using Manager;
 using Unity.VisualScripting;
 using UnityEngine;
+using Random = Unity.Mathematics.Random;
 
 public class EnemySpawner
 {
@@ -79,8 +81,8 @@ public class EnemySpawner
         _nextUnitScoreQuota = stageData.UnitScoreQuota;
         _nextIntervalScoreQuota = stageData.DecreaseSpawnInterval;
 
-        _spawnEventManager = new SpawnEventManager(view, stageData, regionSize, minDistanceFromPlayer);
-
+        _spawnEventManager = new SpawnEventManager(view, stageData, regionSize, minDistanceFromPlayer, _spawnerService);
+    
         CalculateTotalEnemySpawnChance();
         SetState(new StopState());
     }
@@ -136,6 +138,48 @@ public class EnemySpawner
     {
         return enemies.Count(e => e.gameObject.activeInHierarchy) < CurrentMaxEnemySpawn;
     }
+    
+    public async void SpawnEventEnemies(SpawnEventSO.SpawnEventData spawnData, Action<EnemyController> onEnemySpawned)
+    {
+        if (spawnData == null || spawnData.Enemies == null || spawnData.Enemies.Count == 0) { return; }
+        if (spawnData.SpawnDelayAll > 0)
+            await UniTask.Delay(TimeSpan.FromSeconds(spawnData.SpawnDelayAll));
+
+        var count = Math.Min(spawnData.Positions.Count, spawnData.EnemyCount);
+        for (var i = 0; i < count; i++)
+        {
+            var pos = spawnData.Positions[i];
+            var enemyData = spawnData.Enemies[UnityEngine.Random.Range(0, spawnData.Enemies.Count)];
+
+            if (enemyData == null) continue;
+            
+            if (spawnData.SpawnEffectPrefab != null)
+                _spawnerService.Spawn(spawnData.SpawnEffectPrefab, pos, Quaternion.identity);
+            
+            var enemyObj = _spawnerService.Spawn(
+                enemyData.EnemyController.gameObject,
+                pos,
+                Quaternion.identity,
+                _spawnerView.GetEnemyParent(),
+                false
+            );
+
+            if (enemyObj != null && enemyObj.TryGetComponent(out EnemyController enemyController))
+            {
+                enemyController.ResetAllDependentBehavior();
+                enemies.Add(enemyController);
+                enemyController.HealthSystem.OnThisCharacterDead += () => DespawnEnemy(enemyController);
+                OnEnemySpawned?.Invoke(enemyController);
+            }
+
+            if (spawnData.SpawnDelayPerEnemy)
+            {
+                var t = (float)i / Mathf.Max(1, count - 1);
+                var delay = Mathf.Lerp(spawnData.MinDelay, spawnData.MaxDelay, spawnData.DelayCurve.Evaluate(t));
+                await UniTask.Delay(TimeSpan.FromSeconds(delay));
+            }
+        }
+    }
 
 
     /// <summary>
@@ -158,7 +202,7 @@ public class EnemySpawner
         enemyController.HealthSystem.OnThisCharacterDead += () => DespawnEnemy(enemyController);
         OnEnemySpawned?.Invoke(enemyController);
     }
-    
+  
     /// <summary>
     /// Despawn Enemy and remove from list
     /// </summary>
@@ -177,17 +221,35 @@ public class EnemySpawner
     /// <summary>
     /// Setting up the enemy pool.
     /// </summary>
+    // ใน EnemySpawner.cs, แก้ไข Prewarm
     public void Prewarm(StageDataSO stageData, Transform enemyParent)
     {
         foreach (var enemyData in stageData.Enemies)
+        {
             for (var i = 0; i < enemyData.PreObjectSpawn; i++)
             {
                 var enemy = _spawnerService.Spawn(enemyData.EnemyData.EnemyController.gameObject, Vector3.zero,
                     Quaternion.identity, enemyParent, true);
-                if (!enemy.TryGetComponent(out EnemyController enemyController)) { return; }
+                if (!enemy.TryGetComponent(out EnemyController enemyController)) return;
                 enemies.Add(enemyController);
                 _spawnerService.Despawn(enemy);
             }
+        }
+
+        foreach (var spawnEvent in stageData.SpawnEvents)
+            if (spawnEvent is SpawnEventSO eventSO)
+                foreach (var enemyData in spawnEvent.EventEnemies)
+                {
+                    var count = eventSO.EnemySpawnEventCount;
+                    for (var i = 0; i < count; i++)
+                    {
+                        var enemy = _spawnerService.Spawn(enemyData.EnemyController.gameObject, Vector3.zero,
+                            Quaternion.identity, enemyParent, true);
+                        if (!enemy.TryGetComponent(out EnemyController enemyController)) return;
+                        enemies.Add(enemyController);
+                        _spawnerService.Despawn(enemy);
+                    }
+                }
     }
 
     /// <summary>

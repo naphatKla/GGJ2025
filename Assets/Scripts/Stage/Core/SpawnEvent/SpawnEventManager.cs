@@ -16,7 +16,7 @@ public class SpawnEventManager
 
     private readonly List<Vector2> _spawnPositionsPool = new();
     private readonly List<ISpawnEvent> _availableEventsPool = new();
-    private readonly ISpawnerService _spawnerService = new ObjectPoolSpawnerService();
+    private readonly ISpawnerService _spawnerService;
     
     private float _currentTime => Timer.Instance.GlobalTimer;
     private float killTrigger;
@@ -29,13 +29,13 @@ public class SpawnEventManager
     #region Constructor
 
     public SpawnEventManager(IEnemySpawnerView spawnerView, StageDataSO stageData, Vector2 regionSize,
-        float minDistanceFromPlayer)
+        float minDistanceFromPlayer, ISpawnerService spawnerService)
     {
         _spawnerView = spawnerView;
         _stageData = stageData;
         _regionSize = regionSize;
         _minDistanceFromPlayer = minDistanceFromPlayer;
-        
+        _spawnerService = spawnerService;
         InitializeTimerTriggers();
     }
 
@@ -102,10 +102,9 @@ public class SpawnEventManager
     /// </summary>
     public void TriggerSpawnEvent(bool bypassCooldown = false, HashSet<EnemyController> eventEnemies = null, bool noChance = false)
     {
-        var worldEvent = SelectRandomWorldEvent(bypassCooldown, noChance);
-        if (worldEvent == null) return;
-
-        worldEvent.Trigger(_spawnerView, eventEnemies);
+        var spawnEvent = SelectRandomWorldEvent(bypassCooldown, noChance);
+        if (spawnEvent == null) return;
+        spawnEvent.Trigger(_spawnerView, eventEnemies);
     }
 
     /// <summary>
