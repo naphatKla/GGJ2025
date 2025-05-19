@@ -4,6 +4,7 @@ using System.Linq;
 using Characters.Controllers;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class EnemySpawner
 {
@@ -147,7 +148,7 @@ public class EnemySpawner
     /// </summary>
     public void TriggerSpawnEvent(bool bypassCooldown = false, bool noChance = false)
     {
-        _spawnEventManager.TriggerSpawnEvent(bypassCooldown, enemies, noChance);
+        _spawnEventManager.TriggerSpawnEvent(bypassCooldown, noChance);
     }
 
     /// <summary>
@@ -205,7 +206,7 @@ public class EnemySpawner
     /// </summary>
     private bool ValidateSpawnData(SpawnEventSO.SpawnEventData data)
     {
-        return data != null && data.Enemies != null && data.Enemies.Count > 0;
+        return data != null && data.EnemiesWithChance != null && data.EnemiesWithChance.Count > 0;
     }
 
     /// <summary>
@@ -227,7 +228,7 @@ public class EnemySpawner
         for (int i = 0; i < count; i++)
         {
             Vector2 pos = data.Positions[i];
-            IEnemyData enemyData = data.Enemies[UnityEngine.Random.Range(0, data.Enemies.Count)];
+            IEnemyData enemyData = GetRandomEnemyByChance(data.EnemiesWithChance);
 
             if (enemyData == null) continue;
 
@@ -240,6 +241,31 @@ public class EnemySpawner
             }
         }
     }
+    
+    /// <summary>
+    /// Random Chance Enemy Selection
+    /// </summary>
+    /// <param name="enemies"></param>
+    /// <returns></returns>
+    private IEnemyData GetRandomEnemyByChance(List<SpawnEnemyProperties> enemies)
+    {
+        if (enemies == null || enemies.Count == 0) return null;
+
+        var totalChance = enemies.Sum(e => e.SpawnChance);
+        var randomValue = Random.Range(0f, totalChance);
+        var cumulative = 0f;
+
+        foreach (var e in enemies)
+        {
+            cumulative += e.SpawnChance;
+            if (randomValue <= cumulative)
+                return e.EnemyData;
+        }
+
+        return enemies[0].EnemyData;
+    }
+
+
 
     /// <summary>
     /// Spawns 1 enemy at position with visual effect and setup.
@@ -304,7 +330,7 @@ public class EnemySpawner
         enemies.Remove(enemy);
         _spawnerService.Despawn(enemy.gameObject);
         OnEnemyDespawned?.Invoke(enemy);
-        _spawnEventManager.onDespawntrigger?.Invoke();
+        _spawnEventManager.UpdateKillCount();
     }
 
     /// <summary>

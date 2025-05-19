@@ -5,60 +5,96 @@ using Characters.Controllers;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
+#region Data Classes
+
+[Serializable]
+public class SpawnEnemyProperties
+{
+    public EnemyDataSO EnemyData;
+
+    [Tooltip("Chance to spawn this enemy")]
+    public float SpawnChance;
+}
+
+#endregion
+
+[CreateAssetMenu(fileName = "SpawnEventSO", menuName = "Game/Spawn Event")]
 public class SpawnEventSO : ScriptableObject, ISpawnEvent
 {
+    #region Serialized Fields
+
     [Title("Event Properties")]
-    [Tooltip("Chance of this speed event being selected (0–100%)")]
-    [Range(0, 100)] [SerializeField] private float _chance = 1f;
-    
+    [Tooltip("Chance of this spawn event being selected (0–100%)")]
+    [Range(0, 100)]
+    [SerializeField] private float _chance = 1f;
+
     [Tooltip("Cooldown time (in seconds) before this event can be triggered again")]
     [SerializeField] private float _cooldown = 5f;
-    
+
     [Tooltip("Enemy count when spawning event")]
     [SerializeField] private int _enemyCount = 16;
-    
+
     [Tooltip("Toggle to spawn delay per enemy when spawning event")]
     [SerializeField] private float _spawnDelayAll = 0.2f;
-    
-    [Tooltip("Minimum Delay between spawning per enemy when spawning event")]
-    [ShowIf("@spawnDelayPerEnemy == true")]
-    [FoldoutGroup("Delay Per Enemy Setting")] [SerializeField] 
-    private bool spawnDelayPerEnemy;
-    
-    [Tooltip("Minimum Delay between spawning per enemy when spawning event")]
-    [ShowIf("@spawnDelayPerEnemy == true")]
+
     [FoldoutGroup("Delay Per Enemy Setting")]
+    [ShowIf("@spawnDelayPerEnemy == true")]
+    [SerializeField] private bool spawnDelayPerEnemy;
+
+    [FoldoutGroup("Delay Per Enemy Setting")]
+    [ShowIf("@spawnDelayPerEnemy == true")]
     [SerializeField] private float minDelay = 0.05f;
-    
-    [Tooltip("Maximum Delay between spawning per enemy when spawning event")]
-    [ShowIf("@spawnDelayPerEnemy == true")]
+
     [FoldoutGroup("Delay Per Enemy Setting")]
+    [ShowIf("@spawnDelayPerEnemy == true")]
     [SerializeField] private float maxDelay = 0.5f;
-    
-    [Tooltip("Delay Curve between spawning per enemy when spawning event")]
-    [ShowIf("@spawnDelayPerEnemy == true")]
+
     [FoldoutGroup("Delay Per Enemy Setting")]
+    [ShowIf("@spawnDelayPerEnemy == true")]
     [SerializeField] private AnimationCurve perEnemyDelayCurve;
-    
-    [SerializeField] private List<EnemyDataSO> _spawnEnemies;
+
+    [Tooltip("Enemies and their spawn chances")]
+    [SerializeField] private SpawnEnemyProperties[] _spawnEnemies;
+
     [SerializeField] private GameObject _spawnEffectPrefab;
     [SerializeReference] private ISpawnPositionStrategy _spawnStrategy = new ConfigurableSpawnStrategy();
     [SerializeReference] private List<IEventCondition> _customConditions;
+
+    [Tooltip("Trigger times (seconds) for timed spawn events")]
     [SerializeField] public List<float> timerTrigger;
+
+    [Tooltip("Trigger kill counts for kill-based spawn events")]
     [SerializeField] public List<float> killTrigger;
 
+    #endregion
+
+    #region Runtime State
+
     private float _lastSpawnTime = -Mathf.Infinity;
+
+    #endregion
+
+    #region Public Properties
 
     public float Chance => _chance;
     public float Cooldown => _cooldown;
     public int EnemyCount => _enemyCount;
-    public List<IEnemyData> EventEnemies => _spawnEnemies?.ConvertAll(e => (IEnemyData)e);
 
-    public bool IsCooldownActive(float currentTime) => currentTime < _lastSpawnTime + _cooldown;
+    public List<IEnemyData> EventEnemies =>
+        _spawnEnemies?.Select(e => (IEnemyData)e.EnemyData).ToList();
 
-    public bool CanTrigger() => _customConditions == null || _customConditions.All(c => c.CanTrigger());
+    #endregion
 
-    public void MarkTriggered() => _lastSpawnTime = Time.time;
+    #region Public Methods
+
+    public bool IsCooldownActive(float currentTime) =>
+        currentTime < _lastSpawnTime + _cooldown;
+
+    public bool CanTrigger() =>
+        _customConditions == null || _customConditions.All(c => c.CanTrigger());
+
+    public void LastTriggered() =>
+        _lastSpawnTime = Time.time;
 
     public SpawnEventData CreateSpawnData(IEnemySpawnerView spawnerView)
     {
@@ -75,7 +111,7 @@ public class SpawnEventSO : ScriptableObject, ISpawnEvent
         {
             Positions = spawnPositions,
             EnemyCount = _enemyCount,
-            Enemies = EventEnemies,
+            EnemiesWithChance = _spawnEnemies?.ToList(),
             SpawnDelayAll = _spawnDelayAll,
             SpawnDelayPerEnemy = spawnDelayPerEnemy,
             MinDelay = minDelay,
@@ -85,12 +121,16 @@ public class SpawnEventSO : ScriptableObject, ISpawnEvent
         };
     }
 
+    #endregion
+
+    #region Nested Data Class
+
     [Serializable]
     public class SpawnEventData
     {
         public List<Vector2> Positions;
         public int EnemyCount;
-        public List<IEnemyData> Enemies;
+        public List<SpawnEnemyProperties> EnemiesWithChance;
         public float SpawnDelayAll;
         public bool SpawnDelayPerEnemy;
         public float MinDelay;
@@ -98,4 +138,45 @@ public class SpawnEventSO : ScriptableObject, ISpawnEvent
         public AnimationCurve DelayCurve;
         public GameObject SpawnEffectPrefab;
     }
+
+    #endregion
+
+    #region Editor Preview (Draw Button)
+
+#if UNITY_EDITOR
+    [Button("Preview Spawn Event", ButtonSizes.Large)]
+    [GUIColor(0, 1, 0)]
+    private void PreviewSpawnArea()
+    {
+        var playerPos = Vector2.zero;
+        var regionSize = new Vector2(20, 20);
+        var minDistance = 3f;
+        var count = _enemyCount;
+
+        var strategy = _spawnStrategy ?? new ConfigurableSpawnStrategy();
+        var spawnPositions = new List<Vector2>();
+
+        strategy.CalculatePositions(playerPos, regionSize, minDistance, count, spawnPositions);
+
+        foreach (var pos in spawnPositions)
+            DrawDebugBox(pos, 0.6f, Color.red, 5f);
+    }
+
+    private void DrawDebugBox(Vector2 center, float size, Color color, float duration)
+    {
+        var half = size / 2f;
+
+        var topLeft = new Vector3(center.x - half, center.y + half, 0);
+        var topRight = new Vector3(center.x + half, center.y + half, 0);
+        var bottomLeft = new Vector3(center.x - half, center.y - half, 0);
+        var bottomRight = new Vector3(center.x + half, center.y - half, 0);
+
+        Debug.DrawLine(topLeft, topRight, color, duration);
+        Debug.DrawLine(topRight, bottomRight, color, duration);
+        Debug.DrawLine(bottomRight, bottomLeft, color, duration);
+        Debug.DrawLine(bottomLeft, topLeft, color, duration);
+    }
+#endif
+
+    #endregion
 }

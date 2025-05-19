@@ -19,8 +19,9 @@ public class SpawnEventManager
     private readonly ISpawnerService _spawnerService;
     
     private float _currentTime => Timer.Instance.GlobalTimer;
-    private float killTrigger;
-    private readonly Dictionary<ISpawnEvent, int> _eventTriggerIndices = new();
+    private float _killTrigger;
+    private readonly Dictionary<ISpawnEvent, int> _timerTriggerIndices = new();
+    private readonly Dictionary<ISpawnEvent, int> _killTriggerIndices = new();
 
     public UnityEvent onDespawntrigger;
     
@@ -36,7 +37,7 @@ public class SpawnEventManager
         _regionSize = regionSize;
         _minDistanceFromPlayer = minDistanceFromPlayer;
         _spawnerService = spawnerService;
-        InitializeTimerTriggers();
+        InitializeEventTriggerIndices();
     }
 
     #endregion
@@ -46,18 +47,25 @@ public class SpawnEventManager
     /// <summary>
     /// Initializes timerTrigger indices for each WorldEvent.
     /// </summary>
-    private void InitializeTimerTriggers()
+    private void InitializeEventTriggerIndices()
     {
         foreach (var spawnEvent in _stageData.SpawnEvents)
         {
-            if (spawnEvent is SpawnEventSO eventSO && eventSO.timerTrigger != null && eventSO.timerTrigger.Count > 0)
+            if (!_timerTriggerIndices.ContainsKey(spawnEvent))
+                _timerTriggerIndices[spawnEvent] = 0;
+
+            if (!_killTriggerIndices.ContainsKey(spawnEvent))
+                _killTriggerIndices[spawnEvent] = 0;
+
+            if (spawnEvent is SpawnEventSO eventSO)
             {
-                eventSO.timerTrigger.Sort();
-                eventSO.timerTrigger.Reverse();
-                _eventTriggerIndices[spawnEvent] = 0;
+                eventSO.timerTrigger?.Sort();
+                eventSO.killTrigger?.Sort();
             }
         }
     }
+
+
     
     /// <summary>
     /// Updates the timer and checks for timerTrigger events.
@@ -66,21 +74,21 @@ public class SpawnEventManager
     {
         foreach (var spawnEvent in _stageData.SpawnEvents)
         {
-            if (!_eventTriggerIndices.ContainsKey(spawnEvent)) continue;
+            if (!_timerTriggerIndices.ContainsKey(spawnEvent)) continue;
 
-            var currentIndex = _eventTriggerIndices[spawnEvent];
+            var currentIndex = _timerTriggerIndices[spawnEvent];
+
             if (spawnEvent is SpawnEventSO eventSO && currentIndex < eventSO.timerTrigger.Count)
-            {
                 if (_currentTime <= eventSO.timerTrigger[currentIndex] && eventSO.CanTrigger())
                 {
-                    eventSO.MarkTriggered();
+                    eventSO.LastTriggered();
                     var data = eventSO.CreateSpawnData(_spawnerView);
                     _spawnerView.SpawnEventEnemies(data);
-                    _eventTriggerIndices[spawnEvent] = currentIndex + 1;
+                    _timerTriggerIndices[spawnEvent] = currentIndex + 1;
                 }
-            }
         }
     }
+
 
     
     /// <summary>
@@ -90,26 +98,26 @@ public class SpawnEventManager
     {
         foreach (var spawnEvent in _stageData.SpawnEvents)
         {
-            if (!_eventTriggerIndices.ContainsKey(spawnEvent)) continue;
+            if (!_killTriggerIndices.ContainsKey(spawnEvent)) continue;
 
-            var currentIndex = _eventTriggerIndices[spawnEvent];
+            var currentIndex = _killTriggerIndices[spawnEvent];
+
             if (spawnEvent is SpawnEventSO eventSO && currentIndex < eventSO.killTrigger.Count)
-            {
-                if (_currentTime <= eventSO.timerTrigger[currentIndex] && eventSO.CanTrigger())
+                if (_killTrigger >= eventSO.killTrigger[currentIndex] && eventSO.CanTrigger())
                 {
-                    eventSO.MarkTriggered();
+                    eventSO.LastTriggered();
                     var data = eventSO.CreateSpawnData(_spawnerView);
                     _spawnerView.SpawnEventEnemies(data);
-                    _eventTriggerIndices[spawnEvent] = currentIndex + 1;
+                    _killTriggerIndices[spawnEvent] = currentIndex + 1;
                 }
-            }
         }
     }
+
 
     /// <summary>
     ///     Triggers a random world event, spawning enemies if conditions are met.
     /// </summary>
-    public void TriggerSpawnEvent(bool bypassCooldown = false, HashSet<EnemyController> eventEnemies = null, bool noChance = false)
+    public void TriggerSpawnEvent(bool bypassCooldown = false, bool noChance = false)
     {
         var spawnEvent = SelectRandomWorldEvent(bypassCooldown, noChance);
         if (spawnEvent == null) return;
@@ -121,7 +129,7 @@ public class SpawnEventManager
         int availableCount = CountAvailableEnemiesInPool(eventSO);
         if (availableCount < eventSO.EnemyCount) { return; }
         
-        eventSO.MarkTriggered();
+        eventSO.LastTriggered();
         var data = eventSO.CreateSpawnData(_spawnerView);
         _spawnerView.SpawnEventEnemies(data);
     }
@@ -168,10 +176,9 @@ public class SpawnEventManager
     /// <summary>
     /// Update kill count
     /// </summary>
-    private void UpdateKillCount()
+    public void UpdateKillCount()
     {
-        onDespawntrigger?.Invoke();
-        killTrigger += 1;
+        _killTrigger += 1;
     }
 
     #endregion
