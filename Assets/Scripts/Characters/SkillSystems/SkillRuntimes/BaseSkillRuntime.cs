@@ -1,7 +1,7 @@
 using System;
 using System.Threading;
 using Characters.Controllers;
-using Characters.FeedbackSystem;
+using Characters.FeedbackSystems;
 using Characters.SO.SkillDataSo;
 using Cysharp.Threading.Tasks;
 using Manager;

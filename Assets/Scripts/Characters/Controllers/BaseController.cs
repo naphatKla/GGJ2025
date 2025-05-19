@@ -1,9 +1,11 @@
 using Characters.CombatSystems;
+using Characters.FeedbackSystems;
 using Characters.HeathSystems;
 using Characters.InputSystems.Interface;
 using Characters.MovementSystems;
 using Characters.SkillSystems;
 using Characters.SO.CharacterDataSO;
+using Characters.StatusEffectSystems;
 using Sirenix.Serialization;
 using UnityEngine;
 
@@ -40,7 +42,7 @@ namespace Characters.Controllers
         /// Reference to the status effect system.
         /// Should be assigned via Inspector or at runtime.
         /// </summary>
-        [SerializeField] private StatusEffectSystem.StatusEffectSystem statusEffectSystem;
+        [SerializeField] private StatusEffectSystem statusEffectSystem;
 
         /// <summary>
         /// Reference to the Damage on touch system.
@@ -52,7 +54,7 @@ namespace Characters.Controllers
         /// Reference to the feedback system
         /// Should be assigned via Inspector or at runtime.
         /// </summary>
-        [SerializeField] private FeedbackSystem.FeedbackSystem _feedbackSystem;
+        [SerializeField] private FeedbackSystem _feedbackSystem;
 
         /// <summary>
         /// ScriptableObject containing base character stats used to initialize systems.
@@ -88,7 +90,7 @@ namespace Characters.Controllers
         /// Reference to the feedback system
         /// Should be assigned via Inspector or at runtime.
         /// </summary>
-        public FeedbackSystem.FeedbackSystem FeedbackSystem => _feedbackSystem;
+        public FeedbackSystem FeedbackSystem => _feedbackSystem;
 
         #endregion
 

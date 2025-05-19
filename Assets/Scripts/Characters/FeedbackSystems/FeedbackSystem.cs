@@ -3,7 +3,7 @@ using MoreMountains.Feedbacks;
 using Sirenix.OdinInspector;
 using Sirenix.Serialization;
 
-namespace Characters.FeedbackSystem
+namespace Characters.FeedbackSystems
 {
     /// <summary>
     /// Centralized feedback handler attached to a character.

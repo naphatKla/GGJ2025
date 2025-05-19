@@ -1,7 +1,7 @@
 using Characters.SO.StatusEffectSO;
 using UnityEngine;
 
-namespace Characters.StatusEffectSystem.StatusEffects
+namespace Characters.StatusEffectSystems.StatusEffects
 {
     /// <summary>
     /// Abstract base class for all runtime status effects.

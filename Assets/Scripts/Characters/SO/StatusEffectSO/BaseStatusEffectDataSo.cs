@@ -1,6 +1,6 @@
 using System;
-using Characters.StatusEffectSystem;
-using Characters.StatusEffectSystem.StatusEffects;
+using Characters.StatusEffectSystems;
+using Characters.StatusEffectSystems.StatusEffects;
 using Sirenix.OdinInspector;
 using Sirenix.Serialization;
 using UnityEngine;

@@ -2,7 +2,7 @@ using Characters.HeathSystems;
 using Characters.SO.StatusEffectSO;
 using UnityEngine;
 
-namespace Characters.StatusEffectSystem.StatusEffects
+namespace Characters.StatusEffectSystems.StatusEffects
 {
     /// <summary>
     /// A status effect that makes the target invincible for the duration of the effect.

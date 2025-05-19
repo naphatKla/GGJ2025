@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using Characters.SO.StatusEffectSO;
-using Characters.StatusEffectSystem;
-using Characters.StatusEffectSystem.StatusEffects;
+using Characters.StatusEffectSystems;
+using Characters.StatusEffectSystems.StatusEffects;
 using UnityEngine;
 
 namespace Manager

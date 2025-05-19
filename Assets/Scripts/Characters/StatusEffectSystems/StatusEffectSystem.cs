@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 using Characters.SO.StatusEffectSO;
-using Characters.StatusEffectSystem.StatusEffects;
+using Characters.StatusEffectSystems.StatusEffects;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-namespace Characters.StatusEffectSystem
+namespace Characters.StatusEffectSystems
 {
     /// <summary>
     /// Represents the data payload required to apply a status effect.

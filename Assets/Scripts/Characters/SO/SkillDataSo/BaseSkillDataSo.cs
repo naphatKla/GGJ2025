@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
-using Characters.FeedbackSystem;
 using Characters.SkillSystems.SkillRuntimes;
-using Characters.StatusEffectSystem;
+using Characters.StatusEffectSystems;
 using Manager;
 using Sirenix.OdinInspector;
 using Sirenix.Serialization;
