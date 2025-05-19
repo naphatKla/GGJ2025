@@ -17,7 +17,7 @@ namespace Characters.MovementSystems
         /// <summary>
         /// Enables or disables movement direction/velocity Gizmo rendering in the Scene view (for debugging).
         /// </summary>
-        [SerializeField] private bool enableGizmos;
+        [SerializeField] [PropertyOrder(9999)] private bool enableGizmos;
 
         /// <summary>
         /// The default speed value used as the base for movement speed calculations.

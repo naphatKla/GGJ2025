@@ -7,78 +7,81 @@ namespace Characters.MovementSystems
 {
     /// <summary>
     /// Handles enemy movement using Unity's NavMeshAgent.
-    /// Supports inertia-based movement, DOTween transitions, and velocity blending after tween.
-    /// Mirrors Rigidbody-based movement for consistent feel across AI and player.
+    /// Inherits from BaseMovementSystem and implements movement logic for AI-controlled entities.
     /// </summary>
     public class EnemyMovementSystem : BaseMovementSystem
     {
         /// <summary>
-        /// The NavMeshAgent component used for AI pathfinding and manual movement.
-        /// Must be assigned via inspector or initialized at runtime.
+        /// The NavMeshAgent component responsible for pathfinding and movement.
         /// </summary>
         [Required] [SerializeField] private NavMeshAgent agent;
+
+        #region Unity Methods
         
-        /// <summary>
-        /// Initializes the NavMeshAgent by disabling automatic rotation and up-axis adjustment,
-        /// allowing 2D-style movement in a top-down or side-scrolling setup.
-        /// </summary>
         private void Start()
         {
             agent.updateRotation = false;
             agent.updateUpAxis = false;
         }
 
+        #endregion
+
+        #region Methods
+
         /// <summary>
-        /// Moves the enemy toward a target position using smooth inertia logic.
-        /// If recovering from a tween, velocity will blend from previous tween speed
-        /// to natural direction-based speed. Uses NavMeshAgent.Move internally for manual motion.
+        /// Assigns base movement data to the character, including speed and acceleration settings.
+        /// Typically called by the character controller during initialization to configure movement behavior.
         /// </summary>
-        /// <param name="position">Target position to move toward.</param>
+        /// <param name="baseSpeed">The base movement speed of the character.</param>
+        /// <param name="moveAccelerationRate">The rate at which the character accelerates toward its movement speed.</param>
+        /// <param name="turnAccelerationRate">The rate at which the character changes its movement direction.</param>
+        public override void AssignMovementData(float baseSpeed, float moveAccelerationRate, float turnAccelerationRate)
+        {
+            base.AssignMovementData(baseSpeed, moveAccelerationRate, turnAccelerationRate);
+            agent.speed = baseSpeed;
+            agent.acceleration = moveAccelerationRate;
+            agent.angularSpeed = turnAccelerationRate * 180f;
+        }
+        
+        /// <summary>
+        /// Moves the enemy and pathfinding to the target's position using NavMeshAgent.
+        /// Also updates currentDirection and currentVelocity for animation or sync purposes.
+        /// </summary>
+        /// <param name="position">The target position to move towards.</param>
         protected override void MoveWithInertia(Vector2 position)
         {
-            Vector2 desiredVelocity;
-            
-            if (isRecoveringFromTween)
-            {
-                blendBackTimer += Time.fixedDeltaTime;
-                float t = Mathf.Clamp01(blendBackTimer / blendBackDuration);
+            Vector2 nextPosition = Vector2.MoveTowards(agent.transform.position, position, currentSpeed * Time.fixedDeltaTime);
+            Vector2 delta = nextPosition - (Vector2)agent.transform.position;
 
-                desiredVelocity = currentDirection * currentSpeed;
-                currentVelocity = Vector2.Lerp(postTweenVelocity, desiredVelocity, t);
-                agent.Move(currentVelocity * Time.fixedDeltaTime);
-                isRecoveringFromTween = t < 1;
-                return;
+            if (delta.sqrMagnitude > 0.0001f)
+            {
+                currentDirection = delta.normalized;
+                currentVelocity = delta / Time.fixedDeltaTime;
             }
 
-            Vector2 rawDirection = (position - (Vector2)transform.position).normalized;
-            currentDirection = Vector2.Lerp(currentDirection, rawDirection, turnAccelerationRate * Time.fixedDeltaTime);
-
-            desiredVelocity = currentDirection * currentSpeed;
-            currentVelocity = Vector2.Lerp(currentVelocity, desiredVelocity, moveAccelerationRate * Time.fixedDeltaTime);
-            agent.Move(currentVelocity * Time.fixedDeltaTime);
+            agent.SetDestination(position);
         }
 
         /// <summary>
-        /// Instantly teleports the enemy to the specified world-space position,
-        /// bypassing NavMeshAgent pathfinding. Useful for warping or respawn.
+        /// Instantly warps the NavMeshAgent to the specified position, bypassing pathfinding and obstacle avoidance.
         /// </summary>
-        /// <param name="position">The world-space position to teleport to.</param>
+        /// <param name="position">The destination position to warp the agent to.</param>
         protected override void MoveToPosition(Vector2 position)
         {
             agent.Warp(position);
         }
 
         /// <summary>
-        /// Smoothly moves the enemy to a static position over time using DOTween.
-        /// During the tween, <see cref="currentDirection"/> and <see cref="currentVelocity"/> are updated.
-        /// After tween completion, velocity is blended back into inertia-based movement.
-        /// Movement path can include lateral curves for stylized effects.
+        /// Smoothly moves the entity to a destination using DOTween over a specified duration.
+        /// The movement speed is controlled by an optional easing AnimationCurve, and the path can be offset perpendicularly using a second curve.
+        /// This allows for customizable speed and motion effects like arcs, slashes, or waves.
+        /// If no easing curve is provided, Ease.InOutSine is used as the default.
         /// </summary>
-        /// <param name="position">Final world-space destination.</param>
-        /// <param name="duration">Total duration (in seconds) for movement.</param>
-        /// <param name="easeCurve">Optional easing AnimationCurve. Defaults to Ease.InOutSine.</param>
-        /// <param name="moveCurve">Optional perpendicular displacement curve.</param>
-        /// <returns>The tween responsible for managing movement.</returns>
+        /// <param name="position">Target position to move toward.</param>
+        /// <param name="duration">Time in seconds to reach the target position.</param>
+        /// <param name="easeCurve">Optional AnimationCurve that defines how interpolation progresses over time. Defaults to Ease.InOutSine if null.</param>
+        /// <param name="moveCurve">Optional AnimationCurve to apply perpendicular offset for curved or styled motion.</param>
+        /// <returns>A Tween instance managing the interpolated motion over time.</returns>
         protected override Tween MoveToPositionOverTime(Vector2 position, float duration, AnimationCurve easeCurve = null, AnimationCurve moveCurve = null)
         {
             agent.ResetPath();
@@ -95,6 +98,9 @@ namespace Characters.MovementSystems
                 float offset = moveCurve?.Evaluate(linearT) ?? 0f;
                 Vector2 curvedPos = basePos + perpendicular * offset;
 
+                Vector2 delta = curvedPos - (Vector2)agent.transform.position;
+                agent.Move(delta);
+
                 Vector2 frameDirection = (curvedPos - previousPosition).normalized;
                 if (frameDirection != Vector2.zero)
                     currentDirection = frameDirection;
@@ -102,32 +108,21 @@ namespace Characters.MovementSystems
                 float frameDistance = Vector2.Distance(previousPosition, curvedPos);
                 currentVelocity = frameDirection * (frameDistance / Time.deltaTime);
 
-                Vector2 delta = curvedPos - (Vector2)agent.transform.position;
-                agent.Move(delta);
                 previousPosition = curvedPos;
-
             }, 1f, duration);
-
-            tween.OnComplete(() =>
-            {
-                postTweenVelocity = currentVelocity;
-                blendBackTimer = 0f;
-                isRecoveringFromTween = true;
-            });
 
             return easeCurve != null ? tween.SetEase(easeCurve) : tween.SetEase(Ease.InOutSine);
         }
 
         /// <summary>
-        /// Smoothly moves the enemy toward a moving <see cref="Transform"/> target over time.
-        /// Follows the target in real time while applying optional curved pathing and easing.
-        /// Velocity and direction are updated every frame. After completion, blends into inertia.
+        /// Smoothly moves the enemy's NavMeshAgent toward a dynamic target over time using DOTween.
+        /// Continuously follows the target's real-time position while optionally applying custom easing and perpendicular motion.
         /// </summary>
-        /// <param name="target">The dynamic target to follow.</param>
-        /// <param name="duration">Duration in seconds to follow target.</param>
-        /// <param name="easeCurve">Optional easing AnimationCurve. Defaults to Ease.InOutSine.</param>
-        /// <param name="moveCurve">Optional perpendicular curve (arc/slash).</param>
-        /// <returns>The tween managing movement execution.</returns>
+        /// <param name="target">The target Transform to move toward during the tween.</param>
+        /// <param name="duration">Duration (in seconds) of the movement.</param>
+        /// <param name="easeCurve">Optional curve to control easing/speed progression.</param>
+        /// <param name="moveCurve">Optional curve that offsets the path perpendicularly.</param>
+        /// <returns>The Tween that handles interpolated movement.</returns>
         protected override Tween MoveToTargetOverTime(Transform target, float duration, AnimationCurve easeCurve = null, AnimationCurve moveCurve = null)
         {
             agent.ResetPath();
@@ -146,6 +141,9 @@ namespace Characters.MovementSystems
                 float offset = moveCurve?.Evaluate(linearT) ?? 0f;
                 Vector2 curvedPos = basePos + perpendicular * offset;
 
+                Vector2 delta = curvedPos - (Vector2)agent.transform.position;
+                agent.Move(delta);
+
                 Vector2 frameDirection = (curvedPos - previousPosition).normalized;
                 if (frameDirection != Vector2.zero)
                     currentDirection = frameDirection;
@@ -153,20 +151,12 @@ namespace Characters.MovementSystems
                 float frameDistance = Vector2.Distance(previousPosition, curvedPos);
                 currentVelocity = frameDirection * (frameDistance / Time.deltaTime);
 
-                Vector2 delta = curvedPos - (Vector2)agent.transform.position;
-                agent.Move(delta);
                 previousPosition = curvedPos;
-
             }, 1f, duration);
-
-            tween.OnComplete(() =>
-            {
-                postTweenVelocity = currentVelocity;
-                blendBackTimer = 0f;
-                isRecoveringFromTween = true;
-            });
 
             return easeCurve != null ? tween.SetEase(easeCurve) : tween.SetEase(Ease.InOutSine);
         }
+        
+        #endregion
     }
 }
