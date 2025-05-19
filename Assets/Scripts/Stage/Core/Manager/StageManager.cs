@@ -4,6 +4,7 @@ using Characters;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using System.Linq;
+using Characters.Controllers;
 
 public class StageManager : MonoBehaviour, IEnemySpawnerView
 {
@@ -49,8 +50,8 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
         if (globalTimer == null) globalTimer = GetComponent<Timer>();
         if (enemyParent == null) enemyParent = new GameObject("EnemyParent").transform;
         if (CurrentMap.stages.Count == 0 || CurrentStage == null) return;
-        EnemyPoolCreated();
         _enemySpawner = new EnemySpawner(this, CurrentStage, regionSize, minDistanceFromPlayer);
+        EnemyPoolCreated();
     }
     
     private void Start()
@@ -78,26 +79,6 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     }
     
     /// <summary>
-    /// Adds a WorldEvent enemy to the eventEnemies list.
-    /// </summary>
-    public void AddWorldEventEnemy(GameObject enemy)
-    {
-        if (!_enemySpawner.eventEnemies.Contains(enemy))
-            _enemySpawner.eventEnemies.Add(enemy);
-    }
-
-    /// <summary>
-    /// Remove from enemy or event enemy list.
-    /// </summary>
-    public void RemoveListEnemy(GameObject enemy)
-    {
-        if (_enemySpawner.enemies.Contains(enemy))
-            _enemySpawner.enemies.Remove(enemy);
-        else if (_enemySpawner.eventEnemies.Contains(enemy))
-            _enemySpawner.eventEnemies.Remove(enemy);
-    }
-
-    /// <summary>
     /// Returns the parent object for enemies.
     /// </summary>
     public Transform GetEnemyParent()
@@ -110,7 +91,7 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     /// </summary>
     public int GetCurrentEnemyCount()
     {
-        return _enemySpawner.enemies.Count(e => e != null && e.activeInHierarchy);
+        return _enemySpawner.enemies.Count(e => e != null && e.gameObject.activeInHierarchy);
     }
 
     /// <summary>
@@ -139,6 +120,11 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
         return minDistanceFromPlayer;
     }
 
+    public void SpawnEventEnemies(SpawnEventSO.SpawnEventData spawnData)
+    {
+        _enemySpawner.SpawnEventEnemies(spawnData);
+    }
+
     /// <summary>
     /// Sets the background image.
     /// </summary>
@@ -153,7 +139,7 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     /// </summary>
     private void EnemyPoolCreated()
     {
-        EnemyPoolInitializer.Prewarm(CurrentStage, enemyParent);
+        _enemySpawner.Prewarm(CurrentStage, enemyParent);
     }
     
     /// <summary>
@@ -273,14 +259,9 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     {
         foreach (var enemy in _enemySpawner.enemies)
             if (enemy != null)
-                PoolManager.Instance.Despawn(enemy);
-        
-        foreach (var enemy in _enemySpawner.eventEnemies)
-            if (enemy != null)
-                PoolManager.Instance.Despawn(enemy);
+                PoolManager.Instance.Despawn(enemy.gameObject);
         
         _enemySpawner.enemies.Clear();
-        _enemySpawner.eventEnemies.Clear();
         PoolManager.Instance.ClearPool(enemyParent);
         EnemyPoolCreated();
     }

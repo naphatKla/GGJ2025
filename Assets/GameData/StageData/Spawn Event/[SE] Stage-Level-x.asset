@@ -12,10 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c6e2c122e8dc642aecbe83e74a282c, type: 3}
   m_Name: '[SE] Stage-Level-x'
   m_EditorClassIdentifier: 
-  _chance: 50
+  _chance: 10
   _cooldown: 5
+  _enemyCount: 8
   _spawnDelayAll: 0.2
-  spawnDelayPerEnemy: 0
+  spawnDelayPerEnemy: 1
   minDelay: 0.01
   maxDelay: 0.05
   perEnemyDelayCurve:
@@ -42,17 +43,16 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  _enemyCount: 16
-  _raidEnemies:
-  - {fileID: 11400000, guid: b265bf836edd1ac4da7615dd3c48c4ac, type: 2}
+  _spawnEnemies:
+  - EnemyData: {fileID: 11400000, guid: e8bf0e8ec6b32e344a0ddff289ef5d98, type: 2}
+    SpawnChance: 100
+  _spawnEffectPrefab: {fileID: 0}
   _spawnStrategy:
     rid: 3868164761998852097
-  _eventFeedback:
-  - {fileID: 0}
-  _spawnEffectPrefab: {fileID: 0}
   _customConditions: []
   timerTrigger: []
-  killTrigger: []
+  killTrigger:
+  - 10
   references:
     version: 2
     RefIds:

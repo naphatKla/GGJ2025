@@ -23,8 +23,7 @@ public class PoolManager
     /// <param name="parent">The parent Transform for the spawned object (optional).</param>
     /// <param name="forceNew">If true, forces instantiation of a new object instead of reusing one.</param>
     /// <returns>The spawned GameObject, or null if the prefab is null.</returns>
-    public GameObject Spawn(GameObject prefab, Vector3 position, Quaternion rotation, Transform parent = null,
-        bool forceNew = false)
+    public GameObject Spawn(GameObject prefab, Vector3 position, Quaternion rotation, Transform parent = null, bool forceNew = false)
     {
         if (prefab == null) return null;
 
@@ -41,6 +40,7 @@ public class PoolManager
         obj.transform.SetParent(parent);
         return obj;
     }
+
 
     /// <summary>
     ///     Returns a GameObject to the pool for reuse.
@@ -102,7 +102,7 @@ public class PoolManager
     /// <param name="prefab">The prefab to instantiate.</param>
     /// <param name="count">The number of objects to create.</param>
     /// <param name="parent">The parent Transform for the objects (optional).</param>
-    public void PreWarm(GameObject prefab, int count, Transform parent = null)
+    public void PreWarm(GameObject prefab, float count, Transform parent = null)
     {
         if (prefab == null || count <= 0) return;
 
@@ -132,7 +132,12 @@ public class PoolManager
 
         _pools.Remove(poolKey);
     }
-
+    
+    public void LogPoolStatus(string poolKey)
+    {
+        var count = GetPoolCount(poolKey);
+        Debug.Log($"Pool {poolKey} has {count} objects.");
+    }
     #endregion
 }
 

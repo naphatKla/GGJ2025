@@ -6,7 +6,6 @@ public class ObjectPoolSpawnerService : ISpawnerService
     {
         return PoolManager.Instance.Spawn(prefab, position, rotation, parent, forceInstantiate);
     }
-
     public void Despawn(GameObject obj)
     {
         PoolManager.Instance.Despawn(obj);
@@ -15,5 +14,10 @@ public class ObjectPoolSpawnerService : ISpawnerService
     public void ClearPool(Transform parent)
     {
         PoolManager.Instance.ClearPool(parent);
+    }
+    
+    public int CountAvailable(GameObject prefab)
+    {
+        return PoolManager.Instance.GetPoolCount(prefab.name);
     }
 }

@@ -13,16 +13,17 @@ MonoBehaviour:
   m_Name: '[STAGE] Level-1'
   m_EditorClassIdentifier: 
   enemies:
-  - EnemyData: {fileID: 11400000, guid: b265bf836edd1ac4da7615dd3c48c4ac, type: 2}
+  - EnemyData: {fileID: 11400000, guid: e8bf0e8ec6b32e344a0ddff289ef5d98, type: 2}
     SpawnChance: 1
     PreObjectSpawn: 10
-  spawnEvent: []
+  spawnEvent:
+  - {fileID: 11400000, guid: 564a645afaa186c48895c58d22b1047c, type: 2}
   scoreQuota: 5000
   startMaxEnemySpawn: 10
   maxEnemySpawnCap: 20
   unitScoreQuota: 1000
   startSpawnInterval: 1
-  spawnIntervalCap: 0.5
+  spawnIntervalCap: 1
   decreaseSpawnInterval: 0.1
   eventIntervalCheck: 3
   background: {fileID: 0}

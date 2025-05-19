@@ -55,7 +55,7 @@ namespace Characters.HeathSystems
         /// The parameter is the GameObject of the character that died,
         /// allowing external systems (e.g., spawners) to handle cleanup or respawn logic.
         /// </summary>
-        public Action<GameObject> OnThisCharacterDead { get; set; }
+        public Action OnThisCharacterDead { get; set; }
 
         /// <summary>
         /// Event triggered when the invincibility state changes.
@@ -146,7 +146,7 @@ namespace Characters.HeathSystems
         {
             if (_isDead) return;
             _isDead = true;
-            OnThisCharacterDead?.Invoke(gameObject);
+            OnThisCharacterDead?.Invoke();
             gameObject.SetActive(false);
         }
 

@@ -77,6 +77,11 @@ namespace Manager
         /// <summary>
         /// Indicates a previously triggered feedback should stop.
         /// </summary>
-        StopFeedback
+        StopFeedback,
+        
+        /// <summary>
+        /// Despawn Enemy
+        /// </summary>
+        DespawnEnemy
     }
 }

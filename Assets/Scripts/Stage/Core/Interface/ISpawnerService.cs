@@ -16,4 +16,11 @@ public interface ISpawnerService
     /// Clears all pooled objects under a parent.
     /// </summary>
     void ClearPool(Transform parent);
+
+    /// <summary>
+    /// Count prefab in pool
+    /// </summary>
+    /// <param name="prefab"></param>
+    /// <returns></returns>
+    int CountAvailable(GameObject prefab);
 }
