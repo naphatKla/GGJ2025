@@ -1,5 +1,4 @@
 using Characters.SO.CollectableItemDataSO;
-using UnityEngine;
 
 namespace Characters.CollectItemSystems.CollectableItems
 {

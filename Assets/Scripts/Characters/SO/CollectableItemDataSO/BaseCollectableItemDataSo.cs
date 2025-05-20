@@ -7,67 +7,70 @@ using UnityEngine;
 namespace Characters.SO.CollectableItemDataSO
 {
     /// <summary>
-    /// 
+    /// Abstract base class for collectable item data used via ScriptableObject.
+    /// Defines visual presentation and pulling behavior, along with the runtime class type for instantiation.
     /// </summary>
     public abstract class BaseCollectableItemDataSo : SerializedScriptableObject
     {
         #region Inspector & Variables
         
         [Title("Item Preview")]
+        
         [PreviewField(Alignment = ObjectFieldAlignment.Center, Height = 128)]
         [HideLabel, Space(10)]
-        [PropertyTooltip(" ")]
+        [PropertyTooltip("Sprite preview shown in the editor for visual reference.")]
         [SerializeField]
         private Sprite icon;
-        
-        // duration use to move to picker 
+
         [Title("Pull Settings")]
-        
-        [PropertyTooltip("")] [PropertyOrder(9999)]
-        [SerializeField] private float pullDuration = 0.5f;
-        
-        // move ease
-        [PropertyTooltip("")] [PropertyOrder(9999)]
-        [SerializeField] private AnimationCurve pullEase;
-        
-        // movement curve
-        [PropertyTooltip("")] [PropertyOrder(9999)]
-        [SerializeField] private AnimationCurve pullCurve;
-        
-        // ---------------- Runtime Binding ----------------
+
+        [PropertyTooltip("Duration (in seconds) it takes for the item to reach the collector.")]
+        [PropertyOrder(9999)]
+        [SerializeField] 
+        private float pullDuration = 0.5f;
+
+        [PropertyTooltip("AnimationCurve controlling the pull easing over time.")]
+        [PropertyOrder(9999)]
+        [SerializeField] 
+        private AnimationCurve pullEase;
+
+        [PropertyTooltip("Optional movement curve to control lateral or arcing motion.")]
+        [PropertyOrder(9999)]
+        [SerializeField] 
+        private AnimationCurve pullCurve;
 
         [Title("Runtime Binding")]
-        
-        [PropertyTooltip(" ")]
+
+        [PropertyTooltip("The runtime collectable class type associated with this data.")]
         [ShowInInspector, OdinSerialize, PropertyOrder(10000)]
         [TypeDrawerSettings(BaseType = typeof(BaseCollectableItem<>))]
         private Type _itemType;
 
         /// <summary>
-        /// 
+        /// The visual icon displayed for this item.
         /// </summary>
         public Sprite Icon => icon;
 
         /// <summary>
-        /// 
+        /// The time in seconds it takes for the item to reach its target when pulled.
         /// </summary>
         public float PullDuration => pullDuration;
-        
+
         /// <summary>
-        /// 
+        /// The movement curve used for sideways or arcing motion while pulling.
         /// </summary>
         public AnimationCurve PullCurve => pullCurve;
 
         /// <summary>
-        /// 
+        /// The easing curve that defines acceleration during the pull.
         /// </summary>
         public AnimationCurve PullEase => pullEase;
-        
+
         /// <summary>
-        /// 
+        /// The runtime MonoBehaviour type that implements this item.
         /// </summary>
         public Type ItemType => _itemType;
-        
+
         #endregion
     }
 }
