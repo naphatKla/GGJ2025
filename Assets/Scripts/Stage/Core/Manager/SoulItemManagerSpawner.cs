@@ -9,6 +9,8 @@ using MoreMountains.Tools;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
+#region Data Classes
+
 [Serializable]
 public class SoulData
 {
@@ -16,23 +18,25 @@ public class SoulData
     public float spawnChance;
 }
 
+#endregion
+
 public class SoulItemManagerSpawner : MMSingleton<SoulItemManagerSpawner>
 {
-    #region Inspectors & Fields
+    #region Inspector Fields
 
     [SerializeField, Tooltip("List of soul prefabs and their spawn chances.")]
     private List<SoulData> soulDataList = new();
 
-    [SerializeField, Tooltip("Parent transform for spawned oxygen objects.")]
+    [SerializeField, Tooltip("Parent transform for spawned soul objects.")]
     private Transform soulParent;
 
-    [SerializeField, Tooltip("If true, spawns the maximum number of oxygen objects on start.")]
+    [SerializeField, Tooltip("If true, spawns the maximum number of soul objects on start.")]
     private bool spawnMaximumOnStart;
 
-    [SerializeField, Tooltip("Maximum number of oxygen objects allowed in the scene.")]
+    [SerializeField, Tooltip("Maximum number of soul objects allowed in the scene.")]
     private int maxSpawn;
 
-    [SerializeField, Tooltip("Number of oxygen objects to spawn per tick.")]
+    [SerializeField, Tooltip("Number of soul objects to spawn per tick.")]
     private int spawnPerTick = 1;
 
     [SerializeField, Tooltip("Time interval between spawn ticks (in seconds).")]
@@ -41,30 +45,25 @@ public class SoulItemManagerSpawner : MMSingleton<SoulItemManagerSpawner>
     [SerializeField, Tooltip("Size of the spawn area (width and height).")]
     private Vector2 spawnSize = Vector2.zero;
 
-    /// <summary>
-    /// Total sum of spawn chances for all oxygen types.
-    /// </summary>
+    #endregion
+
+    #region Private Fields
+
+    /// <summary>Total sum of spawn chances for all soul types.</summary>
     private float _totalSpawnChance;
 
-    /// <summary>
-    /// List of currently active soul GameObjects.
-    /// </summary>
-    private readonly List<GameObject> _soulGO = new();
-    
-    /// <summary>
-    /// Look up for Gameobject with name
-    /// </summary>
+    /// <summary>List of currently active soul GameObjects.</summary>
+    private readonly HashSet<GameObject> _soulGO = new();
+
+    /// <summary>Lookup table for soul prefabs by name.</summary>
     private readonly Dictionary<string, GameObject> _soulPrefabLookup = new();
-    
-    /// <summary>
-    /// Cancellation token source for controlling spawning loop
-    /// </summary>
+
+    /// <summary>Cancellation token source for controlling spawning loop.</summary>
     private CancellationTokenSource _spawningCts;
-    
-    /// <summary>
-    /// Tracks if spawning is currently active
-    /// </summary>
+
+    /// <summary>Tracks if spawning is currently active.</summary>
     private bool _isSpawning;
+
     private readonly ISpawnerService _spawnerService = new ObjectPoolSpawnerService();
 
     #endregion
@@ -75,12 +74,9 @@ public class SoulItemManagerSpawner : MMSingleton<SoulItemManagerSpawner>
 
     #endregion
 
-    #region Unity Methods
-    
+    #region Unity Lifecycle
 
-    /// <summary>
-    /// Initializes the spawn manager, sets up the object pool, and starts spawning.
-    /// </summary>
+    /// <summary>Initializes the spawn manager, sets up the object pool, and starts spawning.</summary>
     private async UniTaskVoid Start()
     {
         SetupPool();
@@ -92,18 +88,14 @@ public class SoulItemManagerSpawner : MMSingleton<SoulItemManagerSpawner>
         await UniTask.Delay(TimeSpan.FromSeconds(1));
         await StartSpawningLoop();
     }
-    
-    /// <summary>
-    /// Cleans up cancellation token source on destroy
-    /// </summary>
+
+    /// <summary>Cleans up cancellation token source on destroy.</summary>
     private void OnDestroy()
     {
         ResetToken();
     }
-    
-    /// <summary>
-    /// Reset token
-    /// </summary>
+
+    /// <summary>Resets the spawning cancellation token.</summary>
     private void ResetToken()
     {
         _spawningCts?.Cancel();
@@ -111,9 +103,7 @@ public class SoulItemManagerSpawner : MMSingleton<SoulItemManagerSpawner>
         _spawningCts = null;
     }
 
-    /// <summary>
-    /// Draws a wireframe cube in the editor to visualize the spawn area.
-    /// </summary>
+    /// <summary>Draws a wireframe cube in the editor to visualize the spawn area.</summary>
     private void OnDrawGizmos()
     {
         if (soulParent == null) return;
@@ -124,15 +114,15 @@ public class SoulItemManagerSpawner : MMSingleton<SoulItemManagerSpawner>
 
     #endregion
 
-    #region Private Methods
+    #region Spawning Logic
 
-    /// <summary>
-    /// Sets up the object pool for all soul item.
-    /// </summary>
+    /// <summary>Sets up the object pool for all soul items.</summary>
     private void SetupPool()
     {
         foreach (var data in soulDataList)
+        {
             if (data.soulData != null)
+            {
                 for (var a = 0; a < maxSpawn; a++)
                 {
                     var go = new GameObject(data.soulData.name);
@@ -142,24 +132,22 @@ public class SoulItemManagerSpawner : MMSingleton<SoulItemManagerSpawner>
                     go.SetActive(false);
                     go.transform.parent = soulParent;
                     PoolManager.Instance.AddToPool(go);
-                    
-                    if (!_soulPrefabLookup.ContainsKey(data.soulData.name)) 
+
+                    if (!_soulPrefabLookup.ContainsKey(data.soulData.name))
                         _soulPrefabLookup[data.soulData.name] = go;
                 }
+            }
+        }
         CalculateTotalChance();
     }
 
-    /// <summary>
-    /// Calculates the total spawn chance from all soul data.
-    /// </summary>
+    /// <summary>Calculates the total spawn chance from all soul data.</summary>
     private void CalculateTotalChance()
     {
         _totalSpawnChance = soulDataList.Sum(data => data.spawnChance);
     }
 
-    /// <summary>
-    /// Spawns oxygen objects up to the maximum limit at random positions.
-    /// </summary>
+    /// <summary>Spawns soul objects up to the maximum limit at random positions.</summary>
     private void PreSpawnToMax()
     {
         for (var i = 0; i < maxSpawn; i++)
@@ -171,12 +159,7 @@ public class SoulItemManagerSpawner : MMSingleton<SoulItemManagerSpawner>
         }
     }
 
-    /// <summary>
-    /// Starts an asynchronous loop to spawn oxygen objects at regular intervals.
-    /// </summary>
-    /// <summary>
-    /// Starts an asynchronous loop to spawn oxygen objects at regular intervals.
-    /// </summary>
+    /// <summary>Starts an asynchronous loop to spawn soul objects at regular intervals.</summary>
     private async UniTask StartSpawningLoop()
     {
         _isSpawning = true;
@@ -203,10 +186,7 @@ public class SoulItemManagerSpawner : MMSingleton<SoulItemManagerSpawner>
         _isSpawning = false;
     }
 
-    /// <summary>
-    /// Selects a random soul Item based on spawn chance weights.
-    /// </summary>
-    /// <returns>The selected soul data.</returns>
+    /// <summary>Selects a random soul item based on spawn chance weights.</summary>
     private SoulData GetRandomSoul()
     {
         if (_totalSpawnChance <= 0) return soulDataList[0];
@@ -222,10 +202,7 @@ public class SoulItemManagerSpawner : MMSingleton<SoulItemManagerSpawner>
         return soulDataList[0];
     }
 
-    /// <summary>
-    /// Generates a random position within the spawn area.
-    /// </summary>
-    /// <returns>A random position vector.</returns>
+    /// <summary>Generates a random position within the spawn area.</summary>
     private Vector3 GetRandomPosition()
     {
         return new Vector3(
@@ -235,12 +212,7 @@ public class SoulItemManagerSpawner : MMSingleton<SoulItemManagerSpawner>
         ) + (soulParent?.position ?? Vector3.zero);
     }
 
-    /// <summary>
-    /// Spawns an oxygen object at the specified position and rotation.
-    /// </summary>
-    /// <param name="prefab">The oxygen prefab to spawn.</param>
-    /// <param name="position">The spawn position.</param>
-    /// <param name="rotation">The spawn rotation.</param>
+    /// <summary>Spawns a soul object at the specified position and rotation.</summary>
     private void SpawnSoul(string name, Vector3 position, Quaternion rotation)
     {
         if (string.IsNullOrEmpty(name)) return;
@@ -249,55 +221,45 @@ public class SoulItemManagerSpawner : MMSingleton<SoulItemManagerSpawner>
         _soulGO.Add(item);
     }
 
-    /// <summary>
-    /// Despawn soul
-    /// </summary>
-    /// <param name="soul"></param>
+    /// <summary>Despawns a soul object and removes it from the active list.</summary>
     public void DespawnSoul(GameObject soul)
     {
         PoolManager.Instance.Despawn(soul);
         _soulGO.Remove(soul);
     }
-    
+
     #endregion
 
-    #region Public Methods
+    #region Public Controls
 
-    /// <summary>
-    /// Despawns all active oxygen objects, clears the tracking list, and resets the pool.
-    /// </summary>
+    /// <summary>Despawns all active soul objects, clears the tracking list, and resets the pool.</summary>
     [FoldoutGroup("Soul Control"), Button(ButtonSizes.Large), GUIColor(1, 0, 0)]
     public void ClearAll()
     {
         foreach (var obj in _soulGO)
         {
             if (obj != null)
-            {
                 PoolManager.Instance.Despawn(obj);
-            }
         }
+
         _soulGO.Clear();
         _spawnerService.ClearPool(soulParent);
         SetupPool();
     }
-    
-    /// <summary>
-    /// Starts the spawning process
-    /// </summary>
+
+    /// <summary>Starts the spawning process.</summary>
     [FoldoutGroup("Soul Control"), Button(ButtonSizes.Large), GUIColor(0, 1, 0)]
     public void StartSpawning()
     {
         if (_isSpawning) return;
-        
+
         _spawningCts?.Cancel();
         _spawningCts?.Dispose();
         _spawningCts = new CancellationTokenSource();
         StartSpawningLoop().Forget();
     }
 
-    /// <summary>
-    /// Stops the spawning process
-    /// </summary>
+    /// <summary>Stops the spawning process.</summary>
     [FoldoutGroup("Soul Control"), Button(ButtonSizes.Large), GUIColor(1, 1, 0)]
     public void StopSpawning()
     {

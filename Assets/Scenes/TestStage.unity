@@ -431,7 +431,7 @@ MonoBehaviour:
   damageOnTouch: {fileID: 79440899}
   _feedbackSystem: {fileID: 79440898}
   characterData: {fileID: 11400000, guid: 177277e9c5cd29143b05e5f2f4d0bae0, type: 2}
-  comboSystem: {fileID: 0}
+  comboSystem: {fileID: 79440908}
 --- !u!212 &79440906
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -520,7 +520,7 @@ MonoBehaviour:
   scaleAmount: 1.2
   _comboNumber: 1
   _comboMultiplyer: 1
-  _comboTimeStart: 0
+  _comboTimeStart: 100
   comboToDecayRate:
     serializedVersion: 2
     m_Curve:
@@ -836,7 +836,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &751170097
 Transform:
   m_ObjectHideFlags: 0
