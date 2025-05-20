@@ -1,6 +1,8 @@
+using System;
 using Characters.MovementSystems;
 using Characters.SO.CollectableItemDataSO;
 using DG.Tweening;
+using GlobalSettings;
 using ProjectExtensions;
 using UnityEngine;
 
@@ -12,18 +14,20 @@ namespace Characters.CollectItemSystems.CollectableItems
     public abstract class BaseCollectableItem : MonoBehaviour
     {
         #region AbstractMethods
+
         /// <summary>
         /// 
         /// </summary>
         /// <param name="data"></param>
-        public abstract void AssignItemData(BaseCollectableItem data);
-        
+        public abstract void AssignItemData(BaseCollectableItemDataSo data);
+
         /// <summary>
         /// 
         /// </summary>
         /// <param name="target"></param>
-        public abstract void PullToTarget(Transform target);
-        
+        /// <param name="callback"></param>
+        public abstract void PullToTarget(Transform target, TweenCallback callback);
+
         /// <summary>
         /// 
         /// </summary>
@@ -40,12 +44,12 @@ namespace Characters.CollectItemSystems.CollectableItems
     public abstract class BaseCollectableItem<T> : BaseCollectableItem where T : BaseCollectableItemDataSo
     {
         #region Inspector & Variables
-        
+
         /// <summary>
         /// 
         /// </summary>
         protected T itemData;
-        
+
         /// <summary>
         /// 
         /// </summary>
@@ -60,7 +64,7 @@ namespace Characters.CollectItemSystems.CollectableItems
         /// 
         /// </summary>
         private CircleCollider2D _circleCollider2D;
-        
+
         /// <summary>
         /// 
         /// </summary>
@@ -70,7 +74,7 @@ namespace Characters.CollectItemSystems.CollectableItems
         /// 
         /// </summary>
         private Tween _pullingTween;
-        
+
         #endregion
 
         #region Abstract Methods
@@ -82,9 +86,9 @@ namespace Characters.CollectItemSystems.CollectableItems
         protected abstract void OnCollect(CollectItemSystem ownerSystem);
 
         #endregion
-        
+
         #region Methods
-        
+
         /// <summary>
         /// 
         /// </summary>
@@ -94,21 +98,32 @@ namespace Characters.CollectItemSystems.CollectableItems
             _circleCollider2D = gameObject.AddComponent<CircleCollider2D>();
             _rb2D = gameObject.AddComponent<Rigidbody2D>();
             rbMovementSystem = gameObject.AddComponent<RigidbodyMovementSystem>();
+
+            _circleCollider2D.isTrigger = true;
+            Collider2DSnapper.SnapPhysicsShape(_spriteRenderer, _circleCollider2D);
+            _rb2D.gravityScale = 0f;
+            _rb2D.constraints = RigidbodyConstraints2D.FreezeRotation;
+
+            int bitmask = CharacterGlobalSettings.Instance.CollectableItemLayerMask;
+
+            // set layer index from layer mask
+            for (int i = 0; i < 32; i++)
+            {
+                if ((bitmask & (1 << i)) != 0)
+                    gameObject.layer = i;
+            }
         }
-        
+
         /// <summary>
         /// 
         /// </summary>
         /// <param name="data"></param>
-        public override void AssignItemData(BaseCollectableItem data)
+        public override void AssignItemData(BaseCollectableItemDataSo data)
         {
             InitializeItem();
             itemData = data as T;
-            
+
             _spriteRenderer.sprite = itemData.Icon;
-            Collider2DSnapper.SnapPhysicsShape(_spriteRenderer, _circleCollider2D);
-            _rb2D.gravityScale = 0f;
-            _rb2D.constraints = RigidbodyConstraints2D.FreezeRotation;
         }
 
         /// <summary>
@@ -126,10 +141,13 @@ namespace Characters.CollectItemSystems.CollectableItems
         /// 
         /// </summary>
         /// <param name="target"></param>
-        public override void PullToTarget(Transform target)
+        /// <param name="callback"></param>
+        public override void PullToTarget(Transform target, TweenCallback callback)
         {
             if (_pullingTween.IsActive()) return;
-            _pullingTween = rbMovementSystem.TryMoveToTargetOverTime(target, itemData.PullDuration, itemData.PullEase, itemData.PullCurve);
+            _pullingTween = rbMovementSystem
+                .TryMoveToTargetOverTime(target, itemData.PullDuration, itemData.PullEase, itemData.PullCurve)
+                .OnComplete(callback);
         }
 
         /// <summary>
@@ -139,7 +157,7 @@ namespace Characters.CollectItemSystems.CollectableItems
         {
             _pullingTween?.Kill();
         }
-        
+
         #endregion
     }
 }

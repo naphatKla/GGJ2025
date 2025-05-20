@@ -1,4 +1,6 @@
 using Characters.CollectItemSystems.CollectableItems;
+using DG.Tweening;
+using GlobalSettings;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -9,13 +11,15 @@ namespace Characters.CollectItemSystems
         #region Inspector & Variables
         
         [PropertyTooltip("")]
-        [SerializeField] private float collectItemRadius;
-        
-        [PropertyTooltip("")]
         [SerializeField] private float pullItemRadius;
         
         [PropertyTooltip("")]
-        [SerializeField] private LayerMask collectLayer;
+        [SerializeField] private bool enableGizmos;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private LayerMask collectLayer => CharacterGlobalSettings.Instance.CollectableItemLayerMask;
         
         #endregion
 
@@ -26,17 +30,27 @@ namespace Characters.CollectItemSystems
         /// </summary>
         private void FixedUpdate()
         {
-            Collider2D[] objectsDetected = Physics2D.OverlapCircleAll(transform.position, collectItemRadius, collectLayer);
+            Collider2D[] objectsDetected = Physics2D.OverlapCircleAll(transform.position, pullItemRadius, collectLayer);
             
             foreach (Collider2D obj in objectsDetected)
             {
-                if (!TryGetComponent(out BaseCollectableItem item)) continue;
-                item.PullToTarget(transform);
-                if (Vector2.Distance(item.transform.position, transform.position) > collectItemRadius) continue;
-                CollectItem(item);
+                if (!obj.TryGetComponent(out BaseCollectableItem item)) continue;
+                item.PullToTarget(transform, () => CollectItem(item));
             }
         }
-        
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private void OnDrawGizmos()
+        {
+            if (!enableGizmos) return;
+
+            Vector3 position = transform.position;
+            Gizmos.color = new Color(0f, 0.6f, 1f, 0.25f); 
+            Gizmos.DrawWireSphere(position, pullItemRadius);
+        }
+
         #endregion
 
         #region Methods

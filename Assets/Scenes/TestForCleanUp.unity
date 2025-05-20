@@ -692,6 +692,7 @@ GameObject:
   - component: {fileID: 1537051330}
   - component: {fileID: 1537051329}
   - component: {fileID: 1537051331}
+  - component: {fileID: 1537051332}
   - component: {fileID: 1537051320}
   - component: {fileID: 1537051323}
   m_Layer: 7
@@ -961,12 +962,12 @@ MonoBehaviour:
     SerializationNodes:
     - Name: _feedbackList
       Entry: 7
-      Data: 0|System.Collections.Generic.Dictionary`2[[Characters.FeedbackSystem.FeedbackName,
+      Data: 0|System.Collections.Generic.Dictionary`2[[Characters.FeedbackSystems.FeedbackName,
         Assembly-CSharp],[MoreMountains.Feedbacks.MMF_Player, MoreMountains.Feedbacks]],
         mscorlib
     - Name: comparer
       Entry: 7
-      Data: 1|System.Collections.Generic.EnumEqualityComparer`1[[Characters.FeedbackSystem.FeedbackName,
+      Data: 1|System.Collections.Generic.EnumEqualityComparer`1[[Characters.FeedbackSystems.FeedbackName,
         Assembly-CSharp]], mscorlib
     - Name: 
       Entry: 12
@@ -998,6 +999,20 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
+--- !u!114 &1537051332
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1537051317}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1d29482e9b1ae7b48ba51f7683eddfad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pullItemRadius: 3
+  enableGizmos: 1
 --- !u!1001 &1290135693167089119
 PrefabInstance:
   m_ObjectHideFlags: 0

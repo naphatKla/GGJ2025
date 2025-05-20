@@ -7,6 +7,7 @@ namespace Characters.SO.CollectableItemDataSO
     public class SoulItemDataSo : BaseCollectableItemDataSo
     {
         //score to add
+        [Title("Soul Data")]
         [PropertyTooltip("")]
         [SerializeField] private int score;
 
