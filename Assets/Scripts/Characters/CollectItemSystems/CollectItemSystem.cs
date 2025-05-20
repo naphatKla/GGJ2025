@@ -1,9 +1,9 @@
-using CollectableItems;
+using Characters.CollectItemSystems.CollectableItems;
 using UnityEngine;
 
 namespace Characters.CollectItemSystems
 {
-    public class BaseController : MonoBehaviour
+    public class CollectItemSystem : MonoBehaviour
     {
         [SerializeField] private float collectItemRadius;
         [SerializeField] private float pullItemRadius;
@@ -24,7 +24,7 @@ namespace Characters.CollectItemSystems
 
         private void CollectItem(BaseCollectableItem item)
         {
-            //item?.OnCollect(this);            
+            item?.HandleOnCollect(this);          
         }
     }
 }

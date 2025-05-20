@@ -1,9 +1,8 @@
-using Characters.CollectItemSystems;
 using Characters.MovementSystems;
 using DG.Tweening;
 using UnityEngine;
 
-namespace CollectableItems
+namespace Characters.CollectItemSystems.CollectableItems
 {
     public abstract class BaseCollectableItem : MonoBehaviour
     {
@@ -17,15 +16,15 @@ namespace CollectableItems
         #region AbstractMethods
 
         public abstract void PullToTarget(Transform target);
-        protected abstract void OnCollect(BaseController baseController);
+        protected abstract void OnCollect(CollectItemSystem collectItemSystem);
 
         #endregion
 
         #region Methods
 
-        public virtual void HandleOnCollect(BaseController baseController)
+        public virtual void HandleOnCollect(CollectItemSystem collectItemSystem)
         {
-            OnCollect(baseController);
+            OnCollect(collectItemSystem);
             gameObject.SetActive(false);
             ResetCollectableItem();
         }
@@ -44,12 +43,12 @@ namespace CollectableItems
         
         public override void PullToTarget(Transform target)
         {
-            throw new System.NotImplementedException();
+           
         }
 
-        protected override void OnCollect(BaseController baseController)
+        protected override void OnCollect(CollectItemSystem collectItemSystem)
         {
-            throw new System.NotImplementedException();
+            
         }
     }
 }
