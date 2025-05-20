@@ -189,7 +189,6 @@ public class SoulItemManagerSpawner : MMSingleton<SoulItemManagerSpawner>
                     for (var i = 0; i < spawnPerTick && CanSpawnMore; i++)
                     {
                         var data = GetRandomSoul();
-                        Debug.Log(data);
                         var pos = GetRandomPosition();
                         SpawnSoul(data.soulData.name, pos, Quaternion.identity);
                     }

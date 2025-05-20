@@ -22,6 +22,11 @@ namespace Characters.SO.CollectableItemDataSO
         [SerializeField]
         private Sprite icon;
 
+        [Title("Details")]
+        [PropertyTooltip("Time (in seconds) before this item becomes collectible after being spawned.")]
+        [SerializeField]
+        private float pickupDelay = 0.5f;
+        
         [Title("Pull Settings")]
 
         [PropertyTooltip("Duration (in seconds) it takes for the item to reach the collector.")]
@@ -51,6 +56,12 @@ namespace Characters.SO.CollectableItemDataSO
         /// </summary>
         public Sprite Icon => icon;
 
+        /// <summary>
+        /// Time (in seconds) after spawning before this item can be picked up by a character.
+        /// Used to prevent immediate collection on spawn.
+        /// </summary>
+        public float PickupDelay => pickupDelay;
+        
         /// <summary>
         /// The time in seconds it takes for the item to reach its target when pulled.
         /// </summary>

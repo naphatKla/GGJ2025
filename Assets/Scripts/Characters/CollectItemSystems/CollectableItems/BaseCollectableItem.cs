@@ -1,6 +1,8 @@
 using System;
+using System.Collections;
 using Characters.MovementSystems;
 using Characters.SO.CollectableItemDataSO;
+using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using GlobalSettings;
 using ProjectExtensions;
@@ -88,8 +90,29 @@ namespace Characters.CollectItemSystems.CollectableItems
         /// </summary>
         private Tween _pullingTween;
 
+        /// <summary>
+        /// Flag indicating whether this item can currently be collected.
+        /// Set to false on spawn and enabled after the pickup delay expires.
+        /// </summary>
+        private bool _canCollect;
+
         #endregion
 
+        #region Unity Methods
+
+        /// <summary>
+        /// Called when the item is enabled in the scene.
+        /// Starts a delay timer before allowing collection, based on <see cref="itemData.PickupDelay"/>.
+        /// </summary>
+        private async void OnEnable()
+        {
+            await UniTask.WaitUntil(() => itemData != null);
+            await UniTask.WaitForSeconds(itemData.PickupDelay);
+            _canCollect = true;
+        }
+
+        #endregion
+        
         #region Abstract Methods
 
         /// <summary>
@@ -165,6 +188,7 @@ namespace Characters.CollectItemSystems.CollectableItems
         public override void PullToTarget(Transform target, TweenCallback callback)
         {
             if (_pullingTween.IsActive()) return;
+            if (!_canCollect) return;
 
             _pullingTween = rbMovementSystem
                 .TryMoveToTargetOverTime(target, itemData.PullDuration, itemData.PullEase, itemData.PullCurve)
@@ -177,6 +201,7 @@ namespace Characters.CollectItemSystems.CollectableItems
         public virtual void ResetItem()
         {
             _pullingTween?.Kill();
+            _canCollect = false;
         }
 
         #endregion
