@@ -187,6 +187,9 @@ namespace Characters.CollectItemSystems.CollectableItems
         /// <param name="callback">Callback executed when the pull completes.</param>
         public override void PullToTarget(Transform target, TweenCallback callback)
         {
+            if (Vector2.Distance(transform.position, target.position) <= 0.35f) // Pickup threshold
+                _pullingTween.Kill(true);
+                
             if (_pullingTween.IsActive()) return;
             if (!_canCollect) return;
 
