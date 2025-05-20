@@ -1,3 +1,4 @@
+using System;
 using Characters.MovementSystems;
 using Characters.SO.CollectableItemDataSO;
 using DG.Tweening;
@@ -13,6 +14,16 @@ namespace Characters.CollectItemSystems.CollectableItems
     /// </summary>
     public abstract class BaseCollectableItem : MonoBehaviour
     {
+        #region Inspector & Variables
+
+        /// <summary>
+        /// Event invoked when this item is collected by a collector.
+        /// The <see cref="GameObject"/> parameter represents the item GameObject that was collected.
+        /// </summary>
+        public Action<GameObject> OnThisItemCollected { get; set; }
+        
+        #endregion
+        
         #region AbstractMethods
 
         /// <summary>
@@ -140,6 +151,7 @@ namespace Characters.CollectItemSystems.CollectableItems
         public override void HandleOnCollect(CollectItemSystem ownerSystem)
         {
             OnCollect(ownerSystem);
+            OnThisItemCollected?.Invoke(gameObject);
             gameObject.SetActive(false);
             ResetItem();
         }

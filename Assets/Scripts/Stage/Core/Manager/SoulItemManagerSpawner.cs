@@ -138,6 +138,7 @@ public class SoulItemManagerSpawner : MMSingleton<SoulItemManagerSpawner>
                     var go = new GameObject(data.soulData.name);
                     var item = (BaseCollectableItem)go.AddComponent(data.soulData.ItemType);
                     item.AssignItemData(data.soulData);
+                    item.OnThisItemCollected += DespawnSoul;
                     go.SetActive(false);
                     go.transform.parent = soulParent;
                     PoolManager.Instance.AddToPool(go);
