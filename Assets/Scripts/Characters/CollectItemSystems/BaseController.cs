@@ -24,7 +24,7 @@ namespace Characters.CollectItemSystems
 
         private void CollectItem(BaseCollectableItem item)
         {
-            item?.OnCollect(this);            
+            //item?.OnCollect(this);            
         }
     }
 }

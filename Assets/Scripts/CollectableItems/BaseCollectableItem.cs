@@ -40,6 +40,16 @@ namespace CollectableItems
 
     public abstract class BaseCollectableItem<T> : BaseCollectableItem where T : BaseCollectableItemDataSo
     {
+        private T _itemData;
         
+        public override void PullToTarget(Transform target)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        protected override void OnCollect(BaseController baseController)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }
