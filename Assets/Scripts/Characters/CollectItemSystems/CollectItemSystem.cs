@@ -1,14 +1,29 @@
 using Characters.CollectItemSystems.CollectableItems;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace Characters.CollectItemSystems
 {
     public class CollectItemSystem : MonoBehaviour
     {
+        #region Inspector & Variables
+        
+        [PropertyTooltip("")]
         [SerializeField] private float collectItemRadius;
+        
+        [PropertyTooltip("")]
         [SerializeField] private float pullItemRadius;
+        
+        [PropertyTooltip("")]
         [SerializeField] private LayerMask collectLayer;
         
+        #endregion
+
+        #region Unity Methods
+        
+        /// <summary>
+        /// 
+        /// </summary>
         private void FixedUpdate()
         {
             Collider2D[] objectsDetected = Physics2D.OverlapCircleAll(transform.position, collectItemRadius, collectLayer);
@@ -21,10 +36,20 @@ namespace Characters.CollectItemSystems
                 CollectItem(item);
             }
         }
+        
+        #endregion
 
+        #region Methods
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="item"></param>
         private void CollectItem(BaseCollectableItem item)
         {
             item?.HandleOnCollect(this);          
         }
+        
+        #endregion
     }
 }
