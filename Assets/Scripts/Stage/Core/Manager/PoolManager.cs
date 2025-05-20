@@ -40,7 +40,15 @@ public class PoolManager
         obj.transform.SetParent(parent);
         return obj;
     }
+    
+    public void AddToPool(GameObject obj)
+    {
+        if (obj == null) return;
 
+        obj.SetActive(false);
+        var poolKey = obj.name;
+        _pools.GetOrAdd(poolKey, () => new Queue<GameObject>()).Enqueue(obj);
+    }
 
     /// <summary>
     ///     Returns a GameObject to the pool for reuse.
@@ -49,8 +57,7 @@ public class PoolManager
     public void Despawn(GameObject obj)
     {
         if (obj == null) return;
-
-        obj.SetActive(false);
+        if (obj.activeInHierarchy) { obj.SetActive(false); }
         var poolKey = obj.name.EndsWith("(Clone)") ? obj.name[..^7] : obj.name;
         _pools.GetOrAdd(poolKey, () => new Queue<GameObject>()).Enqueue(obj);
     }

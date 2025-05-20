@@ -2,31 +2,29 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using Characters.CollectItemSystems.CollectableItems;
+using Characters.SO.CollectableItemDataSO;
 using Cysharp.Threading.Tasks;
 using MoreMountains.Tools;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 [Serializable]
-public class OxygenDataNew
+public class SoulData
 {
-    public Oxygen oxygenPrefab;
-
-    /// <summary>
-    /// The probability weight for spawning this oxygen type.
-    /// </summary>
+    public BaseCollectableItemDataSo soulData;
     public float spawnChance;
 }
 
-public class OxygenSpawnManagerNew : MMSingleton<OxygenSpawnManagerNew>
+public class SoulItemManagerSpawner : MMSingleton<SoulItemManagerSpawner>
 {
     #region Inspectors & Fields
 
-    [SerializeField, Tooltip("List of oxygen prefabs and their spawn chances.")]
-    private List<OxygenDataNew> oxygenDataList = new();
+    [SerializeField, Tooltip("List of soul prefabs and their spawn chances.")]
+    private List<SoulData> soulDataList = new();
 
     [SerializeField, Tooltip("Parent transform for spawned oxygen objects.")]
-    private Transform oxygenParent;
+    private Transform soulParent;
 
     [SerializeField, Tooltip("If true, spawns the maximum number of oxygen objects on start.")]
     private bool spawnMaximumOnStart;
@@ -49,9 +47,14 @@ public class OxygenSpawnManagerNew : MMSingleton<OxygenSpawnManagerNew>
     private float _totalSpawnChance;
 
     /// <summary>
-    /// List of currently active oxygen GameObjects.
+    /// List of currently active soul GameObjects.
     /// </summary>
-    private readonly List<GameObject> _oxygenGO = new();
+    private readonly List<GameObject> _soulGO = new();
+    
+    /// <summary>
+    /// Look up for Gameobject with name
+    /// </summary>
+    private readonly Dictionary<string, GameObject> _soulPrefabLookup = new();
     
     /// <summary>
     /// Cancellation token source for controlling spawning loop
@@ -68,7 +71,7 @@ public class OxygenSpawnManagerNew : MMSingleton<OxygenSpawnManagerNew>
 
     #region Properties
 
-    private bool CanSpawnMore => _oxygenGO.Count < maxSpawn;
+    private bool CanSpawnMore => _soulGO.Count < maxSpawn;
 
     #endregion
 
@@ -113,10 +116,10 @@ public class OxygenSpawnManagerNew : MMSingleton<OxygenSpawnManagerNew>
     /// </summary>
     private void OnDrawGizmos()
     {
-        if (oxygenParent == null) return;
+        if (soulParent == null) return;
 
         Gizmos.color = Color.green;
-        Gizmos.DrawWireCube(oxygenParent.position, new Vector3(spawnSize.x, spawnSize.y, 0));
+        Gizmos.DrawWireCube(soulParent.position, new Vector3(spawnSize.x, spawnSize.y, 0));
     }
 
     #endregion
@@ -124,27 +127,33 @@ public class OxygenSpawnManagerNew : MMSingleton<OxygenSpawnManagerNew>
     #region Private Methods
 
     /// <summary>
-    /// Sets up the object pool for all oxygen prefabs.
+    /// Sets up the object pool for all soul item.
     /// </summary>
     private void SetupPool()
     {
-        foreach (var data in oxygenDataList)
-        {
-            if (data.oxygenPrefab != null)
-            {
-                PoolManager.Instance.PreWarm(data.oxygenPrefab.gameObject, maxSpawn, oxygenParent);
-            }
-        }
-
+        foreach (var data in soulDataList)
+            if (data.soulData != null)
+                for (var a = 0; a < maxSpawn; a++)
+                {
+                    var go = new GameObject(data.soulData.name);
+                    var item = (BaseCollectableItem)go.AddComponent(data.soulData.ItemType);
+                    item.AssignItemData(data.soulData);
+                    go.SetActive(false);
+                    go.transform.parent = soulParent;
+                    PoolManager.Instance.AddToPool(go);
+                    
+                    if (!_soulPrefabLookup.ContainsKey(data.soulData.name)) 
+                        _soulPrefabLookup[data.soulData.name] = go;
+                }
         CalculateTotalChance();
     }
 
     /// <summary>
-    /// Calculates the total spawn chance from all oxygen data.
+    /// Calculates the total spawn chance from all soul data.
     /// </summary>
     private void CalculateTotalChance()
     {
-        _totalSpawnChance = oxygenDataList.Sum(data => data.spawnChance);
+        _totalSpawnChance = soulDataList.Sum(data => data.spawnChance);
     }
 
     /// <summary>
@@ -155,9 +164,9 @@ public class OxygenSpawnManagerNew : MMSingleton<OxygenSpawnManagerNew>
         for (var i = 0; i < maxSpawn; i++)
         {
             if (!CanSpawnMore) break;
-            var data = GetRandomOxygen();
+            var data = GetRandomSoul();
             var pos = GetRandomPosition();
-            SpawnOxygen(data.oxygenPrefab.gameObject, pos, Quaternion.identity);
+            SpawnSoul(data.soulData.name, pos, Quaternion.identity);
         }
     }
 
@@ -178,9 +187,10 @@ public class OxygenSpawnManagerNew : MMSingleton<OxygenSpawnManagerNew>
                 {
                     for (var i = 0; i < spawnPerTick && CanSpawnMore; i++)
                     {
-                        var data = GetRandomOxygen();
+                        var data = GetRandomSoul();
+                        Debug.Log(data);
                         var pos = GetRandomPosition();
-                        SpawnOxygen(data.oxygenPrefab.gameObject, pos, Quaternion.identity);
+                        SpawnSoul(data.soulData.name, pos, Quaternion.identity);
                     }
                 }
                 await UniTask.Delay(TimeSpan.FromSeconds(timeTick), cancellationToken: _spawningCts.Token);
@@ -194,22 +204,22 @@ public class OxygenSpawnManagerNew : MMSingleton<OxygenSpawnManagerNew>
     }
 
     /// <summary>
-    /// Selects a random oxygen prefab based on spawn chance weights.
+    /// Selects a random soul Item based on spawn chance weights.
     /// </summary>
-    /// <returns>The selected oxygen data.</returns>
-    private OxygenDataNew GetRandomOxygen()
+    /// <returns>The selected soul data.</returns>
+    private SoulData GetRandomSoul()
     {
-        if (_totalSpawnChance <= 0) return oxygenDataList[0];
+        if (_totalSpawnChance <= 0) return soulDataList[0];
 
         var rand = UnityEngine.Random.Range(0f, _totalSpawnChance);
         var cum = 0f;
-        foreach (var data in oxygenDataList)
+        foreach (var data in soulDataList)
         {
             cum += data.spawnChance;
             if (rand <= cum)
                 return data;
         }
-        return oxygenDataList[0];
+        return soulDataList[0];
     }
 
     /// <summary>
@@ -222,7 +232,7 @@ public class OxygenSpawnManagerNew : MMSingleton<OxygenSpawnManagerNew>
             UnityEngine.Random.Range(-spawnSize.x / 2f, spawnSize.x / 2f),
             UnityEngine.Random.Range(-spawnSize.y / 2f, spawnSize.y / 2f),
             0f
-        ) + (oxygenParent?.position ?? Vector3.zero);
+        ) + (soulParent?.position ?? Vector3.zero);
     }
 
     /// <summary>
@@ -231,24 +241,22 @@ public class OxygenSpawnManagerNew : MMSingleton<OxygenSpawnManagerNew>
     /// <param name="prefab">The oxygen prefab to spawn.</param>
     /// <param name="position">The spawn position.</param>
     /// <param name="rotation">The spawn rotation.</param>
-    private void SpawnOxygen(GameObject prefab, Vector3 position, Quaternion rotation)
+    private void SpawnSoul(string name, Vector3 position, Quaternion rotation)
     {
-        if (prefab == null) return;
-        var obj = _spawnerService.Spawn(prefab, position, rotation, oxygenParent);
-        _oxygenGO.Add(obj);
+        if (string.IsNullOrEmpty(name)) return;
+        if (!_soulPrefabLookup.TryGetValue(name, out var prefab)) return;
+        var item = PoolManager.Instance.Spawn(prefab, position, rotation, soulParent);
+        _soulGO.Add(item);
     }
-    
+
     /// <summary>
-    /// Despawn Oxygen to pool and remove from list
+    /// Despawn soul
     /// </summary>
-    /// <param name="oxygen"></param>
-    public void DespawnOxygen(GameObject oxygen)
+    /// <param name="soul"></param>
+    public void DespawnSoul(GameObject soul)
     {
-        if (_oxygenGO.Contains(oxygen))
-        {
-            _oxygenGO.Remove(oxygen);
-            PoolManager.Instance.Despawn(oxygen);
-        }
+        PoolManager.Instance.Despawn(soul);
+        _soulGO.Remove(soul);
     }
     
     #endregion
@@ -258,25 +266,25 @@ public class OxygenSpawnManagerNew : MMSingleton<OxygenSpawnManagerNew>
     /// <summary>
     /// Despawns all active oxygen objects, clears the tracking list, and resets the pool.
     /// </summary>
-    [FoldoutGroup("Oxygen Control"), Button(ButtonSizes.Large), GUIColor(1, 0, 0)]
+    [FoldoutGroup("Soul Control"), Button(ButtonSizes.Large), GUIColor(1, 0, 0)]
     public void ClearAll()
     {
-        foreach (var obj in _oxygenGO)
+        foreach (var obj in _soulGO)
         {
             if (obj != null)
             {
                 PoolManager.Instance.Despawn(obj);
             }
         }
-        _oxygenGO.Clear();
-        _spawnerService.ClearPool(oxygenParent);
+        _soulGO.Clear();
+        _spawnerService.ClearPool(soulParent);
         SetupPool();
     }
     
     /// <summary>
     /// Starts the spawning process
     /// </summary>
-    [FoldoutGroup("Oxygen Control"), Button(ButtonSizes.Large), GUIColor(0, 1, 0)]
+    [FoldoutGroup("Soul Control"), Button(ButtonSizes.Large), GUIColor(0, 1, 0)]
     public void StartSpawning()
     {
         if (_isSpawning) return;
@@ -290,7 +298,7 @@ public class OxygenSpawnManagerNew : MMSingleton<OxygenSpawnManagerNew>
     /// <summary>
     /// Stops the spawning process
     /// </summary>
-    [FoldoutGroup("Oxygen Control"), Button(ButtonSizes.Large), GUIColor(1, 1, 0)]
+    [FoldoutGroup("Soul Control"), Button(ButtonSizes.Large), GUIColor(1, 1, 0)]
     public void StopSpawning()
     {
         if (!_isSpawning) return;
