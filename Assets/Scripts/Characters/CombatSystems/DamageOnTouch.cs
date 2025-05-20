@@ -1,3 +1,4 @@
+using Characters.Controllers;
 using Characters.HeathSystems;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -43,8 +44,9 @@ namespace Characters.CombatSystems
         private void OnTriggerEnter2D(Collider2D other)
         {
             if (!_isEnableDamage) return;
-            if (!other.TryGetComponent(out HealthSystem targetHealth)) return;
-            targetHealth.TakeDamage(_currentDamage);
+            if (!other.TryGetComponent(out HealthSystem targetHealth)) return; 
+            if (!TryGetComponent(out BaseController baseController)) return;
+            targetHealth.TakeDamage(_currentDamage, baseController);
         }
 
         #endregion

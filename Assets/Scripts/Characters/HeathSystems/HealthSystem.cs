@@ -1,4 +1,5 @@
 using System;
+using Characters.Controllers;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -43,7 +44,7 @@ namespace Characters.HeathSystems
         /// <summary>
         /// Event triggered when the character takes damage.
         /// </summary>
-        public Action OnTakeDamage { get; set; }
+        public Action<BaseController> OnTakeDamage { get; set; }
 
         /// <summary>
         /// Event triggered when the character heals.
@@ -83,12 +84,13 @@ namespace Characters.HeathSystems
         /// Prevents damage if the character is invincible or already dead.
         /// </summary>
         /// <param name="damage">The amount of damage to apply.</param>
-        public void TakeDamage(float damage)
+        /// <param name="attacker">The attacker base controller</param>>
+        public void TakeDamage(float damage, BaseController attacker)
         {
             if (_isInvincible) return;
             if (_isDead) return;
             ModifyHealth(-damage);
-            OnTakeDamage?.Invoke();
+            OnTakeDamage?.Invoke(attacker);
 
             if (_currentHealth <= 0)
             {
