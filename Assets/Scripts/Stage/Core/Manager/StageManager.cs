@@ -224,6 +224,8 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     private void ReloadStage()
     {
         ClearEnemies();
+        ResetQuota();
+        Timer.Instance.SetTimer(CurrentMap.stages[currentStageIndexInMap].TimerStage);
         _enemySpawner = new EnemySpawner(this, CurrentStage, regionSize, minDistanceFromPlayer);
         SetBackground(CurrentMap?.background);
     }
@@ -288,8 +290,6 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     public void SetMap(int mapIndex)
     {
         if (mapIndex < 0 || mapIndex >= mapDataList.Count) return;
-        ResetQuota();
-
         currentMapIndex = mapIndex;
         currentStageIndexInMap = 0;
         ReloadStage();
@@ -302,8 +302,6 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     public void NextMap()
     {
         if (mapDataList.Count == 0 || currentMapIndex >= mapDataList.Count - 1) return;
-        ResetQuota();
-
         currentMapIndex++;
         currentStageIndexInMap = 0;
         SetStageInMapWithDelay(currentStageIndexInMap);
@@ -318,11 +316,8 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     public void SetStageInMap(int stageIndex)
     {
         if (CurrentMap == null || stageIndex < 0 || stageIndex >= CurrentMap.stages.Count) return;
-        ResetQuota();
-
         currentStageIndexInMap = stageIndex;
         Timer.Instance.ResumeTimer();
-        Timer.Instance.SetTimer(CurrentMap.stages[stageIndex].TimerStage);
         ReloadStage();
         StartSpawning();
     }
@@ -334,11 +329,8 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     public async void SetStageInMapWithDelay(int stageIndex)
     {
         if (CurrentMap == null || stageIndex < 0 || stageIndex >= CurrentMap.stages.Count) return;
-        ResetQuota();
-        
         currentStageIndexInMap = stageIndex;
         ReloadStage();
-        Timer.Instance.SetTimer(CurrentMap.stages[currentStageIndexInMap].TimerStage);
         Timer.Instance.PauseTimer();
         await UniTask.Delay(TimeSpan.FromSeconds(delayNextStage));
         StartSpawning();
@@ -352,10 +344,7 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     public void NextStageInMap()
     {
         if (CurrentMap == null || currentStageIndexInMap >= CurrentMap.stages.Count - 1) return;
-        ResetQuota();
-        
         currentStageIndexInMap++;
-        Timer.Instance.SetTimer(CurrentMap.stages[currentStageIndexInMap].TimerStage);
         ReloadStage();
     }
     
@@ -366,11 +355,8 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     public async void NextStageWithDelay()
     {
         if (CurrentMap == null || currentStageIndexInMap >= CurrentMap.stages.Count - 1) return;
-        ResetQuota();
-        
         currentStageIndexInMap++;
         ReloadStage();
-        Timer.Instance.SetTimer(CurrentMap.stages[currentStageIndexInMap].TimerStage);
         Timer.Instance.PauseTimer();
         await UniTask.Delay(TimeSpan.FromSeconds(delayNextStage));
         StartSpawning();
