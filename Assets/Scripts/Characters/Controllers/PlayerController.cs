@@ -1,7 +1,3 @@
-using System;
-using UnityEngine;
-using Characters.ComboSystems;
-
 namespace Characters.Controllers
 {
     /// <summary>
@@ -11,8 +7,6 @@ namespace Characters.Controllers
     public class PlayerController : BaseController
     {
         #region Inspector & Variables
-        
-        [SerializeField] public ComboSystem comboSystem;
         
         /// <summary>
         /// A global static reference to the current player instance.

@@ -175,6 +175,7 @@ GameObject:
   - component: {fileID: 79440902}
   - component: {fileID: 79440901}
   - component: {fileID: 79440900}
+  - component: {fileID: 79440909}
   - component: {fileID: 79440899}
   - component: {fileID: 79440898}
   - component: {fileID: 79440897}
@@ -428,10 +429,11 @@ MonoBehaviour:
   skillSystem: {fileID: 79440901}
   healthSystem: {fileID: 79440902}
   statusEffectSystem: {fileID: 79440900}
+  combatSystem: {fileID: 79440909}
   damageOnTouch: {fileID: 79440899}
-  _feedbackSystem: {fileID: 79440898}
-  characterData: {fileID: 11400000, guid: 177277e9c5cd29143b05e5f2f4d0bae0, type: 2}
+  feedbackSystem: {fileID: 79440898}
   comboSystem: {fileID: 79440908}
+  characterData: {fileID: 11400000, guid: 177277e9c5cd29143b05e5f2f4d0bae0, type: 2}
 --- !u!212 &79440906
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -546,6 +548,18 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   comboMilestoneEvents: []
+--- !u!114 &79440909
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 79440894}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d393550483388384599d5d599e78be68, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &279661723
 GameObject:
   m_ObjectHideFlags: 0

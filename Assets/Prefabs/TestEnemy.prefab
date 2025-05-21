@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 8145196360709479149}
   - component: {fileID: 7216587496243282883}
   - component: {fileID: 92550686826700653}
+  - component: {fileID: 4709890271133192763}
   - component: {fileID: 3113999699197328836}
   - component: {fileID: 768242119974896492}
   - component: {fileID: 6056280964992648811}
@@ -111,8 +112,10 @@ MonoBehaviour:
   skillSystem: {fileID: 768242119974896492}
   healthSystem: {fileID: 3113999699197328836}
   statusEffectSystem: {fileID: 6056280964992648811}
+  combatSystem: {fileID: 4709890271133192763}
   damageOnTouch: {fileID: 8858836943072646866}
-  _feedbackSystem: {fileID: 5733554412123996507}
+  feedbackSystem: {fileID: 5733554412123996507}
+  comboSystem: {fileID: 0}
   characterData: {fileID: 11400000, guid: c1d07ea341b30b24fb5d44940eefa14e, type: 2}
 --- !u!114 &7216587496243282883
 MonoBehaviour:
@@ -140,6 +143,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enableGizmos: 1
   agent: {fileID: 5674830790872008389}
+--- !u!114 &4709890271133192763
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3040175372062831934}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d393550483388384599d5d599e78be68, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &3113999699197328836
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -214,12 +229,12 @@ MonoBehaviour:
     SerializationNodes:
     - Name: _feedbackList
       Entry: 7
-      Data: 0|System.Collections.Generic.Dictionary`2[[Characters.FeedbackSystem.FeedbackName,
+      Data: 0|System.Collections.Generic.Dictionary`2[[Characters.FeedbackSystems.FeedbackName,
         Assembly-CSharp],[MoreMountains.Feedbacks.MMF_Player, MoreMountains.Feedbacks]],
         mscorlib
     - Name: comparer
       Entry: 7
-      Data: 1|System.Collections.Generic.EnumEqualityComparer`1[[Characters.FeedbackSystem.FeedbackName,
+      Data: 1|System.Collections.Generic.EnumEqualityComparer`1[[Characters.FeedbackSystems.FeedbackName,
         Assembly-CSharp]], mscorlib
     - Name: 
       Entry: 12

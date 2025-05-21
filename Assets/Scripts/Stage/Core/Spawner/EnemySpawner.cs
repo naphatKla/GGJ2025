@@ -285,7 +285,7 @@ public class EnemySpawner
         if (enemyObj == null || !enemyObj.TryGetComponent(out EnemyController enemyController)) return;
 
         enemies.Add(enemyController);
-        enemyController.HealthSystem.OnThisCharacterDead += () => DespawnEnemy(enemyController);
+        enemyController.HealthSystem.OnDead += () => DespawnEnemy(enemyController);
         OnEnemySpawned?.Invoke(enemyController);
     }
 
@@ -315,7 +315,7 @@ public class EnemySpawner
 
         if (!enemyObj.TryGetComponent(out EnemyController enemyController)) return;
         enemies.Add(enemyController);
-        enemyController.HealthSystem.OnThisCharacterDead += () => DespawnEnemy(enemyController);
+        enemyController.HealthSystem.OnDead += () => DespawnEnemy(enemyController);
         OnEnemySpawned?.Invoke(enemyController);
     }
 
@@ -325,7 +325,7 @@ public class EnemySpawner
     public void DespawnEnemy(EnemyController enemy)
     {
         if (!enemies.Contains(enemy)) return;
-        enemy.HealthSystem.OnThisCharacterDead -= () => DespawnEnemy(enemy);
+        enemy.HealthSystem.OnDead -= () => DespawnEnemy(enemy);
         enemy.ResetAllDependentBehavior();
         enemies.Remove(enemy);
         _spawnerService.Despawn(enemy.gameObject);

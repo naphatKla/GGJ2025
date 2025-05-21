@@ -1,4 +1,5 @@
 using Characters.CombatSystems;
+using Characters.ComboSystems;
 using Characters.FeedbackSystems;
 using Characters.HeathSystems;
 using Characters.InputSystems.Interface;
@@ -6,6 +7,7 @@ using Characters.MovementSystems;
 using Characters.SkillSystems;
 using Characters.SO.CharacterDataSO;
 using Characters.StatusEffectSystems;
+using Sirenix.OdinInspector;
 using Sirenix.Serialization;
 using UnityEngine;
 
@@ -24,6 +26,7 @@ namespace Characters.Controllers
         /// Reference to the movement system used to control character motion.
         /// Should be assigned via Inspector or at runtime.
         /// </summary>
+        [Title("Dependents")]
         [SerializeField] private BaseMovementSystem movementSystem;
 
         /// <summary>
@@ -45,6 +48,12 @@ namespace Characters.Controllers
         [SerializeField] private StatusEffectSystem statusEffectSystem;
 
         /// <summary>
+        /// Reference to the combat system.
+        /// Should be assigned via Inspector or at runtime.
+        /// </summary>
+        [SerializeField] private CombatSystem combatSystem;
+
+        /// <summary>
         /// Reference to the Damage on touch system.
         /// Should be assigned via Inspector or at runtime.
         /// </summary>
@@ -54,11 +63,18 @@ namespace Characters.Controllers
         /// Reference to the feedback system
         /// Should be assigned via Inspector or at runtime.
         /// </summary>
-        [SerializeField] private FeedbackSystem _feedbackSystem;
+        [SerializeField] private FeedbackSystem feedbackSystem;
+        
+        /// <summary>
+        /// Reference to the combo system
+        /// Should be assigned via Inspector or at runtime.
+        /// </summary>
+        [SerializeField] public ComboSystem comboSystem;
 
         /// <summary>
         /// ScriptableObject containing base character stats used to initialize systems.
         /// </summary>
+        [Title("Data")]
         [SerializeField] private CharacterDataSo characterData;
 
         /// <summary>
@@ -90,7 +106,7 @@ namespace Characters.Controllers
         /// Reference to the feedback system
         /// Should be assigned via Inspector or at runtime.
         /// </summary>
-        public FeedbackSystem FeedbackSystem => _feedbackSystem;
+        public FeedbackSystem FeedbackSystem => feedbackSystem;
 
         #endregion
 
@@ -105,7 +121,7 @@ namespace Characters.Controllers
             skillSystem.Initialize(this);
             movementSystem?.AssignMovementData(characterData.BaseSpeed, characterData.MoveAccelerationRate, characterData.TurnAccelerationRate);
             healthSystem?.AssignHealthData(characterData.MaxHealth);
-            damageOnTouch?.AssignDamageOnTouchData(characterData.BaseDamage);
+            combatSystem?.AssignCombatData(characterData.BaseDamage);
         }
 
         /// <summary>
@@ -123,6 +139,9 @@ namespace Characters.Controllers
 
             ToggleMovementInputController(true);
             ToggleSkillInputController(true);
+            
+            if (!comboSystem) return;
+            combatSystem.OnDealDamage += comboSystem.RegisterHit;
         }
 
         /// <summary>
@@ -133,6 +152,9 @@ namespace Characters.Controllers
         {
             ToggleMovementInputController(false);
             ToggleSkillInputController(false);
+            
+            if (!comboSystem) return;
+            combatSystem.OnDealDamage -= comboSystem.RegisterHit;
         }
 
         #endregion

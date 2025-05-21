@@ -91,8 +91,7 @@ namespace Characters.ComboSystems
         /// <summary>
         /// Registers a hit from a valid target and updates combo state.
         /// </summary>
-        /// <param name="target">The hit target.</param>
-        public void RegisterHit(BaseController target)
+        public void RegisterHit()
         {
             if (!_IsCombo)
                 OnComboStart();

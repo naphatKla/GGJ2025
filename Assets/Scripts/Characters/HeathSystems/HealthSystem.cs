@@ -44,7 +44,7 @@ namespace Characters.HeathSystems
         /// <summary>
         /// Event triggered when the character takes damage.
         /// </summary>
-        public Action<BaseController> OnTakeDamage { get; set; }
+        public Action OnTakeDamage { get; set; }
 
         /// <summary>
         /// Event triggered when the character heals.
@@ -53,10 +53,8 @@ namespace Characters.HeathSystems
 
         /// <summary>
         /// Event triggered when this character dies.
-        /// The parameter is the GameObject of the character that died,
-        /// allowing external systems (e.g., spawners) to handle cleanup or respawn logic.
         /// </summary>
-        public Action OnThisCharacterDead { get; set; }
+        public Action OnDead { get; set; }
 
         /// <summary>
         /// Event triggered when the invincibility state changes.
@@ -84,18 +82,20 @@ namespace Characters.HeathSystems
         /// Prevents damage if the character is invincible or already dead.
         /// </summary>
         /// <param name="damage">The amount of damage to apply.</param>
-        /// <param name="attacker">The attacker base controller</param>>
-        public void TakeDamage(float damage, BaseController attacker)
+        /// <returns>Is this entity indeed take damage or not</returns>
+        public bool TakeDamage(float damage)
         {
-            if (_isInvincible) return;
-            if (_isDead) return;
+            if (_isInvincible) return false;
+            if (_isDead) return false;
             ModifyHealth(-damage);
-            OnTakeDamage?.Invoke(attacker);
+            OnTakeDamage?.Invoke();
 
             if (_currentHealth <= 0)
             {
                 Dead();
             }
+
+            return true;
         }
 
         /// <summary>
@@ -148,7 +148,7 @@ namespace Characters.HeathSystems
         {
             if (_isDead) return;
             _isDead = true;
-            OnThisCharacterDead?.Invoke();
+            OnDead?.Invoke();
             gameObject.SetActive(false);
         }
 
