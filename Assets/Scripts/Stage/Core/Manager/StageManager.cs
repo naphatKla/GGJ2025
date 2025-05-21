@@ -306,6 +306,7 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
 
         currentMapIndex++;
         currentStageIndexInMap = 0;
+        SetStageInMapWithDelay(currentStageIndexInMap);
         ReloadStage();
     }
 
