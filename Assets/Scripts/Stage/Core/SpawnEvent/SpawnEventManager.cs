@@ -19,7 +19,7 @@ public class SpawnEventManager
     private readonly ISpawnerService _spawnerService;
     
     private float _currentTime => Timer.Instance.GlobalTimer;
-    private float _killTrigger;
+    private float _killTrigger => _spawnerView.GetPlayerKill();
     private readonly Dictionary<ISpawnEvent, int> _timerTriggerIndices = new();
     private readonly Dictionary<ISpawnEvent, int> _killTriggerIndices = new();
 
@@ -172,14 +172,5 @@ public class SpawnEventManager
         if (_availableEventsPool.Count == 0) return null;
         return _availableEventsPool[Random.Range(0, _availableEventsPool.Count)];
     }
-    
-    /// <summary>
-    /// Update kill count
-    /// </summary>
-    public void UpdateKillCount()
-    {
-        _killTrigger += 1;
-    }
-
     #endregion
 }

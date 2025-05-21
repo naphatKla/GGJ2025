@@ -31,6 +31,7 @@ public class Timer : MMSingleton<Timer>
     public void ResetTimer() => currentTimer = startTimer;
     public void TogglePause() => isPaused = !isPaused;
     public bool IsPaused() => isPaused;
+    public void SetTimer(float timer) { startTimer = timer; ResetTimer(); }
     
     #endregion
 
@@ -63,10 +64,8 @@ public class Timer : MMSingleton<Timer>
                         break;
                     }
                 }
-
-                UpdateUIText();
             }
-
+            UpdateUIText();
             await UniTask.Yield();
         }
     }

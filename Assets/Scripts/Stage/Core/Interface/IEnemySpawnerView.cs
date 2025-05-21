@@ -27,9 +27,9 @@ public interface IEnemySpawnerView
     void SetBackground(Sprite sprite);
 
     /// <summary>
-    /// Gets the player's current score.
+    /// Gets the player's current kill count.
     /// </summary>
-    float GetPlayerScore();
+    float GetPlayerKill();
     
     /// <summary>
     /// Get region size

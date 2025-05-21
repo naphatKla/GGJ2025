@@ -22,8 +22,11 @@ public class EnemySpawner
     // Spawn state and progression tracking
     private ISpawnState _currentState;
     private float _totalEnemySpawnChance;
-    private float _nextUnitScoreQuota;
-    private float _nextIntervalScoreQuota;
+    private float _nextUnitKillQuota;
+    private float _nextIntervalKillQuota;
+    private float _killCount;
+    private int _addMaxEnemySpawn;
+    private float _removeIntervalEnemySpawn;
 
     // Spawning interface
     private readonly ISpawnerService _spawnerService = new ObjectPoolSpawnerService();
@@ -35,11 +38,17 @@ public class EnemySpawner
 
     #region Properties
 
+    public float DebugNextIntervalStartMax => _nextIntervalKillQuota;
+    public float DebugNextKillStartMax => _nextUnitKillQuota;
+
     // Current delay between normal spawns
     public float CurrentSpawnInterval { get; private set; }
 
     // Limit of how many enemies can be alive at once
     public int CurrentMaxEnemySpawn { get; private set; }
+    
+    // Kill count from enemy despawn
+    public float CurrentKillCount => _killCount;
 
     // Time between event trigger checks
     public float EventIntervalCheck => _stageData.EventIntervalCheck;
@@ -65,8 +74,10 @@ public class EnemySpawner
         CurrentSpawnInterval = stageData.EnemySpawnInterval;
         CurrentMaxEnemySpawn = stageData.CurrentMaxEnemySpawn;
 
-        _nextUnitScoreQuota = stageData.UnitScoreQuota;
-        _nextIntervalScoreQuota = stageData.DecreaseSpawnInterval;
+        _nextUnitKillQuota = stageData.SpawnKillQuota;
+        _nextIntervalKillQuota = stageData.IntervalKillQuota;
+        _addMaxEnemySpawn = stageData.AddMaxEnemySpawn;
+        _removeIntervalEnemySpawn = stageData.RemoveIntervalEnemySpawn;
 
         _spawnEventManager = new SpawnEventManager(view, stageData, regionSize, minDistanceFromPlayer, _spawnerService);
 
@@ -150,24 +161,32 @@ public class EnemySpawner
     {
         _spawnEventManager.TriggerSpawnEvent(bypassCooldown, noChance);
     }
+    
+    /// <summary>
+    /// Reset quota
+    /// </summary>
+    public void ResetQuota()
+    {
+        _killCount = 0;
+    }
 
     /// <summary>
     /// Increase max enemies and reduce delay based on score.
     /// </summary>
     public void UpdateQuota()
     {
-        var score = _spawnerView.GetPlayerScore();
+        var killCount = _spawnerView.GetPlayerKill();
 
-        if (score >= _nextUnitScoreQuota)
+        if (killCount >= _nextUnitKillQuota)
         {
-            CurrentMaxEnemySpawn = Mathf.Clamp(CurrentMaxEnemySpawn + 1, 1, _stageData.MaxEnemySpawnCap);
-            _nextUnitScoreQuota += _stageData.UnitScoreQuota;
+            CurrentMaxEnemySpawn = Mathf.Clamp(CurrentMaxEnemySpawn + _addMaxEnemySpawn, 1, _stageData.MaxEnemySpawnCap);
+            _nextUnitKillQuota += _stageData.KillQuota;
         }
 
-        if (score >= _nextIntervalScoreQuota)
+        if (killCount >= _nextIntervalKillQuota)
         {
-            CurrentSpawnInterval = Mathf.Clamp(CurrentSpawnInterval - 0.1f, _stageData.SpawnIntervalCap, CurrentSpawnInterval);
-            _nextIntervalScoreQuota += _stageData.DecreaseSpawnInterval;
+            CurrentSpawnInterval = Mathf.Clamp(CurrentSpawnInterval - _removeIntervalEnemySpawn, _stageData.SpawnIntervalCap, CurrentSpawnInterval);
+            _nextIntervalKillQuota += _stageData.IntervalKillQuota;
         }
     }
 
@@ -328,9 +347,9 @@ public class EnemySpawner
         enemy.HealthSystem.OnDead -= () => DespawnEnemy(enemy);
         enemy.ResetAllDependentBehavior();
         enemies.Remove(enemy);
-        _spawnerService.Despawn(enemy.gameObject);
         OnEnemyDespawned?.Invoke(enemy);
-        _spawnEventManager.UpdateKillCount();
+        _spawnerService.Despawn(enemy.gameObject);
+        _killCount += 1;
     }
 
     /// <summary>
