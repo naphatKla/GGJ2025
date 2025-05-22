@@ -1,5 +1,6 @@
 using Sirenix.OdinInspector;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Characters.SO.CharacterDataSO
 {
@@ -11,9 +12,9 @@ namespace Characters.SO.CharacterDataSO
         [Title("Health Data", TitleAlignment = TitleAlignments.Centered)]
         [PropertyTooltip("The maximum health value the character can have.")]
         [SerializeField] private float maxHealth;
-
+        
         [Title("Movement Data", TitleAlignment = TitleAlignments.Centered)]
-        [PropertyTooltip("The base movement speed of the character when moving at full speed.")]
+        [PropertyTooltip("The base movement speed of the character when moving at full speed. (Units/Sec)")]
         [SerializeField] private float baseSpeed;
         
         [SerializeField]

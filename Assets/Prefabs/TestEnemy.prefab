@@ -12,15 +12,15 @@ GameObject:
   - component: {fileID: 6182622400446059026}
   - component: {fileID: 8145196360709479149}
   - component: {fileID: 7216587496243282883}
-  - component: {fileID: 92550686826700653}
+  - component: {fileID: 5786243850421512531}
   - component: {fileID: 4709890271133192763}
   - component: {fileID: 3113999699197328836}
   - component: {fileID: 768242119974896492}
   - component: {fileID: 6056280964992648811}
   - component: {fileID: 8858836943072646866}
   - component: {fileID: 5733554412123996507}
-  - component: {fileID: 5674830790872008389}
   - component: {fileID: 7555251926067326273}
+  - component: {fileID: 8811412802831875570}
   m_Layer: 6
   m_Name: TestEnemy
   m_TagString: Enemy
@@ -108,7 +108,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f56f9737ba3e1984996fe769767e6c07, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  movementSystem: {fileID: 92550686826700653}
+  movementSystem: {fileID: 5786243850421512531}
   skillSystem: {fileID: 768242119974896492}
   healthSystem: {fileID: 3113999699197328836}
   statusEffectSystem: {fileID: 6056280964992648811}
@@ -129,7 +129,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b45c1e1fc5d14514a8e89bb64c1eb42f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &92550686826700653
+--- !u!114 &5786243850421512531
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -138,11 +138,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 3040175372062831934}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: afe279c1694039b478730879ae1c39f1, type: 3}
+  m_Script: {fileID: 11500000, guid: 6a5456e4aae07a24387ac324ba9fb272, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enableGizmos: 1
-  agent: {fileID: 5674830790872008389}
+  enableGizmos: 0
+  rb2D: {fileID: 0}
 --- !u!114 &4709890271133192763
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -266,28 +266,6 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
---- !u!195 &5674830790872008389
-NavMeshAgent:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3040175372062831934}
-  m_Enabled: 1
-  m_AgentTypeID: 0
-  m_Radius: 0.5
-  m_Speed: 3.5
-  m_Acceleration: 8
-  avoidancePriority: 50
-  m_AngularSpeed: 120
-  m_StoppingDistance: 0
-  m_AutoTraverseOffMeshLink: 1
-  m_AutoBraking: 1
-  m_AutoRepath: 1
-  m_Height: 1
-  m_BaseOffset: 0
-  m_WalkableMask: 4294967295
-  m_ObstacleAvoidanceType: 4
 --- !u!61 &7555251926067326273
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -333,6 +311,33 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!50 &8811412802831875570
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3040175372062831934}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 1
+  m_SleepingMode: 1
+  m_CollisionDetection: 1
+  m_Constraints: 4
 --- !u!1 &3402418623213190331
 GameObject:
   m_ObjectHideFlags: 0

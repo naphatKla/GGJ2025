@@ -77,7 +77,8 @@ namespace Characters.InputSystems
                 Vector2 sightDirection = (PlayerController.Instant.transform.position - transform.position).normalized;
 
                 // Simulate inputs
-                OnMove?.Invoke(PlayerController.Instant.transform.position);
+                Vector2 playerDirection = PlayerController.Instant.transform.position - transform.position;
+                OnMove?.Invoke(playerDirection.normalized);
                 OnPrimarySkillPerform?.Invoke(sightDirection);
                 OnSecondarySkillPerform?.Invoke(sightDirection);
             }

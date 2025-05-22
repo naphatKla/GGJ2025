@@ -11,7 +11,7 @@ namespace Characters.InputSystems.Interface
     {
         /// <summary>
         /// Invoked when a movement input is received.
-        /// The Vector2 parameter represents the movement direction or position.
+        /// The Vector2 parameter represents the movement direction
         /// </summary>
         Action<Vector2> OnMove { get; set; }
 

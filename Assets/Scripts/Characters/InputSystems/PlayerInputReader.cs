@@ -40,7 +40,7 @@ namespace Characters.InputSystems
         /// <summary>
         /// Stores the current movement input direction.
         /// </summary>
-        private Vector2 _movePosition;
+        private Vector2 _mousePosition;
 
         /// <summary>
         /// Stores the aiming or sight direction based on player input.
@@ -69,7 +69,8 @@ namespace Characters.InputSystems
         
         private void FixedUpdate()
         {
-            OnMove?.Invoke(_movePosition);
+            Vector2 moveDirection = _mousePosition - (Vector2)transform.position;
+            OnMove?.Invoke(moveDirection.normalized);
         }
 
         #endregion
@@ -82,7 +83,7 @@ namespace Characters.InputSystems
         /// <param name="context">The input action context containing movement data.</param>
         public void OnMovement(InputAction.CallbackContext context)
         {
-            _movePosition = Camera.main.ScreenToWorldPoint(context.ReadValue<Vector2>());
+            _mousePosition = Camera.main.ScreenToWorldPoint(context.ReadValue<Vector2>());
         }
 
         /// <summary>
@@ -93,7 +94,7 @@ namespace Characters.InputSystems
         public void OnUsePrimarySkill(InputAction.CallbackContext context)
         {
             if (!context.performed) return;
-            _sightDirection = (_movePosition - (Vector2)transform.position).normalized;
+            _sightDirection = (_mousePosition - (Vector2)transform.position).normalized;
             OnPrimarySkillPerform?.Invoke(_sightDirection);
         }
 
@@ -105,7 +106,7 @@ namespace Characters.InputSystems
         public void OnUseSecondarySkill(InputAction.CallbackContext context)
         {
             if (!context.performed) return;
-            _sightDirection = (_movePosition - (Vector2)transform.position).normalized;
+            _sightDirection = (_mousePosition - (Vector2)transform.position).normalized;
             OnSecondarySkillPerform?.Invoke(_sightDirection);
         }
 

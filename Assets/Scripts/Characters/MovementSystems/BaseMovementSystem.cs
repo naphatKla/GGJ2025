@@ -1,4 +1,5 @@
 
+using System;
 using DG.Tweening;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -61,27 +62,10 @@ namespace Characters.MovementSystems
         protected Vector2 currentDirection;
 
         /// <summary>
-        /// Whether the movement system is currently transitioning from tween to normal movement.
-        /// Used for blending back to natural speed after a tween (e.g., dash).
+        /// 
         /// </summary>
-        protected bool isRecoveringFromTween = false;
-
-        /// <summary>
-        /// Internal timer used to track how long the post-tween blending has been active.
-        /// </summary>
-        protected float blendBackTimer = 0f;
-
-        /// <summary>
-        /// How long (in seconds) the tween recovery blend lasts.
-        /// The system interpolates velocity from tween speed back to normal speed over this period.
-        /// </summary>
-        protected float blendBackDuration = 0.15f;
-
-        /// <summary>
-        /// The final velocity at the end of the last tween, used for blending into inertia movement.
-        /// </summary>
-        protected Vector2 postTweenVelocity;
-
+        protected Vector2 inputDirection;
+        
         /// <summary>
         /// Determines whether the entity is allowed to move.
         /// If false, movement commands will be ignored.
@@ -95,6 +79,18 @@ namespace Characters.MovementSystems
         /// If a new tween is triggered, this one will be killed to avoid overlap.
         /// </summary>
         private Tween _moveOverTimeTween;
+        
+        #endregion
+
+        #region Unity Methods
+
+        /// <summary>
+        /// 
+        /// </summary>
+        protected void Update()
+        {
+            TryMoveWithInertia(Vector2.right);
+        }
 
         #endregion
 
@@ -113,16 +109,25 @@ namespace Characters.MovementSystems
         }
 
         /// <summary>
-        /// Attempts to apply inertia-based movement toward the given position if movement is currently allowed.
-        /// Commonly called by input systems or AI controllers to trigger motion with acceleration and turning behavior.
+        /// 
         /// </summary>
-        public virtual void TryMoveWithInertia(Vector2 position)
+        /// <param name="direction"></param>
+        public virtual void AssignInputDirection(Vector2 direction)
+        {
+            inputDirection = direction;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="direction"></param>
+        protected virtual void TryMoveWithInertia(Vector2 direction)
         {
             if (!_canMove) return;
             if (_moveOverTimeTween.IsActive()) return;
-            MoveWithInertia(position);
+            MoveWithInertia(direction);
         }
-
+        
         /// <summary>
         /// Attempts to move the raw position of the entity.
         /// </summary>
@@ -195,6 +200,37 @@ namespace Characters.MovementSystems
             ResetSpeedToDefault();
             SetCanMove(true);
         }
+        
+        RaycastHit2D CheckMultiRaycast(Vector2 from, Vector2 to, int rayCount = 3)
+        {
+            Vector2 dir = (to - from).normalized;
+            float dist = Vector2.Distance(from, to);
+
+            // Try get collider size
+            Vector2 perpOffset = Vector2.zero;
+            if (TryGetComponent<Collider2D>(out var col))
+            {
+                // ใช้ bound จาก collider และยิง perpendicular จากทิศการเคลื่อนที่
+                Vector2 perp = Vector2.Perpendicular(dir).normalized;
+                float extent = col.bounds.extents.y; // หรือ x แล้วแต่แนว
+
+                // ยิงหลายเส้นกระจายระยะ offset (เช่น -0.5, 0, +0.5)
+                for (int i = 0; i < rayCount; i++)
+                {
+                    float lerp = rayCount == 1 ? 0 : (float)i / (rayCount - 1); // 0 to 1
+                    float offsetAmount = Mathf.Lerp(-extent, extent, lerp);
+                    Vector2 offset = perp * offsetAmount;
+                    Vector2 origin = from + offset;
+
+                    RaycastHit2D hit = Physics2D.Raycast(origin, dir, dist, LayerMask.GetMask("Enemy"));
+                    Debug.DrawRay(origin, dir * dist, Color.red, 0.05f);
+
+                    if (hit.collider) return hit;
+                }
+            }
+
+            return default;
+        }
 
         #endregion
 
@@ -204,7 +240,7 @@ namespace Characters.MovementSystems
         /// Moves continuously toward the specified position with acceleration and inertia.
         /// Called in FixedUpdate for consistent physics-based updates.
         /// </summary>
-        protected abstract void MoveWithInertia(Vector2 position);
+        protected abstract void MoveWithInertia(Vector2 direction);
 
         /// <summary>
         /// Instantly moves the entity to the specified world-space position.

@@ -169,9 +169,9 @@ namespace Characters.Controllers
         public void ToggleMovementInputController(bool isToggle)
         {
             if (isToggle)
-                _inputSystem.OnMove += movementSystem.TryMoveWithInertia;
+                _inputSystem.OnMove += movementSystem.AssignInputDirection;
             else
-                _inputSystem.OnMove -= movementSystem.TryMoveWithInertia;
+                _inputSystem.OnMove -= movementSystem.AssignInputDirection;
         }
 
         /// <summary>
