@@ -89,7 +89,7 @@ namespace Characters.MovementSystems
         /// </summary>
         protected void Update()
         {
-            TryMoveWithInertia(Vector2.right);
+            TryMoveWithInertia(inputDirection);
         }
 
         #endregion
