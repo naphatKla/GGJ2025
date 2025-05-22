@@ -1,6 +1,7 @@
 
 using System;
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -84,14 +85,16 @@ namespace Characters.MovementSystems
         /// <summary>
         /// 
         /// </summary>
-        protected List<RaycastHit2D> objectContactThisFrame = new List<RaycastHit2D>();
+        protected HashSet<GameObject> objectContactThisFrame = new HashSet<GameObject>();
 
         /// <summary>
         /// 
         /// </summary>
         protected Vector2 bounceDirection;
-
-        public Action<List<GameObject>> OnContact { get; set; }
+        
+        protected bool shouldBounce = true;
+        
+        public Action<HashSet<GameObject>> OnContact { get; set; }
         
         #endregion
 
@@ -105,21 +108,20 @@ namespace Characters.MovementSystems
             if (inputDirection == Vector2.zero) return;
             TryMoveWithInertia(inputDirection);
         }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        protected void LateUpdate()
+        
+        private async void LateUpdate()
         {
             if (objectContactThisFrame.Count <= 0) return;
-            List<GameObject> contactObjs = new List<GameObject>();
-            foreach (var hit in objectContactThisFrame)
-            {
-                if (!hit) continue;
-                contactObjs.Add(hit.transform.gameObject);
-            }
-            OnContact.Invoke(contactObjs);
+            await UniTask.NextFrame(PlayerLoopTiming.LastPostLateUpdate);
+            OnContact?.Invoke(objectContactThisFrame);
             objectContactThisFrame.Clear();
+            bounceDirection = Vector2.zero;
+            Debug.Log("Reset");
+        }
+        
+        private void OnTriggerEnter2D(Collider2D other)
+        {
+            objectContactThisFrame.Add(other.gameObject);
         }
 
         #endregion
@@ -170,11 +172,10 @@ namespace Characters.MovementSystems
             RaycastHit2D objHitInWay = CastRaysFromSelfWithOffset(position, LayerMask.GetMask("Enemy"));
             if (objHitInWay)
             {
-                objectContactThisFrame.Add(objHitInWay);
+                objectContactThisFrame.Add(objHitInWay.transform.gameObject);
                 Vector2 incoming = currentVelocity.normalized;
                 Vector2 normal = objHitInWay.normal;
                 bounceDirection = Vector2.Reflect(incoming, normal);
-                return;
             }
             
             MoveToPosition(position);
