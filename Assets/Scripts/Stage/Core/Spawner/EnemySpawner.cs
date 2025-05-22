@@ -347,6 +347,7 @@ public class EnemySpawner
         enemy.HealthSystem.OnDead -= () => DespawnEnemy(enemy);
         enemy.ResetAllDependentBehavior();
         enemies.Remove(enemy);
+        PowerUpSpawnerManager.Instance.OnEnemyDefeated();
         OnEnemyDespawned?.Invoke(enemy);
         _spawnerService.Despawn(enemy.gameObject);
         _killCount += 1;
