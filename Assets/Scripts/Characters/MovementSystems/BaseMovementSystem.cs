@@ -89,6 +89,7 @@ namespace Characters.MovementSystems
         /// </summary>
         protected void Update()
         {
+            if (inputDirection == Vector2.zero) return;
             TryMoveWithInertia(inputDirection);
         }
 
@@ -125,12 +126,14 @@ namespace Characters.MovementSystems
         {
             if (!_canMove) return;
             if (_moveOverTimeTween.IsActive()) return;
+            if (currentSpeed == 0) return;
             MoveWithInertia(direction);
         }
         
         /// <summary>
-        /// Attempts to move the raw position of the entity.
+        /// 
         /// </summary>
+        /// <param name="position"></param>
         public virtual void TryMoveRawPosition(Vector2 position)
         {
             if (!_canMove) return;
@@ -201,29 +204,34 @@ namespace Characters.MovementSystems
             SetCanMove(true);
         }
         
-        RaycastHit2D CheckMultiRaycast(Vector2 from, Vector2 to, int rayCount = 3)
+        private RaycastHit2D CheckCollisionWithRayCast(Vector2 from, Vector2 to, int rayCount = 3, float extraDistance = 0.1f)
         {
             Vector2 dir = (to - from).normalized;
-            float dist = Vector2.Distance(from, to);
+            float dist = Vector2.Distance(from, to) + extraDistance;
 
-            // Try get collider size
-            Vector2 perpOffset = Vector2.zero;
             if (TryGetComponent<Collider2D>(out var col))
             {
-                // ใช้ bound จาก collider และยิง perpendicular จากทิศการเคลื่อนที่
-                Vector2 perp = Vector2.Perpendicular(dir).normalized;
-                float extent = col.bounds.extents.y; // หรือ x แล้วแต่แนว
+                Bounds bounds = col.bounds;
 
-                // ยิงหลายเส้นกระจายระยะ offset (เช่น -0.5, 0, +0.5)
+                // คำนวณระยะที่ collider ยื่นออกไปตามทิศทาง
+                Vector2 extent = bounds.extents;
+                float skin = Mathf.Abs(Vector2.Dot(dir, Vector2.right)) * extent.x +
+                             Mathf.Abs(Vector2.Dot(dir, Vector2.up)) * extent.y;
+
+                Vector2 perp = Vector2.Perpendicular(dir).normalized;
+                float perpExtent = Mathf.Abs(Vector2.Dot(perp, Vector2.right)) * extent.x +
+                                   Mathf.Abs(Vector2.Dot(perp, Vector2.up)) * extent.y;
+
                 for (int i = 0; i < rayCount; i++)
                 {
-                    float lerp = rayCount == 1 ? 0 : (float)i / (rayCount - 1); // 0 to 1
-                    float offsetAmount = Mathf.Lerp(-extent, extent, lerp);
+                    float lerp = rayCount == 1 ? 0f : (float)i / (rayCount - 1);
+                    float offsetAmount = Mathf.Lerp(-perpExtent, perpExtent, lerp);
                     Vector2 offset = perp * offsetAmount;
-                    Vector2 origin = from + offset;
+
+                    Vector2 origin = from + dir * skin + offset;
 
                     RaycastHit2D hit = Physics2D.Raycast(origin, dir, dist, LayerMask.GetMask("Enemy"));
-                    Debug.DrawRay(origin, dir * dist, Color.red, 0.05f);
+                    Debug.DrawRay(origin, dir * dist, Color.red, 0.1f);
 
                     if (hit.collider) return hit;
                 }
@@ -231,7 +239,7 @@ namespace Characters.MovementSystems
 
             return default;
         }
-
+        
         #endregion
 
         #region Abstract Methods
