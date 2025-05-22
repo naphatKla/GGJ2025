@@ -23,16 +23,38 @@ public class Timer : MMSingleton<Timer>
     public float GlobalTimer => currentTimer;
     public float StartTimer => startTimer;
     
+    /// <summary>
+    /// Pauses the timer.
+    /// </summary>
     [FoldoutGroup("Time Control"), Button(ButtonSizes.Large), GUIColor(1, 1, 0)]
     public void PauseTimer() => isPaused = true;
+    
+    /// <summary>
+    /// Resume the timer.
+    /// </summary>
     [FoldoutGroup("Time Control"), Button(ButtonSizes.Large), GUIColor(0, 1, 0)]
     public void ResumeTimer() => isPaused = false;
     [FoldoutGroup("Time Control"), Button(ButtonSizes.Large), GUIColor(1, 0, 0)]
+    
+    /// <summary>
+    /// Reset timer to start timer.
+    /// </summary>
     public void ResetTimer() => currentTimer = startTimer;
     public void TogglePause() => isPaused = !isPaused;
     public bool IsPaused() => isPaused;
+    
+    /// <summary>
+    /// Set timer to start timer.
+    /// </summary>
+    /// <param name="timer"></param>
     public void SetTimer(float timer) { startTimer = timer; ResetTimer(); }
     
+    /// <summary>
+    /// Stop the timer and resume after delay
+    /// </summary>
+    /// <param name="time"></param>
+    public async void StopDelayTimer(float time) { PauseTimer(); await UniTask.Delay(TimeSpan.FromSeconds(time)); ResumeTimer(); }
+
     #endregion
 
     #region Unity Methods
@@ -46,6 +68,9 @@ public class Timer : MMSingleton<Timer>
     #endregion
 
     #region Methods
+    /// <summary>
+    /// Starts the countdown asynchronously and updates the timer value.
+    /// </summary>
     public async UniTaskVoid StartCountdownAsync()
     {
         isRunning = true;
@@ -70,6 +95,9 @@ public class Timer : MMSingleton<Timer>
         }
     }
 
+    /// <summary>
+    /// Updates the timer text in the UI.
+    /// </summary>
     private void UpdateUIText()
     {
         if (timerText != null)
@@ -80,16 +108,25 @@ public class Timer : MMSingleton<Timer>
         }
     }
 
+    /// <summary>
+    /// Checks if the spawner is stopped or paused.
+    /// </summary>
+    /// <returns>True if the spawner is stopped or paused, otherwise false.</returns>
     private bool IsSpawnerStoppedOrPaused()
     {
         return stageManager.IsSpawningStoppedOrPaused();
     }
 
+    
+    /// <summary>
+    /// Handles the end of the timer by stopping spawning and clearing enemies.
+    /// </summary>
     private void TimerEnd()
     {
         isRunning = false;
         stageManager.StopSpawning();
         stageManager.ClearEnemies();
     }
+    
     #endregion
 }

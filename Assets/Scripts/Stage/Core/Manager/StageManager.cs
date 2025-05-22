@@ -331,10 +331,9 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
         if (CurrentMap == null || stageIndex < 0 || stageIndex >= CurrentMap.stages.Count) return;
         currentStageIndexInMap = stageIndex;
         ReloadStage();
-        Timer.Instance.PauseTimer();
+        Timer.Instance.StopDelayTimer(delayNextStage);
         await UniTask.Delay(TimeSpan.FromSeconds(delayNextStage));
         StartSpawning();
-        Timer.Instance.ResumeTimer();
     }
 
     /// <summary>
@@ -357,10 +356,9 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
         if (CurrentMap == null || currentStageIndexInMap >= CurrentMap.stages.Count - 1) return;
         currentStageIndexInMap++;
         ReloadStage();
-        Timer.Instance.PauseTimer();
+        Timer.Instance.StopDelayTimer(delayNextStage);
         await UniTask.Delay(TimeSpan.FromSeconds(delayNextStage));
         StartSpawning();
-        Timer.Instance.ResumeTimer();
     }
     
     /// <summary>
