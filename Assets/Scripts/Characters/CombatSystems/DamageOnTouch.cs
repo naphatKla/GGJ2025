@@ -24,13 +24,13 @@ namespace Characters.CombatSystems
         #endregion
         
         #region Unity Methods
-
+        
         /// <summary>
         /// Called by Unity when another collider marked as trigger enters this object's collider.
         /// If damage is enabled, applies damage to the target via <see cref="CombatManager"/>.
         /// </summary>
         /// <param name="other">The other collider that has entered this object's trigger.</param>
-        private void OnCollisionEnter2D(Collision2D other)
+        private void OnCollisionStay2D(Collision2D other)
         {
             if (!_isEnableDamage) return;
             CombatManager.ApplyDamageTo(other.gameObject, gameObject);
