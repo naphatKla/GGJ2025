@@ -1,4 +1,3 @@
-
 using System;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
@@ -31,24 +30,21 @@ namespace Characters.MovementSystems
         /// The current movement speed of the entity.
         /// Modify this value to increase or decrease speed of the entity.
         /// </summary>
-        [ShowInInspector, ReadOnly]
-        [ShowIf("@UnityEngine.Application.isPlaying")]
+        [ShowInInspector, ReadOnly] [ShowIf("@UnityEngine.Application.isPlaying")]
         protected float currentSpeed;
 
         /// <summary>
         /// Controls how quickly the entity accelerates toward its maximum movement speed in a straight line.
         /// Higher values result in quicker speed buildup during forward motion.
         /// </summary>
-        [ShowInInspector, ReadOnly]
-        [ShowIf("@UnityEngine.Application.isPlaying")]
+        [ShowInInspector, ReadOnly] [ShowIf("@UnityEngine.Application.isPlaying")]
         protected float moveAccelerationRate;
 
         /// <summary>
         /// Controls how quickly the entity changes its movement direction when turning.
         /// Higher values result in more responsive and sharper directional adjustments.
         /// </summary>
-        [ShowInInspector, ReadOnly]
-        [ShowIf("@UnityEngine.Application.isPlaying")]
+        [ShowInInspector, ReadOnly] [ShowIf("@UnityEngine.Application.isPlaying")]
         protected float turnAccelerationRate;
 
         /// <summary>
@@ -67,13 +63,12 @@ namespace Characters.MovementSystems
         /// 
         /// </summary>
         protected Vector2 inputDirection;
-        
+
         /// <summary>
         /// Determines whether the entity is allowed to move.
         /// If false, movement commands will be ignored.
         /// </summary>
-        [ShowInInspector, ReadOnly]
-        [ShowIf("@UnityEngine.Application.isPlaying")]
+        [ShowInInspector, ReadOnly] [ShowIf("@UnityEngine.Application.isPlaying")]
         private bool _canMove = true;
 
         /// <summary>
@@ -91,11 +86,11 @@ namespace Characters.MovementSystems
         /// 
         /// </summary>
         protected Vector2 bounceDirection;
-        
+
         protected bool shouldBounce = true;
-        
+
         public Action<HashSet<GameObject>> OnContact { get; set; }
-        
+
         #endregion
 
         #region Unity Methods
@@ -108,7 +103,7 @@ namespace Characters.MovementSystems
             if (inputDirection == Vector2.zero) return;
             TryMoveWithInertia(inputDirection);
         }
-        
+
         private async void LateUpdate()
         {
             if (objectContactThisFrame.Count <= 0) return;
@@ -118,7 +113,7 @@ namespace Characters.MovementSystems
             bounceDirection = Vector2.zero;
             Debug.Log("Reset");
         }
-        
+
         private void OnTriggerEnter2D(Collider2D other)
         {
             objectContactThisFrame.Add(other.gameObject);
@@ -160,7 +155,7 @@ namespace Characters.MovementSystems
             if (currentSpeed == 0) return;
             MoveWithInertia(direction);
         }
-        
+
         /// <summary>
         /// 
         /// </summary>
@@ -177,14 +172,19 @@ namespace Characters.MovementSystems
                 Vector2 incoming = (position - (Vector2)transform.position).normalized;
                 Vector2 normal = objHitInWay.normal;
                 Vector2 reflected = Vector2.Reflect(incoming, normal);
-                Vector2 pushOut = normal * 0.2f;
-                bounceDirection = (reflected + pushOut).normalized;
+                Vector2 tangent = new Vector2(-normal.y, normal.x);
                 
-                if (_moveOverTimeTween.IsActive()) return;
+                float blendFactor = 1f; // ปรับ 0–1, ยิ่งสูงมุมยิ่งเฉียง
+                Vector2 curvedBounce = Vector2.Lerp(reflected, tangent, blendFactor).normalized;
 
+                Vector2 pushOut = normal * 0.1f;
+                bounceDirection = (curvedBounce + pushOut).normalized;
+
+                if (_moveOverTimeTween.IsActive()) return;
                 float bounceSpeed = currentVelocity.magnitude;
                 Vector2 bounceTarget = (Vector2)transform.position + bounceDirection * (bounceSpeed * 0.1f);
                 TryMoveToPositionOverTime(bounceTarget, 0.15f);
+
                 return;
             }
 
@@ -196,7 +196,8 @@ namespace Characters.MovementSystems
         /// Attempts to smoothly move the entity to a specified position over a set duration, if movement is allowed.
         /// Cancels any existing tween before starting a new one.
         /// </summary>
-        public virtual Tween TryMoveToPositionOverTime(Vector2 position, float duration, AnimationCurve easeCurve = null, AnimationCurve moveCurve = null)
+        public virtual Tween TryMoveToPositionOverTime(Vector2 position, float duration,
+            AnimationCurve easeCurve = null, AnimationCurve moveCurve = null)
         {
             if (!_canMove) return null;
             _moveOverTimeTween?.Kill();
@@ -208,7 +209,8 @@ namespace Characters.MovementSystems
         /// Attempts to move the entity smoothly toward a dynamic target Transform over the specified duration.
         /// Cancels any existing movement tween before starting a new one.
         /// </summary>
-        public virtual Tween TryMoveToTargetOverTime(Transform target, float duration, AnimationCurve easeCurve = null, AnimationCurve moveCurve = null)
+        public virtual Tween TryMoveToTargetOverTime(Transform target, float duration, AnimationCurve easeCurve = null,
+            AnimationCurve moveCurve = null)
         {
             if (!_canMove) return null;
             _moveOverTimeTween?.Kill();
@@ -255,7 +257,7 @@ namespace Characters.MovementSystems
             ResetSpeedToDefault();
             SetCanMove(true);
         }
-        
+
         /// <summary>
         /// 
         /// </summary>
@@ -304,7 +306,7 @@ namespace Characters.MovementSystems
 
             return default;
         }
-        
+
         #endregion
 
         #region Abstract Methods
@@ -325,12 +327,14 @@ namespace Characters.MovementSystems
         /// Tween-moves the entity to a position with optional ease and curve.
         /// Used for dash, leaps, or stylish transitions.
         /// </summary>
-        protected abstract Tween MoveToPositionOverTime(Vector2 position, float duration, AnimationCurve easeCurve = null, AnimationCurve moveCurve = null);
+        protected abstract Tween MoveToPositionOverTime(Vector2 position, float duration,
+            AnimationCurve easeCurve = null, AnimationCurve moveCurve = null);
 
         /// <summary>
         /// Tween-moves the entity to follow a dynamic Transform over time.
         /// </summary>
-        protected abstract Tween MoveToTargetOverTime(Transform target, float duration, AnimationCurve easeCurve = null, AnimationCurve moveCurve = null);
+        protected abstract Tween MoveToTargetOverTime(Transform target, float duration, AnimationCurve easeCurve = null,
+            AnimationCurve moveCurve = null);
 
         #endregion
 
