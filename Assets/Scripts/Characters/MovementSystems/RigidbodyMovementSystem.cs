@@ -120,7 +120,7 @@ namespace Characters.MovementSystems
                 Vector2 rayDir = to - from;
                 float rayDist = rayDir.magnitude;
 
-                RaycastHit2D hit = Physics2D.Raycast(from, rayDir.normalized, rayDist, LayerMask.GetMask("Enemy"));
+                RaycastHit2D hit = CheckMultiRaycast(from, to, 3);
                 if (hit.collider)
                 {
                     // ✅ Reflect ทิศ, คูณความเร็วและเวลา
@@ -202,6 +202,37 @@ namespace Characters.MovementSystems
             });
 
             return easeCurve != null ? tween.SetEase(easeCurve) : tween.SetEase(Ease.InOutSine);
+        }
+        
+        RaycastHit2D CheckMultiRaycast(Vector2 from, Vector2 to, int rayCount = 3)
+        {
+            Vector2 dir = (to - from).normalized;
+            float dist = Vector2.Distance(from, to);
+
+            // Try get collider size
+            Vector2 perpOffset = Vector2.zero;
+            if (TryGetComponent<Collider2D>(out var col))
+            {
+                // ใช้ bound จาก collider และยิง perpendicular จากทิศการเคลื่อนที่
+                Vector2 perp = Vector2.Perpendicular(dir).normalized;
+                float extent = col.bounds.extents.y; // หรือ x แล้วแต่แนว
+
+                // ยิงหลายเส้นกระจายระยะ offset (เช่น -0.5, 0, +0.5)
+                for (int i = 0; i < rayCount; i++)
+                {
+                    float lerp = rayCount == 1 ? 0 : (float)i / (rayCount - 1); // 0 to 1
+                    float offsetAmount = Mathf.Lerp(-extent, extent, lerp);
+                    Vector2 offset = perp * offsetAmount;
+                    Vector2 origin = from + offset;
+
+                    RaycastHit2D hit = Physics2D.Raycast(origin, dir, dist, LayerMask.GetMask("Enemy"));
+                    Debug.DrawRay(origin, dir * dist, Color.red, 0.05f);
+
+                    if (hit.collider) return hit;
+                }
+            }
+
+            return default;
         }
 
         #endregion
