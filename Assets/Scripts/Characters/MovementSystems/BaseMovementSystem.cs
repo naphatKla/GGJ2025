@@ -1,5 +1,6 @@
 
 using System;
+using System.Collections.Generic;
 using DG.Tweening;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -79,6 +80,18 @@ namespace Characters.MovementSystems
         /// If a new tween is triggered, this one will be killed to avoid overlap.
         /// </summary>
         private Tween _moveOverTimeTween;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        protected List<RaycastHit2D> objectContactThisFrame = new List<RaycastHit2D>();
+
+        /// <summary>
+        /// 
+        /// </summary>
+        protected Vector2 bounceDirection;
+
+        public Action<List<GameObject>> OnContact { get; set; }
         
         #endregion
 
@@ -91,6 +104,22 @@ namespace Characters.MovementSystems
         {
             if (inputDirection == Vector2.zero) return;
             TryMoveWithInertia(inputDirection);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        protected void LateUpdate()
+        {
+            if (objectContactThisFrame.Count <= 0) return;
+            List<GameObject> contactObjs = new List<GameObject>();
+            foreach (var hit in objectContactThisFrame)
+            {
+                if (!hit) continue;
+                contactObjs.Add(hit.transform.gameObject);
+            }
+            OnContact.Invoke(contactObjs);
+            objectContactThisFrame.Clear();
         }
 
         #endregion
@@ -137,6 +166,17 @@ namespace Characters.MovementSystems
         public virtual void TryMoveRawPosition(Vector2 position)
         {
             if (!_canMove) return;
+            
+            RaycastHit2D objHitInWay = CastRaysFromSelfWithOffset(position, LayerMask.GetMask("Enemy"));
+            if (objHitInWay)
+            {
+                objectContactThisFrame.Add(objHitInWay);
+                Vector2 incoming = currentVelocity.normalized;
+                Vector2 normal = objHitInWay.normal;
+                bounceDirection = Vector2.Reflect(incoming, normal);
+                return;
+            }
+            
             MoveToPosition(position);
         }
 
@@ -204,37 +244,50 @@ namespace Characters.MovementSystems
             SetCanMove(true);
         }
         
-        private RaycastHit2D CheckCollisionWithRayCast(Vector2 from, Vector2 to, int rayCount = 3, float extraDistance = 0.1f)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="to"></param>
+        /// <param name="rayCount"></param>
+        /// <param name="layerMask"></param>
+        /// <param name="extraDistance"></param>
+        /// <returns></returns>
+        private RaycastHit2D CastRaysFromSelfWithOffset(
+            Vector2 to,
+            LayerMask layerMask,
+            int rayCount = 5,
+            float extraDistance = 0.05f)
         {
+            if (!TryGetComponent<Collider2D>(out var col)) return default;
+
+            Vector2 from = transform.position;
             Vector2 dir = (to - from).normalized;
-            float dist = Vector2.Distance(from, to) + extraDistance;
 
-            if (TryGetComponent<Collider2D>(out var col))
+            Bounds bounds = col.bounds;
+
+            // คำนวณ offset ให้ ray เริ่มจาก "ขอบนอก" ของ collider
+            float colliderRadius = Mathf.Max(bounds.extents.x, bounds.extents.y);
+            float rayStartOffset = colliderRadius + 0.01f; // ห่างออกนิดนึง
+            float rayLength = Vector2.Distance(from, to) - rayStartOffset + extraDistance;
+
+            // คำนวณ perpendicular offset เพื่อกระจายหลายเส้น
+            Vector2 perp = Vector2.Perpendicular(dir).normalized;
+            float perpExtent = Mathf.Abs(Vector2.Dot(perp, Vector2.right)) * bounds.extents.x +
+                               Mathf.Abs(Vector2.Dot(perp, Vector2.up)) * bounds.extents.y;
+
+            for (int i = 0; i < rayCount; i++)
             {
-                Bounds bounds = col.bounds;
+                float lerp = rayCount == 1 ? 0f : (float)i / (rayCount - 1);
+                float offsetAmount = Mathf.Lerp(-perpExtent, perpExtent, lerp);
+                Vector2 offset = perp * offsetAmount;
 
-                // คำนวณระยะที่ collider ยื่นออกไปตามทิศทาง
-                Vector2 extent = bounds.extents;
-                float skin = Mathf.Abs(Vector2.Dot(dir, Vector2.right)) * extent.x +
-                             Mathf.Abs(Vector2.Dot(dir, Vector2.up)) * extent.y;
+                Vector2 origin = from + dir * rayStartOffset + offset;
+                RaycastHit2D hit = Physics2D.Raycast(origin, dir, rayLength, layerMask);
 
-                Vector2 perp = Vector2.Perpendicular(dir).normalized;
-                float perpExtent = Mathf.Abs(Vector2.Dot(perp, Vector2.right)) * extent.x +
-                                   Mathf.Abs(Vector2.Dot(perp, Vector2.up)) * extent.y;
+                Debug.DrawRay(origin, dir * rayLength, hit.collider ? Color.red : Color.gray, Time.deltaTime);
 
-                for (int i = 0; i < rayCount; i++)
-                {
-                    float lerp = rayCount == 1 ? 0f : (float)i / (rayCount - 1);
-                    float offsetAmount = Mathf.Lerp(-perpExtent, perpExtent, lerp);
-                    Vector2 offset = perp * offsetAmount;
-
-                    Vector2 origin = from + dir * skin + offset;
-
-                    RaycastHit2D hit = Physics2D.Raycast(origin, dir, dist, LayerMask.GetMask("Enemy"));
-                    Debug.DrawRay(origin, dir * dist, Color.red, 0.1f);
-
-                    if (hit.collider) return hit;
-                }
+                if (hit.collider != null)
+                    return hit;
             }
 
             return default;
