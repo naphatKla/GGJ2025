@@ -168,18 +168,29 @@ namespace Characters.MovementSystems
         public virtual void TryMoveRawPosition(Vector2 position)
         {
             if (!_canMove) return;
-            
+
             RaycastHit2D objHitInWay = CastRaysFromSelfWithOffset(position, LayerMask.GetMask("Enemy"));
             if (objHitInWay)
             {
                 objectContactThisFrame.Add(objHitInWay.transform.gameObject);
-                Vector2 incoming = currentVelocity.normalized;
+
+                Vector2 incoming = (position - (Vector2)transform.position).normalized;
                 Vector2 normal = objHitInWay.normal;
-                bounceDirection = Vector2.Reflect(incoming, normal);
+                Vector2 reflected = Vector2.Reflect(incoming, normal);
+                Vector2 pushOut = normal * 0.2f;
+                bounceDirection = (reflected + pushOut).normalized;
+                
+                if (_moveOverTimeTween.IsActive()) return;
+
+                float bounceSpeed = currentVelocity.magnitude;
+                Vector2 bounceTarget = (Vector2)transform.position + bounceDirection * (bounceSpeed * 0.1f);
+                TryMoveToPositionOverTime(bounceTarget, 0.15f);
+                return;
             }
-            
+
             MoveToPosition(position);
         }
+
 
         /// <summary>
         /// Attempts to smoothly move the entity to a specified position over a set duration, if movement is allowed.

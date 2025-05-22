@@ -70,7 +70,7 @@ protected override Tween MoveToPositionOverTime(Vector2 position, float duration
 
             // ⏱ รีเซ็ตตัวนับเวลา
             elapsed = 0f;
-            duration = newRemainingTime;
+            duration = newRemainingTime + 0.125f;
 
             bounceCount++;
             bounceDirection = Vector2.zero;
