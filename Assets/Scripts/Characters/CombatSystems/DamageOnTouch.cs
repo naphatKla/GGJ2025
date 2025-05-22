@@ -1,3 +1,4 @@
+using System;
 using Manager;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -29,7 +30,7 @@ namespace Characters.CombatSystems
         /// If damage is enabled, applies damage to the target via <see cref="CombatManager"/>.
         /// </summary>
         /// <param name="other">The other collider that has entered this object's trigger.</param>
-        private void OnTriggerEnter2D(Collider2D other)
+        private void OnCollisionEnter2D(Collision2D other)
         {
             if (!_isEnableDamage) return;
             CombatManager.ApplyDamageTo(other.gameObject, gameObject);

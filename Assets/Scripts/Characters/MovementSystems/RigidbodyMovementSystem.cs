@@ -38,46 +38,17 @@ namespace Characters.MovementSystems
             Vector2 perpendicular = Vector2.Perpendicular((endPos - startPos).normalized);
             Vector2 previousPosition = startPos;
             float averageSpeed = Vector2.Distance(position, startPos) / duration;
-
-            float totalDistance = Vector2.Distance(startPos, endPos);
-            float elapsed = 0f;
-            int bounceCount = 0;
-
+            
             var tween = DOTween.To(() => 0f, t =>
             {
-                elapsed += Time.deltaTime;
-                float remainingT = Mathf.Clamp01(1f - elapsed / duration);
                 float linearT = Mathf.Clamp01(t);
-
                 Vector2 basePos = Vector2.Lerp(startPos, endPos, linearT);
                 float offset = moveCurve?.Evaluate(linearT) ?? 0f;
                 Vector2 curvedPos = basePos + perpendicular * offset;
-
+                
                 currentDirection = (curvedPos - previousPosition).normalized;
                 currentVelocity = currentDirection * averageSpeed;
-
-                if (bounceDirection != Vector2.zero)
-                {
-                    float scale = 1f / (1f + bounceCount);
-                    float newRemainingTime = duration * remainingT * scale;
-                    float newRemainingDistance = totalDistance * remainingT * scale;
-
-                    // 🎯 สร้างทิศทางใหม่ตาม bounce
-                    startPos = rb2D.position;
-                    endPos = startPos + bounceDirection * newRemainingDistance;
-                    perpendicular = Vector2.Perpendicular(bounceDirection);
-                    previousPosition = startPos;
-
-                    // ⏱ รีเซ็ตตัวนับเวลา
-                    elapsed = 0f;
-                    duration = newRemainingTime + 0.125f;
-
-                    bounceCount++;
-                    bounceDirection = Vector2.zero;
-                    Debug.Log("Bounce");
-                    return;
-                }
-
+                
                 previousPosition = curvedPos;
                 TryMoveRawPosition(curvedPos);
             }, 1f, duration);
