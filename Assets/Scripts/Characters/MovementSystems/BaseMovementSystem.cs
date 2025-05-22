@@ -119,6 +119,7 @@ namespace Characters.MovementSystems
         public virtual void TryMoveWithInertia(Vector2 position)
         {
             if (!_canMove) return;
+            if (_moveOverTimeTween.IsActive()) return;
             MoveWithInertia(position);
         }
 

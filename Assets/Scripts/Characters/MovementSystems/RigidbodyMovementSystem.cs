@@ -43,7 +43,7 @@ namespace Characters.MovementSystems
             {
                 blendBackTimer += Time.fixedDeltaTime;
                 float t = Mathf.Clamp01(blendBackTimer / blendBackDuration);
-
+                
                 desiredVelocity = currentDirection * currentSpeed;
                 currentVelocity = Vector2.Lerp(postTweenVelocity, desiredVelocity, t);
                 rb2D.velocity = currentVelocity;
@@ -94,6 +94,7 @@ namespace Characters.MovementSystems
             Vector2 direction = (position - startPos).normalized;
             Vector2 perpendicular = Vector2.Perpendicular(direction);
             Vector2 previousPosition = startPos;
+            float averageSpeed = Vector2.Distance(position, transform.position) / duration;
 
             var tween = DOTween.To(() => 0f, t =>
             {
@@ -106,8 +107,7 @@ namespace Characters.MovementSystems
                 if (frameDirection != Vector2.zero)
                     currentDirection = frameDirection;
 
-                float frameDistance = Vector2.Distance(previousPosition, curvedPos);
-                currentVelocity = frameDirection * (frameDistance / Time.deltaTime);
+                currentVelocity = currentDirection * averageSpeed;
 
                 previousPosition = curvedPos;
                 rb2D.MovePosition(curvedPos);
@@ -146,6 +146,7 @@ namespace Characters.MovementSystems
         {
             Vector2 startPos = rb2D.position;
             Vector2 previousPosition = startPos;
+            float averageSpeed = Vector2.Distance(target.position, transform.position) / duration;
 
             var tween = DOTween.To(() => 0f, t =>
             {
@@ -162,8 +163,7 @@ namespace Characters.MovementSystems
                 if (frameDirection != Vector2.zero)
                     currentDirection = frameDirection;
 
-                float frameDistance = Vector2.Distance(previousPosition, curvedPos);
-                currentVelocity = frameDirection * (frameDistance / Time.deltaTime);
+                currentVelocity = currentDirection * averageSpeed;
 
                 previousPosition = curvedPos;
                 rb2D.MovePosition(curvedPos);
