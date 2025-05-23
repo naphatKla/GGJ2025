@@ -99,7 +99,11 @@ namespace Characters.MovementSystems
 
         private void OnCollisionEnter2D(Collision2D other)
         {
-            
+            if (_moveOverTimeTween.IsActive())
+            {
+                Vector2 normal = other.GetContact(0).normal;
+                ApplyBounceFromTweenCollision(normal, 1.2f);
+            }
         }
 
         #endregion
@@ -148,8 +152,7 @@ namespace Characters.MovementSystems
             if (!_canMove) return;
             MoveToPosition(position);
         }
-
-
+        
         /// <summary>
         /// Attempts to smoothly move the entity to a specified position over a set duration, if movement is allowed.
         /// Cancels any existing tween before starting a new one.
@@ -174,6 +177,27 @@ namespace Characters.MovementSystems
             _moveOverTimeTween?.Kill();
             _moveOverTimeTween = MoveToTargetOverTime(target, duration, easeCurve, moveCurve);
             return _moveOverTimeTween;
+        }
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="hitNormal"></param>
+        /// <param name="bounceMultiplier"></param>
+        public void ApplyBounceFromTweenCollision(Vector2 hitNormal, float bounceMultiplier = 1.0f)
+        {
+            if (_moveOverTimeTween.IsActive()) 
+                _moveOverTimeTween.Kill();
+
+            Vector2 reflectedDir = Vector2.Reflect(currentVelocity.normalized, hitNormal);
+            float bounceSpeed = currentVelocity.magnitude * bounceMultiplier;
+
+            Vector2 bounceTarget = (Vector2)transform.position + reflectedDir * bounceSpeed * 0.1f;
+            _moveOverTimeTween = TryMoveToPositionOverTime(
+                bounceTarget,
+                0.15f,
+                AnimationCurve.EaseInOut(0, 0, 1, 1)
+            );
         }
 
         /// <summary>

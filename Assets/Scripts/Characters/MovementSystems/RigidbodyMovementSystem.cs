@@ -82,7 +82,7 @@ namespace Characters.MovementSystems
 
             return easeCurve != null ? tween.SetEase(easeCurve) : tween.SetEase(Ease.InOutSine);
         }
-
+        
         #endregion
     }
 }
