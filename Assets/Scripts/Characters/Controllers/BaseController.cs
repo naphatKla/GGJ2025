@@ -26,8 +26,7 @@ namespace Characters.Controllers
         /// Reference to the movement system used to control character motion.
         /// Should be assigned via Inspector or at runtime.
         /// </summary>
-        [Title("Dependents")]
-        [SerializeField] private BaseMovementSystem movementSystem;
+        [Title("Dependents")] [SerializeField] private BaseMovementSystem movementSystem;
 
         /// <summary>
         /// Reference to the character's skill system, responsible for executing primary and secondary skills.
@@ -64,7 +63,7 @@ namespace Characters.Controllers
         /// Should be assigned via Inspector or at runtime.
         /// </summary>
         [SerializeField] private FeedbackSystem feedbackSystem;
-        
+
         /// <summary>
         /// Reference to the combo system
         /// Should be assigned via Inspector or at runtime.
@@ -74,8 +73,7 @@ namespace Characters.Controllers
         /// <summary>
         /// ScriptableObject containing base character stats used to initialize systems.
         /// </summary>
-        [Title("Data")]
-        [SerializeField] private CharacterDataSo characterData;
+        [Title("Data")] [SerializeField] private CharacterDataSo characterData;
 
         /// <summary>
         /// Character input handler implementing <see cref="ICharacterInput"/>.
@@ -119,7 +117,8 @@ namespace Characters.Controllers
         private void Start()
         {
             skillSystem.Initialize(this);
-            movementSystem?.AssignMovementData(characterData.BaseSpeed, characterData.MoveAccelerationRate, characterData.TurnAccelerationRate);
+            movementSystem?.AssignMovementData(characterData.BaseSpeed, characterData.MoveAccelerationRate,
+                characterData.TurnAccelerationRate, characterData.BounceMultiplier, characterData.Mass);
             healthSystem?.AssignHealthData(characterData.MaxHealth);
             combatSystem?.AssignCombatData(characterData.BaseDamage);
         }
@@ -139,7 +138,7 @@ namespace Characters.Controllers
 
             ToggleMovementInputController(true);
             ToggleSkillInputController(true);
-            
+
             if (!comboSystem) return;
             combatSystem.OnDealDamage += comboSystem.RegisterHit;
         }
@@ -152,7 +151,7 @@ namespace Characters.Controllers
         {
             ToggleMovementInputController(false);
             ToggleSkillInputController(false);
-            
+
             if (!comboSystem) return;
             combatSystem.OnDealDamage -= comboSystem.RegisterHit;
         }

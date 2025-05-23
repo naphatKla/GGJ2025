@@ -561,9 +561,9 @@ GameObject:
   - component: {fileID: 107715698}
   - component: {fileID: 107715697}
   - component: {fileID: 107715696}
-  m_Layer: 6
+  m_Layer: 31
   m_Name: Circle (3)
-  m_TagString: Untagged
+  m_TagString: MapCollision
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -996,6 +996,8 @@ MonoBehaviour:
   enemyParent: {fileID: 1682302871}
   regionSize: {x: 30, y: 30}
   minDistanceFromPlayer: 20
+  delayNextStage: 0
+  enableDebug: 0
 --- !u!114 &751170099
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1122,9 +1124,9 @@ GameObject:
   - component: {fileID: 958143169}
   - component: {fileID: 958143168}
   - component: {fileID: 958143167}
-  m_Layer: 6
+  m_Layer: 31
   m_Name: Circle (1)
-  m_TagString: Untagged
+  m_TagString: MapCollision
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1487,9 +1489,9 @@ GameObject:
   - component: {fileID: 1195459131}
   - component: {fileID: 1195459130}
   - component: {fileID: 1195459129}
-  m_Layer: 6
+  m_Layer: 31
   m_Name: Circle
-  m_TagString: Untagged
+  m_TagString: MapCollision
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1843,7 +1845,7 @@ MonoBehaviour:
   m_BlockingObjects: 0
   m_BlockingMask:
     serializedVersion: 2
-    m_Bits: 3758096631
+    m_Bits: 3221225719
 --- !u!114 &1373688625
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2124,9 +2126,9 @@ GameObject:
   - component: {fileID: 1590007236}
   - component: {fileID: 1590007235}
   - component: {fileID: 1590007234}
-  m_Layer: 6
+  m_Layer: 31
   m_Name: Circle (2)
-  m_TagString: Untagged
+  m_TagString: MapCollision
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2363,7 +2365,7 @@ GameObject:
   - component: {fileID: 1903580927}
   m_Layer: 0
   m_Name: MapBoundary
-  m_TagString: MapBoundary
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

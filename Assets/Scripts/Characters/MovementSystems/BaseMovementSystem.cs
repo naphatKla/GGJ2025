@@ -9,8 +9,10 @@ namespace Characters.MovementSystems
 {
     /// <summary>
     /// Base class for handling movement logic of an entity.
-    /// Includes support for inertia-based movement and tweened movement toward a specific target.
-    /// Meant to be extended by character or enemy movement classes.
+    /// Supports both inertia-based directional movement and tween-based position transitions.
+    /// Includes collision handling logic that applies bounce behavior when moving with tween,
+    /// using the current velocity and surface normal to reflect direction.
+    /// Intended to be extended by specific character or enemy movement implementations (e.g., Rigidbody or NavMesh-based).
     /// </summary>
     public abstract class BaseMovementSystem : MonoBehaviour
     {
@@ -48,6 +50,19 @@ namespace Characters.MovementSystems
         protected float turnAccelerationRate;
 
         /// <summary>
+        /// Movement speed scaling factor applied when bouncing after collision.
+        /// Affects how far the bounce reflects based on the current velocity.
+        /// </summary>
+        [ShowInInspector, ReadOnly] [ShowIf("@UnityEngine.Application.isPlaying")]
+        protected float bounceMultiplier;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [ShowInInspector, ReadOnly] [ShowIf("@UnityEngine.Application.isPlaying")]
+        protected float mass;
+
+        /// <summary>
         /// The current velocity of the entity movement.
         /// Typically updated per frame and applied to Rigidbody2D or NavMeshAgent.
         /// </summary>
@@ -72,8 +87,8 @@ namespace Characters.MovementSystems
         private bool _canMove = true;
 
         /// <summary>
-        /// Reference to the active tween used for movement over time (via DOTween).
-        /// If a new tween is triggered, this one will be killed to avoid overlap.
+        /// Internal reference to the currently active DOTween tween used for time-based movement.
+        /// This is killed and replaced when a new tween is triggered, ensuring smooth override behavior.
         /// </summary>
         private Tween _moveOverTimeTween;
 
@@ -96,13 +111,17 @@ namespace Characters.MovementSystems
             TryMoveWithInertia(inputDirection);
         }
 
+        /// <summary>
+        /// Unity collision callback triggered when a collision occurs.
+        /// If the entity is currently tweening and collides with an object tagged as "MapCollision",
+        /// triggers bounce behavior via ApplyBounceFromTweenCollision.
+        /// </summary>
+        /// <param name="other">The collision data of the impacting object.</param>
         private void OnCollisionEnter2D(Collision2D other)
         {
-            if (_moveOverTimeTween.IsActive())
-            {
-                Vector2 normal = other.GetContact(0).normal;
-                ApplyBounceFromTweenCollision(normal, 1.2f);
-            }
+            if (!other.gameObject.CompareTag("MapCollision")) return;
+            Vector2 normal = other.GetContact(0).normal;
+            ApplyBounceFromTweenCollision(normal);
         }
 
         #endregion
@@ -113,12 +132,14 @@ namespace Characters.MovementSystems
         /// Assigns base movement data to the character, including speed and acceleration settings.
         /// Typically called by the character controller during initialization to configure movement behavior.
         /// </summary>
-        public virtual void AssignMovementData(float baseSpeed, float moveAccelerationRate, float turnAccelerationRate)
+        public virtual void AssignMovementData(float baseSpeed, float moveAccelerationRate, float turnAccelerationRate, float bounceMultiplier, float mass)
         {
             _baseSpeed = baseSpeed;
             currentSpeed = baseSpeed;
             this.moveAccelerationRate = moveAccelerationRate;
             this.turnAccelerationRate = turnAccelerationRate;
+            this.bounceMultiplier = bounceMultiplier;
+            this.mass = mass;
         }
 
         /// <summary>
@@ -179,17 +200,21 @@ namespace Characters.MovementSystems
         }
         
         /// <summary>
-        /// 
+        /// Handles bounce behavior when a collision is detected during tween movement.
+        /// Kills the current tween, reflects the movement direction based on the collision normal,
+        /// calculates a bounce velocity using currentVelocity and bounceMultiplier,
+        /// and applies a short tween in the reflected direction with easing.
         /// </summary>
-        /// <param name="hitNormal"></param>
-        /// <param name="bounceMultiplier"></param>
-        public void ApplyBounceFromTweenCollision(Vector2 hitNormal, float bounceMultiplier = 1.0f)
+        /// <param name="hitNormal">The normal vector from the collision surface.</param>
+        public void ApplyBounceFromTweenCollision(Vector2 hitNormal)
         {
-            if (_moveOverTimeTween.IsActive()) 
-                _moveOverTimeTween.Kill();
-
+            float multiplier = bounceMultiplier;
+            if (!_moveOverTimeTween.IsActive())
+                multiplier *= 0.6f;
+            
+            _moveOverTimeTween?.Kill();
             Vector2 reflectedDir = Vector2.Reflect(currentVelocity.normalized, hitNormal);
-            float bounceSpeed = currentVelocity.magnitude * bounceMultiplier;
+            float bounceSpeed = currentVelocity.magnitude * multiplier;
 
             Vector2 bounceTarget = (Vector2)transform.position + reflectedDir * bounceSpeed * 0.1f;
             _moveOverTimeTween = TryMoveToPositionOverTime(

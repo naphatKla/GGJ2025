@@ -25,6 +25,14 @@ namespace Characters.SO.CharacterDataSO
         [PropertyTooltip("How quickly the character adjusts its movement direction.")]
         private float turnAccelerationRate;
 
+        [SerializeField]
+        [PropertyTooltip("Multiplier applied to bounce speed when the character collides during tween-based movement.")]
+        private float bounceMultiplier = 1.2f;
+        
+        [SerializeField]
+        [PropertyTooltip("Mass factor used in physics-based interactions, such as knockback or bounce weighting.")]
+        private float mass = 1f;
+
         [Title("Combat Data", TitleAlignment = TitleAlignments.Centered)]
         [SerializeField]
         [PropertyTooltip("The base damage this character deals per hit.")]
@@ -50,6 +58,18 @@ namespace Characters.SO.CharacterDataSO
         /// The rate at which the character adjusts its movement direction.
         /// </summary>
         public float TurnAccelerationRate => turnAccelerationRate;
+
+        /// <summary>
+        /// Multiplier applied to bounce force during collisions while moving via tween.
+        /// Typically used to control how far the character rebounds after impact.
+        /// </summary>
+        public float BounceMultiplier => bounceMultiplier;
+
+        /// <summary>
+        /// The effective mass of the character used for calculating momentum,
+        /// knockback resistance, and bounce responsiveness.
+        /// </summary>
+        public float Mass => mass;
 
         /// <summary>
         /// The base attack damage of the character.
