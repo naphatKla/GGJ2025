@@ -198,25 +198,29 @@ namespace Characters.MovementSystems
             _moveOverTimeTween = MoveToTargetOverTime(target, duration, easeCurve, moveCurve);
             return _moveOverTimeTween;
         }
-        
+
         /// <summary>
         /// Handles bounce behavior when a collision is detected during tween movement.
-        /// Kills the current tween, reflects the movement direction based on the collision normal,
-        /// calculates a bounce velocity using currentVelocity, bounceMultiplier, and mass,
-        /// and applies a short tween in the reflected direction with easing.
+        /// Supports optional external force (e.g., from enemy impact) and adjusts bounce speed based on mass.
+        /// Calculates combined momentum from self and external source to simulate head-on collisions.
         /// </summary>
         /// <param name="hitNormal">The normal vector from the collision surface.</param>
-        public void ApplyBounceFromTweenCollision(Vector2 hitNormal)
+        /// <param name="externalForce">Optional force applied externally (e.g., enemy dash impact).</param>
+        public void ApplyBounceFromTweenCollision(Vector2 hitNormal, Vector2? externalForce = null)
         {
             float multiplier = bounceMultiplier;
             if (!_moveOverTimeTween.IsActive())
                 multiplier *= 0.6f;
 
             _moveOverTimeTween?.Kill();
-            Vector2 reflectedDir = Vector2.Reflect(currentVelocity.normalized, hitNormal);
-            float bounceSpeed = (currentVelocity.magnitude * multiplier) / Mathf.Max(0.1f, mass); 
+            
+            Vector2 incomingForce = externalForce ?? Vector2.zero;
+            Vector2 effectiveVelocity = currentVelocity - incomingForce;
+            
+            Vector2 reflectedDir = Vector2.Reflect(effectiveVelocity.normalized, hitNormal);
+            float bounceSpeed = (effectiveVelocity.magnitude * multiplier) / Mathf.Max(0.1f, mass);
             Vector2 bounceTarget = (Vector2)transform.position + reflectedDir * bounceSpeed * 0.1f;
-
+            
             _moveOverTimeTween = TryMoveToPositionOverTime(
                 bounceTarget,
                 0.175f
