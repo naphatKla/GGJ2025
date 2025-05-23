@@ -40,6 +40,11 @@ namespace Characters.HeathSystems
         [ShowInInspector, ReadOnly]
         [ShowIf("@UnityEngine.Application.isPlaying")]
         private bool _isDead;
+        
+        /// <summary>
+        /// Indicates whether the character is dead.
+        /// </summary>
+        public bool IsDead => _isDead;
 
         /// <summary>
         /// Event triggered when the character takes damage.

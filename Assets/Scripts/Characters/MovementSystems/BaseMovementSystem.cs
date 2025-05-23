@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Characters.Controllers;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using Sirenix.OdinInspector;
@@ -77,7 +78,7 @@ namespace Characters.MovementSystems
         /// <summary>
         /// 
         /// </summary>
-        protected Vector2 inputDirection;
+        protected Vector2 inputDirection = Vector2.zero;
 
         /// <summary>
         /// Determines whether the entity is allowed to move.
@@ -93,9 +94,28 @@ namespace Characters.MovementSystems
         private Tween _moveOverTimeTween;
 
         /// <summary>
-        /// 
+        /// Controls whether the primary movement system (e.g., player input or AI) is active.
+        /// If false, automatic or manual movement is disabled.
         /// </summary>
         private bool _enablePrimaryMovement = true;
+
+        /// <summary>
+        /// The duration of the bounce movement tween when a collision occurs.
+        /// Determines how long the character takes to complete the bounce arc.
+        /// </summary>
+        private float _bounceDuration = 0.2f;
+
+        /// <summary>
+        /// The cooldown time after a bounce before another bounce can be triggered.
+        /// Prevents repeated bounce execution from rapid collisions.
+        /// </summary>
+        private float _bounceCoolDown = 0.1f;
+
+        /// <summary>
+        /// Tracks whether the bounce is currently on cooldown.
+        /// Used to prevent multiple bounce responses in quick succession.
+        /// </summary>
+        private bool _isBounceCooldown;
             
         #endregion
 
@@ -110,20 +130,7 @@ namespace Characters.MovementSystems
             if (inputDirection == Vector2.zero) return;
             TryMoveWithInertia(inputDirection);
         }
-
-        /// <summary>
-        /// Unity collision callback triggered when a collision occurs.
-        /// If the entity is currently tweening and collides with an object tagged as "MapCollision",
-        /// triggers bounce behavior via ApplyBounceFromTweenCollision.
-        /// </summary>
-        /// <param name="other">The collision data of the impacting object.</param>
-        private void OnCollisionEnter2D(Collision2D other)
-        {
-            if (!other.gameObject.CompareTag("MapCollision")) return;
-            Vector2 normal = other.GetContact(0).normal;
-            ApplyBounceFromTweenCollision(normal);
-        }
-
+        
         #endregion
 
         #region Methods
@@ -206,7 +213,7 @@ namespace Characters.MovementSystems
         /// </summary>
         /// <param name="hitNormal">The normal vector from the collision surface.</param>
         /// <param name="externalForce">Optional force applied externally (e.g., enemy dash impact).</param>
-        public void ApplyBounceFromTweenCollision(Vector2 hitNormal, Vector2? externalForce = null)
+        protected void ApplyBounceFromTweenCollision(Vector2 hitNormal, Vector2? externalForce = null)
         {
             float multiplier = bounceMultiplier;
             if (!_moveOverTimeTween.IsActive())
@@ -223,8 +230,39 @@ namespace Characters.MovementSystems
             
             _moveOverTimeTween = TryMoveToPositionOverTime(
                 bounceTarget,
-                0.175f
+                _bounceDuration
             ).SetEase(Ease.OutCubic);
+        }
+
+        /// <summary>
+        /// Triggers bounce behavior if not in cooldown. Checks for valid target and applies bounce based on collision impact and enemy velocity.
+        /// </summary>
+        /// <param name="other">Collision data from Unity's collision callback.</param>
+        public async void BounceHandler(Collision2D other)
+        {
+            if (_isBounceCooldown) return;
+            if (!other.gameObject || !other.gameObject.activeSelf) return;
+            Vector2 normal = other.GetContact(0).normal;
+            Vector2? externalForce = null;
+
+            if (other.gameObject.TryGetComponent(out BaseController otherController))
+            {
+                if (otherController.HealthSystem.IsDead) return;
+                externalForce = otherController.MovementSystem.currentVelocity;
+            }
+
+            ApplyBounceFromTweenCollision(normal, externalForce);
+            await StartBounceCooldown();
+        }
+        
+        /// <summary>
+        /// Begins a cooldown after a bounce to prevent repeated bounces in rapid succession.
+        /// </summary>
+        private async UniTask StartBounceCooldown()
+        {
+            _isBounceCooldown = true;
+            await UniTask.WaitForSeconds(_bounceCoolDown);
+            _isBounceCooldown = false;
         }
 
         /// <summary>

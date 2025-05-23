@@ -8,6 +8,7 @@ namespace Characters.CombatSystems
     /// <summary>
     /// Handles applying damage to other objects upon collision, based on the Physics2D Layer Matrix settings.
     /// Typically used for melee enemies or hazardous objects that deal damage when touched.
+    /// Collision Apply in base controller.
     /// </summary>
     public class DamageOnTouch : MonoBehaviour
     {
@@ -20,24 +21,15 @@ namespace Characters.CombatSystems
         [ShowInInspector, ReadOnly] 
         [ShowIf("@UnityEngine.Application.isPlaying")]
         private bool _isEnableDamage;
-        
-        #endregion
-        
-        #region Unity Methods
-        
+
         /// <summary>
-        /// Called by Unity when another collider marked as trigger enters this object's collider.
-        /// If damage is enabled, applies damage to the target via <see cref="CombatManager"/>.
+        /// Indicates whether this object is currently allowed to deal damage on contact.
+        /// Can be toggled at runtime for dynamic combat behaviors.
         /// </summary>
-        /// <param name="other">The other collider that has entered this object's trigger.</param>
-        private void OnCollisionStay2D(Collision2D other)
-        {
-            if (!_isEnableDamage) return;
-            CombatManager.ApplyDamageTo(other.gameObject, gameObject);
-        }
+        public bool IsEnableDamage => _isEnableDamage;
 
         #endregion
-
+   
         #region Methods
         
         /// <summary>

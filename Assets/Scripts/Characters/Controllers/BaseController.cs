@@ -1,3 +1,4 @@
+using System;
 using Characters.CombatSystems;
 using Characters.ComboSystems;
 using Characters.FeedbackSystems;
@@ -7,6 +8,7 @@ using Characters.MovementSystems;
 using Characters.SkillSystems;
 using Characters.SO.CharacterDataSO;
 using Characters.StatusEffectSystems;
+using Manager;
 using Sirenix.OdinInspector;
 using Sirenix.Serialization;
 using UnityEngine;
@@ -134,7 +136,8 @@ namespace Characters.Controllers
         /// and subscribes to movement and skill input events.
         /// </summary>
         private void OnEnable()
-        {
+        {   
+            if (!Application.isPlaying) return;
             if (_inputSystem == null)
             {
                 if (!TryGetComponent(out _inputSystem))
@@ -159,6 +162,41 @@ namespace Characters.Controllers
 
             if (!comboSystem) return;
             combatSystem.OnDealDamage -= comboSystem.RegisterHit;
+        }
+
+        /// <summary>
+        /// Called when a collision with another collider begins.
+        /// Currently unused, but reserved for future logic such as hit reaction triggers or knockback.
+        /// </summary>
+        /// <param name="other">Collision data from Unity's physics engine.</param>
+        private void OnCollisionEnter2D(Collision2D other)
+        {
+    
+        }
+
+        /// <summary>
+        /// Called every frame a collision persists with another collider.
+        /// Triggers damage-on-touch logic and bounce handling during sustained contact.
+        /// </summary>
+        /// <param name="other">Collision data from Unity's physics engine.</param>
+        private void OnCollisionStay2D(Collision2D other)
+        {
+            if (DamageOnTouch.IsEnableDamage)
+            {
+                CombatManager.ApplyDamageTo(other.gameObject, gameObject);
+            }
+
+            movementSystem.BounceHandler(other);
+        }
+
+        /// <summary>
+        /// Called when the collision with another collider ends.
+        /// Currently unused, but can be extended to handle exit-specific behavior (e.g., status cleanup).
+        /// </summary>
+        /// <param name="other">Collision data from Unity's physics engine.</param>
+        private void OnCollisionExit2D(Collision2D other)
+        {
+    
         }
 
         #endregion
