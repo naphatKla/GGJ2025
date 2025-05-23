@@ -64,7 +64,6 @@ namespace Characters.MovementSystems
             Vector2 endPos = position;
             Vector2 perpendicular = Vector2.Perpendicular((endPos - startPos).normalized);
             Vector2 previousPosition = startPos;
-            float averageSpeed = Vector2.Distance(position, startPos) / duration;
             
             var tween = DOTween.To(() => 0f, t =>
             {
@@ -72,9 +71,11 @@ namespace Characters.MovementSystems
                 Vector2 basePos = Vector2.Lerp(startPos, endPos, linearT);
                 float offset = moveCurve?.Evaluate(linearT) ?? 0f;
                 Vector2 curvedPos = basePos + perpendicular * offset;
+                Vector2 frameDelta = curvedPos - previousPosition;
+                float frameSpeed = frameDelta.magnitude / Time.deltaTime;
                 
-                currentDirection = (curvedPos - previousPosition).normalized;
-                currentVelocity = currentDirection * averageSpeed;
+                currentDirection = frameDelta.normalized;
+                currentVelocity = currentDirection * frameSpeed;
                 
                 previousPosition = curvedPos;
                 TryMoveRawPosition(curvedPos);
@@ -97,7 +98,6 @@ namespace Characters.MovementSystems
         {
             Vector2 startPos = rb2D.position;
             Vector2 previousPosition = startPos;
-            float averageSpeed = Vector2.Distance(target.position, transform.position) / duration;
 
             var tween = DOTween.To(() => 0f, t =>
             {
@@ -108,10 +108,12 @@ namespace Characters.MovementSystems
                 Vector2 perpendicular = Vector2.Perpendicular(direction);
                 float offset = moveCurve?.Evaluate(linearT) ?? 0f;
                 Vector2 curvedPos = basePos + perpendicular * offset;
-
-                currentDirection = (curvedPos - previousPosition).normalized;
-                currentVelocity = currentDirection * averageSpeed;
-
+                Vector2 frameDelta = curvedPos - previousPosition;
+                float frameSpeed = frameDelta.magnitude / Time.deltaTime;
+                
+                currentDirection = frameDelta.normalized;
+                currentVelocity = currentDirection * frameSpeed;
+                
                 previousPosition = curvedPos;
                 TryMoveRawPosition(curvedPos);
             }, 1f, duration);

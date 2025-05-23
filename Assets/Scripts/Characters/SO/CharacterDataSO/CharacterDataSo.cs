@@ -27,7 +27,7 @@ namespace Characters.SO.CharacterDataSO
 
         [SerializeField]
         [PropertyTooltip("Multiplier applied to bounce speed when the character collides during tween-based movement.")]
-        private float bounceMultiplier = 1.2f;
+        private float bounceMultiplier = 1f;
         
         [SerializeField]
         [PropertyTooltip("Mass factor used in physics-based interactions, such as knockback or bounce weighting.")]

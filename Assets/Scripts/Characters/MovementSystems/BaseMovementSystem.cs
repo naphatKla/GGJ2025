@@ -202,7 +202,7 @@ namespace Characters.MovementSystems
         /// <summary>
         /// Handles bounce behavior when a collision is detected during tween movement.
         /// Kills the current tween, reflects the movement direction based on the collision normal,
-        /// calculates a bounce velocity using currentVelocity and bounceMultiplier,
+        /// calculates a bounce velocity using currentVelocity, bounceMultiplier, and mass,
         /// and applies a short tween in the reflected direction with easing.
         /// </summary>
         /// <param name="hitNormal">The normal vector from the collision surface.</param>
@@ -211,17 +211,16 @@ namespace Characters.MovementSystems
             float multiplier = bounceMultiplier;
             if (!_moveOverTimeTween.IsActive())
                 multiplier *= 0.6f;
-            
+
             _moveOverTimeTween?.Kill();
             Vector2 reflectedDir = Vector2.Reflect(currentVelocity.normalized, hitNormal);
-            float bounceSpeed = currentVelocity.magnitude * multiplier;
-
+            float bounceSpeed = (currentVelocity.magnitude * multiplier) / Mathf.Max(0.1f, mass); 
             Vector2 bounceTarget = (Vector2)transform.position + reflectedDir * bounceSpeed * 0.1f;
+
             _moveOverTimeTween = TryMoveToPositionOverTime(
                 bounceTarget,
-                0.15f,
-                AnimationCurve.EaseInOut(0, 0, 1, 1)
-            );
+                0.175f
+            ).SetEase(Ease.OutCubic);
         }
 
         /// <summary>
