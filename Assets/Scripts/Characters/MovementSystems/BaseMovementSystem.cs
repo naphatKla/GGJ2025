@@ -76,14 +76,12 @@ namespace Characters.MovementSystems
         /// If a new tween is triggered, this one will be killed to avoid overlap.
         /// </summary>
         private Tween _moveOverTimeTween;
-        
+
         /// <summary>
         /// 
         /// </summary>
-        protected Vector2 bounceDirection;
-
-        protected bool shouldBounce = true;
-        
+        private bool _enablePrimaryMovement = true;
+            
         #endregion
 
         #region Unity Methods
@@ -93,6 +91,7 @@ namespace Characters.MovementSystems
         /// </summary>
         protected void Update()
         {
+            if (!_enablePrimaryMovement) return;
             if (inputDirection == Vector2.zero) return;
             TryMoveWithInertia(inputDirection);
         }
@@ -207,17 +206,22 @@ namespace Characters.MovementSystems
         public virtual void SetCanMove(bool canMove)
         {
             _canMove = canMove;
-            if (!_canMove) StopMovement();
+            if (!_canMove) StopAllMovement();
         }
 
         /// <summary>
         /// Immediately stops the entity's movement and cancels any ongoing tween.
         /// Also resets speed to zero.
         /// </summary>
-        public virtual void StopMovement()
+        public virtual void StopAllMovement()
         {
             _moveOverTimeTween?.Kill();
             currentSpeed = 0;
+        }
+        
+        public virtual void TogglePrimaryMovement(bool enableMovement)
+        {
+            _enablePrimaryMovement = enableMovement;
         }
 
         /// <summary>
