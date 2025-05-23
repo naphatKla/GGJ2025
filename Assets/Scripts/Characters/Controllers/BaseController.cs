@@ -106,6 +106,11 @@ namespace Characters.Controllers
         /// </summary>
         public FeedbackSystem FeedbackSystem => feedbackSystem;
 
+        /// <summary>
+        /// ScriptableObject containing base character stats used to initialize systems.
+        /// </summary>
+        public CharacterDataSo CharacterData => characterData;
+
         #endregion
 
         #region Unity Methods

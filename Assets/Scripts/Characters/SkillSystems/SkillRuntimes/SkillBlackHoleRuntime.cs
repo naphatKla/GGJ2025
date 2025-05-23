@@ -64,10 +64,10 @@ namespace Characters.SkillSystems.SkillRuntimes
                 var clone = _cloneObjectPool[i];
                 clone.TryMoveToPositionOverTime(explosionPos, actualMoveDuration,
                     skillData.ExplosionEaseCurve, skillData.ExplosionMoveCurve);
-                
+
                 await UniTask.Delay((int)(delay * 1000), cancellationToken: cancelToken);
             }
-            
+
             // Wait for the last clone to finish
             await UniTask.Delay((int)(explosionDuration * 1000), cancellationToken: cancelToken);
 
@@ -99,10 +99,10 @@ namespace Characters.SkillSystems.SkillRuntimes
 
                 await UniTask.Delay((int)(delay * 1000), cancellationToken: cancelToken);
             }
-            
+
             await UniTask.Delay((int)(mergeDuration * 1000), cancellationToken: cancelToken);
         }
-        
+
         /// <summary>
         /// Resets clone states when the skill ends.
         /// </summary>
@@ -177,8 +177,9 @@ namespace Characters.SkillSystems.SkillRuntimes
             CopyAnimator(original, clone);
             CopyCollider2D(original, clone);
             CopyRigidbody2D(original, clone);
-
-            return clone.AddComponent<RigidbodyMovementSystem>();
+            RigidbodyMovementSystem movementSystem = clone.AddComponent<RigidbodyMovementSystem>();
+            movementSystem.AssignMovementData(0, 0, 0, owner.CharacterData.BounceMultiplier, owner.CharacterData.Mass);
+            return movementSystem;
         }
 
         /// <summary>
