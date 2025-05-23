@@ -11,6 +11,6 @@ public interface IEnemyData
 [CreateAssetMenu(fileName = "EnemyData", menuName = "Game/EnemyData", order = 1)]
 public class EnemyDataSO : ScriptableObject, IEnemyData
 {
-    [SerializeField] private EnemyController enemyPrefab;
-    public EnemyController EnemyController => enemyPrefab;
+    [SerializeField] private EnemyController enemyController;
+    public EnemyController EnemyController => enemyController;
 }

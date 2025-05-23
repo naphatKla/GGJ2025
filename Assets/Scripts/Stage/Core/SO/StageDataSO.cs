@@ -24,25 +24,33 @@ public class StageDataSO : ScriptableObject
     [Space][Title("Spawn Event")] [Tooltip("Data of world event scriptable object")]
     [SerializeField] private SpawnEventSO[] spawnEvent;
     [Space][Title("Stage Properties")]
-    [Tooltip("Quota of the score to end the game")]
-    [SerializeField] private float scoreQuota;
+    [Tooltip("Quota of the kill to end the game or go to next stage")]
+    [SerializeField] private float killQuota;
+    
+    [Space][Title("Stage Timer")]
+    [Tooltip("Timer limit for this stage to end")]
+    [SerializeField] private float timerLimit;
     
     [Space][Title("Max Enemy Spawn")]
+    [Tooltip("Enemy spawn max will increase by this quota")]
+    [SerializeField] private float spawnQuota;
     [Tooltip("Start max enemy")]
     [SerializeField] private int startMaxEnemySpawn;
     [Tooltip("Max enemy spawn cap")]
     [SerializeField] private int maxEnemySpawnCap;
-    [Tooltip("Max enemy will increase by this quota")]
-    [SerializeField] private float unitScoreQuota;
+    [Tooltip("How many should enemy add to startMaxEnemyspawn (default 1)")]
+    [SerializeField] private int addMaxEnemySpawn = 1;
     
     [Space][Title("Enemy Spawn Timer")]
+    [Tooltip("Enemy spawn interval will increase by this quota")]
+    [SerializeField] private float intervalQuota;
     [Tooltip("Start enemy spawn interval")]
     [SerializeField] private float startSpawnInterval;
     [Tooltip("Enemy spawn interval Cap")]
     [SerializeField] private float spawnIntervalCap = 0.5f;
-    [Tooltip("Enemy spawn interval will increase by this quota")]
-    [SerializeField] private float decreaseSpawnInterval;
-    
+    [Tooltip("How much interval should decrease to startSpawnInterval (default 0.1f)")]
+    [SerializeField] private float removeIntervalEnemySpawn = 0.1f;
+   
     [Space][Title("Spawn Event Timer")]
     [Tooltip("Interval to check for spawn event triggers")]
     [SerializeField] private float eventIntervalCheck = 1f;
@@ -55,14 +63,17 @@ public class StageDataSO : ScriptableObject
     
     public EnemyProperties[] Enemies => enemies;
     public ISpawnEvent[] SpawnEvents => spawnEvent;
-    public float ScoreQuota => scoreQuota;
+    public float KillQuota => killQuota;
+    public float TimerStage => timerLimit;
     public int MaxEnemySpawnCap => maxEnemySpawnCap;
     public int CurrentMaxEnemySpawn => startMaxEnemySpawn;
+    public int AddMaxEnemySpawn => addMaxEnemySpawn;
     public float EnemySpawnInterval => startSpawnInterval;
     public float SpawnIntervalCap => spawnIntervalCap;
+    public float RemoveIntervalEnemySpawn => removeIntervalEnemySpawn;
     public Sprite Background => background;
-    public float UnitScoreQuota => unitScoreQuota;
-    public float DecreaseSpawnInterval => decreaseSpawnInterval;
+    public float SpawnKillQuota => spawnQuota;
+    public float IntervalKillQuota => intervalQuota;
     public float EventIntervalCheck => eventIntervalCheck;
     
     #endregion
