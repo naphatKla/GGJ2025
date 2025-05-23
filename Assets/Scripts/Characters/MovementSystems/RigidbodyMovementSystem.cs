@@ -64,6 +64,7 @@ namespace Characters.MovementSystems
             Vector2 endPos = position;
             Vector2 perpendicular = Vector2.Perpendicular((endPos - startPos).normalized);
             Vector2 previousPosition = startPos;
+            float averageVelocity = Vector2.Distance(position, rb2D.position) / duration;
             
             var tween = DOTween.To(() => 0f, t =>
             {
@@ -73,9 +74,10 @@ namespace Characters.MovementSystems
                 Vector2 curvedPos = basePos + perpendicular * offset;
                 Vector2 frameDelta = curvedPos - previousPosition;
                 float frameSpeed = frameDelta.magnitude / Time.deltaTime;
+                frameSpeed = Mathf.Max(averageVelocity, frameSpeed);
                 
                 currentDirection = frameDelta.normalized;
-                currentVelocity = currentDirection * frameSpeed;
+                currentVelocity =  currentDirection * frameSpeed;
                 
                 previousPosition = curvedPos;
                 TryMoveRawPosition(curvedPos);
@@ -98,6 +100,7 @@ namespace Characters.MovementSystems
         {
             Vector2 startPos = rb2D.position;
             Vector2 previousPosition = startPos;
+            float averageVelocity = Vector2.Distance(target.position, startPos) / duration;
 
             var tween = DOTween.To(() => 0f, t =>
             {
@@ -110,6 +113,7 @@ namespace Characters.MovementSystems
                 Vector2 curvedPos = basePos + perpendicular * offset;
                 Vector2 frameDelta = curvedPos - previousPosition;
                 float frameSpeed = frameDelta.magnitude / Time.deltaTime;
+                frameSpeed = Mathf.Max(averageVelocity, frameSpeed);
                 
                 currentDirection = frameDelta.normalized;
                 currentVelocity = currentDirection * frameSpeed;
