@@ -44,7 +44,7 @@ namespace Characters.FeedbackSystems
             if (!_feedbackList.ContainsKey(feedbackName)) return;
             _feedbackList[feedbackName]?.StopFeedbacks();
         }
-
+        
         #endregion
     }
 

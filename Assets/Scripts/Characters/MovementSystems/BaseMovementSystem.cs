@@ -257,12 +257,14 @@ namespace Characters.MovementSystems
         public void BounceHandler(Collision2D other)
         {
             if (_isBounceCooldown) return;
+            if (other.contactCount == 0) return;
+            
             Vector2 normal = other.GetContact(0).normal;
             Vector2? externalForce = null;
 
             if (other.gameObject.TryGetComponent(out BaseController otherController))
             {
-                if (otherController.HealthSystem.IsDead) return;
+                if (otherController.HealthSystem && otherController.HealthSystem.IsDead) return;
                 externalForce = otherController.MovementSystem.currentVelocity;
             }
             

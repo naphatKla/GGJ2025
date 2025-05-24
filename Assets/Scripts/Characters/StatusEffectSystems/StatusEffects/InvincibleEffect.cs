@@ -48,7 +48,7 @@ namespace Characters.StatusEffectSystems.StatusEffects
         /// </summary>
         public override void OnExit()
         {
-            _ownerHealthSystem.SetInvincible(false);
+            _ownerHealthSystem?.SetInvincible(false);
         }
         
         #endregion

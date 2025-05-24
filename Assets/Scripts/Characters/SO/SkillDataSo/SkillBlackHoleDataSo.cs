@@ -1,5 +1,8 @@
+using System.Collections.Generic;
+using Characters.StatusEffectSystems;
 using Sirenix.OdinInspector;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Characters.SO.SkillDataSo
 {
@@ -104,7 +107,14 @@ namespace Characters.SO.SkillDataSo
         [PropertyTooltip("Applies lateral offset to create arcing or wave-like motion during merge movement.")]
         [SerializeField]
         private AnimationCurve mergeMoveCurve;
-
+        
+        // ------------------ Status Effect ------------------
+        
+        [PropertyTooltip("Status effects that will be applied to the clones when skill start.")]
+        [PropertyOrder(9999)]
+        [SerializeField] 
+        private List<StatusEffectDataPayload> cloneEffects;
+        
         // ------------------ Properties ------------------
 
         /// <summary>Total number of clones spawned during the skill.</summary>
@@ -145,7 +155,10 @@ namespace Characters.SO.SkillDataSo
 
         /// <summary>Curve that offsets the path of clones for merge movement (e.g., arcs or waves).</summary>
         public AnimationCurve MergeMoveCurve => mergeMoveCurve;
-        
+
+        /// <summary>Status effects that will be applied to the clones when skill start.</summary>
+        public List<StatusEffectDataPayload> CloneEffects => cloneEffects;
+
         #endregion
     }
 }

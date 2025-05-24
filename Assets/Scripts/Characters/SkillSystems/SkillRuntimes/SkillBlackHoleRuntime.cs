@@ -1,9 +1,14 @@
 using System.Collections.Generic;
 using System.Threading;
+using Characters.CombatSystems;
+using Characters.Controllers;
 using Characters.MovementSystems;
 using Characters.SO.SkillDataSo;
+using Characters.StatusEffectSystems;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
+using Manager;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Characters.SkillSystems.SkillRuntimes
@@ -64,7 +69,7 @@ namespace Characters.SkillSystems.SkillRuntimes
                 var clone = _cloneObjectPool[i];
                 clone.TryMoveToPositionOverTime(explosionPos, actualMoveDuration,
                     skillData.ExplosionEaseCurve, skillData.ExplosionMoveCurve);
-
+                StatusEffectManager.ApplyEffectTo(clone.gameObject, skillData.CloneEffects);
                 await UniTask.Delay((int)(delay * 1000), cancellationToken: cancelToken);
             }
 
@@ -177,8 +182,18 @@ namespace Characters.SkillSystems.SkillRuntimes
             CopyAnimator(original, clone);
             CopyCollider2D(original, clone);
             CopyRigidbody2D(original, clone);
-            RigidbodyMovementSystem movementSystem = clone.AddComponent<RigidbodyMovementSystem>();
-            return movementSystem;
+
+            CloneCharacterController cloneController = clone.AddComponent<CloneCharacterController>();
+            RigidbodyMovementSystem cloneMovementSystem = clone.AddComponent<RigidbodyMovementSystem>();
+            DamageOnTouch cloneDamageOnTouch = clone.AddComponent<DamageOnTouch>();
+            CombatSystem cloneCombatSystem = clone.AddComponent<CombatSystem>();
+            StatusEffectSystem cloneStatusEffectSystem = clone.AddComponent<StatusEffectSystem>();
+
+            cloneController.AssignCharacterData(owner.CharacterData, cloneMovementSystem,
+                assignDamageOnTouch: cloneDamageOnTouch, assignCombatSystem: cloneCombatSystem,
+                assignStatusEffectSystem: cloneStatusEffectSystem);
+            clone.layer = owner.gameObject.layer;
+            return cloneMovementSystem;
         }
 
         /// <summary>

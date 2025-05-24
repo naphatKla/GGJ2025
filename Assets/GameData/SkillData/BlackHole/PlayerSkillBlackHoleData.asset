@@ -33,7 +33,10 @@ MonoBehaviour:
   cooldown: 3
   hasLifeTime: 0
   lifeTime: 3
-  statusEffectOnSkillStart: []
+  statusEffectOnSkillStart:
+  - effectData: {fileID: 11400000, guid: aa4dff95f38494c4e876f8f95511ecf0, type: 2}
+    isOverrideDuration: 1
+    overrideDuration: 2
   cloneAmount: 6
   cloneDamage: 1
   explosionDistance: 5
@@ -212,3 +215,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  cloneEffects:
+  - effectData: {fileID: 11400000, guid: 859490802a7a26445ba20d4c30cc8d4f, type: 2}
+    isOverrideDuration: 1
+    overrideDuration: 2

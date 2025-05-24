@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using Characters.CombatSystems;
 using Characters.ComboSystems;
 using Characters.FeedbackSystems;
@@ -8,6 +9,7 @@ using Characters.MovementSystems;
 using Characters.SkillSystems;
 using Characters.SO.CharacterDataSO;
 using Characters.StatusEffectSystems;
+using Cysharp.Threading.Tasks;
 using Manager;
 using Sirenix.OdinInspector;
 using Sirenix.Serialization;
@@ -85,6 +87,11 @@ namespace Characters.Controllers
         [OdinSerialize] private ICharacterInput _inputSystem;
 
         /// <summary>
+        /// Is this controller is initialize or not.
+        /// </summary>
+        private bool _isInitialize;
+
+        /// <summary>
         /// Reference to the movement system used to control character motion.
         /// Should be assigned via Inspector or at runtime.
         /// </summary>
@@ -116,52 +123,44 @@ namespace Characters.Controllers
         #endregion
 
         #region Unity Methods
-
-        /// <summary>
-        /// Initializes core systems for the character on the first frame,
-        /// using data provided from the assigned <see cref="characterData"/>.
-        /// </summary>
+        
         private void Start()
         {
-            skillSystem.Initialize(this);
-            movementSystem?.AssignMovementData(characterData.BaseSpeed, characterData.MoveAccelerationRate,
-                characterData.TurnAccelerationRate, characterData.BounceMultiplier, characterData.Mass, characterData.EffectOnBounce);
-            healthSystem?.AssignHealthData(characterData.MaxHealth, characterData.InvincibleTimePerHit);
-            combatSystem?.AssignCombatData(characterData.BaseDamage);
+            if (characterData && !_isInitialize)
+                Initialize();
         }
 
         /// <summary>
-        /// Called when the GameObject becomes active.
-        /// Automatically attempts to locate an input component if none is assigned,
-        /// and subscribes to movement and skill input events.
+        /// Called automatically by Unity when the object is first enabled.
+        /// Waits for initialization before subscribing to input and combo events.
         /// </summary>
-        private void OnEnable()
-        {   
+        private async void OnEnable()
+        {
+            await UniTask.WaitUntil(() => _isInitialize).Timeout(TimeSpan.FromSeconds(2f));
             if (!Application.isPlaying) return;
-            if (_inputSystem == null)
-            {
-                if (!TryGetComponent(out _inputSystem))
-                    Debug.Log("Error: Input Reader is required. Please add an Input Reader component.");
-            }
+
+            _inputSystem ??= GetComponent<ICharacterInput>();
 
             ToggleMovementInputController(true);
             ToggleSkillInputController(true);
 
-            if (!comboSystem) return;
-            combatSystem.OnDealDamage += comboSystem.RegisterHit;
+            if (comboSystem != null)
+                combatSystem.OnDealDamage += comboSystem.RegisterHit;
         }
 
         /// <summary>
-        /// Called when the GameObject becomes inactive.
-        /// Unsubscribes from all input events to prevent unintended behavior.
+        /// Called automatically by Unity when the object is disabled.
+        /// Waits for initialization before unsubscribing from input and combo events.
         /// </summary>
-        private void OnDisable()
+        private async void OnDisable()
         {
+            await UniTask.WaitUntil(() => _isInitialize).Timeout(TimeSpan.FromSeconds(2f));
+
             ToggleMovementInputController(false);
             ToggleSkillInputController(false);
 
-            if (!comboSystem) return;
-            combatSystem.OnDealDamage -= comboSystem.RegisterHit;
+            if (comboSystem != null)
+                combatSystem.OnDealDamage -= comboSystem.RegisterHit;
         }
 
         /// <summary>
@@ -171,23 +170,19 @@ namespace Characters.Controllers
         /// <param name="other">Collision data from Unity's physics engine.</param>
         private void OnCollisionEnter2D(Collision2D other)
         {
-    
         }
 
         /// <summary>
-        /// Called every frame a collision persists with another collider.
-        /// Triggers damage-on-touch logic and bounce handling during sustained contact.
+        /// Called continuously while colliding with another collider.
+        /// Applies contact damage and triggers bounce if applicable.
         /// </summary>
-        /// <param name="other">Collision data from Unity's physics engine.</param>
         private void OnCollisionStay2D(Collision2D other)
         {
-            if (DamageOnTouch.IsEnableDamage)
-            {
+            if (DamageOnTouch?.IsEnableDamage == true)
                 CombatManager.ApplyDamageTo(other.gameObject, gameObject);
-            }
 
-            if (!other.gameObject || !other.gameObject.activeSelf) return;
-            movementSystem.BounceHandler(other);
+            if (other.gameObject && other.gameObject.activeSelf)
+                movementSystem?.BounceHandler(other);
         }
 
         /// <summary>
@@ -197,12 +192,65 @@ namespace Characters.Controllers
         /// <param name="other">Collision data from Unity's physics engine.</param>
         private void OnCollisionExit2D(Collision2D other)
         {
-    
         }
 
         #endregion
 
         #region Methods
+
+        /// <summary>
+        /// Assigns dependencies and stat data to this character.
+        /// Automatically initializes all major subsystems.
+        /// </summary>
+        public void AssignCharacterData(CharacterDataSo data,
+            BaseMovementSystem assignMovementSystem = null,
+            SkillSystem assignSkillSystem = null,
+            HealthSystem assignHealthSystem = null,
+            StatusEffectSystem assignStatusEffectSystem = null,
+            CombatSystem assignCombatSystem = null,
+            DamageOnTouch assignDamageOnTouch = null,
+            FeedbackSystem assignFeedbackSystem = null,
+            ComboSystem assignComboSystem = null,
+            ICharacterInput inputSystem = null)
+        {
+            movementSystem      ??= assignMovementSystem;
+            skillSystem         ??= assignSkillSystem;
+            healthSystem        ??= assignHealthSystem;
+            statusEffectSystem  ??= assignStatusEffectSystem;
+            combatSystem        ??= assignCombatSystem;
+            damageOnTouch       ??= assignDamageOnTouch;
+            feedbackSystem      ??= assignFeedbackSystem;
+            comboSystem         ??= assignComboSystem;
+            _inputSystem        ??= inputSystem;
+
+            characterData = data;
+            Initialize();
+        }
+
+        /// <summary>
+        /// Initializes all assigned systems with stat data.
+        /// Marks the controller as initialized.
+        /// </summary>
+        private void Initialize()
+        {
+            skillSystem?.Initialize(this);
+
+            movementSystem?.AssignMovementData(
+                characterData.BaseSpeed,
+                characterData.MoveAccelerationRate,
+                characterData.TurnAccelerationRate,
+                characterData.BounceMultiplier,
+                characterData.Mass,
+                characterData.EffectOnBounce);
+
+            healthSystem?.AssignHealthData(
+                characterData.MaxHealth,
+                characterData.InvincibleTimePerHit);
+
+            combatSystem?.AssignCombatData(characterData.BaseDamage);
+
+            _isInitialize = true;
+        }
 
         /// <summary>
         /// Subscribes or unsubscribes the character's movement input handler
@@ -211,6 +259,7 @@ namespace Characters.Controllers
         /// <param name="isToggle">If true, subscribes to movement input; otherwise, unsubscribes.</param>
         public void ToggleMovementInputController(bool isToggle)
         {
+            if (_inputSystem == null) return;
             if (isToggle)
                 _inputSystem.OnMove += movementSystem.AssignInputDirection;
             else
@@ -224,6 +273,7 @@ namespace Characters.Controllers
         /// <param name="isToggle">If true, subscribes to skill input; otherwise, unsubscribes.</param>
         public void ToggleSkillInputController(bool isToggle)
         {
+            if (_inputSystem == null) return;
             if (isToggle)
             {
                 _inputSystem.OnPrimarySkillPerform += skillSystem.PerformPrimarySkill;
