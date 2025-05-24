@@ -125,7 +125,7 @@ namespace Characters.Controllers
         {
             skillSystem.Initialize(this);
             movementSystem?.AssignMovementData(characterData.BaseSpeed, characterData.MoveAccelerationRate,
-                characterData.TurnAccelerationRate, characterData.BounceMultiplier, characterData.Mass);
+                characterData.TurnAccelerationRate, characterData.BounceMultiplier, characterData.Mass, characterData.EffectOnBounce);
             healthSystem?.AssignHealthData(characterData.MaxHealth, characterData.InvincibleTimePerHit);
             combatSystem?.AssignCombatData(characterData.BaseDamage);
         }
@@ -186,6 +186,7 @@ namespace Characters.Controllers
                 CombatManager.ApplyDamageTo(other.gameObject, gameObject);
             }
 
+            if (!other.gameObject || !other.gameObject.activeSelf) return;
             movementSystem.BounceHandler(other);
         }
 

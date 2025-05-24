@@ -178,7 +178,6 @@ namespace Characters.SkillSystems.SkillRuntimes
             CopyCollider2D(original, clone);
             CopyRigidbody2D(original, clone);
             RigidbodyMovementSystem movementSystem = clone.AddComponent<RigidbodyMovementSystem>();
-            movementSystem.AssignMovementData(0, 0, 0, owner.CharacterData.BounceMultiplier, owner.CharacterData.Mass);
             return movementSystem;
         }
 

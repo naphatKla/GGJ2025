@@ -1,6 +1,7 @@
+using System.Collections.Generic;
+using Characters.StatusEffectSystems;
 using Sirenix.OdinInspector;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Characters.SO.CharacterDataSO
 {
@@ -37,6 +38,10 @@ namespace Characters.SO.CharacterDataSO
         [SerializeField]
         [PropertyTooltip("Mass factor used in physics-based interactions, such as knockback or bounce weighting.")]
         private float mass = 1f;
+
+        [SerializeField]
+        [PropertyTooltip("Effects that are applied to the character when a bounce occurs.")]
+        private List<StatusEffectDataPayload> effectOnBounce;
 
         [Title("Combat Data", TitleAlignment = TitleAlignments.Centered)]
         [SerializeField]
@@ -80,6 +85,11 @@ namespace Characters.SO.CharacterDataSO
         /// knockback resistance, and bounce responsiveness.
         /// </summary>
         public float Mass => mass;
+
+        /// <summary>
+        /// Effects that are applied to the character when a bounce occurs.
+        /// </summary>
+        public List<StatusEffectDataPayload> EffectOnBounce => effectOnBounce;
 
         /// <summary>
         /// The base attack damage of the character.

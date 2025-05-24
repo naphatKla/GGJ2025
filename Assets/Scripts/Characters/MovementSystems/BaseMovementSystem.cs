@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using Characters.Controllers;
+using Characters.StatusEffectSystems;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
+using Manager;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -58,7 +60,7 @@ namespace Characters.MovementSystems
         protected float bounceMultiplier;
 
         /// <summary>
-        /// 
+        /// mass of this entity, use to calculate bounce force and collision force.
         /// </summary>
         [ShowInInspector, ReadOnly] [ShowIf("@UnityEngine.Application.isPlaying")]
         protected float mass;
@@ -76,7 +78,7 @@ namespace Characters.MovementSystems
         protected Vector2 currentDirection;
 
         /// <summary>
-        /// 
+        /// raw input direction from input reader.
         /// </summary>
         protected Vector2 inputDirection = Vector2.zero;
 
@@ -116,7 +118,12 @@ namespace Characters.MovementSystems
         /// Used to prevent multiple bounce responses in quick succession.
         /// </summary>
         private bool _isBounceCooldown;
-            
+
+        /// <summary>
+        /// Effects that are applied to the character when a bounce occurs
+        /// </summary>
+        private List<StatusEffectDataPayload> _effectOnBounce;
+        
         #endregion
 
         #region Unity Methods
@@ -139,7 +146,7 @@ namespace Characters.MovementSystems
         /// Assigns base movement data to the character, including speed and acceleration settings.
         /// Typically called by the character controller during initialization to configure movement behavior.
         /// </summary>
-        public virtual void AssignMovementData(float baseSpeed, float moveAccelerationRate, float turnAccelerationRate, float bounceMultiplier, float mass)
+        public virtual void AssignMovementData(float baseSpeed, float moveAccelerationRate, float turnAccelerationRate, float bounceMultiplier, float mass, List<StatusEffectDataPayload> effectOnBounce)
         {
             _baseSpeed = baseSpeed;
             currentSpeed = baseSpeed;
@@ -147,6 +154,7 @@ namespace Characters.MovementSystems
             this.turnAccelerationRate = turnAccelerationRate;
             this.bounceMultiplier = bounceMultiplier;
             this.mass = mass;
+            _effectOnBounce = effectOnBounce;
         }
 
         /// <summary>
@@ -216,9 +224,17 @@ namespace Characters.MovementSystems
         protected void ApplyBounceFromTweenCollision(Vector2 hitNormal, Vector2? externalForce = null)
         {
             float multiplier = bounceMultiplier;
-            if (!_moveOverTimeTween.IsActive())
-                multiplier *= 0.6f;
-
+            if (currentVelocity.magnitude <= currentSpeed)
+            {
+                // mini bounce != main bounce
+                multiplier *= 0.5f;
+            }
+            else
+            {
+                //  main bounce
+                StatusEffectManager.ApplyEffectTo(gameObject, _effectOnBounce);
+            }
+            
             _moveOverTimeTween?.Kill();
             
             Vector2 incomingForce = externalForce ?? Vector2.zero;
@@ -238,10 +254,9 @@ namespace Characters.MovementSystems
         /// Triggers bounce behavior if not in cooldown. Checks for valid target and applies bounce based on collision impact and enemy velocity.
         /// </summary>
         /// <param name="other">Collision data from Unity's collision callback.</param>
-        public async void BounceHandler(Collision2D other)
+        public void BounceHandler(Collision2D other)
         {
             if (_isBounceCooldown) return;
-            if (!other.gameObject || !other.gameObject.activeSelf) return;
             Vector2 normal = other.GetContact(0).normal;
             Vector2? externalForce = null;
 
@@ -250,9 +265,9 @@ namespace Characters.MovementSystems
                 if (otherController.HealthSystem.IsDead) return;
                 externalForce = otherController.MovementSystem.currentVelocity;
             }
-
+            
             ApplyBounceFromTweenCollision(normal, externalForce);
-            await StartBounceCooldown();
+            StartBounceCooldown().Forget();
         }
         
         /// <summary>
