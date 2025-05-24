@@ -13,15 +13,8 @@ namespace Characters.SkillSystems.SkillRuntimes
     public class SkillDashRuntime : BaseSkillRuntime<SkillDashDataSo>
     {
         #region Methods
-
-        /// <summary>
-        /// Called when the dash skill begins.
-        /// Disables character input and resets speed to base before performing the dash.
-        /// </summary>
-        protected override void OnSkillStart()
-        {
-            owner.DamageOnTouch.EnableDamage(true);
-        }
+        
+        protected override void OnSkillStart() { }
 
         /// <summary>
         /// Performs the dash by moving the character toward a target position over time.
@@ -36,15 +29,8 @@ namespace Characters.SkillSystems.SkillRuntimes
                 .TryMoveToPositionOverTime(dashPosition, skillData.DashDuration, skillData.DashEaseCurve,
                     skillData.DashMoveCurve).WithCancellation(cancelToken);
         }
-
-        /// <summary>
-        /// Called when the dash completes or is cancelled.
-        /// Re-enables movement input to return control to the character.
-        /// </summary>
-        protected override void OnSkillExit()
-        {
-            owner.DamageOnTouch.EnableDamage(false);
-        }
+        
+        protected override void OnSkillExit() { }
 
         #endregion
     }

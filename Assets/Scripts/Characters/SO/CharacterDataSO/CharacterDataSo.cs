@@ -8,27 +8,32 @@ namespace Characters.SO.CharacterDataSO
     public class CharacterDataSo : ScriptableObject
     {
         #region Inspector & Variables
-        
+
         [Title("Health Data", TitleAlignment = TitleAlignments.Centered)]
         [PropertyTooltip("The maximum health value the character can have.")]
-        [SerializeField] private float maxHealth;
-        
+        [SerializeField]
+        private float maxHealth;
+
+        [PropertyTooltip(
+            "Duration of temporary invincibility (in seconds) after the character takes damage. Prevents consecutive hits during this period.")]
+        [SerializeField]
+        private float invincibleTimePerHit = 0.1f;
+
         [Title("Movement Data", TitleAlignment = TitleAlignments.Centered)]
         [PropertyTooltip("The base movement speed of the character when moving at full speed. (Units/Sec)")]
-        [SerializeField] private float baseSpeed;
-        
         [SerializeField]
-        [PropertyTooltip("How quickly the character accelerates toward the target movement speed.")]
+        private float baseSpeed;
+
+        [SerializeField] [PropertyTooltip("How quickly the character accelerates toward the target movement speed.")]
         private float moveAccelerationRate;
-        
-        [SerializeField]
-        [PropertyTooltip("How quickly the character adjusts its movement direction.")]
+
+        [SerializeField] [PropertyTooltip("How quickly the character adjusts its movement direction.")]
         private float turnAccelerationRate;
 
         [SerializeField]
         [PropertyTooltip("Multiplier applied to bounce speed when the character collides during tween-based movement.")]
         private float bounceMultiplier = 1f;
-        
+
         [SerializeField]
         [PropertyTooltip("Mass factor used in physics-based interactions, such as knockback or bounce weighting.")]
         private float mass = 1f;
@@ -43,6 +48,11 @@ namespace Characters.SO.CharacterDataSO
         /// The maximum health value for the character.
         /// </summary>
         public float MaxHealth => maxHealth;
+
+        /// <summary>
+        /// Duration of temporary invincibility (in seconds) after the character takes damage. Prevents consecutive hits during this period.
+        /// </summary>
+        public float InvincibleTimePerHit => invincibleTimePerHit;
 
         /// <summary>
         /// The base movement speed of the character.
@@ -75,7 +85,7 @@ namespace Characters.SO.CharacterDataSO
         /// The base attack damage of the character.
         /// </summary>
         public float BaseDamage => baseDamage;
-        
+
         #endregion
     }
 }

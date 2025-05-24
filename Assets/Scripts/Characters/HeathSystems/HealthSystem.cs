@@ -1,5 +1,5 @@
 using System;
-using Characters.Controllers;
+using Cysharp.Threading.Tasks;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -7,7 +7,8 @@ namespace Characters.HeathSystems
 {
     /// <summary>
     /// Handles the health system of a character, including taking damage, healing,
-    /// invincibility status, and death state.
+    /// invincibility status, hit cooldown, and death state.
+    /// Prevents taking damage during temporary invincibility or hit cooldown period.
     /// </summary>
     public class HealthSystem : MonoBehaviour
     {
@@ -35,12 +36,24 @@ namespace Characters.HeathSystems
         private bool _isInvincible;
 
         /// <summary>
+        /// The duration (in seconds) of temporary hit cooldown after taking damage.
+        /// During this time, additional hits will be ignored.
+        /// </summary>
+        private float _invincibleTimePerHit;
+
+        /// <summary>
+        /// Whether the character is currently in hit cooldown state.
+        /// Prevents taking consecutive damage.
+        /// </summary>
+        private bool _isHitCooldown;
+
+        /// <summary>
         /// Indicates whether the character is dead.
         /// </summary>
         [ShowInInspector, ReadOnly]
         [ShowIf("@UnityEngine.Application.isPlaying")]
         private bool _isDead;
-        
+
         /// <summary>
         /// Indicates whether the character is dead.
         /// </summary>
@@ -68,32 +81,36 @@ namespace Characters.HeathSystems
         public Action<bool> OnInvincible { get; set; }
 
         #endregion
-        
+
         #region Methods
 
         /// <summary>
         /// Assigns the health data for the character.
         /// This method is typically called by the character controller during initialization.
         /// </summary>
-        /// <param name="maxHealth">maximum health to assign.</param>
-        public void AssignHealthData(float maxHealth)
+        /// <param name="maxHealth">Maximum health to assign.</param>
+        /// <param name="invincibleTimePerHit">Cooldown duration after taking damage.</param>
+        public void AssignHealthData(float maxHealth, float invincibleTimePerHit)
         {
             _maxHealth = maxHealth;
+            _invincibleTimePerHit = invincibleTimePerHit;
             ResetHealthSystem();
         }
-        
+
         /// <summary>
         /// Reduces the character's health by the given damage amount.
-        /// Prevents damage if the character is invincible or already dead.
+        /// Prevents damage if the character is invincible, in cooldown, or already dead.
         /// </summary>
         /// <param name="damage">The amount of damage to apply.</param>
-        /// <returns>Is this entity indeed take damage or not</returns>
+        /// <returns>True if the damage was applied; otherwise, false.</returns>
         public bool TakeDamage(float damage)
         {
             if (_isInvincible) return false;
+            if (_isHitCooldown) return false;
             if (_isDead) return false;
             ModifyHealth(-damage);
             OnTakeDamage?.Invoke();
+            HitCooldownHandler();
 
             if (_currentHealth <= 0)
             {
@@ -126,12 +143,25 @@ namespace Characters.HeathSystems
 
         /// <summary>
         /// Resets the character's health to maximum and revives them if they were dead.
+        /// Also clears invincibility and hit cooldown states.
         /// </summary>
         public void ResetHealthSystem()
         {
             _currentHealth = _maxHealth;
-             SetInvincible(false);
+            SetInvincible(false);
+            _isHitCooldown = false;
             _isDead = false;
+        }
+
+        /// <summary>
+        /// Starts the hit cooldown period after the character takes damage.
+        /// Prevents additional damage for the configured duration.
+        /// </summary>
+        public async void HitCooldownHandler()
+        {
+            _isHitCooldown = true;
+            await UniTask.WaitForSeconds(_invincibleTimePerHit);
+            _isHitCooldown = false; 
         }
 
         /// <summary>

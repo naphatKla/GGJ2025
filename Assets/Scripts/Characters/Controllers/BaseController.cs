@@ -126,7 +126,7 @@ namespace Characters.Controllers
             skillSystem.Initialize(this);
             movementSystem?.AssignMovementData(characterData.BaseSpeed, characterData.MoveAccelerationRate,
                 characterData.TurnAccelerationRate, characterData.BounceMultiplier, characterData.Mass);
-            healthSystem?.AssignHealthData(characterData.MaxHealth);
+            healthSystem?.AssignHealthData(characterData.MaxHealth, characterData.InvincibleTimePerHit);
             combatSystem?.AssignCombatData(characterData.BaseDamage);
         }
 

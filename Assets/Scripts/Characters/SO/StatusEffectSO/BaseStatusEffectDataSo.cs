@@ -40,7 +40,7 @@ namespace Characters.SO.StatusEffectSO
         [PropertyTooltip("Level of the effect used for override priority comparison. Range is 1 (weak) to 4 (strong).")]
         [Range(1, 4)]
         [SerializeField]
-        private int level;
+        private int level = 1;
 
         [Title("Type Binding"), Space(10)]
         [PropertyTooltip("Runtime class that will be instantiated when this effect is applied.")]
