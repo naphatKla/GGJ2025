@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using Characters.Controllers;
 using Characters.InputSystems.Interface;
+using Characters.MovementSystems;
 using UnityEngine;
 
 namespace Characters.InputSystems
@@ -14,6 +15,8 @@ namespace Characters.InputSystems
     public class EnemyInputReader : MonoBehaviour, ICharacterInput
     {
         #region Inspector & Variables
+        
+        private BaseMovementSystem movementSystem;
 
         /// <summary>
         /// Coroutine that periodically updates AI behavior.
@@ -46,6 +49,7 @@ namespace Characters.InputSystems
         private void OnEnable()
         {
             updateTickCoroutine = StartCoroutine(UpdateTick());
+            movementSystem = GetComponent<BaseMovementSystem>();
         }
 
         /// <summary>
@@ -65,9 +69,12 @@ namespace Characters.InputSystems
         /// <summary>
         /// Periodically updates AI behavior every <c>timeTick</c> seconds.
         /// Simulates movement toward the player and triggers skill input.
+        /// PrimaryMovement will toggle enable if distance > distance between player and enemy
         /// </summary>
         private IEnumerator UpdateTick()
         {
+            bool isMovementEnabled = true;
+            
             while (true)
             {
                 yield return new WaitForSeconds(timeTick);
@@ -78,6 +85,19 @@ namespace Characters.InputSystems
 
                 // Simulate inputs
                 Vector2 playerDirection = PlayerController.Instant.transform.position - transform.position;
+                
+                // Check stop movement if near player
+                float distance = Vector2.Distance(PlayerController.Instant.transform.position, transform.position);
+                bool shouldEnable = distance >= 3f;
+
+                if (shouldEnable != isMovementEnabled)
+                {
+                    movementSystem?.TogglePrimaryMovement(shouldEnable);
+                    isMovementEnabled = shouldEnable;
+                }
+
+                if (!shouldEnable) continue;
+                
                 OnMove?.Invoke(playerDirection.normalized);
                 OnPrimarySkillPerform?.Invoke(sightDirection);
                 OnSecondarySkillPerform?.Invoke(sightDirection);
