@@ -12,11 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb20b7afc201d4d46b649b6ac3009fa4, type: 3}
   m_Name: '[STAGE] Level-1'
   m_EditorClassIdentifier: 
+  defaultEnemyData: {fileID: 11400000, guid: e8bf0e8ec6b32e344a0ddff289ef5d98, type: 2}
+  PreObjectSpawn: 20
   enemies:
   - EnemyData: {fileID: 11400000, guid: e8bf0e8ec6b32e344a0ddff289ef5d98, type: 2}
-    SpawnChance: 1
-    PreObjectSpawn: 30
-  spawnEvent: []
+    EnemyType: {fileID: 11400000, guid: c1d07ea341b30b24fb5d44940eefa14e, type: 2}
+    SpawnChance: 10
+  - EnemyData: {fileID: 11400000, guid: e8bf0e8ec6b32e344a0ddff289ef5d98, type: 2}
+    EnemyType: {fileID: 11400000, guid: a3e10d2b7a7c85c4b8f06b4b6bb83034, type: 2}
+    SpawnChance: 10
+  spawnEvent:
+  - {fileID: 11400000, guid: 564a645afaa186c48895c58d22b1047c, type: 2}
   killQuota: 10
   timerLimit: 60
   spawnQuota: 10

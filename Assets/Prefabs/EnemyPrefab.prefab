@@ -22,7 +22,7 @@ GameObject:
   - component: {fileID: 8811412802831875570}
   - component: {fileID: 7312169751311385798}
   m_Layer: 6
-  m_Name: TestEnemy
+  m_Name: EnemyPrefab
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -38,7 +38,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0.25, y: -0.13, z: 0}
-  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2313492309073572760}
@@ -117,6 +117,7 @@ MonoBehaviour:
   feedbackSystem: {fileID: 5733554412123996507}
   comboSystem: {fileID: 0}
   characterData: {fileID: 11400000, guid: c1d07ea341b30b24fb5d44940eefa14e, type: 2}
+  mainCollider: {fileID: 0}
 --- !u!114 &7216587496243282883
 MonoBehaviour:
   m_ObjectHideFlags: 0

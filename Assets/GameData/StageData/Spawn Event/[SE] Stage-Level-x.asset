@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c6e2c122e8dc642aecbe83e74a282c, type: 3}
   m_Name: '[SE] Stage-Level-x'
   m_EditorClassIdentifier: 
+  defaultEnemyData: {fileID: 11400000, guid: e8bf0e8ec6b32e344a0ddff289ef5d98, type: 2}
   _chance: 10
   _cooldown: 5
   _enemyCount: 8
@@ -45,7 +46,11 @@ MonoBehaviour:
     m_RotationOrder: 4
   _spawnEnemies:
   - EnemyData: {fileID: 11400000, guid: e8bf0e8ec6b32e344a0ddff289ef5d98, type: 2}
-    SpawnChance: 100
+    EnemyType: {fileID: 11400000, guid: c1d07ea341b30b24fb5d44940eefa14e, type: 2}
+    SpawnChance: 10
+  - EnemyData: {fileID: 11400000, guid: e8bf0e8ec6b32e344a0ddff289ef5d98, type: 2}
+    EnemyType: {fileID: 11400000, guid: a3e10d2b7a7c85c4b8f06b4b6bb83034, type: 2}
+    SpawnChance: 10
   _spawnEffectPrefab: {fileID: 0}
   _spawnStrategy:
     rid: 3868164761998852097

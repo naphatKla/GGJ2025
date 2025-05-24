@@ -123,7 +123,6 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     #endregion
 
     #region Methods
-    
     /// <summary>
     /// Check player quota to go next stage
     /// </summary>

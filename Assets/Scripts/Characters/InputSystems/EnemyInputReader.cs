@@ -93,7 +93,6 @@ namespace Characters.InputSystems
                 if (shouldEnable != isMovementEnabled)
                 {
                     movementSystem?.TogglePrimaryMovement(shouldEnable);
-                    Debug.Log(shouldEnable);
                     isMovementEnabled = shouldEnable;
                 }
 

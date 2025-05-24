@@ -1,24 +1,43 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using Characters.SO.CharacterDataSO;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.Serialization;
 
 [Serializable]
-public class EnemyProperties
+public class EnemyProperties : IWeightedEnemy
 {
+    [HideInInspector]
     public EnemyDataSO EnemyData;
+
+    [ValueDropdown("@GetEnemyTypesFromDefault()")]
+    public CharacterDataSo EnemyType;
     [Tooltip("Chance to spawn this enemy")]
     public float SpawnChance;
-    [Tooltip("How many enemy should created on enemyparent to use with pooling")]
-    public float PreObjectSpawn;
+
+    private IEnumerable<CharacterDataSo> GetEnemyTypesFromDefault()
+    {
+        if (EnemyData == null || EnemyData.enemyData == null)
+            return Enumerable.Empty<CharacterDataSo>();
+
+        return EnemyData.enemyData;
+    }
+    
+    public CharacterDataSo GetCharacterData() => EnemyType;
+    public float GetSpawnChance() => SpawnChance;
 }
 
 [CreateAssetMenu(fileName = "StageData", menuName = "Game/StageData", order = 2)]
 public class StageDataSO : ScriptableObject
 {
     #region Inspector & Variable
+    [SerializeField] private EnemyDataSO defaultEnemyData;
+    [Tooltip("How many enemy should created on enemyparent to use with pooling")]
+    public float PreObjectSpawn;
+
     [Title("Enemy Data")] [Tooltip("Data of the enemies scriptable object (Random by chance)")]
     [SerializeField] private EnemyProperties[] enemies;
     [Space][Title("Spawn Event")] [Tooltip("Data of world event scriptable object")]
@@ -77,4 +96,9 @@ public class StageDataSO : ScriptableObject
     public float EventIntervalCheck => eventIntervalCheck;
     
     #endregion
+
+    private void OnValidate()
+    {
+        foreach (var enemy in enemies) enemy.EnemyData = defaultEnemyData;
+    }
 }

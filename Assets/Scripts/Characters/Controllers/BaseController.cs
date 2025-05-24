@@ -136,7 +136,7 @@ namespace Characters.Controllers
         /// </summary>
         private async void OnEnable()
         {
-            await UniTask.WaitUntil(() => _isInitialize).Timeout(TimeSpan.FromSeconds(2f));
+            await UniTask.WaitUntil(() => _isInitialize);
             if (!Application.isPlaying) return;
 
             _inputSystem ??= GetComponent<ICharacterInput>();
@@ -154,7 +154,7 @@ namespace Characters.Controllers
         /// </summary>
         private async void OnDisable()
         {
-            await UniTask.WaitUntil(() => _isInitialize).Timeout(TimeSpan.FromSeconds(2f));
+            await UniTask.WaitUntil(() => _isInitialize);
 
             ToggleMovementInputController(false);
             ToggleSkillInputController(false);

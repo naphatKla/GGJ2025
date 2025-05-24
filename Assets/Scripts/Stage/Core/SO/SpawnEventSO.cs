@@ -2,18 +2,34 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Characters.Controllers;
+using Characters.SO.CharacterDataSO;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 #region Data Classes
 
 [Serializable]
-public class SpawnEnemyProperties
+public class SpawnEnemyProperties : IWeightedEnemy
 {
+    [HideInInspector]
     public EnemyDataSO EnemyData;
+    
+    [ValueDropdown("@GetEnemyTypesFromDefault()")]
+    public CharacterDataSo EnemyType;
 
     [Tooltip("Chance to spawn this enemy")]
     public float SpawnChance;
+    
+    private IEnumerable<CharacterDataSo> GetEnemyTypesFromDefault()
+    {
+        if (EnemyData == null || EnemyData.enemyData == null)
+            return Enumerable.Empty<CharacterDataSo>();
+
+        return EnemyData.enemyData;
+    }
+
+    public CharacterDataSo GetCharacterData() => EnemyType;
+    public float GetSpawnChance() => SpawnChance;
 }
 
 #endregion
@@ -22,6 +38,7 @@ public class SpawnEnemyProperties
 public class SpawnEventSO : ScriptableObject, ISpawnEvent
 {
     #region Serialized Fields
+    [SerializeField] private EnemyDataSO defaultEnemyData;
 
     [Title("Event Properties")]
     [Tooltip("Chance of this spawn event being selected (0–100%)")]
@@ -82,7 +99,8 @@ public class SpawnEventSO : ScriptableObject, ISpawnEvent
 
     public List<IEnemyData> EventEnemies =>
         _spawnEnemies?.Select(e => (IEnemyData)e.EnemyData).ToList();
-
+    
+    public SpawnEnemyProperties[] SpawnEnemies => _spawnEnemies;
     #endregion
 
     #region Public Methods
@@ -119,6 +137,12 @@ public class SpawnEventSO : ScriptableObject, ISpawnEvent
             DelayCurve = perEnemyDelayCurve,
             SpawnEffectPrefab = _spawnEffectPrefab
         };
+    }
+    
+    private void OnValidate()
+    {
+        foreach (var enemy in _spawnEnemies)
+            enemy.EnemyData = defaultEnemyData;
     }
 
     #endregion
