@@ -93,11 +93,10 @@ namespace Characters.InputSystems
                 if (shouldEnable != isMovementEnabled)
                 {
                     movementSystem?.TogglePrimaryMovement(shouldEnable);
+                    Debug.Log(shouldEnable);
                     isMovementEnabled = shouldEnable;
                 }
 
-                if (!shouldEnable) continue;
-                
                 OnMove?.Invoke(playerDirection.normalized);
                 OnPrimarySkillPerform?.Invoke(sightDirection);
                 OnSecondarySkillPerform?.Invoke(sightDirection);

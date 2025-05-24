@@ -138,7 +138,6 @@ namespace Characters.MovementSystems
         /// </summary>
         protected void Update()
         {
-            if (!_enablePrimaryMovement) return;
             if (inputDirection == Vector2.zero) return;
             TryMoveWithInertia(inputDirection);
         }
@@ -180,6 +179,8 @@ namespace Characters.MovementSystems
             if (!_canMove) return;
             if (_moveOverTimeTween.IsActive()) return;
             if (currentSpeed == 0) return;
+            if (!_enablePrimaryMovement)
+                direction = Vector2.zero;
             MoveWithInertia(direction);
         }
 
