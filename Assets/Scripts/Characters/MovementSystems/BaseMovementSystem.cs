@@ -123,6 +123,11 @@ namespace Characters.MovementSystems
         /// Effects that are applied to the character when a bounce occurs
         /// </summary>
         private List<StatusEffectDataPayload> _effectOnBounce;
+
+        /// <summary>
+        /// Determine this entity is unstoppable or not.
+        /// </summary>
+        private bool _isUnStoppable;
         
         #endregion
 
@@ -256,6 +261,7 @@ namespace Characters.MovementSystems
         /// <param name="other">Collision data from Unity's collision callback.</param>
         public void BounceHandler(Collision2D other)
         {
+            if (_isUnStoppable) return;
             if (_isBounceCooldown) return;
             if (other.contactCount == 0) return;
             
@@ -290,6 +296,16 @@ namespace Characters.MovementSystems
         {
             _canMove = canMove;
             if (!_canMove) StopAllMovement();
+        }
+
+        /// <summary>
+        /// Sets whether the entity unstoppable or not
+        /// Passing true will ignore status effect and bounce;
+        /// </summary>
+        /// <param name="value"></param>
+        public virtual void SetUnStoppableMode(bool value)
+        {
+            _isUnStoppable = value;
         }
 
         /// <summary>
