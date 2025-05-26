@@ -367,6 +367,9 @@ public class EnemySpawner
         OnEnemyDespawned?.Invoke(enemy);
         _spawnerService.Despawn(enemy.gameObject);
         _killCount += 1;
+        
+        SoulItemManagerSpawner.Instance.SpawnExpDrop(enemy.CharacterData.ExpDrop, enemy.transform.position);
+        
     }
 
     /// <summary>

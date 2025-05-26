@@ -15,7 +15,7 @@ public class EnemyProperties : IWeightedEnemy
 
     [Tooltip("Chance to spawn this enemy")]
     public float SpawnChance;
-
+    
     [FoldoutGroup("Advanced Spawn Control")]
     public bool UseTimer;
 

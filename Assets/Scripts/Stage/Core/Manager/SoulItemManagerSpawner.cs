@@ -8,23 +8,21 @@ using Cysharp.Threading.Tasks;
 using MoreMountains.Tools;
 using Sirenix.OdinInspector;
 using UnityEngine;
-
-#region Data Classes
+using Random = UnityEngine.Random;
 
 [Serializable]
 public class SoulData
 {
-    public BaseCollectableItemDataSo soulData;
+    public SoulItemDataSo soulData;
     public float spawnChance;
+    public float preSpawnObject;
 }
-
-#endregion
 
 public class SoulItemManagerSpawner : MMSingleton<SoulItemManagerSpawner>
 {
-    #region Inspector Fields
+    #region Fields
 
-    [SerializeField, Tooltip("List of soul prefabs and their spawn chances.")]
+    [SerializeField, Tooltip("List of soul prefabs, their spawn chances, and pre-spawn counts.")]
     private List<SoulData> soulDataList = new();
 
     [SerializeField, Tooltip("Parent transform for spawned soul objects.")]
@@ -45,69 +43,50 @@ public class SoulItemManagerSpawner : MMSingleton<SoulItemManagerSpawner>
     [SerializeField, Tooltip("Size of the spawn area (width and height).")]
     private Vector2 spawnSize = Vector2.zero;
 
-    #endregion
+    [SerializeField, Tooltip("If true, prioritizes fewer soul items for EXP drops; otherwise, uses smaller EXP items.")]
+    private bool preferFewerItems = true;
 
-    #region Private Fields
-
-    /// <summary>Total sum of spawn chances for all soul types.</summary>
-    private float _totalSpawnChance;
-
-    /// <summary>List of currently active soul GameObjects.</summary>
-    private readonly HashSet<GameObject> _soulGO = new();
-
-    /// <summary>Lookup table for soul prefabs by name.</summary>
-    private readonly Dictionary<string, GameObject> _soulPrefabLookup = new();
-
-    /// <summary>Cancellation token source for controlling spawning loop.</summary>
-    private CancellationTokenSource _spawningCts;
-
-    /// <summary>Tracks if spawning is currently active.</summary>
-    private bool _isSpawning;
-
+    private readonly HashSet<GameObject> _activeSouls = new();
+    private readonly Dictionary<string, GameObject> _soulPrefabs = new();
     private readonly ISpawnerService _spawnerService = new ObjectPoolSpawnerService();
-
-    #endregion
-
-    #region Properties
-
-    private bool CanSpawnMore => _soulGO.Count < maxSpawn;
+    private CancellationTokenSource _spawningCts;
+    private float _totalSpawnChance;
+    private bool _isSpawning;
 
     #endregion
 
     #region Unity Lifecycle
 
-    /// <summary>Initializes the spawn manager, sets up the object pool, and starts spawning.</summary>
+    /// <summary>
+    /// Initializes the spawner, sets up the object pool, and starts the spawning process.
+    /// </summary>
     private async UniTaskVoid Start()
     {
-        SetupPool();
+        InitializePool();
         _spawningCts = new CancellationTokenSource();
 
         if (spawnMaximumOnStart)
-            PreSpawnToMax();
+            SpawnInitialSouls();
 
         await UniTask.Delay(TimeSpan.FromSeconds(1));
-        await StartSpawningLoop();
+        await RunSpawnLoop();
     }
 
-    /// <summary>Cleans up cancellation token source on destroy.</summary>
+    /// <summary>
+    /// Cleans up the spawning cancellation token when the object is destroyed.
+    /// </summary>
     private void OnDestroy()
-    {
-        ResetToken();
-    }
-
-    /// <summary>Resets the spawning cancellation token.</summary>
-    private void ResetToken()
     {
         _spawningCts?.Cancel();
         _spawningCts?.Dispose();
-        _spawningCts = null;
     }
 
-    /// <summary>Draws a wireframe cube in the editor to visualize the spawn area.</summary>
+    /// <summary>
+    /// Draws a gizmo to visualize the spawn area in the Unity editor.
+    /// </summary>
     private void OnDrawGizmos()
     {
         if (soulParent == null) return;
-
         Gizmos.color = Color.green;
         Gizmos.DrawWireCube(soulParent.position, new Vector3(spawnSize.x, spawnSize.y, 0));
     }
@@ -116,66 +95,55 @@ public class SoulItemManagerSpawner : MMSingleton<SoulItemManagerSpawner>
 
     #region Spawning Logic
 
-    /// <summary>Sets up the object pool for all soul items.</summary>
-    private void SetupPool()
+    /// <summary>
+    /// Sets up the object pool for soul items based on pre-spawn counts and calculates total spawn chance.
+    /// </summary>
+    private void InitializePool()
     {
         foreach (var data in soulDataList)
         {
-            if (data.soulData != null)
-            {
-                for (var a = 0; a < maxSpawn; a++)
-                {
-                    var go = new GameObject(data.soulData.name);
-                    var item = (BaseCollectableItem)go.AddComponent(data.soulData.ItemType);
-                    item.AssignItemData(data.soulData);
-                    item.OnThisItemCollected += DespawnSoul;
-                    go.SetActive(false);
-                    go.transform.parent = soulParent;
-                    PoolManager.Instance.AddToPool(go);
+            if (data.soulData == null) continue;
 
-                    if (!_soulPrefabLookup.ContainsKey(data.soulData.name))
-                        _soulPrefabLookup[data.soulData.name] = go;
-                }
+            int spawnCount = Mathf.Max(1, Mathf.CeilToInt(data.preSpawnObject));
+            for (int i = 0; i < spawnCount; i++)
+            {
+                var go = new GameObject(data.soulData.name);
+                var item = (BaseCollectableItem)go.AddComponent(data.soulData.ItemType);
+                item.AssignItemData(data.soulData);
+                item.OnThisItemCollected += DespawnSoul;
+                go.SetActive(false);
+                go.transform.parent = soulParent;
+                PoolManager.Instance.AddToPool(go);
+                if (!_soulPrefabs.ContainsKey(data.soulData.name))
+                    _soulPrefabs[data.soulData.name] = go;
             }
         }
-        CalculateTotalChance();
-    }
-
-    /// <summary>Calculates the total spawn chance from all soul data.</summary>
-    private void CalculateTotalChance()
-    {
         _totalSpawnChance = soulDataList.Sum(data => data.spawnChance);
     }
 
-    /// <summary>Spawns soul objects up to the maximum limit at random positions.</summary>
-    private void PreSpawnToMax()
+    /// <summary>
+    /// Spawns soul objects up to the maximum limit at random positions on start.
+    /// </summary>
+    private void SpawnInitialSouls()
     {
-        for (var i = 0; i < maxSpawn; i++)
+        for (int i = 0; i < maxSpawn && _activeSouls.Count < maxSpawn; i++)
         {
-            if (!CanSpawnMore) break;
             var data = GetRandomSoul();
-            var pos = GetRandomPosition();
-            SpawnSoul(data.soulData.name, pos, Quaternion.identity);
+            SpawnSoul(data.soulData.name, GetRandomPosition(), Quaternion.identity);
         }
     }
 
-    /// <summary>Starts an asynchronous loop to spawn soul objects at regular intervals.</summary>
-    private async UniTask StartSpawningLoop()
+    /// <summary>
+    /// Runs the main spawning loop, spawning souls at regular intervals.
+    /// </summary>
+    private async UniTask RunSpawnLoop()
     {
         _isSpawning = true;
         while (gameObject.activeInHierarchy && !_spawningCts.Token.IsCancellationRequested)
         {
             try
             {
-                if (CanSpawnMore)
-                {
-                    for (var i = 0; i < spawnPerTick && CanSpawnMore; i++)
-                    {
-                        var data = GetRandomSoul();
-                        var pos = GetRandomPosition();
-                        SpawnSoul(data.soulData.name, pos, Quaternion.identity);
-                    }
-                }
+                TrySpawnSouls();
                 await UniTask.Delay(TimeSpan.FromSeconds(timeTick), cancellationToken: _spawningCts.Token);
             }
             catch (OperationCanceledException)
@@ -186,80 +154,151 @@ public class SoulItemManagerSpawner : MMSingleton<SoulItemManagerSpawner>
         _isSpawning = false;
     }
 
-    /// <summary>Selects a random soul item based on spawn chance weights.</summary>
+    /// <summary>
+    /// Attempts to spawn souls up to the per-tick limit if the maximum spawn count allows.
+    /// </summary>
+    private void TrySpawnSouls()
+    {
+        if (_activeSouls.Count >= maxSpawn) return;
+
+        for (int i = 0; i < spawnPerTick && _activeSouls.Count < maxSpawn; i++)
+        {
+            var data = GetRandomSoul();
+            SpawnSoul(data.soulData.name, GetRandomPosition(), Quaternion.identity);
+        }
+    }
+
+    /// <summary>
+    /// Spawns soul items to match a target EXP value at the specified position.
+    /// </summary>
+    /// <param name="targetExp">The total EXP value to drop.</param>
+    /// <param name="position">The position to spawn the soul items.</param>
+    public void SpawnExpDrop(int targetExp, Vector3 position)
+    {
+        var drops = CalculateExpDrop(targetExp);
+        foreach (var drop in drops)
+        {
+            SpawnSoul(drop.soulData.name, position, Quaternion.identity);
+        }
+    }
+
+    /// <summary>
+    /// Calculates the combination of soul items to match the target EXP value.
+    /// </summary>
+    /// <param name="targetExp">The total EXP value to achieve.</param>
+    /// <returns>A list of soul data items to spawn.</returns>
+    private List<SoulData> CalculateExpDrop(int targetExp)
+    {
+        var drops = new List<SoulData>();
+        var remainingExp = targetExp;
+        
+        var sortedSouls = preferFewerItems
+            ? soulDataList.OrderByDescending(data => data.soulData.Score).ToList()
+            : soulDataList.OrderBy(data => data.soulData.Score).ToList();
+
+        foreach (var data in sortedSouls)
+        {
+            if (data.soulData.Score <= 0) continue;
+
+            int count = remainingExp / data.soulData.Score;
+            for (int i = 0; i < count; i++)
+            {
+                drops.Add(data);
+                remainingExp -= data.soulData.Score;
+            }
+        }
+        return drops;
+    }
+
+    /// <summary>
+    /// Selects a random soul item based on weighted spawn chances.
+    /// </summary>
+    /// <returns>The selected soul data, or the first in the list if no valid selection is made.</returns>
     private SoulData GetRandomSoul()
     {
-        if (_totalSpawnChance <= 0) return soulDataList[0];
-
-        var rand = UnityEngine.Random.Range(0f, _totalSpawnChance);
-        var cum = 0f;
+        if (_totalSpawnChance <= 0 || soulDataList.Count == 0) return soulDataList[0];
+        var rand = Random.Range(0f, _totalSpawnChance);
+        var cumulative = 0f;
         foreach (var data in soulDataList)
         {
-            cum += data.spawnChance;
-            if (rand <= cum)
-                return data;
+            cumulative += data.spawnChance;
+            if (rand <= cumulative) return data;
         }
         return soulDataList[0];
     }
 
-    /// <summary>Generates a random position within the spawn area.</summary>
+    /// <summary>
+    /// Generates a random position within the defined spawn area.
+    /// </summary>
+    /// <returns>A Vector3 representing the spawn position.</returns>
     private Vector3 GetRandomPosition()
     {
-        return new Vector3(
-            UnityEngine.Random.Range(-spawnSize.x / 2f, spawnSize.x / 2f),
-            UnityEngine.Random.Range(-spawnSize.y / 2f, spawnSize.y / 2f),
+        var offset = new Vector3(
+            Random.Range(-spawnSize.x / 2f, spawnSize.x / 2f),
+            Random.Range(-spawnSize.y / 2f, spawnSize.y / 2f),
             0f
-        ) + (soulParent?.position ?? Vector3.zero);
+        );
+        return soulParent != null ? soulParent.position + offset : offset;
     }
 
-    /// <summary>Spawns a soul object at the specified position and rotation.</summary>
+    /// <summary>
+    /// Spawns a soul object at the specified position and rotation.
+    /// </summary>
+    /// <param name="name">The name of the soul to spawn.</param>
+    /// <param name="position">The position to spawn the soul at.</param>
+    /// <param name="rotation">The rotation to apply to the spawned soul.</param>
     private void SpawnSoul(string name, Vector3 position, Quaternion rotation)
     {
-        if (string.IsNullOrEmpty(name)) return;
-        if (!_soulPrefabLookup.TryGetValue(name, out var prefab)) return;
+        if (string.IsNullOrEmpty(name) || !_soulPrefabs.TryGetValue(name, out var prefab)) return;
         var item = PoolManager.Instance.Spawn(prefab, position, rotation, soulParent);
-        _soulGO.Add(item);
+        _activeSouls.Add(item);
     }
 
-    /// <summary>Despawns a soul object and removes it from the active list.</summary>
+    /// <summary>
+    /// Despawns a soul object and removes it from the active list.
+    /// </summary>
+    /// <param name="soul">The soul GameObject to despawn.</param>
     public void DespawnSoul(GameObject soul)
     {
-        PoolManager.Instance.Despawn(soul);
-        _soulGO.Remove(soul);
+        if (_activeSouls.Remove(soul))
+        {
+            PoolManager.Instance.Despawn(soul);
+        }
     }
 
     #endregion
 
     #region Public Controls
 
-    /// <summary>Despawns all active soul objects, clears the tracking list, and resets the pool.</summary>
+    /// <summary>
+    /// Despawns all active soul objects, clears the pool, and reinitializes it.
+    /// </summary>
     [FoldoutGroup("Soul Control"), Button(ButtonSizes.Large), GUIColor(1, 0, 0)]
     public void ClearAll()
     {
-        foreach (var obj in _soulGO)
+        foreach (var obj in _activeSouls.ToList())
         {
-            if (obj != null)
-                PoolManager.Instance.Despawn(obj);
+            DespawnSoul(obj);
         }
-
-        _soulGO.Clear();
         _spawnerService.ClearPool(soulParent);
-        SetupPool();
+        InitializePool();
     }
 
-    /// <summary>Starts the spawning process.</summary>
+    /// <summary>
+    /// Starts the soul spawning loop if not already running.
+    /// </summary>
     [FoldoutGroup("Soul Control"), Button(ButtonSizes.Large), GUIColor(0, 1, 0)]
     public void StartSpawning()
     {
         if (_isSpawning) return;
-
-        _spawningCts?.Cancel();
         _spawningCts?.Dispose();
         _spawningCts = new CancellationTokenSource();
-        StartSpawningLoop().Forget();
+        RunSpawnLoop().Forget();
     }
 
-    /// <summary>Stops the spawning process.</summary>
+    /// <summary>
+    /// Stops the soul spawning loop if currently running.
+    /// </summary>
     [FoldoutGroup("Soul Control"), Button(ButtonSizes.Large), GUIColor(1, 1, 0)]
     public void StopSpawning()
     {

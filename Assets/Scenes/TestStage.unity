@@ -3757,7 +3757,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1712736186
 Transform:
   m_ObjectHideFlags: 0
@@ -3788,12 +3788,14 @@ MonoBehaviour:
   soulDataList:
   - soulData: {fileID: 11400000, guid: 5ff7711956bd54445bc46937e41aaa51, type: 2}
     spawnChance: 100
+    preSpawnObject: 30
   soulParent: {fileID: 425359468}
   spawnMaximumOnStart: 1
-  maxSpawn: 5
+  maxSpawn: 0
   spawnPerTick: 1
   timeTick: 1
   spawnSize: {x: 21.12, y: 11.9}
+  preferFewerItems: 1
 --- !u!1 &1746735401
 GameObject:
   m_ObjectHideFlags: 0

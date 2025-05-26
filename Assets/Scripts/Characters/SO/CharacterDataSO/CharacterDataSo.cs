@@ -48,6 +48,10 @@ namespace Characters.SO.CharacterDataSO
         [PropertyTooltip("The base damage this character deals per hit.")]
         private float baseDamage;
 
+        [Title("Exp Data", TitleAlignment = TitleAlignments.Centered)]
+        [SerializeField]
+        private int expDrop;
+
 
         /// <summary>
         /// The maximum health value for the character.
@@ -85,6 +89,8 @@ namespace Characters.SO.CharacterDataSO
         /// knockback resistance, and bounce responsiveness.
         /// </summary>
         public float Mass => mass;
+
+        public int ExpDrop => expDrop;
 
         /// <summary>
         /// Effects that are applied to the character when a bounce occurs.
