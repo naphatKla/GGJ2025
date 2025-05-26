@@ -112,7 +112,8 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
             }
             else
             {
-                NextStageWithDelay();
+                NextStageInMap();
+                Timer.Instance.PauseTimer();
             }
         }
     }
@@ -301,9 +302,7 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     {
         if (CurrentMap == null || stageIndex < 0 || stageIndex >= CurrentMap.stages.Count) return;
         currentStageIndexInMap = stageIndex;
-        Timer.Instance.ResumeTimer();
         ReloadStage();
-        StartSpawning();
     }
     
     /// <summary>
@@ -353,6 +352,7 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     public void StartPlay()
     {
         SetStageInMap(currentStageIndexInMap);
+        StartSpawning();
     }
     
     /// <summary>
