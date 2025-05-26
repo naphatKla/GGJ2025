@@ -21,6 +21,8 @@ public class Timer : MMSingleton<Timer>
     #region Properties
     
     public float GlobalTimer => currentTimer;
+    public float GlobalTimerDown => startTimer - currentTimer;
+
     public float StartTimer => startTimer;
     
     /// <summary>
@@ -47,7 +49,7 @@ public class Timer : MMSingleton<Timer>
     /// Set timer to start timer.
     /// </summary>
     /// <param name="timer"></param>
-    public void SetTimer(float timer) { startTimer = timer; ResetTimer(); }
+    public void SetTimer(float timer) { startTimer = timer; isRunning = true; ResetTimer(); }
     
     /// <summary>
     /// Stop the timer and resume after delay

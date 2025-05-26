@@ -334,7 +334,7 @@ public class EnemySpawner
     {
         if (!CanSpawn()) return;
 
-        var currentTime = Time.timeSinceLevelLoad;
+        var currentTime = Timer.Instance.GlobalTimerDown;
 
         var availableEnemies = _stageData.Enemies
             .Where(e => e.IsAvailableAtTime(currentTime))
@@ -425,19 +425,32 @@ public class EnemySpawner
     /// </summary>
     public static CharacterDataSo GetRandomEnemyType<T>(List<T> enemies) where T : IWeightedEnemy
     {
-        float total = enemies.Sum(e => e.GetSpawnChance());
-        float roll = UnityEngine.Random.Range(0f, total);
-        float accum = 0f;
+        var currentTime = Timer.Instance.GlobalTimer;
+
+        var total = enemies.Sum(e =>
+        {
+            if (e is EnemyProperties dynamicEnemy)
+                return dynamicEnemy.GetCurrentSpawnChance(currentTime);
+            return e.GetSpawnChance();
+        });
+
+        var roll = Random.Range(0f, total);
+        var accum = 0f;
 
         foreach (var enemy in enemies)
         {
-            accum += enemy.GetSpawnChance();
+            var chance = enemy is EnemyProperties dynamic
+                ? dynamic.GetCurrentSpawnChance(currentTime)
+                : enemy.GetSpawnChance();
+
+            accum += chance;
             if (roll <= accum)
                 return enemy.GetCharacterData();
         }
 
         return enemies.FirstOrDefault()?.GetCharacterData();
     }
+
 
 
 
