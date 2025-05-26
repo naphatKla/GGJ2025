@@ -10,18 +10,17 @@ using Sirenix.OdinInspector;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-#region Data Classes
 [Serializable]
 public class PowerUpData
 {
     public BaseCollectableItemDataSo powerData;
     public float spawnChance;
 }
-#endregion
 
 public class PowerUpSpawnerManager : MMSingleton<PowerUpSpawnerManager>
 {
-    #region Inspector Fields
+    #region Fields
+
     [SerializeField, Tooltip("List of power-up prefabs and their spawn chances.")]
     private List<PowerUpData> powerDataList = new();
 
@@ -37,199 +36,233 @@ public class PowerUpSpawnerManager : MMSingleton<PowerUpSpawnerManager>
     [SerializeField, Tooltip("Initial spawn chance percentage (0-1).")]
     private float initialSpawnChance = 0.1f;
 
-    #endregion
-
-    #region Private Fields
-    private float _totalSpawnChance;
-    private readonly HashSet<GameObject> _powerGO = new();
-    private readonly Dictionary<string, GameObject> _powerPrefabLookup = new();
+    private readonly HashSet<GameObject> _activePowerUps = new();
+    private readonly Dictionary<string, GameObject> _powerUpPrefabs = new();
+    private readonly ISpawnerService _spawnerService = new ObjectPoolSpawnerService();
     private CancellationTokenSource _spawningCts;
-    private bool _isSpawning;
+    private float _totalSpawnChance;
     private float _currentSpawnChance;
     private float _currentCooldown;
-    private readonly ISpawnerService _spawnerService = new ObjectPoolSpawnerService();
-    private const int MAX_SPAWN = 1;
+    private bool _isSpawning;
+    private const int MaxSpawn = 1;
 
-    #endregion
-
-    #region Properties
-    private bool CanSpawnMore => _powerGO.Count < MAX_SPAWN;
     #endregion
 
     #region Unity Lifecycle
+
+    /// <summary>
+    /// Initializes the spawner, sets up the object pool, and starts the spawning loop.
+    /// </summary>
     private async UniTaskVoid Start()
     {
         _currentSpawnChance = initialSpawnChance;
-        SetupPool();
+        _currentCooldown = spawnInterval;
+        InitializePool();
         _spawningCts = new CancellationTokenSource();
-        await StartSpawningLoop();
+        await RunSpawnLoop();
     }
 
+    /// <summary>
+    /// Cleans up the spawning cancellation token when the object is destroyed.
+    /// </summary>
     private void OnDestroy()
-    {
-        ResetToken();
-    }
-
-    private void ResetToken()
     {
         _spawningCts?.Cancel();
         _spawningCts?.Dispose();
-        _spawningCts = null;
     }
 
+    /// <summary>
+    /// Draws a gizmo to visualize the spawn area in the Unity editor.
+    /// </summary>
     private void OnDrawGizmos()
     {
         if (powerParent == null) return;
         Gizmos.color = Color.green;
         Gizmos.DrawWireCube(powerParent.position, new Vector3(spawnSize.x, spawnSize.y, 0));
     }
+
     #endregion
 
     #region Spawning Logic
-    private void SetupPool()
+
+    /// <summary>
+    /// Sets up the object pool for power-ups and initializes the spawn chance sum.
+    /// </summary>
+    private void InitializePool()
     {
         foreach (var data in powerDataList)
         {
-            if (data.powerData != null)
-            {
-                for (var a = 0; a < MAX_SPAWN; a++)
-                {
-                    var go = new GameObject(data.powerData.name);
-                    var item = (BaseCollectableItem)go.AddComponent(data.powerData.ItemType);
-                    item.AssignItemData(data.powerData);
-                    item.OnThisItemCollected += DespawnPower;
-                    go.SetActive(false);
-                    go.transform.parent = powerParent;
-                    PoolManager.Instance.AddToPool(go);
+            if (data.powerData == null) continue;
 
-                    if (!_powerPrefabLookup.ContainsKey(data.powerData.name))
-                        _powerPrefabLookup[data.powerData.name] = go;
-                }
-            }
+            var go = new GameObject(data.powerData.name);
+            var item = (BaseCollectableItem)go.AddComponent(data.powerData.ItemType);
+            item.AssignItemData(data.powerData);
+            item.OnThisItemCollected += DespawnPowerUp;
+            go.SetActive(false);
+            go.transform.parent = powerParent;
+            PoolManager.Instance.AddToPool(go);
+            _powerUpPrefabs[data.powerData.name] = go;
         }
-        CalculateTotalChance();
-    }
-
-    private void CalculateTotalChance()
-    {
         _totalSpawnChance = powerDataList.Sum(data => data.spawnChance);
     }
 
-    private async UniTask StartSpawningLoop()
+    /// <summary>
+    /// Runs the main spawning loop, updating cooldown and attempting to spawn power-ups.
+    /// </summary>
+    private async UniTask RunSpawnLoop()
     {
         _isSpawning = true;
-        _currentCooldown = spawnInterval;
         while (gameObject.activeInHierarchy && !_spawningCts.Token.IsCancellationRequested)
+        {
             try
             {
-                if (CanSpawnMore)
-                {
-                    _currentCooldown -= Time.deltaTime;
-                    if (_currentCooldown <= 0)
-                    {
-                        if (Random.value <= _currentSpawnChance)
-                        {
-                            var data = GetRandomPower();
-                            var pos = GetRandomPosition();
-                            SpawnPower(data.powerData.name, pos, Quaternion.identity);
-                            _currentSpawnChance = initialSpawnChance;
-                        }
-                        else
-                        {
-                            _currentSpawnChance = Mathf.Min(_currentSpawnChance * 2, 1f);
-                        }
-
-                        _currentCooldown = spawnInterval;
-                    }
-                }
-
+                UpdateCooldown();
+                TrySpawnPowerUp();
                 await UniTask.Yield(_spawningCts.Token);
             }
             catch (OperationCanceledException)
             {
                 break;
             }
-
+        }
         _isSpawning = false;
     }
 
-    private PowerUpData GetRandomPower()
+    /// <summary>
+    /// Updates the spawn cooldown based on the number of active power-ups.
+    /// </summary>
+    private void UpdateCooldown()
     {
-        if (_totalSpawnChance <= 0) return powerDataList[0];
-        var rand = UnityEngine.Random.Range(0f, _totalSpawnChance);
-        var cum = 0f;
+        if (_activePowerUps.Count >= MaxSpawn) return;
+        _currentCooldown = Mathf.Max(0, _currentCooldown - Time.deltaTime);
+    }
+
+    /// <summary>
+    /// Attempts to spawn a power-up if conditions are met, adjusting spawn chance and cooldown.
+    /// </summary>
+    private void TrySpawnPowerUp()
+    {
+        if (_activePowerUps.Count >= MaxSpawn || _currentCooldown > 0) return;
+
+        if (Random.value <= _currentSpawnChance)
+        {
+            var data = GetRandomPowerUp();
+            SpawnPowerUp(data.powerData.name, GetRandomPosition(), Quaternion.identity);
+            _currentSpawnChance = initialSpawnChance;
+            _currentCooldown = spawnInterval;
+        }
+        else
+        {
+            _currentSpawnChance = Mathf.Min(_currentSpawnChance * 2, 1f);
+            _currentCooldown = spawnInterval;
+        }
+    }
+
+    /// <summary>
+    /// Selects a random power-up based on weighted spawn chances.
+    /// </summary>
+    /// <returns>The selected power-up data, or the first in the list if no valid selection is made.</returns>
+    private PowerUpData GetRandomPowerUp()
+    {
+        if (_totalSpawnChance <= 0 || powerDataList.Count == 0) return powerDataList[0];
+        var rand = Random.Range(0f, _totalSpawnChance);
+        var cumulative = 0f;
         foreach (var data in powerDataList)
         {
-            cum += data.spawnChance;
-            if (rand <= cum)
-                return data;
+            cumulative += data.spawnChance;
+            if (rand <= cumulative) return data;
         }
         return powerDataList[0];
     }
 
+    /// <summary>
+    /// Generates a random spawn position within the defined spawn area.
+    /// </summary>
+    /// <returns>A Vector3 representing the spawn position.</returns>
     private Vector3 GetRandomPosition()
     {
-        return new Vector3(
-            UnityEngine.Random.Range(-spawnSize.x / 2f, spawnSize.x / 2f),
-            UnityEngine.Random.Range(-spawnSize.y / 2f, spawnSize.y / 2f),
+        var offset = new Vector3(
+            Random.Range(-spawnSize.x / 2f, spawnSize.x / 2f),
+            Random.Range(-spawnSize.y / 2f, spawnSize.y / 2f),
             0f
-        ) + (powerParent?.position ?? Vector3.zero);
+        );
+        return powerParent != null ? powerParent.position + offset : offset;
     }
 
-    private void SpawnPower(string name, Vector3 position, Quaternion rotation)
+    /// <summary>
+    /// Spawns a power-up at the specified position and rotation.
+    /// </summary>
+    /// <param name="name">The name of the power-up to spawn.</param>
+    /// <param name="position">The position to spawn the power-up at.</param>
+    /// <param name="rotation">The rotation to apply to the spawned power-up.</param>
+    private void SpawnPowerUp(string name, Vector3 position, Quaternion rotation)
     {
-        if (string.IsNullOrEmpty(name)) return;
-        if (!_powerPrefabLookup.TryGetValue(name, out var prefab)) return;
+        if (string.IsNullOrEmpty(name) || !_powerUpPrefabs.TryGetValue(name, out var prefab)) return;
         var item = PoolManager.Instance.Spawn(prefab, position, rotation, powerParent);
-        _powerGO.Add(item);
+        _activePowerUps.Add(item);
     }
 
-    public void DespawnPower(GameObject item)
+    /// <summary>
+    /// Despawns a power-up when collected or removed.
+    /// </summary>
+    /// <param name="item">The power-up GameObject to despawn.</param>
+    public void DespawnPowerUp(GameObject item)
     {
-        PoolManager.Instance.Despawn(item);
-        _powerGO.Remove(item);
-    }
-
-    public void OnEnemyDefeated()
-    {
-        if (_currentCooldown > 0)
+        if (_activePowerUps.Remove(item))
         {
-            _currentCooldown = Mathf.Max(0, _currentCooldown - 0.5f);
+            PoolManager.Instance.Despawn(item);
         }
     }
+
+    /// <summary>
+    /// Reduces the spawn cooldown when an enemy is defeated.
+    /// </summary>
+    public void OnEnemyDefeated()
+    {
+        _currentCooldown = Mathf.Max(0, _currentCooldown - 0.5f);
+    }
+
     #endregion
 
     #region Public Controls
+
+    /// <summary>
+    /// Clears all active power-ups, resets the pool, and reinitializes spawning parameters.
+    /// </summary>
     [FoldoutGroup("PowerUp Control"), Button(ButtonSizes.Large), GUIColor(1, 0, 0)]
     public void ClearAll()
     {
-        foreach (var obj in _powerGO)
+        foreach (var obj in _activePowerUps.ToList())
         {
-            if (obj != null)
-                PoolManager.Instance.Despawn(obj);
+            DespawnPowerUp(obj);
         }
-        _powerGO.Clear();
         _spawnerService.ClearPool(powerParent);
-        SetupPool();
+        InitializePool();
         _currentSpawnChance = initialSpawnChance;
         _currentCooldown = spawnInterval;
     }
 
+    /// <summary>
+    /// Starts the power-up spawning loop if not already running.
+    /// </summary>
     [FoldoutGroup("PowerUp Control"), Button(ButtonSizes.Large), GUIColor(0, 1, 0)]
     public void StartSpawning()
     {
         if (_isSpawning) return;
-        _spawningCts?.Cancel();
         _spawningCts?.Dispose();
         _spawningCts = new CancellationTokenSource();
-        StartSpawningLoop().Forget();
+        RunSpawnLoop().Forget();
     }
 
+    /// <summary>
+    /// Stops the power-up spawning loop if currently running.
+    /// </summary>
     [FoldoutGroup("PowerUp Control"), Button(ButtonSizes.Large), GUIColor(1, 1, 0)]
     public void StopSpawning()
     {
         if (!_isSpawning) return;
         _spawningCts?.Cancel();
     }
+
     #endregion
 }
