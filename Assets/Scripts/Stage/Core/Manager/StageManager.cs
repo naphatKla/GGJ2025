@@ -80,7 +80,6 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
         if (enemyParent == null) enemyParent = new GameObject("EnemyParent").transform;
         if (CurrentMap.stages.Count == 0 || CurrentStage == null) return;
         _enemySpawner = new EnemySpawner(this, CurrentStage, regionSize, minDistanceFromPlayer);
-        EnemyPoolCreated();
     }
 
     private void DebugZone()
@@ -96,9 +95,7 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     
     private void Start()
     {
-        _enemySpawner.StartSpawning();
         SetBackground(currentBackground);
-        Timer.Instance.SetTimer(CurrentMap.stages[currentStageIndexInMap].TimerStage);
     }
     private void Update()
     {
@@ -139,18 +136,6 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     private bool IsLastStageInMap()
     {
         return CurrentMap != null && currentStageIndexInMap >= CurrentMap.stages.Count - 1;
-    }
-
-
-    
-    /// <summary>
-    /// Check stop or pause state
-    /// </summary>
-    /// <returns></returns>
-    public bool IsSpawningStoppedOrPaused()
-    {
-        if (_enemySpawner == null) return true;
-        return _enemySpawner.IsStoppedOrPaused();
     }
     
     /// <summary>
@@ -303,7 +288,7 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
         if (mapDataList.Count == 0 || currentMapIndex >= mapDataList.Count - 1) return;
         currentMapIndex++;
         currentStageIndexInMap = 0;
-        SetStageInMapWithDelay(currentStageIndexInMap);
+        SetStageInMap(currentStageIndexInMap);
         ReloadStage();
     }
 
@@ -361,9 +346,18 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     }
     
     /// <summary>
-    /// Deletes all enemies and clears both lists.
+    /// Start Stage
     /// </summary>
     [PropertySpace(SpaceBefore = 30)]
+    [Button(ButtonSizes.Large), GUIColor(0, 1, 0)]
+    public void StartPlay()
+    {
+        SetStageInMap(currentStageIndexInMap);
+    }
+    
+    /// <summary>
+    /// Deletes all enemies and clears both lists.
+    /// </summary>
     [Button(ButtonSizes.Large), GUIColor(1, 0, 0)]
     public void ClearEnemies()
     {

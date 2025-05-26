@@ -109,15 +109,7 @@ public class EnemySpawner
         _currentState = newState;
         _currentState.Enter(this);
     }
-
-    /// <summary>
-    /// Returns true if the spawner is not actively spawning.
-    /// </summary>
-    public bool IsStoppedOrPaused()
-    {
-        return _currentState is StopState || _currentState is PausedState;
-    }
-
+    
     #endregion
 
     #region Spawn Control
@@ -129,6 +121,7 @@ public class EnemySpawner
     {
         Debug.Log("Start Spawning");
         SetState(new SpawningState());
+        Timer.Instance.ResumeTimer();
     }
 
     /// <summary>
@@ -138,6 +131,7 @@ public class EnemySpawner
     {
         Debug.Log("Stop Spawning");
         SetState(new StopState());
+        Timer.Instance.PauseTimer();
     }
 
     /// <summary>
@@ -369,7 +363,7 @@ public class EnemySpawner
         enemy.HealthSystem.OnDead -= () => DespawnEnemy(enemy);
         enemy.ResetAllDependentBehavior();
         enemies.Remove(enemy);
-        PowerUpSpawnerManager.Instance.OnEnemyDefeated();
+        //PowerUpSpawnerManager.Instance.OnEnemyDefeated();
         OnEnemyDespawned?.Invoke(enemy);
         _spawnerService.Despawn(enemy.gameObject);
         _killCount += 1;

@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using Cysharp.Threading.Tasks;
 using TMPro;
 using UnityEngine;
@@ -15,6 +16,8 @@ public class Timer : MMSingleton<Timer>
     private float currentTimer;
     private bool isPaused = false;
     private bool isRunning = false;
+    private CancellationTokenSource countdownCTS;
+
 
     #endregion
 
@@ -44,12 +47,20 @@ public class Timer : MMSingleton<Timer>
     public void ResetTimer() => currentTimer = startTimer;
     public void TogglePause() => isPaused = !isPaused;
     public bool IsPaused() => isPaused;
-    
+
     /// <summary>
     /// Set timer to start timer.
     /// </summary>
     /// <param name="timer"></param>
-    public void SetTimer(float timer) { startTimer = timer; isRunning = true; ResetTimer(); }
+    public void SetTimer(float timer)
+    {
+        startTimer = timer;
+        currentTimer = startTimer;
+        countdownCTS?.Cancel();
+        countdownCTS = new CancellationTokenSource();
+        StartCountdownAsync(countdownCTS.Token).Forget();
+    }
+
     
     /// <summary>
     /// Stop the timer and resume after delay
@@ -64,26 +75,32 @@ public class Timer : MMSingleton<Timer>
     private void Start()
     {
         stageManager = GetComponent<StageManager>();
-        ResetTimer();
-        StartCountdownAsync().Forget();
     }
+
     #endregion
 
     #region Methods
     /// <summary>
     /// Starts the countdown asynchronously and updates the timer value.
     /// </summary>
-    public async UniTaskVoid StartCountdownAsync()
+    public async UniTaskVoid StartCountdownAsync(CancellationToken token)
     {
         isRunning = true;
-        while (isRunning)
-        {
-            if (!IsSpawnerStoppedOrPaused() && !isPaused)
-            {
-                if (currentTimer > 0)
-                {
-                    currentTimer -= Time.deltaTime;
+        var lastTime = Time.realtimeSinceStartup;
 
+        try
+        {
+            while (isRunning && !token.IsCancellationRequested)
+            {
+                await UniTask.NextFrame(token);
+
+                var now = Time.realtimeSinceStartup;
+                var delta = now - lastTime;
+                lastTime = now;
+
+                if (!isPaused)
+                {
+                    currentTimer -= delta;
                     if (currentTimer <= 0)
                     {
                         currentTimer = 0;
@@ -91,10 +108,11 @@ public class Timer : MMSingleton<Timer>
                         break;
                     }
                 }
+
+                UpdateUIText();
             }
-            UpdateUIText();
-            await UniTask.Yield();
         }
+        catch (OperationCanceledException) { }
     }
 
     /// <summary>
@@ -109,14 +127,14 @@ public class Timer : MMSingleton<Timer>
             timerText.text = string.Format("{0:00}:{1:00}", minutes, seconds);
         }
     }
-
+    
     /// <summary>
-    /// Checks if the spawner is stopped or paused.
+    /// Stop countdown
     /// </summary>
-    /// <returns>True if the spawner is stopped or paused, otherwise false.</returns>
-    private bool IsSpawnerStoppedOrPaused()
+    public void StopCountdown()
     {
-        return stageManager.IsSpawningStoppedOrPaused();
+        countdownCTS?.Cancel();
+        isRunning = false;
     }
 
     

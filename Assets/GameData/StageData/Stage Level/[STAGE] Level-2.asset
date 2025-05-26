@@ -12,10 +12,40 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb20b7afc201d4d46b649b6ac3009fa4, type: 3}
   m_Name: '[STAGE] Level-2'
   m_EditorClassIdentifier: 
+  defaultEnemyData: {fileID: 11400000, guid: e8bf0e8ec6b32e344a0ddff289ef5d98, type: 2}
+  PreObjectSpawn: 20
   enemies:
   - EnemyData: {fileID: 11400000, guid: e8bf0e8ec6b32e344a0ddff289ef5d98, type: 2}
+    EnemyType: {fileID: 11400000, guid: c1d07ea341b30b24fb5d44940eefa14e, type: 2}
     SpawnChance: 1
-    PreObjectSpawn: 30
+    UseTimer: 0
+    StartTimer: 0
+    EndTimer: 0
+    UseDynamicSpawnChance: 0
+    SpawnChanceOverTime:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 1
+        inSlope: 0
+        outSlope: 0.03
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 300
+        value: 10
+        inSlope: 0.03
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
   spawnEvent: []
   killQuota: 10
   timerLimit: 30
