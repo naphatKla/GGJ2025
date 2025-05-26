@@ -182,13 +182,15 @@ public class EnemySpawner
 
         if (killCount >= _nextUnitKillQuota)
         {
-            CurrentMaxEnemySpawn = Mathf.Clamp(CurrentMaxEnemySpawn + _addMaxEnemySpawn, 1, _stageData.MaxEnemySpawnCap);
+            CurrentMaxEnemySpawn =
+                Mathf.Clamp(CurrentMaxEnemySpawn + _addMaxEnemySpawn, 1, _stageData.MaxEnemySpawnCap);
             _nextUnitKillQuota += _stageData.KillQuota;
         }
 
         if (killCount >= _nextIntervalKillQuota)
         {
-            CurrentSpawnInterval = Mathf.Clamp(CurrentSpawnInterval - _removeIntervalEnemySpawn, _stageData.SpawnIntervalCap, CurrentSpawnInterval);
+            CurrentSpawnInterval = Mathf.Clamp(CurrentSpawnInterval - _removeIntervalEnemySpawn,
+                _stageData.SpawnIntervalCap, CurrentSpawnInterval);
             _nextIntervalKillQuota += _stageData.IntervalKillQuota;
         }
     }
@@ -245,20 +247,20 @@ public class EnemySpawner
     /// </summary>
     private async UniTask LoopSpawnEnemies(SpawnEventSO.SpawnEventData data)
     {
-        int count = Mathf.Min(data.Positions.Count, data.EnemyCount);
+        var count = Mathf.Min(data.Positions.Count, data.EnemyCount);
 
-        for (int i = 0; i < count; i++)
+        for (var i = 0; i < count; i++)
         {
-            Vector2 pos = data.Positions[i];
-            IEnemyData enemyData = GetRandomEnemyByChance(data.EnemiesWithChance);
+            var pos = data.Positions[i];
+            var enemyData = GetRandomEnemyByChance(data.EnemiesWithChance);
 
             if (enemyData == null) continue;
 
-            SpawnSingleEnemy(enemyData, pos, data);
+            SpawnEnemyWithPosition(enemyData, pos, data);
 
             if (data.SpawnDelayPerEnemy)
             {
-                float delay = CalculatePerEnemyDelay(i, count, data);
+                var delay = CalculatePerEnemyDelay(i, count, data);
                 await UniTask.Delay(TimeSpan.FromSeconds(delay));
             }
         }
@@ -292,7 +294,7 @@ public class EnemySpawner
     /// <summary>
     /// Spawns 1 enemy at position with visual effect and setup.
     /// </summary>
-    private void SpawnSingleEnemy(IEnemyData enemyData, Vector2 position, SpawnEventSO.SpawnEventData data)
+    private void SpawnEnemyWithPosition(IEnemyData enemyData, Vector2 position, SpawnEventSO.SpawnEventData data)
     {
         var enemyType = GetRandomEnemyType(data.EnemiesWithChance);
         if (data.SpawnEffectPrefab != null)
