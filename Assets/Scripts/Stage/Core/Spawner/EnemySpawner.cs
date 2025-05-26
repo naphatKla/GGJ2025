@@ -109,15 +109,7 @@ public class EnemySpawner
         _currentState = newState;
         _currentState.Enter(this);
     }
-
-    /// <summary>
-    /// Returns true if the spawner is not actively spawning.
-    /// </summary>
-    public bool IsStoppedOrPaused()
-    {
-        return _currentState is StopState || _currentState is PausedState;
-    }
-
+    
     #endregion
 
     #region Spawn Control
@@ -129,6 +121,7 @@ public class EnemySpawner
     {
         Debug.Log("Start Spawning");
         SetState(new SpawningState());
+        Timer.Instance.ResumeTimer();
     }
 
     /// <summary>
@@ -138,6 +131,7 @@ public class EnemySpawner
     {
         Debug.Log("Stop Spawning");
         SetState(new StopState());
+        Timer.Instance.PauseTimer();
     }
 
     /// <summary>
@@ -334,7 +328,7 @@ public class EnemySpawner
     {
         if (!CanSpawn()) return;
 
-        var currentTime = Time.timeSinceLevelLoad;
+        var currentTime = Timer.Instance.GlobalTimerDown;
 
         var availableEnemies = _stageData.Enemies
             .Where(e => e.IsAvailableAtTime(currentTime))
@@ -369,7 +363,7 @@ public class EnemySpawner
         enemy.HealthSystem.OnDead -= () => DespawnEnemy(enemy);
         enemy.ResetAllDependentBehavior();
         enemies.Remove(enemy);
-        PowerUpSpawnerManager.Instance.OnEnemyDefeated();
+        //PowerUpSpawnerManager.Instance.OnEnemyDefeated();
         OnEnemyDespawned?.Invoke(enemy);
         _spawnerService.Despawn(enemy.gameObject);
         _killCount += 1;
@@ -425,19 +419,32 @@ public class EnemySpawner
     /// </summary>
     public static CharacterDataSo GetRandomEnemyType<T>(List<T> enemies) where T : IWeightedEnemy
     {
-        float total = enemies.Sum(e => e.GetSpawnChance());
-        float roll = UnityEngine.Random.Range(0f, total);
-        float accum = 0f;
+        var currentTime = Timer.Instance.GlobalTimer;
+
+        var total = enemies.Sum(e =>
+        {
+            if (e is EnemyProperties dynamicEnemy)
+                return dynamicEnemy.GetCurrentSpawnChance(currentTime);
+            return e.GetSpawnChance();
+        });
+
+        var roll = Random.Range(0f, total);
+        var accum = 0f;
 
         foreach (var enemy in enemies)
         {
-            accum += enemy.GetSpawnChance();
+            var chance = enemy is EnemyProperties dynamic
+                ? dynamic.GetCurrentSpawnChance(currentTime)
+                : enemy.GetSpawnChance();
+
+            accum += chance;
             if (roll <= accum)
                 return enemy.GetCharacterData();
         }
 
         return enemies.FirstOrDefault()?.GetCharacterData();
     }
+
 
 
 
