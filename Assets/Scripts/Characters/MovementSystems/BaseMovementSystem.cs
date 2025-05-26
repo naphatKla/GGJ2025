@@ -136,7 +136,7 @@ namespace Characters.MovementSystems
         /// <summary>
         /// 
         /// </summary>
-        protected void Update()
+        protected void FixedUpdate()
         {
             if (inputDirection == Vector2.zero) return;
             TryMoveWithInertia(inputDirection);

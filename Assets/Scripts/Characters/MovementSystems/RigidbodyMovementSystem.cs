@@ -30,10 +30,11 @@ namespace Characters.MovementSystems
         /// <param name="direction">The input movement direction vector.</param>
         protected override void MoveWithInertia(Vector2 direction)
         {
-            currentDirection = Vector2.Lerp(currentDirection, direction, turnAccelerationRate * Time.deltaTime);
+            float dt = Time.fixedDeltaTime; // เปลี่ยนตรงนี้
+            currentDirection = Vector2.Lerp(currentDirection, direction, turnAccelerationRate * dt);
             Vector2 desiredVelocity = currentDirection * currentSpeed;
-            currentVelocity = Vector2.Lerp(currentVelocity, desiredVelocity, moveAccelerationRate * Time.deltaTime);
-            Vector2 newPos = rb2D.position + currentVelocity * Time.deltaTime;
+            currentVelocity = Vector2.Lerp(currentVelocity, desiredVelocity, moveAccelerationRate * dt);
+            Vector2 newPos = rb2D.position + currentVelocity * dt;
             TryMoveRawPosition(newPos);
         }
 
