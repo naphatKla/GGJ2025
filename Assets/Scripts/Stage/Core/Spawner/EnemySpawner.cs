@@ -333,20 +333,31 @@ public class EnemySpawner
     public void SpawnEnemy()
     {
         if (!CanSpawn()) return;
-        var enemyType = GetRandomEnemyType(_stageData.Enemies.ToList());
+
+        var currentTime = Time.timeSinceLevelLoad;
+
+        var availableEnemies = _stageData.Enemies
+            .Where(e => e.IsAvailableAtTime(currentTime))
+            .ToList();
+
+        if (availableEnemies.Count == 0) return;
+
+        var enemyType = GetRandomEnemyType(availableEnemies);
         var spawnPosition = GetRandomSpawnPosition(_spawnerView.GetPlayerPosition());
-        var prefab = _stageData.Enemies[0].EnemyData.EnemyController.gameObject;
+        var prefab = availableEnemies[0].EnemyData.EnemyController.gameObject;
+
         var enemyObj = _spawnerService.Spawn(prefab, spawnPosition, Quaternion.identity, _spawnerView.GetEnemyParent());
-        
-        //Deactivate Collider on Spawn
+
         enemyObj.GetComponent<CircleCollider2D>().isTrigger = true;
-        
+
         if (!enemyObj.TryGetComponent(out EnemyController enemyController)) return;
+
         enemyController.AssignCharacterData(enemyType);
         enemies.Add(enemyController);
         enemyController.HealthSystem.OnDead += () => DespawnEnemy(enemyController);
         OnEnemySpawned?.Invoke(enemyController);
     }
+
 
 
     /// <summary>

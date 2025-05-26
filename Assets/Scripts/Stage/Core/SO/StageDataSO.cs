@@ -15,8 +15,18 @@ public class EnemyProperties : IWeightedEnemy
 
     [ValueDropdown("@GetEnemyTypesFromDefault()")]
     public CharacterDataSo EnemyType;
+
     [Tooltip("Chance to spawn this enemy")]
     public float SpawnChance;
+
+    [FoldoutGroup("Advanced Spawn Control")]
+    public bool UseTimer;
+
+    [ShowIf("UseTimer"), Tooltip("Time after stage start to begin spawning this enemy")]
+    public float StartTimer;
+
+    [ShowIf("UseTimer"), Tooltip("Time after stage start to stop spawning this enemy")]
+    public float EndTimer;
 
     private IEnumerable<CharacterDataSo> GetEnemyTypesFromDefault()
     {
@@ -25,10 +35,17 @@ public class EnemyProperties : IWeightedEnemy
 
         return EnemyData.enemyData;
     }
-    
+
     public CharacterDataSo GetCharacterData() => EnemyType;
     public float GetSpawnChance() => SpawnChance;
+
+    public bool IsAvailableAtTime(float currentTime)
+    {
+        if (!UseTimer) return true;
+        return currentTime >= StartTimer && currentTime <= EndTimer;
+    }
 }
+
 
 [CreateAssetMenu(fileName = "StageData", menuName = "Game/StageData", order = 2)]
 public class StageDataSO : ScriptableObject
