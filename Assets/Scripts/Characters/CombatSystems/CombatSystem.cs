@@ -1,4 +1,6 @@
 using System;
+using Characters.Controllers;
+using Characters.FeedbackSystems;
 using UnityEngine;
 
 namespace Characters.CombatSystems
@@ -24,15 +26,25 @@ namespace Characters.CombatSystems
         private float _currentDamage;
 
         /// <summary>
+        /// Owner controller.
+        /// </summary>
+        private BaseController _owner;
+
+        /// <summary>
         /// Event triggered whenever this character successfully deals damage.
         /// Useful for triggering combo counters, visual effects, or gameplay responses.
         /// </summary>
         public Action OnDealDamage { get; set; }
         
+        /// <summary>
+        /// Event triggered whenever this character and target perform attack in the same time.
+        /// </summary>
+        public Action OnCounterAttack { get; set; }
+        
         #endregion
-
+        
         #region Methods
-
+        
         /// <summary>
         /// Assigns the base damage stat to this combat system.
         /// Also initializes the current damage value to match the base.
@@ -53,6 +65,12 @@ namespace Characters.CombatSystems
         public float CalculateDamageDeal(float multiplier)
         {
             return _currentDamage * multiplier;
+        }
+
+        public void CounterAttack()
+        {
+            if (!TryGetComponent(out BaseController owner)) return;
+            owner?.FeedbackSystem.PlayFeedback(FeedbackName.CounterAttack);
         }
 
         #endregion

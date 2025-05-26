@@ -1,5 +1,6 @@
 using Characters.CombatSystems;
 using Characters.HeathSystems;
+using Characters.StatusEffectSystems;
 using UnityEngine;
 
 namespace Manager
@@ -23,6 +24,12 @@ namespace Manager
         {
             if (!target.TryGetComponent(out HealthSystem targetHealth)) return;
             if (!attacker.TryGetComponent(out CombatSystem attackerCombatSystem)) return;
+            if (StatusEffectManager.TryGetEffect(attacker, StatusEffectName.DamageOnTouch, out _) &&
+                StatusEffectManager.TryGetEffect(target, StatusEffectName.DamageOnTouch, out _))
+            {
+                attackerCombatSystem.CounterAttack();
+                attackerCombatSystem.OnCounterAttack?.Invoke();
+            }
             
             float damageDeal = attackerCombatSystem.CalculateDamageDeal(multiplier);
             if (!targetHealth.TakeDamage(damageDeal)) return;

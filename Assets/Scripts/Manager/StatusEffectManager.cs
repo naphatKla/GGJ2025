@@ -73,6 +73,24 @@ namespace Manager
             if (!target.TryGetComponent(out StatusEffectSystem targetSystem)) return;
             targetSystem.RemoveAllEffect();
         }
+
+        /// <summary>
+        /// Try get effect from target.
+        /// </summary>
+        /// <param name="target">target to get the effect.</param>
+        /// <param name="effectName">Name to get.</param>
+        /// <param name="effect">Effect value.</param>
+        /// <returns></returns>
+        public static bool TryGetEffect(GameObject target, StatusEffectName effectName, out BaseStatusEffect effect)
+        {
+            if (!target.TryGetComponent(out StatusEffectSystem targetSystem))
+            {
+                effect = null;
+                return false;
+            }
+
+            return targetSystem.TryGetEffect(effectName, out effect);
+        }
         
         #endregion
     }

@@ -54,7 +54,15 @@ namespace Characters.FeedbackSystems
     /// </summary>
     public enum FeedbackName
     {
-        None = 0,
+        None = -100,
+        TakeDamage = -99,
+        Heal = -98,
+        Iframe = -97,
+        Dead = -96,
+        Spawn = -95,
+        Bounce = -94,
+        Attack = -93,
+        CounterAttack = -92,
         Dash = 1,
         BlackHole = 2,
     }
