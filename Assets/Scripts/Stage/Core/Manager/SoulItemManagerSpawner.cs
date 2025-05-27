@@ -60,16 +60,14 @@ public class SoulItemManagerSpawner : MMSingleton<SoulItemManagerSpawner>
     /// <summary>
     /// Initializes the spawner, sets up the object pool, and starts the spawning process.
     /// </summary>
-    private async UniTaskVoid Start()
+    private void Start()
     {
         InitializePool();
         _spawningCts = new CancellationTokenSource();
 
         if (spawnMaximumOnStart)
             SpawnInitialSouls();
-
-        await UniTask.Delay(TimeSpan.FromSeconds(1));
-        await RunSpawnLoop();
+        RunSpawnLoop();
     }
 
     /// <summary>
