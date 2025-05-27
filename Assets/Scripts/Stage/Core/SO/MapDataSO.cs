@@ -9,6 +9,9 @@ public class MapDataSO : ScriptableObject
 
     [Tooltip("Background image to use for this map")]
     public Sprite background;
+    
+    [Tooltip("Map Image")]
+    public Sprite Image;
 
     [Tooltip("List of stages under this map")]
     public List<StageDataSO> stages;
