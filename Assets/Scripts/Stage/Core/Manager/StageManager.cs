@@ -9,7 +9,7 @@ using Cysharp.Threading.Tasks;
 using MoreMountains.Tools;
 using UnityEngine.SceneManagement;
 
-public class StageManager : MMSingleton<StageManager>, IEnemySpawnerView
+public class StageManager : MonoBehaviour, IEnemySpawnerView
 {
     #region Inspector & Variable
     [Title("Map Data")] [Tooltip("You can add more than 1 stage and change by Function Set Stage or Next Stage.")]
