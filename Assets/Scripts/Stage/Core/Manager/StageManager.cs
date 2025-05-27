@@ -6,9 +6,10 @@ using UnityEngine;
 using System.Linq;
 using Characters.Controllers;
 using Cysharp.Threading.Tasks;
+using MoreMountains.Tools;
 using UnityEngine.SceneManagement;
 
-public class StageManager : MonoBehaviour, IEnemySpawnerView
+public class StageManager : MMSingleton<StageManager>, IEnemySpawnerView
 {
     #region Inspector & Variable
     [Title("Map Data")] [Tooltip("You can add more than 1 stage and change by Function Set Stage or Next Stage.")]
@@ -37,12 +38,10 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     
     [Space][Tooltip("Show debug stage")]
     [SerializeField] private bool enableDebug;
-    
-    [FoldoutGroup("UI Control")] [Tooltip("For show and hide UI")]
-    [SerializeField] private GameObject UIObject;
-    
+  
     private EnemySpawner _enemySpawner;
     private Timer globalTimer;
+    private bool hasTriggeredResult = false;
     
     private MapDataSO CurrentMap => 
         mapDataList.Count > 0 && currentMapIndex < mapDataList.Count
@@ -88,6 +87,7 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
             if (!mapDataList.Contains(selectedMap)) mapDataList.Add(selectedMap);
 
             currentMapIndex = mapDataList.IndexOf(selectedMap);
+            currentStageIndexInMap = GameController.Instance.nextStageIndex;
         }
         if (CurrentMap.stages.Count == 0 || CurrentStage == null) return;
         _enemySpawner = new EnemySpawner(this, CurrentStage, regionSize, minDistanceFromPlayer);
@@ -109,25 +109,30 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
         SetBackground(currentBackground);
         StartPlay();
     }
-    private void Update()
+    private async void Update()
     {
         _enemySpawner?.Update();
         if (Application.isPlaying && enableDebug) DebugZone();
-        if (CanGotoNextStage())
+        if (!hasTriggeredResult && CanGotoNextStage())
         {
+            hasTriggeredResult = true;
+            
+            // Last Stage in the map list
             if (IsLastStageInMap())
             {
                 StopSpawning();
+                UIManager.Instance.OpenPanel(UIPanelType.ResultLastStage);
+                await UniTask.Delay(300);
                 ReloadStage();
-                Timer.Instance.SetTimer(0);
-                Timer.Instance.PauseTimer();
             }
-            else
+            else // Still have next stage
             {
-                NextStageInMap();
+                StopSpawning();
                 Timer.Instance.PauseTimer();
+                UIManager.Instance.OpenPanel(UIPanelType.ResultWithNextStage);
             }
         }
+
     }
 
     #endregion
@@ -212,7 +217,6 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     /// </summary>
     private void EnemyPoolCreated()
     {
-        Debug.Log("EnemyPoolCreated called\n" + Environment.StackTrace);
         _enemySpawner.Prewarm(CurrentStage, enemyParent);
     }
     
@@ -222,6 +226,7 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     private void ReloadStage()
     {
         ResetQuota();
+        hasTriggeredResult = false;
         Timer.Instance.SetTimer(CurrentMap.stages[currentStageIndexInMap].TimerStage);
         ClearEnemies();
         _enemySpawner = new EnemySpawner(this, CurrentStage, regionSize, minDistanceFromPlayer);
@@ -363,6 +368,7 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     [Button(ButtonSizes.Large), GUIColor(0, 1, 0)]
     public async void StartPlay()
     {
+        UIManager.Instance.CloseAllPanels();
         await UniTask.WaitForSeconds(delayNextStage);
         SetStageInMap(currentStageIndexInMap);
         StartSpawning();

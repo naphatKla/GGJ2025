@@ -6,10 +6,10 @@ using UnityEngine.SceneManagement;
 public class GameController : MonoBehaviour
 {
     public static GameController Instance { get; private set; }
-    [SerializeField] private string sceneLoad;
     
     [ReadOnly] public int selectedMapIndex;
     [ReadOnly] public MapDataSO selectedMapData;
+    [ReadOnly] public int nextStageIndex = 0;
 
     private void Awake()
     {
@@ -21,11 +21,5 @@ public class GameController : MonoBehaviour
 
         Instance = this;
         DontDestroyOnLoad(gameObject);
-    }
-
-    public async void PlaySelected()
-    {
-        await SceneManager.LoadSceneAsync(sceneLoad).ToUniTask();
-        await UniTask.Yield();
     }
 }

@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
 using UnityEngine.UI.Extensions.Examples.FancyScrollViewExample02;
@@ -9,6 +11,7 @@ namespace UnityEngine.UI.Extensions
 {
     class MapSelectionUI : MonoBehaviour
     {
+        [SerializeField] private string sceneLoad;
         [SerializeField] private ScrollView scrollView = default;
         [SerializeField] private Button prevCellButton = default;
         [SerializeField] private Button nextCellButton = default;
@@ -46,6 +49,12 @@ namespace UnityEngine.UI.Extensions
                 GameController.Instance.selectedMapIndex = index;
                 GameController.Instance.selectedMapData = mapDataList[index];
             }
+        }
+        
+        public async void PlaySelected()
+        {
+            await SceneManager.LoadSceneAsync(sceneLoad).ToUniTask();
+            await UniTask.Yield();
         }
     }
 }

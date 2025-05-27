@@ -77,11 +77,25 @@ public class PoolManager
             // Collect keys to clear
             var keysToClear = new List<string>();
             foreach (var pair in _pools)
-                while (pair.Value.Count > 0 && pair.Value.Peek()?.transform.IsChildOf(parent) == true)
+                while (pair.Value.Count > 0)
                 {
-                    keysToClear.Add(pair.Key);
+                    var obj = pair.Value.Peek();
+
+                    if (obj == null || obj.Equals(null))
+                    {
+                        pair.Value.Dequeue();
+                        continue;
+                    }
+
+                    if (obj.transform.IsChildOf(parent))
+                    {
+                        keysToClear.Add(pair.Key);
+                        break;
+                    }
+
                     break;
                 }
+
 
             foreach (var key in keysToClear) DestroyPool(key);
         }

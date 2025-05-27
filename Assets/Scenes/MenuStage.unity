@@ -387,8 +387,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1677962574}
-        m_TargetAssemblyTypeName: GameController, Assembly-CSharp
+      - m_Target: {fileID: 1659855288}
+        m_TargetAssemblyTypeName: UnityEngine.UI.Extensions.MapSelectionUI, Assembly-CSharp
         m_MethodName: PlaySelected
         m_Mode: 1
         m_Arguments:
@@ -1074,6 +1074,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ffef50039363c5244b22c9c6c6129c0a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sceneLoad: TestStage
   scrollView: {fileID: 1469724156}
   prevCellButton: {fileID: 1748397616}
   nextCellButton: {fileID: 1270896403}
@@ -1126,9 +1127,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9a9a7291cd045a34a99cbe3dd12a1087, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sceneLoad: TestStage
   selectedMapIndex: 0
   selectedMapData: {fileID: 0}
+  nextStageIndex: 0
 --- !u!1 &1748397615
 GameObject:
   m_ObjectHideFlags: 0
