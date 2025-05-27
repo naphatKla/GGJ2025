@@ -135,7 +135,10 @@ public class PoolManager
 
         while (pool.Count > 0)
             if (pool.Dequeue() is { } obj)
-                Object.Destroy(obj);
+                if (Application.isPlaying)
+                    Object.Destroy(obj);
+                else
+                    Object.DestroyImmediate(obj);
 
         _pools.Remove(poolKey);
     }

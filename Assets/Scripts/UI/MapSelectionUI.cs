@@ -42,6 +42,9 @@ namespace UnityEngine.UI.Extensions
             {
                 selectedMapName.text = "Map " + _mapDataArray[index].mapName;
                 selectedMapInfo.text = "Stage " + "0" + "/" +_mapDataArray[index].stages.Count.ToString();
+                
+                GameController.Instance.selectedMapIndex = index;
+                GameController.Instance.selectedMapData = mapDataList[index];
             }
         }
     }

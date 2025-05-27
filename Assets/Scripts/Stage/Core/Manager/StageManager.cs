@@ -6,6 +6,7 @@ using UnityEngine;
 using System.Linq;
 using Characters.Controllers;
 using Cysharp.Threading.Tasks;
+using UnityEngine.SceneManagement;
 
 public class StageManager : MonoBehaviour, IEnemySpawnerView
 {
@@ -36,6 +37,9 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     
     [Space][Tooltip("Show debug stage")]
     [SerializeField] private bool enableDebug;
+    
+    [FoldoutGroup("UI Control")] [Tooltip("For show and hide UI")]
+    [SerializeField] private GameObject UIObject;
     
     private EnemySpawner _enemySpawner;
     private Timer globalTimer;
@@ -78,6 +82,13 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
         // Sets up enemy parent and spawner with the current stage.
         if (globalTimer == null) globalTimer = GetComponent<Timer>();
         if (enemyParent == null) enemyParent = new GameObject("EnemyParent").transform;
+        if (GameController.Instance != null && GameController.Instance.selectedMapData != null)
+        {
+            var selectedMap = GameController.Instance.selectedMapData;
+            if (!mapDataList.Contains(selectedMap)) mapDataList.Add(selectedMap);
+
+            currentMapIndex = mapDataList.IndexOf(selectedMap);
+        }
         if (CurrentMap.stages.Count == 0 || CurrentStage == null) return;
         _enemySpawner = new EnemySpawner(this, CurrentStage, regionSize, minDistanceFromPlayer);
     }
@@ -96,6 +107,7 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     private void Start()
     {
         SetBackground(currentBackground);
+        StartPlay();
     }
     private void Update()
     {
@@ -200,6 +212,7 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     /// </summary>
     private void EnemyPoolCreated()
     {
+        Debug.Log("EnemyPoolCreated called\n" + Environment.StackTrace);
         _enemySpawner.Prewarm(CurrentStage, enemyParent);
     }
     
@@ -208,9 +221,9 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     /// </summary>
     private void ReloadStage()
     {
-        ClearEnemies();
         ResetQuota();
         Timer.Instance.SetTimer(CurrentMap.stages[currentStageIndexInMap].TimerStage);
+        ClearEnemies();
         _enemySpawner = new EnemySpawner(this, CurrentStage, regionSize, minDistanceFromPlayer);
         SetBackground(CurrentMap?.background);
     }
@@ -277,7 +290,6 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
         if (mapIndex < 0 || mapIndex >= mapDataList.Count) return;
         currentMapIndex = mapIndex;
         currentStageIndexInMap = 0;
-        ReloadStage();
     }
 
     /// <summary>
@@ -349,8 +361,9 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     /// </summary>
     [PropertySpace(SpaceBefore = 30)]
     [Button(ButtonSizes.Large), GUIColor(0, 1, 0)]
-    public void StartPlay()
+    public async void StartPlay()
     {
+        await UniTask.WaitForSeconds(delayNextStage);
         SetStageInMap(currentStageIndexInMap);
         StartSpawning();
     }
