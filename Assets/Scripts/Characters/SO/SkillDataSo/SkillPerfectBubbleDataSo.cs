@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using Characters.StatusEffectSystems;
 using UnityEngine;
 
 namespace Characters.SO.SkillDataSo
@@ -13,6 +15,7 @@ namespace Characters.SO.SkillDataSo
             public float dashDistance;
             public AnimationCurve dashCurve;
             public AnimationCurve dashEase;
+            public List<StatusEffectDataPayload> effectOnDash;
         }
         
         [SerializeField] private float counterDuration;
