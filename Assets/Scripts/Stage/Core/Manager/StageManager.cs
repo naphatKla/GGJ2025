@@ -7,6 +7,7 @@ using System.Linq;
 using Characters.Controllers;
 using Cysharp.Threading.Tasks;
 using MoreMountains.Tools;
+using TMPro;
 using UnityEngine.SceneManagement;
 
 public class StageManager : MonoBehaviour, IEnemySpawnerView
@@ -38,6 +39,12 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     
     [Space][Tooltip("Show debug stage")]
     [SerializeField] private bool enableDebug;
+
+    [FoldoutGroup("Stage UI")] [SerializeField]
+    private TMP_Text stageText;
+    
+    [FoldoutGroup("Stage UI")] [SerializeField]
+    private TMP_Text killquotaText;
   
     private EnemySpawner _enemySpawner;
     private Timer globalTimer;
@@ -108,10 +115,12 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     {
         SetBackground(currentBackground);
         StartPlay();
+        UpdateStageText();
     }
     private async void Update()
     {
         _enemySpawner?.Update();
+        UpdateKillQuotaText();
         if (Application.isPlaying && enableDebug) DebugZone();
         if (!hasTriggeredResult && CanGotoNextStage())
         {
@@ -123,13 +132,14 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
                 StopSpawning();
                 UIManager.Instance.OpenPanel(UIPanelType.ResultLastStage);
                 await UniTask.Delay(300);
-                ReloadStage();
+                ResetStage();
             }
             else // Still have next stage
             {
                 StopSpawning();
-                Timer.Instance.PauseTimer();
                 UIManager.Instance.OpenPanel(UIPanelType.ResultWithNextStage);
+                Timer.Instance.PauseTimer();
+                ResetStage();
             }
         }
 
@@ -211,6 +221,34 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
         if (currentBackground != null)
             currentBackground = CurrentMap.background;
     }
+
+    /// <summary>
+    /// Update stage index
+    /// </summary>
+    public void UpdateGameController()
+    {
+        if (GameController.Instance == null) return;
+        GameController.Instance.nextStageIndex = currentStageIndexInMap;
+        GameController.Instance.selectedMapIndex = currentMapIndex;
+    }
+    
+    /// <summary>
+    /// Update stage index
+    /// </summary>
+    public void UpdateStageText()
+    {
+        if (stageText == null) return;
+        stageText.text = "Stage: " + (currentStageIndexInMap + 1) + " / " + CurrentMap.stages.Count;
+    }
+    
+    /// <summary>
+    /// Update kill quota
+    /// </summary>
+    public void UpdateKillQuotaText()
+    {
+        if (killquotaText == null) return;
+        killquotaText.text = "Kill: " + _enemySpawner.CurrentKillCount+ "/" + CurrentMap.stages[currentStageIndexInMap].KillQuota;
+    }
     
     /// <summary>
     /// Setting up the enemy pool.
@@ -223,7 +261,7 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     /// <summary>
     /// Reload the stage
     /// </summary>
-    private void ReloadStage()
+    private void ResetStage()
     {
         ResetQuota();
         hasTriggeredResult = false;
@@ -231,6 +269,7 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
         ClearEnemies();
         _enemySpawner = new EnemySpawner(this, CurrentStage, regionSize, minDistanceFromPlayer);
         SetBackground(CurrentMap?.background);
+        UpdateStageText();
     }
     
     /// <summary>
@@ -295,6 +334,7 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
         if (mapIndex < 0 || mapIndex >= mapDataList.Count) return;
         currentMapIndex = mapIndex;
         currentStageIndexInMap = 0;
+        UpdateGameController();
     }
 
     /// <summary>
@@ -307,7 +347,8 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
         currentMapIndex++;
         currentStageIndexInMap = 0;
         SetStageInMap(currentStageIndexInMap);
-        ReloadStage();
+        UpdateGameController();
+        ResetStage();
     }
 
     /// <summary>
@@ -319,7 +360,8 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     {
         if (CurrentMap == null || stageIndex < 0 || stageIndex >= CurrentMap.stages.Count) return;
         currentStageIndexInMap = stageIndex;
-        ReloadStage();
+        UpdateGameController();
+        ResetStage();
     }
     
     /// <summary>
@@ -330,7 +372,7 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     {
         if (CurrentMap == null || stageIndex < 0 || stageIndex >= CurrentMap.stages.Count) return;
         currentStageIndexInMap = stageIndex;
-        ReloadStage();
+        ResetStage();
         Timer.Instance.StopDelayTimer(delayNextStage);
         await UniTask.Delay(TimeSpan.FromSeconds(delayNextStage));
         StartSpawning();
@@ -344,7 +386,8 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     {
         if (CurrentMap == null || currentStageIndexInMap >= CurrentMap.stages.Count - 1) return;
         currentStageIndexInMap++;
-        ReloadStage();
+        UpdateGameController();
+        ResetStage();
     }
     
     /// <summary>
@@ -355,7 +398,8 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     {
         if (CurrentMap == null || currentStageIndexInMap >= CurrentMap.stages.Count - 1) return;
         currentStageIndexInMap++;
-        ReloadStage();
+        UpdateGameController();
+        ResetStage();
         Timer.Instance.StopDelayTimer(delayNextStage);
         await UniTask.Delay(TimeSpan.FromSeconds(delayNextStage));
         StartSpawning();

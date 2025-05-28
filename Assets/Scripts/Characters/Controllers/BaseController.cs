@@ -137,6 +137,7 @@ namespace Characters.Controllers
         private async void OnEnable()
         {
             await UniTask.WaitUntil(() => _isInitialize);
+            if (this == null || gameObject == null || !gameObject.activeInHierarchy) return;
             if (!Application.isPlaying) return;
 
             _inputSystem ??= GetComponent<ICharacterInput>();

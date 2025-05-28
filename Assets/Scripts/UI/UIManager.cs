@@ -86,7 +86,15 @@ public class UIManager : MonoBehaviour
     
     public async void BackMenu()
     {
+        ClearGameController();
         await SceneManager.LoadSceneAsync(menuScene).ToUniTask();
         await UniTask.Yield();
+    }
+    
+    public void ClearGameController()
+    {
+        if (GameController.Instance == null) return;
+        GameController.Instance.nextStageIndex = 0;
+        GameController.Instance.selectedMapIndex = 0;
     }
 }
