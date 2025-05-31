@@ -128,7 +128,13 @@ namespace Characters.MovementSystems
         /// Determine this entity is unstoppable or not.
         /// </summary>
         private bool _isUnStoppable;
-        
+
+        /// <summary>
+        /// The current velocity of the entity movement.
+        /// Typically updated per frame and applied to Rigidbody2D or NavMeshAgent.
+        /// </summary>
+        public Vector2 CurrentVelocity => currentVelocity;
+
         #endregion
 
         #region Unity Methods
