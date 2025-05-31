@@ -47,6 +47,7 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     private TMP_Text killquotaText;
   
     private EnemySpawner _enemySpawner;
+    private CountdownTimer _countdown;
     private Timer globalTimer;
     private bool hasTriggeredResult = false;
     
@@ -87,6 +88,7 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     {
         // Sets up enemy parent and spawner with the current stage.
         if (globalTimer == null) globalTimer = GetComponent<Timer>();
+        if (_countdown == null) _countdown = GetComponent<CountdownTimer>();
         if (enemyParent == null) enemyParent = new GameObject("EnemyParent").transform;
         if (GameController.Instance != null && GameController.Instance.selectedMapData != null)
         {
@@ -413,7 +415,7 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     public async void StartPlay()
     {
         UIManager.Instance.CloseAllPanels();
-        await UniTask.WaitForSeconds(delayNextStage);
+        await _countdown.StartCountdownAsync(delayNextStage);
         SetStageInMap(currentStageIndexInMap);
         StartSpawning();
     }
