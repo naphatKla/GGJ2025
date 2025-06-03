@@ -160,7 +160,7 @@ BlendTree:
     m_Mirror: 0
   - serializedVersion: 2
     m_Motion: {fileID: 7400000, guid: 491450a3042d12d499387cabf9d20f7e, type: 2}
-    m_Threshold: 0.125
+    m_Threshold: 0.0625
     m_Position: {x: 5, y: 0}
     m_TimeScale: 1
     m_CycleOffset: 0
@@ -168,7 +168,7 @@ BlendTree:
     m_Mirror: 0
   - serializedVersion: 2
     m_Motion: {fileID: 7400000, guid: 8ebe022996f894d44bfff43b38e0c47c, type: 2}
-    m_Threshold: 0.25
+    m_Threshold: 0.125
     m_Position: {x: 0, y: -5}
     m_TimeScale: 1
     m_CycleOffset: 0
@@ -176,7 +176,7 @@ BlendTree:
     m_Mirror: 0
   - serializedVersion: 2
     m_Motion: {fileID: 7400000, guid: 903bdd474527c8046a088427a41f74ca, type: 2}
-    m_Threshold: 0.375
+    m_Threshold: 0.1875
     m_Position: {x: -5, y: 0}
     m_TimeScale: 1
     m_CycleOffset: 0
@@ -184,11 +184,43 @@ BlendTree:
     m_Mirror: 0
   - serializedVersion: 2
     m_Motion: {fileID: 7400000, guid: 6cf13bcb12185eb47bd3c7b2f44fe4c4, type: 2}
-    m_Threshold: 0.5
+    m_Threshold: 0.25
     m_Position: {x: 0, y: 0}
     m_TimeScale: 1
     m_CycleOffset: 0
     m_DirectBlendParameter: Blend
+    m_Mirror: 0
+  - serializedVersion: 2
+    m_Motion: {fileID: 7400000, guid: 95318be33979c454e89697755d203add, type: 2}
+    m_Threshold: 0.3125
+    m_Position: {x: -5, y: 5}
+    m_TimeScale: 1
+    m_CycleOffset: 0
+    m_DirectBlendParameter: x
+    m_Mirror: 0
+  - serializedVersion: 2
+    m_Motion: {fileID: 7400000, guid: 31db4ec785f9adb408bdaf0f5f4ee238, type: 2}
+    m_Threshold: 0.375
+    m_Position: {x: -5, y: -5}
+    m_TimeScale: 1
+    m_CycleOffset: 0
+    m_DirectBlendParameter: x
+    m_Mirror: 0
+  - serializedVersion: 2
+    m_Motion: {fileID: 7400000, guid: e00558c1b91a5284d8f83974f0419b88, type: 2}
+    m_Threshold: 0.4375
+    m_Position: {x: 5, y: -5}
+    m_TimeScale: 1
+    m_CycleOffset: 0
+    m_DirectBlendParameter: x
+    m_Mirror: 0
+  - serializedVersion: 2
+    m_Motion: {fileID: 7400000, guid: cb29cd1b0a92a9c408d57e239fda590e, type: 2}
+    m_Threshold: 0.5
+    m_Position: {x: 5, y: 5}
+    m_TimeScale: 1
+    m_CycleOffset: 0
+    m_DirectBlendParameter: x
     m_Mirror: 0
   m_BlendParameter: x
   m_BlendParameterY: y

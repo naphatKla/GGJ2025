@@ -20,7 +20,7 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: {x: -1.15, y: 0.05326055, z: 0}
+        value: {x: -0.68, y: 0, z: 0}
         inSlope: {x: 0, y: 0, z: 0}
         outSlope: {x: 0, y: 0, z: 0}
         tangentMode: 0
@@ -30,13 +30,13 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    path: Armature/Bone.P/Bone.007
+    path: bone_Parent/bone_Bot
   - curve:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: {x: -0.743, y: -0.517, z: 0}
+        value: {x: 0.15, y: 1.48, z: 0}
         inSlope: {x: 0, y: 0, z: 0}
         outSlope: {x: 0, y: 0, z: 0}
         tangentMode: 0
@@ -46,13 +46,13 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    path: Armature/Bone.P/Bone.004
+    path: bone_Parent/bone_LeftBot
   - curve:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: {x: -0.831, y: 0.548, z: 0}
+        value: {x: 2.18, y: 1.32, z: 0}
         inSlope: {x: 0, y: 0, z: 0}
         outSlope: {x: 0, y: 0, z: 0}
         tangentMode: 0
@@ -62,13 +62,13 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    path: Armature/Bone.P/Bone.003
+    path: bone_Parent/bone_LeftTop
   - curve:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: {x: 0.001229979, y: 0.773, z: 0.004539554}
+        value: {x: -0.27, y: -1.42, z: 0}
         inSlope: {x: 0, y: 0, z: 0}
         outSlope: {x: 0, y: 0, z: 0}
         tangentMode: 0
@@ -78,13 +78,13 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    path: Armature/Bone.P/Bone.005
+    path: bone_Parent/bone_RightBot
   - curve:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: {x: -0.0012299572, y: -0.665, z: 0.0045395535}
+        value: {x: 2.13, y: -1.33, z: 0}
         inSlope: {x: 0, y: 0, z: 0}
         outSlope: {x: 0, y: 0, z: 0}
         tangentMode: 0
@@ -94,7 +94,23 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    path: Armature/Bone.P/Bone.006
+    path: bone_Parent/bone_RightTop
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: {x: 2.3, y: 0.01, z: 0}
+        inSlope: {x: 0, y: 0, z: 0}
+        outSlope: {x: 0, y: 0, z: 0}
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: {x: 0, y: 0.33333334, z: 0.33333334}
+        outWeight: {x: 0, y: 0.33333334, z: 0.33333334}
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    path: bone_Parent/bone_Top
   m_ScaleCurves: []
   m_FloatCurves: []
   m_PPtrCurves: []
@@ -106,7 +122,7 @@ AnimationClip:
   m_ClipBindingConstant:
     genericBindings:
     - serializedVersion: 2
-      path: 203671787
+      path: 1898568501
       attribute: 1
       script: {fileID: 0}
       typeID: 4
@@ -115,7 +131,7 @@ AnimationClip:
       isIntCurve: 0
       isSerializeReferenceCurve: 0
     - serializedVersion: 2
-      path: 2502596945
+      path: 3454264302
       attribute: 1
       script: {fileID: 0}
       typeID: 4
@@ -124,7 +140,7 @@ AnimationClip:
       isIntCurve: 0
       isSerializeReferenceCurve: 0
     - serializedVersion: 2
-      path: 189664498
+      path: 3525703733
       attribute: 1
       script: {fileID: 0}
       typeID: 4
@@ -133,7 +149,7 @@ AnimationClip:
       isIntCurve: 0
       isSerializeReferenceCurve: 0
     - serializedVersion: 2
-      path: 3794643399
+      path: 1311452971
       attribute: 1
       script: {fileID: 0}
       typeID: 4
@@ -142,7 +158,16 @@ AnimationClip:
       isIntCurve: 0
       isSerializeReferenceCurve: 0
     - serializedVersion: 2
-      path: 2066020477
+      path: 1374500080
+      attribute: 1
+      script: {fileID: 0}
+      typeID: 4
+      customType: 0
+      isPPtrCurve: 0
+      isIntCurve: 0
+      isSerializeReferenceCurve: 0
+    - serializedVersion: 2
+      path: 1861206254
       attribute: 1
       script: {fileID: 0}
       typeID: 4
@@ -178,7 +203,7 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: -1.15
+        value: -0.68
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -189,7 +214,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalPosition.x
-    path: Armature/Bone.P/Bone.007
+    path: bone_Parent/bone_Bot
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -199,7 +224,7 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 0.05326055
+        value: 0
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -210,7 +235,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalPosition.y
-    path: Armature/Bone.P/Bone.007
+    path: bone_Parent/bone_Bot
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -231,7 +256,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalPosition.z
-    path: Armature/Bone.P/Bone.007
+    path: bone_Parent/bone_Bot
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -241,7 +266,7 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: -0.743
+        value: 0.15
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -252,7 +277,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalPosition.x
-    path: Armature/Bone.P/Bone.004
+    path: bone_Parent/bone_LeftBot
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -262,7 +287,7 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: -0.517
+        value: 1.48
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -273,7 +298,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalPosition.y
-    path: Armature/Bone.P/Bone.004
+    path: bone_Parent/bone_LeftBot
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -294,7 +319,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalPosition.z
-    path: Armature/Bone.P/Bone.004
+    path: bone_Parent/bone_LeftBot
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -304,7 +329,7 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: -0.831
+        value: 2.18
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -315,7 +340,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalPosition.x
-    path: Armature/Bone.P/Bone.003
+    path: bone_Parent/bone_LeftTop
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -325,7 +350,7 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 0.548
+        value: 1.32
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -336,7 +361,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalPosition.y
-    path: Armature/Bone.P/Bone.003
+    path: bone_Parent/bone_LeftTop
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -357,7 +382,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalPosition.z
-    path: Armature/Bone.P/Bone.003
+    path: bone_Parent/bone_LeftTop
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -367,7 +392,7 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 0.001229979
+        value: -0.27
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -378,7 +403,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalPosition.x
-    path: Armature/Bone.P/Bone.005
+    path: bone_Parent/bone_RightBot
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -388,7 +413,7 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 0.773
+        value: -1.42
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -399,7 +424,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalPosition.y
-    path: Armature/Bone.P/Bone.005
+    path: bone_Parent/bone_RightBot
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -409,7 +434,7 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 0.004539554
+        value: 0
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -420,7 +445,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalPosition.z
-    path: Armature/Bone.P/Bone.005
+    path: bone_Parent/bone_RightBot
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -430,7 +455,7 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: -0.0012299572
+        value: 2.13
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -441,7 +466,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalPosition.x
-    path: Armature/Bone.P/Bone.006
+    path: bone_Parent/bone_RightTop
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -451,7 +476,7 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: -0.665
+        value: -1.33
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -462,7 +487,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalPosition.y
-    path: Armature/Bone.P/Bone.006
+    path: bone_Parent/bone_RightTop
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -472,7 +497,7 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 0.0045395535
+        value: 0
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -483,7 +508,70 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalPosition.z
-    path: Armature/Bone.P/Bone.006
+    path: bone_Parent/bone_RightTop
+    classID: 4
+    script: {fileID: 0}
+    flags: 0
+  - serializedVersion: 2
+    curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 2.3
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_LocalPosition.x
+    path: bone_Parent/bone_Top
+    classID: 4
+    script: {fileID: 0}
+    flags: 0
+  - serializedVersion: 2
+    curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0.01
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_LocalPosition.y
+    path: bone_Parent/bone_Top
+    classID: 4
+    script: {fileID: 0}
+    flags: 0
+  - serializedVersion: 2
+    curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_LocalPosition.z
+    path: bone_Parent/bone_Top
     classID: 4
     script: {fileID: 0}
     flags: 0
