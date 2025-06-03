@@ -15,12 +15,11 @@ public class EnemySpawner
 
     // Core data and config references
     private const int MaxSpawnPositionAttempts = 10;
-    private readonly IEnemySpawnerView _spawnerView;
+    private readonly StageManager _stageManager;
     private readonly StageDataSO _stageData;
     private readonly Vector2 _regionSize;
     private readonly float _minDistanceFromPlayer;
     private readonly Vector2 _screenSize;
-    private readonly SpawnEventManager _spawnEventManager;
 
     // Spawn state and progression tracking
     private ISpawnState _currentState;
@@ -30,12 +29,12 @@ public class EnemySpawner
     private float _killCount;
     private int _addMaxEnemySpawn;
     private float _removeIntervalEnemySpawn;
-
-    // Spawning interface
-    private readonly ISpawnerService _spawnerService = new ObjectPoolSpawnerService();
    
     // Active enemies in the world
     public readonly HashSet<EnemyController> enemies = new();
+    
+    // Spawning interface
+    private readonly ISpawnerService _spawnerService = new ObjectPoolSpawnerService();
 
     #endregion
 
@@ -66,9 +65,9 @@ public class EnemySpawner
     /// <summary>
     /// Initializes all required spawn parameters and default state.
     /// </summary>
-    public EnemySpawner(IEnemySpawnerView view, StageDataSO stageData, Vector2 regionSize, float minDistanceFromPlayer)
+    public EnemySpawner(StageManager manager , StageDataSO stageData, Vector2 regionSize, float minDistanceFromPlayer)
     {
-        _spawnerView = view ?? throw new ArgumentNullException(nameof(view));
+        _stageManager = manager ?? throw new ArgumentNullException(nameof(manager));
         _stageData = stageData ?? throw new ArgumentNullException(nameof(stageData));
         _regionSize = regionSize;
         _minDistanceFromPlayer = minDistanceFromPlayer;
@@ -81,35 +80,11 @@ public class EnemySpawner
         _nextIntervalKillQuota = stageData.IntervalKillQuota;
         _addMaxEnemySpawn = stageData.AddMaxEnemySpawn;
         _removeIntervalEnemySpawn = stageData.RemoveIntervalEnemySpawn;
-
-        _spawnEventManager = new SpawnEventManager(view, stageData, regionSize, minDistanceFromPlayer, _spawnerService);
-
+        
         CalculateTotalEnemySpawnChance();
-        SetState(new StopState());
+        _stageManager.SetState(new StopState());
     }
 
-    #endregion
-
-    #region State Handling
-
-    /// <summary>
-    /// Called each frame to update spawn behavior based on state.
-    /// </summary>
-    public void Update()
-    {
-        _currentState?.Update(this);
-    }
-
-    /// <summary>
-    /// Change the active spawning state, calling exit/enter lifecycle.
-    /// </summary>
-    private void SetState(ISpawnState newState)
-    {
-        _currentState?.Exit(this);
-        _currentState = newState;
-        _currentState.Enter(this);
-    }
-    
     #endregion
 
     #region Spawn Control
@@ -120,7 +95,7 @@ public class EnemySpawner
     public void StartSpawning()
     {
         Debug.Log("Start Spawning");
-        SetState(new SpawningState());
+        _stageManager.SetState(new SpawningState());
         Timer.Instance.ResumeTimer();
     }
 
@@ -130,7 +105,7 @@ public class EnemySpawner
     public void StopSpawning()
     {
         Debug.Log("Stop Spawning");
-        SetState(new StopState());
+        _stageManager.SetState(new StopState());
         Timer.Instance.PauseTimer();
     }
 
@@ -140,7 +115,7 @@ public class EnemySpawner
     public void PauseSpawning()
     {
         Debug.Log("Pause Spawning");
-        SetState(new PausedState());
+        _stageManager.SetState(new PausedState());
     }
 
     /// <summary>
@@ -149,14 +124,6 @@ public class EnemySpawner
     public bool CanSpawn()
     {
         return enemies.Count(e => e.gameObject.activeInHierarchy) < CurrentMaxEnemySpawn;
-    }
-
-    /// <summary>
-    /// Triggers an event-based spawn from the event manager.
-    /// </summary>
-    public void TriggerSpawnEvent(bool bypassCooldown = false, bool noChance = false)
-    {
-        _spawnEventManager.TriggerSpawnEvent(bypassCooldown, noChance);
     }
     
     /// <summary>
@@ -172,7 +139,7 @@ public class EnemySpawner
     /// </summary>
     public void UpdateQuota()
     {
-        var killCount = _spawnerView.GetPlayerKill();
+        var killCount = _stageManager.GetPlayerKill();
 
         if (killCount >= _nextUnitKillQuota)
         {
@@ -187,22 +154,6 @@ public class EnemySpawner
                 _stageData.SpawnIntervalCap, CurrentSpawnInterval);
             _nextIntervalKillQuota += _stageData.IntervalKillQuota;
         }
-    }
-
-    /// <summary>
-    /// Check timer-based event trigger points.
-    /// </summary>
-    public void UpdateTimerTriggers()
-    {
-        _spawnEventManager.UpdateTimerTriggers(enemies);
-    }
-
-    /// <summary>
-    /// Check kill-count-based event trigger points.
-    /// </summary>
-    public void UpdateKillTriggers()
-    {
-        _spawnEventManager.UpdateKillTriggers(enemies);
     }
 
     #endregion
@@ -298,7 +249,7 @@ public class EnemySpawner
             enemyType.gameObject,
             position,
             Quaternion.identity,
-            _spawnerView.GetEnemyParent()
+            _stageManager.GetEnemyParent()
         );
             
         //Deactivate Collider on Spawn
@@ -336,9 +287,9 @@ public class EnemySpawner
         if (availableEnemies.Count == 0) return;
 
         var enemyType = GetRandomEnemyType(availableEnemies);
-        var spawnPosition = GetRandomSpawnPosition(_spawnerView.GetPlayerPosition());
+        var spawnPosition = GetRandomSpawnPosition(_stageManager.GetPlayerPosition());
         
-        var enemyObj = _spawnerService.Spawn(enemyType.gameObject, spawnPosition, Quaternion.identity, _spawnerView.GetEnemyParent());
+        var enemyObj = _spawnerService.Spawn(enemyType.gameObject, spawnPosition, Quaternion.identity, _stageManager.GetEnemyParent());
         enemyObj.GetComponent<CircleCollider2D>().isTrigger = true;
 
         if (!enemyObj.TryGetComponent(out EnemyController enemyController)) return;

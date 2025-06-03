@@ -1772,6 +1772,7 @@ GameObject:
   - component: {fileID: 751170098}
   - component: {fileID: 751170099}
   - component: {fileID: 751170100}
+  - component: {fileID: 751170101}
   m_Layer: 0
   m_Name: StageManager
   m_TagString: Untagged
@@ -1816,8 +1817,6 @@ MonoBehaviour:
   minDistanceFromPlayer: 20
   delayNextStage: 3
   enableDebug: 0
-  stageText: {fileID: 978497420}
-  killquotaText: {fileID: 970449225}
 --- !u!114 &751170099
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1845,6 +1844,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   countdownText: {fileID: 916137993}
+--- !u!114 &751170101
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 751170096}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00da7c95a38f9794f83afb94bcdb965f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  stageText: {fileID: 978497420}
+  killquotaText: {fileID: 970449225}
 --- !u!1 &778473138
 GameObject:
   m_ObjectHideFlags: 0
