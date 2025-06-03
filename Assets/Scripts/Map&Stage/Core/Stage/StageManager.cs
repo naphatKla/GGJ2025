@@ -400,9 +400,9 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     {
         //Load Pool & Data
         ClearEntity();
-        SetStageInMap(currentStageIndexInMap);
         UIManager.Instance.CloseAllPanels();
         await _countdown.StartCountdownAsync(delayNextStage);
+        SetStageInMap(currentStageIndexInMap);
         StartSpawning();
     }
     
