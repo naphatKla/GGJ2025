@@ -1,6 +1,7 @@
 using System.Threading;
 using Characters.SO.SkillDataSo;
 using Cysharp.Threading.Tasks;
+using GlobalSettings;
 using UnityEngine;
 
 namespace Characters.SkillSystems.SkillRuntimes
@@ -24,6 +25,9 @@ namespace Characters.SkillSystems.SkillRuntimes
         /// <returns>A UniTask that completes when the dash tween ends or is cancelled.</returns>
         protected override async UniTask OnSkillUpdate(CancellationToken cancelToken)
         {
+            if (skillData.SnapTarget)
+                aimDirection = TryAimAssist(aimDirection, skillData.DashDistance);
+            
             Vector2 dashPosition = (Vector2)transform.position + aimDirection * skillData.DashDistance;
             await owner.MovementSystem
                 .TryMoveToPositionOverTime(dashPosition, skillData.DashDuration, skillData.DashEaseCurve,

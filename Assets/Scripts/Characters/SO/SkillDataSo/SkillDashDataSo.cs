@@ -25,6 +25,9 @@ namespace Characters.SO.SkillDataSo
         
         [PropertyTooltip("AnimationCurve that applies lateral displacement during the dash allowing for custom arcing or wave-like motion paths instead of straight-line dashing.")]
         [SerializeField] private AnimationCurve dashMoveCurve;
+
+        [PropertyTooltip("Help to snap direction to the closest target aiming.")]
+        [SerializeField] private bool snapTarget;
         
         /// <summary>
         /// Duration of the dash movement in seconds.
@@ -49,7 +52,12 @@ namespace Characters.SO.SkillDataSo
         /// Allows curved, arcing, or wave-like motion paths instead of a straight line.
         /// </summary>
         public AnimationCurve DashMoveCurve => dashMoveCurve;
-        
+
+        /// <summary>
+        /// Help to snap direction to the closest target aiming.
+        /// </summary>
+        public bool SnapTarget => snapTarget;
+
         #endregion
     }
 }

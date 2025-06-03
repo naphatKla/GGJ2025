@@ -4,6 +4,7 @@ using Characters.Controllers;
 using Characters.FeedbackSystems;
 using Characters.SO.SkillDataSo;
 using Cysharp.Threading.Tasks;
+using GlobalSettings;
 using Manager;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -151,6 +152,48 @@ namespace Characters.SkillSystems.SkillRuntimes
         {
             _isPerforming = false;
             OnSkillExit();
+        }
+        
+        /// <summary>
+        /// Help to snap the target direction and return the snapped direction.
+        /// </summary>
+        /// <param name="rawDirection">Input raw direction.</param>
+        /// <param name="distance">Distance to check.</param>
+        /// <returns></returns>
+        protected Vector2 TryAimAssist(Vector2 rawDirection, float distance)
+        {
+            LayerMask targetMask = CharacterGlobalSettings.Instance.EnemyLayerDictionary[owner.tag];
+            rawDirection.Normalize();
+            
+            Vector2 perpendicular = new Vector2(-rawDirection.y, rawDirection.x);
+            float offsetDistance = 1.25f;
+            Vector2 origin = transform.position;
+            Vector2[] rayOrigins =
+            {
+                origin,                                
+                origin + perpendicular * offsetDistance, 
+                origin - perpendicular * offsetDistance  
+            };
+            
+            RaycastHit2D bestHit = new RaycastHit2D();
+            float closestDistance = float.MaxValue;
+
+            foreach (var rayOrigin in rayOrigins)
+            {
+                RaycastHit2D hit = Physics2D.Raycast(rayOrigin, rawDirection, distance + 1f, targetMask);
+                Debug.DrawRay(rayOrigin, rawDirection * (distance + 1f), Color.red, 0.2f);
+
+                if (hit.collider == null) continue;
+                float dist = Vector2.Distance(transform.position, hit.point);
+                if (!(dist < closestDistance)) continue;
+                closestDistance = dist;
+                bestHit = hit;
+            }
+            
+            if (bestHit.collider == null) return rawDirection;
+            
+            Debug.Log("Aim assist hit: " + bestHit.collider.name);
+            return (bestHit.point - (Vector2)transform.position).normalized;
         }
 
         #endregion
