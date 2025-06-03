@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a3c6e2c122e8dc642aecbe83e74a282c, type: 3}
-  m_Name: '[SE] Stage-Level-5'
+  m_Name: '[SE] Stage-Level-1'
   m_EditorClassIdentifier: 
   defaultEnemyData: {fileID: 11400000, guid: e8bf0e8ec6b32e344a0ddff289ef5d98, type: 2}
-  _chance: 40
+  _chance: 10
   _cooldown: 20
   _enemyCount: 8
   _spawnDelayAll: 0.2
@@ -47,21 +47,13 @@ MonoBehaviour:
   _spawnEnemies:
   - EnemyData: {fileID: 11400000, guid: e8bf0e8ec6b32e344a0ddff289ef5d98, type: 2}
     EnemyType: {fileID: 8145196360709479149, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
-    SpawnChance: 20
-  - EnemyData: {fileID: 11400000, guid: e8bf0e8ec6b32e344a0ddff289ef5d98, type: 2}
-    EnemyType: {fileID: 8145196360709479149, guid: 3a3de9b5f0ca7124e993a45d196bad5e, type: 3}
-    SpawnChance: 20
+    SpawnChance: 10
   _spawnEffectPrefab: {fileID: 0}
   _spawnStrategy:
     rid: 3868164761998852097
   _customConditions: []
   timerTrigger: []
-  killTrigger:
-  - 10
-  - 20
-  - 30
-  - 40
-  - 50
+  killTrigger: []
   references:
     version: 2
     RefIds:

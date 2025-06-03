@@ -7,6 +7,6 @@ public interface ISpawnEvent
 {
     float Chance { get; }
     float Cooldown { get; }
-    List<IEnemyData> EventEnemies { get; }
+    SpawnEnemyProperties[] EventEnemies { get; }
     bool IsCooldownActive(float currentTime);
 }

@@ -295,18 +295,17 @@ public class EnemySpawner
             _spawnerService.Spawn(data.SpawnEffectPrefab, position, Quaternion.identity);
 
         var enemyObj = _spawnerService.Spawn(
-            enemyData.EnemyController.gameObject,
+            enemyType.gameObject,
             position,
             Quaternion.identity,
             _spawnerView.GetEnemyParent()
         );
-        
+            
         //Deactivate Collider on Spawn
         enemyObj.GetComponent<CircleCollider2D>().isTrigger = true;
 
         if (enemyObj == null || !enemyObj.TryGetComponent(out EnemyController enemyController)) return;
-
-        enemyController.AssignCharacterData(enemyType);
+            
         enemies.Add(enemyController);
         enemyController.HealthSystem.OnDead += () => DespawnEnemy(enemyController);
         OnEnemySpawned?.Invoke(enemyController);
@@ -338,15 +337,12 @@ public class EnemySpawner
 
         var enemyType = GetRandomEnemyType(availableEnemies);
         var spawnPosition = GetRandomSpawnPosition(_spawnerView.GetPlayerPosition());
-        var prefab = availableEnemies[0].EnemyData.EnemyController.gameObject;
-
-        var enemyObj = _spawnerService.Spawn(prefab, spawnPosition, Quaternion.identity, _spawnerView.GetEnemyParent());
-
+        
+        var enemyObj = _spawnerService.Spawn(enemyType.gameObject, spawnPosition, Quaternion.identity, _spawnerView.GetEnemyParent());
         enemyObj.GetComponent<CircleCollider2D>().isTrigger = true;
 
         if (!enemyObj.TryGetComponent(out EnemyController enemyController)) return;
-
-        enemyController.AssignCharacterData(enemyType);
+            
         enemies.Add(enemyController);
         enemyController.HealthSystem.OnDead += () => DespawnEnemy(enemyController);
         OnEnemySpawned?.Invoke(enemyController);
@@ -377,12 +373,11 @@ public class EnemySpawner
     /// </summary>
     public void Prewarm(StageDataSO stageData, Transform enemyParent)
     {
-        var templatePrefab = stageData.Enemies[0].EnemyData.EnemyController.gameObject;
         foreach (var enemyData in stageData.Enemies)
         {
             for (var i = 0; i < stageData.PreObjectSpawn; i++)
             {
-                var enemy = _spawnerService.Spawn(templatePrefab, Vector3.zero,
+                var enemy = _spawnerService.Spawn(enemyData.EnemyType.gameObject, Vector3.zero,
                     Quaternion.identity, enemyParent, true);
                 if (!enemy.TryGetComponent(out EnemyController enemyController)) return;
                 enemies.Add(enemyController);
@@ -391,11 +386,13 @@ public class EnemySpawner
         }
 
         foreach (var spawnEvent in stageData.SpawnEvents)
+        foreach (var enemyData in spawnEvent.EventEnemies)
         {
             if (spawnEvent is not SpawnEventSO eventSO) continue;
             for (var i = 0; i < eventSO.EnemyCount; i++)
             {
-                var enemy = _spawnerService.Spawn(templatePrefab, Vector3.zero, Quaternion.identity, enemyParent,
+                var enemy = _spawnerService.Spawn(enemyData.EnemyType.gameObject, Vector3.zero, Quaternion.identity,
+                    enemyParent,
                     true);
                 if (!enemy.TryGetComponent(out EnemyController controller)) continue;
                 enemies.Add(controller);
@@ -416,11 +413,12 @@ public class EnemySpawner
     {
         _totalEnemySpawnChance = _stageData.Enemies.Sum(enemy => enemy.SpawnChance);
     }
+    
 
     /// <summary>
     /// Selects a random enemy based on weighted probability.
     /// </summary>
-    public static CharacterDataSo GetRandomEnemyType<T>(List<T> enemies) where T : IWeightedEnemy
+    public static EnemyController GetRandomEnemyType<T>(List<T> enemies) where T : IWeightedEnemy
     {
         var currentTime = Timer.Instance.GlobalTimer;
 
@@ -448,9 +446,7 @@ public class EnemySpawner
         return enemies.FirstOrDefault()?.GetCharacterData();
     }
 
-
-
-
+    
     /// <summary>
     /// Chooses a spawn position outside player's view.
     /// </summary>

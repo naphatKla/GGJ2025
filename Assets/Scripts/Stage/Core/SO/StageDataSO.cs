@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Characters.Controllers;
 using Characters.SO.CharacterDataSO;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -11,7 +12,7 @@ public class EnemyProperties : IWeightedEnemy
     [HideInInspector] public EnemyDataSO EnemyData;
 
     [ValueDropdown("@GetEnemyTypesFromDefault()")]
-    public CharacterDataSo EnemyType;
+    public EnemyController EnemyType;
 
     [Tooltip("Chance to spawn this enemy")]
     public float SpawnChance;
@@ -40,15 +41,15 @@ public class EnemyProperties : IWeightedEnemy
     }
 
 
-    private IEnumerable<CharacterDataSo> GetEnemyTypesFromDefault()
+    private IEnumerable<EnemyController> GetEnemyTypesFromDefault()
     {
         if (EnemyData == null || EnemyData.enemyData == null)
-            return Enumerable.Empty<CharacterDataSo>();
+            return Enumerable.Empty<EnemyController>();
 
         return EnemyData.enemyData;
     }
 
-    public CharacterDataSo GetCharacterData()
+    public EnemyController GetCharacterData()
     {
         return EnemyType;
     }

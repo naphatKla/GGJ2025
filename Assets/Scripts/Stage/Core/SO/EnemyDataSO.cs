@@ -7,14 +7,13 @@ using UnityEngine;
 
 public interface IEnemyData
 {
-    EnemyController EnemyController { get; }
+    List<EnemyController> EnemyController { get; }
 }
 
 [CreateAssetMenu(fileName = "EnemyData", menuName = "Game/EnemyData", order = 1)]
 public class EnemyDataSO : ScriptableObject, IEnemyData
 {
-    [SerializeField] private EnemyController genericEnemyPrefab;
-    [SerializeField] public List<CharacterDataSo> enemyData;
+    [SerializeField] public List<EnemyController> enemyData;
     
-    public EnemyController EnemyController => genericEnemyPrefab;
+    public List<EnemyController> EnemyController => enemyData;
 }

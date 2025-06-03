@@ -22,7 +22,7 @@ GameObject:
   - component: {fileID: 8811412802831875570}
   - component: {fileID: 7312169751311385798}
   m_Layer: 6
-  m_Name: EnemyPrefab
+  m_Name: BigEnemy
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -38,7 +38,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0.25, y: -0.13, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2313492309073572760}
@@ -85,7 +85,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 1147617367, guid: 670f34a19ad23084da5dd4450f656b8d, type: 3}
+  m_Sprite: {fileID: 81617131, guid: 34d4ee1b89bb5594c9273953f44b6877, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -116,7 +116,7 @@ MonoBehaviour:
   damageOnTouch: {fileID: 8858836943072646866}
   feedbackSystem: {fileID: 5733554412123996507}
   comboSystem: {fileID: 0}
-  characterData: {fileID: 11400000, guid: c1d07ea341b30b24fb5d44940eefa14e, type: 2}
+  characterData: {fileID: 11400000, guid: a3e10d2b7a7c85c4b8f06b4b6bb83034, type: 2}
 --- !u!114 &7216587496243282883
 MonoBehaviour:
   m_ObjectHideFlags: 0

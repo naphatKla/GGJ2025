@@ -57,6 +57,7 @@ public class Timer : MMSingleton<Timer>
     {
         startTimer = timer;
         currentTimer = startTimer;
+        UpdateUIText();
 
         if (countdownCoroutine != null)
         {
@@ -151,7 +152,7 @@ public class Timer : MMSingleton<Timer>
     private void TimerEnd()
     {
         isRunning = false;
-        stageManager.GameTimeEnd();
+        stageManager.GameStageEnd();
         StopCoroutine(countdownCoroutine);
     }
     

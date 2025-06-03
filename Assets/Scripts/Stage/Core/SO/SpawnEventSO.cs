@@ -15,20 +15,20 @@ public class SpawnEnemyProperties : IWeightedEnemy
     public EnemyDataSO EnemyData;
     
     [ValueDropdown("@GetEnemyTypesFromDefault()")]
-    public CharacterDataSo EnemyType;
+    public EnemyController EnemyType;
 
     [Tooltip("Chance to spawn this enemy")]
     public float SpawnChance;
     
-    private IEnumerable<CharacterDataSo> GetEnemyTypesFromDefault()
+    private IEnumerable<EnemyController> GetEnemyTypesFromDefault()
     {
         if (EnemyData == null || EnemyData.enemyData == null)
-            return Enumerable.Empty<CharacterDataSo>();
+            return Enumerable.Empty<EnemyController>();
 
         return EnemyData.enemyData;
     }
 
-    public CharacterDataSo GetCharacterData() => EnemyType;
+    public EnemyController GetCharacterData() => EnemyType;
     public float GetSpawnChance() => SpawnChance;
 }
 
@@ -96,11 +96,7 @@ public class SpawnEventSO : ScriptableObject, ISpawnEvent
     public float Chance => _chance;
     public float Cooldown => _cooldown;
     public int EnemyCount => _enemyCount;
-
-    public List<IEnemyData> EventEnemies =>
-        _spawnEnemies?.Select(e => (IEnemyData)e.EnemyData).ToList();
-    
-    public SpawnEnemyProperties[] SpawnEnemies => _spawnEnemies;
+    public SpawnEnemyProperties[] EventEnemies => _spawnEnemies;
     #endregion
 
     #region Public Methods

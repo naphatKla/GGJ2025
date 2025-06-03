@@ -131,14 +131,13 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
             // Last Stage in the map list
             if (IsLastStageInMap())
             {
-                GameTimeEnd();
+                GameStageEnd();
+                UIManager.Instance.OpenPanel(UIPanelType.ResultLastStage);
             }
             else // Still have next stage
             {
-                StopSpawning();
+                GameStageEnd();
                 UIManager.Instance.OpenPanel(UIPanelType.ResultWithNextStage);
-                Timer.Instance.PauseTimer();
-                ResetStage();
             }
         }
     }
@@ -147,12 +146,12 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
 
     #region Methods
 
-    public async void GameTimeEnd()
+    public async void GameStageEnd()
     {
+        Timer.Instance.SetTimer(0);
         StopSpawning();
-        UIManager.Instance.OpenPanel(UIPanelType.ResultLastStage);
         await UniTask.Delay(300);
-        ResetStage();
+        ClearEntity();
     }
     
     /// <summary>
@@ -266,18 +265,25 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     }
     
     /// <summary>
-    /// Reload the stage
+    /// Reset the stage
     /// </summary>
     private void ResetStage()
     {
         ResetQuota();
         hasTriggeredResult = false;
         Timer.Instance.SetTimer(CurrentMap.stages[currentStageIndexInMap].TimerStage);
+        SetBackground(CurrentMap?.background);
+        UpdateStageText();
+    }
+
+    /// <summary>
+    /// Clear all entity in map
+    /// </summary>
+    private void ClearEntity()
+    {
         ClearEnemies();
         SoulItemManagerSpawner.Instance.ClearAll();
         _enemySpawner = new EnemySpawner(this, CurrentStage, regionSize, minDistanceFromPlayer);
-        SetBackground(CurrentMap?.background);
-        UpdateStageText();
     }
     
     /// <summary>
@@ -357,6 +363,7 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
         SetStageInMap(currentStageIndexInMap);
         UpdateGameController();
         ResetStage();
+        ClearEntity();
     }
 
     /// <summary>
@@ -371,20 +378,6 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
         UpdateGameController();
         ResetStage();
     }
-    
-    /// <summary>
-    /// Set current of stage index with delay
-    /// </summary>
-    /// <param name="stageIndex"></param>
-    public async void SetStageInMapWithDelay(int stageIndex)
-    {
-        if (CurrentMap == null || stageIndex < 0 || stageIndex >= CurrentMap.stages.Count) return;
-        currentStageIndexInMap = stageIndex;
-        ResetStage();
-        Timer.Instance.StopDelayTimer(delayNextStage);
-        await _countdown.StartCountdownAsync(delayNextStage);
-        StartSpawning();
-    }
 
     /// <summary>
     /// Increase stage index by 1
@@ -395,22 +388,7 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
         if (CurrentMap == null || currentStageIndexInMap >= CurrentMap.stages.Count - 1) return;
         currentStageIndexInMap++;
         UpdateGameController();
-        ResetStage();
-    }
-    
-    /// <summary>
-    /// Check player quota to go next stage
-    /// </summary>
-    /// <returns></returns>
-    public async void NextStageWithDelay()
-    {
-        if (CurrentMap == null || currentStageIndexInMap >= CurrentMap.stages.Count - 1) return;
-        currentStageIndexInMap++;
-        UpdateGameController();
-        ResetStage();
-        Timer.Instance.StopDelayTimer(delayNextStage);
-        await _countdown.StartCountdownAsync(delayNextStage);
-        StartSpawning();
+        StartPlay();
     }
     
     /// <summary>
@@ -420,9 +398,11 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     [Button(ButtonSizes.Large), GUIColor(0, 1, 0)]
     public async void StartPlay()
     {
+        //Load Pool & Data
+        ClearEntity();
+        SetStageInMap(currentStageIndexInMap);
         UIManager.Instance.CloseAllPanels();
         await _countdown.StartCountdownAsync(delayNextStage);
-        SetStageInMap(currentStageIndexInMap);
         StartSpawning();
     }
     

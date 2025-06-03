@@ -144,7 +144,7 @@ public class SpawnEventManager
         int count = 0;
         foreach (var enemyData in eventSO.EventEnemies)
         {
-            GameObject prefab = enemyData.EnemyController.gameObject;
+            GameObject prefab = enemyData.EnemyType.gameObject;
             count += _spawnerService.CountAvailable(prefab);
         }
         return count;
