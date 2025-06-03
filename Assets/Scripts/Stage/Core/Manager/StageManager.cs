@@ -131,10 +131,7 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
             // Last Stage in the map list
             if (IsLastStageInMap())
             {
-                StopSpawning();
-                UIManager.Instance.OpenPanel(UIPanelType.ResultLastStage);
-                await UniTask.Delay(300);
-                ResetStage();
+                GameTimeEnd();
             }
             else // Still have next stage
             {
@@ -144,12 +141,20 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
                 ResetStage();
             }
         }
-
     }
 
     #endregion
 
     #region Methods
+
+    public async void GameTimeEnd()
+    {
+        StopSpawning();
+        UIManager.Instance.OpenPanel(UIPanelType.ResultLastStage);
+        await UniTask.Delay(300);
+        ResetStage();
+    }
+    
     /// <summary>
     /// Check player quota to go next stage
     /// </summary>
@@ -269,6 +274,7 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
         hasTriggeredResult = false;
         Timer.Instance.SetTimer(CurrentMap.stages[currentStageIndexInMap].TimerStage);
         ClearEnemies();
+        SoulItemManagerSpawner.Instance.ClearAll();
         _enemySpawner = new EnemySpawner(this, CurrentStage, regionSize, minDistanceFromPlayer);
         SetBackground(CurrentMap?.background);
         UpdateStageText();
@@ -376,7 +382,7 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
         currentStageIndexInMap = stageIndex;
         ResetStage();
         Timer.Instance.StopDelayTimer(delayNextStage);
-        await UniTask.Delay(TimeSpan.FromSeconds(delayNextStage));
+        await _countdown.StartCountdownAsync(delayNextStage);
         StartSpawning();
     }
 
@@ -403,7 +409,7 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
         UpdateGameController();
         ResetStage();
         Timer.Instance.StopDelayTimer(delayNextStage);
-        await UniTask.Delay(TimeSpan.FromSeconds(delayNextStage));
+        await _countdown.StartCountdownAsync(delayNextStage);
         StartSpawning();
     }
     
