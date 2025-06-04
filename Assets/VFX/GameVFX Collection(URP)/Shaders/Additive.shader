@@ -3,6 +3,7 @@ Shader "Eric/URP Particles/Additive"
 	Properties
 	{	
 		_MainTex("MainTex", 2D) = "white" {}
+		_ChannelMask("MainTex Channel Mask RGBA", Vector) = (1, 0, 0, 0)
 		_Noise("Noise", 2D) = "white" {}
 		_Flow("Flow", 2D) = "white" {}
 		_Mask("Mask", 2D) = "white" {}
@@ -10,6 +11,7 @@ Shader "Eric/URP Particles/Additive"
 		_DistortionSpeedXYPowerZ("Distortion Speed XY Power Z", Vector) = (0,0,0,0)
 		_Emission("Emission", Float) = 2
 		_Color("Color", Color) = (0.5,0.5,0.5,1)
+		_AlphaSharpness ("Alpha Sharpness", Range(0,1)) = 0
 		[Toggle]_Usecenterglow("Use center glow?", Float) = 0
 		[MaterialToggle] _Usedepth ("Use depth?", Float ) = 0
 		[MaterialToggle] _Usecustomrandom ("Use Custom Random?", Float ) = 0
@@ -18,6 +20,7 @@ Shader "Eric/URP Particles/Additive"
 		[Enum(One,1,OneMinuSrcAlpha,6)] _Blend2 ("Blend mode subset", Float) = 1
 		[HideInInspector] _texcoord( "", 2D ) = "white" {}
 	}
+	
 
 	Category 
 	{
@@ -90,6 +93,8 @@ Shader "Eric/URP Particles/Additive"
 				uniform float4 _Noise_ST;
 				uniform float4 _Color;
 				uniform float _Emission;
+				uniform float _AlphaSharpness;
+				uniform float4 _ChannelMask;
 				uniform fixed _Usedepth;
 				uniform fixed _Usecustomrandom;
 				uniform float _Depthpower;
@@ -137,7 +142,13 @@ Shader "Eric/URP Particles/Additive"
 					float2 uv_Mask = i.texcoord.xy * _Mask_ST.xy + _Mask_ST.zw;
 					float4 tex2DNode33 = tex2D( _Mask, uv_Mask );
 					float Flowpower102 = _DistortionSpeedXYPowerZ.z;
-					float4 tex2DNode13 = tex2D( _MainTex, ( panner107 - ( (( tex2D( _Flow, panner110 ) * tex2DNode33 )).rg * Flowpower102 ) ) );
+					float4 rawTex = tex2D( _MainTex, ( panner107 - ( (( tex2D( _Flow, panner110 ) * tex2DNode33 )).rg * Flowpower102 ) ) );
+					float mask = dot(rawTex, _ChannelMask);
+
+float hardAlpha = step(0.5, mask);; // หรือจะใช้ smoothstep(0.45, 0.55, mask) ถ้าจะให้ขอบเนียน
+mask = lerp(mask, hardAlpha, _AlphaSharpness); // Blend ระหว่าง soft กับ hard ตามค่าที่กำหนด
+
+float4 tex2DNode13 = float4(1, 1, 1, 1) * mask;
 					float2 appendResult22 = (float2(_SpeedMainTexUVNoiseZW.z , _SpeedMainTexUVNoiseZW.w));
 					float2 uv0_Noise = i.texcoord.xy * _Noise_ST.xy + _Noise_ST.zw;
 					float ur = lerp(0, i.texcoord.w, _Usecustomrandom);
