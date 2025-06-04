@@ -10,14 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cb20b7afc201d4d46b649b6ac3009fa4, type: 3}
-  m_Name: '[STAGE] Level-2'
+  m_Name: '[STAGE] Level-3'
   m_EditorClassIdentifier: 
   defaultEnemyData: {fileID: 11400000, guid: e8bf0e8ec6b32e344a0ddff289ef5d98, type: 2}
   PreObjectSpawn: 30
   enemies:
   - EnemyData: {fileID: 11400000, guid: e8bf0e8ec6b32e344a0ddff289ef5d98, type: 2}
     EnemyType: {fileID: 8145196360709479149, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
-    SpawnChance: 100
+    SpawnChance: 50
     UseTimer: 0
     StartTimer: 0
     EndTimer: 30
@@ -48,7 +48,7 @@ MonoBehaviour:
       m_RotationOrder: 4
   - EnemyData: {fileID: 11400000, guid: e8bf0e8ec6b32e344a0ddff289ef5d98, type: 2}
     EnemyType: {fileID: 8145196360709479149, guid: 3a3de9b5f0ca7124e993a45d196bad5e, type: 3}
-    SpawnChance: 10
+    SpawnChance: 20
     UseTimer: 0
     StartTimer: 0
     EndTimer: 0
@@ -78,11 +78,11 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   spawnEvent:
-  - {fileID: 11400000, guid: 24793e7fcab335449bdbb126224b01e9, type: 2}
-  killQuota: 20
+  - {fileID: 11400000, guid: 564a645afaa186c48895c58d22b1047c, type: 2}
+  killQuota: 40
   timerLimit: 120
   spawnQuota: 5
-  startMaxEnemySpawn: 5
+  startMaxEnemySpawn: 10
   maxEnemySpawnCap: 20
   addMaxEnemySpawn: 1
   intervalQuota: 5

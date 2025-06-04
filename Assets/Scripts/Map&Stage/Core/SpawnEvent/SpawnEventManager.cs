@@ -9,34 +9,32 @@ public class SpawnEventManager
 {
     #region Variables
 
-    private readonly IEnemySpawnerView _spawnerView;
+    private readonly StageManager _stageManager;
     private readonly StageDataSO _stageData;
     private readonly Vector2 _regionSize;
     private readonly float _minDistanceFromPlayer;
 
     private readonly List<Vector2> _spawnPositionsPool = new();
     private readonly List<ISpawnEvent> _availableEventsPool = new();
-    private readonly ISpawnerService _spawnerService;
+    private readonly ISpawnerService _spawnerService = new ObjectPoolSpawnerService();
     
     private float _currentTime => Timer.Instance.GlobalTimer;
-    private float _killTrigger => _spawnerView.GetPlayerKill();
+    private float _killTrigger => _stageManager.GetPlayerKill();
     private readonly Dictionary<ISpawnEvent, int> _timerTriggerIndices = new();
     private readonly Dictionary<ISpawnEvent, int> _killTriggerIndices = new();
-
+    
     public UnityEvent onDespawntrigger;
     
     #endregion
 
     #region Constructor
 
-    public SpawnEventManager(IEnemySpawnerView spawnerView, StageDataSO stageData, Vector2 regionSize,
-        float minDistanceFromPlayer, ISpawnerService spawnerService)
+    public SpawnEventManager(StageManager stageManager, StageDataSO stageData, Vector2 regionSize, float minDistanceFromPlayer)
     {
-        _spawnerView = spawnerView;
+        _stageManager = stageManager;
         _stageData = stageData;
         _regionSize = regionSize;
         _minDistanceFromPlayer = minDistanceFromPlayer;
-        _spawnerService = spawnerService;
         InitializeEventTriggerIndices();
     }
 
@@ -64,13 +62,22 @@ public class SpawnEventManager
             }
         }
     }
-
+    
+    /// <summary>
+    /// Reset all trigger
+    /// </summary>
+    public void ResetAllTriggers()
+    {
+        _timerTriggerIndices.Clear();
+        _killTriggerIndices.Clear();
+        InitializeEventTriggerIndices();
+    }
 
     
     /// <summary>
     /// Updates the timer and checks for timerTrigger events.
     /// </summary>
-    public void UpdateTimerTriggers(HashSet<EnemyController> eventEnemies)
+    public void UpdateTimerTriggers()
     {
         foreach (var spawnEvent in _stageData.SpawnEvents)
         {
@@ -79,11 +86,11 @@ public class SpawnEventManager
             var currentIndex = _timerTriggerIndices[spawnEvent];
 
             if (spawnEvent is SpawnEventSO eventSO && currentIndex < eventSO.timerTrigger.Count)
-                if (_currentTime <= eventSO.timerTrigger[currentIndex] && eventSO.CanTrigger())
+                if (_currentTime <= eventSO.timerTrigger[currentIndex] && CanTriggerEvent(eventSO, true))
                 {
                     eventSO.LastTriggered();
-                    var data = eventSO.CreateSpawnData(_spawnerView);
-                    _spawnerView.SpawnEventEnemies(data);
+                    var data = eventSO.CreateSpawnData(_stageManager);
+                    _stageManager.SpawnEventEnemies(data);
                     _timerTriggerIndices[spawnEvent] = currentIndex + 1;
                 }
         }
@@ -94,7 +101,7 @@ public class SpawnEventManager
     /// <summary>
     /// Updates the kill and checks for killTrigger events.
     /// </summary>
-    public void UpdateKillTriggers(HashSet<EnemyController> eventEnemies)
+    public void UpdateKillTriggers()
     {
         foreach (var spawnEvent in _stageData.SpawnEvents)
         {
@@ -103,11 +110,12 @@ public class SpawnEventManager
             var currentIndex = _killTriggerIndices[spawnEvent];
 
             if (spawnEvent is SpawnEventSO eventSO && currentIndex < eventSO.killTrigger.Count)
-                if (_killTrigger >= eventSO.killTrigger[currentIndex] && eventSO.CanTrigger())
+                if (_killTrigger >= eventSO.killTrigger[currentIndex] && CanTriggerEvent(eventSO, true))
                 {
+                    Debug.Log($"[SpawnEvent Triggered] Stage: {_stageData.name}, Event: {eventSO.name}, Time: {_currentTime}");
                     eventSO.LastTriggered();
-                    var data = eventSO.CreateSpawnData(_spawnerView);
-                    _spawnerView.SpawnEventEnemies(data);
+                    var data = eventSO.CreateSpawnData(_stageManager);
+                    _stageManager.SpawnEventEnemies(data);
                     _killTriggerIndices[spawnEvent] = currentIndex + 1;
                 }
         }
@@ -124,14 +132,24 @@ public class SpawnEventManager
 
         if (spawnEvent is not SpawnEventSO eventSO) return;
 
-        if (!eventSO.CanTrigger()) return;
-        
+        if (!eventSO.CanTrigger()) { return; }
+
         int availableCount = CountAvailableEnemiesInPool(eventSO);
-        if (availableCount < eventSO.EnemyCount) { return; }
-        
+        if (availableCount < eventSO.EnemyCount) return;
+
         eventSO.LastTriggered();
-        var data = eventSO.CreateSpawnData(_spawnerView);
-        _spawnerView.SpawnEventEnemies(data);
+        var data = eventSO.CreateSpawnData(_stageManager);
+        _stageManager.SpawnEventEnemies(data);
+    }
+    
+    /// <summary>
+    /// Checks if the event can be triggered, considering bypassCooldown option.
+    /// </summary>
+    private bool CanTriggerEvent(SpawnEventSO eventSO, bool bypassCooldown)
+    {
+        if (bypassCooldown)
+            return eventSO._customConditions == null || eventSO._customConditions.All(c => c.CanTrigger());
+        return eventSO.CanTrigger() && !eventSO.IsCooldownActive(Time.time);
     }
     
     /// <summary>
@@ -144,7 +162,7 @@ public class SpawnEventManager
         int count = 0;
         foreach (var enemyData in eventSO.EventEnemies)
         {
-            GameObject prefab = enemyData.EnemyController.gameObject;
+            GameObject prefab = enemyData.EnemyType.gameObject;
             count += _spawnerService.CountAvailable(prefab);
         }
         return count;
@@ -172,5 +190,14 @@ public class SpawnEventManager
         if (_availableEventsPool.Count == 0) return null;
         return _availableEventsPool[Random.Range(0, _availableEventsPool.Count)];
     }
+    
+    public void Dispose()
+    {
+        _availableEventsPool.Clear();
+        _spawnPositionsPool.Clear();
+        _timerTriggerIndices.Clear();
+        _killTriggerIndices.Clear();
+    }
+
     #endregion
 }

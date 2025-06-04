@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using TMPro;
@@ -16,7 +17,7 @@ public class Timer : MMSingleton<Timer>
     private float currentTimer;
     private bool isPaused = false;
     private bool isRunning = false;
-    private CancellationTokenSource countdownCTS;
+    private Coroutine countdownCoroutine;
 
 
     #endregion
@@ -56,10 +57,16 @@ public class Timer : MMSingleton<Timer>
     {
         startTimer = timer;
         currentTimer = startTimer;
-        countdownCTS?.Cancel();
-        countdownCTS = new CancellationTokenSource();
-        StartCountdownAsync(countdownCTS.Token).Forget();
+        UpdateUIText();
+
+        if (countdownCoroutine != null)
+        {
+            StopCoroutine(countdownCoroutine);
+        }
+
+        countdownCoroutine = StartCoroutine(StartCountdown());
     }
+
 
     
     /// <summary>
@@ -83,37 +90,32 @@ public class Timer : MMSingleton<Timer>
     /// <summary>
     /// Starts the countdown asynchronously and updates the timer value.
     /// </summary>
-    public async UniTaskVoid StartCountdownAsync(CancellationToken token)
+    private IEnumerator StartCountdown()
     {
         isRunning = true;
-        var lastTime = Time.realtimeSinceStartup;
 
-        try
+        while (isRunning && currentTimer > 0f)
         {
-            while (isRunning && !token.IsCancellationRequested)
+            while (isPaused || Time.timeScale == 0f || UnityEditor.EditorApplication.isPaused)
             {
-                await UniTask.NextFrame(token);
-
-                var now = Time.realtimeSinceStartup;
-                var delta = now - lastTime;
-                lastTime = now;
-
-                if (!isPaused)
-                {
-                    currentTimer -= delta;
-                    if (currentTimer <= 0)
-                    {
-                        currentTimer = 0;
-                        TimerEnd();
-                        break;
-                    }
-                }
-
-                UpdateUIText();
+                yield return null;
             }
+
+            currentTimer -= Time.deltaTime;
+
+            if (currentTimer <= 0f)
+            {
+                currentTimer = 0f;
+                TimerEnd();
+                yield break;
+            }
+
+            UpdateUIText();
+            yield return null;
         }
-        catch (OperationCanceledException) { }
     }
+
+
 
     /// <summary>
     /// Updates the timer text in the UI.
@@ -133,9 +135,15 @@ public class Timer : MMSingleton<Timer>
     /// </summary>
     public void StopCountdown()
     {
-        countdownCTS?.Cancel();
         isRunning = false;
+
+        if (countdownCoroutine != null)
+        {
+            StopCoroutine(countdownCoroutine);
+            countdownCoroutine = null;
+        }
     }
+
 
     
     /// <summary>
@@ -144,8 +152,8 @@ public class Timer : MMSingleton<Timer>
     private void TimerEnd()
     {
         isRunning = false;
-        stageManager.StopSpawning();
-        stageManager.ClearEnemies();
+        stageManager.GameStageEnd();
+        StopCoroutine(countdownCoroutine);
     }
     
     #endregion

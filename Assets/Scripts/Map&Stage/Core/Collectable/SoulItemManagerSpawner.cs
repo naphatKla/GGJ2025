@@ -98,6 +98,8 @@ public class SoulItemManagerSpawner : MMSingleton<SoulItemManagerSpawner>
     /// </summary>
     private void InitializePool()
     {
+        _soulPrefabs.Clear();
+        _totalSpawnChance = 0f;
         foreach (var data in soulDataList)
         {
             if (data.soulData == null) continue;
@@ -112,8 +114,7 @@ public class SoulItemManagerSpawner : MMSingleton<SoulItemManagerSpawner>
                 go.SetActive(false);
                 go.transform.parent = soulParent;
                 PoolManager.Instance.AddToPool(go);
-                if (!_soulPrefabs.ContainsKey(data.soulData.name))
-                    _soulPrefabs[data.soulData.name] = go;
+                _soulPrefabs[data.soulData.name] = go;
             }
         }
         _totalSpawnChance = soulDataList.Sum(data => data.spawnChance);
@@ -137,19 +138,21 @@ public class SoulItemManagerSpawner : MMSingleton<SoulItemManagerSpawner>
     private async UniTask RunSpawnLoop()
     {
         _isSpawning = true;
-        while (gameObject.activeInHierarchy && !_spawningCts.Token.IsCancellationRequested)
+        var token = _spawningCts.Token;
+
+        try
         {
-            try
+            while (gameObject.activeInHierarchy && !token.IsCancellationRequested)
             {
                 TrySpawnSouls();
-                await UniTask.Delay(TimeSpan.FromSeconds(timeTick), cancellationToken: _spawningCts.Token);
-            }
-            catch (OperationCanceledException)
-            {
-                break;
+                await UniTask.Delay(TimeSpan.FromSeconds(timeTick), cancellationToken: token);
             }
         }
-        _isSpawning = false;
+        catch (OperationCanceledException) { }
+        finally
+        {
+            _isSpawning = false;
+        }
     }
 
     /// <summary>
@@ -165,6 +168,7 @@ public class SoulItemManagerSpawner : MMSingleton<SoulItemManagerSpawner>
             SpawnSoul(data.soulData.name, GetRandomPosition(), Quaternion.identity);
         }
     }
+    
 
     /// <summary>
     /// Spawns soul items to match a target EXP value at the specified position.
@@ -274,13 +278,16 @@ public class SoulItemManagerSpawner : MMSingleton<SoulItemManagerSpawner>
     [FoldoutGroup("Soul Control"), Button(ButtonSizes.Large), GUIColor(1, 0, 0)]
     public void ClearAll()
     {
+        StopSpawning();
         foreach (var obj in _activeSouls.ToList())
         {
             DespawnSoul(obj);
         }
         _spawnerService.ClearPool(soulParent);
         InitializePool();
+        StartSpawning();
     }
+
 
     /// <summary>
     /// Starts the soul spawning loop if not already running.
@@ -289,10 +296,12 @@ public class SoulItemManagerSpawner : MMSingleton<SoulItemManagerSpawner>
     public void StartSpawning()
     {
         if (_isSpawning) return;
-        _spawningCts?.Dispose();
+        _spawningCts?.Cancel();
         _spawningCts = new CancellationTokenSource();
+
         RunSpawnLoop().Forget();
     }
+
 
     /// <summary>
     /// Stops the soul spawning loop if currently running.
@@ -301,8 +310,11 @@ public class SoulItemManagerSpawner : MMSingleton<SoulItemManagerSpawner>
     public void StopSpawning()
     {
         if (!_isSpawning) return;
+
         _spawningCts?.Cancel();
+        _isSpawning = false;
     }
+    
 
     #endregion
 }

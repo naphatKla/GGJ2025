@@ -76,9 +76,9 @@ public class ConfigurableSpawnStrategy : ISpawnPositionStrategy
         {
             float angle = (Mathf.PI * 2f / enemyCount) * i;
             angle += Mathf.Deg2Rad * Random.Range(-randomAngleOffset, randomAngleOffset);
-            float distance = baseMinDistance + Random.Range(-randomDistanceOffset, randomDistanceOffset);
+            float distance = baseMinDistance + Random.Range(0f, randomDistanceOffset);
             Vector2 pos = playerPosition + new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * distance;
-            spawnPositions.Add(SpawnUtility.ClampToBounds(pos, regionSize));
+            spawnPositions.Add(pos);
         }
     }
 
