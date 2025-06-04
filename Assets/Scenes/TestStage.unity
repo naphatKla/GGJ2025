@@ -1816,7 +1816,13 @@ MonoBehaviour:
   regionSize: {x: 50, y: 36}
   minDistanceFromPlayer: 20
   delayNextStage: 3
-  enableDebug: 0
+  enableDebug: 1
+  OnStageUpdated:
+    m_PersistentCalls:
+      m_Calls: []
+  OnKillQuotaUpdated:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &751170099
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1858,6 +1864,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   stageText: {fileID: 978497420}
   killquotaText: {fileID: 970449225}
+  _stageManager: {fileID: 0}
 --- !u!1 &778473138
 GameObject:
   m_ObjectHideFlags: 0
@@ -1990,7 +1997,7 @@ MonoBehaviour:
     - rid: 2975743865254576128
       type: {class: MMF_DebugLog, ns: MoreMountains.Feedbacks, asm: MoreMountains.Feedbacks.MMTools}
       data:
-        Active: 1
+        Active: 0
         UniqueID: -580116986
         Label: Log
         ChannelMode: 0

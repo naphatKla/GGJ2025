@@ -75,7 +75,7 @@ public class SpawnEventSO : ScriptableObject, ISpawnEvent
 
     [SerializeField] private GameObject _spawnEffectPrefab;
     [SerializeReference] private ISpawnPositionStrategy _spawnStrategy = new ConfigurableSpawnStrategy();
-    [SerializeReference] private List<IEventCondition> _customConditions;
+    [SerializeReference] public List<IEventCondition> _customConditions;
 
     [Tooltip("Trigger times (seconds) for timed spawn events")]
     [SerializeField] public List<float> timerTrigger;
@@ -134,6 +134,12 @@ public class SpawnEventSO : ScriptableObject, ISpawnEvent
             SpawnEffectPrefab = _spawnEffectPrefab
         };
     }
+    
+    public void ResetState()
+    {
+        _lastSpawnTime = -Mathf.Infinity;
+    }
+
     
     private void OnValidate()
     {

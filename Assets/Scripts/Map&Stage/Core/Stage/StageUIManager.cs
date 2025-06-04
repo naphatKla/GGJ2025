@@ -12,6 +12,15 @@ public class StageUIManager : MonoBehaviour
     [FoldoutGroup("Stage UI")] [SerializeField]
     private TMP_Text killquotaText;
     
+    [SerializeField] private StageManager _stageManager;
+    
+    private void Awake()
+    {
+        _stageManager = GetComponent<StageManager>();
+        _stageManager.OnStageUpdated.AddListener(UpdateStageText);
+        _stageManager.OnKillQuotaUpdated.AddListener(UpdateKillQuotaText);
+    }
+    
     /// <summary>
     /// Update stage index
     /// </summary>

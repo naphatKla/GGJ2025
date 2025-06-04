@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: '[SE] Stage-Level-2'
   m_EditorClassIdentifier: 
   defaultEnemyData: {fileID: 11400000, guid: e8bf0e8ec6b32e344a0ddff289ef5d98, type: 2}
-  _chance: 10
+  _chance: 0
   _cooldown: 20
   _enemyCount: 8
   _spawnDelayAll: 0.2
@@ -62,7 +62,7 @@ MonoBehaviour:
       type: {class: ConfigurableSpawnStrategy, ns: , asm: Assembly-CSharp}
       data:
         pattern: 0
-        baseMinDistance: 10
+        baseMinDistance: 20
         randomDistanceOffset: 0
         spreadFactor: 1
         randomAngleOffset: 0

@@ -5,6 +5,7 @@ using Characters;
 using Characters.Controllers;
 using Characters.SO.CharacterDataSO;
 using Cysharp.Threading.Tasks;
+using Unity.VisualScripting;
 using UnityEngine;
 using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
@@ -197,11 +198,12 @@ public class EnemySpawner
         for (var i = 0; i < count; i++)
         {
             var pos = data.Positions[i];
-            var enemyData = GetRandomEnemyByChance(data.EnemiesWithChance);
-
-            if (enemyData == null) continue;
-
-            SpawnEnemyWithPosition(enemyData, pos, data);
+            
+            var enemyData = GetRandomEnemy(data.EnemiesWithChance, 
+                e => e.SpawnChance, 
+                e => e.GetCharacterData());
+            
+            SpawnEnemyWithPosition(enemyData , pos, data);
 
             if (data.SpawnDelayPerEnemy)
             {
@@ -210,38 +212,12 @@ public class EnemySpawner
             }
         }
     }
-    
-    /// <summary>
-    /// Random Chance Enemy Selection
-    /// </summary>
-    /// <param name="enemies"></param>
-    /// <returns></returns>
-    private IEnemyData GetRandomEnemyByChance(List<SpawnEnemyProperties> enemies)
-    {
-        if (enemies == null || enemies.Count == 0) return null;
-
-        var totalChance = enemies.Sum(e => e.SpawnChance);
-        var randomValue = Random.Range(0f, totalChance);
-        var cumulative = 0f;
-
-        foreach (var e in enemies)
-        {
-            cumulative += e.SpawnChance;
-            if (randomValue <= cumulative)
-                return e.EnemyData;
-        }
-
-        return enemies[0].EnemyData;
-    }
-
-
 
     /// <summary>
     /// Spawns 1 enemy at position with visual effect and setup.
     /// </summary>
-    private void SpawnEnemyWithPosition(IEnemyData enemyData, Vector2 position, SpawnEventSO.SpawnEventData data)
+    private void SpawnEnemyWithPosition(EnemyController enemyType , Vector2 position, SpawnEventSO.SpawnEventData data)
     {
-        var enemyType = GetRandomEnemyType(data.EnemiesWithChance);
         if (data.SpawnEffectPrefab != null)
             _spawnerService.Spawn(data.SpawnEffectPrefab, position, Quaternion.identity);
 
@@ -286,7 +262,11 @@ public class EnemySpawner
 
         if (availableEnemies.Count == 0) return;
 
-        var enemyType = GetRandomEnemyType(availableEnemies);
+        var enemyType = GetRandomEnemy(
+            availableEnemies,
+            e => e is EnemyProperties dynamicEnemy ? dynamicEnemy.GetCurrentSpawnChance(currentTime) : e.GetSpawnChance(),
+            e => e.GetCharacterData()
+        );
         var spawnPosition = GetRandomSpawnPosition(_stageManager.GetPlayerPosition());
         
         var enemyObj = _spawnerService.Spawn(enemyType.gameObject, spawnPosition, Quaternion.identity, _stageManager.GetEnemyParent());
@@ -364,37 +344,34 @@ public class EnemySpawner
     {
         _totalEnemySpawnChance = _stageData.Enemies.Sum(enemy => enemy.SpawnChance);
     }
-    
 
     /// <summary>
-    /// Selects a random enemy based on weighted probability.
+    /// Selects a random enemy based on weighted probability with customizable chance calculation.
     /// </summary>
-    public static EnemyController GetRandomEnemyType<T>(List<T> enemies) where T : IWeightedEnemy
+    /// <typeparam name="T">Type of the enemy data (must implement IWeightedEnemy or SpawnEnemyProperties)</typeparam>
+    /// <typeparam name="TResult">Type of the result (EnemyController or IEnemyData)</typeparam>
+    /// <param name="enemies">List of enemies to choose from</param>
+    /// <param name="getChance">Function to calculate spawn chance for an enemy</param>
+    /// <param name="getResult">Function to extract result data from an enemy</param>
+    /// <returns>Selected enemy data or null if the list is empty</returns>
+    public static TResult GetRandomEnemy<T, TResult>(List<T> enemies, Func<T, float> getChance, Func<T, TResult> getResult)
     {
-        var currentTime = Timer.Instance.GlobalTimer;
+        if (enemies == null || enemies.Count == 0) return default;
 
-        var total = enemies.Sum(e =>
-        {
-            if (e is EnemyProperties dynamicEnemy)
-                return dynamicEnemy.GetCurrentSpawnChance(currentTime);
-            return e.GetSpawnChance();
-        });
+        var totalChance = enemies.Sum(getChance);
+        if (totalChance <= 0) return getResult(enemies[0]);
 
-        var roll = Random.Range(0f, total);
-        var accum = 0f;
+        var randomValue = Random.Range(0f, totalChance);
+        var cumulative = 0f;
 
         foreach (var enemy in enemies)
         {
-            var chance = enemy is EnemyProperties dynamic
-                ? dynamic.GetCurrentSpawnChance(currentTime)
-                : enemy.GetSpawnChance();
-
-            accum += chance;
-            if (roll <= accum)
-                return enemy.GetCharacterData();
+            cumulative += getChance(enemy);
+            if (randomValue <= cumulative)
+                return getResult(enemy);
         }
 
-        return enemies.FirstOrDefault()?.GetCharacterData();
+        return getResult(enemies[0]);
     }
 
     

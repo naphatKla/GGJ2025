@@ -22,7 +22,7 @@ public class SpawnEventManager
     private float _killTrigger => _stageManager.GetPlayerKill();
     private readonly Dictionary<ISpawnEvent, int> _timerTriggerIndices = new();
     private readonly Dictionary<ISpawnEvent, int> _killTriggerIndices = new();
-
+    
     public UnityEvent onDespawntrigger;
     
     #endregion
@@ -62,7 +62,16 @@ public class SpawnEventManager
             }
         }
     }
-
+    
+    /// <summary>
+    /// Reset all trigger
+    /// </summary>
+    public void ResetAllTriggers()
+    {
+        _timerTriggerIndices.Clear();
+        _killTriggerIndices.Clear();
+        InitializeEventTriggerIndices();
+    }
 
     
     /// <summary>
@@ -77,7 +86,7 @@ public class SpawnEventManager
             var currentIndex = _timerTriggerIndices[spawnEvent];
 
             if (spawnEvent is SpawnEventSO eventSO && currentIndex < eventSO.timerTrigger.Count)
-                if (_currentTime <= eventSO.timerTrigger[currentIndex] && eventSO.CanTrigger())
+                if (_currentTime <= eventSO.timerTrigger[currentIndex] && CanTriggerEvent(eventSO, true))
                 {
                     eventSO.LastTriggered();
                     var data = eventSO.CreateSpawnData(_stageManager);
@@ -101,8 +110,9 @@ public class SpawnEventManager
             var currentIndex = _killTriggerIndices[spawnEvent];
 
             if (spawnEvent is SpawnEventSO eventSO && currentIndex < eventSO.killTrigger.Count)
-                if (_killTrigger >= eventSO.killTrigger[currentIndex] && eventSO.CanTrigger())
+                if (_killTrigger >= eventSO.killTrigger[currentIndex] && CanTriggerEvent(eventSO, true))
                 {
+                    Debug.Log($"[SpawnEvent Triggered] Stage: {_stageData.name}, Event: {eventSO.name}, Time: {_currentTime}");
                     eventSO.LastTriggered();
                     var data = eventSO.CreateSpawnData(_stageManager);
                     _stageManager.SpawnEventEnemies(data);
@@ -130,6 +140,16 @@ public class SpawnEventManager
         eventSO.LastTriggered();
         var data = eventSO.CreateSpawnData(_stageManager);
         _stageManager.SpawnEventEnemies(data);
+    }
+    
+    /// <summary>
+    /// Checks if the event can be triggered, considering bypassCooldown option.
+    /// </summary>
+    private bool CanTriggerEvent(SpawnEventSO eventSO, bool bypassCooldown)
+    {
+        if (bypassCooldown)
+            return eventSO._customConditions == null || eventSO._customConditions.All(c => c.CanTrigger());
+        return eventSO.CanTrigger() && !eventSO.IsCooldownActive(Time.time);
     }
     
     /// <summary>
@@ -170,5 +190,14 @@ public class SpawnEventManager
         if (_availableEventsPool.Count == 0) return null;
         return _availableEventsPool[Random.Range(0, _availableEventsPool.Count)];
     }
+    
+    public void Dispose()
+    {
+        _availableEventsPool.Clear();
+        _spawnPositionsPool.Clear();
+        _timerTriggerIndices.Clear();
+        _killTriggerIndices.Clear();
+    }
+
     #endregion
 }
