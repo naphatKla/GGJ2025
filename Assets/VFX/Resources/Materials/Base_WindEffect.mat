@@ -20,7 +20,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: HitCircle
+  m_Name: Base_WindEffect
   m_Shader: {fileID: 4800000, guid: bd6af5d577c618947b73aa60db554e51, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -49,7 +49,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: 7ae0bb282dc017f4d9dc11d51f8b9e44, type: 3}
+        m_Texture: {fileID: 2800000, guid: 63f3641b7913378419090947d203e1c7, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Main_Alpha:
@@ -57,11 +57,11 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Mask:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: 46410cd49175fc54ba5de99f9e846c19, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Noise:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: 46410cd49175fc54ba5de99f9e846c19, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Static_Alpha_Texture:
@@ -114,7 +114,7 @@ Material:
     - _Distortion_Blend_Channel: {r: 1, g: 0, b: 0, a: 0}
     - _Main_Texture_Pan_Speed: {r: 1, g: 0, b: 0, a: 0}
     - _Offset: {r: 0, g: 0, b: 0, a: 0}
-    - _SpeedMainTexUVNoiseZW: {r: 0, g: 0, b: 0, a: 0}
+    - _SpeedMainTexUVNoiseZW: {r: 0.44, g: -5, b: 0, a: 0}
     - _Texture_Channel: {r: 0, g: 0, b: 0, a: 0}
     - _Tiling: {r: 1, g: 1, b: 0, a: 0}
   m_BuildTextureStacks: []
