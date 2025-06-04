@@ -1,5 +1,8 @@
 using System;
+using System.IO.Compression;
+using Characters.FeedbackSystems;
 using Cysharp.Threading.Tasks;
+using DG.Tweening;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -110,6 +113,10 @@ namespace Characters.HeathSystems
             if (_isDead) return false;
             ModifyHealth(-damage);
             OnTakeDamage?.Invoke();
+            
+            if (TryGetComponent(out FeedbackSystem feedbackSystem))
+                feedbackSystem.PlayFeedback(FeedbackName.TakeDamage);
+           
             HitCooldownHandler();
 
             if (_currentHealth <= 0)
