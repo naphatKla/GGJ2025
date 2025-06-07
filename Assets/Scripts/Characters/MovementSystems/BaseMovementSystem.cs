@@ -105,7 +105,7 @@ namespace Characters.MovementSystems
         /// The duration of the bounce movement tween when a collision occurs.
         /// Determines how long the character takes to complete the bounce arc.
         /// </summary>
-        private float _bounceDuration = 0.3f;
+        private float _bounceDuration = 0.45f;
 
         /// <summary>
         /// The cooldown time after a bounce before another bounce can be triggered.
