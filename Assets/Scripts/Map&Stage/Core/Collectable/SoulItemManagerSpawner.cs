@@ -48,6 +48,7 @@ public class SoulItemManagerSpawner : MMSingleton<SoulItemManagerSpawner>
 
     private readonly HashSet<GameObject> _activeSouls = new();
     private readonly Dictionary<string, GameObject> _soulPrefabs = new();
+    private readonly Dictionary<GameObject, SoulData> _soulItemMap = new();
     private readonly ISpawnerService _spawnerService = new ObjectPoolSpawnerService();
     private CancellationTokenSource _spawningCts;
     private float _totalSpawnChance;
@@ -99,6 +100,7 @@ public class SoulItemManagerSpawner : MMSingleton<SoulItemManagerSpawner>
     private void InitializePool()
     {
         _soulPrefabs.Clear();
+        _soulItemMap.Clear();
         _totalSpawnChance = 0f;
         foreach (var data in soulDataList)
         {
@@ -115,6 +117,7 @@ public class SoulItemManagerSpawner : MMSingleton<SoulItemManagerSpawner>
                 go.transform.parent = soulParent;
                 PoolManager.Instance.AddToPool(go);
                 _soulPrefabs[data.soulData.name] = go;
+                _soulItemMap[go] = data;
             }
         }
         _totalSpawnChance = soulDataList.Sum(data => data.spawnChance);
@@ -268,8 +271,12 @@ public class SoulItemManagerSpawner : MMSingleton<SoulItemManagerSpawner>
     private void SpawnSoul(string name, Vector3 position, Quaternion rotation)
     {
         if (string.IsNullOrEmpty(name) || !_soulPrefabs.TryGetValue(name, out var prefab)) return;
-        var item = PoolManager.Instance.Spawn(prefab, position, rotation, soulParent);
-        _activeSouls.Add(item);
+        
+        var go = PoolManager.Instance.Spawn(prefab, position, rotation, soulParent);
+        _activeSouls.Add(go);
+
+        if (_soulItemMap.TryGetValue(go, out var item) && _activeSouls.Count >= item.preSpawnObject)
+            go.GetComponent<BaseCollectableItem>().AssignItemData(item.soulData);
     }
 
     /// <summary>
