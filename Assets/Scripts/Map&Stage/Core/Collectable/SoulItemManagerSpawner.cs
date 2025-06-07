@@ -198,6 +198,7 @@ public class SoulItemManagerSpawner : MMSingleton<SoulItemManagerSpawner>
             ? soulDataList.OrderByDescending(data => data.soulData.Score).ToList()
             : soulDataList.OrderBy(data => data.soulData.Score).ToList();
 
+        //Find fitable exp to drop
         foreach (var data in sortedSouls)
         {
             if (data.soulData.Score <= 0) continue;
@@ -207,6 +208,21 @@ public class SoulItemManagerSpawner : MMSingleton<SoulItemManagerSpawner>
             {
                 drops.Add(data);
                 remainingExp -= data.soulData.Score;
+            }
+        }
+        
+        //Remaining exp 
+        if (remainingExp > 0)
+        {
+            var smallestFittable = sortedSouls
+                .Where(d => d.soulData.Score <= remainingExp)
+                .OrderByDescending(d => d.soulData.Score)
+                .FirstOrDefault();
+
+            if (smallestFittable != null)
+            {
+                drops.Add(smallestFittable);
+                remainingExp -= smallestFittable.soulData.Score;
             }
         }
         return drops;
