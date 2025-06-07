@@ -30,6 +30,7 @@ public class EnemySpawner
     private float _killCount;
     private int _addMaxEnemySpawn;
     private float _removeIntervalEnemySpawn;
+    private float _enemyQuotaLimit;
    
     // Active enemies in the world
     public readonly HashSet<EnemyController> enemies = new();
@@ -77,6 +78,7 @@ public class EnemySpawner
         CurrentSpawnInterval = stageData.EnemySpawnInterval;
         CurrentMaxEnemySpawn = stageData.CurrentMaxEnemySpawn;
 
+        _enemyQuotaLimit = stageData.KillQuota;
         _nextUnitKillQuota = stageData.SpawnKillQuota;
         _nextIntervalKillQuota = stageData.IntervalKillQuota;
         _addMaxEnemySpawn = stageData.AddMaxEnemySpawn;
@@ -124,6 +126,7 @@ public class EnemySpawner
     /// </summary>
     public bool CanSpawn()
     {
+        if (_enemyQuotaLimit <= 0) return false;
         return enemies.Count(e => e.gameObject.activeInHierarchy) < CurrentMaxEnemySpawn;
     }
     
@@ -164,7 +167,7 @@ public class EnemySpawner
     /// <summary>
     /// Handles full async spawn process for an event.
     /// </summary>
-    public async void SpawnEventEnemies(SpawnEventSO.SpawnEventData spawnData)
+    public async UniTask SpawnEventEnemies(SpawnEventSO.SpawnEventData spawnData)
     {
         if (!ValidateSpawnData(spawnData)) return;
         await ApplyInitialDelay(spawnData);
@@ -277,6 +280,7 @@ public class EnemySpawner
         enemies.Add(enemyController);
         enemyController.HealthSystem.OnDead += () => DespawnEnemy(enemyController);
         OnEnemySpawned?.Invoke(enemyController);
+        _enemyQuotaLimit--;
     }
 
 
@@ -293,7 +297,7 @@ public class EnemySpawner
         //PowerUpSpawnerManager.Instance.OnEnemyDefeated();
         OnEnemyDespawned?.Invoke(enemy);
         _spawnerService.Despawn(enemy.gameObject);
-        _killCount += 1;
+        if (_killCount < _stageData.KillQuota) _killCount += 1;
         
         SoulItemManagerSpawner.Instance.SpawnExpDrop(enemy.CharacterData.ExpDrop, enemy.transform.position);
         

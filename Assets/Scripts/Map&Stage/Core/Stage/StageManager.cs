@@ -174,7 +174,7 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     /// <summary>
     /// Run after stage end
     /// </summary>
-    public async void GameStageEnd()
+    public async UniTask GameStageEnd()
     {
         Timer.Instance.SetTimer(0);
         StopSpawning();
@@ -188,6 +188,7 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     /// <returns></returns>
     public bool CanGotoNextStage()
     {
+        if (_enemySpawner.enemies.Count > 0) return false;
         return GetPlayerKill() >= CurrentMap.stages[currentStageIndexInMap].KillQuota;
     }
     

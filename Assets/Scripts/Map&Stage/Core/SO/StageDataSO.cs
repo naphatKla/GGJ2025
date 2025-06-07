@@ -88,6 +88,9 @@ public class StageDataSO : ScriptableObject
     [Tooltip("Quota of the kill to end the game or go to next stage")]
     [SerializeField]
     private float killQuota;
+    [Tooltip("The number of Enemies will spawn according to the Quota.")]
+    [SerializeField]
+    private bool limitSpawnByQuota;
 
     [Space] [Title("Stage Timer")] [Tooltip("Timer limit for this stage to end")] [SerializeField]
     private float timerLimit;
