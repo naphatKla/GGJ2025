@@ -153,6 +153,7 @@ public class Timer : MMSingleton<Timer>
     {
         isRunning = false;
         stageManager.GameStageEnd();
+        UIManager.Instance.OpenPanel(UIPanelType.ResultLastStage);
         StopCoroutine(countdownCoroutine);
     }
     
