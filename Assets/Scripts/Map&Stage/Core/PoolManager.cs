@@ -41,6 +41,22 @@ public class PoolManager
         return obj;
     }
     
+    /// <summary>
+    /// Spawn with return Componenet
+    /// </summary>
+    /// <param name="prefab"></param>
+    /// <param name="pos"></param>
+    /// <param name="rot"></param>
+    /// <param name="parent"></param>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
+    public T Spawn<T>(GameObject prefab, Vector3 pos, Quaternion rot, Transform parent) where T : Component
+    {
+        var go = Spawn(prefab, pos, rot, parent);
+        return go.GetComponent<T>();
+    }
+
+    
     public void AddToPool(GameObject obj)
     {
         if (obj == null) return;
