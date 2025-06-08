@@ -121,6 +121,7 @@ namespace Characters.HeathSystems
 
             if (_currentHealth <= 0)
             {
+                feedbackSystem.PlayFeedback(FeedbackName.Dead);
                 Dead();
             }
 
