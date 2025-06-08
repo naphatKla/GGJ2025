@@ -1,17 +1,17 @@
-using System.Collections;
-using System.Collections.Generic;
-using Characters.Controllers;
 using UnityEngine;
 
-public class ColliderActivaterZone : MonoBehaviour
+namespace Map_Stage.Core.Stage
 {
-    private void OnTriggerEnter2D(Collider2D other)
+    public class ColliderActivaterZone : MonoBehaviour
     {
-        if (other.CompareTag("Enemy"))
+        private void OnTriggerEnter2D(Collider2D other)
         {
-            Collider2D col = other.gameObject.GetComponent<Collider2D>();
-            if (col != null && col.isTrigger)
-                col.isTrigger = false;
+            if (other.CompareTag("Enemy"))
+            {
+                Collider2D col = other.gameObject.GetComponent<Collider2D>();
+                if (col != null && col.isTrigger)
+                    col.isTrigger = false;
+            }
         }
     }
 }

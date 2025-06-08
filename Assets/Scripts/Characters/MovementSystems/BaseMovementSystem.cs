@@ -140,7 +140,7 @@ namespace Characters.MovementSystems
         /// Used to prevent multiple bounce responses in quick succession.
         /// </summary>
         public bool IsUnStoppable => _isUnStoppable;
-
+        
         #endregion
 
         #region Unity Methods
@@ -274,15 +274,16 @@ namespace Characters.MovementSystems
         /// <param name="other">Collision data from Unity's collision callback.</param>
         public void BounceHandler(Collision2D other)
         {
-            if (_isUnStoppable) return;
-            if (_isBounceCooldown) return;
             if (other.contactCount == 0) return;
+            if (_isBounceCooldown) return;
             
             Vector2 normal = other.GetContact(0).normal;
             Vector2? externalForce = null;
-
-            if (other.gameObject.TryGetComponent(out BaseController otherController))
+            other.gameObject.TryGetComponent(out BaseController otherController);
+            
+            if (otherController)
             {
+                if (_isUnStoppable && !otherController.MovementSystem.IsUnStoppable) return;
                 if (otherController.HealthSystem && otherController.HealthSystem.IsDead) return;
                 externalForce = otherController.MovementSystem.currentVelocity;
             }
