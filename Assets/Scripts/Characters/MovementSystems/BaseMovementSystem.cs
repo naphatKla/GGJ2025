@@ -135,6 +135,12 @@ namespace Characters.MovementSystems
         /// </summary>
         public Vector2 CurrentVelocity => currentVelocity;
 
+        /// <summary>
+        /// Tracks whether the bounce is currently on cooldown.
+        /// Used to prevent multiple bounce responses in quick succession.
+        /// </summary>
+        public bool IsUnStoppable => _isUnStoppable;
+
         #endregion
 
         #region Unity Methods
