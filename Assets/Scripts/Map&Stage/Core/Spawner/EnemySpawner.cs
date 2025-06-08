@@ -30,6 +30,7 @@ public class EnemySpawner
     private float _killCount;
     private int _addMaxEnemySpawn;
     private float _removeIntervalEnemySpawn;
+    private float _enemyPerRound;
    
     // Active enemies in the world
     public readonly HashSet<EnemyController> enemies = new();
@@ -81,6 +82,7 @@ public class EnemySpawner
         _nextIntervalKillQuota = stageData.IntervalKillQuota;
         _addMaxEnemySpawn = stageData.AddMaxEnemySpawn;
         _removeIntervalEnemySpawn = stageData.RemoveIntervalEnemySpawn;
+        _enemyPerRound = stageData.KillQuota;
         
         CalculateTotalEnemySpawnChance();
         _stageManager.SetState(new StopState());
@@ -124,7 +126,7 @@ public class EnemySpawner
     /// </summary>
     public bool CanSpawn()
     {
-        if (CurrentKillCount >= _stageData.KillQuota) return false;
+        if (_enemyPerRound <= 0) return false;
         return enemies.Count(e => e.gameObject.activeInHierarchy) < CurrentMaxEnemySpawn;
     }
     
@@ -195,7 +197,7 @@ public class EnemySpawner
     private async UniTask LoopSpawnEnemies(SpawnEventSO.SpawnEventData data)
     {
         var count = Mathf.Min(data.Positions.Count, data.EnemyCount);
-
+        if (_enemyPerRound < data.EnemyCount) return;
         for (var i = 0; i < count; i++)
         {
             var pos = data.Positions[i];
@@ -237,6 +239,7 @@ public class EnemySpawner
         enemies.Add(enemyController);
         enemyController.HealthSystem.OnDead += () => DespawnEnemy(enemyController);
         OnEnemySpawned?.Invoke(enemyController);
+        _enemyPerRound--;
     }
 
     /// <summary>
@@ -274,7 +277,8 @@ public class EnemySpawner
         enemyObj.GetComponent<CircleCollider2D>().isTrigger = true;
 
         if (!enemyObj.TryGetComponent(out EnemyController enemyController)) return;
-            
+        
+        _enemyPerRound--;
         enemies.Add(enemyController);
         enemyController.HealthSystem.OnDead += () => DespawnEnemy(enemyController);
         OnEnemySpawned?.Invoke(enemyController);
@@ -297,7 +301,7 @@ public class EnemySpawner
         if (_killCount < _stageData.KillQuota) _killCount += 1;
         
         SoulItemManagerSpawner.Instance.SpawnExpDrop(enemy.CharacterData.ExpDrop, enemy.transform.position);
-        
+
     }
 
     /// <summary>
