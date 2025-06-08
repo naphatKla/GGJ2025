@@ -67,8 +67,9 @@ namespace Characters.InputSystems
             _playerInputAction.Gameplay.Disable();
         }
         
-        private void FixedUpdate()
+        private void Update()
         {
+            _mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             Vector2 moveDirection = _mousePosition - (Vector2)transform.position;
             OnMove?.Invoke(moveDirection.normalized);
         }
@@ -83,7 +84,7 @@ namespace Characters.InputSystems
         /// <param name="context">The input action context containing movement data.</param>
         public void OnMovement(InputAction.CallbackContext context)
         {
-            _mousePosition = Camera.main.ScreenToWorldPoint(context.ReadValue<Vector2>());
+            //_mousePosition = Camera.main.ScreenToWorldPoint(context.ReadValue<Vector2>());
         }
 
         /// <summary>
