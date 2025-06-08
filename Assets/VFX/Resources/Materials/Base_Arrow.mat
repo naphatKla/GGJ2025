@@ -20,7 +20,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: HitSlash
+  m_Name: Base_Arrow
   m_Shader: {fileID: 4800000, guid: bd6af5d577c618947b73aa60db554e51, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -45,11 +45,11 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Flow:
-        m_Texture: {fileID: 2800000, guid: 3d5da1014e2ba8648b37b244ea1f771c, type: 3}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: 6756ce1110b2ba24e9f356c415a5a73d, type: 3}
+        m_Texture: {fileID: 2800000, guid: 2fb074fafff1fd4499ae89d8f5378b6f, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Main_Alpha:
@@ -94,7 +94,7 @@ Material:
     - _Dissolve_Mask_Rotation: 0
     - _Distortion_Power: 0
     - _EdgeSoftness: 0.5
-    - _Emission: 5.12
+    - _Emission: 15
     - _Flat_Alpha: 0
     - _Main_Texture_Invert: 0
     - _Opacity: 1
@@ -104,13 +104,13 @@ Material:
     - _Usecustomrandom: 0
     - _Usedepth: 0
     m_Colors:
-    - _ChannelMask: {r: 1, g: 0, b: 0, a: 0}
+    - _ChannelMask: {r: 0, g: 1, b: 0, a: 0}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _Dissolve_Mask_Channel: {r: 1, g: 0, b: 0, a: 0}
     - _Dissolve_Mask_Pan_Speed: {r: 0, g: 0, b: 0, a: 0}
     - _Dissolve_Offset: {r: 0, g: 0, b: 0, a: 0}
     - _Dissolve_Tiling: {r: 1, g: 1, b: 0, a: 0}
-    - _DistortionSpeedXYPowerZ: {r: 0.33, g: 0, b: 0.01, a: 0}
+    - _DistortionSpeedXYPowerZ: {r: 0, g: 0, b: 0, a: 0}
     - _Distortion_Blend_Channel: {r: 1, g: 0, b: 0, a: 0}
     - _Main_Texture_Pan_Speed: {r: 1, g: 0, b: 0, a: 0}
     - _Offset: {r: 0, g: 0, b: 0, a: 0}
