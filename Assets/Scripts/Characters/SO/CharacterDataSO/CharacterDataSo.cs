@@ -34,11 +34,7 @@ namespace Characters.SO.CharacterDataSO
         [SerializeField]
         [PropertyTooltip("Multiplier applied to bounce speed when the character collides during tween-based movement.")]
         private float bounceMultiplier = 1f;
-
-        [SerializeField]
-        [PropertyTooltip("Mass factor used in physics-based interactions, such as knockback or bounce weighting.")]
-        private float mass = 1f;
-
+        
         [SerializeField]
         [PropertyTooltip("Effects that are applied to the character when a bounce occurs.")]
         private List<StatusEffectDataPayload> effectOnBounce;
@@ -83,13 +79,7 @@ namespace Characters.SO.CharacterDataSO
         /// Typically used to control how far the character rebounds after impact.
         /// </summary>
         public float BounceMultiplier => bounceMultiplier;
-
-        /// <summary>
-        /// The effective mass of the character used for calculating momentum,
-        /// knockback resistance, and bounce responsiveness.
-        /// </summary>
-        public float Mass => mass;
-
+        
         public int ExpDrop => expDrop;
 
         /// <summary>

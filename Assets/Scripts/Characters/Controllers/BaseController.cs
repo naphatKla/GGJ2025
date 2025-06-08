@@ -241,7 +241,6 @@ namespace Characters.Controllers
                 characterData.MoveAccelerationRate,
                 characterData.TurnAccelerationRate,
                 characterData.BounceMultiplier,
-                characterData.Mass,
                 characterData.EffectOnBounce);
 
             healthSystem?.AssignHealthData(

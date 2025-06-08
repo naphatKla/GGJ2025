@@ -58,13 +58,7 @@ namespace Characters.MovementSystems
         /// </summary>
         [ShowInInspector, ReadOnly] [ShowIf("@UnityEngine.Application.isPlaying")]
         protected float bounceMultiplier;
-
-        /// <summary>
-        /// mass of this entity, use to calculate bounce force and collision force.
-        /// </summary>
-        [ShowInInspector, ReadOnly] [ShowIf("@UnityEngine.Application.isPlaying")]
-        protected float mass;
-
+        
         /// <summary>
         /// The current velocity of the entity movement.
         /// Typically updated per frame and applied to Rigidbody2D or NavMeshAgent.
@@ -105,7 +99,7 @@ namespace Characters.MovementSystems
         /// The duration of the bounce movement tween when a collision occurs.
         /// Determines how long the character takes to complete the bounce arc.
         /// </summary>
-        private float _bounceDuration = 0.45f;
+        private float _bounceDuration = 0.3f;
 
         /// <summary>
         /// The cooldown time after a bounce before another bounce can be triggered.
@@ -162,14 +156,13 @@ namespace Characters.MovementSystems
         /// Assigns base movement data to the character, including speed and acceleration settings.
         /// Typically called by the character controller during initialization to configure movement behavior.
         /// </summary>
-        public virtual void AssignMovementData(float baseSpeed, float moveAccelerationRate, float turnAccelerationRate, float bounceMultiplier, float mass, List<StatusEffectDataPayload> effectOnBounce)
+        public virtual void AssignMovementData(float baseSpeed, float moveAccelerationRate, float turnAccelerationRate, float bounceMultiplier, List<StatusEffectDataPayload> effectOnBounce)
         {
             _baseSpeed = baseSpeed;
             currentSpeed = baseSpeed;
             this.moveAccelerationRate = moveAccelerationRate;
             this.turnAccelerationRate = turnAccelerationRate;
             this.bounceMultiplier = bounceMultiplier;
-            this.mass = mass;
             _effectOnBounce = effectOnBounce;
         }
 
@@ -238,14 +231,15 @@ namespace Characters.MovementSystems
         /// Calculates combined momentum from self and external source to simulate head-on collisions.
         /// </summary>
         /// <param name="hitNormal">The normal vector from the collision surface.</param>
-        /// <param name="externalForce">Optional force applied externally (e.g., enemy dash impact).</param>
         protected void ApplyBounceFromTweenCollision(Vector2 hitNormal, Vector2? externalForce = null)
         {
             float multiplier = bounceMultiplier;
+            bool isTweenRunning = _moveOverTimeTween.IsActive();
             if (currentVelocity.magnitude <= currentSpeed)
             {
                 // mini bounce != main bounce
-                multiplier *= 0.5f;
+                if (!isTweenRunning)
+                    multiplier *= 0.5f;
             }
             else
             {
@@ -254,12 +248,14 @@ namespace Characters.MovementSystems
             }
             
             _moveOverTimeTween?.Kill();
-            
-            Vector2 incomingForce = externalForce ?? Vector2.zero;
-            Vector2 effectiveVelocity = currentVelocity - incomingForce;
+
+
+            Vector2 effectiveVelocity = currentVelocity;
+            if (externalForce != null && !isTweenRunning)
+                effectiveVelocity = externalForce.Value;
             
             Vector2 reflectedDir = Vector2.Reflect(effectiveVelocity.normalized, hitNormal);
-            float bounceSpeed = (effectiveVelocity.magnitude * multiplier) / Mathf.Max(0.1f, mass);
+            float bounceSpeed = effectiveVelocity.magnitude * multiplier;
             Vector2 bounceTarget = (Vector2)transform.position + reflectedDir * bounceSpeed * 0.1f;
             
             _moveOverTimeTween = TryMoveToPositionOverTime(
