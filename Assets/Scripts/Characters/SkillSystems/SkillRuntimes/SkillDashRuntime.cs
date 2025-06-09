@@ -1,4 +1,5 @@
 using System.Threading;
+using Characters.FeedbackSystems;
 using Characters.SO.SkillDataSo;
 using Cysharp.Threading.Tasks;
 using GlobalSettings;
@@ -14,8 +15,11 @@ namespace Characters.SkillSystems.SkillRuntimes
     public class SkillDashRuntime : BaseSkillRuntime<SkillDashDataSo>
     {
         #region Methods
-        
-        protected override void OnSkillStart() { }
+
+        protected override void OnSkillStart()
+        {
+            owner.FeedbackSystem.PlayFeedback(FeedbackName.Dash);
+        }
 
         /// <summary>
         /// Performs the dash by moving the character toward a target position over time.
