@@ -140,7 +140,6 @@ namespace Characters.SkillSystems.SkillRuntimes
         {
             _isPerforming = true;
             StatusEffectManager.ApplyEffectTo(owner.gameObject, skillData.StatusEffectOnSkillStart);
-            owner.FeedbackSystem.PlayFeedback(FeedbackName.Dash);
             OnSkillStart();
         }
 

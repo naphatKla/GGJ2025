@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading;
 using Characters.CombatSystems;
 using Characters.Controllers;
+using Characters.FeedbackSystems;
 using Characters.MovementSystems;
 using Characters.SO.SkillDataSo;
 using Characters.StatusEffectSystems;
@@ -33,6 +34,7 @@ namespace Characters.SkillSystems.SkillRuntimes
         {
             InitializedSkill();
             ResetCharacterClone(true);
+            owner.FeedbackSystem.PlayFeedback(FeedbackName.BlackHole);
         }
 
         protected override async UniTask OnSkillUpdate(CancellationToken cancelToken)
