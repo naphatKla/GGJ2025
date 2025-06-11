@@ -30,7 +30,7 @@ namespace Characters.MovementSystems
         /// <param name="direction">The input movement direction vector.</param>
         protected override void MoveWithInertia(Vector2 direction)
         {
-            float dt = Time.fixedDeltaTime; // เปลี่ยนตรงนี้
+            float dt = Time.fixedDeltaTime; 
             currentDirection = Vector2.Lerp(currentDirection, direction, turnAccelerationRate * dt);
             Vector2 desiredVelocity = currentDirection * currentSpeed;
             currentVelocity = Vector2.Lerp(currentVelocity, desiredVelocity, moveAccelerationRate * dt);
@@ -65,7 +65,7 @@ namespace Characters.MovementSystems
             Vector2 endPos = position;
             Vector2 perpendicular = Vector2.Perpendicular((endPos - startPos).normalized);
             Vector2 previousPosition = startPos;
-            
+
             var tween = DOTween.To(() => 0f, t =>
             {
                 float linearT = Mathf.Clamp01(t);
@@ -73,14 +73,14 @@ namespace Characters.MovementSystems
                 float offset = moveCurve?.Evaluate(linearT) ?? 0f;
                 Vector2 curvedPos = basePos + perpendicular * offset;
                 Vector2 frameDelta = curvedPos - previousPosition;
-                float frameSpeed = frameDelta.magnitude / Time.deltaTime;
-                
+                float frameSpeed = frameDelta.magnitude / Time.fixedDeltaTime;
+
                 currentDirection = frameDelta.normalized;
-                currentVelocity =  currentDirection * frameSpeed;
-                
+                currentVelocity = currentDirection * frameSpeed;
+
                 previousPosition = curvedPos;
                 TryMoveRawPosition(curvedPos);
-            }, 1f, duration);
+            }, 1f, duration).SetUpdate(UpdateType.Fixed);
 
             return easeCurve != null ? tween.SetEase(easeCurve) : tween.SetEase(Ease.InOutSine);
         }
@@ -110,14 +110,14 @@ namespace Characters.MovementSystems
                 float offset = moveCurve?.Evaluate(linearT) ?? 0f;
                 Vector2 curvedPos = basePos + perpendicular * offset;
                 Vector2 frameDelta = curvedPos - previousPosition;
-                float frameSpeed = frameDelta.magnitude / Time.deltaTime;
+                float frameSpeed = frameDelta.magnitude / Time.fixedDeltaTime;
                 
                 currentDirection = frameDelta.normalized;
                 currentVelocity = currentDirection * frameSpeed;
                 
                 previousPosition = curvedPos;
                 TryMoveRawPosition(curvedPos);
-            }, 1f, duration);
+            }, 1f, duration).SetUpdate(UpdateType.Fixed);
 
             return easeCurve != null ? tween.SetEase(easeCurve) : tween.SetEase(Ease.InOutSine);
         }
