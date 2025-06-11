@@ -25,9 +25,6 @@ namespace Characters.SkillSystems.SkillRuntimes
         /// <returns>A UniTask that completes when the dash tween ends or is cancelled.</returns>
         protected override async UniTask OnSkillUpdate(CancellationToken cancelToken)
         {
-            if (skillData.UnStoppable)
-                owner.MovementSystem.SetUnStoppableMode(true);
-            
             Vector2 dashPosition = (Vector2)transform.position + aimDirection * skillData.DashDistance;
             await owner.MovementSystem
                 .TryMoveToPositionOverTime(dashPosition, skillData.DashDuration, skillData.DashEaseCurve,
@@ -36,8 +33,7 @@ namespace Characters.SkillSystems.SkillRuntimes
 
         protected override void OnSkillExit()
         {
-            if (skillData.UnStoppable)
-                owner.MovementSystem.SetUnStoppableMode(false);
+         
         }
 
         #endregion

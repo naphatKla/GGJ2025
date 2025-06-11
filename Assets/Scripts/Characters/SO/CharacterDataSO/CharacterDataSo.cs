@@ -30,15 +30,7 @@ namespace Characters.SO.CharacterDataSO
 
         [SerializeField] [PropertyTooltip("How quickly the character adjusts its movement direction.")]
         private float turnAccelerationRate;
-
-        [SerializeField]
-        [PropertyTooltip("Multiplier applied to bounce speed when the character collides during tween-based movement.")]
-        private float bounceMultiplier = 1f;
         
-        [SerializeField]
-        [PropertyTooltip("Effects that are applied to the character when a bounce occurs.")]
-        private List<StatusEffectDataPayload> effectOnBounce;
-
         [Title("Combat Data", TitleAlignment = TitleAlignments.Centered)]
         [SerializeField]
         [PropertyTooltip("The base damage this character deals per hit.")]
@@ -73,20 +65,12 @@ namespace Characters.SO.CharacterDataSO
         /// The rate at which the character adjusts its movement direction.
         /// </summary>
         public float TurnAccelerationRate => turnAccelerationRate;
-
-        /// <summary>
-        /// Multiplier applied to bounce force during collisions while moving via tween.
-        /// Typically used to control how far the character rebounds after impact.
-        /// </summary>
-        public float BounceMultiplier => bounceMultiplier;
         
-        public int ExpDrop => expDrop;
-
         /// <summary>
-        /// Effects that are applied to the character when a bounce occurs.
+        /// Exp drop after dead
         /// </summary>
-        public List<StatusEffectDataPayload> EffectOnBounce => effectOnBounce;
-
+        public int ExpDrop => expDrop;
+        
         /// <summary>
         /// The base attack damage of the character.
         /// </summary>

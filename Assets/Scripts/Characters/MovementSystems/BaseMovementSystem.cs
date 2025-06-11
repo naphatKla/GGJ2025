@@ -51,13 +51,6 @@ namespace Characters.MovementSystems
         /// </summary>
         [ShowInInspector, ReadOnly] [ShowIf("@UnityEngine.Application.isPlaying")]
         protected float turnAccelerationRate;
-
-        /// <summary>
-        /// Movement speed scaling factor applied when bouncing after collision.
-        /// Affects how far the bounce reflects based on the current velocity.
-        /// </summary>
-        [ShowInInspector, ReadOnly] [ShowIf("@UnityEngine.Application.isPlaying")]
-        protected float bounceMultiplier;
         
         /// <summary>
         /// The current velocity of the entity movement.
@@ -94,46 +87,12 @@ namespace Characters.MovementSystems
         /// If false, automatic or manual movement is disabled.
         /// </summary>
         private bool _enablePrimaryMovement = true;
-
-        /// <summary>
-        /// The duration of the bounce movement tween when a collision occurs.
-        /// Determines how long the character takes to complete the bounce arc.
-        /// </summary>
-        private float _bounceDuration = 0.3f;
-
-        /// <summary>
-        /// The cooldown time after a bounce before another bounce can be triggered.
-        /// Prevents repeated bounce execution from rapid collisions.
-        /// </summary>
-        private float _bounceCoolDown = 0.05f;
-
-        /// <summary>
-        /// Tracks whether the bounce is currently on cooldown.
-        /// Used to prevent multiple bounce responses in quick succession.
-        /// </summary>
-        private bool _isBounceCooldown;
-
-        /// <summary>
-        /// Effects that are applied to the character when a bounce occurs
-        /// </summary>
-        private List<StatusEffectDataPayload> _effectOnBounce;
-
-        /// <summary>
-        /// Determine this entity is unstoppable or not.
-        /// </summary>
-        private bool _isUnStoppable;
-
+        
         /// <summary>
         /// The current velocity of the entity movement.
         /// Typically updated per frame and applied to Rigidbody2D or NavMeshAgent.
         /// </summary>
         public Vector2 CurrentVelocity => currentVelocity;
-
-        /// <summary>
-        /// Tracks whether the bounce is currently on cooldown.
-        /// Used to prevent multiple bounce responses in quick succession.
-        /// </summary>
-        public bool IsUnStoppable => _isUnStoppable;
         
         #endregion
 
@@ -156,14 +115,12 @@ namespace Characters.MovementSystems
         /// Assigns base movement data to the character, including speed and acceleration settings.
         /// Typically called by the character controller during initialization to configure movement behavior.
         /// </summary>
-        public virtual void AssignMovementData(float baseSpeed, float moveAccelerationRate, float turnAccelerationRate, float bounceMultiplier, List<StatusEffectDataPayload> effectOnBounce)
+        public virtual void AssignMovementData(float baseSpeed, float moveAccelerationRate, float turnAccelerationRate)
         {
             _baseSpeed = baseSpeed;
             currentSpeed = baseSpeed;
             this.moveAccelerationRate = moveAccelerationRate;
             this.turnAccelerationRate = turnAccelerationRate;
-            this.bounceMultiplier = bounceMultiplier;
-            _effectOnBounce = effectOnBounce;
         }
 
         /// <summary>
@@ -224,80 +181,7 @@ namespace Characters.MovementSystems
             _moveOverTimeTween = MoveToTargetOverTime(target, duration, easeCurve, moveCurve);
             return _moveOverTimeTween;
         }
-
-        /// <summary>
-        /// Handles bounce behavior when a collision is detected during tween movement.
-        /// Supports optional external force (e.g., from enemy impact) and adjusts bounce speed based on mass.
-        /// Calculates combined momentum from self and external source to simulate head-on collisions.
-        /// </summary>
-        /// <param name="hitNormal">The normal vector from the collision surface.</param>
-        protected void ApplyBounceFromTweenCollision(Vector2 hitNormal, Vector2? externalForce = null)
-        {
-            float multiplier = bounceMultiplier;
-            bool isTweenRunning = _moveOverTimeTween.IsActive();
-            if (currentVelocity.magnitude <= currentSpeed)
-            {
-                // mini bounce != main bounce
-                if (!isTweenRunning)
-                    multiplier *= 0.5f;
-            }
-            else
-            {
-                //  main bounce
-                StatusEffectManager.ApplyEffectTo(gameObject, _effectOnBounce);
-            }
-            
-            _moveOverTimeTween?.Kill();
-
-
-            Vector2 effectiveVelocity = currentVelocity;
-            if (externalForce != null && !isTweenRunning)
-                effectiveVelocity = externalForce.Value;
-            
-            Vector2 reflectedDir = Vector2.Reflect(effectiveVelocity.normalized, hitNormal);
-            float bounceSpeed = effectiveVelocity.magnitude * multiplier;
-            Vector2 bounceTarget = (Vector2)transform.position + reflectedDir * bounceSpeed * 0.1f;
-            
-            _moveOverTimeTween = TryMoveToPositionOverTime(
-                bounceTarget,
-                _bounceDuration
-            ).SetEase(Ease.OutCubic);
-        }
-
-        /// <summary>
-        /// Triggers bounce behavior if not in cooldown. Checks for valid target and applies bounce based on collision impact and enemy velocity.
-        /// </summary>
-        /// <param name="other">Collision data from Unity's collision callback.</param>
-        public void BounceHandler(Collision2D other)
-        {
-            if (other.contactCount == 0) return;
-            if (_isBounceCooldown) return;
-            
-            Vector2 normal = other.GetContact(0).normal;
-            Vector2? externalForce = null;
-            other.gameObject.TryGetComponent(out BaseController otherController);
-            
-            if (otherController)
-            {
-                if (_isUnStoppable && !otherController.MovementSystem.IsUnStoppable) return;
-                if (otherController.HealthSystem && otherController.HealthSystem.IsDead) return;
-                externalForce = otherController.MovementSystem.currentVelocity;
-            }
-            
-            ApplyBounceFromTweenCollision(normal, externalForce);
-            StartBounceCooldown().Forget();
-        }
         
-        /// <summary>
-        /// Begins a cooldown after a bounce to prevent repeated bounces in rapid succession.
-        /// </summary>
-        private async UniTask StartBounceCooldown()
-        {
-            _isBounceCooldown = true;
-            await UniTask.WaitForSeconds(_bounceCoolDown);
-            _isBounceCooldown = false;
-        }
-
         /// <summary>
         /// Sets whether the movement system is allowed to move.
         /// Passing false will stop movement immediately.
@@ -307,17 +191,7 @@ namespace Characters.MovementSystems
             _canMove = canMove;
             if (!_canMove) StopAllMovement();
         }
-
-        /// <summary>
-        /// Sets whether the entity unstoppable or not
-        /// Passing true will ignore status effect and bounce;
-        /// </summary>
-        /// <param name="value"></param>
-        public virtual void SetUnStoppableMode(bool value)
-        {
-            _isUnStoppable = value;
-        }
-
+        
         /// <summary>
         /// Immediately stops the entity's movement and cancels any ongoing tween.
         /// Also resets speed to zero.

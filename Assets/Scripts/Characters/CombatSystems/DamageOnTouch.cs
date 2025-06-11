@@ -1,4 +1,5 @@
 using System;
+using Characters.HeathSystems;
 using Manager;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -29,7 +30,17 @@ namespace Characters.CombatSystems
         public bool IsEnableDamage => _isEnableDamage;
 
         #endregion
-   
+
+        #region Unity Methods
+
+        private void OnTriggerEnter2D(Collider2D other)
+        {
+            if (!_isEnableDamage) return;
+            CombatManager.ApplyDamageTo(other.gameObject, gameObject);
+        }
+
+        #endregion
+        
         #region Methods
         
         /// <summary>

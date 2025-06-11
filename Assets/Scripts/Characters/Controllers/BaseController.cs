@@ -163,38 +163,7 @@ namespace Characters.Controllers
             if (comboSystem != null)
                 combatSystem.OnDealDamage -= comboSystem.RegisterHit;
         }
-
-        /// <summary>
-        /// Called when a collision with another collider begins.
-        /// Currently unused, but reserved for future logic such as hit reaction triggers or knockback.
-        /// </summary>
-        /// <param name="other">Collision data from Unity's physics engine.</param>
-        private void OnCollisionEnter2D(Collision2D other)
-        {
-        }
-
-        /// <summary>
-        /// Called continuously while colliding with another collider.
-        /// Applies contact damage and triggers bounce if applicable.
-        /// </summary>
-        private void OnCollisionStay2D(Collision2D other)
-        {
-            if (DamageOnTouch?.IsEnableDamage == true)
-                CombatManager.ApplyDamageTo(other.gameObject, gameObject);
-
-            if (other.gameObject && other.gameObject.activeSelf)
-                movementSystem?.BounceHandler(other);
-        }
-
-        /// <summary>
-        /// Called when the collision with another collider ends.
-        /// Currently unused, but can be extended to handle exit-specific behavior (e.g., status cleanup).
-        /// </summary>
-        /// <param name="other">Collision data from Unity's physics engine.</param>
-        private void OnCollisionExit2D(Collision2D other)
-        {
-        }
-
+        
         #endregion
 
         #region Methods
@@ -239,9 +208,8 @@ namespace Characters.Controllers
             movementSystem?.AssignMovementData(
                 characterData.BaseSpeed,
                 characterData.MoveAccelerationRate,
-                characterData.TurnAccelerationRate,
-                characterData.BounceMultiplier,
-                characterData.EffectOnBounce);
+                characterData.TurnAccelerationRate
+                );
 
             healthSystem?.AssignHealthData(
                 characterData.MaxHealth,

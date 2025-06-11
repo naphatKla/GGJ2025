@@ -69,7 +69,7 @@ namespace Characters.SkillSystems.SkillRuntimes
                 var clone = _cloneObjectPool[i];
                 clone.TryMoveToPositionOverTime(explosionPos, actualMoveDuration,
                     skillData.ExplosionEaseCurve, skillData.ExplosionMoveCurve);
-                clone.SetUnStoppableMode(false);
+         
                 StatusEffectManager.ApplyEffectTo(clone.gameObject, skillData.CloneEffects);
                 await UniTask.Delay((int)(delay * 1000), cancellationToken: cancelToken);
             }
@@ -94,7 +94,7 @@ namespace Characters.SkillSystems.SkillRuntimes
             for (int i = 0; i < cloneCount; i++)
             {
                 var clone = _cloneObjectPool[i];
-                clone.SetUnStoppableMode(true);
+          
                 float delay = (mergeWeights[i] / mergeWeightSum) * mergeStagger;
                 float actualMoveDuration = Mathf.Clamp(mergeDuration - delay, 0.05f, mergeDuration);
                 mergeDuration -= delay;
