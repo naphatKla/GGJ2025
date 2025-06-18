@@ -1,13 +1,13 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.EventSystems;
 
 public class SoundSettingMenu : MonoBehaviour
 {
     [SerializeField] private GameObject _settingUI;
-    [SerializeField] private bool toggle = false;
+    private bool toggle = false;
+
     private void Awake()
     {
         if (FindObjectsOfType<SoundSettingMenu>().Length > 1)
@@ -22,36 +22,38 @@ public class SoundSettingMenu : MonoBehaviour
 
     private void Start()
     {
-        _settingUI.gameObject.SetActive(false);
+        _settingUI.SetActive(false);
         toggle = false;
     }
 
-    private void Update()
-    {
-        // if (toggle && Time.timeScale == 1)
-        // {
-        //     Time.timeScale = 1;
-        //     toggle = false;
-        //     _settingUI.gameObject.SetActive(false);
-        // }
-    }
-    
     public void ActivateSetting()
     {
-        if (toggle)
+        if (toggle) return;
+
+        _settingUI.SetActive(true);
+        toggle = true;
+
+        if (SceneManager.GetActiveScene().name != "MainMenu")
+        {
+            Time.timeScale = 0;
+        }
+        
+        EventSystem.current.SetSelectedGameObject(null);
+    }
+
+    public void DeactivateSetting()
+    {
+        if (!toggle) return;
+
+        _settingUI.SetActive(false);
+        toggle = false;
+
+        if (SceneManager.GetActiveScene().name != "MainMenu")
         {
             Time.timeScale = 1;
-            toggle = false;
-            _settingUI.gameObject.SetActive(false);
         }
-        else
-        {
-            if (SceneManager.GetActiveScene() != SceneManager.GetSceneByName("MainMenu"))
-            {
-                Time.timeScale = 0;
-            }
-            toggle = true;
-            _settingUI.gameObject.SetActive(true);
-        }
+
+        // Reset Focus (กันปุ่ม Setting ค้าง hover)
+        EventSystem.current.SetSelectedGameObject(null);
     }
 }
