@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class MenuManager : MonoBehaviour
 {
-    [SerializeField] private SoundSettingMenu settingUI;
+    private SoundSettingMenu settingUI;
     [SerializeField] private GameObject soundButton;
     void Start()
     {
