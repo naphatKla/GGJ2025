@@ -27,6 +27,11 @@ namespace Characters.Controllers
         #region Inspectors & Fields
 
         /// <summary>
+        /// Sprite body of this character.
+        /// </summary>
+        [SerializeField] private SpriteRenderer body;
+        
+        /// <summary>
         /// Reference to the movement system used to control character motion.
         /// Should be assigned via Inspector or at runtime.
         /// </summary>
@@ -85,12 +90,15 @@ namespace Characters.Controllers
         /// Fallbacks to auto-fetching via <c>TryGetComponent</c> if not manually assigned.
         /// </summary>
         [OdinSerialize] private ICharacterInput _inputSystem;
-
+        
         /// <summary>
         /// Is this controller is initialize or not.
         /// </summary>
         private bool _isInitialize;
 
+        public SpriteRenderer Body => body;
+
+        
         public ICharacterInput InputSystem => _inputSystem;
         
         /// <summary>
@@ -215,7 +223,7 @@ namespace Characters.Controllers
 
             healthSystem?.AssignHealthData(
                 characterData.MaxHealth,
-                characterData.InvincibleTimePerHit);
+                characterData.InvincibleTimePerHit, this);
 
             combatSystem?.AssignCombatData(characterData.BaseDamage);
 
@@ -254,6 +262,19 @@ namespace Characters.Controllers
                 _inputSystem.OnPrimarySkillPerform -= skillSystem.PerformPrimarySkill;
                 _inputSystem.OnSecondarySkillPerform -= skillSystem.PerformSecondarySkill;
             }
+        }
+
+        public void TryPlayFeedback(FeedbackName feedbackName)
+        {
+            // handle feedback condition here.
+            if (!feedbackSystem) return;
+            feedbackSystem.PlayFeedback(feedbackName);
+        }
+
+        public void TryStopFeedback(FeedbackName feedbackName)
+        {
+            if (!feedbackSystem) return;
+            feedbackSystem.StopFeedback(feedbackName);
         }
 
         /// <summary>

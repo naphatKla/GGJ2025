@@ -12,7 +12,7 @@ namespace Characters.StatusEffectSystems
     /// Includes effect data and optional duration override.
     /// </summary>
     [Serializable]
-    public class StatusEffectDataPayload
+    public struct StatusEffectDataPayload
     {
         #region Inspector & Variables
         
@@ -44,7 +44,12 @@ namespace Characters.StatusEffectSystems
         /// Gets the overridden duration for the effect if enabled.
         /// </summary>
         public float OverrideDuration => overrideDuration;
-        
+
+        public void SetOverrideDuration(float newDuration)
+        { 
+            if (!isOverrideDuration) return;
+            overrideDuration = newDuration;
+        }
         #endregion
     }
 

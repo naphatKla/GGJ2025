@@ -63,6 +63,8 @@ namespace Characters.FeedbackSystems
         Bounce = -94,
         Attack = -93,
         CounterAttack = -92,
+        
+        // skill
         Dash = 1,
         BlackHole = 2,
     }

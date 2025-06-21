@@ -1,6 +1,9 @@
+using System;
+using System.Collections.Generic;
 using System.Threading;
 using Characters.FeedbackSystems;
 using Characters.SO.SkillDataSo;
+using Characters.StatusEffectSystems;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
@@ -13,11 +16,28 @@ namespace Characters.SkillSystems.SkillRuntimes
     /// </summary>
     public class SkillDashRuntime : BaseSkillRuntime<SkillDashDataSo>
     {
+        private float _dashEffective;
+        
         #region Methods
-
+        
         protected override void OnSkillStart()
         {
-            owner.FeedbackSystem.PlayFeedback(FeedbackName.Dash);
+            owner.TryPlayFeedback(FeedbackName.Dash);
+            _dashEffective = 1f;
+
+            if (!skillData.IsFlexibleDash) return;
+            _dashEffective = Mathf.Clamp(aimDirection.length / skillData.MaxInputLength, skillData.MinMaxEffective.x,
+                skillData.MinMaxEffective.y);
+
+            if (Math.Abs(_dashEffective - 1) < 0.0001f) return;
+            if (!skillData.IsFlexibleStatusEffectDuration) return;
+
+            foreach (var statusEffectDataPayload in effectsApplyOnStart)
+            {
+                float calculatedEffectDuration = statusEffectDataPayload.OverrideDuration * _dashEffective;
+                statusEffectDataPayload.SetOverrideDuration(calculatedEffectDuration);
+                Debug.Log($"{statusEffectDataPayload.EffectData.EffectName} : {statusEffectDataPayload.OverrideDuration}");
+            }
         }
 
         /// <summary>
@@ -28,16 +48,8 @@ namespace Characters.SkillSystems.SkillRuntimes
         /// <returns>A UniTask that completes when the dash tween ends or is cancelled.</returns>
         protected override async UniTask OnSkillUpdate(CancellationToken cancelToken)
         {
-            float dashEffective = 1f;
-
-            if (skillData.IsFlexibleDistance)
-            {
-                dashEffective = Mathf.Clamp(aimDirection.length / skillData.MaxInputLength, skillData.MinMaxEffective.x,
-                    skillData.MinMaxEffective.y);
-            }
-
-            float calculatedDistance = skillData.DashDistance * dashEffective;
-            float calculatedDuration = skillData.DashDuration * dashEffective;
+            float calculatedDistance = skillData.DashDistance * _dashEffective;
+            float calculatedDuration = skillData.DashDuration * _dashEffective;
 
             Vector2 dashPosition = (Vector2)transform.position + aimDirection.direction * calculatedDistance;
             await owner.MovementSystem
@@ -47,6 +59,7 @@ namespace Characters.SkillSystems.SkillRuntimes
 
         protected override void OnSkillExit()
         {
+            effectsApplyOnStart = new List<StatusEffectDataPayload>(skillData.StatusEffectOnSkillStart);
         }
 
         #endregion

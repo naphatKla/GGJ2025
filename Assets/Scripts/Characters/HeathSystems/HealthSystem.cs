@@ -1,5 +1,6 @@
 using System;
 using System.IO.Compression;
+using Characters.Controllers;
 using Characters.FeedbackSystems;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
@@ -17,6 +18,8 @@ namespace Characters.HeathSystems
     {
         #region Inspectors & Variables
 
+        private BaseController owner;
+        
         /// <summary>
         /// The maximum health the character can have.
         /// </summary>
@@ -93,10 +96,11 @@ namespace Characters.HeathSystems
         /// </summary>
         /// <param name="maxHealth">Maximum health to assign.</param>
         /// <param name="invincibleTimePerHit">Cooldown duration after taking damage.</param>
-        public void AssignHealthData(float maxHealth, float invincibleTimePerHit)
+        public void AssignHealthData(float maxHealth, float invincibleTimePerHit, BaseController owner = null)
         {
             _maxHealth = maxHealth;
             _invincibleTimePerHit = invincibleTimePerHit;
+            this.owner = owner;
             ResetHealthSystem();
         }
 
@@ -114,14 +118,12 @@ namespace Characters.HeathSystems
             ModifyHealth(-damage);
             OnTakeDamage?.Invoke();
             
-            if (TryGetComponent(out FeedbackSystem feedbackSystem))
-                feedbackSystem.PlayFeedback(FeedbackName.TakeDamage);
-           
+            owner?.TryPlayFeedback(FeedbackName.TakeDamage);
             HitCooldownHandler();
 
             if (_currentHealth <= 0)
             {
-                feedbackSystem.PlayFeedback(FeedbackName.Dead);
+                owner?.TryPlayFeedback(FeedbackName.Dead);
                 Dead();
             }
 
@@ -139,6 +141,8 @@ namespace Characters.HeathSystems
             OnHeal?.Invoke();
         }
 
+        private Tween colorTween;
+        private Color? startColor;
         /// <summary>
         /// Sets the character's invincibility state.
         /// </summary>
@@ -147,6 +151,19 @@ namespace Characters.HeathSystems
         {
             _isInvincible = value;
             OnInvincible?.Invoke(_isInvincible);
+            startColor ??= owner.Body.color;
+
+            colorTween?.Kill();
+            if (value)
+            {
+                colorTween = owner?.Body.DOColor(Color.cyan, 0.05f);
+                owner?.TryPlayFeedback(FeedbackName.Iframe);
+            }
+            else
+            {
+                colorTween = owner?.Body.DOColor(startColor.Value, 0.05f);
+                owner?.TryStopFeedback(FeedbackName.Iframe);
+            }
         }
 
         /// <summary>

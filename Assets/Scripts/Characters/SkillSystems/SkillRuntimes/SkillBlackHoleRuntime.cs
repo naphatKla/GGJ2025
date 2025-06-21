@@ -34,7 +34,7 @@ namespace Characters.SkillSystems.SkillRuntimes
         {
             InitializedSkill();
             ResetCharacterClone(true);
-            owner.FeedbackSystem.PlayFeedback(FeedbackName.BlackHole);
+            owner.TryPlayFeedback(FeedbackName.BlackHole);
         }
 
         protected override async UniTask OnSkillUpdate(CancellationToken cancelToken)

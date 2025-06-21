@@ -70,8 +70,7 @@ namespace Characters.CombatSystems
         public void CounterAttack()
         {
             if (!TryGetComponent(out BaseController owner)) return;
-            if (!owner.FeedbackSystem) return;
-            owner?.FeedbackSystem.PlayFeedback(FeedbackName.CounterAttack);
+            owner?.TryPlayFeedback(FeedbackName.CounterAttack);
         }
 
         #endregion

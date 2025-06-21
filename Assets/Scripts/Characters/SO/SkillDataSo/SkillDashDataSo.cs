@@ -1,6 +1,7 @@
 using Sirenix.OdinInspector;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Characters.SO.SkillDataSo
 {
@@ -21,14 +22,14 @@ namespace Characters.SO.SkillDataSo
         [PropertyTooltip("Total distance the character will dash forward.")]
         [SerializeField] private float dashDistance = 8f;
         
-        [PropertyTooltip("If true. dash's distant can be scalable depends on input length.")]
-        [SerializeField] private bool isFlexibleDistance;
-
-        [EnableIf(nameof(isFlexibleDistance))]
+        [PropertyTooltip("If true. dash's distant and duration can be scalable depends on input length.")]
+        [SerializeField] private bool isFlexibleDash;
+        
+        [EnableIf(nameof(isFlexibleDash))]
         [PropertyTooltip("Maximum length of input that will perform the maximum effective distance")]
         [SerializeField] private float maxInputLength = 6f;
         
-        [EnableIf(nameof(isFlexibleDistance))]
+        [EnableIf(nameof(isFlexibleDash))]
         [PropertyTooltip("Minimum & Maximum Value tha dash can perform.")]
         [ValidateInput(nameof(IsMinMaxValid), "Values must be between 0 and 1")]
         [SerializeField] private Vector2 minMaxEffective = new Vector2(0.4f, 1f);
@@ -38,6 +39,11 @@ namespace Characters.SO.SkillDataSo
         
         [PropertyTooltip("AnimationCurve that applies lateral displacement during the dash allowing for custom arcing or wave-like motion paths instead of straight-line dashing.")]
         [SerializeField] private AnimationCurve dashMoveCurve;
+        
+        [EnableIf(nameof(isFlexibleDash))]
+        [PropertyTooltip("If true. status effect can be scalable depends on input length.")]
+        [PropertyOrder(9998)]
+        [SerializeField] private bool isFlexibleStatusEffectDuration;
         
         /// <summary>
         /// Duration of the dash movement in seconds.
@@ -54,7 +60,12 @@ namespace Characters.SO.SkillDataSo
         /// <summary>
         /// If true. dash's distant can be scalable depends on input length.
         /// </summary>
-        public bool IsFlexibleDistance => isFlexibleDistance;
+        public bool IsFlexibleDash => isFlexibleDash;
+
+        /// <summary>
+        /// If true. status effect can be scalable depends on input length
+        /// </summary>
+        public bool IsFlexibleStatusEffectDuration => isFlexibleStatusEffectDuration;
 
         /// <summary>
         /// Minimum & Maximum Value tha dash can perform.

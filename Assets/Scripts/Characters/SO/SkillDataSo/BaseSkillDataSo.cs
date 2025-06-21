@@ -75,12 +75,13 @@ namespace Characters.SO.SkillDataSo
         /// Only used if <see cref="HasLifeTime"/> is true.
         /// </summary>
         public float LifeTime => lifeTime;
-        
+
         /// <summary>
         /// List of status effects to apply when this skill starts.
         /// Can target the skill user, allies, or enemies depending on implementation.
         /// </summary>
         public List<StatusEffectDataPayload> StatusEffectOnSkillStart => statusEffectOnSkillStart;
+
 
         /// <summary>
         /// The runtime MonoBehaviour class that handles this skill’s logic. 

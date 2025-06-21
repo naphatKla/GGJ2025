@@ -1,9 +1,11 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using Characters.Controllers;
 using Characters.FeedbackSystems;
 using Characters.InputSystems.Interface;
 using Characters.SO.SkillDataSo;
+using Characters.StatusEffectSystems;
 using Cysharp.Threading.Tasks;
 using GlobalSettings;
 using Manager;
@@ -66,6 +68,8 @@ namespace Characters.SkillSystems.SkillRuntimes
         /// </summary>
         private bool _isPerforming;
 
+        protected List<StatusEffectDataPayload> effectsApplyOnStart;
+
         /// <summary>
         /// 
         /// </summary>
@@ -83,6 +87,7 @@ namespace Characters.SkillSystems.SkillRuntimes
         public override void AssignSkillData(BaseSkillDataSo skillData)
         {
             this.skillData = skillData as T;
+            effectsApplyOnStart = new List<StatusEffectDataPayload>(skillData.StatusEffectOnSkillStart);
         }
 
         /// <summary>
@@ -137,8 +142,8 @@ namespace Characters.SkillSystems.SkillRuntimes
         protected virtual void HandleSkillStart()
         {
             _isPerforming = true;
-            StatusEffectManager.ApplyEffectTo(owner.gameObject, skillData.StatusEffectOnSkillStart);
             OnSkillStart();
+            StatusEffectManager.ApplyEffectTo(owner.gameObject, effectsApplyOnStart);
         }
 
         /// <summary>

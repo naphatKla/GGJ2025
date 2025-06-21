@@ -33,7 +33,7 @@ namespace Characters.StatusEffectSystems.StatusEffects
                 ClearThisEffect(); // Fail-safe: cancel effect if HealthSystem is missing
                 return;
             }
-
+            
             _ownerHealthSystem.SetInvincible(true);
         }
 
