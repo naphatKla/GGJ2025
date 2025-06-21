@@ -4,6 +4,7 @@ using UnityEngine;
 using System.Linq;
 using Characters.Controllers;
 using Cysharp.Threading.Tasks;
+using GameControl;
 using UnityEngine.Events;
 
 
@@ -438,7 +439,7 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
         
         //4. Start spawn & start timer
         StartSpawning();
-        Timer.Instance.ResumeTimer();
+        Timer.Instance.StartTimer();
     }
     
     /// <summary>

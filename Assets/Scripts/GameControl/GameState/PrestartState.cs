@@ -10,6 +10,7 @@ namespace GameControl.GameState
         {
             SpawnerStateController.Instance.SetState(new SpawnerState.StopState());
             PoolingSystem.Instance.ClearAll();
+            Timer.Instance.SetTimer(600);
         }
 
         public void Update(GameStateController controller) { }

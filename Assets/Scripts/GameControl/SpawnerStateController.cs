@@ -22,7 +22,6 @@ namespace GameControl
             _spawningState = new SpawnerState.SpawningState();
             _pauseState = new SpawnerState.PauseState();
         }
-
         
         private void Start()
         {
