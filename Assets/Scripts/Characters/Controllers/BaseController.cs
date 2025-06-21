@@ -91,6 +91,8 @@ namespace Characters.Controllers
         /// </summary>
         private bool _isInitialize;
 
+        public ICharacterInput InputSystem => _inputSystem;
+        
         /// <summary>
         /// Reference to the movement system used to control character motion.
         /// Should be assigned via Inspector or at runtime.
@@ -119,7 +121,7 @@ namespace Characters.Controllers
         /// ScriptableObject containing base character stats used to initialize systems.
         /// </summary>
         public CharacterDataSo CharacterData => characterData;
-
+        
         #endregion
 
         #region Unity Methods

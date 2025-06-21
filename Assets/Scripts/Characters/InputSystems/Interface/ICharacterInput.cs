@@ -9,6 +9,8 @@ namespace Characters.InputSystems.Interface
     /// </summary>
     public interface ICharacterInput
     {
+        public DirectionContainer SightDirection { get; protected set; }
+        
         /// <summary>
         /// Invoked when a movement input is received.
         /// The Vector2 parameter represents the movement direction
@@ -17,14 +19,18 @@ namespace Characters.InputSystems.Interface
 
         /// <summary>
         /// Invoked when the primary skill input is triggered.
-        /// The Vector2 parameter represents the direction or aim of the skill.
         /// </summary>
-        Action<Vector2> OnPrimarySkillPerform { get; set; }
+        Action OnPrimarySkillPerform { get; set; }
 
         /// <summary>
         /// Invoked when the secondary skill input is triggered.
-        /// The Vector2 parameter represents the direction or aim of the skill.
         /// </summary>
-        Action<Vector2> OnSecondarySkillPerform { get; set; }
+        Action OnSecondarySkillPerform { get; set; }
+    }
+
+    public struct DirectionContainer
+    {
+        public Vector2 direction;
+        public float length;
     }
 }

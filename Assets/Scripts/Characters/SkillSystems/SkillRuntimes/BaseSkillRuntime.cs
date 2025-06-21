@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using Characters.Controllers;
 using Characters.FeedbackSystems;
+using Characters.InputSystems.Interface;
 using Characters.SO.SkillDataSo;
 using Cysharp.Threading.Tasks;
 using GlobalSettings;
@@ -25,12 +26,11 @@ namespace Characters.SkillSystems.SkillRuntimes
         public abstract void AssignSkillData(BaseSkillDataSo skillData); 
         
         /// <summary>
-        /// Executes the skill using the provided owner and input direction.
+        /// Executes the skill using the provided owner 
         /// Should be overridden in a generic subclass to implement full behavior.
         /// </summary>
         /// <param name="owner">The character who is performing the skill.</param>
-        /// <param name="direction">The direction in which the skill is being cast.</param>
-        public abstract void PerformSkill(BaseController owner, Vector2 direction);
+        public abstract void PerformSkill(BaseController owner);
 
         public abstract void CancelSkill(int milliSecondDelay = 0);
     }
@@ -58,8 +58,8 @@ namespace Characters.SkillSystems.SkillRuntimes
         /// <summary>
         /// The direction in which the skill should be executed (e.g., toward target).
         /// </summary>
-        protected Vector2 aimDirection;
-
+        protected DirectionContainer aimDirection => owner.InputSystem.SightDirection;
+        
         /// <summary>
         /// Indicates whether this skill is currently active or executing.
         /// Prevents the skill from being retriggered while already in use.
@@ -92,12 +92,10 @@ namespace Characters.SkillSystems.SkillRuntimes
         /// If the skill has a configured lifetime, it schedules automatic cancellation after the specified duration.
         /// </summary>
         /// <param name="owner">The character executing the skill.</param>
-        /// <param name="direction">The direction to aim or move in.</param>
-        public override async void PerformSkill(BaseController owner, Vector2 direction)
+        public override async void PerformSkill(BaseController owner)
         {
             if (_isPerforming) return;
             this.owner = owner;
-            aimDirection = direction;
 
             _cts = new CancellationTokenSource();
             

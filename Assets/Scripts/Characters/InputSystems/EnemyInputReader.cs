@@ -29,14 +29,22 @@ namespace Characters.InputSystems
         /// </summary>
         private float timeTick = 0.2f;
 
+        private DirectionContainer _sightDirection;
+        
+        DirectionContainer ICharacterInput.SightDirection
+        {
+            get => _sightDirection;
+            set => _sightDirection = value;
+        }
+
         /// <inheritdoc/>
         public Action<Vector2> OnMove { get; set; }
 
         /// <inheritdoc/>
-        public Action<Vector2> OnPrimarySkillPerform { get; set; }
+        public Action OnPrimarySkillPerform { get; set; }
 
         /// <inheritdoc/>
-        public Action<Vector2> OnSecondarySkillPerform { get; set; }
+        public Action OnSecondarySkillPerform { get; set; }
 
         #endregion
 
@@ -80,25 +88,20 @@ namespace Characters.InputSystems
                 yield return new WaitForSeconds(timeTick);
 
                 if (!PlayerController.Instance) continue;
-
-                Vector2 sightDirection = (PlayerController.Instance.transform.position - transform.position).normalized;
-
-                // Simulate inputs
-                Vector2 playerDirection = PlayerController.Instance.transform.position - transform.position;
                 
-                // Check stop movement if near player
-                float distance = Vector2.Distance(PlayerController.Instance.transform.position, transform.position);
-                bool shouldEnable = distance >= 3f;
-
+                _sightDirection.direction  = (PlayerController.Instance.transform.position - transform.position).normalized;
+                _sightDirection.length = Vector2.Distance(PlayerController.Instance.transform.position, transform.position);
+                
+                bool shouldEnable = _sightDirection.length >= 3f;
                 if (shouldEnable != isMovementEnabled)
                 {
                     movementSystem?.TogglePrimaryMovement(shouldEnable);
                     isMovementEnabled = shouldEnable;
                 }
-
-                OnMove?.Invoke(playerDirection.normalized);
-                OnPrimarySkillPerform?.Invoke(sightDirection);
-                OnSecondarySkillPerform?.Invoke(sightDirection);
+                
+                OnMove?.Invoke(_sightDirection.direction);
+                OnPrimarySkillPerform?.Invoke();
+                OnSecondarySkillPerform?.Invoke();
             }
         }
 

@@ -107,8 +107,7 @@ namespace Characters.SkillSystems
         /// <summary>
         /// Executes the primary skill if not on cooldown and the system is initialized.
         /// </summary>
-        /// <param name="direction">The direction to perform the skill toward.</param>
-        public void PerformPrimarySkill(Vector2 direction)
+        public void PerformPrimarySkill()
         {
             if (!_primarySkillRuntime || _primarySkillCooldown > 0) return;
             if (!_owner)
@@ -117,15 +116,14 @@ namespace Characters.SkillSystems
                 return;
             }
 
-            _primarySkillRuntime.PerformSkill(_owner, direction);
+            _primarySkillRuntime.PerformSkill(_owner);
             ModifyPrimarySkillCooldown(_primarySkillData.Cooldown);
         }
 
         /// <summary>
         /// Executes the secondary skill if not on cooldown and the system is initialized.
         /// </summary>
-        /// <param name="direction">The direction to perform the skill toward.</param>
-        public void PerformSecondarySkill(Vector2 direction)
+        public void PerformSecondarySkill()
         {
             if (!_secondarySkillRuntime || _secondarySkillCooldown > 0) return;
             if (!_owner)
@@ -134,7 +132,7 @@ namespace Characters.SkillSystems
                 return;
             }
 
-            _secondarySkillRuntime.PerformSkill(_owner, direction);
+            _secondarySkillRuntime.PerformSkill(_owner);
             ModifySecondarySkillCooldown(_secondarySkillData.Cooldown);
         }
 

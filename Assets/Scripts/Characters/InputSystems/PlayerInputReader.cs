@@ -14,6 +14,12 @@ namespace Characters.InputSystems
     {
         #region Inspectors & Variables
 
+        DirectionContainer ICharacterInput.SightDirection
+        {
+            get => _sightDirection;
+            set => _sightDirection = value;
+        }
+
         /// <summary>
         /// Event triggered when the player moves.
         /// The Vector2 parameter represents the movement position.
@@ -22,15 +28,13 @@ namespace Characters.InputSystems
 
         /// <summary>
         /// Event triggered when the player performs the primary skill.
-        /// The Vector2 parameter represents the target direction.
         /// </summary>
-        public Action<Vector2> OnPrimarySkillPerform { get; set; }
+        public Action OnPrimarySkillPerform { get; set; }
 
         /// <summary>
         /// Event triggered when the player performs the secondary skill.
-        /// The Vector2 parameter represents the target direction.
         /// </summary>
-        public Action<Vector2> OnSecondarySkillPerform { get; set; }
+        public Action OnSecondarySkillPerform { get; set; }
 
         /// <summary>
         /// Instance of the player input system that handles all input actions.
@@ -42,10 +46,7 @@ namespace Characters.InputSystems
         /// </summary>
         private Vector2 _mousePosition;
 
-        /// <summary>
-        /// Stores the aiming or sight direction based on player input.
-        /// </summary>
-        private Vector2 _sightDirection;
+        private DirectionContainer _sightDirection;
 
         #endregion
 
@@ -70,8 +71,10 @@ namespace Characters.InputSystems
         private void Update()
         {
             _mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            Vector2 moveDirection = _mousePosition - (Vector2)transform.position;
-            OnMove?.Invoke(moveDirection.normalized);
+            Vector2 mouseDirection = _mousePosition - (Vector2)transform.position;
+            _sightDirection.direction = mouseDirection.normalized;
+            _sightDirection.length = mouseDirection.magnitude;
+            OnMove?.Invoke(_sightDirection.direction);
         }
 
         #endregion
@@ -95,8 +98,7 @@ namespace Characters.InputSystems
         public void OnUsePrimarySkill(InputAction.CallbackContext context)
         {
             if (!context.performed) return;
-            _sightDirection = (_mousePosition - (Vector2)transform.position).normalized;
-            OnPrimarySkillPerform?.Invoke(_sightDirection);
+            OnPrimarySkillPerform?.Invoke();
         }
 
         /// <summary>
@@ -107,8 +109,7 @@ namespace Characters.InputSystems
         public void OnUseSecondarySkill(InputAction.CallbackContext context)
         {
             if (!context.performed) return;
-            _sightDirection = (_mousePosition - (Vector2)transform.position).normalized;
-            OnSecondarySkillPerform?.Invoke(_sightDirection);
+            OnSecondarySkillPerform?.Invoke();
         }
 
         #endregion
