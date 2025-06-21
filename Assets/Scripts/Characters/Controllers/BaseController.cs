@@ -213,19 +213,23 @@ namespace Characters.Controllers
         /// </summary>
         private void Initialize()
         {
-            skillSystem?.Initialize(this);
+            if (skillSystem)
+                skillSystem.Initialize(this);
 
-            movementSystem?.AssignMovementData(
-                characterData.BaseSpeed,
-                characterData.MoveAccelerationRate,
-                characterData.TurnAccelerationRate
-                );
+            if (movementSystem)
+                movementSystem.AssignMovementData(
+                    characterData.BaseSpeed,
+                    characterData.MoveAccelerationRate,
+                    characterData.TurnAccelerationRate
+                    );
 
-            healthSystem?.AssignHealthData(
-                characterData.MaxHealth,
-                characterData.InvincibleTimePerHit, this);
+            if (healthSystem)
+                healthSystem.AssignHealthData(
+                    characterData.MaxHealth,
+                    characterData.InvincibleTimePerHit, this);
 
-            combatSystem?.AssignCombatData(characterData.BaseDamage);
+            if (combatSystem)
+                combatSystem.AssignCombatData(characterData.BaseDamage);
 
             _isInitialize = true;
         }
@@ -238,6 +242,8 @@ namespace Characters.Controllers
         public void ToggleMovementInputController(bool isToggle)
         {
             if (_inputSystem == null) return;
+            if (!movementSystem) return;
+            
             if (isToggle)
                 _inputSystem.OnMove += movementSystem.AssignInputDirection;
             else
@@ -252,6 +258,8 @@ namespace Characters.Controllers
         public void ToggleSkillInputController(bool isToggle)
         {
             if (_inputSystem == null) return;
+            if (!skillSystem) return;
+            
             if (isToggle)
             {
                 _inputSystem.OnPrimarySkillPerform += skillSystem.PerformPrimarySkill;
@@ -283,6 +291,7 @@ namespace Characters.Controllers
         /// </summary>
         public void ResetAllDependentBehavior()
         {
+            if (!_isInitialize) return;
             movementSystem?.ResetMovementSystem();
             skillSystem?.ResetSkillSystem();
             healthSystem?.ResetHealthSystem();

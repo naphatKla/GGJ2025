@@ -30,8 +30,6 @@ namespace Characters.Controllers
                 Instance = this;
                 return;
             }
-
-            Destroy(gameObject);
         }
         
         #endregion

@@ -25,14 +25,13 @@ namespace Characters.SkillSystems.SkillRuntimes
         /// Called during skill initialization.
         /// </summary>
         /// <param name="skillData">The data asset associated with this runtime skill.</param>
-        public abstract void AssignSkillData(BaseSkillDataSo skillData); 
+        public abstract void AssignSkillData(BaseSkillDataSo skillData, BaseController owner); 
         
         /// <summary>
         /// Executes the skill using the provided owner 
         /// Should be overridden in a generic subclass to implement full behavior.
         /// </summary>
-        /// <param name="owner">The character who is performing the skill.</param>
-        public abstract void PerformSkill(BaseController owner);
+        public abstract void PerformSkill();
 
         public abstract void CancelSkill(int milliSecondDelay = 0);
     }
@@ -84,10 +83,11 @@ namespace Characters.SkillSystems.SkillRuntimes
         /// Called during skill initialization.
         /// </summary>
         /// <param name="skillData">The data asset associated with this runtime skill.</param>
-        public override void AssignSkillData(BaseSkillDataSo skillData)
+        public override void AssignSkillData(BaseSkillDataSo skillData, BaseController owner)
         {
             this.skillData = skillData as T;
             effectsApplyOnStart = new List<StatusEffectDataPayload>(skillData.StatusEffectOnSkillStart);
+            this.owner = owner;
         }
 
         /// <summary>
@@ -97,13 +97,11 @@ namespace Characters.SkillSystems.SkillRuntimes
         /// If the skill has a configured lifetime, it schedules automatic cancellation after the specified duration.
         /// </summary>
         /// <param name="owner">The character executing the skill.</param>
-        public override async void PerformSkill(BaseController owner)
+        public override async void PerformSkill()
         {
             if (_isPerforming) return;
-            this.owner = owner;
-
-            _cts = new CancellationTokenSource();
             
+            _cts = new CancellationTokenSource();
             if (skillData.HasLifeTime)
             {
                 int milliSecondLifeTime = (int)(skillData.LifeTime * 1000);

@@ -36,6 +36,7 @@ namespace Characters.CombatSystems
         private void OnTriggerEnter2D(Collider2D other)
         {
             if (!_isEnableDamage) return;
+            Debug.Log($"{name} + {other.name}");
             CombatManager.ApplyDamageTo(other.gameObject, gameObject);
         }
 

@@ -1,15 +1,17 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using Characters.CombatSystems;
 using Characters.Controllers;
 using Characters.FeedbackSystems;
+using Characters.HeathSystems;
 using Characters.MovementSystems;
 using Characters.SO.SkillDataSo;
 using Characters.StatusEffectSystems;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using Manager;
-using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Characters.SkillSystems.SkillRuntimes
@@ -23,9 +25,17 @@ namespace Characters.SkillSystems.SkillRuntimes
         /// <summary>
         /// Object pool for clone instances to reduce instantiation overhead.
         /// </summary>
-        private readonly List<RigidbodyMovementSystem> _cloneObjectPool = new();
+        private readonly List<BaseMovementSystem> _cloneObjectPool = new();
+        private BaseMovementSystem _ownerStartPrefab;
 
         #region Base Methods
+
+        public override void AssignSkillData(BaseSkillDataSo skillData, BaseController owner)
+        {
+            base.AssignSkillData(skillData, owner);
+            _ownerStartPrefab = CreateCharacterClone(gameObject);
+            _cloneObjectPool.Add(_ownerStartPrefab);
+        }
 
         /// <summary>
         /// Initializes and activates clone objects at the start of the skill.
@@ -135,7 +145,7 @@ namespace Characters.SkillSystems.SkillRuntimes
             {
                 for (int i = 0; i < difference; i++)
                 {
-                    var clone = CreateCharacterClone(gameObject);
+                    var clone = CreateCharacterClone(_ownerStartPrefab.gameObject);
                     clone.transform.position = owner.transform.position;
                     clone.gameObject.SetActive(false);
                     _cloneObjectPool.Add(clone);
@@ -170,120 +180,40 @@ namespace Characters.SkillSystems.SkillRuntimes
         /// <summary>
         /// Instantiates a clone object and copies relevant components from the original GameObject.
         /// </summary>
-        private RigidbodyMovementSystem CreateCharacterClone(GameObject original)
+        private BaseMovementSystem CreateCharacterClone(GameObject original)
         {
-            GameObject clone = new("CharacterClone")
+            GameObject clone = Instantiate(original);
+            
+            clone.TryGetComponent(out BaseController controller);
+            if (!controller)
             {
-                transform =
-                {
-                    position = original.transform.position,
-                    rotation = original.transform.rotation,
-                    localScale = original.transform.localScale
-                }
+                Debug.LogError("Cloning target not have character controller!");
+                return null;
+            }
+            
+            Type[] typeToKeep = new[]
+            {
+                typeof(BaseController),
+                typeof(CombatSystem),
+                typeof(StatusEffectSystem),
+                typeof(DamageOnTouch),
+                typeof(BaseMovementSystem),
+                typeof(SpriteFollowMouse),
+                typeof(HealthSystem)
             };
 
-            CopySpriteRenderer(original, clone);
-            CopyAnimator(original, clone);
-            CopyCollider2D(original, clone);
-            CopyRigidbody2D(original, clone);
-
-            CloneCharacterController cloneController = clone.AddComponent<CloneCharacterController>();
-            RigidbodyMovementSystem cloneMovementSystem = clone.AddComponent<RigidbodyMovementSystem>();
-            DamageOnTouch cloneDamageOnTouch = clone.AddComponent<DamageOnTouch>();
-            CombatSystem cloneCombatSystem = clone.AddComponent<CombatSystem>();
-            StatusEffectSystem cloneStatusEffectSystem = clone.AddComponent<StatusEffectSystem>();
-
-            cloneController.AssignCharacterData(owner.CharacterData, cloneMovementSystem,
-                assignDamageOnTouch: cloneDamageOnTouch, assignCombatSystem: cloneCombatSystem,
-                assignStatusEffectSystem: cloneStatusEffectSystem);
-            clone.layer = owner.gameObject.layer;
-            return cloneMovementSystem;
-        }
-
-        /// <summary>
-        /// Duplicates the SpriteRenderer component.
-        /// </summary>
-        private void CopySpriteRenderer(GameObject original, GameObject clone)
-        {
-            var src = original.GetComponent<SpriteRenderer>();
-            if (!src) return;
-
-            var dst = clone.AddComponent<SpriteRenderer>();
-            dst.sprite = src.sprite;
-            dst.color = src.color;
-            dst.flipX = src.flipX;
-            dst.flipY = src.flipY;
-            dst.sortingLayerID = src.sortingLayerID;
-            dst.sortingOrder = src.sortingOrder;
-        }
-
-        /// <summary>
-        /// Duplicates the Animator component.
-        /// </summary>
-        private void CopyAnimator(GameObject original, GameObject clone)
-        {
-            var src = original.GetComponent<Animator>();
-            if (!src) return;
-
-            var dst = clone.AddComponent<Animator>();
-            dst.runtimeAnimatorController = src.runtimeAnimatorController;
-            dst.avatar = src.avatar;
-            dst.applyRootMotion = src.applyRootMotion;
-            dst.updateMode = src.updateMode;
-            dst.cullingMode = src.cullingMode;
-        }
-
-        /// <summary>
-        /// Copies supported Collider2D settings to the clone.
-        /// </summary>
-        private void CopyCollider2D(GameObject original, GameObject clone)
-        {
-            var src = original.GetComponent<Collider2D>();
-            if (!src) return;
-
-            var dst = (Collider2D)clone.AddComponent(src.GetType());
-
-            switch (src)
+            foreach (var mono in clone.GetComponents<MonoBehaviour>())
             {
-                case BoxCollider2D oBox when dst is BoxCollider2D cBox:
-                    cBox.offset = oBox.offset;
-                    cBox.size = oBox.size;
-                    cBox.isTrigger = oBox.isTrigger;
-                    break;
-
-                case CircleCollider2D oCircle when dst is CircleCollider2D cCircle:
-                    cCircle.offset = oCircle.offset;
-                    cCircle.radius = oCircle.radius;
-                    cCircle.isTrigger = oCircle.isTrigger;
-                    break;
+                Type compType = mono.GetType();
+                bool shouldKeep = typeToKeep.Any(t => t.IsAssignableFrom(compType));
+                if (shouldKeep) continue;
+                Destroy(mono);
             }
+            
+            clone.gameObject.SetActive(false);
+            return clone.GetComponent<BaseMovementSystem>();
         }
-
-        /// <summary>
-        /// Duplicates Rigidbody2D settings, applying defaults if missing.
-        /// </summary>
-        private void CopyRigidbody2D(GameObject original, GameObject clone)
-        {
-            var src = original.GetComponent<Rigidbody2D>();
-            var dst = clone.AddComponent<Rigidbody2D>();
-
-            if (!src)
-            {
-                dst.gravityScale = 0f;
-                dst.constraints = RigidbodyConstraints2D.FreezeRotation;
-                return;
-            }
-
-            dst.bodyType = src.bodyType;
-            dst.mass = src.mass;
-            dst.drag = src.drag;
-            dst.angularDrag = src.angularDrag;
-            dst.gravityScale = src.gravityScale;
-            dst.interpolation = src.interpolation;
-            dst.collisionDetectionMode = src.collisionDetectionMode;
-            dst.constraints = src.constraints;
-        }
-
+        
         #endregion
     }
 }

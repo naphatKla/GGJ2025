@@ -74,7 +74,7 @@ namespace Characters.SkillSystems
             foreach (BaseSkillDataSo skillData in allAvailableSkillData)
             {
                 BaseSkillRuntime skillRuntime = (BaseSkillRuntime)gameObject.AddComponent(skillData.SkillRuntime);
-                skillRuntime.AssignSkillData(skillData);
+                skillRuntime.AssignSkillData(skillData, owner);
                 _skillDictionary.Add(skillData, skillRuntime);
             }
 
@@ -116,7 +116,7 @@ namespace Characters.SkillSystems
                 return;
             }
 
-            _primarySkillRuntime.PerformSkill(_owner);
+            _primarySkillRuntime.PerformSkill();
             ModifyPrimarySkillCooldown(_primarySkillData.Cooldown);
         }
 
@@ -132,7 +132,7 @@ namespace Characters.SkillSystems
                 return;
             }
 
-            _secondarySkillRuntime.PerformSkill(_owner);
+            _secondarySkillRuntime.PerformSkill();
             ModifySecondarySkillCooldown(_secondarySkillData.Cooldown);
         }
 
