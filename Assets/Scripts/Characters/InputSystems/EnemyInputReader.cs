@@ -79,15 +79,15 @@ namespace Characters.InputSystems
             {
                 yield return new WaitForSeconds(timeTick);
 
-                if (!PlayerController.Instant) continue;
+                if (!PlayerController.Instance) continue;
 
-                Vector2 sightDirection = (PlayerController.Instant.transform.position - transform.position).normalized;
+                Vector2 sightDirection = (PlayerController.Instance.transform.position - transform.position).normalized;
 
                 // Simulate inputs
-                Vector2 playerDirection = PlayerController.Instant.transform.position - transform.position;
+                Vector2 playerDirection = PlayerController.Instance.transform.position - transform.position;
                 
                 // Check stop movement if near player
-                float distance = Vector2.Distance(PlayerController.Instant.transform.position, transform.position);
+                float distance = Vector2.Distance(PlayerController.Instance.transform.position, transform.position);
                 bool shouldEnable = distance >= 3f;
 
                 if (shouldEnable != isMovementEnabled)

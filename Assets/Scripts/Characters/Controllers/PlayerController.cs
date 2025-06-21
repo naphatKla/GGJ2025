@@ -12,7 +12,7 @@ namespace Characters.Controllers
         /// A global static reference to the current player instance.
         /// Allows other systems to easily access the active player in the scene.
         /// </summary>
-        public static PlayerController Instant { get; private set; }
+        public static PlayerController Instance { get; private set; }
         
         #endregion
 
@@ -25,9 +25,9 @@ namespace Characters.Controllers
         /// </summary>
         private void Awake()
         {
-            if (!Instant)
+            if (!Instance)
             {
-                Instant = this;
+                Instance = this;
                 return;
             }
 

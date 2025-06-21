@@ -1,8 +1,8 @@
 using System.Collections.Generic;
-using Characters;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using System.Linq;
+using Characters.Controllers;
 using Cysharp.Threading.Tasks;
 using UnityEngine.Events;
 
@@ -218,7 +218,7 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     /// </summary>
     public Vector2 GetPlayerPosition()
     {
-        return PlayerCharacter.Instance != null ? PlayerCharacter.Instance.transform.position : Vector2.zero;
+        return PlayerController.Instance != null ? PlayerController.Instance.transform.position : Vector2.zero;
     }
     
     /// <summary>
