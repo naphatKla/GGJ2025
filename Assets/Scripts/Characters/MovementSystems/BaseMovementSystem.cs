@@ -93,7 +93,9 @@ namespace Characters.MovementSystems
         /// Typically updated per frame and applied to Rigidbody2D or NavMeshAgent.
         /// </summary>
         public Vector2 CurrentVelocity => currentVelocity;
-        
+
+        public Vector2 CurrentDirection => currentDirection;
+
         #endregion
 
         #region Unity Methods

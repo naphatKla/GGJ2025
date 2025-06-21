@@ -31,9 +31,9 @@ namespace Characters.MovementSystems
         protected override void MoveWithInertia(Vector2 direction)
         {
             float dt = Time.fixedDeltaTime; 
-            currentDirection = Vector2.Lerp(currentDirection, direction, turnAccelerationRate * dt);
             Vector2 desiredVelocity = currentDirection * currentSpeed;
-            currentVelocity = Vector2.Lerp(currentVelocity, desiredVelocity, moveAccelerationRate * dt);
+            currentDirection = SmoothVector(currentDirection, direction, turnAccelerationRate);
+            currentVelocity = SmoothVector(currentVelocity, desiredVelocity, moveAccelerationRate);
             Vector2 newPos = rb2D.position + currentVelocity * dt;
             TryMoveRawPosition(newPos);
         }
@@ -75,9 +75,12 @@ namespace Characters.MovementSystems
                 Vector2 frameDelta = curvedPos - previousPosition;
                 float frameSpeed = frameDelta.magnitude / Time.fixedDeltaTime;
 
-                currentDirection = frameDelta.normalized;
-                currentVelocity = currentDirection * frameSpeed;
-
+                if (frameDelta.normalized.magnitude >= 0.01f)
+                {
+                    currentDirection = frameDelta.normalized;
+                    currentVelocity = currentDirection * frameSpeed;
+                }
+                
                 previousPosition = curvedPos;
                 TryMoveRawPosition(curvedPos);
             }, 1f, duration).SetUpdate(UpdateType.Fixed);
@@ -112,14 +115,24 @@ namespace Characters.MovementSystems
                 Vector2 frameDelta = curvedPos - previousPosition;
                 float frameSpeed = frameDelta.magnitude / Time.fixedDeltaTime;
                 
-                currentDirection = frameDelta.normalized;
-                currentVelocity = currentDirection * frameSpeed;
+                if (frameDelta.normalized.magnitude >= 0.01f)
+                {
+                    currentDirection = frameDelta.normalized;
+                    currentVelocity = currentDirection * frameSpeed;
+                }
                 
                 previousPosition = curvedPos;
                 TryMoveRawPosition(curvedPos);
             }, 1f, duration).SetUpdate(UpdateType.Fixed);
 
             return easeCurve != null ? tween.SetEase(easeCurve) : tween.SetEase(Ease.InOutSine);
+        }
+        
+        protected Vector2 SmoothVector(Vector2 targetVector, Vector2 desiredVector, float lerpSpeed)
+        {
+            float dt = Time.fixedDeltaTime;
+            float lerpFactor = 1f - Mathf.Exp(-lerpSpeed * dt);
+            return Vector2.Lerp(targetVector, desiredVector, lerpFactor);
         }
         
         #endregion
