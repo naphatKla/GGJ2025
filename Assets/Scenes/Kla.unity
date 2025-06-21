@@ -4458,7 +4458,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1429416585
 Transform:
   m_ObjectHideFlags: 0
@@ -5772,18 +5772,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 159241545103338559, guid: ef87c6aedde00684a81e6139e502fb41, type: 3}
-      propertyPath: managedReferences[4929453777397219333].Active
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 159241545103338559, guid: ef87c6aedde00684a81e6139e502fb41, type: 3}
-      propertyPath: managedReferences[4929453861510053889].Active
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 406790586103967934, guid: ef87c6aedde00684a81e6139e502fb41, type: 3}
-      propertyPath: managedReferences[4929453777397219333].ParticlesPrefab
-      value: 
-      objectReference: {fileID: 8127464484710613483, guid: 626aeb230004ce44ca70feb110750303, type: 3}
     - target: {fileID: 1661318226121973417, guid: ef87c6aedde00684a81e6139e502fb41, type: 3}
       propertyPath: serializationData.Prefab
       value: 
@@ -5840,25 +5828,9 @@ PrefabInstance:
       propertyPath: comboTimeoutSlider
       value: 
       objectReference: {fileID: 1038854596}
-    - target: {fileID: 2661090035924833344, guid: ef87c6aedde00684a81e6139e502fb41, type: 3}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: 7ff898270d9574a44a7ef6a7a3bd0eba, type: 2}
     - target: {fileID: 2726293917207744010, guid: ef87c6aedde00684a81e6139e502fb41, type: 3}
       propertyPath: m_Name
       value: Player
-      objectReference: {fileID: 0}
-    - target: {fileID: 4551693807369029157, guid: ef87c6aedde00684a81e6139e502fb41, type: 3}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: 8126ccc83ba3ca54bbcaa6bf44054b53, type: 2}
-    - target: {fileID: 4992275773061537535, guid: ef87c6aedde00684a81e6139e502fb41, type: 3}
-      propertyPath: m_Time
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 4992275773061537535, guid: ef87c6aedde00684a81e6139e502fb41, type: 3}
-      propertyPath: m_Parameters.numCornerVertices
-      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 8974750955813567560, guid: ef87c6aedde00684a81e6139e502fb41, type: 3}
       propertyPath: m_LocalPosition.x
@@ -5900,8 +5872,7 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 5081525321023057620, guid: ef87c6aedde00684a81e6139e502fb41, type: 3}
+    m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []

@@ -30,7 +30,7 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
-  cooldown: 5
+  cooldown: 2
   hasLifeTime: 0
   lifeTime: 0
   statusEffectOnSkillStart:
@@ -38,19 +38,40 @@ MonoBehaviour:
     isOverrideDuration: 1
     overrideDuration: 0.25
   dashDuration: 0.3
-  dashDistance: 5
+  dashDistance: 7.5
+  isFlexibleDistance: 0
+  maxInputLength: 0
+  minMaxEffective: {x: 0.4, y: 1}
   dashEaseCurve:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
       time: 0
       value: 0
-      inSlope: 2
-      outSlope: 2
+      inSlope: 0.13049228
+      outSlope: 0.13049228
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
-      outWeight: 0
+      outWeight: 0.07137873
+    - serializedVersion: 3
+      time: 0.4707496
+      value: 0.2321493
+      inSlope: 1.2439445
+      outSlope: 1.2439445
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.06109681
+      outWeight: 0.06121441
+    - serializedVersion: 3
+      time: 0.89207774
+      value: 0.9241267
+      inSlope: 1.9507829
+      outSlope: 1.9507829
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
     - serializedVersion: 3
       time: 1
       value: 1
@@ -87,4 +108,3 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  snapTarget: 0

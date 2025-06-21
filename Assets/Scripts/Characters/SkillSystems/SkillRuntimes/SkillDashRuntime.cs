@@ -2,7 +2,6 @@ using System.Threading;
 using Characters.FeedbackSystems;
 using Characters.SO.SkillDataSo;
 using Cysharp.Threading.Tasks;
-using GlobalSettings;
 using UnityEngine;
 
 namespace Characters.SkillSystems.SkillRuntimes
@@ -29,15 +28,25 @@ namespace Characters.SkillSystems.SkillRuntimes
         /// <returns>A UniTask that completes when the dash tween ends or is cancelled.</returns>
         protected override async UniTask OnSkillUpdate(CancellationToken cancelToken)
         {
-            Vector2 dashPosition = (Vector2)transform.position + aimDirection.direction * skillData.DashDistance;
+            float dashEffective = 1f;
+
+            if (skillData.IsFlexibleDistance)
+            {
+                dashEffective = Mathf.Clamp(aimDirection.length / skillData.MaxInputLength, skillData.MinMaxEffective.x,
+                    skillData.MinMaxEffective.y);
+            }
+
+            float calculatedDistance = skillData.DashDistance * dashEffective;
+            float calculatedDuration = skillData.DashDuration * dashEffective;
+
+            Vector2 dashPosition = (Vector2)transform.position + aimDirection.direction * calculatedDistance;
             await owner.MovementSystem
-                .TryMoveToPositionOverTime(dashPosition, skillData.DashDuration, skillData.DashEaseCurve,
+                .TryMoveToPositionOverTime(dashPosition, calculatedDuration, skillData.DashEaseCurve,
                     skillData.DashMoveCurve).WithCancellation(cancelToken);
         }
 
         protected override void OnSkillExit()
         {
-         
         }
 
         #endregion

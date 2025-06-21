@@ -144,7 +144,11 @@ namespace Characters.MovementSystems
             if (_moveOverTimeTween.IsActive()) return;
             if (currentSpeed == 0) return;
             if (!_enablePrimaryMovement)
-                direction = Vector2.zero;
+            {
+                MoveWithInertia(direction, Vector2.zero);
+                return;
+            }
+            
             MoveWithInertia(direction);
         }
 
@@ -237,7 +241,7 @@ namespace Characters.MovementSystems
         /// Moves continuously toward the specified position with acceleration and inertia.
         /// Called in FixedUpdate for consistent physics-based updates.
         /// </summary>
-        protected abstract void MoveWithInertia(Vector2 direction);
+        protected abstract void MoveWithInertia(Vector2 direction, Vector2? overrideVelocity = null);
 
         /// <summary>
         /// Instantly moves the entity to the specified world-space position.

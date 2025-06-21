@@ -22,17 +22,18 @@ namespace Characters.MovementSystems
         }
 
         #region Methods
-        
+
         /// <summary>
         /// Performs frame-based inertia movement using acceleration and turn smoothing.
         /// Updates current direction and velocity, then applies motion via Rigidbody2D.MovePosition.
         /// </summary>
         /// <param name="direction">The input movement direction vector.</param>
-        protected override void MoveWithInertia(Vector2 direction)
+        /// <param name="overrideVelocity"></param>
+        protected override void MoveWithInertia(Vector2 direction, Vector2? overrideVelocity = null)
         {
             float dt = Time.fixedDeltaTime; 
-            Vector2 desiredVelocity = currentDirection * currentSpeed;
             currentDirection = SmoothVector(currentDirection, direction, turnAccelerationRate);
+            Vector2 desiredVelocity = overrideVelocity ?? currentDirection * currentSpeed;
             currentVelocity = SmoothVector(currentVelocity, desiredVelocity, moveAccelerationRate);
             Vector2 newPos = rb2D.position + currentVelocity * dt;
             TryMoveRawPosition(newPos);
