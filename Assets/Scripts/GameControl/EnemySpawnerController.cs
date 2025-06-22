@@ -29,10 +29,13 @@ namespace GameControl
                 var cloned = new SO.MapDataSO.EnemyOption
                 {
                     id = data.id,
+                    enemyController = data.enemyController,
                     prewarmCount = data.prewarmCount,
                     EnemyPoint = data.EnemyPoint,
                     enemyPointGrowthRate = data.enemyPointGrowthRate,
-                    enemyCanGrowth = data.enemyCanGrowth
+                    enemyCanGrowth = data.enemyCanGrowth,
+                    useCustomInterval = data.useCustomInterval,
+                    customInterval = data.customInterval
                 };
 
                 _storeEnemy.Add(cloned);
