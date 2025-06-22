@@ -1910,6 +1910,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f1be4fcfce7ce1478d9b86d67377cdc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mapDataList:
+  - {fileID: 11400000, guid: e5b64c88641c36b4daf008e9128337bf, type: 2}
+  currentMapIndex: 0
 --- !u!4 &681150449
 Transform:
   m_ObjectHideFlags: 0
@@ -1962,7 +1965,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   timerText: {fileID: 393350693}
-  startTimer: 600
+  startTimer: 1200
 --- !u!1 &747783225
 GameObject:
   m_ObjectHideFlags: 0

@@ -15,12 +15,18 @@ namespace GameControl
         
         [ShowInInspector, ReadOnly]
         private string _currentStateName;
+        [ShowInInspector, ReadOnly]
+        private SO.MapDataSO _currentMapData;
+        private EnemySpawnerController _enemySpawnerController;
         
         private void Awake()
         {
             _stopState = new SpawnerState.StopState();
             _spawningState = new SpawnerState.SpawningState();
             _pauseState = new SpawnerState.PauseState();
+            _currentMapData = GameStateController.Instance.CurrentMap;
+
+            _enemySpawnerController = new EnemySpawnerController(_currentMapData, this);
         }
         
         private void Start()
