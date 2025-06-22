@@ -12,10 +12,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 844e63b3876cd4d479ac769e5560becf, type: 3}
   m_Name: MapData
   m_EditorClassIdentifier: 
-  mapName: 
+  mapName: Horizon
   background: {fileID: 0}
   image: {fileID: 0}
-  EnemyOptions: []
+  EnemyOptions:
+  - id: NormalEnemy
+    enemyController: {fileID: 8145196360709479149, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
+    prewarmCount: 5
+    spawnPoint: 10
+    enemyCanGrowth: 0
+    enemyPointGrowthRate: 12.5
+    chance: 100
+    useCustomInterval: 1
+    customInterval: 0.5
+  defaultEnemySpawnTimer: 5
   startEnemyPoint: 30
   maxEnemyPoint: 500
   increaseRateEnemyPoint: 0
