@@ -137,43 +137,16 @@ namespace Characters.Controllers
         private void Start()
         {
             if (characterData && !_isInitialize)
-                Initialize();
+                AssignCharacterData(characterData);
+            
+            SubscribeDependency();
         }
 
-        /// <summary>
-        /// Called automatically by Unity when the object is first enabled.
-        /// Waits for initialization before subscribing to input and combo events.
-        /// </summary>
-        private async void OnEnable()
+        private void OnDestroy()
         {
-            await UniTask.WaitUntil(() => _isInitialize);
-            if (this == null || gameObject == null || !gameObject.activeInHierarchy) return;
-            if (!Application.isPlaying) return;
-
-            _inputSystem ??= GetComponent<ICharacterInput>();
-
-            ToggleMovementInputController(true);
-            ToggleSkillInputController(true);
-
-            if (comboSystem != null)
-                combatSystem.OnDealDamage += comboSystem.RegisterHit;
+            UnSubscribeDependency();
         }
 
-        /// <summary>
-        /// Called automatically by Unity when the object is disabled.
-        /// Waits for initialization before unsubscribing from input and combo events.
-        /// </summary>
-        private async void OnDisable()
-        {
-            await UniTask.WaitUntil(() => _isInitialize);
-
-            ToggleMovementInputController(false);
-            ToggleSkillInputController(false);
-
-            if (comboSystem != null)
-                combatSystem.OnDealDamage -= comboSystem.RegisterHit;
-        }
-        
         #endregion
 
         #region Methods
@@ -204,74 +177,68 @@ namespace Characters.Controllers
             _inputSystem        ??= inputSystem;
 
             characterData = data;
-            Initialize();
+            InitializeData();
         }
 
         /// <summary>
         /// Initializes all assigned systems with stat data.
         /// Marks the controller as initialized.
         /// </summary>
-        private void Initialize()
+        private void InitializeData()
         {
             if (skillSystem)
                 skillSystem.Initialize(this);
-
+            
             if (movementSystem)
+            {
                 movementSystem.AssignMovementData(
                     characterData.BaseSpeed,
                     characterData.MoveAccelerationRate,
                     characterData.TurnAccelerationRate
-                    );
-
+                );
+            }
+            
             if (healthSystem)
+            {
                 healthSystem.AssignHealthData(
                     characterData.MaxHealth,
                     characterData.InvincibleTimePerHit, this);
-
+            }
+            
             if (combatSystem)
                 combatSystem.AssignCombatData(characterData.BaseDamage);
-
+            
             _isInitialize = true;
         }
 
-        /// <summary>
-        /// Subscribes or unsubscribes the character's movement input handler
-        /// to the input system's movement event.
-        /// </summary>
-        /// <param name="isToggle">If true, subscribes to movement input; otherwise, unsubscribes.</param>
-        public void ToggleMovementInputController(bool isToggle)
+        private void SubscribeDependency()
         {
-            if (_inputSystem == null) return;
-            if (!movementSystem) return;
+            _inputSystem ??= GetComponent<ICharacterInput>();
             
-            if (isToggle)
-                _inputSystem.OnMove += movementSystem.AssignInputDirection;
-            else
-                _inputSystem.OnMove -= movementSystem.AssignInputDirection;
-        }
-
-        /// <summary>
-        /// Subscribes or unsubscribes the character's skill input handlers
-        /// to the input system's primary and secondary skill events.
-        /// </summary>
-        /// <param name="isToggle">If true, subscribes to skill input; otherwise, unsubscribes.</param>
-        public void ToggleSkillInputController(bool isToggle)
-        {
-            if (_inputSystem == null) return;
-            if (!skillSystem) return;
-            
-            if (isToggle)
+            if (_inputSystem != null)
             {
                 _inputSystem.OnPrimarySkillPerform += skillSystem.PerformPrimarySkill;
                 _inputSystem.OnSecondarySkillPerform += skillSystem.PerformSecondarySkill;
+                _inputSystem.OnMove += movementSystem.AssignInputDirection;
             }
-            else
+            
+            if (comboSystem)
+                combatSystem.OnDealDamage += comboSystem.RegisterHit;
+        }
+
+        private void UnSubscribeDependency()
+        {
+            if (_inputSystem != null)
             {
                 _inputSystem.OnPrimarySkillPerform -= skillSystem.PerformPrimarySkill;
                 _inputSystem.OnSecondarySkillPerform -= skillSystem.PerformSecondarySkill;
+                _inputSystem.OnMove -= movementSystem.AssignInputDirection;
             }
+            
+            if (comboSystem)
+                combatSystem.OnDealDamage -= comboSystem.RegisterHit;
         }
-
+        
         public void TryPlayFeedback(FeedbackName feedbackName)
         {
             // handle feedback condition here.

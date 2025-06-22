@@ -25,11 +25,8 @@ namespace Characters.Controllers
         /// </summary>
         private void Awake()
         {
-            if (!Instance)
-            {
-                Instance = this;
-                return;
-            }
+            if (Instance) return;
+            Instance = this;
         }
         
         #endregion
