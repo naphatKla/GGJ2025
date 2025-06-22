@@ -23,17 +23,21 @@ namespace GameControl
         /// <param name="prefab">The prefab to instantiate.</param>
         /// <param name="amount">Number of instances to prewarm.</param>
         /// <param name="parent">Parent transform to assign the spawned objects to.</param>
-        public void Prewarm(string id, GameObject prefab, int amount, Transform parent)
+        public List<GameObject> Prewarm(string id, GameObject prefab, int amount, Transform parent)
         {
             if (!prefabs.ContainsKey(id)) prefabs[id] = prefab;
             if (!pool.ContainsKey(id)) pool[id] = new Queue<GameObject>();
 
-            for (var i = 0; i < amount; i++)
+            List<GameObject> createdObjects = new List<GameObject>();
+
+            for (int i = 0; i < amount; i++)
             {
                 var obj = Instantiate(prefab, parent);
                 obj.SetActive(false);
                 pool[id].Enqueue(obj);
+                createdObjects.Add(obj);
             }
+            return createdObjects;
         }
 
         /// <summary>

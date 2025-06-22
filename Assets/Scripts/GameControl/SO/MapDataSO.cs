@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Characters.Controllers;
+using GameControl.Interface;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -12,12 +13,16 @@ namespace GameControl.SO
     public class MapDataSO : ScriptableObject
     {
         [Serializable]
-        public class EnemyOption
+        public class EnemyOption : IRandomable
         {
             [FoldoutGroup("$id")]
             public string id;
             [FoldoutGroup("$id")]
             public EnemyController enemyController;
+            [FoldoutGroup("$id")]
+            public bool useCustomInterval;
+            [FoldoutGroup("$id")] [ShowIf("$useCustomInterval")]
+            public float customInterval;
             [FoldoutGroup("$id")]
             [Tooltip("Start of spawn point")]
             public float spawnPoint;
@@ -27,14 +32,12 @@ namespace GameControl.SO
             [FoldoutGroup("$id")]
             public int prewarmCount = 30;
             [FoldoutGroup("$id")]
-            public int weight = 1;
-            [FoldoutGroup("$id")]
-            [Range(0, 100)] public int chance = 100;
+            [Range(0, 100)] public float chance = 100;
             
-            public int EnemyWeight => weight;
-            public int EnemyChance => chance;
-            public float EnemyPoint => spawnPoint;
+            public float Chance { get => chance; set => chance = value; }
+            public float EnemyPoint { get => spawnPoint; set => spawnPoint = value; }
             public string EnemyId => id;
+            public float EnemyCooldown => customInterval;
             public GameObject EnemyObject => enemyController.gameObject;
             public bool TryPassChance() => Random.Range(0, 100) < chance;
         }
@@ -54,6 +57,10 @@ namespace GameControl.SO
         [FoldoutGroup("Enemy Setting")]
         [Tooltip("Data of each enemy")]
         public List<EnemyOption> EnemyOptions;
+        
+        [FoldoutGroup("Enemy Setting")]
+        [Tooltip("Enemy spawn interval (Default 1)")]
+        public float defaultEnemySpawnTimer;
 
         [FoldoutGroup("Enemy Setting")] 
         [Tooltip("start spawn point of every enemy to spawn (Default 30)")]

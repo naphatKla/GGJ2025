@@ -123,6 +123,7 @@ namespace Characters.ComboSystems
         /// </summary>
         private void PlayTween()
         {
+            if (comboUI == null) return;
             if (_comboStreak > 0)
             {
                 comboUI.transform.DOScale(new Vector3(scaleAmount, scaleAmount, 1), tweenDuration)
@@ -145,8 +146,8 @@ namespace Characters.ComboSystems
         /// </summary>
         private void OnComboStart()
         {
-            if (_IsCombo)
-                return;
+            if (comboStreakText == null) return;
+            if (_IsCombo) return;
 
             _IsCombo = true;
             comboTimeoutSlider.maxValue = _comboTimeStart;
@@ -167,6 +168,7 @@ namespace Characters.ComboSystems
         /// </summary>
         private void UpdateComboTime()
         {
+            if (comboStreakText == null) return;
             if (_IsCombo && comboToDecayRate != null)
             {
                 _currentDecayRate = comboToDecayRate.Evaluate(_comboStreak);
