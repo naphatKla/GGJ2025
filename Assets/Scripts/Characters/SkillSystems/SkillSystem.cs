@@ -4,6 +4,7 @@ using Characters.SkillSystems.SkillRuntimes;
 using Characters.SO.SkillDataSo;
 using Sirenix.OdinInspector;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Characters.SkillSystems
 {
@@ -15,18 +16,20 @@ namespace Characters.SkillSystems
     public class SkillSystem : MonoBehaviour
     {
         #region Inspector & Variables
-
-        [SerializeField, InfoBox("Default list of skill data. [0] is primary, [1] is secondary.")]
-        private List<BaseSkillDataSo> allAvailableSkillData;
-
+        
+        [SerializeField]
+        private BaseSkillDataSo primarySkillDataOnStart;
+        
+        [SerializeField]
+        private BaseSkillDataSo secondarySkillDataOnStart;
+        
+        private BaseSkillDataSo _primarySkillData;
+        private BaseSkillDataSo _secondarySkillData;
+        
         /// <summary>
         /// Stores instantiated runtime components for each skill data.
         /// </summary>
         private Dictionary<BaseSkillDataSo, BaseSkillRuntime> _skillDictionary = new();
-
-        private BaseSkillDataSo _primarySkillData;
-        private BaseSkillDataSo _secondarySkillData;
-
         private BaseSkillRuntime _primarySkillRuntime;
         private BaseSkillRuntime _secondarySkillRuntime;
 
@@ -70,38 +73,30 @@ namespace Characters.SkillSystems
         public void Initialize(BaseController owner)
         {
             _owner = owner;
-
-            foreach (BaseSkillDataSo skillData in allAvailableSkillData)
-            {
-                BaseSkillRuntime skillRuntime = (BaseSkillRuntime)gameObject.AddComponent(skillData.SkillRuntime);
-                skillRuntime.AssignSkillData(skillData, owner);
-                _skillDictionary.Add(skillData, skillRuntime);
-            }
-
-            AssignDefaultSkill();
+            ResetToDefaultSkill();
         }
 
+        private void AddSkillRuntime(BaseSkillDataSo skillData)
+        {
+            if (!skillData) return;
+            if (!_owner) return;
+            if (_skillDictionary.ContainsKey(skillData)) return;
+            BaseSkillRuntime skillRuntime = (BaseSkillRuntime)gameObject.AddComponent(skillData.SkillRuntime);
+            skillRuntime.AssignSkillData(skillData, _owner);
+            _skillDictionary.Add(skillData, skillRuntime);
+        }
+        
         /// <summary>
         /// Assigns default primary and secondary skills based on the available skill list.
         /// If only one skill exists, assigns it to primary and leaves secondary empty.
         /// Logs warnings if no or only one skill is available.
         /// </summary>
-        private void AssignDefaultSkill()
+        private void ResetToDefaultSkill()
         {
-            switch (allAvailableSkillData.Count)
-            {
-                case <= 0:
-                    Debug.LogWarning($"⚠️ [SkillSystem] No skill data assigned on {gameObject.name}.");
-                    return;
-                case 1:
-                    Debug.LogWarning($"⚠️ [SkillSystem] Only one skill assigned on {gameObject.name}. Secondary will be empty.");
-                    SetPrimarySkill(allAvailableSkillData[0]);
-                    return;
-                default:
-                    SetPrimarySkill(allAvailableSkillData[0]);
-                    SetSecondarySkill(allAvailableSkillData[1]);
-                    break;
-            }
+            if (!_owner) return;
+
+            SetPrimarySkill(primarySkillDataOnStart);
+            SetSecondarySkill(secondarySkillDataOnStart);
         }
 
         /// <summary>
@@ -170,10 +165,20 @@ namespace Characters.SkillSystems
         /// Assigns a new primary skill by referencing its runtime from the dictionary and resets cooldown.
         /// </summary>
         /// <param name="newSkillData">The skill data to assign as primary.</param>
+        [Button]
         public void SetPrimarySkill(BaseSkillDataSo newSkillData)
         {
+            if (!_owner) return;
+            if (!newSkillData) return;
+       
             _primarySkillData = newSkillData;
-            _primarySkillRuntime = _skillDictionary[_primarySkillData];
+
+            if (!_skillDictionary.TryGetValue(_primarySkillData, out _primarySkillRuntime))
+            {
+                AddSkillRuntime(_primarySkillData);
+                _primarySkillRuntime = _skillDictionary[_primarySkillData];
+            }
+            
             ResetPrimarySkillCooldown();
         }
 
@@ -181,10 +186,20 @@ namespace Characters.SkillSystems
         /// Assigns a new secondary skill by referencing its runtime from the dictionary and resets cooldown.
         /// </summary>
         /// <param name="newSkillData">The skill data to assign as secondary.</param>
+        [Button]
         public void SetSecondarySkill(BaseSkillDataSo newSkillData)
         {
+            if (!_owner) return;
+            if (!newSkillData) return;
+            
             _secondarySkillData = newSkillData;
-            _secondarySkillRuntime = _skillDictionary[_secondarySkillData];
+            
+            if (!_skillDictionary.TryGetValue(_secondarySkillData, out _secondarySkillRuntime))
+            {
+                AddSkillRuntime(_secondarySkillData);
+                _secondarySkillRuntime = _skillDictionary[_secondarySkillData];
+            }
+            
             ResetSecondarySkillCooldown();
         }
 
@@ -197,7 +212,7 @@ namespace Characters.SkillSystems
         {
             _primarySkillRuntime?.CancelSkill();
             _secondarySkillRuntime?.CancelSkill();
-            AssignDefaultSkill();
+            ResetToDefaultSkill();
         }
 
         #endregion
