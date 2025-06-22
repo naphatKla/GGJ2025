@@ -4,7 +4,6 @@ using Characters.SkillSystems.SkillRuntimes;
 using Characters.SO.SkillDataSo;
 using Sirenix.OdinInspector;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Characters.SkillSystems
 {
@@ -165,7 +164,6 @@ namespace Characters.SkillSystems
         /// Assigns a new primary skill by referencing its runtime from the dictionary and resets cooldown.
         /// </summary>
         /// <param name="newSkillData">The skill data to assign as primary.</param>
-        [Button]
         public void SetPrimarySkill(BaseSkillDataSo newSkillData)
         {
             if (!_owner) return;
@@ -186,7 +184,6 @@ namespace Characters.SkillSystems
         /// Assigns a new secondary skill by referencing its runtime from the dictionary and resets cooldown.
         /// </summary>
         /// <param name="newSkillData">The skill data to assign as secondary.</param>
-        [Button]
         public void SetSecondarySkill(BaseSkillDataSo newSkillData)
         {
             if (!_owner) return;
