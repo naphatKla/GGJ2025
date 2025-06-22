@@ -43,14 +43,7 @@ namespace Characters.SO.CollectableItemDataSO
         [PropertyOrder(9999)]
         [SerializeField] 
         private AnimationCurve pullCurve;
-
-        [Title("Runtime Binding")]
-
-        [PropertyTooltip("The runtime collectable class type associated with this data.")]
-        [ShowInInspector, OdinSerialize, PropertyOrder(10000)]
-        [TypeDrawerSettings(BaseType = typeof(BaseCollectableItem<>))]
-        private Type _itemType;
-
+        
         /// <summary>
         /// The visual icon displayed for this item.
         /// </summary>
@@ -76,12 +69,7 @@ namespace Characters.SO.CollectableItemDataSO
         /// The easing curve that defines acceleration during the pull.
         /// </summary>
         public AnimationCurve PullEase => pullEase;
-
-        /// <summary>
-        /// The runtime MonoBehaviour type that implements this item.
-        /// </summary>
-        public Type ItemType => _itemType;
-
+        
         #endregion
     }
 }

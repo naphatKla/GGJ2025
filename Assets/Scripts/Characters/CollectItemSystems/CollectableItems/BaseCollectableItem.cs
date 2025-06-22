@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using Characters.MovementSystems;
 using Characters.SO.CollectableItemDataSO;
 using Cysharp.Threading.Tasks;
@@ -27,13 +26,7 @@ namespace Characters.CollectItemSystems.CollectableItems
         #endregion
         
         #region AbstractMethods
-
-        /// <summary>
-        /// Assigns the item's static data from a ScriptableObject at runtime.
-        /// </summary>
-        /// <param name="data">The collectable item data to bind to this runtime object.</param>
-        public abstract void AssignItemData(BaseCollectableItemDataSo data);
-
+        
         /// <summary>
         /// Begins pulling the item toward a target transform with optional callback upon completion.
         /// </summary>
@@ -62,28 +55,15 @@ namespace Characters.CollectItemSystems.CollectableItems
         /// <summary>
         /// The assigned data for this item instance, cast to the specific type.
         /// </summary>
+        [SerializeField]
         protected T itemData;
 
         /// <summary>
         /// The movement system used to perform tween-based pull motion.
         /// </summary>
+        [SerializeField]
         protected RigidbodyMovementSystem rbMovementSystem;
-
-        /// <summary>
-        /// Runtime-generated SpriteRenderer used to display the item icon.
-        /// </summary>
-        private SpriteRenderer _spriteRenderer;
-
-        /// <summary>
-        /// Runtime-generated CircleCollider2D used for interaction and overlap detection.
-        /// </summary>
-        private CircleCollider2D _circleCollider2D;
-
-        /// <summary>
-        /// Runtime-generated Rigidbody2D for enabling physics-based movement and constraints.
-        /// </summary>
-        private Rigidbody2D _rb2D;
-
+        
         /// <summary>
         /// Tween instance used to pull the item toward the target.
         /// Prevents multiple simultaneous pulls.
@@ -95,6 +75,8 @@ namespace Characters.CollectItemSystems.CollectableItems
         /// Set to false on spawn and enabled after the pickup delay expires.
         /// </summary>
         private bool _canCollect;
+
+        public T ItemData => itemData;
 
         #endregion
 
@@ -125,48 +107,7 @@ namespace Characters.CollectItemSystems.CollectableItems
         #endregion
 
         #region Methods
-
-        /// <summary>
-        /// Initializes rendering, physics, collider, and movement system for the item.
-        /// Automatically assigns a layer from global settings.
-        /// </summary>
-        private void InitializeItem()
-        {
-            _spriteRenderer = gameObject.AddComponent<SpriteRenderer>();
-            _circleCollider2D = gameObject.AddComponent<CircleCollider2D>();
-            _rb2D = gameObject.AddComponent<Rigidbody2D>();
-            rbMovementSystem = gameObject.AddComponent<RigidbodyMovementSystem>();
-
-            _circleCollider2D.isTrigger = true;
-            Collider2DSnapper.SnapPhysicsShape(_spriteRenderer, _circleCollider2D);
-            _rb2D.gravityScale = 0f;
-            _rb2D.constraints = RigidbodyConstraints2D.FreezeRotation;
-
-            int bitmask = CharacterGlobalSettings.Instance.CollectableItemLayerMask;
-
-            // Set the first active layer in the bitmask
-            for (int i = 0; i < 32; i++)
-            {
-                if ((bitmask & (1 << i)) != 0)
-                {
-                    gameObject.layer = i;
-                    break;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Binds item data, initializes the item, and assigns the display sprite from the data.
-        /// </summary>
-        /// <param name="data">ScriptableObject data to assign to the item.</param>
-        public override void AssignItemData(BaseCollectableItemDataSo data)
-        {
-            InitializeItem();
-            itemData = data as T;
-
-            _spriteRenderer.sprite = itemData.Icon;
-        }
-
+        
         /// <summary>
         /// Triggers item collection logic and resets the item state.
         /// </summary>

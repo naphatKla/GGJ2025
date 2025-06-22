@@ -1,5 +1,4 @@
 using System;
-using System.IO.Compression;
 using Characters.Controllers;
 using Characters.FeedbackSystems;
 using Cysharp.Threading.Tasks;

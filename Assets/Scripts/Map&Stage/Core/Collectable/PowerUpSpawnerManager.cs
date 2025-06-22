@@ -13,7 +13,7 @@ using Random = UnityEngine.Random;
 [Serializable]
 public class PowerUpData
 {
-    public BaseCollectableItemDataSo powerData;
+    public BaseCollectableItem powerData;
     public float spawnChance;
 }
 
@@ -94,9 +94,8 @@ public class PowerUpSpawnerManager : MMSingleton<PowerUpSpawnerManager>
         {
             if (data.powerData == null) continue;
 
-            var go = new GameObject(data.powerData.name);
-            var item = (BaseCollectableItem)go.AddComponent(data.powerData.ItemType);
-            item.AssignItemData(data.powerData);
+            var go = Instantiate(data.powerData.gameObject);
+            var item = go.GetComponent<BaseCollectableItem>();
             item.OnThisItemCollected += DespawnPowerUp;
             go.SetActive(false);
             go.transform.parent = powerParent;

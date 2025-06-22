@@ -7,13 +7,14 @@ using Characters.SO.CollectableItemDataSO;
 using Cysharp.Threading.Tasks;
 using MoreMountains.Tools;
 using Sirenix.OdinInspector;
+using Unity.VisualScripting;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
 [Serializable]
 public class SoulData
 {
-    public SoulItemDataSo soulData;
+    public SoulItem soulData;
     public float spawnChance;
     public float preSpawnObject;
 }
@@ -109,9 +110,8 @@ public class SoulItemManagerSpawner : MMSingleton<SoulItemManagerSpawner>
             int spawnCount = Mathf.Max(1, Mathf.CeilToInt(data.preSpawnObject));
             for (int i = 0; i < spawnCount; i++)
             {
-                var go = new GameObject(data.soulData.name);
-                var item = (BaseCollectableItem)go.AddComponent(data.soulData.ItemType);
-                item.AssignItemData(data.soulData);
+                var go = Instantiate(data.soulData.gameObject);
+                var item = go.GetComponent<SoulItem>();
                 item.OnThisItemCollected += DespawnSoul;
                 go.SetActive(false);
                 go.transform.parent = soulParent;
@@ -198,19 +198,19 @@ public class SoulItemManagerSpawner : MMSingleton<SoulItemManagerSpawner>
         var remainingExp = targetExp;
         
         var sortedSouls = preferFewerItems
-            ? soulDataList.OrderByDescending(data => data.soulData.Score).ToList()
-            : soulDataList.OrderBy(data => data.soulData.Score).ToList();
+            ? soulDataList.OrderByDescending(data => data.soulData.ItemData.Score).ToList()
+            : soulDataList.OrderBy(data => data.soulData.ItemData.Score).ToList();
 
         //Find fitable exp to drop
         foreach (var data in sortedSouls)
         {
-            if (data.soulData.Score <= 0) continue;
+            if (data.soulData.ItemData.Score <= 0) continue;
 
-            int count = remainingExp / data.soulData.Score;
+            int count = remainingExp / data.soulData.ItemData.Score;
             for (int i = 0; i < count; i++)
             {
                 drops.Add(data);
-                remainingExp -= data.soulData.Score;
+                remainingExp -= data.soulData.ItemData.Score;
             }
         }
         
@@ -218,14 +218,14 @@ public class SoulItemManagerSpawner : MMSingleton<SoulItemManagerSpawner>
         if (remainingExp > 0)
         {
             var smallestFittable = sortedSouls
-                .Where(d => d.soulData.Score <= remainingExp)
-                .OrderByDescending(d => d.soulData.Score)
+                .Where(d => d.soulData.ItemData.Score <= remainingExp)
+                .OrderByDescending(d => d.soulData.ItemData.Score)
                 .FirstOrDefault();
 
             if (smallestFittable != null)
             {
                 drops.Add(smallestFittable);
-                remainingExp -= smallestFittable.soulData.Score;
+                remainingExp -= smallestFittable.soulData.ItemData.Score;
             }
         }
         return drops;
@@ -275,8 +275,8 @@ public class SoulItemManagerSpawner : MMSingleton<SoulItemManagerSpawner>
         var go = PoolManager.Instance.Spawn(prefab, position, rotation, soulParent);
         _activeSouls.Add(go);
 
-        if (_soulItemMap.TryGetValue(go, out var item) && _activeSouls.Count >= item.preSpawnObject)
-            go.GetComponent<BaseCollectableItem>().AssignItemData(item.soulData);
+        /*if (_soulItemMap.TryGetValue(go, out var item) && _activeSouls.Count >= item.preSpawnObject)
+            go.GetComponent<BaseCollectableItem>().AssignItemData(item.soulData);*/
     }
 
     /// <summary>
