@@ -36,7 +36,6 @@ namespace Characters.SkillSystems.SkillRuntimes
             {
                 float calculatedEffectDuration = statusEffectDataPayload.OverrideDuration * _dashEffective;
                 statusEffectDataPayload.SetOverrideDuration(calculatedEffectDuration);
-                Debug.Log($"{statusEffectDataPayload.EffectData.EffectName} : {statusEffectDataPayload.OverrideDuration}");
             }
         }
 
