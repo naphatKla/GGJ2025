@@ -18,12 +18,13 @@ MonoBehaviour:
   EnemyOptions:
   - id: NormalEnemy
     enemyController: {fileID: 8145196360709479149, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
+    prewarmCount: 5
+    spawnPoint: 10
+    enemyCanGrowth: 0
+    enemyPointGrowthRate: 12.5
+    chance: 100
     useCustomInterval: 1
     customInterval: 0.5
-    spawnPoint: 10
-    enemyPointGrowthRate: 12.5
-    prewarmCount: 5
-    chance: 100
   defaultEnemySpawnTimer: 5
   startEnemyPoint: 30
   maxEnemyPoint: 500

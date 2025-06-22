@@ -15,24 +15,30 @@ namespace GameControl.SO
         [Serializable]
         public class EnemyOption : IRandomable
         {
-            [FoldoutGroup("$id")]
+            [FoldoutGroup("$id")][Title("Setting")]
             public string id;
             [FoldoutGroup("$id")]
             public EnemyController enemyController;
             [FoldoutGroup("$id")]
-            public bool useCustomInterval;
-            [FoldoutGroup("$id")] [ShowIf("$useCustomInterval")]
-            public float customInterval;
-            [FoldoutGroup("$id")]
+            public int prewarmCount = 30;
+            
+            [FoldoutGroup("$id")] [Title("Spawn Point")]
             [Tooltip("Start of spawn point")]
             public float spawnPoint;
             [FoldoutGroup("$id")]
+            [Tooltip("if this enable this enemy point will increase every 30 seconds")]
+            public bool enemyCanGrowth;
+            [FoldoutGroup("$id")] [ShowIf("$enemyCanGrowth")]
             [Tooltip("Growth rate of spawn point (Default 12.5%)")]
             public float enemyPointGrowthRate = 12.5f;
-            [FoldoutGroup("$id")]
-            public int prewarmCount = 30;
-            [FoldoutGroup("$id")]
+            
+            [FoldoutGroup("$id")][Title("Chance Setting")]
             [Range(0, 100)] public float chance = 100;
+            
+            [FoldoutGroup("$id")][Title("Enemy Interval")]
+            public bool useCustomInterval;
+            [FoldoutGroup("$id")] [ShowIf("$useCustomInterval")]
+            public float customInterval;
             
             public float Chance { get => chance; set => chance = value; }
             public float EnemyPoint { get => spawnPoint; set => spawnPoint = value; }
@@ -58,6 +64,7 @@ namespace GameControl.SO
         [Tooltip("Data of each enemy")]
         public List<EnemyOption> EnemyOptions;
         
+        [Space]
         [FoldoutGroup("Enemy Setting")]
         [Tooltip("Enemy spawn interval (Default 1)")]
         public float defaultEnemySpawnTimer;
