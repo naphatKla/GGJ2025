@@ -18,7 +18,7 @@ public class SpawnEventManager
     private readonly List<ISpawnEvent> _availableEventsPool = new();
     private readonly ISpawnerService _spawnerService = new ObjectPoolSpawnerService();
     
-    private float _currentTime => Timer.Instance.GlobalTimer;
+    private float _currentTime => GameControl.Timer.Instance.GlobalTimer;
     private float _killTrigger => _stageManager.GetPlayerKill();
     private readonly Dictionary<ISpawnEvent, int> _timerTriggerIndices = new();
     private readonly Dictionary<ISpawnEvent, int> _killTriggerIndices = new();

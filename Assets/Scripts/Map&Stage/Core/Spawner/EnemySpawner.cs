@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using Characters;
 using Characters.Controllers;
-using Characters.SO.CharacterDataSO;
+using GameControl;
 using Cysharp.Threading.Tasks;
 using Unity.VisualScripting;
 using UnityEngine;
-using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
 
 public class EnemySpawner
@@ -99,7 +98,7 @@ public class EnemySpawner
     {
         Debug.Log("Start Spawning");
         _stageManager.SetState(new SpawningState());
-        Timer.Instance.ResumeTimer();
+        GameControl.Timer.Instance.StartTimer();
     }
 
     /// <summary>
@@ -109,7 +108,7 @@ public class EnemySpawner
     {
         Debug.Log("Stop Spawning");
         _stageManager.SetState(new StopState());
-        Timer.Instance.PauseTimer();
+        GameControl.Timer.Instance.PauseTimer();
     }
 
     /// <summary>
@@ -258,7 +257,7 @@ public class EnemySpawner
     {
         if (!CanSpawn()) return;
 
-        var currentTime = Timer.Instance.GlobalTimerDown;
+        var currentTime = GameControl.Timer.Instance.GlobalTimerDown;
 
         var availableEnemies = _stageData.Enemies
             .Where(e => e.IsAvailableAtTime(currentTime))
