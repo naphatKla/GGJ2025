@@ -1,8 +1,8 @@
 using System.Collections.Generic;
+using Characters.Controllers;
 using Characters.StatusEffectSystems;
 using Sirenix.OdinInspector;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Characters.SO.SkillDataSo
 {
@@ -30,6 +30,12 @@ namespace Characters.SO.SkillDataSo
         [PropertyTooltip("Damage dealt by each individual clone when it hits enemies.")]
         [SerializeField]
         private float cloneDamage;
+
+        [BoxGroup("Clones")]
+        [LabelText("Clone Prefab")]
+        [PropertyTooltip("Prefab of clone instances.")]
+        [SerializeField]
+        private CloneCharacterController clonePrefab;
 
         // ------------------ Explosion Phase ------------------
 
@@ -122,6 +128,9 @@ namespace Characters.SO.SkillDataSo
 
         /// <summary>Damage dealt by each clone during the explosion or merge interaction.</summary>
         public float CloneDamage => cloneDamage;
+
+        /// <summary>Prefab of clone to create the instances.</summary>
+        public CloneCharacterController ClonePrefab => clonePrefab;
 
         /// <summary>Distance each clone travels outward during the explosion phase.</summary>
         public float ExplosionDistance => explosionDistance;

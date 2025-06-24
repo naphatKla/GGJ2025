@@ -26,17 +26,9 @@ namespace Characters.SkillSystems.SkillRuntimes
         /// Object pool for clone instances to reduce instantiation overhead.
         /// </summary>
         private readonly List<BaseMovementSystem> _cloneObjectPool = new();
-        private BaseMovementSystem _ownerStartPrefab;
 
         #region Base Methods
-
-        public override void AssignSkillData(BaseSkillDataSo skillData, BaseController owner)
-        {
-            base.AssignSkillData(skillData, owner);
-            _ownerStartPrefab = CreateCharacterClone(gameObject);
-            _cloneObjectPool.Add(_ownerStartPrefab);
-        }
-
+        
         /// <summary>
         /// Initializes and activates clone objects at the start of the skill.
         /// </summary>
@@ -145,7 +137,7 @@ namespace Characters.SkillSystems.SkillRuntimes
             {
                 for (int i = 0; i < difference; i++)
                 {
-                    var clone = CreateCharacterClone(_ownerStartPrefab.gameObject);
+                    var clone = CreateCharacterClone();
                     clone.transform.position = owner.transform.position;
                     clone.gameObject.SetActive(false);
                     _cloneObjectPool.Add(clone);
@@ -180,38 +172,11 @@ namespace Characters.SkillSystems.SkillRuntimes
         /// <summary>
         /// Instantiates a clone object and copies relevant components from the original GameObject.
         /// </summary>
-        private BaseMovementSystem CreateCharacterClone(GameObject original)
+        private BaseMovementSystem CreateCharacterClone()
         {
-            GameObject clone = Instantiate(original);
-            
-            clone.TryGetComponent(out BaseController controller);
-            if (!controller)
-            {
-                Debug.LogError("Cloning target not have character controller!");
-                return null;
-            }
-            
-            Type[] typeToKeep = new[]
-            {
-                typeof(BaseController),
-                typeof(CombatSystem),
-                typeof(StatusEffectSystem),
-                typeof(DamageOnTouch),
-                typeof(BaseMovementSystem),
-                typeof(SpriteFollowMouse),
-                typeof(HealthSystem)
-            };
-
-            foreach (var mono in clone.GetComponents<MonoBehaviour>())
-            {
-                Type compType = mono.GetType();
-                bool shouldKeep = typeToKeep.Any(t => t.IsAssignableFrom(compType));
-                if (shouldKeep) continue;
-                Destroy(mono);
-            }
-            
+            CloneCharacterController clone = Instantiate(skillData.ClonePrefab);
             clone.gameObject.SetActive(false);
-            return clone.GetComponent<BaseMovementSystem>();
+            return clone.MovementSystem;
         }
         
         #endregion
