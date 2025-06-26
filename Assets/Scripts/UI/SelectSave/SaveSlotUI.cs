@@ -4,7 +4,7 @@ using TMPro;
 using DG.Tweening;
 using UnityEngine.EventSystems;
 
-public class SaveSlotUI : MonoBehaviour, IPointerClickHandler
+public class SaveSlotUI : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
 {
     [Header("References")]
     public RectTransform slotTransform;
@@ -19,6 +19,7 @@ public class SaveSlotUI : MonoBehaviour, IPointerClickHandler
 
     [Header("Scale Settings")]
     public float clickScale = 1.1f;
+    public float hoverScale = 1.05f;
     public float tweenDuration = 0.2f;
 
     private bool isClicked = false;
@@ -55,24 +56,28 @@ public class SaveSlotUI : MonoBehaviour, IPointerClickHandler
 
         labelTitle.gameObject.SetActive(false);
 
-        if (HasSavedName())
-        {
-            inputName.gameObject.SetActive(false);
-            nextButton.SetActive(true);
-            nameStateObj.SetActive(true);
-            numStateObj.SetActive(true);
-            timeObj.SetActive(true);
-        }
-        else
-        {
-            inputName.gameObject.SetActive(true);
-            inputName.ActivateInputField();
+        // ✅ แสดง inputField เสมอ
+        inputName.gameObject.SetActive(true);
+        inputName.ActivateInputField();
 
-            nextButton.SetActive(false);
-            nameStateObj.SetActive(false);
-            numStateObj.SetActive(false);
-            timeObj.SetActive(false);
-        }
+        // ✅ แสดง nextButton และข้อมูลทันที
+        nextButton.SetActive(true);
+        nameStateObj.SetActive(true);
+        numStateObj.SetActive(true);
+        timeObj.SetActive(true);
+    }
+
+
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        if (isClicked) return;
+        slotTransform.DOScale(originalScale * hoverScale, tweenDuration).SetEase(Ease.OutQuad);
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        if (isClicked) return;
+        slotTransform.DOScale(originalScale, tweenDuration).SetEase(Ease.OutQuad);
     }
 
     private void OnInputChanged(string value)
