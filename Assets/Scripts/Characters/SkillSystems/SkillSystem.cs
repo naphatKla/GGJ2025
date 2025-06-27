@@ -35,7 +35,7 @@ namespace Characters.SkillSystems
         /// <summary>
         /// Remaining cooldown time for the primary skill.
         /// </summary>
-        private float _primarySkillCooldown;
+        protected float _primarySkillCooldown;
 
         /// <summary>
         /// Remaining cooldown time for the secondary skill.
@@ -45,7 +45,7 @@ namespace Characters.SkillSystems
         /// <summary>
         /// Reference to the character who owns this skill system.
         /// </summary>
-        private BaseController _owner;
+        protected BaseController _owner;
 
         #endregion
 
@@ -101,7 +101,7 @@ namespace Characters.SkillSystems
         /// <summary>
         /// Executes the primary skill if not on cooldown and the system is initialized.
         /// </summary>
-        public void PerformPrimarySkill()
+        public virtual void PerformPrimarySkill()
         {
             if (!_primarySkillRuntime || _primarySkillCooldown > 0) return;
             if (!_owner)
