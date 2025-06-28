@@ -1,9 +1,7 @@
-
 using System;
 using GameControl;
+using GameControl.Controller;
 using GameControl.Interface;
-using UnityEngine;
-using UnityEngine.Events;
 
 namespace Characters.Controllers
 {

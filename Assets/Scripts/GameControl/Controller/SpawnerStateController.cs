@@ -4,7 +4,7 @@ using MoreMountains.Tools;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-namespace GameControl
+namespace GameControl.Controller
 {
     public class SpawnerStateController : MMSingleton<SpawnerStateController>
     {

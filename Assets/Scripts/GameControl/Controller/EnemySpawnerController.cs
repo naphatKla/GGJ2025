@@ -4,7 +4,7 @@ using Characters.Controllers;
 using Characters.HeathSystems;
 using UnityEngine;
 
-namespace GameControl
+namespace GameControl.Controller
 {
     public class EnemySpawnerController
     {

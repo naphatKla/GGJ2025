@@ -5,7 +5,7 @@ using MoreMountains.Tools;
 using UnityEngine;
 using Sirenix.OdinInspector;
 
-namespace GameControl
+namespace GameControl.Controller
 {
     public class GameStateController : MMSingleton<GameStateController>
     {
