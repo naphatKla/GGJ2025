@@ -7,6 +7,10 @@ namespace GameControl.GameState
 {
     public class SummaryState : IGameState
     {
+        public void OnEnable(GameStateController controller) { }
+
+        public void OnDisable(GameStateController controller) { }
+
         public void Enter(GameStateController controller) { }
 
         public void Update(GameStateController controller) { }

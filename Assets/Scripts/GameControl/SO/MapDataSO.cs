@@ -90,10 +90,6 @@ namespace GameControl.SO
         [Tooltip("center of pattern")]
         public Vector2 PatternCenter;
         
-        [FoldoutGroup("Pattern Setting")]
-        [Tooltip("Amount of time that pattern will add to the list and random out (Second)")]
-        public float PatternTriggerTime;
-        
         [Space]
         [FoldoutGroup("Data Setting")]
         [Tooltip("Enemy spawn interval (Default 1)")]

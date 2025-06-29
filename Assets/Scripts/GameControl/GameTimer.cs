@@ -141,13 +141,11 @@ namespace GameControl
                 GlobalTimer -= Time.deltaTime;
 
                 foreach (var trigger in _timeTriggers)
-                {
                     if (!trigger.triggered && GlobalTimer <= trigger.triggerTime)
                     {
                         trigger.triggered = true;
                         trigger.callback?.Invoke();
                     }
-                }
 
                 if (GlobalTimer <= 0f)
                 {

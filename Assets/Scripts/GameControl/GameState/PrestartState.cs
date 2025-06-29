@@ -8,6 +8,10 @@ namespace GameControl.GameState
 {
     public class PrestartState : IGameState
     {
+        public void OnEnable(GameStateController controller) { }
+
+        public void OnDisable(GameStateController controller) { }
+
         public void Enter(GameStateController controller)
         {
             SpawnerStateController.Instance.SetState(new SpawnerState.StopState());

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using GameControl.GameState;
 using GameControl.Interface;
@@ -41,7 +42,16 @@ namespace GameControl.Controller
             _currentMapData = CurrentMap;
         }
 
+        private void OnEnable()
+        {
+            _currentState?.OnEnable(this);
+        }
         
+        private void OnDisable()
+        {
+            _currentState?.OnDisable(this);
+        }
+
         private void Start()
         {
             SetState(_prestartState);
