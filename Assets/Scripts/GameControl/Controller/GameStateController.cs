@@ -7,6 +7,7 @@ using Sirenix.OdinInspector;
 
 namespace GameControl.Controller
 {
+    [RequireComponent(typeof(SpawnerStateController), typeof(GameTimer), typeof(PoolingSystem))]
     public class GameStateController : MMSingleton<GameStateController>
     {
         private IGameState _currentState;

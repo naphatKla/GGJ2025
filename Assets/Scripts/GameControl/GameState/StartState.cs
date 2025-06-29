@@ -10,7 +10,7 @@ namespace GameControl.GameState
         public void Enter(GameStateController controller)
         {
             SpawnerStateController.Instance.SetState(new SpawnerState.SpawningState());
-            Timer.Instance.StartTimer();
+            GameTimer.Instance.StartTimer();
         }
 
         public void Update(GameStateController controller) { }

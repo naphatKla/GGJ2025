@@ -55,15 +55,15 @@ namespace GameControl.SO
             [FoldoutGroup("$pattern")] [Title("Setting")]
             public BaseSpawnPattern pattern;
             [FoldoutGroup("$pattern")]
-            public float delayBetweenRows = 1f;
+            public float delayBetweenEnemy = 0.1f;
             [FoldoutGroup("$pattern")]
-            public float delayBetweenPatterns = 2f;
+            public float delayBetweenRows = 1f;
             [FoldoutGroup("$pattern")]
             [Tooltip("the amount of point to use calcalate how many enemy should spawn base on point")]
             public float patternPoint;
             
             public float DelayBetweenRows => delayBetweenRows;
-            public float DelayBetweenPatterns => delayBetweenPatterns;
+            public float DelayBetweenEnemy => delayBetweenEnemy;
         }
         
         [FoldoutGroup("Map Setting")]
@@ -85,6 +85,10 @@ namespace GameControl.SO
         [FoldoutGroup("Pattern Setting")]
         [Tooltip("Data of each pattern")]
         public List<PatternOption> PatternOptions;
+        
+        [FoldoutGroup("Pattern Setting")]
+        [Tooltip("center of pattern")]
+        public Vector2 PatternCenter;
         
         [FoldoutGroup("Pattern Setting")]
         [Tooltip("Amount of time that pattern will add to the list and random out (Second)")]

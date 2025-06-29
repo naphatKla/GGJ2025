@@ -11,7 +11,7 @@ namespace GameControl.SpawnerState
         
         public void Enter(SpawnerStateController controller)
         {
-            Timer.Instance.ResumeTimer();
+            GameTimer.Instance.ResumeTimer();
             _currentTimer = 0;
             _checkTimer = 0;
         }

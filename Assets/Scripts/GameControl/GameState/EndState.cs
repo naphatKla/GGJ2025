@@ -13,7 +13,7 @@ namespace GameControl.GameState
         {
             SpawnerStateController.Instance.SetState(new SpawnerState.StopState());
             PoolingSystem.Instance.ClearAll();
-            Timer.Instance.StopTimer();
+            GameTimer.Instance.StopTimer();
         }
 
         public void Exit(GameStateController controller) { }

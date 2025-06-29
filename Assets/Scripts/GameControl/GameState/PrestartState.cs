@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using GameControl;
 using GameControl.Controller;
 using GameControl.Interface;
@@ -11,12 +12,20 @@ namespace GameControl.GameState
         {
             SpawnerStateController.Instance.SetState(new SpawnerState.StopState());
             PoolingSystem.Instance.ClearAll();
-            Timer.Instance.SetTimer(600);
+            GameTimer.Instance.SetTimer(600);
             SpawnerStateController.Instance.SetupMapAndEnemy().Forget();
+            
+            StartStage().Forget();
         }
 
         public void Update(GameStateController controller) { }
 
         public void Exit(GameStateController controller) { }
+
+        private async UniTaskVoid StartStage()
+        {
+            await GameTimer.Instance.StartCountdownAsync(5f);
+            GameStateController.Instance.SetState(new StartState());
+        }
     }
 }

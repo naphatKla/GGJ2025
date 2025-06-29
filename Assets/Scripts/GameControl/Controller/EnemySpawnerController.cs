@@ -49,9 +49,13 @@ namespace GameControl.Controller
                 }
             }
         }
-
         
-        public void UpgradePointRatio(string id)
+        public List<SO.MapDataSO.EnemyOption> GetEnemyList()
+        {
+            return _storeEnemy;
+        }
+        
+        public void UpgradePointRatio()
         {
             //Upgrade enemy point ratio
             foreach (var data in _storeEnemy)
@@ -72,7 +76,5 @@ namespace GameControl.Controller
 
             return randomEnemy;
         }
-
- 
     }
 }
