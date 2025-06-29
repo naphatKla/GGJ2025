@@ -83,7 +83,11 @@ public class UIButtonEffect : MonoBehaviour
     void AddTrigger(EventTrigger trigger, EventTriggerType eventType, UnityEngine.Events.UnityAction<BaseEventData> action)
     {
         EventTrigger.Entry entry = new EventTrigger.Entry { eventID = eventType };
-        entry.callback.AddListener(action);
+        entry.callback.AddListener((data) =>
+        {
+            if (GameModePanelSlide.isSliding) return; // <-- กันคลิกขณะ slide
+            action.Invoke(data);
+        });
         trigger.triggers.Add(entry);
     }
 }
