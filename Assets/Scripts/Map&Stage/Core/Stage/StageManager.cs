@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using System.Linq;
+using System.Timers;
 using Characters.Controllers;
 using Cysharp.Threading.Tasks;
 using GameControl;
@@ -173,7 +174,7 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
     /// </summary>
     public async UniTask GameStageEnd()
     {
-        Timer.Instance.SetTimer(0);
+        GameTimer.Instance.SetTimer(0);
         StopSpawning();
         await UniTask.Delay(300);
         ClearEntity();
@@ -300,8 +301,8 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
         //Game Quota
         ResetQuota();
         hasTriggeredResult = false;
-        Timer.Instance.SetTimer(CurrentMap.stages[currentStageIndexInMap].TimerStage);
-        Timer.Instance.PauseTimer();
+        GameTimer.Instance.SetTimer(CurrentMap.stages[currentStageIndexInMap].TimerStage);
+        GameTimer.Instance.PauseTimer();
         SetBackground(CurrentMap?.background);
         OnStageUpdated?.Invoke(currentStageIndexInMap, CurrentMap.stages.Count);
     }
@@ -439,7 +440,7 @@ public class StageManager : MonoBehaviour, IEnemySpawnerView
         
         //4. Start spawn & start timer
         StartSpawning();
-        Timer.Instance.StartTimer();
+        GameTimer.Instance.StartTimer();
     }
     
     /// <summary>
