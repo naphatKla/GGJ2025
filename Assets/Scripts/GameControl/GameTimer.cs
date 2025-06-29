@@ -50,6 +50,7 @@ namespace GameControl
         public float GlobalTimer { get; private set; }
         public float GlobalTimerDown => startTimer - GlobalTimer;
         public float StartTimerNumber => startTimer;
+        public event Action OnTimerEnded;
         
         [Button(ButtonSizes.Large)]
         [GUIColor(1, 1, 0)]
@@ -136,8 +137,7 @@ namespace GameControl
 
             while (_isRunning && GlobalTimer > 0f)
             {
-                yield return new WaitUntil(() => !_isPaused && Time.timeScale > 0f && !EditorApplication.isPaused);
-
+                while (_isPaused || Time.timeScale == 0f || EditorApplication.isPaused) yield return null;
                 GlobalTimer -= Time.deltaTime;
 
                 foreach (var trigger in _timeTriggers)
@@ -227,6 +227,7 @@ namespace GameControl
         {
             _isRunning = false;
             StopCoroutine(_countdownCoroutine);
+            OnTimerEnded?.Invoke();
         }
     }
 }

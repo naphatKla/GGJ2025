@@ -15,14 +15,14 @@ namespace GameControl.GameState
             GameTimer.Instance.SetTimer(600);
             SpawnerStateController.Instance.SetupMapAndEnemy().Forget();
             
-            StartStage().Forget();
+            CountdownStart().Forget();
         }
 
         public void Update(GameStateController controller) { }
 
         public void Exit(GameStateController controller) { }
 
-        private async UniTaskVoid StartStage()
+        private async UniTaskVoid CountdownStart()
         {
             await GameTimer.Instance.StartCountdownAsync(5f);
             GameStateController.Instance.SetState(new StartState());
