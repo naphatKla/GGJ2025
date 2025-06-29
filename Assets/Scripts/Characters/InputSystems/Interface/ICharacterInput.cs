@@ -1,4 +1,5 @@
 using System;
+using Characters.SkillSystems;
 using UnityEngine;
 
 namespace Characters.InputSystems.Interface
@@ -17,15 +18,7 @@ namespace Characters.InputSystems.Interface
         /// </summary>
         Action<Vector2> OnMove { get; set; }
 
-        /// <summary>
-        /// Invoked when the primary skill input is triggered.
-        /// </summary>
-        Action OnPrimarySkillPerform { get; set; }
-
-        /// <summary>
-        /// Invoked when the secondary skill input is triggered.
-        /// </summary>
-        Action OnSecondarySkillPerform { get; set; }
+        Action<SkillType> OnSkillPerform { get; set; }
     }
 
     public struct DirectionContainer

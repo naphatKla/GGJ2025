@@ -10,16 +10,20 @@ namespace Characters.SkillSystems
         
         // TODO: Delete this and implement system, this is for mockup test
         private bool _isCharging;
-        public override async void PerformPrimarySkill()
+
+        public override async void PerformSkill(SkillType type)
         {
-            if (!_owner) return;
+            if (!owner) return;
             if (_isCharging) return;
-            if (_primarySkillCooldown > chargeMockupDelay) return;
+            var runtime = GetSkillRuntimeOrDefault(primarySkillData);
+            
+            if (!runtime) return;
+            if (runtime.Cooldown > chargeMockupDelay) return;
 
             _isCharging = true;
-            _owner.FeedbackSystem.PlayFeedback(FeedbackName.Charge);
+            owner.FeedbackSystem.PlayFeedback(FeedbackName.Charge);
             await UniTask.WaitForSeconds(chargeMockupDelay);
-            base.PerformPrimarySkill();
+            base.PerformSkill(type);
             _isCharging = false;
         }
     }

@@ -20,6 +20,9 @@ namespace Characters.SkillSystems.SkillRuntimes
     /// </summary>
     public abstract class BaseSkillRuntime : MonoBehaviour
     {
+        protected float cooldown;
+        public float Cooldown => cooldown;
+
         /// <summary>
         /// Injects the skill data into this runtime behavior.
         /// Called during skill initialization.
@@ -32,6 +35,17 @@ namespace Characters.SkillSystems.SkillRuntimes
         /// Should be overridden in a generic subclass to implement full behavior.
         /// </summary>
         public abstract void PerformSkill();
+        
+        public virtual void SetCooldown(float value)
+        {
+            cooldown = Mathf.Max(0, value);
+        }
+
+        public virtual void UpdateCoolDown(float deltaTime)
+        {
+            if (Cooldown <= 0) return;
+            SetCooldown(Cooldown - deltaTime);
+        }
 
         public abstract void CancelSkill(int milliSecondDelay = 0);
     }
@@ -87,6 +101,7 @@ namespace Characters.SkillSystems.SkillRuntimes
         {
             this.skillData = skillData as T;
             effectsApplyOnStart = new List<StatusEffectDataPayload>(skillData.StatusEffectOnSkillStart);
+            SetCooldown(skillData.Cooldown);
             this.owner = owner;
         }
 
@@ -99,8 +114,10 @@ namespace Characters.SkillSystems.SkillRuntimes
         /// <param name="owner">The character executing the skill.</param>
         public override async void PerformSkill()
         {
+            if (cooldown > 0) return;
             if (_isPerforming) return;
-            
+
+            SetCooldown(skillData.Cooldown);
             _cts = new CancellationTokenSource();
             if (skillData.HasLifeTime)
             {

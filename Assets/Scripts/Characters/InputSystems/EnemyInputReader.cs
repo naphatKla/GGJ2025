@@ -3,6 +3,7 @@ using System.Collections;
 using Characters.Controllers;
 using Characters.InputSystems.Interface;
 using Characters.MovementSystems;
+using Characters.SkillSystems;
 using UnityEngine;
 
 namespace Characters.InputSystems
@@ -40,11 +41,7 @@ namespace Characters.InputSystems
         /// <inheritdoc/>
         public Action<Vector2> OnMove { get; set; }
 
-        /// <inheritdoc/>
-        public Action OnPrimarySkillPerform { get; set; }
-
-        /// <inheritdoc/>
-        public Action OnSecondarySkillPerform { get; set; }
+        public Action<SkillType> OnSkillPerform { get; set; }
 
         #endregion
 
@@ -100,8 +97,8 @@ namespace Characters.InputSystems
                 }
                 
                 OnMove?.Invoke(_sightDirection.direction);
-                OnPrimarySkillPerform?.Invoke();
-                OnSecondarySkillPerform?.Invoke();
+                OnSkillPerform?.Invoke(SkillType.PrimarySkill);
+                OnSkillPerform?.Invoke(SkillType.SecondarySkill);
             }
         }
 

@@ -213,8 +213,7 @@ namespace Characters.Controllers
             
             if (_inputSystem != null)
             {
-                _inputSystem.OnPrimarySkillPerform += skillSystem.PerformPrimarySkill;
-                _inputSystem.OnSecondarySkillPerform += skillSystem.PerformSecondarySkill;
+                _inputSystem.OnSkillPerform += skillSystem.PerformSkill;
                 _inputSystem.OnMove += movementSystem.AssignInputDirection;
             }
             
@@ -226,8 +225,7 @@ namespace Characters.Controllers
         {
             if (_inputSystem != null)
             {
-                _inputSystem.OnPrimarySkillPerform -= skillSystem.PerformPrimarySkill;
-                _inputSystem.OnSecondarySkillPerform -= skillSystem.PerformSecondarySkill;
+                _inputSystem.OnSkillPerform -= skillSystem.PerformSkill;
                 _inputSystem.OnMove -= movementSystem.AssignInputDirection;
             }
             

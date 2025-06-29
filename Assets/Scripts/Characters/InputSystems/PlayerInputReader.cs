@@ -1,5 +1,6 @@
 using System;
 using Characters.InputSystems.Interface;
+using Characters.SkillSystems;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -26,15 +27,7 @@ namespace Characters.InputSystems
         /// </summary>
         public Action<Vector2> OnMove { get; set; }
 
-        /// <summary>
-        /// Event triggered when the player performs the primary skill.
-        /// </summary>
-        public Action OnPrimarySkillPerform { get; set; }
-
-        /// <summary>
-        /// Event triggered when the player performs the secondary skill.
-        /// </summary>
-        public Action OnSecondarySkillPerform { get; set; }
+        public Action<SkillType> OnSkillPerform { get; set; }
 
         /// <summary>
         /// Instance of the player input system that handles all input actions.
@@ -98,7 +91,7 @@ namespace Characters.InputSystems
         public void OnUsePrimarySkill(InputAction.CallbackContext context)
         {
             if (!context.performed) return;
-            OnPrimarySkillPerform?.Invoke();
+            OnSkillPerform?.Invoke(SkillType.PrimarySkill);
         }
 
         /// <summary>
@@ -109,7 +102,7 @@ namespace Characters.InputSystems
         public void OnUseSecondarySkill(InputAction.CallbackContext context)
         {
             if (!context.performed) return;
-            OnSecondarySkillPerform?.Invoke();
+            OnSkillPerform?.Invoke(SkillType.SecondarySkill);
         }
 
         #endregion
