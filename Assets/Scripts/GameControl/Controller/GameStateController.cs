@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using GameControl.GameState;
 using GameControl.Interface;
@@ -5,8 +6,9 @@ using MoreMountains.Tools;
 using UnityEngine;
 using Sirenix.OdinInspector;
 
-namespace GameControl
+namespace GameControl.Controller
 {
+    [RequireComponent(typeof(SpawnerStateController), typeof(GameTimer), typeof(PoolingSystem))]
     public class GameStateController : MMSingleton<GameStateController>
     {
         private IGameState _currentState;
@@ -40,7 +42,16 @@ namespace GameControl
             _currentMapData = CurrentMap;
         }
 
+        private void OnEnable()
+        {
+            _currentState?.OnEnable(this);
+        }
         
+        private void OnDisable()
+        {
+            _currentState?.OnDisable(this);
+        }
+
         private void Start()
         {
             SetState(_prestartState);

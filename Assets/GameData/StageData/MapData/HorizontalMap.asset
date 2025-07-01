@@ -10,22 +10,29 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 844e63b3876cd4d479ac769e5560becf, type: 3}
-  m_Name: MapData
+  m_Name: HorizontalMap
   m_EditorClassIdentifier: 
   mapName: Horizon
   background: {fileID: 0}
   image: {fileID: 0}
   EnemyOptions:
-  - id: NormalEnemy
+  - id: Enemy_Normal
     enemyController: {fileID: 8145196360709479149, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
-    prewarmCount: 5
-    spawnPoint: 10
+    prewarmCount: 100
+    spawnPoint: 1
     enemyCanGrowth: 0
     enemyPointGrowthRate: 12.5
     chance: 100
-    useCustomInterval: 1
+    useCustomInterval: 0
     customInterval: 0.5
-  defaultEnemySpawnTimer: 5
-  startEnemyPoint: 30
+  PatternOptions:
+  - pattern: {fileID: 11400000, guid: 36c3fedbba3e5da468bfd40819443053, type: 2}
+    delayBetweenEnemy: 0
+    delayBetweenRows: 1
+    patternPoint: 30
+  PatternCenter: {x: 0, y: 0}
+  PatternTriggerTime: 0
+  defaultEnemySpawnTimer: 1
+  startEnemyPoint: 100
   maxEnemyPoint: 500
   increaseRateEnemyPoint: 0

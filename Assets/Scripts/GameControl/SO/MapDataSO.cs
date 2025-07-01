@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Characters.Controllers;
 using GameControl.Interface;
+using GameControl.Pattern;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -48,6 +49,23 @@ namespace GameControl.SO
             public bool TryPassChance() => Random.Range(0, 100) < chance;
         }
         
+        [Serializable]
+        public class PatternOption
+        {
+            [FoldoutGroup("$pattern")] [Title("Setting")]
+            public BaseSpawnPattern pattern;
+            [FoldoutGroup("$pattern")]
+            public float delayBetweenEnemy = 0.1f;
+            [FoldoutGroup("$pattern")]
+            public float delayBetweenRows = 1f;
+            [FoldoutGroup("$pattern")]
+            [Tooltip("the amount of point to use calcalate how many enemy should spawn base on point")]
+            public float patternPoint;
+            
+            public float DelayBetweenRows => delayBetweenRows;
+            public float DelayBetweenEnemy => delayBetweenEnemy;
+        }
+        
         [FoldoutGroup("Map Setting")]
         [Tooltip("Name of this map")]
         public string mapName;
@@ -64,20 +82,28 @@ namespace GameControl.SO
         [Tooltip("Data of each enemy")]
         public List<EnemyOption> EnemyOptions;
         
+        [FoldoutGroup("Pattern Setting")]
+        [Tooltip("Data of each pattern")]
+        public List<PatternOption> PatternOptions;
+        
+        [FoldoutGroup("Pattern Setting")]
+        [Tooltip("center of pattern")]
+        public Vector2 PatternCenter;
+        
         [Space]
-        [FoldoutGroup("Enemy Setting")]
+        [FoldoutGroup("Data Setting")]
         [Tooltip("Enemy spawn interval (Default 1)")]
         public float defaultEnemySpawnTimer;
 
-        [FoldoutGroup("Enemy Setting")] 
+        [FoldoutGroup("Data Setting")] 
         [Tooltip("start spawn point of every enemy to spawn (Default 30)")]
         public float startEnemyPoint = 30;
         
-        [FoldoutGroup("Enemy Setting")] 
+        [FoldoutGroup("Data Setting")] 
         [Tooltip("Max spawn point of every enemy to spawn (Default 500)")]
         public float maxEnemyPoint = 500;
         
-        [FoldoutGroup("Enemy Setting")] 
+        [FoldoutGroup("Data Setting")] 
         [Tooltip("Max spawn point of every enemy to spawn (Default 20)")]
         public float increaseRateEnemyPoint;
     }

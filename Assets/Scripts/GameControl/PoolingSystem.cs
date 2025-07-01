@@ -61,19 +61,23 @@ namespace GameControl
 
         /// <summary>
         /// Spawns a GameObject from the pool at the given position.
+        /// Will NOT create a new object if the pool is empty; returns null instead.
         /// </summary>
         /// <param name="id">Identifier for the pool type.</param>
         /// <param name="pos">World position to place the spawned object.</param>
-        /// <returns>The spawned GameObject.</returns>
+        /// <returns>The spawned GameObject, or null if pool is empty.</returns>
         public GameObject Spawn(string id, Vector3 pos)
         {
-            if (!prefabs.ContainsKey(id)) throw new ArgumentException($"SpawnId '{id}' is not registered. Provide prefab to register it first.");
+            if (!prefabs.ContainsKey(id))
+                throw new ArgumentException($"SpawnId '{id}' is not registered. Provide prefab to register it first.");
+
             if (!pool.ContainsKey(id)) pool[id] = new Queue<GameObject>();
             if (!activeObjects.ContainsKey(id)) activeObjects[id] = new List<GameObject>();
 
-            var obj = pool[id].Count > 0
-                ? pool[id].Dequeue()
-                : Instantiate(prefabs[id]);
+            if (pool[id].Count == 0)
+                return null;
+
+            var obj = pool[id].Dequeue();
 
             obj.transform.position = pos;
             obj.SetActive(true);
@@ -172,5 +176,17 @@ namespace GameControl
 
             return result;
         }
+        
+        /// <summary>
+        /// Returns all registered pool IDs that start with "Enemy".
+        /// </summary>
+        /// <returns>List of enemy-related pool IDs.</returns>
+        public List<string> GetIds(string poolid)
+        {
+            return prefabs.Keys
+                .Where(id => id.StartsWith(poolid, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+        }
+
     }
 }
