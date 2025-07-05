@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace GameControl.Pattern
 {
-    [System.Flags]
+    [Flags]
     public enum SpawnDirectionFlag
     {
         None = 0,
@@ -14,11 +15,12 @@ namespace GameControl.Pattern
         Right = 1 << 3,
         All = Top | Bottom | Left | Right
     }
-    
+
     [CreateAssetMenu(menuName = "EnemySpawnPatterns/DirectionalLine")]
     public class DirectionalLinePattern : BaseSpawnPattern
     {
         public SpawnDirectionFlag directions = SpawnDirectionFlag.Left;
+        public bool canRandom;
         public int rowsPerDirection = 2;
         public float spacingBetweenEnemies = 1.5f;
         public float spacingBetweenRows = 1.0f;
@@ -28,10 +30,10 @@ namespace GameControl.Pattern
         {
             List<Vector2> positions = new();
 
-            foreach (SpawnDirectionFlag direction in Enum.GetValues(typeof(SpawnDirectionFlag)))
-            {
-                if (direction == SpawnDirectionFlag.None || !directions.HasFlag(direction)) continue;
+            var selectedDirections = GetSelectedDirections();
 
+            foreach (var direction in selectedDirections)
+            {
                 var mainDir = GetMainDirection(direction);
                 var sideDir = GetSideDirection(direction);
 
@@ -52,6 +54,66 @@ namespace GameControl.Pattern
 
             return positions;
         }
+
+        public override List<List<Vector2>> CalculateRows(Vector2 center, int enemiesPerRow)
+        {
+            List<List<Vector2>> allRows = new();
+
+            var selectedDirections = GetSelectedDirections();
+
+            foreach (var direction in selectedDirections)
+            {
+                var mainDir = GetMainDirection(direction);
+                var sideDir = GetSideDirection(direction);
+
+                for (var row = 0; row < rowsPerDirection; row++)
+                {
+                    List<Vector2> rowPositions = new();
+
+                    var rowOffset = mainDir * (spawnDistanceFromCenter + row * spacingBetweenRows);
+                    var rowCenter = center + rowOffset;
+                    var half = (enemiesPerRow - 1) * spacingBetweenEnemies / 2f;
+
+                    for (var i = 0; i < enemiesPerRow; i++)
+                    {
+                        var sideOffset = sideDir * (i * spacingBetweenEnemies - half);
+                        var pos = rowCenter + sideOffset;
+                        rowPositions.Add(pos);
+                    }
+
+                    allRows.Add(rowPositions);
+                }
+            }
+
+            return allRows;
+        }
+
+        private List<SpawnDirectionFlag> GetSelectedDirections()
+        {
+            var list = new List<SpawnDirectionFlag>();
+
+            foreach (SpawnDirectionFlag dir in Enum.GetValues(typeof(SpawnDirectionFlag)))
+            {
+                if (dir == SpawnDirectionFlag.None || !IsPowerOfTwo((int)dir)) continue;
+
+                if (directions.HasFlag(dir))
+                    list.Add(dir);
+            }
+
+            if (canRandom && list.Count > 0)
+            {
+                var randomIndex = Random.Range(0, list.Count);
+                return new List<SpawnDirectionFlag> { list[randomIndex] };
+            }
+
+            return list;
+        }
+
+        private bool IsPowerOfTwo(int x)
+        {
+            return x > 0 && (x & (x - 1)) == 0;
+        }
+
 
         private Vector2 GetMainDirection(SpawnDirectionFlag dir)
         {
@@ -76,39 +138,5 @@ namespace GameControl.Pattern
                 _ => Vector2.zero
             };
         }
-        
-        public virtual List<List<Vector2>> CalculateRows(Vector2 center, int enemiesPerRow)
-        {
-            List<List<Vector2>> allRows = new();
-
-            foreach (SpawnDirectionFlag direction in Enum.GetValues(typeof(SpawnDirectionFlag)))
-            {
-                if (direction == SpawnDirectionFlag.None || !directions.HasFlag(direction)) continue;
-
-                var mainDir = GetMainDirection(direction);
-                var sideDir = GetSideDirection(direction);
-
-                for (int row = 0; row < rowsPerDirection; row++)
-                {
-                    List<Vector2> rowPositions = new();
-
-                    var rowOffset = mainDir * (spawnDistanceFromCenter + row * spacingBetweenRows);
-                    var rowCenter = center + rowOffset;
-                    float half = (enemiesPerRow - 1) * spacingBetweenEnemies / 2f;
-
-                    for (int i = 0; i < enemiesPerRow; i++)
-                    {
-                        var sideOffset = sideDir * (i * spacingBetweenEnemies - half);
-                        var pos = rowCenter + sideOffset;
-                        rowPositions.Add(pos);
-                    }
-
-                    allRows.Add(rowPositions);
-                }
-            }
-
-            return allRows;
-        }
-
     }
 }

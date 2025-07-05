@@ -26,17 +26,19 @@ namespace GameControl.Pattern
             List<Vector2> positions = new();
 
             if (rows <= 0) rows = 1;
-            int baseEnemiesPerRow = Mathf.Max(1, enemyCount / rows);
-            int extra = enemyCount % rows;
 
             for (int row = 0; row < rows; row++)
             {
-                int enemiesThisRow = baseEnemiesPerRow + (row < extra ? 1 : 0);
                 float radius = baseMinDistance + row * rowSpacing;
 
-                for (int i = 0; i < enemiesThisRow; i++)
+                for (int i = 0; i < enemyCount; i++)
                 {
-                    float angle = (evenlySpaced ? (Mathf.PI * 2f / enemiesThisRow) * i : Random.Range(0, Mathf.PI * 2f));
+                    float angle;
+                    if (evenlySpaced)
+                        angle = (Mathf.PI * 2f / enemyCount) * i;
+                    else
+                        angle = Random.Range(0f, Mathf.PI * 2f);
+
                     angle += Mathf.Deg2Rad * Random.Range(-randomAngleOffset, randomAngleOffset);
 
                     float actualDistance = radius + Random.Range(0f, randomDistanceOffset);
@@ -44,26 +46,24 @@ namespace GameControl.Pattern
                     positions.Add(pos);
                 }
             }
+
             return positions;
         }
 
-        public virtual List<List<Vector2>> CalculateRows(Vector2 center, int totalEnemyCount)
+        public override List<List<Vector2>> CalculateRows(Vector2 center, int enemiesPerRow)
         {
             List<List<Vector2>> result = new();
 
             int rowCount = Mathf.Max(1, rows);
-            int baseEnemiesPerRow = Mathf.Max(1, totalEnemyCount / rowCount);
-            int extra = totalEnemyCount % rowCount;
 
-            for (int rowIndex = 0; rowIndex < rowCount; rowIndex++)
+            for (int rowIndex = 0; rowCount > 0 && rowIndex < rowCount; rowIndex++)
             {
-                int enemiesThisRow = baseEnemiesPerRow + (rowIndex < extra ? 1 : 0);
                 float radius = baseMinDistance + rowIndex * rowSpacing;
                 List<Vector2> rowPositions = new();
 
-                for (int i = 0; i < enemiesThisRow; i++)
+                for (int i = 0; i < enemiesPerRow; i++)
                 {
-                    float angle = (evenlySpaced ? (Mathf.PI * 2f / enemiesThisRow) * i : Random.Range(0, Mathf.PI * 2f));
+                    float angle = (evenlySpaced ? (Mathf.PI * 2f / enemiesPerRow) * i : Random.Range(0, Mathf.PI * 2f));
                     angle += Mathf.Deg2Rad * Random.Range(-randomAngleOffset, randomAngleOffset);
 
                     float actualDistance = radius + Random.Range(0f, randomDistanceOffset);
