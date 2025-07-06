@@ -66,6 +66,30 @@ namespace GameControl.SO
             public float DelayBetweenEnemy => delayBetweenEnemy;
         }
         
+        [Serializable]
+        public class ItemOption : IRandomable
+        {
+            [FoldoutGroup("$id")][Title("Setting")]
+            public string id;
+            [FoldoutGroup("$id")]
+            public GameObject itemObj;
+            [FoldoutGroup("$id")]
+            public int prewarmCount = 30;
+          
+            [FoldoutGroup("$id")][Title("Chance Setting")]
+            [Range(0, 100)] public float chance = 100;
+            
+            [FoldoutGroup("$id")][Title("Item Generate Interval")]
+            public bool useCustomInterval;
+            [FoldoutGroup("$id")] [ShowIf("$useCustomInterval")]
+            public float customInterval;
+            
+            public float Chance { get => chance; set => chance = value; }
+            public string EnemyId => id;
+            public float EnemyCooldown => customInterval;
+            public bool TryPassChance() => Random.Range(0, 100) < chance;
+        }
+        
         [FoldoutGroup("Map Setting")]
         [Tooltip("Name of this map")]
         public string mapName;
@@ -85,6 +109,10 @@ namespace GameControl.SO
         [FoldoutGroup("Pattern Setting")]
         [Tooltip("Data of each pattern")]
         public List<PatternOption> PatternOptions;
+        
+        [FoldoutGroup("Item Setting")]
+        [Tooltip("Data of each item")]
+        public List<ItemOption> ItemOptions;
         
         [FoldoutGroup("Pattern Setting")]
         [Tooltip("center of pattern")]
