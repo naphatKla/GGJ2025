@@ -14,17 +14,20 @@ namespace Characters.SkillSystems
         public override async void PerformSkill(SkillType type)
         {
             if (!owner) return;
-            if (_isCharging) return;
-            var runtime = GetSkillRuntimeOrDefault(primarySkillData);
             
-            if (!runtime) return;
-            if (runtime.Cooldown > chargeMockupDelay) return;
-
-            _isCharging = true;
-            owner.FeedbackSystem.PlayFeedback(FeedbackName.Charge);
-            await UniTask.WaitForSeconds(chargeMockupDelay);
+            if (type == SkillType.PrimarySkill)
+            {
+                if (_isCharging) return;
+                var runtime = GetSkillRuntimeOrDefault(primarySkillData);
+                if (!runtime) return;
+                if (runtime.Cooldown > chargeMockupDelay) return;
+                _isCharging = true;
+                owner.FeedbackSystem.PlayFeedback(FeedbackName.Charge);
+                await UniTask.WaitForSeconds(chargeMockupDelay);
+                _isCharging = false;
+            }
+            
             base.PerformSkill(type);
-            _isCharging = false;
         }
     }
 }
