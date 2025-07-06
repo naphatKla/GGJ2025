@@ -1,3 +1,4 @@
+using GameControl.Controller;
 using GameControl.Interface;
 
 namespace GameControl.SpawnerState
@@ -6,7 +7,7 @@ namespace GameControl.SpawnerState
     {
         public void Enter(SpawnerStateController controller)
         {
-            Timer.Instance.PauseTimer();
+            GameTimer.Instance.PauseTimer();
         }
 
         public void Update(SpawnerStateController controller) { }

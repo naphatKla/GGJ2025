@@ -98,7 +98,7 @@ public class EnemySpawner
     {
         Debug.Log("Start Spawning");
         _stageManager.SetState(new SpawningState());
-        GameControl.Timer.Instance.StartTimer();
+        GameTimer.Instance.StartTimer();
     }
 
     /// <summary>
@@ -108,7 +108,7 @@ public class EnemySpawner
     {
         Debug.Log("Stop Spawning");
         _stageManager.SetState(new StopState());
-        GameControl.Timer.Instance.PauseTimer();
+        GameTimer.Instance.PauseTimer();
     }
 
     /// <summary>
@@ -257,7 +257,7 @@ public class EnemySpawner
     {
         if (!CanSpawn()) return;
 
-        var currentTime = GameControl.Timer.Instance.GlobalTimerDown;
+        var currentTime = GameTimer.Instance.GlobalTimerDown;
 
         var availableEnemies = _stageData.Enemies
             .Where(e => e.IsAvailableAtTime(currentTime))

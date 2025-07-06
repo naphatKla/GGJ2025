@@ -4,7 +4,7 @@ using MoreMountains.Tools;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-namespace GameControl
+namespace GameControl.Controller
 {
     public class SpawnerStateController : MMSingleton<SpawnerStateController>
     {
@@ -26,10 +26,14 @@ namespace GameControl
         private SO.MapDataSO _currentMapData;
         
         [BoxGroup("Setting")] [SerializeField] private EnemySpawnerController _enemySpawnerController;
-        [BoxGroup("Setting")] [SerializeField] private Transform enemyParent;
+        [BoxGroup("Setting")] [SerializeField] private EnemyPatternController _enemyPatternController;
+        [BoxGroup("Setting")] [Required] [SerializeField] private Transform enemyParent;
         [BoxGroup("Setting")] [SerializeField] private Vector2 regionSize = Vector2.zero;
         
+        [ShowInInspector, ReadOnly]
+        public float EnemyPoint => _currentEnemyPoint;
         public EnemySpawnerController EnemySpawnerController => _enemySpawnerController;
+        public EnemyPatternController EnemyPatternController => _enemyPatternController;
         public Transform EnemyParent => enemyParent;
         public Vector2 RegionSize => regionSize;
         public float SpawnTimer { get => _currentMapData.defaultEnemySpawnTimer; set => _currentMapData.defaultEnemySpawnTimer = value; }
@@ -70,18 +74,49 @@ namespace GameControl
         public async UniTaskVoid SetupMapAndEnemy()
         {
             _enemySpawnerController = new EnemySpawnerController(_currentMapData, this, regionSize);
-            await UniTask.WaitUntil(() => _enemySpawnerController != null);
-            _enemySpawnerController.PrewarmEnemy();
+            _enemyPatternController = new EnemyPatternController(_currentMapData, this, regionSize);
+            await UniTask.WaitUntil(() => _enemySpawnerController != null && _enemyPatternController != null);
             
             _currentEnemyPoint = _currentMapData.startEnemyPoint;
             _maxEnemyPoint = _currentMapData.maxEnemyPoint;
             _increaseRateEnemyPoint = _currentMapData.increaseRateEnemyPoint;
+            
+            _enemySpawnerController.PrewarmEnemy();
+            _enemyPatternController.SetEnemyList(_enemySpawnerController.GetEnemyList());
+            _enemyPatternController.AddRandomPattern();
+            
+            //Every 3 minute trigger pattern
+            GameTimer.Instance.ScheduleLoopingTrigger(
+                180,
+                GameTimer.Instance.StartTimerNumber,
+                () =>
+                {
+                    UniTask.Void(async () =>
+                    {
+                        _enemyPatternController.AddRandomPattern();
+                        await UniTask.Delay(100);
+                        _enemyPatternController.TriggerAllPatternsIn3Minutes().Forget();
+                    });
+                });
+            
+            //Upgrade Max Spawn point every 1 minute
+            GameTimer.Instance.ScheduleLoopingTrigger(60, GameTimer.Instance.StartTimerNumber, 
+                () => UpgradeMaxSpawnPoint(20f));
+            
+            //Upgrade Spawn Ratio every 30 seconds
+            GameTimer.Instance.ScheduleLoopingTrigger(30, GameTimer.Instance.StartTimerNumber, 
+                () => _enemySpawnerController.UpgradePointRatio());
         }
         
         public bool CanSpawn()
         {
             if (CurrentEnemyPoint <= 0) return false;
             return true;
+        }
+
+        public void UpgradeMaxSpawnPoint(float increasePoint)
+        {
+            _maxEnemyPoint += increasePoint;
         }
         
         [Button("Start Spawning" , ButtonSizes.Large), GUIColor(0, 1, 0)]
@@ -100,6 +135,12 @@ namespace GameControl
         private void DebugStop()
         {
             SetState(_stopState);
+        }
+        
+        [Button("Trigger Pattern" , ButtonSizes.Large), GUIColor(1, 1, 0)]
+        private void TriggerPattern()
+        {
+            _enemyPatternController.TriggerAllPatternsIn3Minutes().Forget();
         }
         
         private void OnDrawGizmos()

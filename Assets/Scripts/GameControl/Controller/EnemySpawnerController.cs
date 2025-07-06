@@ -4,7 +4,7 @@ using Characters.Controllers;
 using Characters.HeathSystems;
 using UnityEngine;
 
-namespace GameControl
+namespace GameControl.Controller
 {
     public class EnemySpawnerController
     {
@@ -49,9 +49,13 @@ namespace GameControl
                 }
             }
         }
-
         
-        public void UpgradePointRatio(string id)
+        public List<SO.MapDataSO.EnemyOption> GetEnemyList()
+        {
+            return _storeEnemy;
+        }
+        
+        public void UpgradePointRatio()
         {
             //Upgrade enemy point ratio
             foreach (var data in _storeEnemy)
@@ -72,7 +76,5 @@ namespace GameControl
 
             return randomEnemy;
         }
-
- 
     }
 }
