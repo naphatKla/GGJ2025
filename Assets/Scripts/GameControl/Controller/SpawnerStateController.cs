@@ -29,6 +29,7 @@ namespace GameControl.Controller
         [BoxGroup("Setting")] [SerializeField] private EnemyPatternController _enemyPatternController;
         [BoxGroup("Setting")] [Required] [SerializeField] private Transform enemyParent;
         [BoxGroup("Setting")] [SerializeField] private Vector2 regionSize = Vector2.zero;
+        [BoxGroup("Setting")] [SerializeField] private Vector2 itemdropRegionSize = Vector2.zero;
         
         [ShowInInspector, ReadOnly]
         public float EnemyPoint => _currentEnemyPoint;
@@ -147,6 +148,9 @@ namespace GameControl.Controller
         {
             Gizmos.color = Color.red;
             Gizmos.DrawWireCube(transform.position, regionSize);
+            
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawWireCube(transform.position, itemdropRegionSize);
         }
     }
 }
