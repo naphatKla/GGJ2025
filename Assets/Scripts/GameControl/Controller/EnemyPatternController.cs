@@ -36,13 +36,11 @@ namespace GameControl.Controller
             {
                 var pattern = _patternEnemy[i];
 
-                TriggerSinglePattern(pattern).Forget();
-
-                await UniTask.Delay((int)(interval * 1000));
+                await TriggerSinglePattern(pattern);
             }
         }
 
-        private async UniTaskVoid TriggerSinglePattern(SO.MapDataSO.PatternOption patternData)
+        private async UniTask TriggerSinglePattern(SO.MapDataSO.PatternOption patternData)
         {
             if (!CanTriggerPattern(patternData)) return;
 
@@ -57,14 +55,17 @@ namespace GameControl.Controller
         public void AddRandomPattern()
         {
             if (_mapdata.PatternOptions == null || _mapdata.PatternOptions.Count == 0) return;
+
             var availablePatterns = _mapdata.PatternOptions
                 .Where(p => !_patternEnemy.Contains(p)).ToList();
 
             if (availablePatterns.Count == 0) return;
+       
             var randomIndex = Random.Range(0, availablePatterns.Count);
             var selectedPattern = availablePatterns[randomIndex];
             _patternEnemy.Add(selectedPattern);
         }
+
         
         //RandomEnemy to spawn and Calculate point how many enemy should spawn base on patternpoint
         //var enemyIds = PoolingSystem.Instance.GetIds("Enemy");

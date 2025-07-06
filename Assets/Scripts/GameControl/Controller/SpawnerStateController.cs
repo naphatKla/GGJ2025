@@ -86,10 +86,18 @@ namespace GameControl.Controller
             _enemyPatternController.AddRandomPattern();
             
             //Every 3 minute trigger pattern
-            GameTimer.Instance.ScheduleLoopingTrigger(180, GameTimer.Instance.StartTimerNumber, 
-                () => _enemyPatternController.AddRandomPattern());
-            GameTimer.Instance.ScheduleLoopingTrigger(180, GameTimer.Instance.StartTimerNumber, 
-                () => _enemyPatternController.TriggerAllPatternsIn3Minutes().Forget());
+            GameTimer.Instance.ScheduleLoopingTrigger(
+                180,
+                GameTimer.Instance.StartTimerNumber,
+                () =>
+                {
+                    UniTask.Void(async () =>
+                    {
+                        _enemyPatternController.AddRandomPattern();
+                        await UniTask.Delay(100);
+                        _enemyPatternController.TriggerAllPatternsIn3Minutes().Forget();
+                    });
+                });
             
             //Upgrade Max Spawn point every 1 minute
             GameTimer.Instance.ScheduleLoopingTrigger(60, GameTimer.Instance.StartTimerNumber, 
