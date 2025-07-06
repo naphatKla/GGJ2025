@@ -93,8 +93,8 @@ public class UIManager : MonoBehaviour
     
     public void ClearGameController()
     {
-        if (GameController.Instance == null) return;
+        /*if (GameController.Instance == null) return;
         GameController.Instance.nextStageIndex = 0;
-        GameController.Instance.selectedMapIndex = 0;
+        GameController.Instance.selectedMapIndex = 0;*/
     }
 }

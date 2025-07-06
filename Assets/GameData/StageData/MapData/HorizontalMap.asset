@@ -25,6 +25,15 @@ MonoBehaviour:
     chance: 100
     useCustomInterval: 0
     customInterval: 0.5
+  - id: Enemy_Big
+    enemyController: {fileID: 1371981663885322251, guid: c825ab4cef105ab40aa986fd07615367, type: 3}
+    prewarmCount: 100
+    spawnPoint: 2
+    enemyCanGrowth: 0
+    enemyPointGrowthRate: 12.5
+    chance: 50
+    useCustomInterval: 1
+    customInterval: 2
   PatternOptions:
   - pattern: {fileID: 11400000, guid: 1152772dc8e0f114e824dddd694be66b, type: 2}
     delayBetweenEnemy: 0
@@ -43,7 +52,7 @@ MonoBehaviour:
     delayBetweenRows: 1
     patternPoint: 30
   PatternCenter: {x: 0, y: 0}
-  defaultEnemySpawnTimer: 1
-  startEnemyPoint: 30
+  defaultEnemySpawnTimer: 0.5
+  startEnemyPoint: 50
   maxEnemyPoint: 500
-  increaseRateEnemyPoint: 0
+  increaseRateEnemyPoint: 20
