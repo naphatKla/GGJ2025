@@ -6,27 +6,43 @@ namespace GameControl.SpawnerState
 {
     public class SpawningState : ISpawnerState
     {
-        private float _currentTimer;
-        private float _checkTimer;
+        private float _enemycurrentTimer;
+        private float _itemcurrentTimer;
+        private float _enemyCheckTimer;
+        private float _itemCheckTimer;
         
         public void Enter(SpawnerStateController controller)
         {
             GameTimer.Instance.ResumeTimer();
-            _currentTimer = 0;
-            _checkTimer = 0;
+            _enemycurrentTimer = 0;
+            _itemcurrentTimer = 0;
+            
+            _enemyCheckTimer = 0;
+            _itemCheckTimer = 0;
         }
 
         public void Update(SpawnerStateController controller)
         {
-            _currentTimer += Time.deltaTime;
-            if (_currentTimer >= _checkTimer && controller.CanSpawn())
+            _enemycurrentTimer += Time.deltaTime;
+            if (_enemycurrentTimer >= _enemyCheckTimer && controller.EnemyCanSpawn())
             {
                 var selectedEnemyOption = controller.EnemySpawnerController.SpawnEnemy();
-                _currentTimer = 0f;
+                _enemycurrentTimer = 0f;
                 
-                _checkTimer = selectedEnemyOption.useCustomInterval
+                _enemyCheckTimer = selectedEnemyOption.useCustomInterval
                     ? selectedEnemyOption.customInterval 
-                    : controller.SpawnTimer;
+                    : controller.EnemySpawnTimer;
+            }
+            
+            _itemcurrentTimer += Time.deltaTime;
+            if (_itemcurrentTimer >= _itemCheckTimer && controller.ItemSpawnerController.CanSpawnItem())
+            {
+                var selectedItemOption = controller.ItemSpawnerController.SpawnItem();
+                _itemcurrentTimer = 0;
+                
+                _itemCheckTimer = selectedItemOption.useCustomInterval
+                    ? selectedItemOption.customInterval 
+                    : controller.ItemSpawnTimer;
             }
         }
 

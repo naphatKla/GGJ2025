@@ -1,4 +1,7 @@
+using System;
 using Characters.SO.CollectableItemDataSO;
+using GameControl;
+using UnityEngine;
 
 namespace Characters.CollectItemSystems.CollectableItems
 {
@@ -7,6 +10,8 @@ namespace Characters.CollectItemSystems.CollectableItems
     /// </summary>
     public class SoulItem : BaseCollectableItem<SoulItemDataSo>
     {
+        [SerializeField] private PoolableComponent poolable;
+
         /// <summary>
         /// 
         /// </summary>
@@ -14,6 +19,7 @@ namespace Characters.CollectItemSystems.CollectableItems
         protected override void OnCollect(CollectItemSystem ownerSystem)
         {
             //Debug.Log("Add Score" + itemData.Score);
+            PoolingSystem.Instance.Despawn(poolable.ComponenetId, gameObject);
         }
     }
 }

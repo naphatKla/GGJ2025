@@ -48,4 +48,12 @@ public static class SpawnUtility
         }
         return new Vector2(x, y);
     }
+    
+    public static Vector2 RandomInsideRegion(Vector2 regionSize)
+    {
+        float x = Random.Range(-regionSize.x / 2f, regionSize.x / 2f);
+        float y = Random.Range(-regionSize.y / 2f, regionSize.y / 2f);
+        return new Vector2(x, y);
+    }
+
 }

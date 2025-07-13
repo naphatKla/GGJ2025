@@ -13,6 +13,7 @@ namespace Characters.Controllers
         public void OnSpawned()
         {
             HealthSystem.OnDead += HandleDeath;
+            ResetAllDependentBehavior();
         }
 
         public void OnDespawned()

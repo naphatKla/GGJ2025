@@ -14,8 +14,9 @@ GameObject:
   - component: {fileID: 2034691309466057754}
   - component: {fileID: -7062362344555050260}
   - component: {fileID: 8589778046636973207}
+  - component: {fileID: -5713370279045352398}
   m_Layer: 30
-  m_Name: Soul
+  m_Name: ItemExp
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -178,3 +179,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemData: {fileID: 11400000, guid: 5ff7711956bd54445bc46937e41aaa51, type: 2}
   rbMovementSystem: {fileID: -7062362344555050260}
+  poolable: {fileID: -5713370279045352398}
+--- !u!114 &-5713370279045352398
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5178803466644883778}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e07535dcda731c340a4f2428b2af4ffc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

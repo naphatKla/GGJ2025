@@ -38,28 +38,30 @@ MonoBehaviour:
   - pattern: {fileID: 11400000, guid: 1152772dc8e0f114e824dddd694be66b, type: 2}
     delayBetweenEnemy: 0
     delayBetweenRows: 1
-    patternPoint: 30
+    patternPoint: 10
   - pattern: {fileID: 11400000, guid: 098e856c71484744d95d27a8654a8433, type: 2}
     delayBetweenEnemy: 0
     delayBetweenRows: 1
-    patternPoint: 30
+    patternPoint: 10
   - pattern: {fileID: 11400000, guid: 288500a21d61a4540b39a6463d3f4af9, type: 2}
     delayBetweenEnemy: 0
     delayBetweenRows: 1
-    patternPoint: 30
+    patternPoint: 10
   - pattern: {fileID: 11400000, guid: 2bc8bc7d72e130d4382d64794bbc160c, type: 2}
     delayBetweenEnemy: 0.1
     delayBetweenRows: 1
-    patternPoint: 30
+    patternPoint: 10
   ItemOptions:
-  - id: 
-    itemObj: {fileID: 0}
+  - id: Normal_Exp
+    itemObj: {fileID: -5713370279045352398, guid: eb2f8352aac61d446a4ef94d6303afbf, type: 3}
     prewarmCount: 30
     chance: 100
     useCustomInterval: 0
     customInterval: 0
+  maxItemSpawning: 10
+  defaultItemSpawnTimer: 1
   PatternCenter: {x: 0, y: 0}
   defaultEnemySpawnTimer: 0.5
-  startEnemyPoint: 50
+  startEnemyPoint: 15
   maxEnemyPoint: 500
   increaseRateEnemyPoint: 20

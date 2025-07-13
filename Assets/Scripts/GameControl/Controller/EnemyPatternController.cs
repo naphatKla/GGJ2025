@@ -1,46 +1,88 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Cysharp.Threading.Tasks;
+using GameControl.SO;
 using UnityEngine;
 
 namespace GameControl.Controller
 {
     public class EnemyPatternController
     {
-        private SO.MapDataSO _mapdata;
+        private readonly MapDataSO _mapdata;
         private SpawnerStateController _state;
         private readonly Vector2 _regionSize;
-        private List<SO.MapDataSO.PatternOption> _patternEnemy;
-        private List<SO.MapDataSO.EnemyOption> _storeEnemy;
+        private readonly List<MapDataSO.PatternOption> _patternEnemy;
+        private List<MapDataSO.EnemyOption> _storeEnemy;
+        private readonly bool _isDebug;
 
-        public EnemyPatternController(SO.MapDataSO mapData, SpawnerStateController state, Vector2 spawnRegion)
+        public EnemyPatternController(MapDataSO mapData, SpawnerStateController state, Vector2 spawnRegion, bool debug)
         {
             _mapdata = mapData;
             _state = state;
             _regionSize = spawnRegion;
-            _patternEnemy = new List<SO.MapDataSO.PatternOption>();
+            _patternEnemy = new List<MapDataSO.PatternOption>();
+            _isDebug = debug;
         }
-        
-        public void SetEnemyList(List<SO.MapDataSO.EnemyOption> enemyList)
+
+        public void SetEnemyList(List<MapDataSO.EnemyOption> enemyList)
         {
             _storeEnemy = enemyList;
+        }
+
+        private async UniTask WaitForEnoughEnemyPoint(MapDataSO.PatternOption pattern)
+        {
+            while (SpawnerStateController.Instance.CurrentEnemyPoint < pattern.patternPoint)
+            {
+                if (_isDebug) Debug.Log($"[EnemyPatternController] Waiting for enough CurrentEnemyPoint to play pattern '{pattern.pattern.name}'. Current: {SpawnerStateController.Instance.CurrentEnemyPoint}, Required: {pattern.patternPoint}");
+                await UniTask.Delay(500);
+            }
+        }
+
+        private async UniTask<float> PlayPatternWithTiming(int index, MapDataSO.PatternOption pattern, float interval)
+        {
+            if (_isDebug) Debug.Log($"[EnemyPatternController] Start playing pattern {index + 1}: '{pattern.pattern.name}'");
+            var startTime = Time.time;
+
+            await TriggerSinglePattern(pattern);
+
+            var elapsed = Time.time - startTime;
+            if (_isDebug) Debug.Log($"[EnemyPatternController] Finished pattern '{pattern.pattern.name}' in {elapsed:F2} seconds");
+
+            var remaining = interval - elapsed;
+            if (remaining > 0)
+            {
+                if (_isDebug) Debug.Log($"[EnemyPatternController] Waiting {remaining:F2} seconds before next pattern...");
+                await UniTask.Delay((int)(remaining * 1000));
+            }
+
+            return elapsed + Mathf.Max(remaining, 0);
         }
 
         public async UniTaskVoid TriggerAllPatternsIn3Minutes()
         {
             if (_patternEnemy == null || _patternEnemy.Count == 0) return;
-            var totalDuration = 180f;
+
+            var totalDuration = 10f;
             var interval = totalDuration / _patternEnemy.Count;
+
+            var totalElapsed = 0f;
+
             for (var i = 0; i < _patternEnemy.Count; i++)
             {
                 var pattern = _patternEnemy[i];
+                if (_isDebug) Debug.Log($"[EnemyPatternController] Ready to play pattern {i + 1}/{_patternEnemy.Count}: '{pattern.pattern.name}'");
 
-                await TriggerSinglePattern(pattern);
+                await WaitForEnoughEnemyPoint(pattern);
+
+                var elapsed = await PlayPatternWithTiming(i, pattern, interval);
+                totalElapsed += elapsed;
             }
+
+            if (_isDebug) Debug.Log($"[EnemyPatternController] All patterns triggered in total {totalElapsed:F2} seconds");
         }
 
-        private async UniTask TriggerSinglePattern(SO.MapDataSO.PatternOption patternData)
+
+        private async UniTask TriggerSinglePattern(MapDataSO.PatternOption patternData)
         {
             if (!CanTriggerPattern(patternData)) return;
 
@@ -48,9 +90,8 @@ namespace GameControl.Controller
             var enemyAmount = Mathf.FloorToInt(CalculatePoint(enemyType, patternData));
             var rows = CalculatePatternRows(patternData, enemyAmount);
             await SpawnEnemyRows(rows, enemyType, patternData);
-            Debug.Log($"Triggered pattern '{patternData.pattern.name}' with {enemyAmount} enemies in {rows.Count} rows.");
         }
-        
+
         //RandomPattern to add to list
         public void AddRandomPattern()
         {
@@ -59,40 +100,50 @@ namespace GameControl.Controller
             var availablePatterns = _mapdata.PatternOptions
                 .Where(p => !_patternEnemy.Contains(p)).ToList();
 
-            if (availablePatterns.Count == 0) return;
-       
+            if (availablePatterns.Count == 0)
+            {
+                if (_isDebug) Debug.Log("[EnemyPatternController] No available new patterns to add.");
+                return;
+            }
+
             var randomIndex = Random.Range(0, availablePatterns.Count);
             var selectedPattern = availablePatterns[randomIndex];
             _patternEnemy.Add(selectedPattern);
+
+            if (_isDebug)
+                Debug.Log(
+                    $"[EnemyPatternController] Added random pattern: '{selectedPattern.pattern.name}'. Total patterns now: {_patternEnemy.Count}");
         }
 
-        
+
         //RandomEnemy to spawn and Calculate point how many enemy should spawn base on patternpoint
         //var enemyIds = PoolingSystem.Instance.GetIds("Enemy");
-        public SO.MapDataSO.EnemyOption RandomType()
+        public MapDataSO.EnemyOption RandomType()
         {
             //Random
             return RandomUtility.GetWeightedRandom(_storeEnemy);
         }
-        public float CalculatePoint(SO.MapDataSO.EnemyOption enemyOption, SO.MapDataSO.PatternOption patternOption)
+
+        public float CalculatePoint(MapDataSO.EnemyOption enemyOption, MapDataSO.PatternOption patternOption)
         {
-            float enemyAmount = Mathf.Floor(patternOption.patternPoint / enemyOption.EnemyPoint);
+            var enemyAmount = Mathf.Floor(patternOption.patternPoint / enemyOption.EnemyPoint);
             return enemyAmount;
         }
-        
-        private bool CanTriggerPattern(SO.MapDataSO.PatternOption patternData)
+
+        private bool CanTriggerPattern(MapDataSO.PatternOption patternData)
         {
             return patternData.pattern != null &&
-                   SpawnerStateController.Instance.CurrentEnemyPoint >= patternData.patternPoint;
+                   SpawnerStateController.Instance.CurrentEnemyPoint > patternData.patternPoint;
         }
 
-        private List<List<Vector2>> CalculatePatternRows(SO.MapDataSO.PatternOption patternData, int enemyAmount)
+        private List<List<Vector2>> CalculatePatternRows(MapDataSO.PatternOption patternData, int enemyAmount)
         {
             var center = _mapdata.PatternCenter;
             return patternData.pattern.CalculateRows(center, enemyAmount);
         }
-        
-        private async UniTask SpawnEnemyRows(List<List<Vector2>> rows, SO.MapDataSO.EnemyOption enemyType, SO.MapDataSO.PatternOption patternData)
+
+        private async UniTask SpawnEnemyRows(List<List<Vector2>> rows, MapDataSO.EnemyOption enemyType,
+            MapDataSO.PatternOption patternData)
         {
             foreach (var row in rows)
             {
@@ -109,8 +160,5 @@ namespace GameControl.Controller
                     await UniTask.Delay((int)(patternData.DelayBetweenRows * 1000));
             }
         }
-
     }
-
 }
-

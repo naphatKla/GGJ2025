@@ -31,6 +31,10 @@ namespace GameControl.Pattern
             List<Vector2> positions = new();
 
             var selectedDirections = GetSelectedDirections();
+            int directionCount = selectedDirections.Count;
+
+            if (directionCount == 0) return positions;
+            int enemiesPerDirection = Mathf.Max(1, dummyEnemyCount / directionCount);
 
             foreach (var direction in selectedDirections)
             {
@@ -42,9 +46,10 @@ namespace GameControl.Pattern
                     var rowOffset = mainDir * (spawnDistanceFromCenter + row * spacingBetweenRows);
                     var rowCenter = center + rowOffset;
 
-                    for (var i = 0; i < dummyEnemyCount; i++)
+                    var half = (enemiesPerDirection - 1) * spacingBetweenEnemies / 2f;
+
+                    for (var i = 0; i < enemiesPerDirection; i++)
                     {
-                        var half = (dummyEnemyCount - 1) * spacingBetweenEnemies / 2f;
                         var sideOffset = sideDir * (i * spacingBetweenEnemies - half);
                         var pos = rowCenter + sideOffset;
                         positions.Add(pos);

@@ -72,7 +72,7 @@ namespace GameControl.SO
             [FoldoutGroup("$id")][Title("Setting")]
             public string id;
             [FoldoutGroup("$id")]
-            public GameObject itemObj;
+            public PoolableComponent itemObj;
             [FoldoutGroup("$id")]
             public int prewarmCount = 30;
           
@@ -85,8 +85,8 @@ namespace GameControl.SO
             public float customInterval;
             
             public float Chance { get => chance; set => chance = value; }
-            public string EnemyId => id;
-            public float EnemyCooldown => customInterval;
+            public string ItemId => id;
+            public float ItemCooldown => customInterval;
             public bool TryPassChance() => Random.Range(0, 100) < chance;
         }
         
@@ -113,6 +113,14 @@ namespace GameControl.SO
         [FoldoutGroup("Item Setting")]
         [Tooltip("Data of each item")]
         public List<ItemOption> ItemOptions;
+        
+        [FoldoutGroup("Item Setting")]
+        [Tooltip("Max spawning of item")]
+        public float maxItemSpawning;
+        
+        [FoldoutGroup("Item Setting")]
+        [Tooltip("Item spawn interval (Default 1)")]
+        public float defaultItemSpawnTimer;
         
         [FoldoutGroup("Pattern Setting")]
         [Tooltip("center of pattern")]

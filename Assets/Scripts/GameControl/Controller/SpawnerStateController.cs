@@ -27,17 +27,23 @@ namespace GameControl.Controller
         
         [BoxGroup("Setting")] [SerializeField] private EnemySpawnerController _enemySpawnerController;
         [BoxGroup("Setting")] [SerializeField] private EnemyPatternController _enemyPatternController;
+        [BoxGroup("Setting")] [SerializeField] private ItemSpawnerController _itemSpawnerController;
         [BoxGroup("Setting")] [Required] [SerializeField] private Transform enemyParent;
+        [BoxGroup("Setting")] [Required] [SerializeField] private Transform itemParent;
         [BoxGroup("Setting")] [SerializeField] private Vector2 regionSize = Vector2.zero;
         [BoxGroup("Setting")] [SerializeField] private Vector2 itemdropRegionSize = Vector2.zero;
         
+        [BoxGroup("Debug Zone")] [SerializeField] private bool debugPattern;
         [ShowInInspector, ReadOnly]
         public float EnemyPoint => _currentEnemyPoint;
         public EnemySpawnerController EnemySpawnerController => _enemySpawnerController;
         public EnemyPatternController EnemyPatternController => _enemyPatternController;
+        public ItemSpawnerController ItemSpawnerController => _itemSpawnerController;
         public Transform EnemyParent => enemyParent;
+        public Transform ItemParent => itemParent;
         public Vector2 RegionSize => regionSize;
-        public float SpawnTimer { get => _currentMapData.defaultEnemySpawnTimer; set => _currentMapData.defaultEnemySpawnTimer = value; }
+        public float EnemySpawnTimer { get => _currentMapData.defaultEnemySpawnTimer; set => _currentMapData.defaultEnemySpawnTimer = value; }
+        public float ItemSpawnTimer { get => _currentMapData.defaultItemSpawnTimer; set => _currentMapData.defaultItemSpawnTimer = value; }
 
         public float CurrentEnemyPoint
         {
@@ -75,14 +81,16 @@ namespace GameControl.Controller
         public async UniTaskVoid SetupMapAndEnemy()
         {
             _enemySpawnerController = new EnemySpawnerController(_currentMapData, this, regionSize);
-            _enemyPatternController = new EnemyPatternController(_currentMapData, this, regionSize);
-            await UniTask.WaitUntil(() => _enemySpawnerController != null && _enemyPatternController != null);
+            _enemyPatternController = new EnemyPatternController(_currentMapData, this, regionSize, debugPattern);
+            _itemSpawnerController = new ItemSpawnerController(_currentMapData, this, itemdropRegionSize);
+            await UniTask.WaitUntil(() => _enemySpawnerController != null && _enemyPatternController != null && _itemSpawnerController != null);
             
             _currentEnemyPoint = _currentMapData.startEnemyPoint;
             _maxEnemyPoint = _currentMapData.maxEnemyPoint;
             _increaseRateEnemyPoint = _currentMapData.increaseRateEnemyPoint;
             
             _enemySpawnerController.PrewarmEnemy();
+            _itemSpawnerController.PrewarmItem();
             _enemyPatternController.SetEnemyList(_enemySpawnerController.GetEnemyList());
             _enemyPatternController.AddRandomPattern();
             
@@ -109,7 +117,7 @@ namespace GameControl.Controller
                 () => _enemySpawnerController.UpgradePointRatio());
         }
         
-        public bool CanSpawn()
+        public bool EnemyCanSpawn()
         {
             if (CurrentEnemyPoint <= 0) return false;
             return true;
@@ -142,6 +150,12 @@ namespace GameControl.Controller
         private void TriggerPattern()
         {
             _enemyPatternController.TriggerAllPatternsIn3Minutes().Forget();
+        }
+        
+        [Button("Add Pattern" , ButtonSizes.Large), GUIColor(0, 1, 0)]
+        private void TriggerAddPattern()
+        {
+            _enemyPatternController.AddRandomPattern();
         }
         
         private void OnDrawGizmos()
