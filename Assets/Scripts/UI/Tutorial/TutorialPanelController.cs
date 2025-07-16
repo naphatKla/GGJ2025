@@ -33,6 +33,8 @@ public class TutorialPanelController : MonoBehaviour
 
     private void Start()
     {
+        PlayerPrefs.DeleteAll();
+        
         // ตรวจว่าผู้เล่นเคยดู Tutorial แล้วหรือยัง
         if (PlayerPrefs.GetInt("HasSeenTutorial", 0) == 1)
         {
@@ -57,21 +59,48 @@ public class TutorialPanelController : MonoBehaviour
             GameObject page = Instantiate(pagePrefab, contentHolder);
             page.transform.localScale = Vector3.one;
 
-            var titleText = page.transform.Find("TitleText").GetComponent<TMP_Text>();
-            var descText = page.transform.Find("DescriptionText").GetComponent<TMP_Text>();
-            var image = page.transform.Find("Image").GetComponent<Image>();
-
-            titleText.text = data.title;
-            descText.text = data.description;
-
-            if (data.image != null)
+            // Title Text
+            var titleObj = page.transform.Find("TitleText");
+            if (titleObj == null)
             {
-                image.sprite = data.image;
-                image.gameObject.SetActive(true);
+                Debug.LogError("TitleText not found in prefab!");
             }
             else
             {
-                image?.gameObject.SetActive(false);
+                var titleText = titleObj.GetComponent<TMP_Text>();
+                titleText.text = data.title;
+            }
+
+            // Description Text
+            var descObj = page.transform.Find("DescriptionText");
+            if (descObj == null)
+            {
+                Debug.LogError("DescriptionText not found in prefab!");
+            }
+            else
+            {
+                var descText = descObj.GetComponent<TMP_Text>();
+                descText.text = data.description;
+            }
+
+            // Image
+            var imageObj = page.transform.Find("Image");
+            if (imageObj != null)
+            {
+                var image = imageObj.GetComponent<Image>();
+                if (data.image != null)
+                {
+                    image.sprite = data.image;
+                    image.gameObject.SetActive(true);
+                }
+                else
+                {
+                    image.gameObject.SetActive(false);
+                }
+            }
+            else
+            {
+                Debug.LogWarning("Image object not found in prefab!");
             }
 
             page.SetActive(false);
@@ -88,6 +117,7 @@ public class TutorialPanelController : MonoBehaviour
             indicators.Add(dot.GetComponent<Image>());
         }
     }
+
 
     void ChangePage(int direction)
     {
