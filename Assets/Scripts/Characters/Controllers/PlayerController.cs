@@ -1,3 +1,7 @@
+using Characters.LevelSystems;
+using Characters.SkillSystems;
+using UnityEngine;
+
 namespace Characters.Controllers
 {
     /// <summary>
@@ -7,6 +11,9 @@ namespace Characters.Controllers
     public class PlayerController : BaseController
     {
         #region Inspector & Variables
+
+        [SerializeField] protected LevelSystem levelSystem;
+        [SerializeField] protected SkillUpgradeController skillUpgradeController;
         
         /// <summary>
         /// A global static reference to the current player instance.
@@ -28,7 +35,30 @@ namespace Characters.Controllers
             if (Instance) return;
             Instance = this;
         }
-        
+
+        protected override void SubscribeDependency()
+        {
+            levelSystem.OnLevelUp += skillUpgradeController.OnLevelUp;
+            
+            base.SubscribeDependency();
+        }
+
+        protected override void UnSubscribeDependency()
+        {
+            levelSystem.OnLevelUp -= skillUpgradeController.OnLevelUp;
+            
+            base.UnSubscribeDependency();
+        }
+
+        public override void ResetAllDependentBehavior()
+        {
+            if (!isInitialize) return;
+            levelSystem.ResetLevel();
+            skillUpgradeController.ResetSkillUpgradeController();
+            
+            base.ResetAllDependentBehavior();
+        }
+
         #endregion
     }
 }

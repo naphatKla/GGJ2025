@@ -5818,6 +5818,8 @@ GameObject:
   - component: {fileID: 7534513208806243613}
   - component: {fileID: 4786182755069043034}
   - component: {fileID: 1611083095111674569}
+  - component: {fileID: 2047403147416900316}
+  - component: {fileID: 7127418468070666774}
   - component: {fileID: 2183269856455368127}
   - component: {fileID: 4177936962492003484}
   - component: {fileID: 7330480618453326501}
@@ -5875,6 +5877,8 @@ MonoBehaviour:
   feedbackSystem: {fileID: 1661318226121973417}
   comboSystem: {fileID: 2247090465659933957}
   characterData: {fileID: 11400000, guid: 177277e9c5cd29143b05e5f2f4d0bae0, type: 2}
+  levelSystem: {fileID: 2047403147416900316}
+  skillUpgradeController: {fileID: 7127418468070666774}
 --- !u!114 &7534513208806243613
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5913,6 +5917,33 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5dd45224fe3c4d4ca1bd168263f9430, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &2047403147416900316
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2726293917207744010}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce2f5e6d797c1d24d96e9555f516b478, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  expPerLevel: 100
+--- !u!114 &7127418468070666774
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2726293917207744010}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: daaa21c8fa23d854992b57f950dd4e3f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  allSkillDataList: []
+  upgradeChoicesCount: 3
 --- !u!114 &2183269856455368127
 MonoBehaviour:
   m_ObjectHideFlags: 0

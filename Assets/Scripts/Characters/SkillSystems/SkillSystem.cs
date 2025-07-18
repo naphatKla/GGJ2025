@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Characters.Controllers;
 using Characters.SkillSystems.SkillRuntimes;
 using Characters.SO.SkillDataSo;
@@ -21,29 +22,28 @@ namespace Characters.SkillSystems
     public class SkillSystem : MonoBehaviour
     {
         #region Inspector & Variables
-        
+
         [ValidateInput(nameof(IsSkillDataUnique), "Primary/Secondary/Auto skill must not duplicate!")]
         [SerializeField] protected BaseSkillDataSo primarySkillData;
-        
+
         [ValidateInput(nameof(IsSkillDataUnique), "Primary/Secondary/Auto skill must not duplicate!")]
         [SerializeField] private BaseSkillDataSo secondarySkillData;
-        
+
         [ValidateInput(nameof(IsSkillListUnique), "Duplicate skill in autoSkillDataList is not allowed!")]
-        [SerializeField] private List<BaseSkillDataSo> autoSkillDataList; // skill input from inspector
-        
-        private HashSet<BaseSkillDataSo> _autoSkillDatas = new(); // this is the real collection of auto skill system
+        [SerializeField] private List<BaseSkillDataSo> autoSkillDataList;
+
+        private HashSet<BaseSkillDataSo> _autoSkillDatas = new(); // Runtime collection for auto skills
         private BaseSkillDataSo _defaultPrimarySkillData;
         private BaseSkillDataSo _defaultSecondarySkillData;
         private HashSet<BaseSkillDataSo> _defaultAutoSkillDatas = new();
 
         private readonly Dictionary<BaseSkillDataSo, BaseSkillRuntime> _skillRuntimeDictionary = new();
-        protected BaseController owner; // _owner == null; means not initialized;
+        protected BaseController owner;
 
         #endregion
 
         #region Inspector Duplicate Check (Odin)
 
-#if UNITY_EDITOR
         private bool IsSkillListUnique(List<BaseSkillDataSo> list)
         {
             if (list == null) return true;
@@ -70,7 +70,6 @@ namespace Characters.SkillSystems
             }
             return true;
         }
-#endif
 
         #endregion
 
@@ -84,12 +83,16 @@ namespace Characters.SkillSystems
 
         #endregion
 
-        #region Methods
+        #region Public API
 
+        /// <summary>
+        /// Initializes the SkillSystem with a controller/owner.
+        /// </summary>
         public void Initialize(BaseController owner)
         {
             this.owner = owner;
 
+            _autoSkillDatas.Clear();
             foreach (var baseSkillDataSo in autoSkillDataList)
                 _autoSkillDatas.Add(baseSkillDataSo);
 
@@ -98,6 +101,120 @@ namespace Characters.SkillSystems
             _defaultAutoSkillDatas = new(_autoSkillDatas);
             ResetToDefaultSkill();
         }
+
+        /// <summary>
+        /// Returns all currently equipped skills, organized by slot.
+        /// </summary>
+        public (BaseSkillDataSo Primary, BaseSkillDataSo Secondary, List<BaseSkillDataSo> Auto, IEnumerable<BaseSkillDataSo> All)
+            GetAllCurrentSkillDatas()
+        {
+            var all = new List<BaseSkillDataSo>();
+            if (primarySkillData != null) all.Add(primarySkillData);
+            if (secondarySkillData != null) all.Add(secondarySkillData);
+            all.AddRange(_autoSkillDatas);
+            return (primarySkillData, secondarySkillData, _autoSkillDatas.ToList(), all);
+        }
+
+        /// <summary>
+        /// Adds or upgrades a skill in the appropriate slot (Primary → Secondary → Auto).
+        /// - If the slot is empty, assigns the skill.
+        /// - If an upgrade is available, replaces the skill in that slot.
+        /// - If all auto slots are full, upgrades the appropriate auto skill.
+        /// </summary>
+        public void UpgradeSkillSlot(BaseSkillDataSo upgradeSkill)
+        {
+            // Try Primary slot
+            if (primarySkillData == null)
+            {
+                SetOrAddSkill(upgradeSkill, SkillType.PrimarySkill);
+                Debug.Log($"[SkillSystem] Added new primary skill: {upgradeSkill.name}");
+                return;
+            }
+            if (primarySkillData.NextSkillDataUpgrade == upgradeSkill)
+            {
+                SetOrAddSkill(upgradeSkill, SkillType.PrimarySkill);
+                Debug.Log($"[SkillSystem] Upgraded primary skill to: {upgradeSkill.name}");
+                return;
+            }
+
+            // Try Secondary slot
+            if (secondarySkillData == null)
+            {
+                SetOrAddSkill(upgradeSkill, SkillType.SecondarySkill);
+                Debug.Log($"[SkillSystem] Added new secondary skill: {upgradeSkill.name}");
+                return;
+            }
+            if (secondarySkillData.NextSkillDataUpgrade == upgradeSkill)
+            {
+                SetOrAddSkill(upgradeSkill, SkillType.SecondarySkill);
+                Debug.Log($"[SkillSystem] Upgraded secondary skill to: {upgradeSkill.name}");
+                return;
+            }
+
+            // Try upgrading an auto skill
+            var oldAuto = _autoSkillDatas.FirstOrDefault(s => s.NextSkillDataUpgrade == upgradeSkill);
+            if (oldAuto != null)
+            {
+                _autoSkillDatas.Remove(oldAuto);
+                SetOrAddSkill(upgradeSkill, SkillType.AutoSkill);
+                Debug.Log($"[SkillSystem] Upgraded auto skill to: {upgradeSkill.name}");
+                return;
+            }
+
+            // Add as new auto skill if slots available
+            if (_autoSkillDatas.Count < autoSkillDataList.Count)
+            {
+                SetOrAddSkill(upgradeSkill, SkillType.AutoSkill);
+                Debug.Log($"[SkillSystem] Added new auto skill: {upgradeSkill.name}");
+                return;
+            }
+
+            Debug.LogWarning($"[SkillSystem] Cannot upgrade/add skill {upgradeSkill.name}: all slots full and no match for upgrade.");
+        }
+
+        /// <summary>
+        /// Determines which slot would be affected by upgrading to the given skill.
+        /// Useful for UI highlighting or validation.
+        /// </summary>
+        public SkillType? GetSlotUpgradeTarget(BaseSkillDataSo upgradeSkill)
+        {
+            if (primarySkillData == null || primarySkillData.NextSkillDataUpgrade == upgradeSkill)
+                return SkillType.PrimarySkill;
+            if (secondarySkillData == null || secondarySkillData.NextSkillDataUpgrade == upgradeSkill)
+                return SkillType.SecondarySkill;
+            if (_autoSkillDatas.Any(s => s.NextSkillDataUpgrade == upgradeSkill) || _autoSkillDatas.Count < autoSkillDataList.Count)
+                return SkillType.AutoSkill;
+            return null;
+        }
+
+        /// <summary>
+        /// Returns true if there is an empty slot for the given skill type.
+        /// </summary>
+        public bool HasEmptySlot(SkillType type)
+        {
+            switch (type)
+            {
+                case SkillType.PrimarySkill: return primarySkillData == null;
+                case SkillType.SecondarySkill: return secondarySkillData == null;
+                case SkillType.AutoSkill: return _autoSkillDatas.Count < autoSkillDataList.Count;
+                default: return false;
+            }
+        }
+
+        /// <summary>
+        /// Checks if a given skill is already equipped in any slot.
+        /// </summary>
+        public bool ContainsSkill(BaseSkillDataSo skillData)
+        {
+            if (skillData == null) return false;
+            return skillData == primarySkillData
+                || skillData == secondarySkillData
+                || _autoSkillDatas.Contains(skillData);
+        }
+
+        #endregion
+
+        #region Internal Methods
 
         private void InstantiateSkillRuntime(BaseSkillDataSo skillData)
         {
@@ -111,14 +228,14 @@ namespace Characters.SkillSystems
         }
 
         /// <summary>
-        /// Add or set skill for the specified slot, with duplicate check (prevent duplicate between primary, secondary, auto)
+        /// Adds or sets a skill for the specified slot, with duplicate validation.
         /// </summary>
         public virtual void SetOrAddSkill(BaseSkillDataSo newSkillData, SkillType type)
         {
             if (!owner) return;
             if (!newSkillData) return;
 
-            // --- Duplicate check ---
+            // Prevent duplicate assignments
             switch (type)
             {
                 case SkillType.PrimarySkill:

@@ -78,6 +78,7 @@ namespace Characters.Controllers
         /// <summary>
         /// ScriptableObject containing base character stats used to initialize systems.
         /// </summary>
+        [PropertyOrder(9999)]
         [Title("Data")] [SerializeField] private CharacterDataSo characterData;
 
         /// <summary>
@@ -90,7 +91,7 @@ namespace Characters.Controllers
         /// <summary>
         /// Is this controller is initialize or not.
         /// </summary>
-        private bool _isInitialize;
+        protected bool isInitialize;
 
         public SpriteRenderer Body => body;
 
@@ -132,7 +133,7 @@ namespace Characters.Controllers
         
         private void Start()
         {
-            if (characterData && !_isInitialize)
+            if (characterData && !isInitialize)
                 AssignCharacterData(characterData);
             
             SubscribeDependency();
@@ -204,10 +205,10 @@ namespace Characters.Controllers
             if (combatSystem)
                 combatSystem.AssignCombatData(characterData.BaseDamage);
             
-            _isInitialize = true;
+            isInitialize = true;
         }
 
-        private void SubscribeDependency()
+        protected virtual void SubscribeDependency()
         {
             _inputSystem ??= GetComponent<ICharacterInput>();
             
@@ -221,7 +222,7 @@ namespace Characters.Controllers
                 combatSystem.OnDealDamage += comboSystem.RegisterHit;
         }
 
-        private void UnSubscribeDependency()
+        protected virtual void UnSubscribeDependency()
         {
             if (_inputSystem != null)
             {
@@ -250,9 +251,9 @@ namespace Characters.Controllers
         /// Resets the damage-on-touch system by disabling its damage output.
         /// Commonly used during respawn, state reset, or when temporarily disabling attack interactions.
         /// </summary>
-        public void ResetAllDependentBehavior()
+        public virtual void ResetAllDependentBehavior()
         {
-            if (!_isInitialize) return;
+            if (!isInitialize) return;
             movementSystem?.ResetMovementSystem();
             skillSystem?.ResetSkillSystem();
             healthSystem?.ResetHealthSystem();
