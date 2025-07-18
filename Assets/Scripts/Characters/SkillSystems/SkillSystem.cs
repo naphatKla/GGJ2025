@@ -38,8 +38,6 @@ namespace Characters.SkillSystems
         private void FixedUpdate()
         {
             if (!owner) return;
-           
-            PerformSkill(SkillType.AutoSkill);
             UpdateCooldown();
         }
 
@@ -109,7 +107,8 @@ namespace Characters.SkillSystems
             {
                 case SkillType.PrimarySkill :
                     Debug.Log("Perform Primary");
-                    GetSkillRuntimeOrDefault(primarySkillData)?.PerformSkill();
+                    GetSkillRuntimeOrDefault(primarySkillData).PerformSkill();
+                    PerformSkill(SkillType.AutoSkill);
                     break;
                 
                 case SkillType.SecondarySkill :
@@ -132,8 +131,6 @@ namespace Characters.SkillSystems
 
         public virtual void CancelAllSkill()
         {
-            BaseSkillRuntime skillRuntime;
-            
             GetSkillRuntimeOrDefault(primarySkillData)?.CancelSkill();
             
             foreach (var data in _autoSkillDatas)
