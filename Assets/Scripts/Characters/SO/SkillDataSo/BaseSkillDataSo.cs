@@ -106,6 +106,11 @@ namespace Characters.SO.SkillDataSo
         public Type SkillRuntime => _skillRuntime;
 
         /// <summary>
+        /// Skill's level
+        /// </summary>
+        public int Level => level;
+        
+        /// <summary>
         /// Next skill data. Use in the upgrade.
         /// </summary>
         public SkillDashDataSo NextSkillDataUpgrade => nextSkillDataUpgrade;

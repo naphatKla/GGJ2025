@@ -13,14 +13,14 @@ namespace Characters.SkillSystems
         [Header("Number of skill choices presented on level up.")]
         public int upgradeChoicesCount = 3;
 
-        private SkillSystem playerSkillSystem;
+        private SkillSystem _playerSkillSystem;
 
         /// <summary>
         /// Injects the target SkillSystem for upgrades and management.
         /// </summary>
         public void Init(SkillSystem skillSystem)
         {
-            playerSkillSystem = skillSystem;
+            _playerSkillSystem = skillSystem;
         }
 
         /// <summary>
@@ -29,14 +29,18 @@ namespace Characters.SkillSystems
         /// </summary>
         public void OnLevelUp(int level)
         {
-            var options = GetUpgradeOptions(playerSkillSystem);
+            var options = GetUpgradeOptions(_playerSkillSystem);
 
             // TODO: Send 'options' to UI or an event for the player to choose from.
             // For demo, always upgrade using the first available option.
-            if (options.Count > 0)
+            if (options.Count <= 0) return;
+            foreach (var baseSkillDataSo in options)
             {
-                UpgradeSkill(playerSkillSystem, options[0]);
+                Debug.Log($"Random Skill {baseSkillDataSo.name}, LV: {baseSkillDataSo.Level}");
             }
+                
+            Debug.LogWarning($"Select skill {options[0].name}, LV: {options[0].Level}");
+            UpgradeSkill(_playerSkillSystem, options[0]);
         }
 
         /// <summary>

@@ -14,6 +14,7 @@ namespace Characters.LevelSystems
         [Header("Level Up EXP")]
         public int expPerLevel = 10;
         
+        [Button]
         public void AddExp(int amount)
         {
             Exp += amount;
