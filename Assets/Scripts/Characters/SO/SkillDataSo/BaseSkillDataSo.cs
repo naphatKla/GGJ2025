@@ -18,45 +18,62 @@ namespace Characters.SO.SkillDataSo
     public abstract class BaseSkillDataSo : SerializedScriptableObject
     {
         #region Inspector & Variables
-        
+
         // ---------------- Cooldown ----------------
+
+        [PropertyTooltip("The level of this skill.")] [SerializeField]
+        private int level;
 
         [Unit(Units.Second)]
         [PropertyTooltip("Cooldown duration (in seconds) before the skill can be used again after activation.")]
-        [SerializeField] 
+        [SerializeField]
         private float cooldown = 1f;
 
         // ---------------- Life Time ----------------
 
         [Title("Life Time")]
-
         [PropertyTooltip("If enabled, the skill will automatically exit after a set time.")]
         [PropertyOrder(9999)]
-        [SerializeField] 
+        [SerializeField]
         private bool hasLifeTime;
 
-        [EnableIf(nameof(hasLifeTime))] [Unit(Units.Second)]
-        [PropertyTooltip("Total active time (in seconds) before the skill automatically exits. Used only if 'Has Life Time' is enabled.")]
+        [EnableIf(nameof(hasLifeTime))]
+        [Unit(Units.Second)]
+        [PropertyTooltip(
+            "Total active time (in seconds) before the skill automatically exits. Used only if 'Has Life Time' is enabled.")]
         [PropertyOrder(9999)]
-        [SerializeField] 
+        [SerializeField]
         private float lifeTime;
-        
+
         // ---------------- Status Effects ----------------
         [Title("Status Effects")]
-        
         [PropertyTooltip("Status effects that will be applied to the user or others when this skill starts.")]
         [PropertyOrder(9999)]
-        [SerializeField] 
+        [SerializeField]
         private List<StatusEffectDataPayload> statusEffectOnSkillStart;
 
         // ---------------- Runtime Binding ----------------
 
         [Title("Runtime Binding")]
-        
-        [PropertyTooltip("The MonoBehaviour runtime class that will execute this skill. Must inherit from BaseSkillRuntime<T>.")]
+        [PropertyTooltip(
+            "The MonoBehaviour runtime class that will execute this skill. Must inherit from BaseSkillRuntime<T>.")]
         [ShowInInspector, OdinSerialize, PropertyOrder(10000)]
         [TypeDrawerSettings(BaseType = typeof(BaseSkillRuntime<>))]
         private Type _skillRuntime;
+        
+        [Title("Next Upgrade To")]
+        [PropertyTooltip("The next skill's data when this skill is upgraded")]
+        [ValidateInput(nameof(IsNextSkillValidate), "Next skill's level must be greater than this skill's level")]
+        [SerializeField, PropertyOrder(100001)]
+        private SkillDashDataSo nextSkillDataUpgrade;
+
+        private bool IsNextSkillValidate()
+        {
+            if (nextSkillDataUpgrade == null)
+                return true;
+            
+            return nextSkillDataUpgrade.level > level;
+        }
 
         // ---------------- Properties ----------------
 
@@ -82,13 +99,17 @@ namespace Characters.SO.SkillDataSo
         /// </summary>
         public List<StatusEffectDataPayload> StatusEffectOnSkillStart => statusEffectOnSkillStart;
 
-
         /// <summary>
         /// The runtime MonoBehaviour class that handles this skill’s logic. 
         /// Must inherit from <see cref="BaseSkillRuntime{T}"/>.
         /// </summary>
         public Type SkillRuntime => _skillRuntime;
-        
+
+        /// <summary>
+        /// Next skill data. Use in the upgrade.
+        /// </summary>
+        public SkillDashDataSo NextSkillDataUpgrade => nextSkillDataUpgrade;
+
         #endregion
     }
 }
