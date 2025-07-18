@@ -3,6 +3,7 @@ Shader "Eric/URP Particles/Alpha Blended"
 	Properties
 	{
 		_MainTex("MainTex", 2D) = "white" {}
+		_ChannelMask("MainTex Channel Mask RGBA", Vector) = (1, 0, 0, 0)
 		_Noise("Noise", 2D) = "white" {}
 		_Flow("Flow", 2D) = "white" {}
 		_Mask("Mask", 2D) = "white" {}
@@ -10,6 +11,7 @@ Shader "Eric/URP Particles/Alpha Blended"
 		_DistortionSpeedXYPowerZ("Distortion Speed XY Power Z", Vector) = (0,0,0,0)
 		_Emission("Emission", Float) = 2
 		_Color("Color", Color) = (0.5,0.5,0.5,1)
+		_AlphaSharpness ("Alpha Sharpness", Range(0,1)) = 0
 		_Opacity("Opacity", Range( 0 , 3)) = 1
 		[Toggle]_Usecenterglow("Use center glow?", Float) = 0
 		[MaterialToggle] _Usedepth ("Use depth?", Float ) = 0
@@ -87,6 +89,8 @@ Shader "Eric/URP Particles/Alpha Blended"
 				uniform float4 _Mask_ST;
 				uniform sampler2D _Noise;
 				uniform float4 _Noise_ST;
+				uniform float _AlphaSharpness;
+				uniform float4 _ChannelMask;
 				uniform float4 _Color;
 				uniform float _Emission;
 				uniform float _Opacity;
@@ -137,15 +141,23 @@ Shader "Eric/URP Particles/Alpha Blended"
 					float4 tex2DNode33 = tex2D( _Mask, uv_Mask );
 					float Flowpower102 = _DistortionSpeedXYPowerZ.z;
 					float4 tex2DNode13 = tex2D( _MainTex, ( panner107 - ( (( tex2D( _Flow, panner110 ) * tex2DNode33 )).rg * Flowpower102 ) ) );
+					float4 rawTex = tex2D( _MainTex, ( panner107 - ( (( tex2D( _Flow, panner110 ) * tex2DNode33 )).rg * Flowpower102 ) ) );
 					float2 appendResult22 = (float2(_SpeedMainTexUVNoiseZW.z , _SpeedMainTexUVNoiseZW.w));
 					float2 uv0_Noise = i.texcoord.xy * _Noise_ST.xy + _Noise_ST.zw;
 					float2 panner108 = ( 1.0 * _Time.y * appendResult22 + uv0_Noise);
 					float4 tex2DNode14 = tex2D( _Noise, panner108 );
-					float3 temp_output_78_0 = (( tex2DNode13 * tex2DNode14 * _Color * i.color )).rgb;
+					float3 temp_output_78_0 = (_Color.rgb * i.color.rgb);
 					float4 temp_cast_0 = ((1.0 + (uv0_Flow.z - 0.0) * (0.0 - 1.0) / (1.0 - 0.0))).xxxx;
 					float4 clampResult38 = tex2DNode33 - temp_cast_0;
 					float4 clampResult40 = clamp( ( tex2DNode33 * clampResult38 ) , float4( 0,0,0,0 ) , float4( 1,1,1,1 ) );
-					float4 appendResult87 = (float4(( lerp(temp_output_78_0,( temp_output_78_0 * (clampResult40).rgb ),_Usecenterglow) * _Emission ) , ( tex2DNode13.a * tex2DNode14.a * _Color.a * i.color.a * _Opacity )));
+					float mask = dot(rawTex, _ChannelMask); // ดึงค่า R/G/B/A ที่เลือกจาก MainTex
+
+float alphaFromMask = dot(rawTex, _ChannelMask);
+
+float4 appendResult87 = float4(
+    lerp(temp_output_78_0, temp_output_78_0 * clampResult40.rgb, _Usecenterglow) * _Emission,
+    alphaFromMask * tex2DNode14.a * _Color.a * i.color.a * _Opacity
+);
 					fixed4 col = appendResult87;
 					UNITY_APPLY_FOG(i.fogCoord, col);
 					return col;
