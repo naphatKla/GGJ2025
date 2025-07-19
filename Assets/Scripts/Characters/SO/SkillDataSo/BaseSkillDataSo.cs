@@ -21,8 +21,8 @@ namespace Characters.SO.SkillDataSo
 
         // ---------------- Cooldown ----------------
 
-        [PropertyTooltip("The level of this skill.")] [SerializeField]
-        private int level;
+        [MinValue(1)] [PropertyTooltip("The level of this skill.")] [SerializeField]
+        private int level = 1;
 
         [Unit(Units.Second)]
         [PropertyTooltip("Cooldown duration (in seconds) before the skill can be used again after activation.")]
@@ -65,7 +65,7 @@ namespace Characters.SO.SkillDataSo
         [PropertyTooltip("The next skill's data when this skill is upgraded")]
         [ValidateInput(nameof(IsNextSkillValidate), "Next skill's level must be greater than this skill's level")]
         [SerializeField, PropertyOrder(100001)]
-        private SkillDashDataSo nextSkillDataUpgrade;
+        private BaseSkillDataSo nextSkillDataUpgrade;
 
         private bool IsNextSkillValidate()
         {
@@ -113,7 +113,7 @@ namespace Characters.SO.SkillDataSo
         /// <summary>
         /// Next skill data. Use in the upgrade.
         /// </summary>
-        public SkillDashDataSo NextSkillDataUpgrade => nextSkillDataUpgrade;
+        public BaseSkillDataSo NextSkillDataUpgrade => nextSkillDataUpgrade;
 
         #endregion
     }

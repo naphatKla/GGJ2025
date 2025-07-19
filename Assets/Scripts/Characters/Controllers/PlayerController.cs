@@ -36,6 +36,12 @@ namespace Characters.Controllers
             Instance = this;
         }
 
+        protected override void InitializeData()
+        {
+            skillUpgradeController.Init(skillSystem);
+            base.InitializeData();
+        }
+
         protected override void SubscribeDependency()
         {
             levelSystem.OnLevelUp += skillUpgradeController.OnLevelUp;

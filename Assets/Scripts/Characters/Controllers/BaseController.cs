@@ -37,7 +37,7 @@ namespace Characters.Controllers
         /// Reference to the character's skill system, responsible for executing primary and secondary skills.
         /// Should be assigned via Inspector or at runtime, Automatically initialized
         /// </summary>
-        [SerializeField] private SkillSystem skillSystem;
+        [SerializeField] protected SkillSystem skillSystem;
 
         /// <summary>
         /// Reference to the health system.
@@ -181,7 +181,7 @@ namespace Characters.Controllers
         /// Initializes all assigned systems with stat data.
         /// Marks the controller as initialized.
         /// </summary>
-        private void InitializeData()
+        protected virtual void InitializeData()
         {
             if (skillSystem)
                 skillSystem.Initialize(this);
