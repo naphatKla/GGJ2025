@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Characters.SO.SkillDataSo;
-using Characters.SO.CharacterDataSO; // ต้อง import ด้วย
+using Characters.SO.CharacterDataSO;
 using UnityEngine;
 
 namespace Characters.SkillSystems
@@ -14,13 +14,10 @@ namespace Characters.SkillSystems
         private SkillSystem _playerSkillSystem;
         private List<BaseSkillDataSo> _skillPool = new();
 
-        /// <summary>
-        /// Inject PlayerDataSO (หรือ BaseCharacterDataSO ถ้าอยากรองรับหลายแบบ)
-        /// </summary>
         public void AssignData(SkillSystem skillSystem, PlayerDataSo playerDataSo)
         {
             _playerSkillSystem = skillSystem;
-            _skillPool = playerDataSo.SkillUpgradePool; // รับ pool จาก SO
+            _skillPool = playerDataSo.SkillUpgradePool;
         }
 
         public void OnLevelUp(int level)
@@ -41,34 +38,20 @@ namespace Characters.SkillSystems
             if (skillSystem == null) return options;
 
             var slotData = skillSystem.GetAllCurrentSkillDatas();
-            var currentOwned = slotData.All.ToHashSet();
+            var currentRoots = slotData.All.Select(s => s.RootNode).ToHashSet();
 
-            // Primary
-            if (slotData.Primary == null)
-                options.AddRange(_skillPool.Where(s => !currentOwned.Contains(s)));
-            else if (slotData.Primary.NextSkillDataUpgrade != null &&
-                     !currentOwned.Contains(slotData.Primary.NextSkillDataUpgrade))
-                options.Add(slotData.Primary.NextSkillDataUpgrade);
+            // 1. Base node ยังไม่ถูกถือ (add new)
+            options.AddRange(_skillPool.Where(s => !currentRoots.Contains(s)));
 
-            // Secondary
-            if (slotData.Secondary == null)
-                options.AddRange(_skillPool.Where(s => !currentOwned.Contains(s)));
-            else if (slotData.Secondary.NextSkillDataUpgrade != null &&
-                     !currentOwned.Contains(slotData.Secondary.NextSkillDataUpgrade))
-                options.Add(slotData.Secondary.NextSkillDataUpgrade);
+            // 2. อัพเกรดได้ (next)
+            foreach (var skill in slotData.All)
+            {
+                if (skill != null && skill.NextSkillDataUpgrade != null)
+                    options.Add(skill.NextSkillDataUpgrade);
+            }
 
-            // Auto
-            if (slotData.Auto.Count == 0)
-                options.AddRange(_skillPool.Where(s => !currentOwned.Contains(s)));
-            else
-                foreach (var autoSkill in slotData.Auto)
-                    if (autoSkill.NextSkillDataUpgrade != null &&
-                        !currentOwned.Contains(autoSkill.NextSkillDataUpgrade))
-                        options.Add(autoSkill.NextSkillDataUpgrade);
-
-            // filter & random
             options = options
-                .Where(skill => skill != null && !currentOwned.Contains(skill))
+                .Where(skill => skill != null)
                 .Distinct()
                 .ToList();
 

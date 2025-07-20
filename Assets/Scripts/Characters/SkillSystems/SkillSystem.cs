@@ -33,23 +33,17 @@ namespace Characters.SkillSystems
         private readonly Dictionary<BaseSkillDataSo, BaseSkillRuntime> _skillRuntimeDictionary = new();
         protected BaseController owner;
 
-        /// <summary>
-        /// Assigns all config data from SO (call on spawn/init).
-        /// </summary>
         public virtual void AssignData(BaseController owner, BaseSkillDataSo primary, BaseSkillDataSo secondary,
             List<BaseSkillDataSo> autoList, int autoSlot)
         {
             this.owner = owner;
             primarySkillData = primary;
             secondarySkillData = secondary;
-
             autoSkillSlot = Mathf.Max(0, autoSlot);
             autoSkillDataList = new List<BaseSkillDataSo>(autoList ?? new List<BaseSkillDataSo>());
-            // trim list 
             while (autoSkillDataList.Count > autoSkillSlot)
                 autoSkillDataList.RemoveAt(autoSkillDataList.Count - 1);
 
-            // Build runtime collections
             _autoSkillDatas.Clear();
             foreach (var skill in autoSkillDataList)
                 _autoSkillDatas.Add(skill);
@@ -60,15 +54,12 @@ namespace Characters.SkillSystems
             ResetToDefaultSkill();
         }
 
-        // Convenience: assign SO directly
         public virtual void AssignData(BaseController owner, BaseCharacterDataSo dataSO)
         {
-            AssignData(owner, dataSO.PrimarySkillData, dataSO.SecondarySkillData, dataSO.AutoSkillDataList,
-                dataSO.AutoSkillSlot);
+            AssignData(owner, dataSO.PrimarySkillData, dataSO.SecondarySkillData, dataSO.AutoSkillDataList, dataSO.AutoSkillSlot);
         }
 
-        public (BaseSkillDataSo Primary, BaseSkillDataSo Secondary, List<BaseSkillDataSo> Auto,
-            IEnumerable<BaseSkillDataSo> All)
+        public (BaseSkillDataSo Primary, BaseSkillDataSo Secondary, List<BaseSkillDataSo> Auto, IEnumerable<BaseSkillDataSo> All)
             GetAllCurrentSkillDatas()
         {
             var all = new List<BaseSkillDataSo>();
@@ -78,95 +69,88 @@ namespace Characters.SkillSystems
             return (primarySkillData, secondarySkillData, _autoSkillDatas.ToList(), all);
         }
 
+        /// <summary>
+        /// Return true if any current equipped skill has the same root node.
+        /// </summary>
+        public bool ContainsSkillWithSameRoot(BaseSkillDataSo skillData)
+        {
+            if (skillData == null) return false;
+            var skillRoot = skillData.RootNode;
+            if (primarySkillData != null && primarySkillData.RootNode == skillRoot) return true;
+            if (secondarySkillData != null && secondarySkillData.RootNode == skillRoot) return true;
+            foreach (var auto in _autoSkillDatas)
+                if (auto != null && auto.RootNode == skillRoot) return true;
+            return false;
+        }
+
         public void UpgradeSkillSlot(BaseSkillDataSo upgradeSkill)
         {
+            var skillRoot = upgradeSkill.RootNode;
+
+            // Primary
             if (primarySkillData == null)
             {
-                SetOrAddSkill(upgradeSkill, SkillType.PrimarySkill);
-                Debug.Log($"[SkillSystem] Added new primary skill: {upgradeSkill.name}");
-                return;
+                if (!ContainsSkillWithSameRoot(upgradeSkill))
+                {
+                    SetOrAddSkill(upgradeSkill, SkillType.PrimarySkill);
+                    Debug.Log($"[SkillSystem] Added new primary skill: {upgradeSkill.name}");
+                    return;
+                }
             }
-
-            if (primarySkillData.NextSkillDataUpgrade == upgradeSkill)
+            else if (primarySkillData.RootNode == skillRoot)
             {
-                SetOrAddSkill(upgradeSkill, SkillType.PrimarySkill);
-                Debug.Log($"[SkillSystem] Upgraded primary skill to: {upgradeSkill.name}");
-                return;
+                if (primarySkillData.NextSkillDataUpgrade == upgradeSkill)
+                {
+                    SetOrAddSkill(upgradeSkill, SkillType.PrimarySkill);
+                    Debug.Log($"[SkillSystem] Upgraded primary skill to: {upgradeSkill.name}");
+                    return;
+                }
             }
 
+            // Secondary
             if (secondarySkillData == null)
             {
-                SetOrAddSkill(upgradeSkill, SkillType.SecondarySkill);
-                Debug.Log($"[SkillSystem] Added new secondary skill: {upgradeSkill.name}");
-                return;
+                if (!ContainsSkillWithSameRoot(upgradeSkill))
+                {
+                    SetOrAddSkill(upgradeSkill, SkillType.SecondarySkill);
+                    Debug.Log($"[SkillSystem] Added new secondary skill: {upgradeSkill.name}");
+                    return;
+                }
             }
-
-            if (secondarySkillData.NextSkillDataUpgrade == upgradeSkill)
+            else if (secondarySkillData.RootNode == skillRoot)
             {
-                SetOrAddSkill(upgradeSkill, SkillType.SecondarySkill);
-                Debug.Log($"[SkillSystem] Upgraded secondary skill to: {upgradeSkill.name}");
-                return;
+                if (secondarySkillData.NextSkillDataUpgrade == upgradeSkill)
+                {
+                    SetOrAddSkill(upgradeSkill, SkillType.SecondarySkill);
+                    Debug.Log($"[SkillSystem] Upgraded secondary skill to: {upgradeSkill.name}");
+                    return;
+                }
             }
 
-            var oldAuto = _autoSkillDatas.FirstOrDefault(s => s.NextSkillDataUpgrade == upgradeSkill);
-            if (oldAuto != null)
+            // Auto
+            foreach (var autoSkill in _autoSkillDatas.ToList())
             {
-                _autoSkillDatas.Remove(oldAuto);
-                SetOrAddSkill(upgradeSkill, SkillType.AutoSkill);
-                Debug.Log($"[SkillSystem] Upgraded auto skill to: {upgradeSkill.name}");
-                return;
+                if (autoSkill.RootNode == skillRoot)
+                {
+                    if (autoSkill.NextSkillDataUpgrade == upgradeSkill)
+                    {
+                        _autoSkillDatas.Remove(autoSkill);
+                        SetOrAddSkill(upgradeSkill, SkillType.AutoSkill);
+                        Debug.Log($"[SkillSystem] Upgraded auto skill to: {upgradeSkill.name}");
+                        return;
+                    }
+                }
             }
 
-            if (_autoSkillDatas.Count < autoSkillSlot)
+            // Add as new auto skill if slot available and root node doesn't exist yet
+            if (_autoSkillDatas.Count < autoSkillSlot && !ContainsSkillWithSameRoot(upgradeSkill))
             {
                 SetOrAddSkill(upgradeSkill, SkillType.AutoSkill);
                 Debug.Log($"[SkillSystem] Added new auto skill: {upgradeSkill.name}");
                 return;
             }
 
-            Debug.LogWarning(
-                $"[SkillSystem] Cannot upgrade/add skill {upgradeSkill.name}: all slots full and no match for upgrade.");
-        }
-
-        public SkillType? GetSlotUpgradeTarget(BaseSkillDataSo upgradeSkill)
-        {
-            if (primarySkillData == null || primarySkillData.NextSkillDataUpgrade == upgradeSkill)
-                return SkillType.PrimarySkill;
-            if (secondarySkillData == null || secondarySkillData.NextSkillDataUpgrade == upgradeSkill)
-                return SkillType.SecondarySkill;
-            if (_autoSkillDatas.Any(s => s.NextSkillDataUpgrade == upgradeSkill) ||
-                _autoSkillDatas.Count < autoSkillSlot)
-                return SkillType.AutoSkill;
-            return null;
-        }
-
-        public bool HasEmptySlot(SkillType type)
-        {
-            switch (type)
-            {
-                case SkillType.PrimarySkill: return primarySkillData == null;
-                case SkillType.SecondarySkill: return secondarySkillData == null;
-                case SkillType.AutoSkill: return _autoSkillDatas.Count < autoSkillSlot;
-                default: return false;
-            }
-        }
-
-        public bool ContainsSkill(BaseSkillDataSo skillData)
-        {
-            if (skillData == null) return false;
-            return skillData == primarySkillData
-                   || skillData == secondarySkillData
-                   || _autoSkillDatas.Contains(skillData);
-        }
-
-        private void InstantiateSkillRuntime(BaseSkillDataSo skillData)
-        {
-            if (!skillData) return;
-            if (!owner) return;
-            if (_skillRuntimeDictionary.ContainsKey(skillData)) return;
-            BaseSkillRuntime skillRuntime = (BaseSkillRuntime)gameObject.AddComponent(skillData.SkillRuntime);
-            skillRuntime.AssignSkillData(skillData, owner);
-            _skillRuntimeDictionary.Add(skillData, skillRuntime);
+            Debug.LogWarning($"[SkillSystem] Cannot upgrade/add skill {upgradeSkill.name}: all slots full, root node exists, or max level.");
         }
 
         public virtual void SetOrAddSkill(BaseSkillDataSo newSkillData, SkillType type)
@@ -177,30 +161,23 @@ namespace Characters.SkillSystems
                 case SkillType.PrimarySkill:
                     if ((secondarySkillData == newSkillData) || _autoSkillDatas.Contains(newSkillData))
                     {
-                        Debug.LogWarning(
-                            $"[SkillSystem] Duplicate skill ({newSkillData.name}) detected! Cannot assign as Primary because it already exists in Secondary or AutoSkill.");
+                        Debug.LogWarning($"[SkillSystem] Duplicate skill ({newSkillData.name}) detected! Cannot assign as Primary because it already exists in Secondary or AutoSkill.");
                         return;
                     }
-
                     break;
                 case SkillType.SecondarySkill:
                     if ((primarySkillData == newSkillData) || _autoSkillDatas.Contains(newSkillData))
                     {
-                        Debug.LogWarning(
-                            $"[SkillSystem] Duplicate skill ({newSkillData.name}) detected! Cannot assign as Secondary because it already exists in Primary or AutoSkill.");
+                        Debug.LogWarning($"[SkillSystem] Duplicate skill ({newSkillData.name}) detected! Cannot assign as Secondary because it already exists in Primary or AutoSkill.");
                         return;
                     }
-
                     break;
                 case SkillType.AutoSkill:
-                    if ((primarySkillData == newSkillData) || (secondarySkillData == newSkillData) ||
-                        _autoSkillDatas.Contains(newSkillData))
+                    if ((primarySkillData == newSkillData) || (secondarySkillData == newSkillData) || _autoSkillDatas.Contains(newSkillData))
                     {
-                        Debug.LogWarning(
-                            $"[SkillSystem] Duplicate skill ({newSkillData.name}) detected! Cannot assign as AutoSkill because it already exists in Primary/Secondary/AutoSkill.");
+                        Debug.LogWarning($"[SkillSystem] Duplicate skill ({newSkillData.name}) detected! Cannot assign as AutoSkill because it already exists in Primary/Secondary/AutoSkill.");
                         return;
                     }
-
                     break;
             }
 
@@ -219,6 +196,16 @@ namespace Characters.SkillSystems
             }
 
             GetSkillRuntimeOrDefault(newSkillData)?.SetCooldown(0);
+        }
+
+        private void InstantiateSkillRuntime(BaseSkillDataSo skillData)
+        {
+            if (!skillData) return;
+            if (!owner) return;
+            if (_skillRuntimeDictionary.ContainsKey(skillData)) return;
+            BaseSkillRuntime skillRuntime = (BaseSkillRuntime)gameObject.AddComponent(skillData.SkillRuntime);
+            skillRuntime.AssignSkillData(skillData, owner);
+            _skillRuntimeDictionary.Add(skillData, skillRuntime);
         }
 
         public virtual BaseSkillRuntime GetSkillRuntimeOrDefault(BaseSkillDataSo skillData)

@@ -2,119 +2,91 @@ using System;
 using System.Collections.Generic;
 using Characters.SkillSystems.SkillRuntimes;
 using Characters.StatusEffectSystems;
-using Manager;
 using Sirenix.OdinInspector;
 using Sirenix.Serialization;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Characters.SO.SkillDataSo
 {
-    /// <summary>
-    /// Abstract base class for all ScriptableObjects used to define static skill configuration data.
-    /// Includes cooldown control, optional lifetime behavior, feedback events, status effect triggers, 
-    /// and runtime MonoBehaviour binding. Subclasses should extend with their own configuration fields.
-    /// </summary>
     public abstract class BaseSkillDataSo : SerializedScriptableObject
     {
-        #region Inspector & Variables
-
-        // ---------------- Cooldown ----------------
-
-        [MinValue(1)] [PropertyTooltip("The level of this skill.")] [SerializeField]
+        [MinValue(1)]
+        [SerializeField, PropertyTooltip("The level of this skill.")]
         private int level = 1;
 
         [Unit(Units.Second)]
-        [PropertyTooltip("Cooldown duration (in seconds) before the skill can be used again after activation.")]
-        [SerializeField]
+        [SerializeField, PropertyTooltip("Cooldown duration (in seconds) before the skill can be used again after activation.")]
         private float cooldown = 1f;
 
-        // ---------------- Life Time ----------------
-
         [Title("Life Time")]
-        [PropertyTooltip("If enabled, the skill will automatically exit after a set time.")]
-        [PropertyOrder(9999)]
-        [SerializeField]
+        [SerializeField, PropertyTooltip("If enabled, the skill will automatically exit after a set time.")]
         private bool hasLifeTime;
 
         [EnableIf(nameof(hasLifeTime))]
         [Unit(Units.Second)]
-        [PropertyTooltip(
-            "Total active time (in seconds) before the skill automatically exits. Used only if 'Has Life Time' is enabled.")]
-        [PropertyOrder(9999)]
-        [SerializeField]
+        [SerializeField, PropertyTooltip("Total active time (in seconds) before the skill automatically exits.")]
         private float lifeTime;
 
-        // ---------------- Status Effects ----------------
         [Title("Status Effects")]
-        [PropertyTooltip("Status effects that will be applied to the user or others when this skill starts.")]
-        [PropertyOrder(9999)]
-        [SerializeField]
+        [SerializeField, PropertyTooltip("Status effects that will be applied to the user or others when this skill starts.")]
         private List<StatusEffectDataPayload> statusEffectOnSkillStart;
 
-        // ---------------- Runtime Binding ----------------
-
         [Title("Runtime Binding")]
-        [PropertyTooltip(
-            "The MonoBehaviour runtime class that will execute this skill. Must inherit from BaseSkillRuntime<T>.")]
         [ShowInInspector, OdinSerialize, PropertyOrder(10000)]
         [TypeDrawerSettings(BaseType = typeof(BaseSkillRuntime<>))]
         private Type _skillRuntime;
-        
-        [Title("Next Upgrade To")]
-        [PropertyTooltip("The next skill's data when this skill is upgraded")]
-        [ValidateInput(nameof(IsNextSkillValidate), "Next skill's level must be greater than this skill's level")]
-        [SerializeField, PropertyOrder(100001)]
+
+        [Title("Upgrade Chain")]
+        [ValidateInput(nameof(IsNextSkillValidate), "Next skill's level must be greater than this skill's level, and must chain back to this node.")]
+        [SerializeField, PropertyTooltip("The next skill's data when this skill is upgraded")]
         private BaseSkillDataSo nextSkillDataUpgrade;
+
+        [ValidateInput(nameof(IsPreviousSkillValidate), "Previous skill's level must be less than this skill's level, and must chain forward to this node.")]
+        [SerializeField, PropertyTooltip("The previous/base skill node (null = this is base/LV1)")]
+        private BaseSkillDataSo previousSkillData;
+
+        // ---- Validation Methods ----
 
         private bool IsNextSkillValidate()
         {
             if (nextSkillDataUpgrade == null)
                 return true;
-            
-            return nextSkillDataUpgrade.level > level;
+            // Next ต้อง lv > node ปัจจุบัน และ next.previous == this
+            return nextSkillDataUpgrade.level > level
+                && nextSkillDataUpgrade.previousSkillData == this;
         }
 
-        // ---------------- Properties ----------------
+        private bool IsPreviousSkillValidate()
+        {
+            if (previousSkillData == null)
+                return true;
+            // Previous ต้อง lv < node ปัจจุบัน และ previous.next == this
+            return previousSkillData.level < level
+                && previousSkillData.nextSkillDataUpgrade == this;
+        }
 
-        /// <summary>
-        /// Cooldown duration (in seconds) before the skill can be re-used.
-        /// </summary>
+        // ---- Properties ----
         public float Cooldown => cooldown;
-
-        /// <summary>
-        /// Whether this skill automatically ends after a set lifetime.
-        /// </summary>
         public bool HasLifeTime => hasLifeTime;
-
-        /// <summary>
-        /// Maximum active time (in seconds) before the skill auto-cancels.
-        /// Only used if <see cref="HasLifeTime"/> is true.
-        /// </summary>
         public float LifeTime => lifeTime;
-
-        /// <summary>
-        /// List of status effects to apply when this skill starts.
-        /// Can target the skill user, allies, or enemies depending on implementation.
-        /// </summary>
         public List<StatusEffectDataPayload> StatusEffectOnSkillStart => statusEffectOnSkillStart;
-
-        /// <summary>
-        /// The runtime MonoBehaviour class that handles this skill’s logic. 
-        /// Must inherit from <see cref="BaseSkillRuntime{T}"/>.
-        /// </summary>
         public Type SkillRuntime => _skillRuntime;
-
-        /// <summary>
-        /// Skill's level
-        /// </summary>
         public int Level => level;
-        
-        /// <summary>
-        /// Next skill data. Use in the upgrade.
-        /// </summary>
         public BaseSkillDataSo NextSkillDataUpgrade => nextSkillDataUpgrade;
+        public BaseSkillDataSo PreviousSkillData => previousSkillData;
 
-        #endregion
+        /// <summary>
+        /// Return the root (LV1) node of this skill branch.
+        /// </summary>
+        public BaseSkillDataSo RootNode
+        {
+            get
+            {
+                BaseSkillDataSo root = this;
+                while (root.previousSkillData != null)
+                    root = root.previousSkillData;
+                return root;
+            }
+        }
     }
 }
