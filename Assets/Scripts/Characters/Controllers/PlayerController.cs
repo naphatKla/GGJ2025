@@ -41,7 +41,7 @@ namespace Characters.Controllers
 
         public override void AssignCharacterData(BaseCharacterDataSo data)
         {
-            skillUpgradeController.Init(skillSystem);
+            skillUpgradeController.AssignData(skillSystem, data as PlayerDataSo);
             base.AssignCharacterData(data);
         }
         

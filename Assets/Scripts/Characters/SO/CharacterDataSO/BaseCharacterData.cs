@@ -29,31 +29,27 @@ namespace Characters.SO.CharacterDataSO
         private float baseDamage = 10;
 
         [Title("Skill Loadout")]
-        [SerializeField, ValidateInput(nameof(IsSkillDataUnique), "Primary/Secondary/Auto skill must not duplicate!")]
+        [SerializeField, 
+         ValidateInput(nameof(IsSkillDataUnique), "Primary/Secondary/Auto skill must not duplicate!"),
+         ValidateInput(nameof(IsLv1), "Primary skill must be Level 1!")]
         private BaseSkillDataSo primarySkillData;
 
-        [SerializeField, ValidateInput(nameof(IsSkillDataUnique), "Primary/Secondary/Auto skill must not duplicate!")]
+        [SerializeField, 
+         ValidateInput(nameof(IsSkillDataUnique), "Primary/Secondary/Auto skill must not duplicate!"),
+         ValidateInput(nameof(IsLv1), "Secondary skill must be Level 1!")]
         private BaseSkillDataSo secondarySkillData;
 
         [SerializeField, MinValue(0), PropertyTooltip("Number of auto skill slots.")]
         private int autoSkillSlot = 3;
 
-        [SerializeField, ValidateInput(nameof(IsSkillListUnique), "Duplicate skill in autoSkillDataList is not allowed!")]
+        [SerializeField, 
+         ValidateInput(nameof(IsSkillPoolUnique), "Duplicate skill in autoSkillDataList is not allowed!"),
+         ValidateInput(nameof(IsAllLv1), "All auto skills must be Level 1!")]
         private List<BaseSkillDataSo> autoSkillDataList = new();
 
-        // Validation
-        private bool IsSkillListUnique(List<BaseSkillDataSo> list)
-        {
-            if (list == null) return true;
-            var hashSet = new HashSet<BaseSkillDataSo>();
-            foreach (var skill in list)
-            {
-                if (skill == null) continue;
-                if (!hashSet.Add(skill)) return false;
-            }
-            return true;
-        }
-        private bool IsSkillDataUnique(BaseSkillDataSo _)
+
+// --- Validation Method ---
+        protected bool IsSkillDataUnique(BaseSkillDataSo _)
         {
             var set = new HashSet<BaseSkillDataSo>();
             if (primarySkillData && !set.Add(primarySkillData)) return false;
@@ -66,6 +62,34 @@ namespace Characters.SO.CharacterDataSO
             return true;
         }
 
+        protected bool IsSkillPoolUnique(List<BaseSkillDataSo> list)
+        {
+            if (list == null) return true;
+            var set = new HashSet<BaseSkillDataSo>();
+            foreach (var skill in list)
+            {
+                if (skill == null) continue;
+                if (!set.Add(skill)) return false;
+            }
+            return true;
+        }
+
+        protected bool IsAllLv1(List<BaseSkillDataSo> list)
+        {
+            if (list == null) return true;
+            foreach (var skill in list)
+            {
+                if (skill == null) continue;
+                if (skill.Level != 1) return false;
+            }
+            return true;
+        }
+
+        protected bool IsLv1(BaseSkillDataSo skill)
+        {
+            return skill == null || skill.Level == 1;
+        }
+        
         // Public Getters
         public float MaxHealth => maxHealth;
         public float InvincibleTimePerHit => invincibleTimePerHit;
