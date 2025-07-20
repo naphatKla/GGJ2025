@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5056253ad23a97346927fde2743fb996, type: 3}
-  m_Name: autoSkillTest1
+  m_Name: autoSkillTest5
   m_EditorClassIdentifier: 
   serializationData:
     SerializedFormat: 2
@@ -30,18 +30,20 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
-  cooldown: 3
+  level: 5
+  cooldown: 12
   hasLifeTime: 0
   lifeTime: 3
   statusEffectOnSkillStart:
   - effectData: {fileID: 11400000, guid: aa4dff95f38494c4e876f8f95511ecf0, type: 2}
     isOverrideDuration: 1
     overrideDuration: 2
-  cloneAmount: 4
+  nextSkillDataUpgrade: {fileID: 0}
+  cloneAmount: 12
   cloneDamage: 1
-  clonePrefab: {fileID: 4060171572858958693, guid: 2e103f3aa6fb49647a9665689c570cea, type: 3}
-  explosionDistance: 5
-  explosionEntireDuration: 1
+  clonePrefab: {fileID: 4060171572858958693, guid: b87d6bf7ba64f804c9362b610223e8ea, type: 3}
+  explosionDistance: 13
+  explosionEntireDuration: 1.75
   explosionStartDuration: 0.1
   explosionStartCurve:
     serializedVersion: 2
@@ -106,17 +108,35 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 0
       value: 0
-      inSlope: -4
-      outSlope: -4
+      inSlope: 8
+      outSlope: 8
       tangentMode: 34
       weightedMode: 0
       inWeight: 0
       outWeight: 0.33333334
     - serializedVersion: 3
+      time: 0.25
+      value: 2
+      inSlope: -2
+      outSlope: -2
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
       time: 0.5
-      value: -2
-      inSlope: 0
-      outSlope: 0
+      value: -1
+      inSlope: -1
+      outSlope: -1
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.75
+      value: 1.5
+      inSlope: 2
+      outSlope: 2
       tangentMode: 34
       weightedMode: 0
       inWeight: 0.33333334
@@ -124,8 +144,8 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 1
       value: 0
-      inSlope: 4
-      outSlope: 4
+      inSlope: -6
+      outSlope: -6
       tangentMode: 34
       weightedMode: 0
       inWeight: 0.33333334

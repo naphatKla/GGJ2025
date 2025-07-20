@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5056253ad23a97346927fde2743fb996, type: 3}
-  m_Name: autoSkillTest2
+  m_Name: autoSkillTest3
   m_EditorClassIdentifier: 
   serializationData:
     SerializedFormat: 2
@@ -30,18 +30,20 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
-  cooldown: 5
+  level: 3
+  cooldown: 7
   hasLifeTime: 0
   lifeTime: 3
   statusEffectOnSkillStart:
   - effectData: {fileID: 11400000, guid: aa4dff95f38494c4e876f8f95511ecf0, type: 2}
     isOverrideDuration: 1
     overrideDuration: 2
-  cloneAmount: 6
+  nextSkillDataUpgrade: {fileID: 11400000, guid: 29a85d4ce6705e745854f15ae56c40b2, type: 2}
+  cloneAmount: 8
   cloneDamage: 1
-  clonePrefab: {fileID: 4060171572858958693, guid: 3c9996294d64515458589e11a80e8d61, type: 3}
-  explosionDistance: 7
-  explosionEntireDuration: 0.75
+  clonePrefab: {fileID: 4060171572858958693, guid: 9257356071eee0043989d2966896cebc, type: 3}
+  explosionDistance: 9
+  explosionEntireDuration: 1
   explosionStartDuration: 0.1
   explosionStartCurve:
     serializedVersion: 2
@@ -106,17 +108,35 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 0
       value: 0
-      inSlope: 4
-      outSlope: 4
+      inSlope: -1.5915625
+      outSlope: -1.5915625
       tangentMode: 34
       weightedMode: 0
       inWeight: 0
       outWeight: 0.33333334
     - serializedVersion: 3
+      time: 0.29486012
+      value: -0.46928832
+      inSlope: -4.5266786
+      outSlope: -4.5266786
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
       time: 0.5
-      value: 2
-      inSlope: 0
-      outSlope: 0
+      value: -2
+      inSlope: -0.17162895
+      outSlope: -0.17162895
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.7394609
+      value: -0.29538882
+      inSlope: 4.126148
+      outSlope: 4.126148
       tangentMode: 34
       weightedMode: 0
       inWeight: 0.33333334
@@ -124,8 +144,8 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 1
       value: 0
-      inSlope: -4
-      outSlope: -4
+      inSlope: 1.13376
+      outSlope: 1.13376
       tangentMode: 34
       weightedMode: 0
       inWeight: 0.33333334
