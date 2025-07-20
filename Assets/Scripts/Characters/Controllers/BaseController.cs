@@ -72,7 +72,7 @@ namespace Characters.Controllers
         /// ScriptableObject containing base character stats used to initialize systems.
         /// </summary>
         [PropertyOrder(9999)]
-        [Title("Data")] [SerializeField] private BaseCharacterData characterData;
+        [Title("Data")] [SerializeField] private BaseCharacterDataSo characterData;
 
         /// <summary>
         /// Character input handler implementing <see cref="ICharacterInput"/>.
@@ -112,7 +112,7 @@ namespace Characters.Controllers
         /// <summary>
         /// ScriptableObject containing base character stats used to initialize systems.
         /// </summary>
-        public BaseCharacterData CharacterData => characterData;
+        public BaseCharacterDataSo CharacterData => characterData;
         
         #endregion
 
@@ -133,10 +133,10 @@ namespace Characters.Controllers
 
         #region Methods
         
-        public virtual void AssignCharacterData(BaseCharacterData data)
+        public virtual void AssignCharacterData(BaseCharacterDataSo data)
         {
             characterData = data;
-            skillSystem.Initialize(this);
+            skillSystem.AssignData(this, data);
             movementSystem.AssignMovementData(
                 characterData.BaseSpeed,
                 characterData.MoveAccelerationRate,

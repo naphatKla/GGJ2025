@@ -1,68 +1,82 @@
+using System.Collections.Generic;
+using Characters.SO.SkillDataSo;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace Characters.SO.CharacterDataSO
 {
-    public abstract class BaseCharacterData : ScriptableObject
+    public abstract class BaseCharacterDataSo : ScriptableObject
     {
-        #region Inspector & Variables
+        [Title("Health Data")]
+        [SerializeField, MinValue(1), PropertyTooltip("Maximum health value.")]
+        private float maxHealth = 100;
 
-        [Title("Health Data", TitleAlignment = TitleAlignments.Centered)]
-        [PropertyTooltip("The maximum health value the character can have.")]
-        [SerializeField]
-        private float maxHealth;
-
-        [PropertyTooltip(
-            "Duration of temporary invincibility (in seconds) after the character takes damage. Prevents consecutive hits during this period.")]
-        [SerializeField]
+        [SerializeField, MinValue(0), PropertyTooltip("Invincible time after hit (sec).")]
         private float invincibleTimePerHit = 0.1f;
 
-        [Title("Movement Data", TitleAlignment = TitleAlignments.Centered)]
-        [PropertyTooltip("The base movement speed of the character when moving at full speed. (Units/Sec)")]
-        [SerializeField]
-        private float baseSpeed;
+        [Title("Movement Data")]
+        [SerializeField, PropertyTooltip("Base movement speed (unit/sec).")]
+        private float baseSpeed = 5;
 
-        [SerializeField] [PropertyTooltip("How quickly the character accelerates toward the target movement speed.")]
-        private float moveAccelerationRate;
+        [SerializeField, PropertyTooltip("Move acceleration rate.")]
+        private float moveAccelerationRate = 15;
 
-        [SerializeField] [PropertyTooltip("How quickly the character adjusts its movement direction.")]
-        private float turnAccelerationRate;
-        
-        [Title("Combat Data", TitleAlignment = TitleAlignments.Centered)]
-        [SerializeField]
-        [PropertyTooltip("The base damage this character deals per hit.")]
-        private float baseDamage;
-        
-        /// <summary>
-        /// The maximum health value for the character.
-        /// </summary>
+        [SerializeField, PropertyTooltip("Turn acceleration rate.")]
+        private float turnAccelerationRate = 30;
+
+        [Title("Combat Data")]
+        [SerializeField, PropertyTooltip("Base damage per hit.")]
+        private float baseDamage = 10;
+
+        [Title("Skill Loadout")]
+        [SerializeField, ValidateInput(nameof(IsSkillDataUnique), "Primary/Secondary/Auto skill must not duplicate!")]
+        private BaseSkillDataSo primarySkillData;
+
+        [SerializeField, ValidateInput(nameof(IsSkillDataUnique), "Primary/Secondary/Auto skill must not duplicate!")]
+        private BaseSkillDataSo secondarySkillData;
+
+        [SerializeField, MinValue(0), PropertyTooltip("Number of auto skill slots.")]
+        private int autoSkillSlot = 3;
+
+        [SerializeField, ValidateInput(nameof(IsSkillListUnique), "Duplicate skill in autoSkillDataList is not allowed!")]
+        private List<BaseSkillDataSo> autoSkillDataList = new();
+
+        // Validation
+        private bool IsSkillListUnique(List<BaseSkillDataSo> list)
+        {
+            if (list == null) return true;
+            var hashSet = new HashSet<BaseSkillDataSo>();
+            foreach (var skill in list)
+            {
+                if (skill == null) continue;
+                if (!hashSet.Add(skill)) return false;
+            }
+            return true;
+        }
+        private bool IsSkillDataUnique(BaseSkillDataSo _)
+        {
+            var set = new HashSet<BaseSkillDataSo>();
+            if (primarySkillData && !set.Add(primarySkillData)) return false;
+            if (secondarySkillData && !set.Add(secondarySkillData)) return false;
+            foreach (var skill in autoSkillDataList)
+            {
+                if (skill == null) continue;
+                if (!set.Add(skill)) return false;
+            }
+            return true;
+        }
+
+        // Public Getters
         public float MaxHealth => maxHealth;
-
-        /// <summary>
-        /// Duration of temporary invincibility (in seconds) after the character takes damage. Prevents consecutive hits during this period.
-        /// </summary>
         public float InvincibleTimePerHit => invincibleTimePerHit;
-
-        /// <summary>
-        /// The base movement speed of the character.
-        /// </summary>
         public float BaseSpeed => baseSpeed;
-
-        /// <summary>
-        /// The rate at which the character accelerates toward its movement speed.
-        /// </summary>
         public float MoveAccelerationRate => moveAccelerationRate;
-
-        /// <summary>
-        /// The rate at which the character adjusts its movement direction.
-        /// </summary>
         public float TurnAccelerationRate => turnAccelerationRate;
-        
-        /// <summary>
-        /// The base attack damage of the character.
-        /// </summary>
         public float BaseDamage => baseDamage;
 
-        #endregion
+        public BaseSkillDataSo PrimarySkillData => primarySkillData;
+        public BaseSkillDataSo SecondarySkillData => secondarySkillData;
+        public int AutoSkillSlot => autoSkillSlot;
+        public List<BaseSkillDataSo> AutoSkillDataList => autoSkillDataList;
     }
 }

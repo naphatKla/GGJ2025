@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Characters.SO.CharacterDataSO
 {
     [CreateAssetMenu(fileName = "EnemyData", menuName = "GameData/CharacterData/EnemyData")]
-    public class EnemyDataSo : BaseCharacterData
+    public class EnemyDataSo : BaseCharacterDataSo
     {
         [Title("Exp Data", TitleAlignment = TitleAlignments.Centered)]
         [SerializeField]
