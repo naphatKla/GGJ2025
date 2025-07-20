@@ -1,8 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Characters.Controllers;
 using Characters.HeathSystems;
+using Cinemachine;
+using GameControl.Interface;
+using GameControl.SO;
 using UnityEngine;
+using UnityEngine.Pool;
+using VHierarchy.Libs;
 
 namespace GameControl.Controller
 {
@@ -11,22 +17,27 @@ namespace GameControl.Controller
         private SO.MapDataSO _mapdata;
         private SpawnerStateController _state;
         private readonly Vector2 _regionSize;
-        private List<SO.MapDataSO.EnemyOption> _storeEnemy;
+        
+        private Dictionary<string, ObjectPool<EnemyController>> _enemyPools;
+        private List<MapDataSO.EnemyOption> _enemyOptionsList;
 
-        public EnemySpawnerController(SO.MapDataSO mapData, SpawnerStateController state, Vector2 spawnRegion)
+        public EnemySpawnerController(MapDataSO mapData, SpawnerStateController state, Vector2 spawnRegion)
         {
             _mapdata = mapData;
             _state = state;
             _regionSize = spawnRegion;
+
+            PrewarmEnemy();
         }
 
         public void PrewarmEnemy()
         {
-            _storeEnemy = new List<SO.MapDataSO.EnemyOption>();
-
+            _enemyOptionsList = new List<MapDataSO.EnemyOption>();
+            _enemyPools = new Dictionary<string, ObjectPool<EnemyController>>();
+            
             foreach (var data in _mapdata.EnemyOptions)
             {
-                var cloned = new SO.MapDataSO.EnemyOption
+                var cloned = new MapDataSO.EnemyOption
                 {
                     id = data.id,
                     enemyController = data.enemyController,
@@ -35,46 +46,83 @@ namespace GameControl.Controller
                     enemyPointGrowthRate = data.enemyPointGrowthRate,
                     enemyCanGrowth = data.enemyCanGrowth,
                     useCustomInterval = data.useCustomInterval,
-                    customInterval = data.customInterval
+                    customInterval = data.customInterval,
+                    EnemyObject = data.EnemyObject
                 };
+                _enemyOptionsList.Add(cloned);
 
-                _storeEnemy.Add(cloned);
-
-                foreach (var enemy in PoolingSystem.Instance.Prewarm(data.id, data.EnemyObject, data.prewarmCount,
-                             _state.EnemyParent))
-                {
-                    var enemyController = enemy.GetComponent<EnemyController>();
-                    enemyController.EnemyId = data.id;
-                    enemyController.EnemyPoint = data.EnemyPoint;
-                }
+                _enemyPools[cloned.id] = new ObjectPool<EnemyController>(
+                    () => CreateFunc(cloned),
+                    obj => ActionOnGet(obj, cloned),
+                    obj => ActionOnRelease(obj, cloned),
+                    obj => ActionOnDestroy(obj, cloned),
+                    false
+                );
             }
         }
-        
-        public List<SO.MapDataSO.EnemyOption> GetEnemyList()
+
+        private EnemyController CreateFunc(MapDataSO.EnemyOption option)
         {
-            return _storeEnemy;
+            var obj = Object.Instantiate(option.EnemyObject);
+            var controller = obj.GetComponent<EnemyController>();
+            controller.HealthSystem.OnDead = () => _enemyPools[option.id].Release(controller);
+            return controller;
+        }
+        
+        public void ActionOnDestroy(EnemyController obj, MapDataSO.EnemyOption option)
+        {
+            Object.Destroy(obj.gameObject);
+        }
+
+        public void ActionOnRelease(EnemyController obj, MapDataSO.EnemyOption option)
+        {
+            obj.gameObject.SetActive(false);
+            SpawnerStateController.Instance.CurrentEnemyPoint += option.EnemyPoint;
+        }
+        
+        private void ActionOnGet(EnemyController obj, MapDataSO.EnemyOption option)
+        {
+            obj.ResetAllDependentBehavior();
+            obj.gameObject.SetActive(true);
+        }
+
+        public Dictionary<string, ObjectPool<EnemyController>> GetEnemyList()
+        {
+            return _enemyPools;
+        }
+        
+        public List<MapDataSO.EnemyOption> GetEnemyOption()
+        {
+            return _enemyOptionsList;
         }
         
         public void UpgradePointRatio()
         {
-            //Upgrade enemy point ratio
-            foreach (var data in _storeEnemy)
+            foreach (var data in _enemyOptionsList)
             {
                 if (data.enemyCanGrowth)
                     data.EnemyPoint *= (1 + data.enemyPointGrowthRate / 100f);
             }
         }
 
-        public SO.MapDataSO.EnemyOption SpawnEnemy()
+        public MapDataSO.EnemyOption SpawnEnemy()
         {
-            //Random
-            var randomEnemy = RandomUtility.GetWeightedRandom(_storeEnemy);
-            PoolingSystem.Instance.Spawn(randomEnemy.id, SpawnUtility.RandomSpawnAroundRegion(_regionSize));
+            // Random Enemy
+            var randomEnemy = RandomUtility.GetWeightedRandom(_enemyOptionsList);
+            if (randomEnemy == null) return null;
 
-            //Reduce enemy point
+            // Get GameObject
+            if (!_enemyPools.TryGetValue(randomEnemy.id, out var pool)) return null;
+            
+            var enemyObj = pool.Get();
+            enemyObj.transform.position = SpawnUtility.RandomSpawnAroundRegion(_regionSize);
+            enemyObj.transform.SetParent(_state.EnemyParent);
+            
+            // Spawn Point Decrease
             SpawnerStateController.Instance.CurrentEnemyPoint -= randomEnemy.EnemyPoint;
 
             return randomEnemy;
         }
+
     }
 }

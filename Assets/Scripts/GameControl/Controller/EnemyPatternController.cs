@@ -1,8 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
+using Characters.Controllers;
 using Cysharp.Threading.Tasks;
 using GameControl.SO;
 using UnityEngine;
+using UnityEngine.Pool;
 
 namespace GameControl.Controller
 {
@@ -12,7 +14,8 @@ namespace GameControl.Controller
         private SpawnerStateController _state;
         private readonly Vector2 _regionSize;
         private readonly List<MapDataSO.PatternOption> _patternEnemy;
-        private List<MapDataSO.EnemyOption> _storeEnemy;
+        private Dictionary<string, ObjectPool<EnemyController>> _storeEnemy;
+        private List<MapDataSO.EnemyOption> _storeOption;
         private readonly bool _isDebug;
 
         public EnemyPatternController(MapDataSO mapData, SpawnerStateController state, Vector2 spawnRegion, bool debug)
@@ -24,9 +27,10 @@ namespace GameControl.Controller
             _isDebug = debug;
         }
 
-        public void SetEnemyList(List<MapDataSO.EnemyOption> enemyList)
+        public void SetEnemyList(Dictionary<string, ObjectPool<EnemyController>> enemyList, List<MapDataSO.EnemyOption> enemyOptions)
         {
             _storeEnemy = enemyList;
+            _storeOption = enemyOptions;
         }
 
         private async UniTask WaitForEnoughEnemyPoint(MapDataSO.PatternOption pattern)
@@ -114,14 +118,11 @@ namespace GameControl.Controller
                 Debug.Log(
                     $"[EnemyPatternController] Added random pattern: '{selectedPattern.pattern.name}'. Total patterns now: {_patternEnemy.Count}");
         }
-
-
-        //RandomEnemy to spawn and Calculate point how many enemy should spawn base on patternpoint
-        //var enemyIds = PoolingSystem.Instance.GetIds("Enemy");
+        
         public MapDataSO.EnemyOption RandomType()
         {
             //Random
-            return RandomUtility.GetWeightedRandom(_storeEnemy);
+            return RandomUtility.GetWeightedRandom(_storeOption);
         }
 
         public float CalculatePoint(MapDataSO.EnemyOption enemyOption, MapDataSO.PatternOption patternOption)
@@ -149,9 +150,8 @@ namespace GameControl.Controller
             {
                 foreach (var pos in row)
                 {
-                    PoolingSystem.Instance.Spawn(enemyType.id, pos);
-                    SpawnerStateController.Instance.CurrentEnemyPoint -= enemyType.EnemyPoint;
-
+                    SpawnEnemy(enemyType, pos);
+                    
                     if (patternData.DelayBetweenEnemy > 0)
                         await UniTask.Delay((int)(patternData.DelayBetweenEnemy * 1000));
                 }
@@ -159,6 +159,17 @@ namespace GameControl.Controller
                 if (patternData.DelayBetweenRows > 0)
                     await UniTask.Delay((int)(patternData.DelayBetweenRows * 1000));
             }
+        }
+
+        private void SpawnEnemy(MapDataSO.EnemyOption enemyType, Vector2 pos)
+        {
+            if (!_storeEnemy.TryGetValue(enemyType.id, out var pool)) return;
+                    
+            var enemyObj = pool.Get();
+            enemyObj.transform.position = pos;
+            enemyObj.transform.SetParent(_state.EnemyParent);
+                
+            SpawnerStateController.Instance.CurrentEnemyPoint -= enemyType.EnemyPoint;
         }
     }
 }

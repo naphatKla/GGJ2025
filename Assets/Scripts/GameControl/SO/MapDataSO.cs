@@ -45,7 +45,11 @@ namespace GameControl.SO
             public float EnemyPoint { get => spawnPoint; set => spawnPoint = value; }
             public string EnemyId => id;
             public float EnemyCooldown => customInterval;
-            public GameObject EnemyObject => enemyController.gameObject;
+            public GameObject EnemyObject
+            {
+                get => enemyController.gameObject;
+                set => enemyController = value?.GetComponent<EnemyController>();
+            }
             public bool TryPassChance() => Random.Range(0, 100) < chance;
         }
         
