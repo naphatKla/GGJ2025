@@ -89,9 +89,8 @@ namespace GameControl.Controller
             _maxEnemyPoint = _currentMapData.maxEnemyPoint;
             _increaseRateEnemyPoint = _currentMapData.increaseRateEnemyPoint;
             
-            _enemySpawnerController.PrewarmEnemy();
             _itemSpawnerController.PrewarmItem();
-            _enemyPatternController.SetEnemyList(_enemySpawnerController.GetEnemyList());
+            _enemyPatternController.SetEnemyList(_enemySpawnerController.GetEnemyList(), _enemySpawnerController.GetEnemyOption());
             _enemyPatternController.AddRandomPattern();
             
             //Every 3 minute trigger pattern
