@@ -1,12 +1,9 @@
-using System.Collections.Generic;
-using Characters.StatusEffectSystems;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace Characters.SO.CharacterDataSO
 {
-    [CreateAssetMenu(fileName = "CharacterData", menuName = "GameData/CharacterData")]
-    public class CharacterDataSo : ScriptableObject
+    public abstract class BaseCharacterData : ScriptableObject
     {
         #region Inspector & Variables
 
@@ -35,12 +32,7 @@ namespace Characters.SO.CharacterDataSO
         [SerializeField]
         [PropertyTooltip("The base damage this character deals per hit.")]
         private float baseDamage;
-
-        [Title("Exp Data", TitleAlignment = TitleAlignments.Centered)]
-        [SerializeField]
-        private int expDrop;
-
-
+        
         /// <summary>
         /// The maximum health value for the character.
         /// </summary>
@@ -65,11 +57,6 @@ namespace Characters.SO.CharacterDataSO
         /// The rate at which the character adjusts its movement direction.
         /// </summary>
         public float TurnAccelerationRate => turnAccelerationRate;
-        
-        /// <summary>
-        /// Exp drop after dead
-        /// </summary>
-        public int ExpDrop => expDrop;
         
         /// <summary>
         /// The base attack damage of the character.

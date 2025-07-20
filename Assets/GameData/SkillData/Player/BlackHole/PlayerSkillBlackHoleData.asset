@@ -30,6 +30,7 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
+  level: 1
   cooldown: 3
   hasLifeTime: 0
   lifeTime: 3
@@ -37,9 +38,10 @@ MonoBehaviour:
   - effectData: {fileID: 11400000, guid: aa4dff95f38494c4e876f8f95511ecf0, type: 2}
     isOverrideDuration: 1
     overrideDuration: 2
+  nextSkillDataUpgrade: {fileID: 0}
   cloneAmount: 6
   cloneDamage: 1
-  clonePrefab: {fileID: 4060171572858958693, guid: 718487630362cea45bc4ce9971ca37dd, type: 3}
+  clonePrefab: {fileID: 2632147385205435600, guid: 77ab01583acdb514f86262907fd33d07, type: 3}
   explosionDistance: 7
   explosionEntireDuration: 1
   explosionStartDuration: 0.1
@@ -216,7 +218,3 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  cloneEffects:
-  - effectData: {fileID: 11400000, guid: 859490802a7a26445ba20d4c30cc8d4f, type: 2}
-    isOverrideDuration: 1
-    overrideDuration: 2

@@ -5876,7 +5876,7 @@ MonoBehaviour:
   damageOnTouch: {fileID: 5678313002177273158}
   feedbackSystem: {fileID: 1661318226121973417}
   comboSystem: {fileID: 2247090465659933957}
-  characterData: {fileID: 11400000, guid: 177277e9c5cd29143b05e5f2f4d0bae0, type: 2}
+  characterData: {fileID: 11400000, guid: 39ed973e8de08f84faa43653bfdd68e7, type: 2}
   levelSystem: {fileID: 2047403147416900316}
   skillUpgradeController: {fileID: 7127418468070666774}
 --- !u!114 &7534513208806243613
@@ -5942,7 +5942,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: daaa21c8fa23d854992b57f950dd4e3f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  allSkillDataList: []
+  allSkillDataList:
+  - {fileID: 11400000, guid: 9349f10fdf731e144b8a8be9b5138bf3, type: 2}
   upgradeChoicesCount: 3
 --- !u!114 &2183269856455368127
 MonoBehaviour:
@@ -5958,12 +5959,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   primarySkillData: {fileID: 11400000, guid: 0e1b5bdaf3cd54043a42bec2bc82dcb1, type: 2}
   secondarySkillData: {fileID: 11400000, guid: 9a46408e5bdddd547be40c1e80dff589, type: 2}
-  autoSkillDataList:
-  - {fileID: 11400000, guid: 9349f10fdf731e144b8a8be9b5138bf3, type: 2}
-  - {fileID: 11400000, guid: e6df2eb36f3f6674e992a706f76eb31b, type: 2}
-  - {fileID: 11400000, guid: bed868c658f81d34a80c17dd98d3d17d, type: 2}
-  - {fileID: 11400000, guid: 29a85d4ce6705e745854f15ae56c40b2, type: 2}
-  - {fileID: 11400000, guid: fba4fbb922467094b94e3a773c4f516e, type: 2}
+  autoSkillDataList: []
 --- !u!114 &4177936962492003484
 MonoBehaviour:
   m_ObjectHideFlags: 0

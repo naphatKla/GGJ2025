@@ -1,5 +1,7 @@
+using Characters.ComboSystems;
 using Characters.LevelSystems;
 using Characters.SkillSystems;
+using Characters.SO.CharacterDataSO;
 using UnityEngine;
 
 namespace Characters.Controllers
@@ -11,7 +13,8 @@ namespace Characters.Controllers
     public class PlayerController : BaseController
     {
         #region Inspector & Variables
-
+        
+        [SerializeField] public ComboSystem comboSystem;
         [SerializeField] protected LevelSystem levelSystem;
         [SerializeField] protected SkillUpgradeController skillUpgradeController;
         
@@ -36,15 +39,16 @@ namespace Characters.Controllers
             Instance = this;
         }
 
-        protected override void InitializeData()
+        public override void AssignCharacterData(BaseCharacterData data)
         {
             skillUpgradeController.Init(skillSystem);
-            base.InitializeData();
+            base.AssignCharacterData(data);
         }
-
+        
         protected override void SubscribeDependency()
         {
             levelSystem.OnLevelUp += skillUpgradeController.OnLevelUp;
+            combatSystem.OnDealDamage += comboSystem.RegisterHit;
             
             base.SubscribeDependency();
         }
@@ -52,13 +56,13 @@ namespace Characters.Controllers
         protected override void UnSubscribeDependency()
         {
             levelSystem.OnLevelUp -= skillUpgradeController.OnLevelUp;
+            combatSystem.OnDealDamage -= comboSystem.RegisterHit;
             
             base.UnSubscribeDependency();
         }
 
         public override void ResetAllDependentBehavior()
         {
-            if (!isInitialize) return;
             levelSystem.ResetLevel();
             skillUpgradeController.ResetSkillUpgradeController();
             

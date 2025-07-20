@@ -293,13 +293,11 @@ namespace Characters.SkillSystems
             switch (type)
             {
                 case SkillType.PrimarySkill:
-                    Debug.Log("Perform Primary");
                     GetSkillRuntimeOrDefault(primarySkillData)?.PerformSkill();
                     PerformSkill(SkillType.AutoSkill);
                     break;
 
                 case SkillType.SecondarySkill:
-                    Debug.Log("Perform Secondary");
                     GetSkillRuntimeOrDefault(secondarySkillData)?.PerformSkill();
                     break;
 

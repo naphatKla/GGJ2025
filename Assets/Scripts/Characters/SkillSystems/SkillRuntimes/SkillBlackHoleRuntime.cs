@@ -1,14 +1,9 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using Characters.CombatSystems;
-using Characters.Controllers;
 using Characters.FeedbackSystems;
-using Characters.HeathSystems;
 using Characters.MovementSystems;
 using Characters.SO.SkillDataSo;
-using Characters.StatusEffectSystems;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using Manager;
@@ -26,6 +21,7 @@ namespace Characters.SkillSystems.SkillRuntimes
         /// Object pool for clone instances to reduce instantiation overhead.
         /// </summary>
         private readonly List<BaseMovementSystem> _cloneObjectPool = new();
+        private readonly List<DamageOnTouch> _cloneDamageOnTouchPool = new();
 
         #region Base Methods
         
@@ -73,8 +69,7 @@ namespace Characters.SkillSystems.SkillRuntimes
                 var clone = _cloneObjectPool[i];
                 clone.TryMoveToPositionOverTime(explosionPos, actualMoveDuration,
                     skillData.ExplosionEaseCurve, skillData.ExplosionMoveCurve);
-         
-                StatusEffectManager.ApplyEffectTo(clone.gameObject, skillData.CloneEffects);
+                
                 await UniTask.Delay((int)(delay * 1000), cancellationToken: cancelToken);
             }
 
@@ -141,6 +136,7 @@ namespace Characters.SkillSystems.SkillRuntimes
                     clone.transform.position = owner.transform.position;
                     clone.gameObject.SetActive(false);
                     _cloneObjectPool.Add(clone);
+                    _cloneDamageOnTouchPool.Add(clone.GetComponent<DamageOnTouch>());
                 }
             }
             else if (difference < 0)
@@ -149,6 +145,7 @@ namespace Characters.SkillSystems.SkillRuntimes
                 {
                     Destroy(_cloneObjectPool[^1]);
                     _cloneObjectPool.RemoveAt(_cloneObjectPool.Count - 1);
+                    _cloneDamageOnTouchPool.RemoveAt(_cloneObjectPool.Count-1);
                 }
             }
         }
@@ -158,10 +155,11 @@ namespace Characters.SkillSystems.SkillRuntimes
         /// </summary>
         private void ResetCharacterClone(bool isActive)
         {
-            foreach (var clone in _cloneObjectPool)
+            for (int i = 0; i < _cloneObjectPool.Count; i++)
             {
-                clone.transform.position = owner.transform.position;
-                clone.gameObject.SetActive(isActive);
+                _cloneObjectPool[i].transform.position = owner.transform.position;
+                _cloneObjectPool[i].gameObject.SetActive(isActive);
+                _cloneDamageOnTouchPool[i].EnableDamage(isActive, owner.gameObject);
             }
         }
 
@@ -174,9 +172,9 @@ namespace Characters.SkillSystems.SkillRuntimes
         /// </summary>
         private BaseMovementSystem CreateCharacterClone()
         {
-            CloneCharacterController clone = Instantiate(skillData.ClonePrefab);
+            BaseMovementSystem clone = Instantiate(skillData.ClonePrefab);
             clone.gameObject.SetActive(false);
-            return clone.MovementSystem;
+            return clone;
         }
         
         #endregion

@@ -1,5 +1,3 @@
-using System;
-using Characters.HeathSystems;
 using Manager;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -14,7 +12,6 @@ namespace Characters.CombatSystems
     public class DamageOnTouch : MonoBehaviour
     {
         #region Inspectors & Variables
-
         /// <summary>
         /// Indicates whether this object is currently allowed to deal damage on contact.
         /// Can be toggled at runtime for dynamic combat behaviors.
@@ -22,6 +19,7 @@ namespace Characters.CombatSystems
         [ShowInInspector, ReadOnly] 
         [ShowIf("@UnityEngine.Application.isPlaying")]
         private bool _isEnableDamage;
+        private GameObject _attacker;
 
         /// <summary>
         /// Indicates whether this object is currently allowed to deal damage on contact.
@@ -36,7 +34,7 @@ namespace Characters.CombatSystems
         private void OnTriggerEnter2D(Collider2D other)
         {
             if (!_isEnableDamage) return;
-            CombatManager.ApplyDamageTo(other.gameObject, gameObject);
+            CombatManager.ApplyDamageTo(other.gameObject, _attacker);
         }
 
         #endregion
@@ -48,9 +46,12 @@ namespace Characters.CombatSystems
         /// Should be called based on character state (e.g. active, stunned, dead).
         /// </summary>
         /// <param name="isEnable">True to enable damage, false to disable.</param>
-        public void EnableDamage(bool isEnable)
+        public void EnableDamage(bool isEnable, GameObject ownerAttacker)
         {
             _isEnableDamage = isEnable;
+            _attacker = ownerAttacker;
+            if (ownerAttacker && ownerAttacker != gameObject)
+                gameObject.layer = ownerAttacker.layer;
         }
         
         /// <summary>
@@ -59,7 +60,7 @@ namespace Characters.CombatSystems
         /// </summary>
         public void ResetDamageOnTouch()
         {
-            EnableDamage(false);
+            EnableDamage(false, null);
         }
 
         #endregion

@@ -1,5 +1,4 @@
 using Characters.CombatSystems;
-using Characters.ComboSystems;
 using Characters.FeedbackSystems;
 using Characters.HeathSystems;
 using Characters.InputSystems.Interface;
@@ -55,7 +54,7 @@ namespace Characters.Controllers
         /// Reference to the combat system.
         /// Should be assigned via Inspector or at runtime.
         /// </summary>
-        [SerializeField] private CombatSystem combatSystem;
+        [SerializeField] protected CombatSystem combatSystem;
 
         /// <summary>
         /// Reference to the Damage on touch system.
@@ -68,18 +67,12 @@ namespace Characters.Controllers
         /// Should be assigned via Inspector or at runtime.
         /// </summary>
         [SerializeField] private FeedbackSystem feedbackSystem;
-
-        /// <summary>
-        /// Reference to the combo system
-        /// Should be assigned via Inspector or at runtime.
-        /// </summary>
-        [SerializeField] public ComboSystem comboSystem;
-
+        
         /// <summary>
         /// ScriptableObject containing base character stats used to initialize systems.
         /// </summary>
         [PropertyOrder(9999)]
-        [Title("Data")] [SerializeField] private CharacterDataSo characterData;
+        [Title("Data")] [SerializeField] private BaseCharacterData characterData;
 
         /// <summary>
         /// Character input handler implementing <see cref="ICharacterInput"/>.
@@ -88,13 +81,7 @@ namespace Characters.Controllers
         /// </summary>
         [OdinSerialize] private ICharacterInput _inputSystem;
         
-        /// <summary>
-        /// Is this controller is initialize or not.
-        /// </summary>
-        protected bool isInitialize;
-
         public SpriteRenderer Body => body;
-
         
         public ICharacterInput InputSystem => _inputSystem;
         
@@ -125,21 +112,19 @@ namespace Characters.Controllers
         /// <summary>
         /// ScriptableObject containing base character stats used to initialize systems.
         /// </summary>
-        public CharacterDataSo CharacterData => characterData;
+        public BaseCharacterData CharacterData => characterData;
         
         #endregion
 
         #region Unity Methods
-        
-        private void Start()
+
+        protected virtual void OnEnable()
         {
-            if (characterData && !isInitialize)
-                AssignCharacterData(characterData);
-            
             SubscribeDependency();
+            AssignCharacterData(characterData);
         }
 
-        private void OnDestroy()
+        protected virtual void OnDisable()
         {
             UnSubscribeDependency();
         }
@@ -147,91 +132,36 @@ namespace Characters.Controllers
         #endregion
 
         #region Methods
-
-        /// <summary>
-        /// Assigns dependencies and stat data to this character.
-        /// Automatically initializes all major subsystems.
-        /// </summary>
-        public void AssignCharacterData(CharacterDataSo data,
-            BaseMovementSystem assignMovementSystem = null,
-            SkillSystem assignSkillSystem = null,
-            HealthSystem assignHealthSystem = null,
-            StatusEffectSystem assignStatusEffectSystem = null,
-            CombatSystem assignCombatSystem = null,
-            DamageOnTouch assignDamageOnTouch = null,
-            FeedbackSystem assignFeedbackSystem = null,
-            ComboSystem assignComboSystem = null,
-            ICharacterInput inputSystem = null)
+        
+        public virtual void AssignCharacterData(BaseCharacterData data)
         {
-            movementSystem      ??= assignMovementSystem;
-            skillSystem         ??= assignSkillSystem;
-            healthSystem        ??= assignHealthSystem;
-            statusEffectSystem  ??= assignStatusEffectSystem;
-            combatSystem        ??= assignCombatSystem;
-            damageOnTouch       ??= assignDamageOnTouch;
-            feedbackSystem      ??= assignFeedbackSystem;
-            comboSystem         ??= assignComboSystem;
-            _inputSystem        ??= inputSystem;
-
             characterData = data;
-            InitializeData();
+            skillSystem.Initialize(this);
+            movementSystem.AssignMovementData(
+                characterData.BaseSpeed,
+                characterData.MoveAccelerationRate,
+                characterData.TurnAccelerationRate
+            );
+            healthSystem.AssignHealthData(
+                characterData.MaxHealth,
+                characterData.InvincibleTimePerHit, this);
+            combatSystem.AssignCombatData(characterData.BaseDamage);
         }
-
-        /// <summary>
-        /// Initializes all assigned systems with stat data.
-        /// Marks the controller as initialized.
-        /// </summary>
-        protected virtual void InitializeData()
-        {
-            if (skillSystem)
-                skillSystem.Initialize(this);
-            
-            if (movementSystem)
-            {
-                movementSystem.AssignMovementData(
-                    characterData.BaseSpeed,
-                    characterData.MoveAccelerationRate,
-                    characterData.TurnAccelerationRate
-                );
-            }
-            
-            if (healthSystem)
-            {
-                healthSystem.AssignHealthData(
-                    characterData.MaxHealth,
-                    characterData.InvincibleTimePerHit, this);
-            }
-            
-            if (combatSystem)
-                combatSystem.AssignCombatData(characterData.BaseDamage);
-            
-            isInitialize = true;
-        }
-
+        
         protected virtual void SubscribeDependency()
         {
             _inputSystem ??= GetComponent<ICharacterInput>();
-            
-            if (_inputSystem != null)
-            {
-                _inputSystem.OnSkillPerform += skillSystem.PerformSkill;
-                _inputSystem.OnMove += movementSystem.AssignInputDirection;
-            }
-            
-            if (comboSystem)
-                combatSystem.OnDealDamage += comboSystem.RegisterHit;
+
+            if (_inputSystem == null) return;
+            _inputSystem.OnSkillPerform += skillSystem.PerformSkill;
+            _inputSystem.OnMove += movementSystem.AssignInputDirection;
         }
 
         protected virtual void UnSubscribeDependency()
         {
-            if (_inputSystem != null)
-            {
-                _inputSystem.OnSkillPerform -= skillSystem.PerformSkill;
-                _inputSystem.OnMove -= movementSystem.AssignInputDirection;
-            }
-            
-            if (comboSystem)
-                combatSystem.OnDealDamage -= comboSystem.RegisterHit;
+            if (_inputSystem == null) return;
+            _inputSystem.OnSkillPerform -= skillSystem.PerformSkill;
+            _inputSystem.OnMove -= movementSystem.AssignInputDirection;
         }
         
         public void TryPlayFeedback(FeedbackName feedbackName)
@@ -253,12 +183,11 @@ namespace Characters.Controllers
         /// </summary>
         public virtual void ResetAllDependentBehavior()
         {
-            if (!isInitialize) return;
-            movementSystem?.ResetMovementSystem();
-            skillSystem?.ResetSkillSystem();
-            healthSystem?.ResetHealthSystem();
-            statusEffectSystem?.ResetStatusEffectSystem();
-            damageOnTouch?.ResetDamageOnTouch();
+            movementSystem.ResetMovementSystem();
+            skillSystem.ResetSkillSystem();
+            healthSystem.ResetHealthSystem();
+            statusEffectSystem.ResetStatusEffectSystem();
+            damageOnTouch.ResetDamageOnTouch();
         }
 
         #endregion

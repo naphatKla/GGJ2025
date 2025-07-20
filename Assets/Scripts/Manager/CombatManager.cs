@@ -23,7 +23,11 @@ namespace Manager
         public static void ApplyDamageTo(GameObject target, GameObject attacker, float multiplier = 1)
         {
             if (!target.TryGetComponent(out HealthSystem targetHealth)) return;
-            if (!attacker.TryGetComponent(out CombatSystem attackerCombatSystem)) return;
+            if (!attacker.TryGetComponent(out CombatSystem attackerCombatSystem))
+            {
+                Debug.LogWarning("Can not apply damage. no attacker no damage deal.");
+                return;
+            }
             if (StatusEffectManager.TryGetEffect(attacker, StatusEffectName.DamageOnTouch, out _) &&
                 StatusEffectManager.TryGetEffect(target, StatusEffectName.DamageOnTouch, out _))
             {

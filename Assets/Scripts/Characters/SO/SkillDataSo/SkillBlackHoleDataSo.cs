@@ -1,6 +1,4 @@
-using System.Collections.Generic;
-using Characters.Controllers;
-using Characters.StatusEffectSystems;
+using Characters.MovementSystems;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -35,7 +33,7 @@ namespace Characters.SO.SkillDataSo
         [LabelText("Clone Prefab")]
         [PropertyTooltip("Prefab of clone instances.")]
         [SerializeField]
-        private CloneCharacterController clonePrefab;
+        private BaseMovementSystem clonePrefab;
 
         // ------------------ Explosion Phase ------------------
 
@@ -114,13 +112,6 @@ namespace Characters.SO.SkillDataSo
         [SerializeField]
         private AnimationCurve mergeMoveCurve;
         
-        // ------------------ Status Effect ------------------
-        
-        [PropertyTooltip("Status effects that will be applied to the clones when skill start.")]
-        [PropertyOrder(9999)]
-        [SerializeField] 
-        private List<StatusEffectDataPayload> cloneEffects;
-        
         // ------------------ Properties ------------------
 
         /// <summary>Total number of clones spawned during the skill.</summary>
@@ -130,7 +121,7 @@ namespace Characters.SO.SkillDataSo
         public float CloneDamage => cloneDamage;
 
         /// <summary>Prefab of clone to create the instances.</summary>
-        public CloneCharacterController ClonePrefab => clonePrefab;
+        public BaseMovementSystem ClonePrefab => clonePrefab;
 
         /// <summary>Distance each clone travels outward during the explosion phase.</summary>
         public float ExplosionDistance => explosionDistance;
@@ -164,10 +155,7 @@ namespace Characters.SO.SkillDataSo
 
         /// <summary>Curve that offsets the path of clones for merge movement (e.g., arcs or waves).</summary>
         public AnimationCurve MergeMoveCurve => mergeMoveCurve;
-
-        /// <summary>Status effects that will be applied to the clones when skill start.</summary>
-        public List<StatusEffectDataPayload> CloneEffects => cloneEffects;
-
+        
         #endregion
     }
 }
