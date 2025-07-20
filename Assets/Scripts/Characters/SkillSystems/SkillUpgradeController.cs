@@ -8,9 +8,7 @@ namespace Characters.SkillSystems
 {
     public class SkillUpgradeController : MonoBehaviour
     {
-        [Header("Number of skill choices presented on level up.")]
-        public int upgradeChoicesCount = 3;
-
+        private int _upgradeChoicesCount;
         private SkillSystem _playerSkillSystem;
         private List<BaseSkillDataSo> _skillPool = new();
 
@@ -18,6 +16,7 @@ namespace Characters.SkillSystems
         {
             _playerSkillSystem = skillSystem;
             _skillPool = playerDataSo.SkillUpgradePool;
+            _upgradeChoicesCount = playerDataSo.UpgradeChoicesCount;
         }
 
         public void OnLevelUp(int level)
@@ -39,11 +38,9 @@ namespace Characters.SkillSystems
 
             var slotData = skillSystem.GetAllCurrentSkillDatas();
             var currentRoots = slotData.All.Select(s => s.RootNode).ToHashSet();
-
-            // 1. Base node ยังไม่ถูกถือ (add new)
+            
             options.AddRange(_skillPool.Where(s => !currentRoots.Contains(s)));
-
-            // 2. อัพเกรดได้ (next)
+            
             foreach (var skill in slotData.All)
             {
                 if (skill != null && skill.NextSkillDataUpgrade != null)
@@ -55,7 +52,7 @@ namespace Characters.SkillSystems
                 .Distinct()
                 .ToList();
 
-            int count = Mathf.Min(upgradeChoicesCount, options.Count);
+            int count = Mathf.Min(_upgradeChoicesCount, options.Count);
             var result = new List<BaseSkillDataSo>();
             var randomPool = new List<BaseSkillDataSo>(options);
 
