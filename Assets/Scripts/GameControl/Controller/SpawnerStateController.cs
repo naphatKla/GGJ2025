@@ -95,7 +95,7 @@ namespace GameControl.Controller
             
             //Every 3 minute trigger pattern
             GameTimer.Instance.ScheduleLoopingTrigger(
-                10,
+                180,
                 GameTimer.Instance.StartTimerNumber,
                 () =>
                 {

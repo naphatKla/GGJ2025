@@ -66,7 +66,7 @@ namespace GameControl.Controller
         {
             if (_patternEnemy == null || _patternEnemy.Count == 0) return;
 
-            var totalDuration = 10f;
+            var totalDuration = 180f;
             var interval = totalDuration / _patternEnemy.Count;
 
             var totalElapsed = 0f;
