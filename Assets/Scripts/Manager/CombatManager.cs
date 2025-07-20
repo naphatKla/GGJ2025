@@ -39,5 +39,11 @@ namespace Manager
             if (!targetHealth.TakeDamage(damageDeal)) return;
             attackerCombatSystem.OnDealDamage?.Invoke();
         }
+
+        public static void ApplyDamageTo(GameObject target, float damage)
+        {
+            if (!target.TryGetComponent(out HealthSystem targetHealth)) return;
+            targetHealth.TakeDamage(damage);
+        }
     }
 }

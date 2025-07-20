@@ -6,7 +6,6 @@ using Characters.MovementSystems;
 using Characters.SO.SkillDataSo;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
-using Manager;
 using UnityEngine;
 
 namespace Characters.SkillSystems.SkillRuntimes
