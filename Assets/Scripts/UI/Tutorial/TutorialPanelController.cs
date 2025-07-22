@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,35 +11,28 @@ public class TutorialPanelController : MonoBehaviour
     public TutorialConfig tutorialConfig;
 
     [Header("UI Prefabs")]
-    public GameObject pagePrefab;
-    public GameObject dotPrefab;
+    public GameObject pagePrefab, dotPrefab;
 
     [Header("UI References")]
-    public Transform contentHolder;
-    public Transform indicatorPanel;
-    public Button leftButton;
-    public Button rightButton;
-    public Button skipButton;
+    public Transform contentHolder, indicatorPanel;
+    public Button leftButton, rightButton, skipButton;
     public CanvasGroup canvasGroup;
 
     [Header("Indicator Colors")]
-    public Color activeColor = Color.cyan;
-    public Color inactiveColor = Color.gray;
+    public Color activeColor = Color.cyan, inactiveColor = Color.gray;
 
-    private List<GameObject> pages = new List<GameObject>();
-    private List<Image> indicators = new List<Image>();
-
+    private List<GameObject> pages = new();
+    private List<Image> indicators = new();
     private int currentIndex = 0;
     private bool isAnimating = false;
 
-    private void Start()
-    {
+    void Start()
+    { 
         PlayerPrefs.DeleteAll();
         
-        // ตรวจว่าผู้เล่นเคยดู Tutorial แล้วหรือยัง
         if (PlayerPrefs.GetInt("HasSeenTutorial", 0) == 1)
         {
-            this.gameObject.SetActive(false);
+            gameObject.SetActive(false);
             return;
         }
 
@@ -49,59 +43,41 @@ public class TutorialPanelController : MonoBehaviour
         rightButton.onClick.AddListener(() => ChangePage(1));
         skipButton.onClick.AddListener(CloseTutorial);
 
-        ShowPage(currentIndex, instant:true);
+        ShowPage(currentIndex, true);
     }
 
     void GeneratePages()
     {
         foreach (var data in tutorialConfig.pages)
         {
-            GameObject page = Instantiate(pagePrefab, contentHolder);
+            var page = Instantiate(pagePrefab, contentHolder);
             page.transform.localScale = Vector3.one;
 
-            // Title Text
-            var titleObj = page.transform.Find("TitleText");
-            if (titleObj == null)
+            var titleText = page.transform.Find("TitleText")?.GetComponent<TMP_Text>();
+            var descText  = page.transform.Find("DescriptionText")?.GetComponent<TMP_Text>();
+            var image     = page.transform.Find("Image")?.GetComponent<Image>();
+
+            if (titleText)
             {
-                Debug.LogError("TitleText not found in prefab!");
-            }
-            else
-            {
-                var titleText = titleObj.GetComponent<TMP_Text>();
                 titleText.text = data.title;
+                if (tutorialConfig.globalTitleFont) titleText.font = tutorialConfig.globalTitleFont;
             }
 
-            // Description Text
-            var descObj = page.transform.Find("DescriptionText");
-            if (descObj == null)
+            if (descText)
             {
-                Debug.LogError("DescriptionText not found in prefab!");
-            }
-            else
-            {
-                var descText = descObj.GetComponent<TMP_Text>();
                 descText.text = data.description;
+                if (tutorialConfig.globalDescriptionFont) descText.font = tutorialConfig.globalDescriptionFont;
             }
 
-            // Image
-            var imageObj = page.transform.Find("Image");
-            if (imageObj != null)
+            if (image)
             {
-                var image = imageObj.GetComponent<Image>();
-                if (data.image != null)
-                {
-                    image.sprite = data.image;
-                    image.gameObject.SetActive(true);
-                }
-                else
-                {
-                    image.gameObject.SetActive(false);
-                }
+                image.sprite = data.image;
+                image.gameObject.SetActive(data.image != null);
             }
-            else
-            {
-                Debug.LogWarning("Image object not found in prefab!");
-            }
+
+            if (!page.TryGetComponent(out CanvasGroup cg))
+                cg = page.AddComponent<CanvasGroup>();
+            cg.alpha = 0;
 
             page.SetActive(false);
             pages.Add(page);
@@ -110,7 +86,7 @@ public class TutorialPanelController : MonoBehaviour
 
     void GenerateIndicators()
     {
-        for (int i = 0; i < pages.Count; i++)
+        foreach (var _ in pages)
         {
             var dot = Instantiate(dotPrefab, indicatorPanel);
             dot.transform.localScale = Vector3.one;
@@ -118,34 +94,30 @@ public class TutorialPanelController : MonoBehaviour
         }
     }
 
-
     void ChangePage(int direction)
     {
         if (isAnimating) return;
 
-        int newIndex = currentIndex + direction;
-        if (newIndex < 0) newIndex = pages.Count - 1;
-        if (newIndex >= pages.Count) newIndex = 0;
-
+        int newIndex = (currentIndex + direction + pages.Count) % pages.Count;
         StartCoroutine(AnimatePageChange(currentIndex, newIndex));
         currentIndex = newIndex;
     }
 
-    System.Collections.IEnumerator AnimatePageChange(int fromIndex, int toIndex)
+    IEnumerator AnimatePageChange(int from, int to)
     {
         isAnimating = true;
 
-        pages[fromIndex].GetComponent<CanvasGroup>().DOFade(0, 0.3f)
-            .OnComplete(() => pages[fromIndex].SetActive(false));
+        var fromPage = pages[from];
+        var toPage = pages[to];
 
-        pages[toIndex].SetActive(true);
-        var cg = pages[toIndex].GetComponent<CanvasGroup>();
+        fromPage.GetComponent<CanvasGroup>().DOFade(0, 0.1f).OnComplete(() => fromPage.SetActive(false));
+        toPage.SetActive(true);
+        var cg = toPage.GetComponent<CanvasGroup>();
         cg.alpha = 0;
-        cg.DOFade(1, 0.3f);
+        cg.DOFade(1, 0.1f);
 
-        UpdateIndicators(toIndex);
-
-        yield return new WaitForSeconds(0.3f);
+        UpdateIndicators(to);
+        yield return new WaitForSeconds(0.01f);
         isAnimating = false;
     }
 
@@ -153,29 +125,23 @@ public class TutorialPanelController : MonoBehaviour
     {
         for (int i = 0; i < pages.Count; i++)
         {
-            pages[i].SetActive(i == index);
-            if (pages[i].TryGetComponent<CanvasGroup>(out var cg))
-                cg.alpha = (i == index) ? 1 : 0;
+            bool isActive = i == index;
+            pages[i].SetActive(isActive);
+            if (pages[i].TryGetComponent(out CanvasGroup cg))
+                cg.alpha = isActive ? 1 : 0;
         }
-
         UpdateIndicators(index);
     }
 
     void UpdateIndicators(int index)
     {
         for (int i = 0; i < indicators.Count; i++)
-        {
             indicators[i].color = (i == index) ? activeColor : inactiveColor;
-        }
     }
 
     void CloseTutorial()
     {
-        canvasGroup.DOFade(0, 0.5f).OnComplete(() =>
-        {
-            gameObject.SetActive(false);
-        });
-
+        canvasGroup.DOFade(0, 0.5f).OnComplete(() => gameObject.SetActive(false));
         PlayerPrefs.SetInt("HasSeenTutorial", 1);
         PlayerPrefs.Save();
     }

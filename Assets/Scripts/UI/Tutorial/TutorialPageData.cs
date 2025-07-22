@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "TutorialPageData", menuName = "Tutorial/Tutorial Page Data")]
