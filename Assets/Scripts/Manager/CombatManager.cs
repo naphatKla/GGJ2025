@@ -31,13 +31,12 @@ namespace Manager
             if (StatusEffectManager.TryGetEffect(attacker, StatusEffectName.DamageOnTouch, out _) &&
                 StatusEffectManager.TryGetEffect(target, StatusEffectName.DamageOnTouch, out _))
             {
-                attackerCombatSystem.CounterAttack();
-                attackerCombatSystem.OnCounterAttack?.Invoke();
+                attackerCombatSystem.OnCounterAttackHandler();
             }
             
             float damageDeal = attackerCombatSystem.CalculateDamageDeal(multiplier);
             if (!targetHealth.TakeDamage(damageDeal)) return;
-            attackerCombatSystem.OnDealDamage?.Invoke();
+            attackerCombatSystem.OnDealDamageHandler();
         }
 
         public static void ApplyDamageTo(GameObject target, float damage)
