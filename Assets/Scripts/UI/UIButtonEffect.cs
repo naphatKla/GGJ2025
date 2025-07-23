@@ -75,9 +75,32 @@ public class UIButtonEffect : MonoBehaviour
         {
             rectTransform.DOKill();
             bool isHover = ((PointerEventData)data).pointerEnter == button.gameObject;
-            float targetScale = isHover ? hoverScale : 1f;
-            rectTransform.DOScale(originalScale * targetScale, tweenDuration).SetEase(Ease.OutBack);
+            if (isHover)
+            {
+                rectTransform.DOScale(originalScale * hoverScale, tweenDuration).SetEase(Ease.OutBack);
+            }
+            else
+            {
+                ResetEffect(rectTransform, backgroundImage, originalScale);
+            }
         });
+
+        // Reset effect after button click
+        button.onClick.AddListener(() =>
+        {
+            ResetEffect(rectTransform, backgroundImage, originalScale);
+        });
+    }
+
+    void ResetEffect(RectTransform rectTransform, Image backgroundImage, Vector3 originalScale)
+    {
+        rectTransform.DOKill();
+        rectTransform.DOScale(originalScale, tweenDuration).SetEase(Ease.OutQuad);
+
+        if (backgroundImage != null)
+        {
+            backgroundImage.DOFade(normalAlpha, tweenDuration);
+        }
     }
 
     void AddTrigger(EventTrigger trigger, EventTriggerType eventType, UnityEngine.Events.UnityAction<BaseEventData> action)
@@ -85,7 +108,7 @@ public class UIButtonEffect : MonoBehaviour
         EventTrigger.Entry entry = new EventTrigger.Entry { eventID = eventType };
         entry.callback.AddListener((data) =>
         {
-            if (GameModePanelSlide.isSliding) return; // <-- กันคลิกขณะ slide
+            if (GameModePanelSlide.isSliding) return; // กันคลิกขณะ slide
             action.Invoke(data);
         });
         trigger.triggers.Add(entry);

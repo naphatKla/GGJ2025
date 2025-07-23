@@ -11,6 +11,10 @@ public enum UIPanelType
     ResultLastStage,
     SkillTree,
     Setting,
+    SaveGame,
+    GameMode,
+    MapSelect,
+    QuitPanel,
 }
 
 [System.Serializable]
@@ -24,6 +28,7 @@ public class UIManager : MonoBehaviour
 {
     public static UIManager Instance { get; private set; }
     [SerializeField] private string menuScene;
+    [SerializeField] private string gamePlayScene;
 
     [Header("UI Panels")] public List<UIPanelEntry> panelEntries;
 
@@ -50,7 +55,13 @@ public class UIManager : MonoBehaviour
 
     public void OpenPanel(UIPanelType type)
     {
-        if (!panelDict.ContainsKey(type)) { return; }
+        Debug.Log($"[UIManager] OpenPanel called with: {type}");
+        if (!panelDict.ContainsKey(type))
+        {
+            Debug.LogWarning($"[UIManager] panelDict doesn't contain type: {type}");
+            return;
+        }
+        
         if (panelStack.Count > 0)
         {
             var last = panelStack.Peek();
@@ -96,5 +107,29 @@ public class UIManager : MonoBehaviour
         if (GameController.Instance == null) return;
         GameController.Instance.nextStageIndex = 0;
         GameController.Instance.selectedMapIndex = 0;
+    }
+    
+    public void OpenSaveGamePanel()
+    {
+        OpenPanel(UIPanelType.SaveGame);
+    }
+    
+    public void OpenMapSelectPanel()
+    {
+        OpenPanel(UIPanelType.MapSelect);
+    }
+    public void OpenGameModePanel()
+    {
+        OpenPanel(UIPanelType.GameMode);
+    }
+
+    public void LoadToGamePlayScene()
+    {
+        SceneManager.LoadScene(gamePlayScene);
+    }
+    
+    public void OpenQuitPanel()
+    {
+        OpenPanel(UIPanelType.QuitPanel);
     }
 }

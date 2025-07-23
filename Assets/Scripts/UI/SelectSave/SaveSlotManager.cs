@@ -18,14 +18,20 @@ public class SaveSlotManager : MonoBehaviour
         {
             GameObject clickedObject = GetObjectUnderMouse();
 
-            // Reset the active slot if clicked outside of the current active slot
+            // Reset only if clicked another SaveSlotUI
             if (currentActiveSlot != null &&
-                (clickedObject == null || clickedObject != currentActiveSlot.gameObject))
+                clickedObject != null &&
+                clickedObject != currentActiveSlot.gameObject)
             {
-                ResetActiveSlot();
+                SaveSlotUI clickedSlot = clickedObject.GetComponent<SaveSlotUI>();
+                if (clickedSlot != null)
+                {
+                    ResetActiveSlot();
+                }
             }
         }
     }
+
     
     // Check if the slot is already active
     public void SetActiveSlot(SaveSlotUI slot)
