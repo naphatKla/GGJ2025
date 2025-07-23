@@ -44,6 +44,12 @@ namespace Characters.FeedbackSystems
             if (!_feedbackList.ContainsKey(feedbackName)) return;
             _feedbackList[feedbackName]?.StopFeedbacks();
         }
+
+        public bool IsFeedbackPlaying(FeedbackName feedbackName)
+        {
+            if (!_feedbackList.ContainsKey(feedbackName)) return false;
+            return _feedbackList[feedbackName].IsPlaying;
+        }
         
         #endregion
     }

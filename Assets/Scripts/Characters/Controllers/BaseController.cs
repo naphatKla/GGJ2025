@@ -168,6 +168,11 @@ namespace Characters.Controllers
         {
             // handle feedback condition here.
             if (!feedbackSystem) return;
+            if (feedbackName == FeedbackName.AttackHit)
+            {
+                if (FeedbackSystem.IsFeedbackPlaying(FeedbackName.CounterAttack))
+                    return;
+            }
             feedbackSystem.PlayFeedback(feedbackName);
         }
 

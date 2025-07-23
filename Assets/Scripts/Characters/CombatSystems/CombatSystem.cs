@@ -78,6 +78,9 @@ namespace Characters.CombatSystems
         public void OnDealDamageHandler()
         {
             OnDealDamage?.Invoke();
+            
+            if (!TryGetComponent(out BaseController owner)) return;
+            owner?.TryPlayFeedback(FeedbackName.AttackHit);
         }
 
         #endregion
