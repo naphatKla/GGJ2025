@@ -67,10 +67,20 @@ namespace Characters.CombatSystems
             return _currentDamage * multiplier;
         }
 
-        public void CounterAttack()
+        public void OnCounterAttackHandler()
         {
+            OnCounterAttack?.Invoke();
+            
             if (!TryGetComponent(out BaseController owner)) return;
             owner?.TryPlayFeedback(FeedbackName.CounterAttack);
+        }
+
+        public void OnDealDamageHandler()
+        {
+            OnDealDamage?.Invoke();
+            
+            if (!TryGetComponent(out BaseController owner)) return;
+            owner?.TryPlayFeedback(FeedbackName.AttackHit);
         }
 
         #endregion

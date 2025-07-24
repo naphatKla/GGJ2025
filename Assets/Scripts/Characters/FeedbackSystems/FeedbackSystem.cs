@@ -44,6 +44,12 @@ namespace Characters.FeedbackSystems
             if (!_feedbackList.ContainsKey(feedbackName)) return;
             _feedbackList[feedbackName]?.StopFeedbacks();
         }
+
+        public bool IsFeedbackPlaying(FeedbackName feedbackName)
+        {
+            if (!_feedbackList.ContainsKey(feedbackName)) return false;
+            return _feedbackList[feedbackName].IsPlaying;
+        }
         
         #endregion
     }
@@ -61,7 +67,7 @@ namespace Characters.FeedbackSystems
         Dead = -96,
         Spawn = -95,
         Bounce = -94,
-        Attack = -93,
+        AttackHit = -93,
         CounterAttack = -92,
         Charge = -91,
         

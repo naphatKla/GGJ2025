@@ -30,6 +30,7 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
+  level: 2
   cooldown: 0.35
   hasLifeTime: 0
   lifeTime: 0.3
@@ -40,8 +41,13 @@ MonoBehaviour:
   - effectData: {fileID: 11400000, guid: 859490802a7a26445ba20d4c30cc8d4f, type: 2}
     isOverrideDuration: 1
     overrideDuration: 0.3
+  nextSkillDataUpgrade: {fileID: 0}
+  previousSkillData: {fileID: 11400000, guid: 0e1b5bdaf3cd54043a42bec2bc82dcb1, type: 2}
   dashDuration: 0.4
   dashDistance: 7.5
+  isFlexibleDash: 0
+  maxInputLength: 6
+  minMaxEffective: {x: 0.4, y: 1}
   dashEaseCurve:
     serializedVersion: 2
     m_Curve:
@@ -117,4 +123,4 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  snapTarget: 0
+  isFlexibleStatusEffectDuration: 0
