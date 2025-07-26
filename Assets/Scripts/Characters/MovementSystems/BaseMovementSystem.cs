@@ -81,6 +81,8 @@ namespace Characters.MovementSystems
         /// If false, automatic or manual movement is disabled.
         /// </summary>
         private bool _enablePrimaryMovement = true;
+
+        private bool _isStopFromStun;
         
         /// <summary>
         /// The current velocity of the entity movement.
@@ -135,6 +137,7 @@ namespace Characters.MovementSystems
         protected virtual void TryMoveWithInertia(Vector2 direction)
         {
             if (!_canMove) return;
+            if (_isStopFromStun) return;
             if (_moveOverTimeTween.IsActive()) return;
             if (currentSpeed == 0) return;
             if (!_enablePrimaryMovement)
@@ -197,6 +200,11 @@ namespace Characters.MovementSystems
             }
             
             ResetSpeedToDefault();
+        }
+
+        public virtual void StopFromStun(bool isStun)
+        {
+            _isStopFromStun = isStun;
         }
         
         /// <summary>

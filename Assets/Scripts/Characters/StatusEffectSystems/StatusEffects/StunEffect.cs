@@ -10,7 +10,7 @@ namespace Characters.StatusEffectSystems.StatusEffects
         public override void OnStart(GameObject owner)
         {
             ownerController = owner.GetComponent<BaseController>();
-            ownerController.MovementSystem.SetCanMove(false);
+            ownerController.MovementSystem.StopFromStun(true);
             ownerController.SkillSystem.SetCanUseSkills(false);
         }
 
@@ -21,7 +21,7 @@ namespace Characters.StatusEffectSystems.StatusEffects
 
         public override void OnExit()
         {
-            ownerController.MovementSystem.SetCanMove(true);
+            ownerController.MovementSystem.StopFromStun(false);
             ownerController.SkillSystem.SetCanUseSkills(true);
             ownerController = null;
         }
