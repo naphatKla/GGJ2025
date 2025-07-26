@@ -73,6 +73,6 @@ namespace Characters.FeedbackSystems
         
         // skill
         Dash = 1,
-        BlackHole = 2,
+        Reflection = 2,
     }
 }

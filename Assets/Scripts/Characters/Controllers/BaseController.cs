@@ -97,6 +97,8 @@ namespace Characters.Controllers
         /// </summary>
         public HealthSystem HealthSystem => healthSystem;
 
+        public SkillSystem SkillSystem => skillSystem;
+
         /// <summary>
         /// Reference to the Damage on touch system.
         /// Should be assigned via Inspector or at runtime.

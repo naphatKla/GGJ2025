@@ -11,7 +11,7 @@ namespace Characters.SO.SkillDataSo
     /// Includes timing, damage, movement curves, and delay logic via animation curves.
     /// </summary>
     [CreateAssetMenu(fileName = "SkillBlackHoleData", menuName = "GameData/SkillData/SkillBlackHoleData")]
-    public class SkillBlackHoleDataSo : BaseSkillDataSo
+    public class SkillReflectionDataSo : BaseSkillDataSo
     {
         #region Inspector & Variables
         

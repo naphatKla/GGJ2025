@@ -14,7 +14,7 @@ namespace Characters.SkillSystems.SkillRuntimes
     /// Executes a black hole skill by creating multiple clones that explode outward and then return to the caster.
     /// Useful for visual-heavy effects like illusions or area disruption.
     /// </summary>
-    public class SkillBlackHoleRuntime : BaseSkillRuntime<SkillBlackHoleDataSo>
+    public class SkillReflectionRuntime : BaseSkillRuntime<SkillReflectionDataSo>
     {
         /// <summary>
         /// Object pool for clone instances to reduce instantiation overhead.
@@ -31,7 +31,7 @@ namespace Characters.SkillSystems.SkillRuntimes
         {
             InitializedSkill();
             ResetCharacterClone(true);
-            owner.TryPlayFeedback(FeedbackName.BlackHole);
+            owner.TryPlayFeedback(FeedbackName.Reflection);
         }
 
         protected override async UniTask OnSkillUpdate(CancellationToken cancelToken)

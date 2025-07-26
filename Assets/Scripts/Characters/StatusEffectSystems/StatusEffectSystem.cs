@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Characters.SO.StatusEffectSO;
 using Characters.StatusEffectSystems.StatusEffects;
+using Manager;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -60,6 +61,7 @@ namespace Characters.StatusEffectSystems
     {
         Iframe = 0,
         DamageOnTouch = 1,
+        Stun = 2,
         // Add more statuses here
     }
 
@@ -129,10 +131,17 @@ namespace Characters.StatusEffectSystems
             newEffect.OnStart(gameObject);
         }
 
+        [Button]
+        private void TestAddEffect(StatusEffectDataPayload effectPayload)
+        {
+            StatusEffectManager.ApplyEffectTo(gameObject, effectPayload);
+        }
+        
         /// <summary>
         /// Removes a specific status effect from the character.
         /// </summary>
         /// <param name="effectName">The enum name of the effect to remove.</param>
+        [Button]
         public void RemoveEffect(StatusEffectName effectName)
         {
             if (!TryGetEffect(effectName, out BaseStatusEffect effect)) return;

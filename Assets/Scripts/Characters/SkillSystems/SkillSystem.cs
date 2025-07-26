@@ -5,6 +5,7 @@ using Characters.Controllers;
 using Characters.SkillSystems.SkillRuntimes;
 using Characters.SO.CharacterDataSO;
 using Characters.SO.SkillDataSo;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace Characters.SkillSystems
@@ -32,6 +33,7 @@ namespace Characters.SkillSystems
 
         private readonly Dictionary<BaseSkillDataSo, BaseSkillRuntime> _skillRuntimeDictionary = new();
         protected BaseController owner;
+        private bool _canUseSkills = true;
 
         public virtual void AssignData(BaseController owner, BaseSkillDataSo primary, BaseSkillDataSo secondary,
             List<BaseSkillDataSo> autoList, int autoSlot)
@@ -153,6 +155,7 @@ namespace Characters.SkillSystems
             Debug.LogWarning($"[SkillSystem] Cannot upgrade/add skill {upgradeSkill.name}: all slots full, root node exists, or max level.");
         }
 
+        [Button]
         public virtual void SetOrAddSkill(BaseSkillDataSo newSkillData, SkillType type)
         {
             if (!owner || !newSkillData) return;
@@ -218,6 +221,8 @@ namespace Characters.SkillSystems
         public virtual void PerformSkill(SkillType type)
         {
             if (!owner) return;
+            if (!_canUseSkills) return;
+            
             switch (type)
             {
                 case SkillType.PrimarySkill:
@@ -257,6 +262,12 @@ namespace Characters.SkillSystems
                 SetOrAddSkill(data, SkillType.AutoSkill);
         }
 
+
+        public void SetCanUseSkills(bool enable)
+        {
+            _canUseSkills = enable;
+        }
+        
         public void ResetSkillSystem()
         {
             CancelAllSkill();

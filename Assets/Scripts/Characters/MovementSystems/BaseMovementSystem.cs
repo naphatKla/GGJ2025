@@ -189,7 +189,14 @@ namespace Characters.MovementSystems
         public virtual void SetCanMove(bool canMove)
         {
             _canMove = canMove;
-            if (!_canMove) StopAllMovement();
+            
+            if (!_canMove)
+            {
+                StopAllMovement();
+                return;
+            }
+            
+            ResetSpeedToDefault();
         }
         
         /// <summary>
