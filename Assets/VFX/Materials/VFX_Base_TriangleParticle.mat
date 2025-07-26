@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: VFX_Parry_CircleDot
+  m_Name: VFX_Base_TriangleParticle
   m_Shader: {fileID: 4800000, guid: 27571cf4c6194f74ebc01da5e57ee527, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -56,9 +56,9 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Texture:
-        m_Texture: {fileID: 2800000, guid: 6789e2cfcb5848940ab7ffe794c8e046, type: 3}
+        m_Texture: {fileID: 2800000, guid: 8e9974907d1495543bee7e6ef4061292, type: 3}
         m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
+        m_Offset: {x: 0, y: -0.05}
     m_Ints: []
     m_Floats:
     - _AlphaBoldness: 1
@@ -105,5 +105,5 @@ Material:
     - _MainTexturePanSpeed: {r: 0, g: 0, b: 0, a: 0}
     - _RendererColor: {r: 1, g: 1, b: 1, a: 1}
     - _StaticAlphaChannel: {r: 1, g: 0, b: 0, a: 0}
-    - _TextureChannel: {r: 1, g: 0, b: 0, a: 0}
+    - _TextureChannel: {r: 0, g: 0, b: 0, a: 1}
   m_BuildTextureStacks: []
