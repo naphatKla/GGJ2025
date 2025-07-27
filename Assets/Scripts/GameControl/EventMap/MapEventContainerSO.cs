@@ -1,9 +1,9 @@
-using System;
-using System.Collections.Generic;
-using Sirenix.OdinInspector;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
+using System;
+using System.Collections.Generic;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace GameControl.EventMap
@@ -19,7 +19,9 @@ namespace GameControl.EventMap
         public Vector3 spawnEulerAngles;
 
         [PropertySpace]
-        [AssetsOnly] [AssetSelector(Paths = "Assets/Prefabs/MapEvent")] public BaseMapEvent eventPrefab;
+        [AssetsOnly]
+        [AssetSelector(Paths = "Assets/Prefabs/MapEvent")]
+        public BaseMapEvent eventPrefab;
         public float delayBetweenEvents = 0.3f;
     }
     
@@ -36,24 +38,34 @@ namespace GameControl.EventMap
 
             foreach (var go in Selection.gameObjects)
             {
-                var evt = go.GetComponent<BaseMapEvent>();
-                if (evt == null) continue; 
+                var evtInstance = go.GetComponent<BaseMapEvent>();
+                if (evtInstance == null) continue;
 
+                // ถ้าเป็น Prefab instance, ดึง Asset แท้
+                BaseMapEvent prefabAsset = null;
+                #if UNITY_EDITOR
+                var source = PrefabUtility.GetCorrespondingObjectFromSource(evtInstance.gameObject);
+                if (source != null)
+                    prefabAsset = source.GetComponent<BaseMapEvent>();
+                #endif
+                
+                if (prefabAsset == null)
+                    prefabAsset = evtInstance;
                 var entry = new MapEventStorageEntry
                 {
                     spawnPosition      = go.transform.position,
                     spawnEulerAngles   = go.transform.eulerAngles,
-                    eventPrefab        = evt,
+                    eventPrefab        = prefabAsset,
                     delayBetweenEvents = 0.3f,
                 };
                 entries.Add(entry);
             }
 
-#if UNITY_EDITOR
+            #if UNITY_EDITOR
             EditorUtility.SetDirty(this);
             AssetDatabase.SaveAssets();
             Debug.Log($"[Odin] Captured {entries.Count} entries into {name}");
-#endif
+            #endif
         }
     }
 }
