@@ -19,7 +19,6 @@ namespace GameControl.EventMap
         public Vector3 spawnEulerAngles;
 
         [PropertySpace]
-        [AssetsOnly]
         [AssetSelector(Paths = "Assets/Prefabs/MapEvent")]
         public BaseMapEvent eventPrefab;
         public float delayBetweenEvents = 0.3f;
