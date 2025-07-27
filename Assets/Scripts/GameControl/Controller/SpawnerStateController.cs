@@ -157,6 +157,12 @@ namespace GameControl.Controller
             _enemyPatternController.AddRandomPattern();
         }
         
+        [Button("Clear all Enemy" , ButtonSizes.Large), GUIColor(1, 0, 0)]
+        private void DebugClearEnemy()
+        {
+            _enemySpawnerController.ReleaseAllEnemies();
+        }
+        
         private void OnDrawGizmos()
         {
             Gizmos.color = Color.red;

@@ -117,6 +117,17 @@ namespace GameControl.Controller
 
             return randomEnemy;
         }
+        
+        public void ReleaseAllEnemies()
+        {
+            var allEnemies = GameObject.FindObjectsOfType<EnemyController>();
+
+            foreach (var enemy in allEnemies)
+            {
+                enemy.HealthSystem.OnDead?.Invoke();
+            }
+        }
+
 
     }
 }

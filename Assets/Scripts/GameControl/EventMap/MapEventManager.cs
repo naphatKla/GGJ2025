@@ -20,6 +20,8 @@ namespace GameControl.EventMap
     {
         [SerializeField] private List<StorageEntry> storageEntries;
 
+        [SerializeField] private Transform eventMapParent;
+
         private Dictionary<string, MapEventContainerSO> _mapStorageDict;
         private Dictionary<BaseMapEvent, ObjectPool<BaseMapEvent>> _poolDict = new();
 
@@ -50,13 +52,11 @@ namespace GameControl.EventMap
 
         private ObjectPool<BaseMapEvent> GetOrCreatePool(BaseMapEvent prefab)
         {
-            if (_poolDict.TryGetValue(prefab, out var pool))
-                return pool;
-
+            if (_poolDict.TryGetValue(prefab, out var pool)) return pool;
             pool = new ObjectPool<BaseMapEvent>(
                 () =>
                 {
-                    var obj = Instantiate(prefab);
+                    var obj = Instantiate(prefab, eventMapParent);
                     obj.SetPool(pool);
                     return obj;
                 },
