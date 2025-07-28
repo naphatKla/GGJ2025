@@ -17,16 +17,7 @@ namespace Characters.SO.SkillDataSo
         [Unit(Units.Second)]
         [SerializeField, PropertyTooltip("Cooldown duration (in seconds) before the skill can be used again after activation.")]
         private float cooldown = 1f;
-
-        [Title("Life Time")]
-        [SerializeField, PropertyTooltip("If enabled, the skill will automatically exit after a set time.")]
-        private bool hasLifeTime;
-
-        [EnableIf(nameof(hasLifeTime))]
-        [Unit(Units.Second)]
-        [SerializeField, PropertyTooltip("Total active time (in seconds) before the skill automatically exits.")]
-        private float lifeTime;
-
+        
         [Title("Status Effects")]
         [SerializeField, PropertyTooltip("Status effects that will be applied to the user or others when this skill starts.")]
         private List<StatusEffectDataPayload> statusEffectOnSkillStart;
@@ -67,8 +58,6 @@ namespace Characters.SO.SkillDataSo
 
         // ---- Properties ----
         public float Cooldown => cooldown;
-        public bool HasLifeTime => hasLifeTime;
-        public float LifeTime => lifeTime;
         public List<StatusEffectDataPayload> StatusEffectOnSkillStart => statusEffectOnSkillStart;
         public Type SkillRuntime => _skillRuntime;
         public int Level => level;

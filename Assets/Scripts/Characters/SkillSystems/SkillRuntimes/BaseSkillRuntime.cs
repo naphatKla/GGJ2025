@@ -22,6 +22,8 @@ namespace Characters.SkillSystems.SkillRuntimes
     {
         protected float cooldown;
         public float Cooldown => cooldown;
+        public abstract bool IsPerforming { get; protected set; }
+     
 
         /// <summary>
         /// Injects the skill data into this runtime behavior.
@@ -75,18 +77,15 @@ namespace Characters.SkillSystems.SkillRuntimes
         /// </summary>
         protected DirectionContainer aimDirection => owner.InputSystem.SightDirection;
         
-        /// <summary>
-        /// Indicates whether this skill is currently active or executing.
-        /// Prevents the skill from being retriggered while already in use.
-        /// </summary>
-        private bool _isPerforming;
-
+        
         protected List<StatusEffectDataPayload> effectsApplyOnStart;
 
         /// <summary>
         /// 
         /// </summary>
         private CancellationTokenSource _cts;
+
+        public override bool IsPerforming { get; protected set; }
 
         #endregion
 
@@ -115,15 +114,10 @@ namespace Characters.SkillSystems.SkillRuntimes
         public override async void PerformSkill()
         {
             if (cooldown > 0) return;
-            if (_isPerforming) return;
-
+            if (IsPerforming) return;
+            
             SetCooldown(skillData.Cooldown);
             _cts = new CancellationTokenSource();
-            if (skillData.HasLifeTime)
-            {
-                int milliSecondLifeTime = (int)(skillData.LifeTime * 1000);
-                CancelSkill(milliSecondLifeTime);
-            }
             
             HandleSkillStart();
             try
@@ -146,7 +140,7 @@ namespace Characters.SkillSystems.SkillRuntimes
         public override async void CancelSkill(int milliSecondDelay = 0)
         {
             await UniTask.Delay(milliSecondDelay);
-            if (!_isPerforming) return;
+            if (IsPerforming) return;
             _cts?.Cancel();
         }
 
@@ -156,7 +150,7 @@ namespace Characters.SkillSystems.SkillRuntimes
         /// </summary>
         protected virtual void HandleSkillStart()
         {
-            _isPerforming = true;
+            IsPerforming = true;
             OnSkillStart();
             StatusEffectManager.ApplyEffectTo(owner.gameObject, effectsApplyOnStart);
         }
@@ -167,7 +161,7 @@ namespace Characters.SkillSystems.SkillRuntimes
         /// </summary>
         protected virtual void HandleSkillExit()
         {
-            _isPerforming = false;
+            IsPerforming = false;
             OnSkillExit();
         }
         

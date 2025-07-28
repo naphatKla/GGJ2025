@@ -83,6 +83,8 @@ namespace Characters.MovementSystems
         private bool _enablePrimaryMovement = true;
 
         private bool _isStopFromStun;
+
+        private bool _isStopFromParry;
         
         /// <summary>
         /// The current velocity of the entity movement.
@@ -138,6 +140,7 @@ namespace Characters.MovementSystems
         {
             if (!_canMove) return;
             if (_isStopFromStun) return;
+            if (_isStopFromParry) return;
             if (_moveOverTimeTween.IsActive()) return;
             if (currentSpeed == 0) return;
             if (!_enablePrimaryMovement)
@@ -185,43 +188,31 @@ namespace Characters.MovementSystems
             return _moveOverTimeTween;
         }
         
-        /// <summary>
-        /// Sets whether the movement system is allowed to move.
-        /// Passing false will stop movement immediately.
-        /// </summary>
-        public virtual void SetCanMove(bool canMove)
-        {
-            _canMove = canMove;
-            
-            if (!_canMove)
-            {
-                StopAllMovement();
-                return;
-            }
-            
-            ResetSpeedToDefault();
-        }
-
         public virtual void StopFromStun(bool isStun)
         {
             _isStopFromStun = isStun;
+        }
+        
+        public virtual void StopFromInput(bool enableMovement)
+        {
+            _enablePrimaryMovement = enableMovement;
+        }
+
+        public virtual void StopFromParry(bool isParry)
+        {
+            _isStopFromParry = isParry;
         }
         
         /// <summary>
         /// Immediately stops the entity's movement and cancels any ongoing tween.
         /// Also resets speed to zero.
         /// </summary>
-        public virtual void StopAllMovement()
+        public virtual void StopAllMovementAndTween()
         {
             _moveOverTimeTween?.Kill();
-            currentSpeed = 0;
+            _canMove = false;
         }
         
-        public virtual void TogglePrimaryMovement(bool enableMovement)
-        {
-            _enablePrimaryMovement = enableMovement;
-        }
-
         /// <summary>
         /// Resets the current speed to the default base speed.
         /// Useful after temporary speed modifications.
@@ -239,7 +230,9 @@ namespace Characters.MovementSystems
         {
             _moveOverTimeTween?.Kill();
             ResetSpeedToDefault();
-            SetCanMove(true);
+            _canMove = true;
+            StopFromInput(false);
+            StopFromStun(false);
         }
         
         #endregion

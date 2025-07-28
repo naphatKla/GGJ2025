@@ -92,7 +92,7 @@ namespace Characters.InputSystems
                 bool shouldEnable = _sightDirection.length >= 3f;
                 if (shouldEnable != isMovementEnabled)
                 {
-                    movementSystem?.TogglePrimaryMovement(shouldEnable);
+                    movementSystem?.StopFromInput(shouldEnable);
                     isMovementEnabled = shouldEnable;
                 }
                 

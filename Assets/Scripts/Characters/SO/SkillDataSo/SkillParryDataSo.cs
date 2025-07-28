@@ -1,4 +1,8 @@
+using System.Collections.Generic;
+using Characters.StatusEffectSystems;
+using Sirenix.OdinInspector;
 using UnityEngine;
+
 namespace Characters.SO.SkillDataSo
 {
     
@@ -7,7 +11,18 @@ namespace Characters.SO.SkillDataSo
     {
         [SerializeField] private float parryDuration;
 
+        [Title("Parry Succession")] [SerializeField] private float explosionDamageMultiplier;
+        [SerializeField] private float explosionRadius;
+        [SerializeField] private List<StatusEffectDataPayload> explosionEffects;
+        [SerializeField] private float knockBackDistance;
+        [SerializeField] private float knockBackDuration;
+
         public float ParryDuration => parryDuration;
-        //[SerializeField] private int dashAmount;
+
+        public float ExplosionDamageMultiplier => explosionDamageMultiplier;
+        public float ExplosionRadius => explosionRadius;
+        public List<StatusEffectDataPayload> ExplosionEffects => explosionEffects;
+        public float KnockBackDistance => knockBackDistance;
+        public float KnockBackDuration => knockBackDuration;
     }
 }

@@ -13,19 +13,34 @@ MonoBehaviour:
   m_Name: LV1_Player_Parry
   m_EditorClassIdentifier: 
   serializationData:
-    SerializedFormat: 0
-    SerializedBytes: 01010d0000005f0073006b0069006c006c00520075006e00740069006d0065002f00000000011c000000530079007300740065006d002e00520075006e00740069006d00650054007900700065002c0020006d00730063006f0072006c00690062000000000028014800000043006800610072006100630074006500720073002e0053006b0069006c006c00530079007300740065006d0073002e0053006b0069006c006c00520075006e00740069006d00650073002e0053006b0069006c006c0050006100720072007900520075006e00740069006d0065002c00200041007300730065006d0062006c0079002d0043005300680061007200700005
+    SerializedFormat: 2
+    SerializedBytes: 
     ReferencedUnityObjects: []
     SerializedBytesString: 
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
-    SerializationNodes: []
+    SerializationNodes:
+    - Name: _skillRuntime
+      Entry: 7
+      Data: 0|System.RuntimeType, mscorlib
+    - Name: 
+      Entry: 1
+      Data: Characters.SkillSystems.SkillRuntimes.SkillParryRuntime, Assembly-CSharp
+    - Name: 
+      Entry: 8
+      Data: 
   level: 1
   cooldown: 1
-  hasLifeTime: 0
-  lifeTime: 0
   statusEffectOnSkillStart: []
   nextSkillDataUpgrade: {fileID: 0}
   previousSkillData: {fileID: 0}
-  parryDuration: 0
+  parryDuration: 0.5
+  explosionDamageMultiplier: 3
+  explosionRadius: 5
+  explosionEffects:
+  - effectData: {fileID: 11400000, guid: e5ae6010e3c4a7b43bc80da0bf5a9ef5, type: 2}
+    isOverrideDuration: 1
+    overrideDuration: 0.5
+  knockBackDistance: 5
+  knockBackDuration: 0.25
