@@ -1,5 +1,6 @@
 using System;
 using System.Threading;
+using Characters.FeedbackSystems;
 using Characters.MovementSystems;
 using Characters.SO.SkillDataSo;
 using Cysharp.Threading.Tasks;
@@ -18,6 +19,7 @@ namespace Characters.SkillSystems.SkillRuntimes
             _isParryTrigger = false;
             owner.HealthSystem.OnTakeDamage += TriggerParry;
             owner.MovementSystem.StopFromParry(true);
+            owner.TryPlayFeedback(FeedbackName.ParryUSe);
         }
 
         protected override async UniTask OnSkillUpdate(CancellationToken cancelToken)
@@ -26,6 +28,7 @@ namespace Characters.SkillSystems.SkillRuntimes
                 .TimeoutWithoutException(TimeSpan.FromSeconds(skillData.ParryDuration));
             
             if (!_isParryTrigger) return;
+            owner.TryPlayFeedback(FeedbackName.ParrySuccess);
             LayerMask damageLayer = CharacterGlobalSettings.Instance.EnemyLayerDictionary[owner.tag];
             var targetsInRange = Physics2D.OverlapCircleAll(owner.transform.position, skillData.ExplosionRadius, damageLayer);
             

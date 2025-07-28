@@ -74,5 +74,7 @@ namespace Characters.FeedbackSystems
         // skill
         Dash = 1,
         Reflection = 2,
+        ParryUSe = 3,
+        ParrySuccess = 4,
     }
 }
