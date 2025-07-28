@@ -192,7 +192,7 @@ Canvas:
   m_Enabled: 1
   serializedVersion: 3
   m_RenderMode: 1
-  m_Camera: {fileID: 0}
+  m_Camera: {fileID: 882224221}
   m_PlaneDistance: 100
   m_PixelPerfect: 0
   m_ReceivesEvents: 1
@@ -340,7 +340,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0, y: -211}
+  m_AnchoredPosition: {x: 0, y: -211}
   m_SizeDelta: {x: 164.8114, y: 47.4057}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &756467194
@@ -930,12 +930,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 56f1da0ed0c4e244182dffa658d69315, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cellInterval: 0.15
-  scrollOffset: 0.5
-  loop: 0
-  cellContainer: {fileID: 855322725}
-  scroller: {fileID: 1469724157}
-  cellPrefab: {fileID: 1901728338085442, guid: d432cd8a052c847b0a9234295575210d, type: 3}
 --- !u!114 &1469724157
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1074,15 +1068,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ffef50039363c5244b22c9c6c6129c0a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sceneLoad: TestStage
-  scrollView: {fileID: 1469724156}
-  prevCellButton: {fileID: 1748397616}
-  nextCellButton: {fileID: 1270896403}
-  selectedMapName: {fileID: 1884054654}
-  selectedMapInfo: {fileID: 743835377}
-  mapDataList:
-  - {fileID: 11400000, guid: aae0d35a43fc6b0478c922f121843613, type: 2}
-  - {fileID: 11400000, guid: 1362d26206ab5454a886c4360a14f35e, type: 2}
 --- !u!1 &1677962571
 GameObject:
   m_ObjectHideFlags: 0
@@ -1092,7 +1077,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1677962573}
-  - component: {fileID: 1677962574}
   m_Layer: 0
   m_Name: GameController
   m_TagString: Untagged
@@ -1115,21 +1099,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1677962574
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1677962571}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9a9a7291cd045a34a99cbe3dd12a1087, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  selectedMapIndex: 0
-  selectedMapData: {fileID: 0}
-  nextStageIndex: 0
 --- !u!1 &1748397615
 GameObject:
   m_ObjectHideFlags: 0

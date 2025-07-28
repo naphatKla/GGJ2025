@@ -7,7 +7,6 @@ using DG.Tweening;
 using MoreMountains.Tools;
 using Sirenix.OdinInspector;
 using TMPro;
-using UnityEditor;
 using UnityEngine;
 
 namespace GameControl
@@ -137,7 +136,7 @@ namespace GameControl
 
             while (_isRunning && GlobalTimer > 0f)
             {
-                while (_isPaused || Time.timeScale == 0f || EditorApplication.isPaused) yield return null;
+                while (_isPaused || Time.timeScale == 0f) yield return null;
                 GlobalTimer -= Time.deltaTime;
 
                 foreach (var trigger in _timeTriggers)

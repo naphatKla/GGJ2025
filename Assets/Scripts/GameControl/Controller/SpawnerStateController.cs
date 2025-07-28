@@ -89,9 +89,8 @@ namespace GameControl.Controller
             _maxEnemyPoint = _currentMapData.maxEnemyPoint;
             _increaseRateEnemyPoint = _currentMapData.increaseRateEnemyPoint;
             
-            _enemySpawnerController.PrewarmEnemy();
             _itemSpawnerController.PrewarmItem();
-            _enemyPatternController.SetEnemyList(_enemySpawnerController.GetEnemyList());
+            _enemyPatternController.SetEnemyList(_enemySpawnerController.GetEnemyList(), _enemySpawnerController.GetEnemyOption());
             _enemyPatternController.AddRandomPattern();
             
             //Every 3 minute trigger pattern
@@ -156,6 +155,12 @@ namespace GameControl.Controller
         private void TriggerAddPattern()
         {
             _enemyPatternController.AddRandomPattern();
+        }
+        
+        [Button("Clear all Enemy" , ButtonSizes.Large), GUIColor(1, 0, 0)]
+        private void DebugClearEnemy()
+        {
+            _enemySpawnerController.ReleaseAllEnemies();
         }
         
         private void OnDrawGizmos()
