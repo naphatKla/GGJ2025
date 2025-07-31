@@ -21,6 +21,7 @@ namespace GameControl.GameState
             SpawnerStateController.Instance.SetState(new SpawnerState.StopState());
             PoolingSystem.Instance.ClearAll();
             GameTimer.Instance.SetTimer(controller.CurrentMap.mapGlobalTime);
+            GameTimer.Instance.StopTimer();
             SpawnerStateController.Instance.ClearEnemy();
             SpawnerStateController.Instance.ClearItem();
             SpawnerStateController.Instance.SetupMapAndEnemy().Forget();
