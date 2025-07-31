@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
+using GameControl.Controller;
 using MoreMountains.Tools;
 using Sirenix.OdinInspector;
 using TMPro;

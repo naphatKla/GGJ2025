@@ -106,6 +106,10 @@ namespace GameControl.SO
         [Tooltip("Map Image")]
         public Sprite image;
         
+        [FoldoutGroup("Map Setting")]
+        [Tooltip("Map Time")]
+        public float mapGlobalTime;
+        
         [FoldoutGroup("Enemy Setting")]
         [Tooltip("Data of each enemy")]
         public List<EnemyOption> EnemyOptions;

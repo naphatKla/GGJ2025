@@ -1,5 +1,8 @@
+using System;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
+using GameControl.Controller;
+using GameControl.GameState;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -7,8 +10,7 @@ public enum UIPanelType
 {
     None,
     Pause,
-    ResultWithNextStage,
-    ResultLastStage,
+    MapResult,
     SkillTree,
     Setting,
     SaveGame,
@@ -34,6 +36,7 @@ public class UIManager : MonoBehaviour
 
     private readonly Dictionary<UIPanelType, GameObject> panelDict = new();
     private readonly Stack<UIPanelType> panelStack = new();
+    private bool _isPaused = false;
 
     private void Awake()
     {
@@ -53,38 +56,53 @@ public class UIManager : MonoBehaviour
             }
     }
 
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            OpenPausePanel();
+        }
+    }
+
     public void OpenPanel(UIPanelType type)
     {
-        Debug.Log($"[UIManager] OpenPanel called with: {type}");
         if (!panelDict.ContainsKey(type))
         {
             Debug.LogWarning($"[UIManager] panelDict doesn't contain type: {type}");
             return;
         }
         
+        if (panelStack.Count > 0 && panelStack.Peek() == type)
+        {
+            ClosePanel();
+            return;
+        }
+        
         if (panelStack.Count > 0)
         {
-            var last = panelStack.Peek();
-            panelDict[last].SetActive(false);
+            var current = panelStack.Peek();
+            panelDict[current].SetActive(false);
         }
-
         panelDict[type].SetActive(true);
         panelStack.Push(type);
     }
 
+
     public void ClosePanel()
     {
-        if (panelStack.Count == 0) return;
+        if (panelStack.Count == 0)
+            return;
 
         var top = panelStack.Pop();
         panelDict[top].SetActive(false);
-
+        
         if (panelStack.Count > 0)
         {
             var previous = panelStack.Peek();
             panelDict[previous].SetActive(true);
         }
     }
+
 
     public void CloseAllPanels()
     {
@@ -93,6 +111,8 @@ public class UIManager : MonoBehaviour
             var top = panelStack.Pop();
             panelDict[top].SetActive(false);
         }
+
+        Time.timeScale = 1;
     }
     
     public async void BackMenu()
@@ -108,6 +128,18 @@ public class UIManager : MonoBehaviour
         GameController.Instance.nextStageIndex = 0;
         GameController.Instance.selectedMapIndex = 0;*/
     }
+    
+    public void OpenPausePanel()
+    {
+        if (Time.timeScale > 0 && Time.timeScale < 1) return;
+        OpenPanel(UIPanelType.Pause);
+        
+        if (GameStateController.Instance.CurrentState is SummaryState) 
+            Time.timeScale = 0;
+        else 
+            Time.timeScale = Time.timeScale == 0 ? 1 : 0;
+    }
+
     
     public void OpenSaveGamePanel()
     {

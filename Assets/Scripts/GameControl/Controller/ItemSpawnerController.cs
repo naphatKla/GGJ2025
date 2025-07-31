@@ -67,5 +67,15 @@ namespace GameControl.Controller
         {
             return _activeItem.Count < _mapdata.maxItemSpawning;
         }
+        
+        public void ReleaseAllItem()
+        {
+            var allItems = GameObject.FindObjectsOfType<PoolableComponent>();
+            if (allItems == null) return;
+            foreach (var item in allItems)
+            {
+                PoolingSystem.Instance.Despawn(item.ComponenetId, item.gameObject);
+            }
+        }
     }
 }

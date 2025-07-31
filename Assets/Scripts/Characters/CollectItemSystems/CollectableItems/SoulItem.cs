@@ -18,7 +18,6 @@ namespace Characters.CollectItemSystems.CollectableItems
         /// <param name="ownerSystem"></param>
         protected override void OnCollect(CollectItemSystem ownerSystem)
         {
-            //Debug.Log("Add Score" + itemData.Score);
             PoolingSystem.Instance.Despawn(poolable.ComponenetId, gameObject);
         }
     }

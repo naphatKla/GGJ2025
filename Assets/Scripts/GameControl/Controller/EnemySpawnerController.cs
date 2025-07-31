@@ -121,10 +121,10 @@ namespace GameControl.Controller
         public void ReleaseAllEnemies()
         {
             var allEnemies = GameObject.FindObjectsOfType<EnemyController>();
-
+            if (allEnemies == null)  return;
             foreach (var enemy in allEnemies)
             {
-                enemy.HealthSystem.OnDead?.Invoke();
+                enemy?.HealthSystem.TakeDamage(99999);
             }
         }
 

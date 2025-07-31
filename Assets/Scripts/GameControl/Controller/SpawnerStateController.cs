@@ -116,6 +116,16 @@ namespace GameControl.Controller
                 () => _enemySpawnerController.UpgradePointRatio());
         }
         
+        public void ClearEnemy()
+        {
+            _enemySpawnerController?.ReleaseAllEnemies();
+        }
+        
+        public void ClearItem()
+        {
+            _itemSpawnerController?.ReleaseAllItem();
+        }
+        
         public bool EnemyCanSpawn()
         {
             if (CurrentEnemyPoint <= 0) return false;
@@ -160,7 +170,13 @@ namespace GameControl.Controller
         [Button("Clear all Enemy" , ButtonSizes.Large), GUIColor(1, 0, 0)]
         private void DebugClearEnemy()
         {
-            _enemySpawnerController.ReleaseAllEnemies();
+            ClearEnemy();
+        }
+        
+        [Button("Clear all Item" , ButtonSizes.Large), GUIColor(1, 0, 0)]
+        private void DebugClearItem()
+        {
+            ClearItem();
         }
         
         private void OnDrawGizmos()

@@ -15,10 +15,13 @@ namespace GameControl.GameState
         public void Enter(GameStateController controller)
         {
             SpawnerStateController.Instance.SetState(new SpawnerState.StopState());
+            SpawnerStateController.Instance.ClearEnemy();
+            SpawnerStateController.Instance.ClearItem();
             PoolingSystem.Instance.ClearAll();
             GameTimer.Instance.StopTimer();
             GameTimer.Instance.ClearAllTriggers();
             WaitBeforeSummary().Forget();
+            controller.LerpTimeScaleAsync(0.1f, 0.7f).Forget();
         }
 
         public void Update(GameStateController controller)
@@ -28,7 +31,7 @@ namespace GameControl.GameState
         
         private async UniTaskVoid WaitBeforeSummary()
         {
-            await UniTask.WaitForSeconds(5f);
+            await UniTask.WaitForSeconds(0.5f);
             GameStateController.Instance.SetState(new SummaryState());
         }
     }

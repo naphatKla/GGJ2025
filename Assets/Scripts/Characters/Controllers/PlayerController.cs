@@ -2,7 +2,9 @@ using Characters.ComboSystems;
 using Characters.LevelSystems;
 using Characters.SkillSystems;
 using Characters.SO.CharacterDataSO;
+using Sirenix.OdinInspector;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Characters.Controllers
 {
@@ -17,7 +19,7 @@ namespace Characters.Controllers
         [SerializeField] public ComboSystem comboSystem;
         [SerializeField] protected LevelSystem levelSystem;
         [SerializeField] protected SkillUpgradeController skillUpgradeController;
-        
+
         /// <summary>
         /// A global static reference to the current player instance.
         /// Allows other systems to easily access the active player in the scene.
@@ -38,7 +40,7 @@ namespace Characters.Controllers
             if (Instance) return;
             Instance = this;
         }
-
+        
         public override void AssignCharacterData(BaseCharacterDataSo data)
         {
             skillUpgradeController.AssignData(skillSystem, data as PlayerDataSo);
@@ -65,6 +67,7 @@ namespace Characters.Controllers
         {
             levelSystem.ResetLevel();
             skillUpgradeController.ResetSkillUpgradeController();
+            comboSystem.ResetCombo();
             
             base.ResetAllDependentBehavior();
         }

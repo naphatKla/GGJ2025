@@ -80,11 +80,23 @@ namespace Characters.HeathSystems
         public Action OnDead { get; set; }
 
         /// <summary>
+        /// Event triggered when this character health change.
+        /// </summary>
+        public Action OnHealthChange { get; set; }
+
+        /// <summary>
         /// Event triggered when the invincibility state changes.
         /// The boolean parameter represents whether the character is now invincible.
         /// </summary>
         public Action<bool> OnInvincible { get; set; }
 
+        #endregion
+        
+        #region Properties
+
+        public float CurrentHealth => _currentHealth;
+        public float MaxHealth => _maxHealth;
+        
         #endregion
 
         #region Methods
@@ -197,6 +209,7 @@ namespace Characters.HeathSystems
         {
             _currentHealth += value;
             _currentHealth = Mathf.Clamp(_currentHealth, 0, _maxHealth);
+            OnHealthChange?.Invoke();
         }
 
         /// <summary>

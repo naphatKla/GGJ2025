@@ -7384,6 +7384,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8974750955813567560}
   - component: {fileID: 8896851534345665359}
+  - component: {fileID: 1766625338755230343}
   - component: {fileID: 7534513208806243613}
   - component: {fileID: 4786182755069043034}
   - component: {fileID: 1611083095111674569}
@@ -7448,6 +7449,28 @@ MonoBehaviour:
   comboSystem: {fileID: 2247090465659933957}
   levelSystem: {fileID: 2047403147416900316}
   skillUpgradeController: {fileID: 7127418468070666774}
+--- !u!114 &1766625338755230343
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2726293917207744010}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4725e48355ee0534d85ac63c3c44d90d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  comboSystem: {fileID: 2247090465659933957}
+  comboUI: {fileID: 0}
+  comboStreakText: {fileID: 0}
+  scoreMultiply: {fileID: 0}
+  comboTimeoutSlider: {fileID: 0}
+  tweenDuration: 0.1
+  scaleAmount: 1.2
+  levelSystem: {fileID: 0}
+  healthSystem: {fileID: 0}
+  hpBar: {fileID: 0}
 --- !u!114 &7534513208806243613
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7750,12 +7773,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a262df3aedbdbe74fb0b326524c23682, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  comboUI: {fileID: 0}
-  comboStreakText: {fileID: 0}
-  scoreMultiply: {fileID: 0}
-  comboTimeoutSlider: {fileID: 0}
-  tweenDuration: 0.1
-  scaleAmount: 1.2
   _comboNumber: 1
   _comboMultiplyer: 1
   _comboTimeStart: 100

@@ -1,3 +1,4 @@
+using Characters.Controllers;
 using Cysharp.Threading.Tasks;
 using GameControl;
 using GameControl.Controller;
@@ -10,16 +11,29 @@ namespace GameControl.GameState
     {
         public void OnEnable(GameStateController controller) { }
 
-        public void OnDisable(GameStateController controller) { }
+        public void OnDisable(GameStateController controller)
+        {
+            PlayerController.Instance.HealthSystem.OnDead -= PlayerDeathResult;
+        }
 
         public void Enter(GameStateController controller)
         {
             SpawnerStateController.Instance.SetState(new SpawnerState.StopState());
             PoolingSystem.Instance.ClearAll();
-            GameTimer.Instance.SetTimer(600);
+            GameTimer.Instance.SetTimer(controller.CurrentMap.mapGlobalTime);
+            SpawnerStateController.Instance.ClearEnemy();
+            SpawnerStateController.Instance.ClearItem();
             SpawnerStateController.Instance.SetupMapAndEnemy().Forget();
+            controller.gameResult = EndResult.None;
+            
+            if (Time.timeScale <= 0f)
+                controller.LerpTimeScaleAsync(1f, 1f).Forget();
+            else
+                Time.timeScale = 1f;
             
             CountdownStart().Forget();
+            PlayerController.Instance.ResetAllDependentBehavior();
+            PlayerController.Instance.HealthSystem.OnDead += PlayerDeathResult;
         }
 
         public void Update(GameStateController controller) { }
@@ -30,6 +44,13 @@ namespace GameControl.GameState
         {
             await GameTimer.Instance.StartCountdownAsync(5f);
             GameStateController.Instance.SetState(new StartState());
+        }
+
+        private void PlayerDeathResult()
+        {
+            GameStateController.Instance.gameResult = EndResult.Failed;
+            PlayerController.Instance.HealthSystem.OnDead -= PlayerDeathResult;
+            GameStateController.Instance.SetState(new EndState());
         }
     }
 }

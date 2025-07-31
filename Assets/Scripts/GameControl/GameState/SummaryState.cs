@@ -11,7 +11,11 @@ namespace GameControl.GameState
 
         public void OnDisable(GameStateController controller) { }
 
-        public void Enter(GameStateController controller) { }
+        public void Enter(GameStateController controller)
+        {
+            Time.timeScale = 0f;
+            UIManager.Instance.OpenPanel(UIPanelType.MapResult);
+        }
 
         public void Update(GameStateController controller) { }
 

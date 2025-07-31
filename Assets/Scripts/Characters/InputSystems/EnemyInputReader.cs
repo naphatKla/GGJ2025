@@ -78,7 +78,7 @@ namespace Characters.InputSystems
         /// </summary>
         private IEnumerator UpdateTick()
         {
-            bool isMovementEnabled = true;
+            bool isStop = false;
             
             while (true)
             {
@@ -89,11 +89,11 @@ namespace Characters.InputSystems
                 _sightDirection.direction  = (PlayerController.Instance.transform.position - transform.position).normalized;
                 _sightDirection.length = Vector2.Distance(PlayerController.Instance.transform.position, transform.position);
                 
-                bool shouldEnable = _sightDirection.length >= 3f;
-                if (shouldEnable != isMovementEnabled)
+                bool shouldStop = _sightDirection.length < 3f;
+                if (shouldStop != isStop)
                 {
-                    movementSystem?.StopFromInput(shouldEnable);
-                    isMovementEnabled = shouldEnable;
+                    movementSystem?.StopFromInput(shouldStop);
+                    isStop = shouldStop;
                 }
                 
                 OnMove?.Invoke(_sightDirection.direction);

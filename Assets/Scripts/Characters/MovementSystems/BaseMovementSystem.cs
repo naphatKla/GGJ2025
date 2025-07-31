@@ -80,8 +80,7 @@ namespace Characters.MovementSystems
         /// Controls whether the primary movement system (e.g., player input or AI) is active.
         /// If false, automatic or manual movement is disabled.
         /// </summary>
-        private bool _enablePrimaryMovement = true;
-
+        private bool _isStopFromInput;
         private bool _isStopFromStun;
 
         private bool _isStopFromParry;
@@ -143,7 +142,7 @@ namespace Characters.MovementSystems
             if (_isStopFromParry) return;
             if (_moveOverTimeTween.IsActive()) return;
             if (currentSpeed == 0) return;
-            if (!_enablePrimaryMovement)
+            if (_isStopFromInput)
             {
                 MoveWithInertia(direction, Vector2.zero);
                 return;
@@ -193,9 +192,9 @@ namespace Characters.MovementSystems
             _isStopFromStun = isStun;
         }
         
-        public virtual void StopFromInput(bool enableMovement)
+        public virtual void StopFromInput(bool isStop)
         {
-            _enablePrimaryMovement = enableMovement;
+            _isStopFromInput = isStop;
         }
 
         public virtual void StopFromParry(bool isParry)
@@ -229,8 +228,9 @@ namespace Characters.MovementSystems
         public void ResetMovementSystem()
         {
             _moveOverTimeTween?.Kill();
-            ResetSpeedToDefault();
             _canMove = true;
+            ResetSpeedToDefault();
+            StopFromParry(false);
             StopFromInput(false);
             StopFromStun(false);
         }

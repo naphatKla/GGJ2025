@@ -7,10 +7,7 @@ namespace GameControl.GameState
 {
     public class StartState : IGameState
     {
-        public void OnEnable(GameStateController controller)
-        {
-            GameTimer.Instance.OnTimerEnded += HandleTimerEnded;
-        }
+        public void OnEnable(GameStateController controller) { }
 
         public void OnDisable(GameStateController controller)
         {
@@ -19,6 +16,7 @@ namespace GameControl.GameState
 
         public void Enter(GameStateController controller)
         {
+            GameTimer.Instance.OnTimerEnded += HandleTimerEnded;
             SpawnerStateController.Instance.SetState(new SpawnerState.SpawningState());
             GameTimer.Instance.StartTimer();
         }
@@ -32,6 +30,7 @@ namespace GameControl.GameState
         
         private void HandleTimerEnded()
         {
+            GameStateController.Instance.gameResult = EndResult.Completed;
             GameStateController.Instance.SetState(new EndState());
         }
     }

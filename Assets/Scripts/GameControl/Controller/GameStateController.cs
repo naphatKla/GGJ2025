@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using Characters.Controllers;
+using Cysharp.Threading.Tasks;
 using GameControl.GameState;
 using GameControl.Interface;
 using MoreMountains.Tools;
@@ -8,6 +10,13 @@ using Sirenix.OdinInspector;
 
 namespace GameControl.Controller
 {
+    public enum EndResult
+    {
+        None,
+        Completed,
+        Failed,
+    }
+    
     [RequireComponent(typeof(SpawnerStateController), typeof(GameTimer), typeof(PoolingSystem))]
     public class GameStateController : MMSingleton<GameStateController>
     {
@@ -23,7 +32,7 @@ namespace GameControl.Controller
         
         [ShowInInspector, ReadOnly]
         private SO.MapDataSO _currentMapData;
-
+        
         [SerializeField] private List<SO.MapDataSO> mapDataList;
         [Tooltip("The index of the current map in the mapData list.")]
         [SerializeField] private int currentMapIndex;
@@ -32,6 +41,9 @@ namespace GameControl.Controller
             mapDataList.Count > 0 && currentMapIndex < mapDataList.Count
                 ? mapDataList[currentMapIndex]
                 : null;
+        
+        public EndResult gameResult;
+        public IGameState CurrentState => _currentState;
         
         private void Awake()
         {
@@ -70,6 +82,32 @@ namespace GameControl.Controller
             _currentStateName = _currentState?.GetType().Name;
         }
         
+        public async UniTask LerpTimeScaleAsync(float target, float duration)
+        {
+            float start = Time.timeScale;
+            float elapsed = 0f;
+
+            while (elapsed < duration)
+            {
+                elapsed += Time.unscaledDeltaTime;
+                Time.timeScale = Mathf.Lerp(start, target, elapsed / duration);
+                await UniTask.Yield(PlayerLoopTiming.Update);
+            }
+            Time.timeScale = target;
+        }
+
+        public void RestartMap()
+        {
+            SetState(_prestartState);
+        }
+        
+        [FoldoutGroup("Game State")]
+        [Button("Restart" , ButtonSizes.Large), GUIColor(1, 1, 1)]
+        private void DebugRestart()
+        {
+            RestartMap();
+        }
+        
         [FoldoutGroup("Game State")]
         [Button("PreStart" , ButtonSizes.Large), GUIColor(1, 1, 0)]
         private void DebugPreStart()
@@ -88,6 +126,7 @@ namespace GameControl.Controller
         [Button("End Game" , ButtonSizes.Large), GUIColor(1, 0, 0)]
         private void DebugEndGame()
         {
+            gameResult = EndResult.Completed;
             SetState(_endState);
         }
 

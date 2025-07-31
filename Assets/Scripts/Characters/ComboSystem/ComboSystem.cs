@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Characters.Controllers;
 using DG.Tweening;
@@ -24,16 +25,6 @@ namespace Characters.ComboSystems
     /// </summary>
     public class ComboSystem : MonoBehaviour
     {
-        #region UI Fields
-
-        [FoldoutGroup("UI")] public GameObject comboUI;
-        [FoldoutGroup("UI")] public TMP_Text comboStreakText;
-        [FoldoutGroup("UI")] public TMP_Text scoreMultiply;
-        [FoldoutGroup("UI")] public Slider comboTimeoutSlider;
-        [FoldoutGroup("UI")] public float tweenDuration = 0.1f;
-        [FoldoutGroup("UI")] public float scaleAmount = 1.2f;
-
-        #endregion
 
         #region Combo Settings
 
@@ -53,7 +44,10 @@ namespace Characters.ComboSystems
         [LabelText("Combo Milestones Events")]
         [SerializeField]
         private List<ComboMilestoneEvent> comboMilestoneEvents = new();
-
+        public event Action<float> OnComboUpdated;
+        public bool ComboActive => _IsCombo;
+        public float CurrentComboTime => _currentTime;
+        public float ComboStartValue => _comboTimeStart;
         #endregion
 
         #region Runtime State
@@ -76,12 +70,9 @@ namespace Characters.ComboSystems
 
         private void Update()
         {
-            UpdateScoreText();
             UpdateComboTime();
-            UpdateComboUI();
 
-            if (_IsCombo && _currentTime <= 0)
-                ResetCombo();
+            if (_IsCombo && _currentTime <= 0) ResetCombo();
         }
 
         #endregion
@@ -94,12 +85,16 @@ namespace Characters.ComboSystems
         public void RegisterHit()
         {
             if (!_IsCombo)
-                OnComboStart();
+            {
+                _IsCombo = true;
+                _currentTime = _comboTimeStart;
+            }
 
-            PlayTween();
             _comboStreak += _comboNumber * _comboMultiplyer;
             _comboStreak = Mathf.Round(_comboStreak);
             _currentTime = _comboTimeStart;
+            OnComboUpdated?.Invoke(_comboStreak);
+
             CheckComboMilestones();
         }
 
@@ -111,72 +106,21 @@ namespace Characters.ComboSystems
             _IsCombo = false;
             _comboStreak = 0;
             _currentTime = 0;
-            // triggeredMilestones.Clear();
         }
 
         #endregion
 
         #region Private Methods
 
-        /// <summary>
-        /// Plays a UI tween animation when a combo is triggered.
-        /// </summary>
-        private void PlayTween()
-        {
-            if (comboUI == null) return;
-            if (_comboStreak > 0)
-            {
-                comboUI.transform.DOScale(new Vector3(scaleAmount, scaleAmount, 1), tweenDuration)
-                    .SetEase(Ease.OutBack)
-                    .OnComplete(() => comboUI.transform.DOScale(Vector3.one, tweenDuration));
-            }
-        }
-
-        /// <summary>
-        /// Updates the text showing current combo streak.
-        /// </summary>
-        private void UpdateScoreText()
-        {
-            if (comboStreakText != null)
-                comboStreakText.text = "Combo " + _comboStreak;
-        }
-
-        /// <summary>
-        /// Called when a combo sequence starts.
-        /// </summary>
-        private void OnComboStart()
-        {
-            if (comboStreakText == null) return;
-            if (_IsCombo) return;
-
-            _IsCombo = true;
-            comboTimeoutSlider.maxValue = _comboTimeStart;
-            _currentTime = _comboTimeStart;
-        }
-
-        /// <summary>
-        /// Enables or disables the combo UI based on current combo state.
-        /// </summary>
-        private void UpdateComboUI()
-        {
-            if (comboUI != null)
-                comboUI.SetActive(_IsCombo);
-        }
-
-        /// <summary>
-        /// Updates the remaining combo time and decay.
-        /// </summary>
         private void UpdateComboTime()
         {
-            if (comboStreakText == null) return;
             if (_IsCombo && comboToDecayRate != null)
             {
                 _currentDecayRate = comboToDecayRate.Evaluate(_comboStreak);
                 _currentTime -= _currentDecayRate * Time.deltaTime;
-                comboTimeoutSlider.value = _currentTime;
             }
         }
-
+        
         /// <summary>
         /// Checks and triggers combo milestone events if conditions are met.
         /// </summary>
