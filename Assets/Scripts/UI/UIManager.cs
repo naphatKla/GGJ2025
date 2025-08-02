@@ -131,13 +131,13 @@ public class UIManager : MonoBehaviour
     
     public void OpenPausePanel()
     {
-        if (Time.timeScale > 0 && Time.timeScale < 1) return;
+        if (Time.timeScale > 0.002f && Time.timeScale < 1) return;
         OpenPanel(UIPanelType.Pause);
         
         if (GameStateController.Instance.CurrentState is SummaryState) 
-            Time.timeScale = 0;
+            Time.timeScale = 0.001f;
         else 
-            Time.timeScale = Time.timeScale == 0 ? 1 : 0;
+            Time.timeScale = Time.timeScale <= 0.001f ? 1f : 0.001f;
     }
 
     
