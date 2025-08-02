@@ -5503,8 +5503,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f1be4fcfce7ce1478d9b86d67377cdc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mapDataList:
-  - {fileID: 11400000, guid: e5b64c88641c36b4daf008e9128337bf, type: 2}
+  mapContainer: {fileID: 11400000, guid: 8fc50f84ed4481043ad4d348c2efc8eb, type: 2}
   currentMapIndex: 0
   gameResult: 0
 --- !u!4 &681150449
@@ -5578,6 +5577,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6f55c2d221032e4db32ddb9b031fc22, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentMapData: {fileID: 0}
+  mapName: {fileID: 1006819941}
 --- !u!1 &695175194
 GameObject:
   m_ObjectHideFlags: 0
@@ -19340,7 +19341,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f95dcc8c23824f4d82cf0df133b1a17, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  menuScene: MenuStage
+  menuScene: MainMenu
   gamePlayScene: 
   panelEntries:
   - type: 2
