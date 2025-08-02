@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4876064964454048568}
   - component: {fileID: 8664070425611870484}
+  - component: {fileID: 6429923079801110711}
   m_Layer: 0
   m_Name: NormalEnemyCharge
   m_TagString: Untagged
@@ -122,7 +123,7 @@ MonoBehaviour:
   DebugActive: 0
   FeedbacksList:
   - rid: 2975743865254576128
-  - rid: 4929453777397219333
+  - rid: 7334425405478141959
   KeepPlayModeChanges: 0
   PerformanceMode: 0
   StopFeedbacksOnDisable: 0
@@ -202,12 +203,12 @@ MonoBehaviour:
         DebugMessage: 
         DebugColor: {r: 0, g: 1, b: 1, a: 1}
         DisplayFrameCount: 1
-    - rid: 4929453777397219333
-      type: {class: MMF_ParticlesInstantiation, ns: MoreMountains.Feedbacks, asm: MoreMountains.Feedbacks}
+    - rid: 7334425405478141959
+      type: {class: MMF_Events, ns: MoreMountains.Feedbacks, asm: MoreMountains.Feedbacks}
       data:
         Active: 1
-        UniqueID: 945975497
-        Label: Particles Instantiation
+        UniqueID: -164382473
+        Label: Unity Events
         ChannelMode: 0
         Channel: 0
         MMChannelDefinition: {fileID: 0}
@@ -270,25 +271,45 @@ MonoBehaviour:
         RemapRangeFalloff: {x: 0, y: 1}
         Owner: {fileID: 8664070425611870484}
         DebugActive: 0
-        Mode: 0
-        ObjectPoolSize: 10
-        MutualizePools: 0
-        ParentTransform: {fileID: 0}
-        CachedRecycle: 1
-        ParticlesPrefab: {fileID: 4923192885908265, guid: 35a73281f6847994f825fe030ac69e82, type: 3}
-        RandomParticlePrefabs: []
-        ForceSetActiveOnPlay: 1
-        StopOnReset: 0
-        DeclaredDuration: 0
-        PositionMode: 0
-        InstantiateParticlesPosition: {fileID: 0}
-        TargetWorldPosition: {x: 0, y: 0, z: 0}
-        Offset: {x: 0, y: 0, z: 0}
-        NestParticles: 1
-        ApplyRotation: 0
-        ApplyScale: 0
-        ForceSimulationSpeed: 0
-        ForcedSimulationSpeed: {x: 0.1, y: 1}
+        PlayEvents:
+          m_PersistentCalls:
+            m_Calls:
+            - m_Target: {fileID: 6429923079801110711}
+              m_TargetAssemblyTypeName: Feedbacks.VFXPlayerPooling, Assembly-CSharp
+              m_MethodName: PlayVFX
+              m_Mode: 1
+              m_Arguments:
+                m_ObjectArgument: {fileID: 0}
+                m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+                m_IntArgument: 0
+                m_FloatArgument: 0
+                m_StringArgument: 
+                m_BoolArgument: 0
+              m_CallState: 2
+        StopEvents:
+          m_PersistentCalls:
+            m_Calls: []
+        InitializationEvents:
+          m_PersistentCalls:
+            m_Calls: []
+        ResetEvents:
+          m_PersistentCalls:
+            m_Calls: []
+--- !u!114 &6429923079801110711
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1943798464071913329}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f010f6edecaea2a40adea01bf2111bb8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  vfxPrefab: {fileID: 4923192885908265, guid: 35a73281f6847994f825fe030ac69e82, type: 3}
+  followMode: 1
+  rotationMode: 0
 --- !u!1 &3040175372062831934
 GameObject:
   m_ObjectHideFlags: 0
@@ -700,6 +721,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6569491998741461474}
   - component: {fileID: 7889806664539695170}
+  - component: {fileID: 2398513818364634764}
   m_Layer: 0
   m_Name: NormalEnemyTakeDamage
   m_TagString: Untagged
@@ -812,7 +834,7 @@ MonoBehaviour:
   DebugActive: 0
   FeedbacksList:
   - rid: 2975743865254576128
-  - rid: 4929453777397219333
+  - rid: 7334425405478141958
   KeepPlayModeChanges: 0
   PerformanceMode: 0
   StopFeedbacksOnDisable: 0
@@ -892,12 +914,12 @@ MonoBehaviour:
         DebugMessage: 
         DebugColor: {r: 0, g: 1, b: 1, a: 1}
         DisplayFrameCount: 1
-    - rid: 4929453777397219333
-      type: {class: MMF_ParticlesInstantiation, ns: MoreMountains.Feedbacks, asm: MoreMountains.Feedbacks}
+    - rid: 7334425405478141958
+      type: {class: MMF_Events, ns: MoreMountains.Feedbacks, asm: MoreMountains.Feedbacks}
       data:
         Active: 1
-        UniqueID: 945975497
-        Label: Particles Instantiation
+        UniqueID: -2075557536
+        Label: Unity Events
         ChannelMode: 0
         Channel: 0
         MMChannelDefinition: {fileID: 0}
@@ -960,25 +982,45 @@ MonoBehaviour:
         RemapRangeFalloff: {x: 0, y: 1}
         Owner: {fileID: 7889806664539695170}
         DebugActive: 0
-        Mode: 0
-        ObjectPoolSize: 10
-        MutualizePools: 0
-        ParentTransform: {fileID: 0}
-        CachedRecycle: 1
-        ParticlesPrefab: {fileID: 8127464484710613483, guid: 995f4415b6ac98b4b9c7db689b2221fb, type: 3}
-        RandomParticlePrefabs: []
-        ForceSetActiveOnPlay: 1
-        StopOnReset: 0
-        DeclaredDuration: 0
-        PositionMode: 0
-        InstantiateParticlesPosition: {fileID: 0}
-        TargetWorldPosition: {x: 0, y: 0, z: 0}
-        Offset: {x: 0, y: 0, z: 0}
-        NestParticles: 0
-        ApplyRotation: 0
-        ApplyScale: 0
-        ForceSimulationSpeed: 0
-        ForcedSimulationSpeed: {x: 0.1, y: 1}
+        PlayEvents:
+          m_PersistentCalls:
+            m_Calls:
+            - m_Target: {fileID: 2398513818364634764}
+              m_TargetAssemblyTypeName: Feedbacks.VFXPlayerPooling, Assembly-CSharp
+              m_MethodName: PlayVFX
+              m_Mode: 1
+              m_Arguments:
+                m_ObjectArgument: {fileID: 0}
+                m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+                m_IntArgument: 0
+                m_FloatArgument: 0
+                m_StringArgument: 
+                m_BoolArgument: 0
+              m_CallState: 2
+        StopEvents:
+          m_PersistentCalls:
+            m_Calls: []
+        InitializationEvents:
+          m_PersistentCalls:
+            m_Calls: []
+        ResetEvents:
+          m_PersistentCalls:
+            m_Calls: []
+--- !u!114 &2398513818364634764
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4115155700243525769}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f010f6edecaea2a40adea01bf2111bb8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  vfxPrefab: {fileID: 8127464484710613483, guid: 995f4415b6ac98b4b9c7db689b2221fb, type: 3}
+  followMode: 0
+  rotationMode: 0
 --- !u!1 &6893798603404414412
 GameObject:
   m_ObjectHideFlags: 0
@@ -989,6 +1031,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2361658103792419496}
   - component: {fileID: 7483767108748292306}
+  - component: {fileID: 7993008330672070213}
   m_Layer: 0
   m_Name: NormalEnemyDead
   m_TagString: Untagged
@@ -1101,8 +1144,7 @@ MonoBehaviour:
   DebugActive: 0
   FeedbacksList:
   - rid: 2975743865254576128
-  - rid: 4929453777397219333
-  - rid: 4929453861510053890
+  - rid: 7334425405478141960
   KeepPlayModeChanges: 0
   PerformanceMode: 0
   StopFeedbacksOnDisable: 0
@@ -1182,12 +1224,12 @@ MonoBehaviour:
         DebugMessage: 
         DebugColor: {r: 0, g: 1, b: 1, a: 1}
         DisplayFrameCount: 1
-    - rid: 4929453777397219333
-      type: {class: MMF_ParticlesInstantiation, ns: MoreMountains.Feedbacks, asm: MoreMountains.Feedbacks}
+    - rid: 7334425405478141960
+      type: {class: MMF_Events, ns: MoreMountains.Feedbacks, asm: MoreMountains.Feedbacks}
       data:
         Active: 1
-        UniqueID: 945975497
-        Label: Particles Instantiation
+        UniqueID: -83230303
+        Label: Unity Events
         ChannelMode: 0
         Channel: 0
         MMChannelDefinition: {fileID: 0}
@@ -1250,112 +1292,45 @@ MonoBehaviour:
         RemapRangeFalloff: {x: 0, y: 1}
         Owner: {fileID: 7483767108748292306}
         DebugActive: 0
-        Mode: 0
-        ObjectPoolSize: 10
-        MutualizePools: 0
-        ParentTransform: {fileID: 0}
-        CachedRecycle: 1
-        ParticlesPrefab: {fileID: 5742859516330534167, guid: 010a90b008f5e4d479bc8ee9695dad76, type: 3}
-        RandomParticlePrefabs: []
-        ForceSetActiveOnPlay: 1
-        StopOnReset: 0
-        DeclaredDuration: 0
-        PositionMode: 0
-        InstantiateParticlesPosition: {fileID: 0}
-        TargetWorldPosition: {x: 0, y: 0, z: 0}
-        Offset: {x: 0, y: 0, z: 0}
-        NestParticles: 0
-        ApplyRotation: 0
-        ApplyScale: 0
-        ForceSimulationSpeed: 0
-        ForcedSimulationSpeed: {x: 0.1, y: 1}
-    - rid: 4929453861510053890
-      type: {class: MMF_ParticlesInstantiation, ns: MoreMountains.Feedbacks, asm: MoreMountains.Feedbacks}
-      data:
-        Active: 0
-        UniqueID: -952570790
-        Label: Particles Instantiation
-        ChannelMode: 0
-        Channel: 0
-        MMChannelDefinition: {fileID: 0}
-        Chance: 100
-        DisplayColor: {r: 0, g: 0, b: 0, a: 1}
-        Timing:
-          TimescaleMode: 0
-          ExcludeFromHoldingPauses: 0
-          ContributeToTotalDuration: 1
-          InitialDelay: 0
-          CooldownDuration: 0
-          InterruptsOnStop: 1
-          NumberOfRepeats: 0
-          RepeatForever: 0
-          DelayBetweenRepeats: 1
-          MMFeedbacksDirectionCondition: 0
-          PlayDirection: 0
-          ConstantIntensity: 0
-          UseIntensityInterval: 0
-          IntensityIntervalMin: 0
-          IntensityIntervalMax: 0
-          Sequence: {fileID: 0}
-          TrackID: 0
-          Quantized: 0
-          TargetBPM: 120
-        AutomatedTargetAcquisition:
-          Mode: 0
-          ChildIndex: 0
-        RandomizeOutput: 0
-        RandomMultiplier: {x: 0.8, y: 1}
-        RandomizeDuration: 0
-        RandomDurationMultiplier: {x: 0.5, y: 2}
-        UseRange: 0
-        RangeDistance: 5
-        UseRangeFalloff: 0
-        RangeFalloff:
-          serializedVersion: 2
-          m_Curve:
-          - serializedVersion: 3
-            time: 0
-            value: 1
-            inSlope: 0
-            outSlope: 0
-            tangentMode: 0
-            weightedMode: 0
-            inWeight: 0
-            outWeight: 0
-          - serializedVersion: 3
-            time: 1
-            value: 0
-            inSlope: 0
-            outSlope: 0
-            tangentMode: 0
-            weightedMode: 0
-            inWeight: 0
-            outWeight: 0
-          m_PreInfinity: 2
-          m_PostInfinity: 2
-          m_RotationOrder: 4
-        RemapRangeFalloff: {x: 0, y: 1}
-        Owner: {fileID: 7483767108748292306}
-        DebugActive: 0
-        Mode: 0
-        ObjectPoolSize: 10
-        MutualizePools: 0
-        ParentTransform: {fileID: 0}
-        CachedRecycle: 1
-        ParticlesPrefab: {fileID: 7653445582093397150, guid: 714ec197d7036b94284f29f6da37d622, type: 3}
-        RandomParticlePrefabs: []
-        ForceSetActiveOnPlay: 1
-        StopOnReset: 0
-        DeclaredDuration: 0
-        PositionMode: 0
-        InstantiateParticlesPosition: {fileID: 0}
-        TargetWorldPosition: {x: 0, y: 0, z: 0}
-        Offset: {x: 0, y: 0, z: 0}
-        NestParticles: 0
-        ApplyRotation: 0
-        ApplyScale: 0
-        ForceSimulationSpeed: 0
-        ForcedSimulationSpeed: {x: 0.1, y: 1}
+        PlayEvents:
+          m_PersistentCalls:
+            m_Calls:
+            - m_Target: {fileID: 7993008330672070213}
+              m_TargetAssemblyTypeName: Feedbacks.VFXPlayerPooling, Assembly-CSharp
+              m_MethodName: PlayVFX
+              m_Mode: 1
+              m_Arguments:
+                m_ObjectArgument: {fileID: 0}
+                m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+                m_IntArgument: 0
+                m_FloatArgument: 0
+                m_StringArgument: 
+                m_BoolArgument: 0
+              m_CallState: 2
+        StopEvents:
+          m_PersistentCalls:
+            m_Calls: []
+        InitializationEvents:
+          m_PersistentCalls:
+            m_Calls: []
+        ResetEvents:
+          m_PersistentCalls:
+            m_Calls: []
+--- !u!114 &7993008330672070213
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6893798603404414412}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f010f6edecaea2a40adea01bf2111bb8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  vfxPrefab: {fileID: 5742859516330534167, guid: 010a90b008f5e4d479bc8ee9695dad76, type: 3}
+  followMode: 0
+  rotationMode: 0
 --- !u!1 &7395592095400793151
 GameObject:
   m_ObjectHideFlags: 0
@@ -1760,7 +1735,7 @@ MonoBehaviour:
     - rid: 6347591105996128259
       type: {class: MMF_SetActive, ns: MoreMountains.Feedbacks, asm: MoreMountains.Feedbacks}
       data:
-        Active: 1
+        Active: 0
         UniqueID: 1999399699
         Label: Set Active
         ChannelMode: 0
