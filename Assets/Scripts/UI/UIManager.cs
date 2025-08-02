@@ -164,4 +164,10 @@ public class UIManager : MonoBehaviour
     {
         OpenPanel(UIPanelType.QuitPanel);
     }
+    
+    public void QuitGame()
+    {
+        Application.Quit();
+        Debug.Log("Quit Game");
+    }
 }
