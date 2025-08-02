@@ -1914,9 +1914,9 @@ RectTransform:
   - {fileID: 313572770}
   m_Father: {fileID: 914178932}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 800, y: -330}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 1300, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &401265629
@@ -1938,8 +1938,8 @@ MonoBehaviour:
   nameStateObj: {fileID: 1061424818}
   numStateObj: {fileID: 1897062400}
   timeObj: {fileID: 1513925880}
-  clickScale: 1.1
-  hoverScale: 1.05
+  clickScale: 1.05
+  hoverScale: 1.03
   tweenDuration: 0.2
 --- !u!114 &401265630
 MonoBehaviour:
@@ -2607,9 +2607,9 @@ RectTransform:
   - {fileID: 35763541}
   m_Father: {fileID: 914178932}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 800, y: -560}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 1300, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &558106065
@@ -2631,8 +2631,8 @@ MonoBehaviour:
   nameStateObj: {fileID: 2016399546}
   numStateObj: {fileID: 1653568906}
   timeObj: {fileID: 1894046647}
-  clickScale: 1.1
-  hoverScale: 1.05
+  clickScale: 1.05
+  hoverScale: 1.03
   tweenDuration: 0.2
 --- !u!114 &558106066
 MonoBehaviour:
@@ -3199,7 +3199,7 @@ MonoBehaviour:
   m_text: 'Time : 00:00'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: abc1bde12442a8341a3fcd9a44406187, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 4855737462702251181, guid: abc1bde12442a8341a3fcd9a44406187, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -3262,7 +3262,7 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
-  m_hasFontAssetChanged: 1
+  m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
 --- !u!222 &587156731
@@ -3395,13 +3395,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   menuScene: 
-  gamePlayScene: ReworkStageShaoKuy
+  gamePlayScene: GameplayShaoKuy
   panelEntries:
-  - type: 6
+  - type: 5
     panel: {fileID: 1673546081}
-  - type: 7
+  - type: 6
     panel: {fileID: 1501110633}
-  - type: 8
+  - type: 7
     panel: {fileID: 1129107202}
 --- !u!1 &597054485
 GameObject:
@@ -4585,7 +4585,7 @@ MonoBehaviour:
   m_text: State Name
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: abc1bde12442a8341a3fcd9a44406187, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 4855737462702251181, guid: abc1bde12442a8341a3fcd9a44406187, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -4648,7 +4648,7 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
-  m_hasFontAssetChanged: 1
+  m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
 --- !u!222 &941422849
@@ -5795,7 +5795,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: -230, y: 0}
+  m_AnchoredPosition: {x: -140, y: 0}
   m_SizeDelta: {x: 200, y: 60}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1067637733
@@ -9138,7 +9138,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1673546082
 RectTransform:
   m_ObjectHideFlags: 0
@@ -11151,9 +11151,9 @@ RectTransform:
   - {fileID: 1488938716}
   m_Father: {fileID: 914178932}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 800, y: -100}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 1300, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2006604629
@@ -11257,8 +11257,8 @@ MonoBehaviour:
   nameStateObj: {fileID: 941422846}
   numStateObj: {fileID: 2028745178}
   timeObj: {fileID: 587156728}
-  clickScale: 1.1
-  hoverScale: 1.05
+  clickScale: 1.05
+  hoverScale: 1.03
   tweenDuration: 0.2
 --- !u!1 &2015077224
 GameObject:
@@ -11588,7 +11588,7 @@ MonoBehaviour:
   m_text: 0-0
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: abc1bde12442a8341a3fcd9a44406187, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 4855737462702251181, guid: abc1bde12442a8341a3fcd9a44406187, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -11651,7 +11651,7 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
-  m_hasFontAssetChanged: 1
+  m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
 --- !u!222 &2028745181
