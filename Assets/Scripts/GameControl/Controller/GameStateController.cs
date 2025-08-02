@@ -4,9 +4,11 @@ using Characters.Controllers;
 using Cysharp.Threading.Tasks;
 using GameControl.GameState;
 using GameControl.Interface;
+using GameControl.SO;
 using MoreMountains.Tools;
 using UnityEngine;
 using Sirenix.OdinInspector;
+using UI.MapSelection;
 
 namespace GameControl.Controller
 {
@@ -33,13 +35,14 @@ namespace GameControl.Controller
         [ShowInInspector, ReadOnly]
         private SO.MapDataSO _currentMapData;
         
-        [SerializeField] private List<SO.MapDataSO> mapDataList;
+        [SerializeField] private MapSelectionDataContainer mapContainer;
         [Tooltip("The index of the current map in the mapData list.")]
         [SerializeField] private int currentMapIndex;
+        private List<MapDataSO> MapDataList => mapContainer != null ? mapContainer.mapSelectionList : new List<MapDataSO>();
         
         public SO.MapDataSO CurrentMap => 
-            mapDataList.Count > 0 && currentMapIndex < mapDataList.Count
-                ? mapDataList[currentMapIndex]
+            MapDataList.Count > 0 && currentMapIndex < MapDataList.Count
+                ? MapDataList[currentMapIndex]
                 : null;
         
         public EndResult gameResult;
@@ -66,7 +69,7 @@ namespace GameControl.Controller
 
         private void Start()
         {
-            SetState(_prestartState);
+            SetupGameSelection().Forget();
         }
 
         private void Update()
@@ -80,6 +83,14 @@ namespace GameControl.Controller
             _currentState = newState;
             _currentState?.Enter(this);
             _currentStateName = _currentState?.GetType().Name;
+        }
+
+        private async UniTask SetupGameSelection()
+        {
+            await UniTask.WaitUntil(() => MapSelectionSender.Instance != null);
+            currentMapIndex = MapSelectionSender.Instance.currentMapSelectionIndex;
+            _currentMapData = CurrentMap;
+            SetState(_prestartState);
         }
         
         public async UniTask LerpTimeScaleAsync(float target, float duration)
@@ -140,16 +151,20 @@ namespace GameControl.Controller
         [FoldoutGroup("Map Button"), Button(ButtonSizes.Large), GUIColor(0, 1, 1)]
         public void SetMap(int mapIndex)
         {
-            if (mapIndex < 0 || mapIndex >= mapDataList.Count) return;
+            if (mapIndex < 0 || mapIndex >= MapDataList.Count) return;
             currentMapIndex = mapIndex;
+            _currentMapData = CurrentMap;
+            MapSelectionSender.Instance.currentMapSelectionIndex = currentMapIndex;
             SetState(_prestartState);
         }
         
         [FoldoutGroup("Map Button"), Button(ButtonSizes.Large), GUIColor(0, 1, 1)]
         public void NextMap()
         {
-            if (mapDataList.Count == 0 || currentMapIndex >= mapDataList.Count - 1) return;
+            if (MapDataList.Count == 0 || currentMapIndex >= MapDataList.Count - 1) return;
             currentMapIndex++;
+            _currentMapData = CurrentMap;
+            MapSelectionSender.Instance.currentMapSelectionIndex = currentMapIndex;
             SetState(_prestartState);
         }
     }

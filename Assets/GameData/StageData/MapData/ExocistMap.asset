@@ -1,0 +1,68 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 844e63b3876cd4d479ac769e5560becf, type: 3}
+  m_Name: ExocistMap
+  m_EditorClassIdentifier: 
+  mapName: Exocist
+  background: {fileID: 0}
+  image: {fileID: 21300000, guid: 971799f60ca7f7341be01e157f3b1ae2, type: 3}
+  mapGlobalTime: 30
+  EnemyOptions:
+  - id: Enemy_Normal
+    enemyController: {fileID: 8145196360709479149, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
+    prewarmCount: 100
+    spawnPoint: 1
+    enemyCanGrowth: 0
+    enemyPointGrowthRate: 12.5
+    chance: 100
+    useCustomInterval: 0
+    customInterval: 0.5
+  - id: Enemy_Big
+    enemyController: {fileID: 1371981663885322251, guid: c825ab4cef105ab40aa986fd07615367, type: 3}
+    prewarmCount: 100
+    spawnPoint: 2
+    enemyCanGrowth: 0
+    enemyPointGrowthRate: 12.5
+    chance: 50
+    useCustomInterval: 0
+    customInterval: 2
+  PatternOptions:
+  - pattern: {fileID: 11400000, guid: 1152772dc8e0f114e824dddd694be66b, type: 2}
+    delayBetweenEnemy: 0
+    delayBetweenRows: 1
+    patternPoint: 10
+  - pattern: {fileID: 11400000, guid: 098e856c71484744d95d27a8654a8433, type: 2}
+    delayBetweenEnemy: 0
+    delayBetweenRows: 1
+    patternPoint: 10
+  - pattern: {fileID: 11400000, guid: 288500a21d61a4540b39a6463d3f4af9, type: 2}
+    delayBetweenEnemy: 0
+    delayBetweenRows: 1
+    patternPoint: 10
+  - pattern: {fileID: 11400000, guid: 2bc8bc7d72e130d4382d64794bbc160c, type: 2}
+    delayBetweenEnemy: 0.1
+    delayBetweenRows: 1
+    patternPoint: 10
+  ItemOptions:
+  - id: Normal_Exp
+    itemObj: {fileID: -5713370279045352398, guid: eb2f8352aac61d446a4ef94d6303afbf, type: 3}
+    prewarmCount: 30
+    chance: 100
+    useCustomInterval: 0
+    customInterval: 0
+  maxItemSpawning: 10
+  defaultItemSpawnTimer: 1
+  PatternCenter: {x: 0, y: 0}
+  defaultEnemySpawnTimer: 0.5
+  startEnemyPoint: 100
+  maxEnemyPoint: 500
+  increaseRateEnemyPoint: 20
