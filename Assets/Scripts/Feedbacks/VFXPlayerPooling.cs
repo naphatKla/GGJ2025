@@ -1,7 +1,8 @@
+using System;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using Manager;
 using UnityEngine;
-using Cysharp.Threading.Tasks;
-using System.Collections.Generic;
 
 namespace Feedbacks
 {
@@ -17,36 +18,53 @@ namespace Feedbacks
         MatchOwner = 1,
     }
 
-    public class VFXPlayerPooling : MonoBehaviour, IPoolingLifeCycle<ParticleSystem>
+    public class VFXPlayerPooling : MonoBehaviour
     {
-        [Header("VFX Setup")]
-        [SerializeField] private ParticleSystem vfxPrefab;
+        [Header("VFX Setup")] [SerializeField] private ParticleSystem vfxPrefab;
 
-        [Header("Playback Mode")]
+        [Header("Playback Mode")] [SerializeField]
+        private bool stopOnDisable;
+
         [SerializeField] private FollowMode followMode = FollowMode.Once;
         [SerializeField] private RotationMode rotationMode = RotationMode.Identity;
 
-        private static readonly HashSet<string> CreatedPools = new();
+        private CancellationTokenSource _cts;
 
         private void Awake()
         {
             var key = vfxPrefab.name;
-            
-            if (CreatedPools.Contains(key)) return;
-            
+
             PoolingManager.Instance.Create<ParticleSystem>(
                 key,
                 PoolingGroupName.VFX,
-                this
+                CreatePoolInstance
             );
-            
-            CreatedPools.Add(key);
+        }
+
+        private void OnDisable()
+        {
+            if (stopOnDisable)
+                _cts?.Cancel();
+        }
+
+        private void OnDestroy()
+        {
+            _cts?.Cancel();
+            _cts?.Dispose();
         }
 
         public void PlayVFX()
         {
-            var vfx = PoolingManager.Instance.Get<ParticleSystem>(vfxPrefab.name);
-            PlayAndReleaseAsync(vfx).Forget();
+            var vfxInstance = PoolingManager.Instance.Get<ParticleSystem>(vfxPrefab.name);
+            vfxInstance.transform.position = transform.position;
+            vfxInstance.transform.rotation = rotationMode switch
+            {
+                RotationMode.MatchOwner => transform.rotation,
+                _ => Quaternion.identity
+            };
+            vfxInstance.gameObject.SetActive(true);
+            
+            PlayAndReleaseAsync(vfxInstance).Forget();
         }
 
         private async UniTaskVoid PlayAndReleaseAsync(ParticleSystem instance)
@@ -58,53 +76,52 @@ namespace Feedbacks
             if (followMode == FollowMode.Follow)
                 await FollowWhileAlive(instance);
             else
-                await UniTask.WaitWhile(() => instance.IsAlive(true), cancellationToken: this.GetCancellationTokenOnDestroy());
+                await UniTask.WaitWhile(() => instance.IsAlive(true), cancellationToken: GetLinkedToken());
 
+            instance.Stop();
+            instance.gameObject.SetActive(false);
             PoolingManager.Instance.Release(vfxPrefab.name, instance);
         }
 
         private async UniTask FollowWhileAlive(ParticleSystem instance)
         {
-            while (instance.IsAlive(true))
+            var token = GetLinkedToken();
+
+            try
             {
-                instance.transform.position = transform.position;
+                while (instance.IsAlive(true))
+                {
+                    instance.transform.position = transform.position;
 
-                if (rotationMode == RotationMode.MatchOwner)
-                    instance.transform.rotation = transform.rotation;
+                    if (rotationMode == RotationMode.MatchOwner)
+                        instance.transform.rotation = transform.rotation;
 
-                await UniTask.NextFrame(cancellationToken: this.GetCancellationTokenOnDestroy());
+                    await UniTask.NextFrame(cancellationToken: token);
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                // Canceled via disable/destroy
             }
         }
 
-        // Pool life cycle
+        private CancellationToken GetLinkedToken()
+        {
+            _cts?.Cancel();
+            _cts?.Dispose();
+            _cts = new CancellationTokenSource();
+
+            return CancellationTokenSource.CreateLinkedTokenSource(
+                _cts.Token,
+                this.GetCancellationTokenOnDestroy()
+            ).Token;
+        }
+
         public ParticleSystem CreatePoolInstance()
         {
             var vfxInstance = Instantiate(vfxPrefab);
-            vfxInstance.transform.position = transform.position;
             vfxInstance.gameObject.SetActive(false);
             return vfxInstance;
-        }
-
-        public void OnGetFromPool(ParticleSystem instance)
-        {
-            instance.transform.position = transform.position;
-            instance.transform.rotation = rotationMode switch
-            {
-                RotationMode.MatchOwner => transform.rotation,
-                _ => Quaternion.identity
-            };
-            instance.gameObject.SetActive(true);
-        }
-
-        public void OnReleaseToPool(ParticleSystem instance)
-        {
-            instance.gameObject.SetActive(false);
-            instance.Stop();
-        }
-
-        public void OnDestroyFromPool(ParticleSystem instance)
-        {
-            Destroy(instance.gameObject);
         }
     }
 }

@@ -14,14 +14,6 @@ namespace Manager
         public static string Item => nameof(Item);
     }
 
-    public interface IPoolingLifeCycle<T>
-    {
-        T CreatePoolInstance();
-        void OnGetFromPool(T instance);
-        void OnReleaseToPool(T instance);
-        void OnDestroyFromPool(T instance);
-    }
-
     public class PoolingManager : MMSingleton<PoolingManager>
     {
         private readonly Dictionary<string, object> _typedPools = new();
@@ -40,15 +32,18 @@ namespace Manager
         public void Create<T>(
             string nameOrID,
             string groupName,
-            IPoolingLifeCycle<T> lifeCycle,
+            Func<T> createFunc,
+            Action<T> onGet = null,
+            Action<T> onRelease = null,
+            Action<T> onDestroy = null,
             bool collectionCheck = false,
             int defaultCapacity = 10,
-            int maxSize = 150
+            int? maxSize = null
         ) where T : Component
         {
-            if (string.IsNullOrEmpty(nameOrID) || lifeCycle == null)
+            if (string.IsNullOrEmpty(nameOrID) || createFunc == null)
             {
-                Debug.LogError("[PoolingManager] Cannot create pool. Key or lifeCycle is null.");
+                Debug.LogError("[PoolingManager] Cannot create pool. Key or createFunc is null.");
                 return;
             }
 
@@ -60,16 +55,26 @@ namespace Manager
             var pool = new ObjectPool<T>(
                 createFunc: () =>
                 {
-                    var obj = lifeCycle.CreatePoolInstance();
-                    obj.gameObject.transform.SetParent(parent);
+                    var obj = createFunc();
+                    obj.transform.SetParent(parent);
+                    obj.gameObject.SetActive(false);
                     return obj;
                 },
-                actionOnGet: lifeCycle.OnGetFromPool,
-                actionOnRelease: lifeCycle.OnReleaseToPool,
-                actionOnDestroy: lifeCycle.OnDestroyFromPool,
+                actionOnGet: obj =>
+                {
+                    onGet?.Invoke(obj);
+                },
+                actionOnRelease: obj =>
+                {
+                    onRelease?.Invoke(obj);
+                },
+                actionOnDestroy: obj =>
+                {
+                    onDestroy?.Invoke(obj);
+                },
                 collectionCheck: collectionCheck,
                 defaultCapacity: defaultCapacity,
-                maxSize: maxSize
+                maxSize: maxSize ?? int.MaxValue
             );
 
             _typedPools[nameOrID] = pool;
@@ -155,7 +160,7 @@ namespace Manager
 
             foreach (var folder in _parentFolders.Values)
             {
-                if (folder != null)
+                if (folder != null) 
                     Destroy(folder.gameObject);
             }
 
