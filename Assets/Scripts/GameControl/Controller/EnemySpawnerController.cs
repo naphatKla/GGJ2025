@@ -77,6 +77,7 @@ namespace GameControl.Controller
         public void ActionOnRelease(EnemyController obj, MapDataSO.EnemyOption option)
         {
             obj.gameObject.SetActive(false);
+            obj.FeedbackSystem.ShowTrail(false);
             obj.transform.position = SpawnUtility.RandomSpawnAroundRegion(_regionSize);
             SpawnerStateController.Instance.CurrentEnemyPoint += option.EnemyPoint;
             _activeEnemy.Remove(obj);
@@ -87,6 +88,7 @@ namespace GameControl.Controller
             obj.ResetAllDependentBehavior();
             obj.transform.position = SpawnUtility.RandomSpawnAroundRegion(_regionSize);
             obj.transform.SetParent(_state.EnemyParent);
+            obj.FeedbackSystem.ShowTrail(true);
             obj.gameObject.SetActive(true);
 
             _activeEnemy.Add(obj);

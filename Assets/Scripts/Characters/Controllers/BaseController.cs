@@ -195,6 +195,7 @@ namespace Characters.Controllers
             healthSystem.ResetHealthSystem();
             statusEffectSystem.ResetStatusEffectSystem();
             damageOnTouch.ResetDamageOnTouch();
+            feedbackSystem.ResetFeedbackSystem();
         }
 
         #endregion

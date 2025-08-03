@@ -5482,7 +5482,6 @@ GameObject:
   - component: {fileID: 681150448}
   - component: {fileID: 681150451}
   - component: {fileID: 681150452}
-  - component: {fileID: 681150450}
   - component: {fileID: 681150453}
   m_Layer: 0
   m_Name: GameController
@@ -5521,18 +5520,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &681150450
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 681150447}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7892dd329705b3d4abd74050e69641fe, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &681150451
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -20145,28 +20132,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1918178044}
   m_CullTransparentMesh: 1
---- !u!114 &1926532004 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2047403147416900316, guid: ef87c6aedde00684a81e6139e502fb41, type: 3}
-  m_PrefabInstance: {fileID: 6860519980066294386}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ce2f5e6d797c1d24d96e9555f516b478, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1926532005 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1611083095111674569, guid: ef87c6aedde00684a81e6139e502fb41, type: 3}
-  m_PrefabInstance: {fileID: 6860519980066294386}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b5dd45224fe3c4d4ca1bd168263f9430, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1930642914
 GameObject:
   m_ObjectHideFlags: 0
@@ -21672,14 +21637,6 @@ PrefabInstance:
       propertyPath: levelImage
       value: 
       objectReference: {fileID: 315115972}
-    - target: {fileID: 1766625338755230343, guid: ef87c6aedde00684a81e6139e502fb41, type: 3}
-      propertyPath: levelSystem
-      value: 
-      objectReference: {fileID: 1926532004}
-    - target: {fileID: 1766625338755230343, guid: ef87c6aedde00684a81e6139e502fb41, type: 3}
-      propertyPath: healthSystem
-      value: 
-      objectReference: {fileID: 1926532005}
     - target: {fileID: 1766625338755230343, guid: ef87c6aedde00684a81e6139e502fb41, type: 3}
       propertyPath: comboStreakText
       value: 

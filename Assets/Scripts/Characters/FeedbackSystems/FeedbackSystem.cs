@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using MoreMountains.Feedbacks;
 using Sirenix.OdinInspector;
 using Sirenix.Serialization;
+using UnityEngine;
 
 namespace Characters.FeedbackSystems
 {
@@ -19,6 +20,8 @@ namespace Characters.FeedbackSystems
         [DictionaryDrawerSettings(KeyLabel = "Feedback Name", ValueLabel = "MMF_Player Reference")]
         [OdinSerialize]
         private Dictionary<FeedbackName, MMF_Player> _feedbackList;
+
+        [SerializeField] private TrailRenderer trail;
 
         #endregion
 
@@ -49,6 +52,25 @@ namespace Characters.FeedbackSystems
         {
             if (!_feedbackList.ContainsKey(feedbackName)) return false;
             return _feedbackList[feedbackName].IsPlaying;
+        }
+
+        public void ShowTrail(bool enable)
+        {
+            if (!trail) return;
+            trail.Clear();
+            trail.ResetBounds();
+            trail.ResetLocalBounds();
+            trail.emitting = enable;
+        }
+
+        public void ResetFeedbackSystem()
+        {
+            trail.Clear();
+            trail.ResetBounds();
+            trail.ResetLocalBounds();
+            
+            foreach (var keyValuePair in _feedbackList)
+                StopFeedback(keyValuePair.Key);
         }
         
         #endregion
