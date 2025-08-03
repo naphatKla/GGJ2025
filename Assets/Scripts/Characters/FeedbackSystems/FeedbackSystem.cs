@@ -68,9 +68,6 @@ namespace Characters.FeedbackSystems
             trail.Clear();
             trail.ResetBounds();
             trail.ResetLocalBounds();
-            
-            foreach (var keyValuePair in _feedbackList)
-                StopFeedback(keyValuePair.Key);
         }
         
         #endregion

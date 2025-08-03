@@ -70,17 +70,28 @@ namespace Feedbacks
         private async UniTaskVoid PlayAndReleaseAsync(ParticleSystem instance)
         {
             if (instance == null) return;
+            var token = GetLinkedToken();
 
-            instance.Play();
+            try
+            {
+                instance.Play();
 
-            if (followMode == FollowMode.Follow)
-                await FollowWhileAlive(instance);
-            else
-                await UniTask.WaitWhile(() => instance.IsAlive(true), cancellationToken: GetLinkedToken());
+                if (followMode == FollowMode.Follow)
+                    await FollowWhileAlive(instance);
+                else
+                    await UniTask.WaitWhile(() => instance.IsAlive(true) && instance, cancellationToken: token);
 
-            instance.Stop();
-            instance.gameObject.SetActive(false);
-            PoolingManager.Instance.Release(vfxPrefab.name, instance);
+                // If instance was destroyed during waiting
+                if (!instance) return;
+                
+                instance.Stop();
+                instance.gameObject.SetActive(false);
+                PoolingManager.Instance.Release(vfxPrefab.name, instance);
+            }
+            catch (OperationCanceledException)
+            {
+                // Canceled via disable/destroy
+            }
         }
 
         private async UniTask FollowWhileAlive(ParticleSystem instance)
