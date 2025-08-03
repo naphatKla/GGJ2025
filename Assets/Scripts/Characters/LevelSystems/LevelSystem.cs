@@ -18,6 +18,7 @@ namespace Characters.LevelSystems
         public void AddExp(int amount)
         {
             Exp += amount;
+            
             while (Exp >= expPerLevel)
             {
                 Exp -= expPerLevel;

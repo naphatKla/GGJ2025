@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5056253ad23a97346927fde2743fb996, type: 3}
-  m_Name: autoSkillTest4
+  m_Name: LV3_Skill_Refliction 2
   m_EditorClassIdentifier: 
   serializationData:
     SerializedFormat: 2
@@ -30,18 +30,18 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
-  level: 4
-  cooldown: 9
+  level: 3
+  cooldown: 3
   statusEffectOnSkillStart:
   - effectData: {fileID: 11400000, guid: aa4dff95f38494c4e876f8f95511ecf0, type: 2}
     isOverrideDuration: 1
     overrideDuration: 2
-  nextSkillDataUpgrade: {fileID: 11400000, guid: fba4fbb922467094b94e3a773c4f516e, type: 2}
-  previousSkillData: {fileID: 11400000, guid: bed868c658f81d34a80c17dd98d3d17d, type: 2}
+  nextSkillDataUpgrade: {fileID: 11400000, guid: 2183eec5f09ebc54c92eaed05a2db844, type: 2}
+  previousSkillData: {fileID: 11400000, guid: 099d0d3bb0564e7428cfee6e37f82620, type: 2}
   skillObjectAmount: 12
   reflectionSkillObject: {fileID: -5084912477967523391, guid: 77ab01583acdb514f86262907fd33d07, type: 3}
-  explosionDistance: 11
-  explosionEntireDuration: 1.5
+  explosionDistance: 8.5
+  explosionEntireDuration: 1
   explosionStartDuration: 0.1
   explosionStartCurve:
     serializedVersion: 2
@@ -106,15 +106,15 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 0
       value: 0
-      inSlope: 0
-      outSlope: 0
+      inSlope: -4
+      outSlope: -4
       tangentMode: 34
       weightedMode: 0
       inWeight: 0
       outWeight: 0.33333334
     - serializedVersion: 3
       time: 0.5
-      value: 0
+      value: -2
       inSlope: 0
       outSlope: 0
       tangentMode: 34
@@ -124,8 +124,8 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 1
       value: 0
-      inSlope: 0
-      outSlope: 0
+      inSlope: 4
+      outSlope: 4
       tangentMode: 34
       weightedMode: 0
       inWeight: 0.33333334

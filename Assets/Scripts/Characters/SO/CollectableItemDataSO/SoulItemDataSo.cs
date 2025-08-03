@@ -10,10 +10,12 @@ namespace Characters.SO.CollectableItemDataSO
         [Title("Soul Data")]
         [PropertyTooltip("")]
         [SerializeField] private int score;
+        [SerializeField] private int exp;
 
         /// <summary>
         /// 
         /// </summary>
         public int Score => score;
+        public int Exp => exp;
     }
 }

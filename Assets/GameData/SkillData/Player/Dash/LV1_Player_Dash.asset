@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 969282f293f7ef54fa8686f27a67f5df, type: 3}
-  m_Name: PlayerSkillDashData
+  m_Name: LV1_Player_Dash
   m_EditorClassIdentifier: 
   serializationData:
     SerializedFormat: 2
@@ -32,8 +32,6 @@ MonoBehaviour:
       Data: 
   level: 1
   cooldown: 0.5
-  hasLifeTime: 0
-  lifeTime: 0.3
   statusEffectOnSkillStart:
   - effectData: {fileID: 11400000, guid: aa4dff95f38494c4e876f8f95511ecf0, type: 2}
     isOverrideDuration: 1
@@ -41,7 +39,7 @@ MonoBehaviour:
   - effectData: {fileID: 11400000, guid: 859490802a7a26445ba20d4c30cc8d4f, type: 2}
     isOverrideDuration: 1
     overrideDuration: 0.35
-  nextSkillDataUpgrade: {fileID: 11400000, guid: 1ab3209725ee20844a53b809180ca3bc, type: 2}
+  nextSkillDataUpgrade: {fileID: 0}
   previousSkillData: {fileID: 0}
   dashDuration: 0.25
   dashDistance: 10
