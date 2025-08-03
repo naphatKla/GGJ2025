@@ -1,8 +1,11 @@
+using System;
 using System.Collections.Generic;
 using Characters.Controllers;
 using GameControl.SO;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.Pool;
+using Object = UnityEngine.Object;
 
 namespace GameControl.Controller
 {
@@ -12,8 +15,10 @@ namespace GameControl.Controller
         private SpawnerStateController _state;
         private readonly Vector2 _regionSize;
         
+        private List<EnemyController> _activeEnemy;
         private Dictionary<string, ObjectPool<EnemyController>> _enemyPools;
         private List<MapDataSO.EnemyOption> _enemyOptionsList;
+        
 
         public EnemySpawnerController(MapDataSO mapData, SpawnerStateController state, Vector2 spawnRegion)
         {
@@ -26,6 +31,7 @@ namespace GameControl.Controller
 
         public void PrewarmEnemy()
         {
+            _activeEnemy = new List<EnemyController>();
             _enemyOptionsList = new List<MapDataSO.EnemyOption>();
             _enemyPools = new Dictionary<string, ObjectPool<EnemyController>>();
             
@@ -71,14 +77,21 @@ namespace GameControl.Controller
         public void ActionOnRelease(EnemyController obj, MapDataSO.EnemyOption option)
         {
             obj.gameObject.SetActive(false);
+            obj.transform.position = SpawnUtility.RandomSpawnAroundRegion(_regionSize);
             SpawnerStateController.Instance.CurrentEnemyPoint += option.EnemyPoint;
+            _activeEnemy.Remove(obj);
         }
         
         private void ActionOnGet(EnemyController obj, MapDataSO.EnemyOption option)
         {
             obj.ResetAllDependentBehavior();
+            obj.transform.position = SpawnUtility.RandomSpawnAroundRegion(_regionSize);
+            obj.transform.SetParent(_state.EnemyParent);
             obj.gameObject.SetActive(true);
+
+            _activeEnemy.Add(obj);
         }
+        
 
         public Dictionary<string, ObjectPool<EnemyController>> GetEnemyList()
         {
@@ -107,27 +120,20 @@ namespace GameControl.Controller
 
             // Get GameObject
             if (!_enemyPools.TryGetValue(randomEnemy.id, out var pool)) return null;
-            
-            var enemyObj = pool.Get();
-            enemyObj.transform.position = SpawnUtility.RandomSpawnAroundRegion(_regionSize);
-            enemyObj.transform.SetParent(_state.EnemyParent);
+            pool.Get();
             
             // Spawn Point Decrease
             SpawnerStateController.Instance.CurrentEnemyPoint -= randomEnemy.EnemyPoint;
 
             return randomEnemy;
         }
-        
+
         public void ReleaseAllEnemies()
         {
-            var allEnemies = GameObject.FindObjectsOfType<EnemyController>();
-            if (allEnemies == null)  return;
-            foreach (var enemy in allEnemies)
+            foreach (var enemy in _activeEnemy.ToArray())
             {
-                enemy?.HealthSystem.TakeDamage(99999);
+                enemy.HealthSystem.TakeDamage(enemy.HealthSystem.MaxHealth);
             }
         }
-
-
     }
 }

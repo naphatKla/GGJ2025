@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Characters.CollectItemSystems.CollectableItems;
 using Characters.Controllers;
 using GameControl.Interface;
 using GameControl.Pattern;
@@ -76,7 +77,7 @@ namespace GameControl.SO
             [FoldoutGroup("$id")][Title("Setting")]
             public string id;
             [FoldoutGroup("$id")]
-            public PoolableComponent itemObj;
+            public BaseCollectableItem itemObj;
             [FoldoutGroup("$id")]
             public int prewarmCount = 30;
           

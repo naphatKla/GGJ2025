@@ -19,7 +19,6 @@ namespace GameControl.GameState
         public void Enter(GameStateController controller)
         {
             SpawnerStateController.Instance.SetState(new SpawnerState.StopState());
-            PoolingSystem.Instance.ClearAll();
             GameTimer.Instance.SetTimer(controller.CurrentMap.mapGlobalTime);
             GameTimer.Instance.StopTimer();
             SpawnerStateController.Instance.ClearEnemy();

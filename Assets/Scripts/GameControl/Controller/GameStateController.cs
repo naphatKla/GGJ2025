@@ -19,7 +19,7 @@ namespace GameControl.Controller
         Failed,
     }
     
-    [RequireComponent(typeof(SpawnerStateController), typeof(GameTimer), typeof(PoolingSystem))]
+    [RequireComponent(typeof(SpawnerStateController), typeof(GameTimer))]
     public class GameStateController : MMSingleton<GameStateController>
     {
         private IGameState _currentState;

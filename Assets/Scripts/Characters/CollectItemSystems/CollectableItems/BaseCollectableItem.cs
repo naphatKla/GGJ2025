@@ -21,7 +21,7 @@ namespace Characters.CollectItemSystems.CollectableItems
         /// Event invoked when this item is collected by a collector.
         /// The <see cref="GameObject"/> parameter represents the item GameObject that was collected.
         /// </summary>
-        public Action<GameObject> OnThisItemCollected { get; set; }
+        public Action OnThisItemCollected { get; set; }
         
         #endregion
         
@@ -115,7 +115,7 @@ namespace Characters.CollectItemSystems.CollectableItems
         public override void HandleOnCollect(CollectItemSystem ownerSystem)
         {
             OnCollect(ownerSystem);
-            OnThisItemCollected?.Invoke(gameObject);
+            OnThisItemCollected?.Invoke();
             gameObject.SetActive(false);
             ResetItem();
         }
