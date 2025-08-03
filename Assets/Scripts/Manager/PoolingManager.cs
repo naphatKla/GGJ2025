@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Pool;
@@ -15,7 +16,7 @@ namespace Manager
 
     public class PoolingManager : MMSingleton<PoolingManager>
     {
-        private readonly Dictionary<string, ObjectPool<GameObject>> _pools = new();
+        private readonly Dictionary<string, object> _typedPools = new();
         private readonly Dictionary<string, Transform> _parentFolders = new();
         private Transform _root;
 
@@ -30,37 +31,67 @@ namespace Manager
 
         public void Create<T>(
             string nameOrID,
-            GameObject prefab,
+            Func<T> createFunc,
             string groupName = "Default",
-            System.Action<T> onCreate = null,
-            System.Action<T> onGet = null,
-            System.Action<T> onRelease = null,
-            System.Action<T> onDestroy = null
+            Action<T> onGet = null,
+            Action<T> onRelease = null,
+            Action<T> onDestroy = null,
+            bool collectionCheck = false,
+            int defaultCapacity = 10,
+            int maxSize = 100
         ) where T : Component
         {
-            if (string.IsNullOrEmpty(nameOrID) || prefab == null)
+            if (string.IsNullOrEmpty(nameOrID) || createFunc == null)
             {
-                Debug.LogError("[PoolingManager] Cannot create pool. Key or prefab is null.");
+                Debug.LogError("[PoolingManager] Cannot create pool. Key or createFunc is null.");
                 return;
             }
 
-            if (_pools.ContainsKey(nameOrID))
+            if (_typedPools.ContainsKey(nameOrID))
                 return;
 
-            var pool = CreatePool(nameOrID, prefab, groupName, onCreate, onGet, onRelease, onDestroy);
-            _pools.Add(nameOrID, pool);
+            Transform parent = GetOrCreateParent(nameOrID, groupName);
+
+            var pool = new ObjectPool<T>(
+                createFunc: () =>
+                {
+                    var obj = createFunc();
+                    obj.transform.SetParent(parent);
+                    obj.gameObject.SetActive(false);
+                    return obj;
+                },
+                actionOnGet: obj =>
+                {
+                    obj.gameObject.SetActive(true);
+                    onGet?.Invoke(obj);
+                },
+                actionOnRelease: obj =>
+                {
+                    obj.gameObject.SetActive(false);
+                    onRelease?.Invoke(obj);
+                },
+                actionOnDestroy: obj =>
+                {
+                    onDestroy?.Invoke(obj);
+                    Destroy(obj.gameObject);
+                },
+                collectionCheck: collectionCheck,
+                defaultCapacity: defaultCapacity,
+                maxSize: maxSize
+            );
+
+            _typedPools[nameOrID] = pool;
         }
 
         public T Get<T>(string nameOrID) where T : Component
         {
-            if (!_pools.TryGetValue(nameOrID, out var pool))
+            if (_typedPools.TryGetValue(nameOrID, out var obj) && obj is ObjectPool<T> pool)
             {
-                Debug.LogError($"[PoolingManager] Pool for key '{nameOrID}' has not been created.");
-                return null;
+                return pool.Get();
             }
 
-            var instance = pool.Get();
-            return instance.GetComponent<T>();
+            Debug.LogError($"[PoolingManager] Pool for key '{nameOrID}' has not been created.");
+            return null;
         }
 
         public void Release<T>(string nameOrID, T instance) where T : Component
@@ -71,9 +102,9 @@ namespace Manager
                 return;
             }
 
-            if (_pools.TryGetValue(nameOrID, out var pool))
+            if (_typedPools.TryGetValue(nameOrID, out var obj) && obj is ObjectPool<T> pool)
             {
-                pool.Release(instance.gameObject);
+                pool.Release(instance);
             }
             else
             {
@@ -84,10 +115,13 @@ namespace Manager
 
         public void ClearPool(string nameOrID)
         {
-            if (_pools.TryGetValue(nameOrID, out var pool))
+            if (_typedPools.TryGetValue(nameOrID, out var poolObj))
             {
-                pool.Dispose(); // Destroys all inactive objects and disables pool
-                _pools.Remove(nameOrID);
+                if (poolObj is IDisposable disposable)
+                {
+                    disposable.Dispose();
+                }
+                _typedPools.Remove(nameOrID);
 
                 if (_parentFolders.TryGetValue(nameOrID, out var folder))
                 {
@@ -96,15 +130,35 @@ namespace Manager
                 }
             }
         }
-        
-        public void ClearAllPools()
+
+        public void ClearGroup(string groupName)
         {
-            foreach (var pair in _pools)
+            var toRemove = new List<string>();
+            foreach (var pair in _parentFolders)
             {
-                pair.Value.Dispose();
+                if (pair.Value.parent.name == groupName)
+                {
+                    toRemove.Add(pair.Key);
+                }
             }
 
-            _pools.Clear();
+            foreach (var key in toRemove)
+            {
+                ClearPool(key);
+            }
+        }
+
+        public void ClearAllPools()
+        {
+            foreach (var poolObj in _typedPools.Values)
+            {
+                if (poolObj is IDisposable disposable)
+                {
+                    disposable.Dispose();
+                }
+            }
+
+            _typedPools.Clear();
 
             foreach (var folder in _parentFolders.Values)
             {
@@ -115,49 +169,7 @@ namespace Manager
             _parentFolders.Clear();
         }
 
-        // -------- Internal Pool Creation --------
-
-        private ObjectPool<GameObject> CreatePool<T>(
-            string key,
-            GameObject prefab,
-            string groupName,
-            System.Action<T> onCreate,
-            System.Action<T> onGet,
-            System.Action<T> onRelease,
-            System.Action<T> onDestroy
-        ) where T : Component
-        {
-            var parent = GetOrCreateParent(key, groupName);
-
-            return new ObjectPool<GameObject>(
-                createFunc: () =>
-                {
-                    var obj = Instantiate(prefab, parent);
-                    obj.name = prefab.name;
-                    obj.SetActive(false);
-                    onCreate?.Invoke(obj.GetComponent<T>());
-                    return obj;
-                },
-                actionOnGet: go =>
-                {
-                    go.SetActive(true);
-                    onGet?.Invoke(go.GetComponent<T>());
-                },
-                actionOnRelease: go =>
-                {
-                    go.SetActive(false);
-                    onRelease?.Invoke(go.GetComponent<T>());
-                },
-                actionOnDestroy: go =>
-                {
-                    onDestroy?.Invoke(go.GetComponent<T>());
-                    Destroy(go);
-                },
-                collectionCheck: false,
-                defaultCapacity: 0,
-                maxSize: int.MaxValue
-            );
-        }
+        // -------- Internal --------
 
         private Transform GetOrCreateParent(string key, string groupName)
         {
