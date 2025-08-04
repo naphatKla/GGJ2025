@@ -7361,7 +7361,7 @@ GameObject:
   - component: {fileID: 1611083095111674569}
   - component: {fileID: 2047403147416900316}
   - component: {fileID: 7127418468070666774}
-  - component: {fileID: 2183269856455368127}
+  - component: {fileID: 1367073074030531616}
   - component: {fileID: 4177936962492003484}
   - component: {fileID: 7330480618453326501}
   - component: {fileID: 5678313002177273158}
@@ -7410,7 +7410,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   body: {fileID: 4551693807369029157}
   movementSystem: {fileID: 4786182755069043034}
-  skillSystem: {fileID: 2183269856455368127}
+  skillSystem: {fileID: 1367073074030531616}
   healthSystem: {fileID: 1611083095111674569}
   statusEffectSystem: {fileID: 4177936962492003484}
   combatSystem: {fileID: 7330480618453326501}
@@ -7507,7 +7507,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: daaa21c8fa23d854992b57f950dd4e3f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &2183269856455368127
+--- !u!114 &1367073074030531616
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -7516,9 +7516,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 2726293917207744010}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0de63d556ce2eea4ca302cf09c1f9e61, type: 3}
+  m_Script: {fileID: 11500000, guid: 3e37fcb2c2b36ef459b4a79f072a6d0b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  useInputBuffering: 1
+  bufferWindow: 0.225
 --- !u!114 &4177936962492003484
 MonoBehaviour:
   m_ObjectHideFlags: 0

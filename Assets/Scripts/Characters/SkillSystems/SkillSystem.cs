@@ -21,7 +21,7 @@ namespace Characters.SkillSystems
     public class SkillSystem : MonoBehaviour
     {
         protected BaseSkillDataSo primarySkillData;
-        private BaseSkillDataSo secondarySkillData;
+        protected BaseSkillDataSo secondarySkillData;
         private int autoSkillSlot;
         private List<BaseSkillDataSo> autoSkillDataList = new();
 
@@ -33,7 +33,7 @@ namespace Characters.SkillSystems
 
         private readonly Dictionary<BaseSkillDataSo, BaseSkillRuntime> _skillRuntimeDictionary = new();
         protected BaseController owner;
-        private bool _canUseSkills = true;
+        protected bool canUseSkills = true;
 
         public virtual void AssignData(BaseController owner, BaseSkillDataSo primary, BaseSkillDataSo secondary,
             List<BaseSkillDataSo> autoList, int autoSlot)
@@ -221,7 +221,7 @@ namespace Characters.SkillSystems
         public virtual void PerformSkill(SkillType type)
         {
             if (!owner) return;
-            if (!_canUseSkills) return;
+            if (!canUseSkills) return;
             
             switch (type)
             {
@@ -265,10 +265,10 @@ namespace Characters.SkillSystems
 
         public void SetCanUseSkills(bool enable)
         {
-            _canUseSkills = enable;
+            canUseSkills = enable;
         }
         
-        public void ResetSkillSystem()
+         public virtual void ResetSkillSystem()
         {
             CancelAllSkill();
             ResetToDefaultSkill();
