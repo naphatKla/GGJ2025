@@ -18,7 +18,7 @@ namespace Characters.SkillSystems.SkillRuntimes
         {
             _isParryTrigger = false;
             owner.HealthSystem.OnTakeDamage += TriggerParry;
-            owner.MovementSystem.StopFromParry(true);
+            owner.MovementSystem.StopFromParry(skillData.StopWhileParry);
             owner.TryPlayFeedback(FeedbackName.ParryUSe);
         }
 
