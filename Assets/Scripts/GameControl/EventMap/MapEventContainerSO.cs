@@ -35,6 +35,16 @@ namespace GameControl.EventMap
         [FoldoutGroup("$GroupName")]
         public float delayBetweenEvents = 0.3f;
 
+        [FoldoutGroup("$GroupName")]
+        [LabelText("Chance Event")]
+        public bool enableChance;
+
+        [FoldoutGroup("$GroupName")]
+        [ShowIf("enableChance")]
+        [Range(0, 1f)]
+        [LabelText("Chance (0 - 1)")]
+        public float chance = 0.5f;
+
         [HideInInspector]
         public string GroupName => eventPrefab != null ? eventPrefab.name : "Ungrouped";
     }
@@ -42,10 +52,10 @@ namespace GameControl.EventMap
     [CreateAssetMenu(menuName = "EventMap/Container")]
     public class MapEventContainerSO : ScriptableObject
     {
-        [Title("📦 Event List")]
+        [Title("Event List")]
         public List<MapEventStorageEntry> entries = new();
 
-        [Title("⚙️ Delay Config")]
+        [Title("Delay Config")]
         public DelayMode delayMode = DelayMode.Fixed;
 
         [ShowIf("@delayMode == DelayMode.Fixed")]
@@ -54,11 +64,14 @@ namespace GameControl.EventMap
         [ShowIf("@delayMode == DelayMode.Additive")]
         public float additiveStep = 0.1f;
         
-        [Title("📦 Default Prefab Asset")]
+        [Title("Default Prefab Asset")]
         [AssetSelector(Paths = "Assets/Prefabs/MapEvent")]
         public BaseMapEvent defaultPrefabAsset;
+        
+        [Title("Event Bool")]
+        public bool randomAllEvent;
 
-        [Title("🛠️ Editor Tools")]
+        [Title("Editor Tools")]
         [Button("Capture From Selection (Clear)", ButtonSizes.Medium)]
         private void CaptureFromSelection()
         {

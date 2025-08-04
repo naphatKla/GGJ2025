@@ -51,8 +51,9 @@ namespace GameControl.Controller
             set => _currentEnemyPoint = Mathf.Clamp(value, 0, _maxEnemyPoint);
         }
         
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             _stopState = new SpawnerState.StopState();
             _spawningState = new SpawnerState.SpawningState();
             _pauseState = new SpawnerState.PauseState();

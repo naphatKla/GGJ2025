@@ -25,8 +25,9 @@ namespace GameControl.EventMap
         private Dictionary<string, MapEventContainerSO> _mapStorageDict;
         private Dictionary<BaseMapEvent, ObjectPool<BaseMapEvent>> _poolDict = new();
 
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             _mapStorageDict = new Dictionary<string, MapEventContainerSO>();
             foreach (var entry in storageEntries)
                 _mapStorageDict[entry.id] = entry.storage;
@@ -36,18 +37,58 @@ namespace GameControl.EventMap
         {
             if (!_mapStorageDict.TryGetValue(id, out var storage)) return;
 
+            var eventsToRun = GetFilteredEvents(storage);
+            foreach (var entry in eventsToRun)
+            {
+                await PlayEntry(entry);
+                await UniTask.Delay(TimeSpan.FromSeconds(GetDelayForEntry(entry, storage)));
+            }
+        }
+
+        private List<MapEventStorageEntry> GetFilteredEvents(MapEventContainerSO storage)
+        {
+            var events = new List<MapEventStorageEntry>();
+
             foreach (var entry in storage.entries)
             {
-                var pool = GetOrCreatePool(entry.eventPrefab);
-                var instance = pool.Get();
-
-                instance.SetPool(pool);
-                instance.transform.position = entry.spawnPosition;
-                instance.transform.rotation = Quaternion.Euler(entry.spawnEulerAngles);
-
-                await instance.Play();
-                await UniTask.Delay(TimeSpan.FromSeconds(entry.delayBetweenEvents));
+                bool shouldRun = !entry.enableChance || UnityEngine.Random.value <= entry.chance;
+                if (shouldRun)
+                    events.Add(entry);
             }
+
+            return storage.randomAllEvent ? ShuffleList(events) : events;
+        }
+
+        private async UniTask PlayEntry(MapEventStorageEntry entry)
+        {
+            var pool = GetOrCreatePool(entry.eventPrefab);
+            var instance = pool.Get();
+
+            instance.SetPool(pool);
+            instance.transform.position = entry.spawnPosition;
+            instance.transform.rotation = Quaternion.Euler(entry.spawnEulerAngles);
+
+            await instance.Play();
+        }
+
+        private float GetDelayForEntry(MapEventStorageEntry entry, MapEventContainerSO storage)
+        {
+            return storage.delayMode switch
+            {
+                DelayMode.Fixed => storage.defaultDelay,
+                DelayMode.Additive => entry.delayBetweenEvents,
+                _ => 0.3f
+            };
+        }
+        
+        private List<T> ShuffleList<T>(List<T> list)
+        {
+            for (int i = 0; i < list.Count; i++)
+            {
+                int rand = UnityEngine.Random.Range(i, list.Count);
+                (list[i], list[rand]) = (list[rand], list[i]);
+            }
+            return list;
         }
 
         private ObjectPool<BaseMapEvent> GetOrCreatePool(BaseMapEvent prefab)

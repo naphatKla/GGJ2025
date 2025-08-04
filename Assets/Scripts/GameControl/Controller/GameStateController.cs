@@ -48,8 +48,9 @@ namespace GameControl.Controller
         public EndResult gameResult;
         public IGameState CurrentState => _currentState;
         
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             _prestartState = new PrestartState();
             _startState = new StartState();
             _endState = new EndState();
