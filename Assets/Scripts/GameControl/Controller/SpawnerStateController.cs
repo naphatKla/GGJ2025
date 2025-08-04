@@ -119,10 +119,12 @@ namespace GameControl.Controller
         public void ClearEnemy()
         {
             _enemySpawnerController?.ReleaseAllEnemies();
+            _enemySpawnerController?.ClearAllEnemysCompletely();
         }
         
         public void ClearItem()
         {
+            _itemSpawnerController?.ClearAllItemsCompletely();
             _itemSpawnerController?.ReleaseAllItem();
         }
         
