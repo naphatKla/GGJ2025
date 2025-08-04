@@ -13,7 +13,6 @@ namespace Characters.CombatSystems
         {
             public object Caller;
             public float HitPerSec;
-            public float NextHitTime;
         }
 
         [ShowInInspector, ReadOnly]
@@ -22,36 +21,32 @@ namespace Characters.CombatSystems
 
         private GameObject _owner;
         private readonly List<DamageInstance> _damageInstances = new();
-        private readonly Dictionary<(GameObject, object), float> _cooldownMap = new();
+        private readonly Dictionary<(GameObject target, object caller), float> _cooldownMap = new();
+        private readonly List<(GameObject, object)> _cooldownRemoveBuffer = new(); // reuse list
 
         public GameObject Owner => _owner;
         public bool IsEnableDamage => _isEnableDamage;
 
+        #region Unity Methods
+
+        private void OnTriggerEnter2D(Collider2D other)
+        {
+            TryApplyDamageTo(other.gameObject);
+        }
+
         private void OnTriggerStay2D(Collider2D other)
         {
-            if (!_isEnableDamage || _owner == null) 
-                return;
-            
-            GameObject target = other.gameObject;
-            float now = Time.time;
-            
-            foreach (var instance in _damageInstances)
-            {
-                var key = (target, instance.Caller);
-
-                if (_cooldownMap.TryGetValue(key, out float nextTime))
-                {
-                    if (now < nextTime)
-                        continue;
-                }
-
-                // Apply damage
-                CombatManager.ApplyDamageTo(target, _owner);
-
-                float cooldown = 1f / Mathf.Max(instance.HitPerSec, 0.01f);
-                _cooldownMap[key] = now + cooldown;
-            }
+            TryApplyDamageTo(other.gameObject);
         }
+
+        private void OnTriggerExit2D(Collider2D other)
+        {
+            RemoveCooldownForTarget(other.gameObject);
+        }
+
+        #endregion
+
+        #region Public API
 
         public void EnableDamage(GameObject owner, object caller, float hitPerSec)
         {
@@ -72,32 +67,28 @@ namespace Characters.CombatSystems
                 return;
             }
 
-            var newInstance = new DamageInstance
+            _damageInstances.Add(new DamageInstance
             {
                 Caller = caller,
                 HitPerSec = Mathf.Max(hitPerSec, 0.01f),
-                NextHitTime = Time.time
-            };
+            });
 
-            _damageInstances.Add(newInstance);
             _isEnableDamage = true;
         }
 
         public void DisableDamage(object caller)
         {
-            _damageInstances.RemoveAll(x => x.Caller == caller);
+            _damageInstances.RemoveAll(instance => instance.Caller == caller);
 
-            // Remove cooldowns related to this caller
-            var keysToRemove = new List<(GameObject, object)>();
-            foreach (var key in _cooldownMap.Keys)
+            // Clean up cooldowns by caller
+            _cooldownRemoveBuffer.Clear();
+            foreach (var kvp in _cooldownMap)
             {
-                if (key.Item2 == caller)
-                    keysToRemove.Add(key);
+                if (kvp.Key.caller == caller)
+                    _cooldownRemoveBuffer.Add(kvp.Key);
             }
-            foreach (var key in keysToRemove)
-            {
+            foreach (var key in _cooldownRemoveBuffer)
                 _cooldownMap.Remove(key);
-            }
 
             if (_damageInstances.Count == 0)
             {
@@ -110,8 +101,49 @@ namespace Characters.CombatSystems
         {
             _damageInstances.Clear();
             _cooldownMap.Clear();
+            _cooldownRemoveBuffer.Clear();
             _isEnableDamage = false;
             _owner = null;
         }
+
+        #endregion
+
+        #region Internal Logic
+
+        private void TryApplyDamageTo(GameObject target)
+        {
+            if (!_isEnableDamage || _owner == null) return;
+
+            float now = Time.time;
+
+            for (int i = 0; i < _damageInstances.Count; i++)
+            {
+                var instance = _damageInstances[i];
+                var key = (target, instance.Caller);
+
+                if (_cooldownMap.TryGetValue(key, out float nextTime) && now < nextTime)
+                    continue;
+
+                CombatManager.ApplyDamageTo(target, _owner);
+
+                float cooldown = 1f / instance.HitPerSec;
+                _cooldownMap[key] = now + cooldown;
+            }
+        }
+
+        private void RemoveCooldownForTarget(GameObject target)
+        {
+            _cooldownRemoveBuffer.Clear();
+            foreach (var instance in _damageInstances)
+            {
+                var key = (target, instance.Caller);
+                if (_cooldownMap.ContainsKey(key))
+                    _cooldownRemoveBuffer.Add(key);
+            }
+            foreach (var key in _cooldownRemoveBuffer)
+                _cooldownMap.Remove(key);
+        }
+
+        #endregion
     }
 }
