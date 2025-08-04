@@ -32,7 +32,7 @@ namespace Characters.StatusEffectSystems.StatusEffects
                 return;
             }
             
-            _damageOnTouch.EnableDamage(true, owner);
+            _damageOnTouch.EnableDamage(true, owner, effectData.HitPerSec);
         }
 
         /// <summary>
@@ -51,7 +51,7 @@ namespace Characters.StatusEffectSystems.StatusEffects
         /// </summary>
         public override void OnExit()
         {
-            _damageOnTouch.EnableDamage(false, null);
+            _damageOnTouch.ResetDamageOnTouch();
         }
     }
 }
