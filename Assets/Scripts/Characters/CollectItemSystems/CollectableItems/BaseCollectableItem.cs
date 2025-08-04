@@ -6,6 +6,7 @@ using DG.Tweening;
 using GlobalSettings;
 using ProjectExtensions;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Characters.CollectItemSystems.CollectableItems
 {
@@ -134,8 +135,9 @@ namespace Characters.CollectItemSystems.CollectableItems
             if (_pullingTween.IsActive()) return;
             if (!_canCollect) return;
 
+            float duration = Random.Range(itemData.PullDuration.x, itemData.PullDuration.y);
             _pullingTween = rbMovementSystem
-                .TryMoveToTargetOverTime(target, itemData.PullDuration, itemData.PullEase, itemData.PullCurve)
+                .TryMoveToTargetOverTime(target, duration, itemData.PullEase, itemData.PullCurve)
                 .OnComplete(callback);
         }
 

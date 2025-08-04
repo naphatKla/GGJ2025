@@ -26,13 +26,12 @@ namespace Characters.SO.CollectableItemDataSO
         [PropertyTooltip("Time (in seconds) before this item becomes collectible after being spawned.")]
         [SerializeField]
         private float pickupDelay = 0.5f;
-        
-        [Title("Pull Settings")]
 
-        [PropertyTooltip("Duration (in seconds) it takes for the item to reach the collector.")]
+        [Title("Pull Settings")]
+        [PropertyTooltip("Duration (in seconds) it takes for the item to reach the collector. Min - Max the value random between this values")]
         [PropertyOrder(9999)]
-        [SerializeField] 
-        private float pullDuration = 0.5f;
+        [SerializeField]
+        private Vector2 pullDuration = new Vector2(0.25f, 0.4f);
 
         [PropertyTooltip("AnimationCurve controlling the pull easing over time.")]
         [PropertyOrder(9999)]
@@ -58,7 +57,7 @@ namespace Characters.SO.CollectableItemDataSO
         /// <summary>
         /// The time in seconds it takes for the item to reach its target when pulled.
         /// </summary>
-        public float PullDuration => pullDuration;
+        public Vector2 PullDuration => pullDuration;
 
         /// <summary>
         /// The movement curve used for sideways or arcing motion while pulling.
