@@ -139,7 +139,6 @@ public class UIManager : MonoBehaviour
         else 
             Time.timeScale = Time.timeScale <= 0.001f ? 1f : 0.001f;
     }
-
     
     public void OpenSaveGamePanel()
     {
