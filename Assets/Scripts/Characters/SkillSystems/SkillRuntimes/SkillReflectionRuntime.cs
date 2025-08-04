@@ -38,7 +38,7 @@ namespace Characters.SkillSystems.SkillRuntimes
             {
                 var skillObject = PoolingManager.Instance.Get<ReflectionSkillObject>(skillData.ReflectionSkillObject.name);
                 skillObject.transform.position = owner.transform.position;
-                skillObject.DamageOnTouch.EnableDamage(true, owner.gameObject);
+                skillObject.DamageOnTouch.EnableDamage(owner.gameObject, this, skillData.DamageHitPerSec);
                 skillObject.gameObject.SetActive(true);
                 _skillObjects.Add(skillObject);
             }
@@ -123,7 +123,7 @@ namespace Characters.SkillSystems.SkillRuntimes
         {
             foreach (var skillObject in _skillObjects)
             {
-                skillObject.DamageOnTouch.EnableDamage(false, owner.gameObject);
+                skillObject.DamageOnTouch.DisableDamage(this);
                 skillObject.gameObject.SetActive(false);
                 skillObject.transform.position = owner.transform.position;
                 PoolingManager.Instance.Release(skillData.ReflectionSkillObject.name, skillObject);

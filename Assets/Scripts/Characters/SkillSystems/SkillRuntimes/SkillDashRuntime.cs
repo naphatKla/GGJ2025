@@ -24,14 +24,20 @@ namespace Characters.SkillSystems.SkillRuntimes
         {
             owner.TryPlayFeedback(FeedbackName.Dash);
             _dashEffective = 1f;
+            owner.DamageOnTouch.EnableDamage(owner.gameObject, this, 1);
 
-            if (!skillData.IsFlexibleDash) return;
+            if (!skillData.IsFlexibleDash) 
+                return;
+            
             _dashEffective = Mathf.Clamp(aimDirection.length / skillData.MaxInputLength, skillData.MinMaxEffective.x,
                 skillData.MinMaxEffective.y);
-
-            if (Math.Abs(_dashEffective - 1) < 0.0001f) return;
-            if (!skillData.IsFlexibleStatusEffectDuration) return;
-
+            
+            if (Math.Abs(_dashEffective - 1) < 0.0001f) 
+                return;
+            
+            if (!skillData.IsFlexibleStatusEffectDuration) 
+                return;
+            
             foreach (var statusEffectDataPayload in effectsApplyOnStart)
             {
                 float calculatedEffectDuration = statusEffectDataPayload.OverrideDuration * _dashEffective;
@@ -48,17 +54,25 @@ namespace Characters.SkillSystems.SkillRuntimes
         protected override async UniTask OnSkillUpdate(CancellationToken cancelToken)
         {
             float calculatedDistance = skillData.DashDistance * _dashEffective;
-            float calculatedDuration = skillData.DashDuration * _dashEffective;
+            float calculatedDashDuration = skillData.DashDuration * _dashEffective;
+            float calculatedDamageDuration = skillData.DamageEnableDuration * _dashEffective;
 
             Vector2 dashPosition = (Vector2)transform.position + aimDirection.direction * calculatedDistance;
-            await owner.MovementSystem
-                .TryMoveToPositionOverTime(dashPosition, calculatedDuration, skillData.DashEaseCurve,
-                    skillData.DashMoveCurve).WithCancellation(cancelToken);
+
+            var dashTask = owner.MovementSystem
+                .TryMoveToPositionOverTime(dashPosition, calculatedDashDuration, skillData.DashEaseCurve,
+                    skillData.DashMoveCurve)
+                .WithCancellation(cancelToken);
+
+            var damageTask = UniTask.Delay(TimeSpan.FromSeconds(calculatedDamageDuration), cancellationToken: cancelToken);
+
+            await UniTask.WhenAll(dashTask, damageTask);
         }
 
         protected override void OnSkillExit()
         {
             effectsApplyOnStart = new List<StatusEffectDataPayload>(skillData.StatusEffectOnSkillStart);
+            owner.DamageOnTouch.DisableDamage(this);
         }
 
         #endregion

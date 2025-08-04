@@ -18,6 +18,7 @@ namespace Characters.SO.SkillDataSo
         [Unit(Units.Second)]
         [PropertyTooltip("Duration of the dash movement in seconds.")]
         [SerializeField] private float dashDuration = 0.3f;
+        [SerializeField] private float damageEnableDuration = 0.35f;
 
         [PropertyTooltip("Total distance the character will dash forward.")]
         [SerializeField] private float dashDistance = 8f;
@@ -50,6 +51,8 @@ namespace Characters.SO.SkillDataSo
         /// Determines how long the dash takes from start to finish.
         /// </summary>
         public float DashDuration => dashDuration;
+
+        public float DamageEnableDuration => damageEnableDuration;
 
         /// <summary>
         /// Total distance the character will dash forward.

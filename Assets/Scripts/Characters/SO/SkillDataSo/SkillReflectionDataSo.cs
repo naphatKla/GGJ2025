@@ -24,6 +24,10 @@ namespace Characters.SO.SkillDataSo
         [PropertyTooltip("Total number of skill objects spawned by the skill.")]
         [SerializeField]
         private int skillObjectAmount;
+
+        [PropertyTooltip("Total number of skill objects hit per second")]
+        [SerializeField]
+        private float damageHitPerSec = 3;
         
         [BoxGroup("Skill Objects")]
         [LabelText("Skill Object Prefab")]
@@ -112,7 +116,9 @@ namespace Characters.SO.SkillDataSo
 
         /// <summary>Total number of skill object spawned during the skill.</summary>
         public int SkillObjectAmount => skillObjectAmount;
-        
+
+        public float DamageHitPerSec => damageHitPerSec;
+
         /// <summary>Prefab of skill object to create the instances.</summary>
         public ReflectionSkillObject ReflectionSkillObject => reflectionSkillObject;
 

@@ -1,78 +1,117 @@
+using System;
 using System.Collections.Generic;
+using Characters.HeathSystems;
+using UnityEngine;
 using Manager;
 using Sirenix.OdinInspector;
-using UnityEngine;
 
 namespace Characters.CombatSystems
 {
     public class DamageOnTouch : MonoBehaviour
     {
-        #region Inspectors & Variables
+        private class DamageInstance
+        {
+            public object Caller;
+            public float HitPerSec;
+            public float NextHitTime;
+        }
 
         [ShowInInspector, ReadOnly]
         [ShowIf("@UnityEngine.Application.isPlaying")]
         private bool _isEnableDamage;
 
-        private GameObject _attacker;
-        private float _hitPerSec = 1f;
+        private GameObject _owner;
+        private readonly List<DamageInstance> _damageInstances = new();
+        private readonly Dictionary<(GameObject, object), float> _cooldownMap = new();
 
-        // Cooldown map: tracks when each target can be hit next
-        private readonly Dictionary<GameObject, float> _nextHitTimeMap = new();
+        public GameObject Owner => _owner;
         public bool IsEnableDamage => _isEnableDamage;
-
-        #endregion
-
-        #region Unity Methods
 
         private void OnTriggerStay2D(Collider2D other)
         {
-            if (!_isEnableDamage || _attacker == null) return;
-
+            if (!_isEnableDamage || _owner == null) 
+                return;
+            
             GameObject target = other.gameObject;
-            float currentTime = Time.time;
-
-            if (_nextHitTimeMap.TryGetValue(target, out float nextHitTime))
+            float now = Time.time;
+            
+            foreach (var instance in _damageInstances)
             {
-                if (currentTime < nextHitTime)
-                    return; 
+                var key = (target, instance.Caller);
+
+                if (_cooldownMap.TryGetValue(key, out float nextTime))
+                {
+                    if (now < nextTime)
+                        continue;
+                }
+
+                // Apply damage
+                CombatManager.ApplyDamageTo(target, _owner);
+
+                float cooldown = 1f / Mathf.Max(instance.HitPerSec, 0.01f);
+                _cooldownMap[key] = now + cooldown;
+            }
+        }
+
+        public void EnableDamage(GameObject owner, object caller, float hitPerSec)
+        {
+            if (caller == null || owner == null)
+            {
+                Debug.LogWarning("[DamageOnTouch] Invalid caller or owner.");
+                return;
             }
 
-            // Apply damage
-            CombatManager.ApplyDamageTo(target, _attacker);
+            if (_owner == null)
+            {
+                _owner = owner;
+                gameObject.layer = owner.layer;
+            }
+            else if (_owner != owner)
+            {
+                Debug.LogWarning("[DamageOnTouch] Already assigned to a different owner.");
+                return;
+            }
 
-            // Set next allowed hit time
-            float cooldown = 1f / Mathf.Max(_hitPerSec, 0.01f);
-            _nextHitTimeMap[target] = currentTime + cooldown;
+            var newInstance = new DamageInstance
+            {
+                Caller = caller,
+                HitPerSec = Mathf.Max(hitPerSec, 0.01f),
+                NextHitTime = Time.time
+            };
+
+            _damageInstances.Add(newInstance);
+            _isEnableDamage = true;
         }
 
-        private void OnTriggerExit2D(Collider2D other)
+        public void DisableDamage(object caller)
         {
-            // Optional: Clean up target entry to avoid memory growth
-            _nextHitTimeMap.Remove(other.gameObject);
-        }
+            _damageInstances.RemoveAll(x => x.Caller == caller);
 
-        #endregion
+            // Remove cooldowns related to this caller
+            var keysToRemove = new List<(GameObject, object)>();
+            foreach (var key in _cooldownMap.Keys)
+            {
+                if (key.Item2 == caller)
+                    keysToRemove.Add(key);
+            }
+            foreach (var key in keysToRemove)
+            {
+                _cooldownMap.Remove(key);
+            }
 
-        #region Methods
-
-        public void EnableDamage(bool isEnable, GameObject ownerAttacker, float hitPerSec)
-        {
-            _isEnableDamage = isEnable;
-            _attacker = ownerAttacker;
-            _hitPerSec = Mathf.Max(hitPerSec, 0.01f);
-
-            if (ownerAttacker && ownerAttacker != gameObject)
-                gameObject.layer = ownerAttacker.layer;
-
-            if (!isEnable)
-                _nextHitTimeMap.Clear();
+            if (_damageInstances.Count == 0)
+            {
+                _isEnableDamage = false;
+                _owner = null;
+            }
         }
 
         public void ResetDamageOnTouch()
         {
-            EnableDamage(false, null, 1);
+            _damageInstances.Clear();
+            _cooldownMap.Clear();
+            _isEnableDamage = false;
+            _owner = null;
         }
-
-        #endregion
     }
 }

@@ -60,7 +60,7 @@ namespace Characters.StatusEffectSystems
     public enum StatusEffectName
     {
         Iframe = 0,
-        DamageOnTouch = 1,
+        //DamageOnTouch = 1,
         Stun = 2,
         // Add more statuses here
     }
