@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Characters.Controllers;
+using Characters.SO.CharacterDataSO;
 using GameControl.SO;
 using UnityEngine;
 using UnityEngine.Events;
@@ -65,7 +66,7 @@ namespace GameControl.Controller
         {
             var obj = Object.Instantiate(option.EnemyObject);
             var controller = obj.GetComponent<EnemyController>();
-            controller.HealthSystem.OnDead = () => _enemyPools[option.id].Release(controller);
+            controller.HealthSystem.OnDead = () => _enemyPools[option.id].Release(controller); ;
             return controller;
         }
         
@@ -76,6 +77,11 @@ namespace GameControl.Controller
 
         public void ActionOnRelease(EnemyController obj, MapDataSO.EnemyOption option)
         {
+            if (obj.CharacterData is EnemyDataSo enemyData)
+            {
+                _state.ItemSpawnerController.SpawnExpItem(enemyData.ExpDrop, obj.transform.position);
+            }
+            
             obj.gameObject.SetActive(false);
             obj.FeedbackSystem.ShowTrail(false);
             obj.transform.position = SpawnUtility.RandomSpawnAroundRegion(_regionSize);
@@ -128,6 +134,21 @@ namespace GameControl.Controller
             SpawnerStateController.Instance.CurrentEnemyPoint -= randomEnemy.EnemyPoint;
 
             return randomEnemy;
+        }
+        
+        public void ClearAllEnemysCompletely()
+        {
+            ReleaseAllEnemies();
+            ClearAllEnemys();
+        }
+        
+        public void ClearAllEnemys()
+        {
+            foreach (var pool in _enemyPools.Values)
+            {
+                pool.Clear();
+            }
+            _activeEnemy.Clear();
         }
 
         public void ReleaseAllEnemies()
