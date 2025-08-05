@@ -1,14 +1,11 @@
 using System;
 using System.Collections.Generic;
-using Characters.Controllers;
-using DG.Tweening;
+using Manager;
 using Sirenix.OdinInspector;
-using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.UI;
 
-namespace Characters.ComboSystems
+namespace Characters.ComboSystem
 {
     /// <summary>
     /// Represents a combo milestone and its associated UnityEvent when reached.
@@ -82,7 +79,7 @@ namespace Characters.ComboSystems
         /// <summary>
         /// Registers a hit from a valid target and updates combo state.
         /// </summary>
-        public void RegisterHit()
+        public void RegisterHit(DamageData damageData)
         {
             if (!_IsCombo)
             {

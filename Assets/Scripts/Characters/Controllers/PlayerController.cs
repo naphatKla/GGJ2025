@@ -1,5 +1,4 @@
 using System;
-using Characters.ComboSystems;
 using Characters.LevelSystems;
 using Characters.SkillSystems;
 using Characters.SO.CharacterDataSO;
@@ -17,7 +16,7 @@ namespace Characters.Controllers
     {
         #region Inspector & Variables
         
-        [SerializeField] public ComboSystem comboSystem;
+        [SerializeField] public ComboSystem.ComboSystem comboSystem;
         [SerializeField] protected LevelSystem levelSystem;
         [SerializeField] protected SkillUpgradeController skillUpgradeController;
 

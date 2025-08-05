@@ -5,6 +5,24 @@ using UnityEngine;
 
 namespace Manager
 {
+    public class DamageData
+    {
+        public GameObject Attacker { get; }
+        public GameObject TargetHit { get; }
+        public Vector2 HitPosition { get; }
+        public float Damage { get; }
+        public bool IsCritical { get; }
+
+        public DamageData(GameObject attacker, GameObject targetHit, Vector2 hitPos, float damage, bool isCritical)
+        {
+            Attacker = attacker;
+            TargetHit = targetHit;
+            HitPosition = hitPos;
+            Damage = damage;
+            IsCritical = isCritical;
+        }
+    }
+    
     /// <summary>
     /// Static manager responsible for handling combat interactions between entities.
     /// Provides utility methods for applying damage and triggering combat-related callbacks.
@@ -25,7 +43,7 @@ namespace Manager
         /// <param name="target">The GameObject receiving the damage.</param>
         /// <param name="attacker">The GameObject dealing the damage.</param>
         /// <param name="multiplier">A multiplier applied to the attacker's damage (default is 1).</param>
-        public static void ApplyDamageTo(GameObject target, GameObject attacker, float multiplier = 1f)
+        public static void ApplyDamageTo(GameObject target, GameObject attacker, Vector2 hitPosition, float multiplier = 1f)
         {
             if (!TryGetCachedComponent(target, _healthCache, out var targetHealth)) return;
 
@@ -41,13 +59,12 @@ namespace Manager
                 attackerDamage.IsEnableDamage && targetDamage.IsEnableDamage)
             {
                 attackerCombatSystem.OnCounterAttackHandler();
-                Debug.Log("counter");
             }
 
-            float damageDeal = attackerCombatSystem.CalculateDamageDeal(multiplier);
-            if (!targetHealth.TakeDamage(damageDeal)) return;
-
-            attackerCombatSystem.OnDealDamageHandler();
+            var damageData = attackerCombatSystem.CalculateDamageDeal(targetHealth.gameObject, hitPosition, multiplier);
+                
+            if (!targetHealth.TakeDamage(damageData.Damage)) return;
+            attackerCombatSystem.OnDealDamageHandler(damageData);
         }
 
         /// <summary>

@@ -12,6 +12,8 @@ namespace Manager
         public static string Enemy => nameof(Enemy);
         public static string SkillObject => nameof(SkillObject);
         public static string Item => nameof(Item);
+
+        public static string UI => nameof(UI);
     }
 
     public class PoolingManager : MMSingleton<PoolingManager>

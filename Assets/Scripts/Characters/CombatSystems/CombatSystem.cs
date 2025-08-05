@@ -1,7 +1,9 @@
 using System;
 using Characters.Controllers;
 using Characters.FeedbackSystems;
+using Manager;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Characters.CombatSystems
 {
@@ -34,7 +36,7 @@ namespace Characters.CombatSystems
         /// Event triggered whenever this character successfully deals damage.
         /// Useful for triggering combo counters, visual effects, or gameplay responses.
         /// </summary>
-        public Action OnDealDamage { get; set; }
+        public Action<DamageData> OnDealDamage { get; set; }
         
         /// <summary>
         /// Event triggered whenever this character and target perform attack in the same time.
@@ -62,9 +64,13 @@ namespace Characters.CombatSystems
         /// </summary>
         /// <param name="multiplier">The multiplier applied to current damage (e.g. from skills, crits).</param>
         /// <returns>The final damage value to be applied to a target.</returns>
-        public float CalculateDamageDeal(float multiplier)
+        public DamageData CalculateDamageDeal(GameObject target, Vector2 hitPos , float multiplier)
         {
-            return _currentDamage * multiplier;
+            bool isCritical = Random.Range(0, 100) < 20;
+            float damageDeal = isCritical? _currentDamage * multiplier * 2 : _currentDamage * multiplier;
+            
+            var damageData = new DamageData(gameObject, target, hitPos, damageDeal, isCritical);
+            return damageData;
         }
 
         public void OnCounterAttackHandler()
@@ -75,9 +81,9 @@ namespace Characters.CombatSystems
             owner?.TryPlayFeedback(FeedbackName.CounterAttack);
         }
 
-        public void OnDealDamageHandler()
+        public void OnDealDamageHandler(DamageData damageData)
         {
-            OnDealDamage?.Invoke();
+            OnDealDamage?.Invoke(damageData);
             
             if (!TryGetComponent(out BaseController owner)) return;
             owner?.TryPlayFeedback(FeedbackName.AttackHit);

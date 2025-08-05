@@ -31,12 +31,12 @@ namespace Characters.CombatSystems
 
         private void OnTriggerEnter2D(Collider2D other)
         {
-            TryApplyDamageTo(other.gameObject);
+            TryApplyDamageTo(other);
         }
 
         private void OnTriggerStay2D(Collider2D other)
         {
-            TryApplyDamageTo(other.gameObject);
+            TryApplyDamageTo(other);
         }
 
         private void OnTriggerExit2D(Collider2D other)
@@ -110,11 +110,13 @@ namespace Characters.CombatSystems
 
         #region Internal Logic
 
-        private void TryApplyDamageTo(GameObject target)
+        private void TryApplyDamageTo(Collider2D collider)
         {
             if (!_isEnableDamage || _owner == null) return;
 
+            GameObject target = collider.gameObject;
             float now = Time.time;
+            Vector2 hitPosition = collider.ClosestPoint(transform.position);
 
             for (int i = 0; i < _damageInstances.Count; i++)
             {
@@ -124,12 +126,13 @@ namespace Characters.CombatSystems
                 if (_cooldownMap.TryGetValue(key, out float nextTime) && now < nextTime)
                     continue;
 
-                CombatManager.ApplyDamageTo(target, _owner);
+                CombatManager.ApplyDamageTo(target, _owner, hitPosition);
 
                 float cooldown = 1f / instance.HitPerSec;
                 _cooldownMap[key] = now + cooldown;
             }
         }
+
 
         private void RemoveCooldownForTarget(GameObject target)
         {

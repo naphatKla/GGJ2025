@@ -1,7 +1,8 @@
-using Characters.ComboSystems;
+using Characters.CombatSystems;
 using Characters.HeathSystems;
 using Characters.LevelSystems;
 using DG.Tweening;
+using Manager;
 using PixelUI;
 using Sirenix.OdinInspector;
 using TMPro;
@@ -14,7 +15,7 @@ namespace Characters.UIDisplay
     {
         [FoldoutGroup("Combo Display")]
         [Title("Ref")]
-        [SerializeField] public ComboSystem comboSystem;
+        [SerializeField] public ComboSystem.ComboSystem comboSystem;
         [Title("UI")]
         [FoldoutGroup("Combo Display")] public GameObject comboUI;
         [FoldoutGroup("Combo Display")] public TMP_Text comboStreakText;
@@ -22,6 +23,12 @@ namespace Characters.UIDisplay
         [FoldoutGroup("Combo Display")] public Slider comboTimeoutSlider;
         [FoldoutGroup("Combo Display")] public float tweenDuration = 0.1f;
         [FoldoutGroup("Combo Display")] public float scaleAmount = 1.2f;
+
+        
+        [FoldoutGroup("Combat Display")] 
+        [SerializeField] private CombatSystem combatSystem;
+        [FoldoutGroup("Combat Display")] 
+        [SerializeField]private TextMeshProUGUI damageTextPrefab;
         
         [FoldoutGroup("Level Display")]
         [Title("Ref")]
@@ -40,11 +47,15 @@ namespace Characters.UIDisplay
         {
             ComboUISetup();
             comboSystem.OnComboUpdated += UpdateComboScoreText;
+            combatSystem.OnDealDamage += UpdateDamageText;
+            PoolingManager.Instance.Create<TextMeshProUGUI>(damageTextPrefab.name, PoolingGroupName.UI, CreateDamageText);
         }
         
         private void OnDestroy()
         {
             comboSystem.OnComboUpdated -= UpdateComboScoreText;
+            combatSystem.OnDealDamage -= UpdateDamageText;
+            PoolingManager.Instance.ClearPool(damageTextPrefab.name);
         }
 
         private void Update()
@@ -78,6 +89,28 @@ namespace Characters.UIDisplay
                 .SetEase(Ease.OutBack)
                 .OnComplete(() => comboUI.transform.DOScale(Vector3.one, tweenDuration));
         }
+        #endregion
+
+        #region Combat UI
+
+        private TextMeshProUGUI CreateDamageText()
+        {
+            return Instantiate(damageTextPrefab);
+        }
+
+        private void UpdateDamageText(DamageData damageData)
+        {
+            var textInstance = PoolingManager.Instance.Get<TextMeshProUGUI>(damageTextPrefab.name);
+            textInstance.text = damageData.Damage.ToString();
+            textInstance.transform.position = damageData.HitPosition;
+            textInstance.gameObject.SetActive(true);
+         
+            DOVirtual.DelayedCall(0.7f, () =>
+            {
+                PoolingManager.Instance.Release(damageTextPrefab.name, textInstance);
+            });
+        }
+
         #endregion
         
         #region Health UI
