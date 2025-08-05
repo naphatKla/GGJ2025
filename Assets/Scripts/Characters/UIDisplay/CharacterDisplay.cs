@@ -5,6 +5,7 @@ using Characters.ComboSystems;
 using Characters.HeathSystems;
 using Characters.LevelSystems;
 using DG.Tweening;
+using PixelUI;
 using Sirenix.OdinInspector;
 using TMPro;
 using UnityEngine;
@@ -30,7 +31,7 @@ namespace Characters.UIDisplay
         [SerializeField] public LevelSystem levelSystem;
         [Title("UI")] 
         [FoldoutGroup("Level Display")] public TMP_Text levelText;
-        [FoldoutGroup("Level Display")] public Image levelImage;
+        [FoldoutGroup("Level Display")] public ValueBar levelbar;
         
         [FoldoutGroup("Health Display")]
         [Title("Ref")]
@@ -98,8 +99,8 @@ namespace Characters.UIDisplay
         private void UpdateLevelUI()
         {
             levelText.text = levelSystem.Level.ToString();
-            float fillAmount = (float)levelSystem.Exp / levelSystem.expPerLevel;
-            levelImage.fillAmount = Mathf.Clamp01(fillAmount);
+            float fillAmount = ((float)levelSystem.Exp / levelSystem.expPerLevel) * 100;
+            levelbar.CurrentValue = Mathf.Clamp(fillAmount, 0, 100);
         }
 
         #endregion
