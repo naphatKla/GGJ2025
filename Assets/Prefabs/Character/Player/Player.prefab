@@ -7436,12 +7436,14 @@ MonoBehaviour:
   comboUI: {fileID: 0}
   comboStreakText: {fileID: 0}
   scoreMultiply: {fileID: 0}
-  comboTimeoutSlider: {fileID: 0}
+  comboTimeoutBar: {fileID: 0}
   tweenDuration: 0.1
   scaleAmount: 1.2
+  combatSystem: {fileID: 7330480618453326501}
+  damageTextPrefab: {fileID: 3505668433232323823, guid: 5f9a0b920a9bf3d458d1cba11d917f1c, type: 3}
   levelSystem: {fileID: 2047403147416900316}
   levelText: {fileID: 0}
-  levelImage: {fileID: 0}
+  levelbar: {fileID: 0}
   healthSystem: {fileID: 1611083095111674569}
   hpBar: {fileID: 0}
 --- !u!114 &7534513208806243613
@@ -7494,7 +7496,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce2f5e6d797c1d24d96e9555f516b478, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  expPerLevel: 10
 --- !u!114 &7127418468070666774
 MonoBehaviour:
   m_ObjectHideFlags: 0
