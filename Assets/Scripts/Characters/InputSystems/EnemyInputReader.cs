@@ -4,6 +4,7 @@ using Characters.Controllers;
 using Characters.InputSystems.Interface;
 using Characters.MovementSystems;
 using Characters.SkillSystems;
+using Characters.SO.CharacterDataSO;
 using UnityEngine;
 
 namespace Characters.InputSystems
@@ -16,7 +17,8 @@ namespace Characters.InputSystems
     public class EnemyInputReader : MonoBehaviour, ICharacterInput
     {
         #region Inspector & Variables
-        
+
+        private EnemyDataSo _enemyDataSo;
         private BaseMovementSystem movementSystem;
 
         /// <summary>
@@ -55,6 +57,14 @@ namespace Characters.InputSystems
         {
             updateTickCoroutine = StartCoroutine(UpdateTick());
             movementSystem = GetComponent<BaseMovementSystem>();
+            if (GetComponent<EnemyController>().CharacterData is EnemyDataSo data)
+            {
+                _enemyDataSo = data;
+            }
+            else
+            {
+                throw new FormatException();
+            }
         }
 
         /// <summary>
@@ -89,7 +99,7 @@ namespace Characters.InputSystems
                 _sightDirection.direction  = (PlayerController.Instance.transform.position - transform.position).normalized;
                 _sightDirection.length = Vector2.Distance(PlayerController.Instance.transform.position, transform.position);
                 
-                bool shouldStop = _sightDirection.length < 3f;
+                bool shouldStop = _sightDirection.length < _enemyDataSo.StopDistance;
                 if (shouldStop != isStop)
                 {
                     movementSystem?.StopFromInput(shouldStop);
@@ -97,6 +107,8 @@ namespace Characters.InputSystems
                 }
                 
                 OnMove?.Invoke(_sightDirection.direction);
+                
+                if (!(_sightDirection.length < _enemyDataSo.PerformSkillDistance)) continue;
                 OnSkillPerform?.Invoke(SkillType.PrimarySkill);
                 OnSkillPerform?.Invoke(SkillType.SecondarySkill);
             }

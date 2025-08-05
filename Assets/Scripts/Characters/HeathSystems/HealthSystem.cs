@@ -63,11 +63,11 @@ namespace Characters.HeathSystems
         /// Indicates whether the character is dead.
         /// </summary>
         public bool IsDead => _isDead;
-
+        
         /// <summary>
         /// Event triggered when the character takes damage.
         /// </summary>
-        public Action OnTakeDamage { get; set; }
+        public Action<bool> OnTakeDamage { get; set; }
 
         /// <summary>
         /// Event triggered when the character heals.
@@ -123,11 +123,15 @@ namespace Characters.HeathSystems
         /// <returns>True if the damage was applied; otherwise, false.</returns>
         public bool TakeDamage(float damage)
         {
-            if (_isInvincible) return false;
-            if (_isHitCooldown) return false;
             if (_isDead) return false;
+            if (_isInvincible || _isHitCooldown)
+            {
+                OnTakeDamage?.Invoke(false);
+                return false;
+            }
+            
             ModifyHealth(-damage);
-            OnTakeDamage?.Invoke();
+            OnTakeDamage?.Invoke(true);
             
             owner?.TryPlayFeedback(FeedbackName.TakeDamage);
             HitCooldownHandler();
