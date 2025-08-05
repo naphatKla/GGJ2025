@@ -86,8 +86,7 @@ public class UIManager : MonoBehaviour
         panelDict[type].SetActive(true);
         panelStack.Push(type);
     }
-
-
+    
     public void ClosePanel()
     {
         if (panelStack.Count == 0)
@@ -102,8 +101,7 @@ public class UIManager : MonoBehaviour
             panelDict[previous].SetActive(true);
         }
     }
-
-
+    
     public void CloseAllPanels()
     {
         while (panelStack.Count > 0)
