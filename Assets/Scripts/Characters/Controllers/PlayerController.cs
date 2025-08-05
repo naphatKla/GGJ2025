@@ -1,3 +1,4 @@
+using System;
 using Characters.ComboSystems;
 using Characters.LevelSystems;
 using Characters.SkillSystems;
@@ -43,7 +44,16 @@ namespace Characters.Controllers
         
         public override void AssignCharacterData(BaseCharacterDataSo data)
         {
-            skillUpgradeController.AssignData(skillSystem, data as PlayerDataSo);
+            if (data is PlayerDataSo playerData)
+            {
+                skillUpgradeController.AssignData(skillSystem, playerData);
+                levelSystem.AssignData(playerData.BaseExpLevelUp, playerData.ExpMultiplierPerLevel);
+            }
+            else
+            {
+                throw new FormatException();
+            }
+           
             base.AssignCharacterData(data);
         }
         

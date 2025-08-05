@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5056253ad23a97346927fde2743fb996, type: 3}
-  m_Name: LV1_Skill_Refliction
+  m_Name: LV6_Skill_Refliction
   m_EditorClassIdentifier: 
   serializationData:
     SerializedFormat: 2
@@ -30,15 +30,15 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
-  level: 1
-  cooldown: 15
+  level: 6
+  cooldown: 10.125
   statusEffectOnSkillStart: []
-  nextSkillDataUpgrade: {fileID: 11400000, guid: 099d0d3bb0564e7428cfee6e37f82620, type: 2}
-  previousSkillData: {fileID: 0}
-  skillObjectAmount: 6
-  damageHitPerSec: 3
+  nextSkillDataUpgrade: {fileID: 0}
+  previousSkillData: {fileID: 11400000, guid: 583f599c8aab6664e9aa0a74217323e7, type: 2}
+  skillObjectAmount: 8
+  damageHitPerSec: 5.9625
   reflectionSkillObject: {fileID: -5084912477967523391, guid: 77ab01583acdb514f86262907fd33d07, type: 3}
-  explosionDistance: 4
+  explosionDistance: 4.875
   explosionEntireDuration: 1
   explosionStartDuration: 0.1
   explosionStartCurve:
@@ -79,7 +79,7 @@ MonoBehaviour:
       outWeight: 0
     - serializedVersion: 3
       time: 0.23855853
-      value: 0.9
+      value: 0.9059637
       inSlope: 0.20707549
       outSlope: 0.20707549
       tangentMode: 0

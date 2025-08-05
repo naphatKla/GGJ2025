@@ -7,48 +7,44 @@ namespace Characters.SO.CharacterDataSO
 {
     public abstract class BaseCharacterDataSo : ScriptableObject
     {
-        [Title("Health Data")]
-        [SerializeField, MinValue(1), PropertyTooltip("Maximum health value.")]
-        private float maxHealth = 100;
+        [FoldoutGroup("Health"), MinValue(1), PropertyTooltip("Maximum health value.")]
+        [SerializeField] private float maxHealth = 100;
 
-        [SerializeField, MinValue(0), PropertyTooltip("Invincible time after hit (sec).")]
-        private float invincibleTimePerHit = 0.1f;
+        [FoldoutGroup("Health"), MinValue(0), PropertyTooltip("Invincible time after hit (sec).")]
+        [SerializeField] private float invincibleTimePerHit = 0.1f;
 
-        [Title("Movement Data")]
-        [SerializeField, PropertyTooltip("Base movement speed (unit/sec).")]
-        private float baseSpeed = 5;
+        [FoldoutGroup("Movement"), PropertyTooltip("Base movement speed (unit/sec).")]
+        [SerializeField] private float baseSpeed = 5;
 
-        [SerializeField, PropertyTooltip("Move acceleration rate.")]
-        private float moveAccelerationRate = 15;
+        [FoldoutGroup("Movement"), PropertyTooltip("Move acceleration rate.")]
+        [SerializeField] private float moveAccelerationRate = 15;
 
-        [SerializeField, PropertyTooltip("Turn acceleration rate.")]
-        private float turnAccelerationRate = 30;
+        [FoldoutGroup("Movement"), PropertyTooltip("Turn acceleration rate.")]
+        [SerializeField] private float turnAccelerationRate = 30;
 
-        [Title("Combat Data")]
-        [SerializeField, PropertyTooltip("Base damage per hit.")]
-        private float baseDamage = 10;
+        [FoldoutGroup("Combat"), PropertyTooltip("Base damage per hit.")]
+        [SerializeField] private float baseDamage = 10;
 
-        [Title("Skill Loadout")]
-        [SerializeField, 
+        [FoldoutGroup("Skills"), 
          ValidateInput(nameof(IsSkillDataUnique), "Primary/Secondary/Auto skill must not duplicate!"),
          ValidateInput(nameof(IsLv1), "Primary skill must be Level 1!")]
-        private BaseSkillDataSo primarySkillData;
+        [SerializeField] private BaseSkillDataSo primarySkillData;
 
-        [SerializeField, 
+        [FoldoutGroup("Skills"),
          ValidateInput(nameof(IsSkillDataUnique), "Primary/Secondary/Auto skill must not duplicate!"),
          ValidateInput(nameof(IsLv1), "Secondary skill must be Level 1!")]
-        private BaseSkillDataSo secondarySkillData;
+        [SerializeField] private BaseSkillDataSo secondarySkillData;
 
-        [SerializeField, MinValue(0), PropertyTooltip("Number of auto skill slots.")]
-        private int autoSkillSlot = 3;
+        [FoldoutGroup("Skills"), MinValue(0), PropertyTooltip("Number of auto skill slots.")]
+        [SerializeField] private int autoSkillSlot = 3;
 
-        [SerializeField, 
+        [FoldoutGroup("Skills"),
          ValidateInput(nameof(IsSkillPoolUnique), "Duplicate skill in autoSkillDataList is not allowed!"),
          ValidateInput(nameof(IsAllLv1), "All auto skills must be Level 1!")]
-        private List<BaseSkillDataSo> autoSkillDataList = new();
+        [Space]
+        [SerializeField] private List<BaseSkillDataSo> autoSkillDataList = new();
 
-
-// --- Validation Method ---
+        // --- Validation ---
         protected bool IsSkillDataUnique(BaseSkillDataSo _)
         {
             var set = new HashSet<BaseSkillDataSo>();
@@ -89,7 +85,7 @@ namespace Characters.SO.CharacterDataSO
         {
             return skill == null || skill.Level == 1;
         }
-        
+
         // Public Getters
         public float MaxHealth => maxHealth;
         public float InvincibleTimePerHit => invincibleTimePerHit;

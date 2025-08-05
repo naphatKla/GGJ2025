@@ -51,7 +51,7 @@ namespace Characters.SkillSystems.SkillRuntimes
             owner.HealthSystem.OnTakeDamage -= TriggerParry;
         }
 
-        private void TriggerParry()
+        private void TriggerParry(bool hitWithDamage)
         {
             _isParryTrigger = true;
         }

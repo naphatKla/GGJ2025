@@ -1,6 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using Characters.ComboSystems;
 using Characters.HeathSystems;
 using Characters.LevelSystems;
@@ -99,7 +96,7 @@ namespace Characters.UIDisplay
         private void UpdateLevelUI()
         {
             levelText.text = levelSystem.Level.ToString();
-            float fillAmount = ((float)levelSystem.Exp / levelSystem.expPerLevel) * 100;
+            float fillAmount = levelSystem.ExpProgress01 * 100;
             levelbar.CurrentValue = Mathf.Clamp(fillAmount, 0, 100);
         }
 
