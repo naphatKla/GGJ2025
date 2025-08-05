@@ -98,7 +98,7 @@ namespace Characters.UIDisplay
         private void UpdateLevelUI()
         {
             levelText.text = levelSystem.Level.ToString();
-            float fillAmount = (float)levelSystem.Exp / levelSystem.expPerLevel;
+            float fillAmount = levelSystem.ExpProgress01;
             levelImage.fillAmount = Mathf.Clamp01(fillAmount);
         }
 

@@ -8,6 +8,15 @@ namespace Characters.SO.CharacterDataSO
     [CreateAssetMenu(fileName = "PlayerData", menuName = "GameData/CharacterData/PlayerData")]
     public class PlayerDataSo : BaseCharacterDataSo
     {
+        [FoldoutGroup("Combat")]
+        [SerializeField] private float baseExpLevelUp;
+        
+        [FoldoutGroup("Combat")]
+        [SerializeField] private float expMultiplierPerLevel;
+
+        public float BaseExpLevelUp => baseExpLevelUp;
+        public float ExpMultiplierPerLevel => expMultiplierPerLevel;
+
         [Space]
         [FoldoutGroup("Skills/Upgrade")]
         [SerializeField, PropertyTooltip("The amount of choices to select the skill's upgrade.")]
