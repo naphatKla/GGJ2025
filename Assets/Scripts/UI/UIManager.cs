@@ -139,7 +139,6 @@ public class UIManager : MonoBehaviour
         else 
             Time.timeScale = Time.timeScale <= 0.001f ? 1f : 0.001f;
     }
-
     
     public void OpenSaveGamePanel()
     {
@@ -163,5 +162,11 @@ public class UIManager : MonoBehaviour
     public void OpenQuitPanel()
     {
         OpenPanel(UIPanelType.QuitPanel);
+    }
+    
+    public void QuitGame()
+    {
+        Application.Quit();
+        Debug.Log("Quit Game");
     }
 }

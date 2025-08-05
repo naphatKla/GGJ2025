@@ -46,29 +46,37 @@ public class UIButtonEffect : MonoBehaviour
         AddTrigger(trigger, EventTriggerType.PointerEnter, (data) =>
         {
             rectTransform.DOKill();
-            rectTransform.DOScale(originalScale * hoverScale, tweenDuration).SetEase(easeType);
+            rectTransform.DOScale(originalScale * hoverScale, tweenDuration)
+                .SetEase(easeType)
+                .SetUpdate(true);
 
             if (backgroundImage != null)
             {
-                backgroundImage.DOFade(hoverAlpha, tweenDuration);
+                backgroundImage.DOFade(hoverAlpha, tweenDuration)
+                    .SetUpdate(true);
             }
         });
 
         AddTrigger(trigger, EventTriggerType.PointerExit, (data) =>
         {
             rectTransform.DOKill();
-            rectTransform.DOScale(originalScale, tweenDuration).SetEase(Ease.OutQuad);
+            rectTransform.DOScale(originalScale, tweenDuration)
+                .SetEase(Ease.OutQuad)
+                .SetUpdate(true);
 
             if (backgroundImage != null)
             {
-                backgroundImage.DOFade(normalAlpha, tweenDuration);
+                backgroundImage.DOFade(normalAlpha, tweenDuration)
+                    .SetUpdate(true);
             }
         });
 
         AddTrigger(trigger, EventTriggerType.PointerDown, (data) =>
         {
             rectTransform.DOKill();
-            rectTransform.DOScale(originalScale * pressScale, tweenDuration).SetEase(easeType);
+            rectTransform.DOScale(originalScale * pressScale, tweenDuration)
+                .SetEase(easeType)
+                .SetUpdate(true);
         });
 
         AddTrigger(trigger, EventTriggerType.PointerUp, (data) =>
@@ -77,7 +85,9 @@ public class UIButtonEffect : MonoBehaviour
             bool isHover = ((PointerEventData)data).pointerEnter == button.gameObject;
             if (isHover)
             {
-                rectTransform.DOScale(originalScale * hoverScale, tweenDuration).SetEase(Ease.OutBack);
+                rectTransform.DOScale(originalScale * hoverScale, tweenDuration)
+                    .SetEase(Ease.OutBack)
+                    .SetUpdate(true);
             }
             else
             {
@@ -95,11 +105,14 @@ public class UIButtonEffect : MonoBehaviour
     void ResetEffect(RectTransform rectTransform, Image backgroundImage, Vector3 originalScale)
     {
         rectTransform.DOKill();
-        rectTransform.DOScale(originalScale, tweenDuration).SetEase(Ease.OutQuad);
+        rectTransform.DOScale(originalScale, tweenDuration)
+            .SetEase(Ease.OutQuad)
+            .SetUpdate(true);
 
         if (backgroundImage != null)
         {
-            backgroundImage.DOFade(normalAlpha, tweenDuration);
+            backgroundImage.DOFade(normalAlpha, tweenDuration)
+                .SetUpdate(true);
         }
     }
 
