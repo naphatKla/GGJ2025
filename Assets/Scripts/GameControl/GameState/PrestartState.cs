@@ -32,6 +32,7 @@ namespace GameControl.GameState
                 Time.timeScale = 1f;
             
             CountdownStart().Forget();
+            if (!PlayerController.Instance.gameObject.activeInHierarchy) PlayerController.Instance.gameObject.SetActive(true);
             PlayerController.Instance.ResetAllDependentBehavior();
             PlayerController.Instance.HealthSystem.OnDead += PlayerDeathResult;
         }

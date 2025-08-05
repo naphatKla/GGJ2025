@@ -9,6 +9,7 @@ using MoreMountains.Tools;
 using UnityEngine;
 using Sirenix.OdinInspector;
 using UI.MapSelection;
+using UnityEngine.SceneManagement;
 
 namespace GameControl.Controller
 {
@@ -110,6 +111,7 @@ namespace GameControl.Controller
 
         public void RestartMap()
         {
+            //SceneManager.LoadScene(SceneManager.GetActiveScene().name);
             SetState(_prestartState);
         }
         
