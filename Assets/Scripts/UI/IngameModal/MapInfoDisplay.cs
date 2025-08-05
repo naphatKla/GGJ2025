@@ -12,6 +12,7 @@ namespace UI
 
         private void Update()
         {
+            if (mapName == null) return;
             if (GameStateController.Instance.CurrentMap == null) return;
 
             if (currentMapData == GameStateController.Instance.CurrentMap) return;
