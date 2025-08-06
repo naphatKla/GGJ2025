@@ -10,6 +10,12 @@ namespace Characters.SO.SkillDataSo
 {
     public abstract class BaseSkillDataSo : SerializedScriptableObject
     {
+        [SerializeField] 
+        private Sprite skillIcon;
+        
+        [SerializeField] 
+        private string skillDescription;
+        
         [MinValue(1)]
         [SerializeField, PropertyTooltip("The level of this skill.")]
         private int level = 1;
@@ -57,6 +63,8 @@ namespace Characters.SO.SkillDataSo
         }
 
         // ---- Properties ----
+        public Sprite SkillIcon => skillIcon;
+        public string SkillDescription => skillDescription;
         public float Cooldown => cooldown;
         public List<StatusEffectDataPayload> StatusEffectOnSkillStart => statusEffectOnSkillStart;
         public Type SkillRuntime => _skillRuntime;

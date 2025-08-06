@@ -1,15 +1,22 @@
+using System.Collections.Generic;
 using Characters.CombatSystems;
 using Characters.Controllers;
 using Characters.HeathSystems;
 using Characters.LevelSystems;
+using Characters.SkillSystems;
+using Characters.SO.SkillDataSo;
+using Cysharp.Threading.Tasks;
 using DG.Tweening;
+using GameControl.Controller;
 using Manager;
 using PixelUI;
 using Sirenix.OdinInspector;
 using TMPro;
+using UI.IngameModal;
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
+using VHierarchy.Libs;
 
 namespace Characters.UIDisplay
 {
@@ -46,6 +53,20 @@ namespace Characters.UIDisplay
 
         [Title("UI")] [FoldoutGroup("Health Display")] [SerializeField]
         public SlotBar hpBar;
+        
+        [FoldoutGroup("SolfUpgrade Display")]
+        [Title("Ref")] [SerializeField]
+        public SkillUpgradeController skillUpgradeController;
+        
+        [FoldoutGroup("SolfUpgrade Display")] [Title("UI")] 
+        [SerializeField] public GameObject solfUpgradeHud;
+        [FoldoutGroup("SolfUpgrade Display")]
+        public GameObject solfUpgradePanel;
+        [FoldoutGroup("SolfUpgrade Display")]
+        public SolfUpgradeModal solfUpgradeModal;
+        
+        private Queue<BaseSkillDataSo> skillQueue = new();
+        private bool isChoosingSkill = false;
 
         private void Start()
         {
@@ -55,6 +76,7 @@ namespace Characters.UIDisplay
             comboSystem.OnComboTimeUpdated += UpdateComboTimeBar;
 
             levelSystem.OnLevelUpdate += UpdateLevelUI;
+            skillUpgradeController.OnSkillUpgradeOptionsGenerated += SolfUpgradePopup;
 
             healthSystem.OnHealthChange += UpdateHealthUI;
 
@@ -196,6 +218,65 @@ namespace Characters.UIDisplay
             levelText.text = "LEVEL " + levelSystem.Level;
             float fillAmount = levelSystem.ExpProgress01 * 100;
             levelbar.CurrentValue = Mathf.Clamp(fillAmount, 0, 100);
+        }
+
+        #endregion
+
+        #region Solf Upgrade
+
+        private void SolfUpgradePopup(List<BaseSkillDataSo> skillList)
+        {
+            if (skillList.Count <= 0) return;
+
+            foreach (var skill in skillList) skillQueue.Enqueue(skill);
+
+            if (!isChoosingSkill)
+                ShowNextSkillPopup();
+        }
+
+        private void ShowNextSkillPopup()
+        {
+            if (skillQueue.Count == 0)
+            {
+                isChoosingSkill = false;
+                return;
+            }
+
+            isChoosingSkill = true;
+         
+            solfUpgradeHud.SetActive(true);
+            var nextSkill = skillQueue.Dequeue();
+
+            ClearSkillCards();
+            CreateSkillCard(nextSkill);
+        }
+
+        private void ClearSkillCards()
+        {
+            foreach (Transform child in solfUpgradePanel.transform)
+            {
+                Destroy(child.gameObject);
+            }
+        }
+
+        private void CreateSkillCard(BaseSkillDataSo skill)
+        {
+            var skillcard = Instantiate(solfUpgradeModal.gameObject, solfUpgradePanel.transform);
+            var modal = skillcard.GetComponent<SolfUpgradeModal>();
+            modal.UpdateUIModal(skill);
+            modal.SelectButton.onClick.AddListener(() =>
+            {
+                OnSkillSelected(skill);
+            });
+        }
+
+        private void OnSkillSelected(BaseSkillDataSo skill)
+        {
+            solfUpgradeHud.SetActive(false);
+            skillUpgradeController.SelectSkill(skill);
+            ClearSkillCards();
+
+            ShowNextSkillPopup();
         }
 
         #endregion
