@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Characters.SO.SkillDataSo;
@@ -11,6 +12,8 @@ namespace Characters.SkillSystems
         private int _upgradeChoicesCount;
         private SkillSystem _playerSkillSystem;
         private List<BaseSkillDataSo> _skillPool = new();
+        private List<BaseSkillDataSo> _currentOptions = new();
+        public event Action<List<BaseSkillDataSo>> OnSkillUpgradeOptionsGenerated;
 
         public void AssignData(SkillSystem skillSystem, PlayerDataSo playerDataSo)
         {
@@ -21,26 +24,43 @@ namespace Characters.SkillSystems
 
         public void OnLevelUp(int level)
         {
-            var options = GetUpgradeOptions(_playerSkillSystem);
+            _currentOptions = GetUpgradeOptions(_playerSkillSystem);
 
-            if (options.Count <= 0) return;
-            foreach (var baseSkillDataSo in options)
-                Debug.Log($"Random Skill {baseSkillDataSo.name}, LV: {baseSkillDataSo.Level}");
+            if (_currentOptions.Count <= 0) return;
 
-            Debug.LogWarning($"Select skill {options[0].name}, LV: {options[0].Level}");
-            UpgradeSkill(_playerSkillSystem, options[0]);
+            foreach (var option in _currentOptions)
+                Debug.Log($"[SkillUpgrade] Option: {option.name}, LV: {option.Level}");
+
+            OnSkillUpgradeOptionsGenerated?.Invoke(_currentOptions);
+            
+            //TODO: Remove this if UI Implemented
+            SelectSkill(_currentOptions[0]);
         }
 
-        public List<BaseSkillDataSo> GetUpgradeOptions(SkillSystem skillSystem)
+        public void SelectSkill(BaseSkillDataSo selectedSkill)
+        {
+            if (selectedSkill == null || !_currentOptions.Contains(selectedSkill))
+            {
+                Debug.LogWarning($"[SkillUpgrade] Invalid skill selected: {selectedSkill?.name}");
+                return;
+            }
+
+            UpgradeSkill(_playerSkillSystem, selectedSkill);
+            Debug.Log($"[SkillUpgrade] Selected: {selectedSkill.name}, LV: {selectedSkill.Level}");
+
+            _currentOptions.Clear(); // clear options after selection
+        }
+
+        private List<BaseSkillDataSo> GetUpgradeOptions(SkillSystem skillSystem)
         {
             var options = new List<BaseSkillDataSo>();
             if (skillSystem == null) return options;
 
             var slotData = skillSystem.GetAllCurrentSkillDatas();
             var currentRoots = slotData.All.Select(s => s.RootNode).ToHashSet();
-            
+
             options.AddRange(_skillPool.Where(s => !currentRoots.Contains(s)));
-            
+
             foreach (var skill in slotData.All)
             {
                 if (skill != null && skill.NextSkillDataUpgrade != null)
@@ -59,7 +79,7 @@ namespace Characters.SkillSystems
             for (int i = 0; i < count; i++)
             {
                 if (randomPool.Count == 0) break;
-                int idx = Random.Range(0, randomPool.Count);
+                int idx = UnityEngine.Random.Range(0, randomPool.Count);
                 result.Add(randomPool[idx]);
                 randomPool.RemoveAt(idx);
             }
@@ -67,11 +87,14 @@ namespace Characters.SkillSystems
             return result;
         }
 
-        public void UpgradeSkill(SkillSystem skillSystem, BaseSkillDataSo chosenSkill)
+        private void UpgradeSkill(SkillSystem skillSystem, BaseSkillDataSo chosenSkill)
         {
             skillSystem.UpgradeSkillSlot(chosenSkill);
         }
 
-        public void ResetSkillUpgradeController() { }
+        public void ResetSkillUpgradeController()
+        {
+            _currentOptions.Clear();
+        }
     }
 }
