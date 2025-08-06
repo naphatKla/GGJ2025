@@ -9,6 +9,7 @@ using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using GameControl.Controller;
 using Manager;
+using MoreMountains.Feedbacks;
 using PixelUI;
 using Sirenix.OdinInspector;
 using TMPro;
@@ -22,6 +23,7 @@ namespace Characters.UIDisplay
 {
     public class CharacterDisplay : MonoBehaviour
     {
+        //Combo
         [FoldoutGroup("Combo Display")] [Title("Ref")] [SerializeField]
         public ComboSystem.ComboSystem comboSystem;
 
@@ -34,12 +36,14 @@ namespace Characters.UIDisplay
         [FoldoutGroup("Combo Display")] public float tweenDuration = 0.1f;
         [FoldoutGroup("Combo Display")] public float scaleAmount = 1.2f;
         
+        //Combat
         [FoldoutGroup("Combat Display")] [SerializeField]
         private CombatSystem combatSystem;
 
         [FoldoutGroup("Combat Display")] [SerializeField]
         private TextMeshProUGUI damageTextPrefab;
 
+        //Level
         [FoldoutGroup("Level Display")] [Title("Ref")] [SerializeField]
         public LevelSystem levelSystem;
 
@@ -48,25 +52,36 @@ namespace Characters.UIDisplay
 
         [FoldoutGroup("Level Display")] public ValueBar levelbar;
 
+        //Health
         [FoldoutGroup("Health Display")] [Title("Ref")] [SerializeField]
         public HealthSystem healthSystem;
 
         [Title("UI")] [FoldoutGroup("Health Display")] [SerializeField]
         public SlotBar hpBar;
         
+        //Solf Upgrade
         [FoldoutGroup("SolfUpgrade Display")]
         [Title("Ref")] [SerializeField]
         public SkillUpgradeController skillUpgradeController;
         
         [FoldoutGroup("SolfUpgrade Display")] [Title("UI")] 
-        [SerializeField] public GameObject solfUpgradeHud;
         [FoldoutGroup("SolfUpgrade Display")]
         public GameObject solfUpgradePanel;
         [FoldoutGroup("SolfUpgrade Display")]
-        public SolfUpgradeModal solfUpgradeModal;
+        public SolfUpgradeModel solfUpgradeModel;
         
         private Queue<BaseSkillDataSo> skillQueue = new();
         private bool isChoosingSkill = false;
+        
+        //Skill Slot
+        [FoldoutGroup("SkillSlot Display")]
+        [Title("Ref")] [SerializeField]
+        public SkillSystem skillSystem;
+        
+        [FoldoutGroup("SkillSlot Display")] [Title("UI")] 
+        [FoldoutGroup("SkillSlot Display")] [SerializeField] private SkillSlotModel primarySkillSlotModel;
+        [FoldoutGroup("SkillSlot Display")] [SerializeField] private SkillSlotModel secondarySkillSlotModel;
+        [FoldoutGroup("SkillSlot Display")] [SerializeField] private List<SkillSlotModel> solfSkillSlotModel;
 
         private void Start()
         {
@@ -243,12 +258,16 @@ namespace Characters.UIDisplay
             }
 
             isChoosingSkill = true;
-         
-            solfUpgradeHud.SetActive(true);
-            var nextSkill = skillQueue.Dequeue();
 
+            UIManager.Instance.OpenPanel(UIPanelType.SolfUpgrade);
             ClearSkillCards();
-            CreateSkillCard(nextSkill);
+
+            int skillsToShow = Mathf.Min(3, skillQueue.Count);
+            for (int i = 0; i < skillsToShow; i++)
+            {
+                var skill = skillQueue.Dequeue();
+                CreateSkillCard(skill);
+            }
         }
 
         private void ClearSkillCards()
@@ -261,8 +280,8 @@ namespace Characters.UIDisplay
 
         private void CreateSkillCard(BaseSkillDataSo skill)
         {
-            var skillcard = Instantiate(solfUpgradeModal.gameObject, solfUpgradePanel.transform);
-            var modal = skillcard.GetComponent<SolfUpgradeModal>();
+            var skillcard = Instantiate(solfUpgradeModel.gameObject, solfUpgradePanel.transform);
+            var modal = skillcard.GetComponent<SolfUpgradeModel>();
             modal.UpdateUIModal(skill);
             modal.SelectButton.onClick.AddListener(() =>
             {
@@ -272,12 +291,18 @@ namespace Characters.UIDisplay
 
         private void OnSkillSelected(BaseSkillDataSo skill)
         {
-            solfUpgradeHud.SetActive(false);
+            UIManager.Instance.CloseAllPanels();
             skillUpgradeController.SelectSkill(skill);
             ClearSkillCards();
 
             ShowNextSkillPopup();
         }
+
+        #endregion
+
+        #region Skill Slot
+
+        
 
         #endregion
     }
