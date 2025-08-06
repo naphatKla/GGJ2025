@@ -109,8 +109,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 2, y: 0}
-  m_SizeDelta: {x: -4, y: 4}
+  m_AnchoredPosition: {x: 10.779, y: 0.0000011921}
+  m_SizeDelta: {x: -8.558, y: 9}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &5394168094269827119
 CanvasRenderer:
@@ -159,6 +159,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3228952998107535858}
+  - component: {fileID: 4488972672416742434}
   m_Layer: 5
   m_Name: SolfSkillSlot
   m_TagString: Untagged
@@ -188,6 +189,20 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &4488972672416742434
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4740928478935641851}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 429417c3044990f4e81395086bfb27ce, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  skillIcon: {fileID: 1327491178888117114}
+  valueBar: {fileID: 7269687556445787093}
 --- !u!1 &5930656435531158531
 GameObject:
   m_ObjectHideFlags: 0
@@ -340,10 +355,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91fa51f4119443146ad8f1ca4bfa6137, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxValue: 100
+  MaxValue: 1
   MinValue: 0
-  currentValue: 60
-  AnimationSpeed: 7
+  currentValue: 0
+  AnimationSpeed: 999
   FillImage: {fileID: 786037541926770738}
   FollowUpImage: {fileID: 1551725095702511280}
   FillPadding: 0
@@ -418,7 +433,7 @@ MonoBehaviour:
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 1
-  m_FillAmount: 0.6
+  m_FillAmount: 0
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0

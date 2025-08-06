@@ -79,9 +79,7 @@ namespace Characters.UIDisplay
         public SkillSystem skillSystem;
         
         [FoldoutGroup("SkillSlot Display")] [Title("UI")] 
-        [FoldoutGroup("SkillSlot Display")] [SerializeField] private SkillSlotModel primarySkillSlotModel;
-        [FoldoutGroup("SkillSlot Display")] [SerializeField] private SkillSlotModel secondarySkillSlotModel;
-        [FoldoutGroup("SkillSlot Display")] [SerializeField] private List<SkillSlotModel> solfSkillSlotModel;
+        [FoldoutGroup("SkillSlot Display")] [SerializeField] private List<SkillSlotModel> skillSlotModel;
 
         private void Start()
         {
@@ -94,6 +92,10 @@ namespace Characters.UIDisplay
             skillUpgradeController.OnSkillUpgradeOptionsGenerated += SolfUpgradePopup;
 
             healthSystem.OnHealthChange += UpdateHealthUI;
+
+            skillSystem.OnNewSkillAssign += AssignSkillSlot;
+            skillSystem.OnSkillCooldownUpdate += UpdateCooldownSlot;
+            skillSystem.OnSkillCooldownReset += ResetSkillSlot;
 
             combatSystem.OnDealDamage += UpdateDamageText;
             PoolingManager.Instance.Create<TextMeshProUGUI>(damageTextPrefab.name, PoolingGroupName.UI, CreateDamageText);
@@ -109,6 +111,11 @@ namespace Characters.UIDisplay
             levelSystem.OnLevelUpdate -= UpdateLevelUI;
             
             healthSystem.OnHealthChange -= UpdateHealthUI;
+            
+            skillSystem.OnNewSkillAssign -= AssignSkillSlot;
+            skillSystem.OnSkillCooldownUpdate -= UpdateCooldownSlot;
+            skillSystem.OnSkillCooldownReset -= ResetSkillSlot;
+            
             
             combatSystem.OnDealDamage -= UpdateDamageText;
             PoolingManager.Instance.ClearPool(damageTextPrefab.name);
@@ -302,7 +309,30 @@ namespace Characters.UIDisplay
 
         #region Skill Slot
 
-        
+        private void AssignSkillSlot(BaseSkillDataSo skill, int skillIndex)
+        {
+            if (skillIndex < 0 || skillIndex >= skillSlotModel.Count) return;
+            if (skillSlotModel[skillIndex] == null) return;
+            
+            skillSlotModel[skillIndex].skillIcon.sprite = skill.SkillIcon;
+        }
+
+        private void UpdateCooldownSlot(float cooldown, int skillIndex)
+        {
+            if (skillIndex < 0 || skillIndex >= skillSlotModel.Count) return;
+            if (skillSlotModel[skillIndex] == null) return;
+    
+            skillSlotModel[skillIndex].valueBar.CurrentValue = 1 - cooldown;
+        }
+
+        private void ResetSkillSlot(int skillIndex)
+        {
+            if (skillIndex < 0 || skillIndex >= skillSlotModel.Count) return;
+            if (skillSlotModel[skillIndex] == null) return;
+    
+            skillSlotModel[skillIndex].valueBar.CurrentValue = 0;
+        }
+
 
         #endregion
     }
