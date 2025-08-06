@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: VFX_Base_TriangleParticle
-  m_Shader: {fileID: 4800000, guid: 27571cf4c6194f74ebc01da5e57ee527, type: 3}
+  m_Shader: {fileID: 4800000, guid: 337f638ec0835e64e99594b828e4f649, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -28,6 +28,22 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _ColorTexture:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DissolveDirection:
+        m_Texture: {fileID: 2800000, guid: c386cdbadf8c1a648bfa12201487eb89, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DissolveMask:
+        m_Texture: {fileID: 2800000, guid: 8e9974907d1495543bee7e6ef4061292, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: -0.1}
+    - _DistortMask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DistortionBlendTexture1:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
@@ -70,6 +86,15 @@ Material:
     - _ColorTextureValueShift: 0
     - _Cull: 0
     - _DepthFadeDivide: 1
+    - _DissolveDirectionInvert: 1
+    - _DissolveDirectionRotation: 0
+    - _DissolveMaskInvert: 0
+    - _DissolveMaskRotation: 0
+    - _DistortMaskRotation: 0
+    - _DistortionBlendInvert1: 0
+    - _DistortionBlendMoveWithMain1: 0
+    - _DistortionBlendRotation1: 0
+    - _DistortionPower: 0
     - _Dst: 10
     - _EnableExternalAlpha: 0
     - _FlatAlpha: 0
@@ -79,11 +104,13 @@ Material:
     - _GradientMapValueShift: 0
     - _GradientShapeRotation: 0
     - _InnerPartBrightness: 1
+    - _InnerPartBrightness11: 1
     - _InnerPartColorIntensity: 0
     - _InnerPartSize: 0
     - _InvertGradient: 0
     - _InvertIntoOutline: 0
     - _MainTextureInvert: 0
+    - _MoveWithTexture: 0
     - _ScriptableAlpha: 1
     - _SharpenInnerPart: 0
     - _Src: 5
@@ -97,6 +124,13 @@ Material:
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _ColorTexturePanSpeed: {r: 0, g: 0, b: 0, a: 0}
+    - _DissolveDirectionChannel: {r: 1, g: 0, b: 0, a: 0}
+    - _DissolveMaskChannel: {r: 1, g: 0, b: 0, a: 0}
+    - _DissolveMaskPanSpeed: {r: 0, g: 0, b: 0, a: 0}
+    - _DistortMaskChannel: {r: 0, g: 0, b: 0, a: 0}
+    - _DistortPanSpeed: {r: 0, g: 0, b: 0, a: 0}
+    - _DistortedTextureCorrection1: {r: 0, g: 0, b: 0, a: 0}
+    - _DistortionBlendChannel1: {r: 1, g: 0, b: 0, a: 0}
     - _EmissionColor: {r: 1, g: 1, b: 1, a: 1}
     - _Flip: {r: 1, g: 1, b: 1, a: 1}
     - _GradientShapeChannel: {r: 0, g: 0, b: 0, a: 0}

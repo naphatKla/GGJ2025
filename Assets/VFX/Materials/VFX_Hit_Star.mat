@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: VFX_Hit_Star
-  m_Shader: {fileID: 4800000, guid: 324401ff4cd382b4282bf2de1dc919f1, type: 3}
+  m_Shader: {fileID: 4800000, guid: 337f638ec0835e64e99594b828e4f649, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -44,14 +44,18 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _DissolveDirection:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: 2715ab26d18548c48a75f58c360bebda, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _DissolveMask:
-        m_Texture: {fileID: 2800000, guid: 9614dde3f409ea343a69d0a53d275945, type: 3}
+        m_Texture: {fileID: 2800000, guid: 59155dc74fb00ca4f9e5cda3424ea8e8, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _DistortMask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DistortionBlendTexture1:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
@@ -104,7 +108,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Texture:
-        m_Texture: {fileID: 2800000, guid: 04df72d441a4cd1479e00b6c25296a2e, type: 3}
+        m_Texture: {fileID: 2800000, guid: 2715ab26d18548c48a75f58c360bebda, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _texcoord:
@@ -133,42 +137,53 @@ Material:
     - _Blend: 0
     - _Blend2: 1
     - _BlendModePreserveSpecular: 1
-    - _Brightness: 10.71
+    - _Brightness: 1
     - _BumpScale: 1
     - _ColorRotation: 0
+    - _ColorTextureHueShift: 0
     - _ColorTextureHueShift2: 0
+    - _ColorTextureSaturationShift: 0
     - _ColorTextureSaturationShift2: 0
+    - _ColorTextureValueShift: 0
     - _ColorTextureValueShift2: 0
-    - _Cull: 2
+    - _Cull: 0
     - _CullMode: 0
     - _Cutoff: 0.5
     - _DepthFadeDivide: 1
     - _Depthpower: 1
-    - _DissolveDirectionInvert: 0
+    - _DissolveDirectionInvert: 1
     - _DissolveDirectionRotation: 0
-    - _DissolveMaskInvert: 0
+    - _DissolveMaskInvert: 1
     - _DissolveMaskRotation: 0
     - _DistortMaskRotation: 0
+    - _DistortionBlendInvert1: 0
     - _DistortionBlendInvert2: 0
+    - _DistortionBlendMoveWithMain1: 0
     - _DistortionBlendMoveWithMain2: 0
+    - _DistortionBlendRotation1: 0
     - _DistortionBlendRotation2: 0
     - _DistortionPower: 0
-    - _Dst: 5
+    - _Dst: 10
     - _DstBlend: 10
     - _DstBlendAlpha: 10
     - _Emission: 2
     - _EnableExternalAlpha: 0
-    - _FlatAlpha: 0
+    - _FlatAlpha: 1
     - _GlossinessSource: 0
     - _GradientMapDisplacement: 0
+    - _GradientMapHueShift: 0
     - _GradientMapHueShift2: 0
+    - _GradientMapSaturationShift: 0
     - _GradientMapSaturationShift2: 0
+    - _GradientMapValueShift: 0
     - _GradientMapValueShift2: 0
     - _GradientShapeRotation: 0
+    - _InnerPartBrightness11: 1
     - _InnerPartBrightness14: 1
     - _InnerPartColorIntensity: 0
     - _InnerPartSize: 0
     - _InvertGradient: 0
+    - _InvertIntoOutline: 0
     - _InvertIntoOutline2: 0
     - _MainTextureInvert: 0
     - _MoveWithTexture: 0
@@ -201,12 +216,14 @@ Material:
     - _ChannelMask: {r: 1, g: 0, b: 0, a: 0}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _ColorTexturePanSpeed: {r: 0, g: 0, b: 0, a: 0}
-    - _DissolveDirectionChannel: {r: 0, g: 0, b: 0, a: 0}
+    - _DissolveDirectionChannel: {r: 1, g: 0, b: 0, a: 0}
     - _DissolveMaskChannel: {r: 1, g: 0, b: 0, a: 0}
-    - _DissolveMaskPanSpeed: {r: 0, g: 1, b: 0, a: 0}
+    - _DissolveMaskPanSpeed: {r: 0, g: 0, b: 0, a: 0}
     - _DistortMaskChannel: {r: 0, g: 0, b: 0, a: 0}
     - _DistortPanSpeed: {r: 0, g: 0, b: 0, a: 0}
+    - _DistortedTextureCorrection1: {r: 0, g: 0, b: 0, a: 0}
     - _DistortedTextureCorrection2: {r: 0, g: 0, b: 0, a: 0}
+    - _DistortionBlendChannel1: {r: 0, g: 0, b: 0, a: 0}
     - _DistortionBlendChannel2: {r: 1, g: 0, b: 0, a: 0}
     - _DistortionSpeedXYPowerZ: {r: 0, g: 0, b: 0, a: 0}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
