@@ -39,6 +39,7 @@ namespace Characters.SkillSystems.SkillRuntimes
                 skillInstance.transform.rotation = Quaternion.Euler(0f, 0f, angle);
 
                 skillInstance.gameObject.SetActive(true);
+                skillInstance.DamageOnTouch.EnableDamage(owner.gameObject, this, skillData.DamageHitPerSec);
                 _skillObjects.Add(skillInstance);
             }
 
@@ -63,7 +64,7 @@ namespace Characters.SkillSystems.SkillRuntimes
                     obj.transform.RotateAround(center, Vector3.forward, -spinSpeed * delta); // clockwise
                 }
 
-                await UniTask.Yield(this.destroyCancellationToken);
+                await UniTask.Yield(destroyCancellationToken);
             }
         }
 
@@ -71,7 +72,8 @@ namespace Characters.SkillSystems.SkillRuntimes
         {
             foreach (var obj in _skillObjects)
             {
-                obj.gameObject.SetActive(false);
+                obj.gameObject?.SetActive(false);
+                obj?.DamageOnTouch.DisableDamage(this);
                 PoolingManager.Instance.Release(skillData.LightPrefab.name, obj);
             }
         }
