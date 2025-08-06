@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class SpriteFollowMouse : MonoBehaviour
 {
-    [SerializeField] private RigidbodyMovementSystem ownerMovementSystem;
+    [SerializeField] private TransformMovementSystem ownerMovementSystem;
     [SerializeField] private GameObject _sprite;
 
     // Update is called once per frame

@@ -63,7 +63,7 @@ namespace Characters.CollectItemSystems.CollectableItems
         /// The movement system used to perform tween-based pull motion.
         /// </summary>
         [SerializeField]
-        protected RigidbodyMovementSystem rbMovementSystem;
+        protected TransformMovementSystem rbMovementSystem;
         
         /// <summary>
         /// Tween instance used to pull the item toward the target.
