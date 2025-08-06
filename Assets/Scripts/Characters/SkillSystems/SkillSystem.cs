@@ -5,6 +5,7 @@ using Characters.Controllers;
 using Characters.SkillSystems.SkillRuntimes;
 using Characters.SO.CharacterDataSO;
 using Characters.SO.SkillDataSo;
+using Manager;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -18,7 +19,7 @@ namespace Characters.SkillSystems
         AutoSkill = 2,
     }
 
-    public class SkillSystem : MonoBehaviour
+    public class SkillSystem : MonoBehaviour, IFixedUpdateable
     {
         public event Action<float, int> OnSkillCooldownUpdate;
         public event Action<int> OnSkillCooldownReset;
@@ -308,7 +309,18 @@ namespace Characters.SkillSystems
             CleanupUnusedRuntimesAfterReset();
         }
 
-        private void FixedUpdate()
+
+        private void OnEnable()
+        {
+            FixedUpdateManager.Instance.Register(this);
+        }
+
+        private void OnDisable()
+        {
+            FixedUpdateManager.Instance.Unregister(this);
+        }
+
+        public void OnFixedUpdate()
         {
             if (!owner) return;
             UpdateCooldown();

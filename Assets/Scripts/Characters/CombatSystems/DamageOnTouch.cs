@@ -5,7 +5,7 @@ using Sirenix.OdinInspector;
 
 namespace Characters.CombatSystems
 {
-    public class DamageOnTouch : MonoBehaviour
+    public class DamageOnTouch : MonoBehaviour, IFixedUpdateable
     {
         private class DamageInstance
         {
@@ -44,33 +44,6 @@ namespace Characters.CombatSystems
 
         public GameObject Owner => _owner;
         public bool IsEnableDamage => _isEnableDamage;
-
-        private void FixedUpdate()
-        {
-            if (!_isEnableDamage || _owner == null)
-                return;
-
-            int count = 0;
-            Vector2 position = transform.position;
-            float angle = transform.eulerAngles.z;
-
-            switch (shape)
-            {
-                case OverlapShape.Box:
-                    count = Physics2D.OverlapBoxNonAlloc(position, boxSize, angle, _overlapResults, targetLayer);
-                    break;
-
-                case OverlapShape.Circle:
-                    count = Physics2D.OverlapCircleNonAlloc(position, circleRadius, _overlapResults, targetLayer);
-                    break;
-            }
-
-            for (int i = 0; i < count; i++)
-            {
-                TryApplyDamageTo(_overlapResults[i]);
-            }
-        }
-
 
         #region Public API
 
@@ -117,7 +90,11 @@ namespace Characters.CombatSystems
                 HitPerSec = Mathf.Max(hitPerSec, 0.01f),
             });
 
-            _isEnableDamage = true;
+            if (!_isEnableDamage)
+            {
+                _isEnableDamage = true;
+                FixedUpdateManager.Instance.Register(this);
+            }
         }
 
         public void DisableDamage(object caller)
@@ -138,6 +115,7 @@ namespace Characters.CombatSystems
             {
                 _isEnableDamage = false;
                 _owner = null;
+                FixedUpdateManager.Instance.Unregister(this);
             }
         }
 
@@ -146,13 +124,43 @@ namespace Characters.CombatSystems
             _damageInstances.Clear();
             _cooldownMap.Clear();
             _cooldownRemoveBuffer.Clear();
+
+            if (_isEnableDamage)
+                FixedUpdateManager.Instance.Unregister(this);
+
             _isEnableDamage = false;
             _owner = null;
         }
 
         #endregion
 
-        #region Internal Logic
+        #region Damage Logic
+
+        public void OnFixedUpdate()
+        {
+            if (!_isEnableDamage || _owner == null)
+                return;
+
+            int count = 0;
+            Vector2 position = transform.position;
+            float angle = transform.eulerAngles.z;
+
+            switch (shape)
+            {
+                case OverlapShape.Box:
+                    count = Physics2D.OverlapBoxNonAlloc(position, boxSize, angle, _overlapResults, targetLayer);
+                    break;
+
+                case OverlapShape.Circle:
+                    count = Physics2D.OverlapCircleNonAlloc(position, circleRadius, _overlapResults, targetLayer);
+                    break;
+            }
+
+            for (int i = 0; i < count; i++)
+            {
+                TryApplyDamageTo(_overlapResults[i]);
+            }
+        }
 
         private void TryApplyDamageTo(Collider2D collider)
         {
@@ -183,7 +191,17 @@ namespace Characters.CombatSystems
 
         #endregion
 
-#if UNITY_EDITOR
+        #region Safety (Optional)
+
+        private void OnDisable()
+        {
+            if (_isEnableDamage)
+                FixedUpdateManager.Instance.Unregister(this);
+        }
+
+        #endregion
+
+    #if UNITY_EDITOR
         private void OnDrawGizmosSelected()
         {
             Gizmos.color = Color.red;
@@ -205,6 +223,6 @@ namespace Characters.CombatSystems
                     break;
             }
         }
-#endif
+    #endif
     }
 }

@@ -1,5 +1,7 @@
+using System;
 using Characters.CollectItemSystems.CollectableItems;
 using GlobalSettings;
+using Manager;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -10,7 +12,7 @@ namespace Characters.CollectItemSystems
     /// Uses Unity Physics2D to detect items on the defined collectible layer and pulls them toward the player.
     /// When close enough, the item is collected through its assigned collect logic.
     /// </summary>
-    public class CollectItemSystem : MonoBehaviour
+    public class CollectItemSystem : MonoBehaviour, IFixedUpdateable
     {
         #region Inspector & Variables
 
@@ -36,11 +38,17 @@ namespace Characters.CollectItemSystems
 
         #region Unity Methods
 
-        /// <summary>
-        /// Runs every physics frame to check for collectible items within the pull radius.
-        /// Pulls items toward this GameObject and attempts to collect them once close enough.
-        /// </summary>
-        private void FixedUpdate()
+        private void OnEnable()
+        {
+            FixedUpdateManager.Instance.Register(this);
+        }
+
+        private void OnDisable()
+        {
+            FixedUpdateManager.Instance.Unregister(this);
+        }
+
+        public void OnFixedUpdate()
         {
             Collider2D[] objectsDetected = Physics2D.OverlapCircleAll(transform.position, pullItemRadius, collectLayer);
 

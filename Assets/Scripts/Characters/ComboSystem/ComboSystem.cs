@@ -20,7 +20,7 @@ namespace Characters.ComboSystem
     /// <summary>
     /// Handles combo logic including streaks, decay, milestones, and UI feedback.
     /// </summary>
-    public class ComboSystem : MonoBehaviour
+    public class ComboSystem : MonoBehaviour, IFixedUpdateable
     {
 
         #region Combo Settings
@@ -67,11 +67,21 @@ namespace Characters.ComboSystem
 
         #region Unity Methods
 
-        private void Update()
+        private void OnEnable()
+        {
+            FixedUpdateManager.Instance.Register(this);
+        }
+
+        public void OnFixedUpdate()
         {
             UpdateComboTime();
 
             if (_IsCombo && _currentTime <= 0) ResetCombo();
+        }
+        
+        private void OnDisable()
+        {
+            FixedUpdateManager.Instance.Unregister(this);
         }
 
         #endregion
@@ -119,7 +129,7 @@ namespace Characters.ComboSystem
             if (_IsCombo && comboToDecayRate != null)
             {
                 _currentDecayRate = comboToDecayRate.Evaluate(_comboStreak);
-                _currentTime -= _currentDecayRate * Time.deltaTime;
+                _currentTime -= _currentDecayRate * Time.fixedDeltaTime;
                 _currentTime = Mathf.Max(_currentTime, 0);
 
                 OnComboTimeUpdated?.Invoke(_currentTime);
