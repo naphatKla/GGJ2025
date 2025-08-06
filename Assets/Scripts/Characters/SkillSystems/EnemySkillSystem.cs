@@ -30,7 +30,7 @@ namespace Characters.SkillSystems
                 if (_isCharging) return;
                 var runtime = GetSkillRuntimeOrDefault(primarySkillData);
                 if (!runtime) return;
-                if (runtime.Cooldown > skillChargeDelay) return;
+                if (runtime.CurrentCooldown > skillChargeDelay) return;
                 _isCharging = true;
                 owner.FeedbackSystem.PlayFeedback(FeedbackName.Charge);
                 await UniTask.WaitForSeconds(skillChargeDelay);

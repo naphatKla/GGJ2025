@@ -176,14 +176,41 @@ namespace Manager
             if (_parentFolders.TryGetValue(key, out var existing))
                 return existing;
 
-            Transform group = _root.Find(groupName) ?? new GameObject(groupName).transform;
-            group.SetParent(_root);
+            // Find or create group transform
+            Transform group = _root.Find(groupName);
+            if (group == null)
+            {
+                var groupGO = new GameObject(groupName);
 
+                // World Space UI setup
+                if (groupName == PoolingGroupName.UI)
+                {
+                    var canvas = groupGO.AddComponent<Canvas>();
+                    canvas.renderMode = RenderMode.WorldSpace;
+                    canvas.worldCamera = Camera.main;
+                    canvas.sortingLayerID = SortingLayer.NameToID("World UI");
+
+                    var scaler = groupGO.AddComponent<UnityEngine.UI.CanvasScaler>();
+                    scaler.uiScaleMode = UnityEngine.UI.CanvasScaler.ScaleMode.ConstantPixelSize;
+                }
+
+                group = groupGO.transform;
+                group.SetParent(_root, false);
+                group.localPosition = Vector3.zero;
+                group.localRotation = Quaternion.identity;
+                group.localScale = Vector3.one;
+            }
+
+            // Create folder under group
             var folder = new GameObject(key).transform;
-            folder.SetParent(group);
+            folder.SetParent(group, false);
+            folder.localPosition = Vector3.zero;
+            folder.localRotation = Quaternion.identity;
+            folder.localScale = Vector3.one;
 
             _parentFolders[key] = folder;
             return folder;
         }
+        
     }
 }
