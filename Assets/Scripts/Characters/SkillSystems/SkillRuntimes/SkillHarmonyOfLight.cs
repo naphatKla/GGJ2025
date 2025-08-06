@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace Characters.SkillSystems.SkillRuntimes
 {
-    public class SkillHarmonyOfLight : BaseSkillRuntime<SkillHarmonyOfLightDataSo>
+    public class SkSkillHarmonyOfLight : BaseSkillRuntime<SkillHarmonyOfLightDataSo>
     {
         private List<HarmonyOfLightSkillObject> _skillObjects = new();
         private Vector3 startPos;

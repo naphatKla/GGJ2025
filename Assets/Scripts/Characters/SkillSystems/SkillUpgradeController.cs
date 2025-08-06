@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Characters.SO.SkillDataSo;
 using Characters.SO.CharacterDataSO;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 namespace Characters.SkillSystems
@@ -13,6 +15,11 @@ namespace Characters.SkillSystems
         private SkillSystem _playerSkillSystem;
         private List<BaseSkillDataSo> _skillPool = new();
         private List<BaseSkillDataSo> _currentOptions = new();
+
+        private int _pendingForSelection = 0;
+
+        private CancellationTokenSource _globalCts;
+
         public event Action<List<BaseSkillDataSo>> OnSkillUpgradeOptionsGenerated;
 
         public void AssignData(SkillSystem skillSystem, PlayerDataSo playerDataSo)
@@ -20,25 +27,55 @@ namespace Characters.SkillSystems
             _playerSkillSystem = skillSystem;
             _skillPool = playerDataSo.SkillUpgradePool;
             _upgradeChoicesCount = playerDataSo.UpgradeChoicesCount;
+            _globalCts = new CancellationTokenSource();
         }
 
         public void OnLevelUp(int level)
         {
-            _currentOptions = GetUpgradeOptions(_playerSkillSystem);
+            UpgradeSkillAsync().Forget();
+        }
 
-            if (_currentOptions.Count <= 0) return;
+        private async UniTaskVoid UpgradeSkillAsync()
+        {
+            // local cts + linked with global & mono destroy
+            using var localCts = new CancellationTokenSource();
+            using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(
+                localCts.Token,
+                _globalCts?.Token ?? CancellationToken.None,
+                this.GetCancellationTokenOnDestroy()
+            );
 
-            foreach (var option in _currentOptions)
-                Debug.Log($"[SkillUpgrade] Option: {option.name}, LV: {option.Level}");
+            try
+            {
+                await UniTask.WaitUntil(() => _pendingForSelection <= 0, cancellationToken: linkedCts.Token);
 
-            OnSkillUpgradeOptionsGenerated?.Invoke(_currentOptions);
-            
-            /*//TODO: Remove this if UI Implemented
-            SelectSkill(_currentOptions[0]);*/
+                _pendingForSelection++;
+                _currentOptions = GetRandomAvailableUpgradeOptions(_playerSkillSystem);
+
+                if (_currentOptions.Count <= 0)
+                {
+                    _pendingForSelection = 0;
+                    return;
+                }
+
+                OnSkillUpgradeOptionsGenerated?.Invoke(_currentOptions);
+            }
+            catch (OperationCanceledException)
+            {
+                Debug.LogWarning("[SkillUpgrade] Cancelled upgrade selection.");
+            }
         }
 
         public void SelectSkill(BaseSkillDataSo selectedSkill)
         {
+            if (_pendingForSelection <= 0)
+            {
+                Debug.LogWarning("No pending upgrade to apply selection to.");
+                return;
+            }
+
+            _pendingForSelection--;
+
             if (selectedSkill == null || !_currentOptions.Contains(selectedSkill))
             {
                 Debug.LogWarning($"[SkillUpgrade] Invalid skill selected: {selectedSkill?.name}");
@@ -48,10 +85,10 @@ namespace Characters.SkillSystems
             UpgradeSkill(_playerSkillSystem, selectedSkill);
             Debug.Log($"[SkillUpgrade] Selected: {selectedSkill.name}, LV: {selectedSkill.Level}");
 
-            _currentOptions.Clear(); // clear options after selection
+            _currentOptions.Clear();
         }
 
-        private List<BaseSkillDataSo> GetUpgradeOptions(SkillSystem skillSystem)
+        private List<BaseSkillDataSo> GetRandomAvailableUpgradeOptions(SkillSystem skillSystem)
         {
             var options = new List<BaseSkillDataSo>();
             if (skillSystem == null) return options;
@@ -94,7 +131,21 @@ namespace Characters.SkillSystems
 
         public void ResetSkillUpgradeController()
         {
+            _globalCts?.Cancel();
+            _globalCts?.Dispose();
+            _globalCts = new CancellationTokenSource();
+
             _currentOptions.Clear();
+            _pendingForSelection = 0;
+
+            Debug.Log("[SkillUpgrade] Reset and cancelled all pending upgrades.");
+        }
+
+        private void OnDestroy()
+        {
+            _globalCts?.Cancel();
+            _globalCts?.Dispose();
+            _globalCts = null;
         }
     }
 }
