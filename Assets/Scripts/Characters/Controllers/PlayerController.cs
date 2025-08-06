@@ -2,6 +2,7 @@ using System;
 using Characters.LevelSystems;
 using Characters.SkillSystems;
 using Characters.SO.CharacterDataSO;
+using Characters.UIDisplay;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.UI;
@@ -15,7 +16,6 @@ namespace Characters.Controllers
     public class PlayerController : BaseController
     {
         #region Inspector & Variables
-        
         [SerializeField] public ComboSystem.ComboSystem comboSystem;
         [SerializeField] protected LevelSystem levelSystem;
         [SerializeField] protected SkillUpgradeController skillUpgradeController;
