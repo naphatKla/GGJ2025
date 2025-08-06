@@ -20,8 +20,6 @@ namespace Characters.SkillSystems
 
     public class SkillSystem : MonoBehaviour
     {
-        // float = cool down progression 0 - 1
-        // int index, 0 = primary skill, 1 = secondary, >2 = auto skill
         private event Action<float, int> OnSkillCooldownUpdate;
         private event Action<int> OnSkillCooldownReset;
         private event Action<BaseSkillDataSo, int> OnNewSkillAssign;
@@ -37,6 +35,8 @@ namespace Characters.SkillSystems
         private HashSet<BaseSkillDataSo> _defaultAutoSkillDatas = new();
 
         private readonly Dictionary<BaseSkillDataSo, BaseSkillRuntime> _skillRuntimeDictionary = new();
+        private readonly List<BaseSkillDataSo> _pendingRuntimeRemoval = new();
+
         protected BaseController owner;
         protected bool canUseSkills = true;
 
@@ -68,8 +68,7 @@ namespace Characters.SkillSystems
         }
 
         public (BaseSkillDataSo Primary, BaseSkillDataSo Secondary, List<BaseSkillDataSo> Auto,
-            IEnumerable<BaseSkillDataSo> All)
-            GetAllCurrentSkillDatas()
+            IEnumerable<BaseSkillDataSo> All) GetAllCurrentSkillDatas()
         {
             var all = new List<BaseSkillDataSo>();
             if (primarySkillData != null) all.Add(primarySkillData);
@@ -123,6 +122,7 @@ namespace Characters.SkillSystems
                 if (autoSkill.RootNode == skillRoot && autoSkill.NextSkillDataUpgrade == upgradeSkill)
                 {
                     _autoSkillDatas.Remove(autoSkill);
+                    RemoveUnusedSkillRuntime(autoSkill);
                     SetOrAddSkill(upgradeSkill, SkillType.AutoSkill);
                     return;
                 }
@@ -144,34 +144,26 @@ namespace Characters.SkillSystems
             {
                 case SkillType.PrimarySkill:
                     if (secondarySkillData == newSkillData || _autoSkillDatas.Contains(newSkillData)) return;
+                    if (primarySkillData != null && primarySkillData != newSkillData)
+                        RemoveUnusedSkillRuntime(primarySkillData);
+                    primarySkillData = newSkillData;
                     break;
                 case SkillType.SecondarySkill:
                     if (primarySkillData == newSkillData || _autoSkillDatas.Contains(newSkillData)) return;
+                    if (secondarySkillData != null && secondarySkillData != newSkillData)
+                        RemoveUnusedSkillRuntime(secondarySkillData);
+                    secondarySkillData = newSkillData;
                     break;
                 case SkillType.AutoSkill:
                     if (primarySkillData == newSkillData || secondarySkillData == newSkillData ||
                         _autoSkillDatas.Contains(newSkillData)) return;
-                    break;
-            }
-
-            InstantiateSkillRuntime(newSkillData);
-
-            switch (type)
-            {
-                case SkillType.PrimarySkill:
-                    primarySkillData = newSkillData;
-                    break;
-                case SkillType.SecondarySkill:
-                    secondarySkillData = newSkillData;
-                    break;
-                case SkillType.AutoSkill:
                     _autoSkillDatas.Add(newSkillData);
                     break;
             }
 
+            InstantiateSkillRuntime(newSkillData);
             var runtime = GetSkillRuntimeOrDefault(newSkillData);
             runtime?.SetCurrentCooldown(0);
-            
             int index = GetSkillIndex(newSkillData);
             OnNewSkillAssign?.Invoke(newSkillData, index);
         }
@@ -179,12 +171,41 @@ namespace Characters.SkillSystems
         private void InstantiateSkillRuntime(BaseSkillDataSo skillData)
         {
             if (!skillData || !owner || _skillRuntimeDictionary.ContainsKey(skillData)) return;
-
             BaseSkillRuntime skillRuntime = (BaseSkillRuntime)gameObject.AddComponent(skillData.SkillRuntime);
             skillRuntime.AssignSkillData(skillData, owner);
             _skillRuntimeDictionary.Add(skillData, skillRuntime);
         }
-        
+
+        private void RemoveUnusedSkillRuntime(BaseSkillDataSo oldSkill)
+        {
+            if (!_skillRuntimeDictionary.TryGetValue(oldSkill, out var runtime)) return;
+            if (runtime.IsPerforming)
+            {
+                if (!_pendingRuntimeRemoval.Contains(oldSkill))
+                    _pendingRuntimeRemoval.Add(oldSkill);
+            }
+            else
+            {
+                Destroy(runtime);
+                _skillRuntimeDictionary.Remove(oldSkill);
+            }
+        }
+
+        private void CleanupPendingRuntimes()
+        {
+            for (int i = _pendingRuntimeRemoval.Count - 1; i >= 0; i--)
+            {
+                var skill = _pendingRuntimeRemoval[i];
+                var runtime = GetSkillRuntimeOrDefault(skill);
+                if (runtime == null || !runtime.IsPerforming)
+                {
+                    Destroy(runtime);
+                    _skillRuntimeDictionary.Remove(skill);
+                    _pendingRuntimeRemoval.RemoveAt(i);
+                }
+            }
+        }
+
         public virtual BaseSkillRuntime GetSkillRuntimeOrDefault(BaseSkillDataSo skillData)
         {
             return skillData && _skillRuntimeDictionary.TryGetValue(skillData, out var runtime) ? runtime : null;
@@ -217,20 +238,18 @@ namespace Characters.SkillSystems
                 var data = kvp.Key;
                 var runtime = kvp.Value;
                 int index = GetSkillIndex(data);
-                bool isCooldownBeforeUpdate = runtime.IsCooldown;
-                
+                bool wasCooling = runtime.IsCooldown;
                 runtime.UpdateCoolDown(Time.fixedDeltaTime);
-                
+
                 if (!runtime.IsCooldown)
                 {
-                    if (isCooldownBeforeUpdate)
-                        OnSkillCooldownReset?.Invoke(index);    
-                    
+                    if (wasCooling)
+                        OnSkillCooldownReset?.Invoke(index);
                     continue;
                 }
-                
-                float progression = 1f - Mathf.Clamp01(runtime.CurrentCooldown / runtime.Cooldown);
-                OnSkillCooldownUpdate?.Invoke(progression, index);
+
+                float progress = 1f - Mathf.Clamp01(runtime.CurrentCooldown / runtime.Cooldown);
+                OnSkillCooldownUpdate?.Invoke(progress, index);
             }
         }
 
@@ -240,7 +259,36 @@ namespace Characters.SkillSystems
             foreach (var data in _autoSkillDatas)
                 GetSkillRuntimeOrDefault(data)?.CancelSkill();
         }
+        
+        private void CleanupUnusedRuntimesAfterReset()
+        {
+            var usedSkills = new HashSet<BaseSkillDataSo>
+            {
+                primarySkillData,
+                secondarySkillData
+            };
+            usedSkills.UnionWith(_autoSkillDatas);
 
+            foreach (var kvp in _skillRuntimeDictionary.ToList())
+            {
+                var data = kvp.Key;
+                var runtime = kvp.Value;
+                if (usedSkills.Contains(data)) continue;
+
+                runtime.CancelSkill();
+                if (runtime.IsPerforming)
+                {
+                    if (!_pendingRuntimeRemoval.Contains(data))
+                        _pendingRuntimeRemoval.Add(data);
+                }
+                else
+                {
+                    Destroy(runtime);
+                    _skillRuntimeDictionary.Remove(data);
+                }
+            }
+        }
+        
         private void ResetToDefaultSkill()
         {
             if (!owner) return;
@@ -257,12 +305,14 @@ namespace Characters.SkillSystems
         {
             CancelAllSkill();
             ResetToDefaultSkill();
+            CleanupUnusedRuntimesAfterReset();
         }
 
         private void FixedUpdate()
         {
             if (!owner) return;
             UpdateCooldown();
+            CleanupPendingRuntimes();
         }
 
         private int GetSkillIndex(BaseSkillDataSo data)
