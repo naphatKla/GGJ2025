@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 namespace UI.IngameModal
 {
-    public class SolfUpgradeModal : MonoBehaviour
+    public class SolfUpgradeModel : MonoBehaviour
     {
         [SerializeField] private TMP_Text skillTitle;
         [SerializeField] private Image skillIcon;

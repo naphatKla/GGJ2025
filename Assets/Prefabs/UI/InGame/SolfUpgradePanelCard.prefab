@@ -363,10 +363,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 264675995846866633}
-  - component: {fileID: 3788579587011981026}
   - component: {fileID: 6174928591968400326}
   - component: {fileID: 3095080574729251622}
   - component: {fileID: 2970943279626917557}
+  - component: {fileID: 962830566913950826}
   m_Layer: 5
   m_Name: SolfUpgradePanelCard
   m_TagString: Untagged
@@ -397,22 +397,6 @@ RectTransform:
   m_AnchoredPosition: {x: -960, y: -540}
   m_SizeDelta: {x: 67, y: 94}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &3788579587011981026
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2056762471974520835}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f8a31369091e9b8428f00928c7be2837, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  skillTitle: {fileID: 5375069260703292228}
-  skillIcon: {fileID: 2347049430679849395}
-  skillDescription: {fileID: 2802678027423887548}
-  selectButton: {fileID: 5123104023582053221}
 --- !u!114 &6174928591968400326
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -467,6 +451,22 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &962830566913950826
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2056762471974520835}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 399a95f7cf8bc9649b60b0f874cbea3a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  skillTitle: {fileID: 5375069260703292228}
+  skillIcon: {fileID: 2347049430679849395}
+  skillDescription: {fileID: 2802678027423887548}
+  selectButton: {fileID: 5123104023582053221}
 --- !u!1 &2089695466854628266
 GameObject:
   m_ObjectHideFlags: 0
@@ -708,10 +708,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1536068703615366902}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 7.35, y: -2.565}
-  m_SizeDelta: {x: 12.7, y: 3.13}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &9191027289951133871
 CanvasRenderer:

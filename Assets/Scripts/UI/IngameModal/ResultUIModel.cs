@@ -6,9 +6,9 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace UI
+namespace UI.IngameModal
 {
-    public class ResultUIModal : MonoBehaviour
+    public class ResultUIModel : MonoBehaviour
     {
         [SerializeField] private Button restartButton;
         [SerializeField] private Button backButton;

@@ -23,6 +23,7 @@ namespace Characters.UIDisplay
 {
     public class CharacterDisplay : MonoBehaviour
     {
+        //Combo
         [FoldoutGroup("Combo Display")] [Title("Ref")] [SerializeField]
         public ComboSystem.ComboSystem comboSystem;
 
@@ -35,12 +36,14 @@ namespace Characters.UIDisplay
         [FoldoutGroup("Combo Display")] public float tweenDuration = 0.1f;
         [FoldoutGroup("Combo Display")] public float scaleAmount = 1.2f;
         
+        //Combat
         [FoldoutGroup("Combat Display")] [SerializeField]
         private CombatSystem combatSystem;
 
         [FoldoutGroup("Combat Display")] [SerializeField]
         private TextMeshProUGUI damageTextPrefab;
 
+        //Level
         [FoldoutGroup("Level Display")] [Title("Ref")] [SerializeField]
         public LevelSystem levelSystem;
 
@@ -49,12 +52,14 @@ namespace Characters.UIDisplay
 
         [FoldoutGroup("Level Display")] public ValueBar levelbar;
 
+        //Health
         [FoldoutGroup("Health Display")] [Title("Ref")] [SerializeField]
         public HealthSystem healthSystem;
 
         [Title("UI")] [FoldoutGroup("Health Display")] [SerializeField]
         public SlotBar hpBar;
         
+        //Solf Upgrade
         [FoldoutGroup("SolfUpgrade Display")]
         [Title("Ref")] [SerializeField]
         public SkillUpgradeController skillUpgradeController;
@@ -63,10 +68,20 @@ namespace Characters.UIDisplay
         [FoldoutGroup("SolfUpgrade Display")]
         public GameObject solfUpgradePanel;
         [FoldoutGroup("SolfUpgrade Display")]
-        public SolfUpgradeModal solfUpgradeModal;
+        public SolfUpgradeModel solfUpgradeModel;
         
         private Queue<BaseSkillDataSo> skillQueue = new();
         private bool isChoosingSkill = false;
+        
+        //Skill Slot
+        [FoldoutGroup("SkillSlot Display")]
+        [Title("Ref")] [SerializeField]
+        public SkillSystem skillSystem;
+        
+        [FoldoutGroup("SkillSlot Display")] [Title("UI")] 
+        [FoldoutGroup("SkillSlot Display")] [SerializeField] private SkillSlotModel primarySkillSlotModel;
+        [FoldoutGroup("SkillSlot Display")] [SerializeField] private SkillSlotModel secondarySkillSlotModel;
+        [FoldoutGroup("SkillSlot Display")] [SerializeField] private List<SkillSlotModel> solfSkillSlotModel;
 
         private void Start()
         {
@@ -265,8 +280,8 @@ namespace Characters.UIDisplay
 
         private void CreateSkillCard(BaseSkillDataSo skill)
         {
-            var skillcard = Instantiate(solfUpgradeModal.gameObject, solfUpgradePanel.transform);
-            var modal = skillcard.GetComponent<SolfUpgradeModal>();
+            var skillcard = Instantiate(solfUpgradeModel.gameObject, solfUpgradePanel.transform);
+            var modal = skillcard.GetComponent<SolfUpgradeModel>();
             modal.UpdateUIModal(skill);
             modal.SelectButton.onClick.AddListener(() =>
             {
@@ -282,6 +297,12 @@ namespace Characters.UIDisplay
 
             ShowNextSkillPopup();
         }
+
+        #endregion
+
+        #region Skill Slot
+
+        
 
         #endregion
     }
