@@ -9,6 +9,7 @@ using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using GameControl.Controller;
 using Manager;
+using MoreMountains.Feedbacks;
 using PixelUI;
 using Sirenix.OdinInspector;
 using TMPro;
@@ -59,7 +60,6 @@ namespace Characters.UIDisplay
         public SkillUpgradeController skillUpgradeController;
         
         [FoldoutGroup("SolfUpgrade Display")] [Title("UI")] 
-        [SerializeField] public GameObject solfUpgradeHud;
         [FoldoutGroup("SolfUpgrade Display")]
         public GameObject solfUpgradePanel;
         [FoldoutGroup("SolfUpgrade Display")]
@@ -243,12 +243,16 @@ namespace Characters.UIDisplay
             }
 
             isChoosingSkill = true;
-         
-            solfUpgradeHud.SetActive(true);
-            var nextSkill = skillQueue.Dequeue();
 
+            UIManager.Instance.OpenPanel(UIPanelType.SolfUpgrade);
             ClearSkillCards();
-            CreateSkillCard(nextSkill);
+
+            int skillsToShow = Mathf.Min(3, skillQueue.Count);
+            for (int i = 0; i < skillsToShow; i++)
+            {
+                var skill = skillQueue.Dequeue();
+                CreateSkillCard(skill);
+            }
         }
 
         private void ClearSkillCards()
@@ -272,7 +276,7 @@ namespace Characters.UIDisplay
 
         private void OnSkillSelected(BaseSkillDataSo skill)
         {
-            solfUpgradeHud.SetActive(false);
+            UIManager.Instance.CloseAllPanels();
             skillUpgradeController.SelectSkill(skill);
             ClearSkillCards();
 

@@ -111,8 +111,8 @@ namespace GameControl.Controller
 
         public void RestartMap()
         {
-            //SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-            SetState(_prestartState);
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            //SetState(_prestartState);
         }
         
         [FoldoutGroup("Game State")]

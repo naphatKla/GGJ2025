@@ -33,8 +33,8 @@ namespace Characters.SkillSystems
 
             OnSkillUpgradeOptionsGenerated?.Invoke(_currentOptions);
             
-            //TODO: Remove this if UI Implemented
-            SelectSkill(_currentOptions[0]);
+            /*//TODO: Remove this if UI Implemented
+            SelectSkill(_currentOptions[0]);*/
         }
 
         public void SelectSkill(BaseSkillDataSo selectedSkill)

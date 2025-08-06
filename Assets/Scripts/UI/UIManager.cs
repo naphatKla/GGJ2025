@@ -12,6 +12,7 @@ public enum UIPanelType
     Pause,
     MapResult,
     SkillTree,
+    SolfUpgrade,
     Setting,
     SaveGame,
     GameMode,
