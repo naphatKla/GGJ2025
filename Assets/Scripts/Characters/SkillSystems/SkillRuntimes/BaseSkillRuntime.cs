@@ -15,21 +15,22 @@ namespace Characters.SkillSystems.SkillRuntimes
     public abstract class BaseSkillRuntime : MonoBehaviour
     {
         protected float cooldown;
+        protected float currentCooldown;
         public float Cooldown => cooldown;
-        public bool IsCooldown => cooldown > 0;
+        public float CurrentCooldown => currentCooldown;
+        public bool IsCooldown => currentCooldown > 0;
         public abstract bool IsPerforming { get; protected set; }
-
         private Action cooldownReadyCallback;
 
         public abstract void AssignSkillData(BaseSkillDataSo skillData, BaseController owner);
         public abstract void PerformSkill();
         public abstract void CancelSkill(int milliSecondDelay = 0);
 
-        public virtual void SetCooldown(float value)
+        public virtual void SetCurrentCooldown(float value)
         {
-            float prev = cooldown;
-            cooldown = Mathf.Max(0, value);
-            if (prev > 0 && cooldown <= 0)
+            float prev = currentCooldown;
+            currentCooldown = Mathf.Max(0, value);
+            if (prev > 0 && currentCooldown <= 0)
             {
                 cooldownReadyCallback?.Invoke();
                 cooldownReadyCallback = null;
@@ -38,8 +39,8 @@ namespace Characters.SkillSystems.SkillRuntimes
 
         public virtual void UpdateCoolDown(float deltaTime)
         {
-            if (cooldown <= 0) return;
-            SetCooldown(cooldown - deltaTime);
+            if (currentCooldown <= 0) return;
+            SetCurrentCooldown(currentCooldown - deltaTime);
         }
 
         public void RegisterCooldownReadyCallback(Action callback)
@@ -67,7 +68,8 @@ namespace Characters.SkillSystems.SkillRuntimes
         {
             this.skillData = skillData as T;
             this.owner = owner;
-            SetCooldown(skillData.Cooldown);
+            cooldown = skillData.Cooldown;
+            SetCurrentCooldown(skillData.Cooldown);
             effectsApplyOnStart = new List<StatusEffectDataPayload>(skillData.StatusEffectOnSkillStart);
         }
 
@@ -75,7 +77,7 @@ namespace Characters.SkillSystems.SkillRuntimes
         {
             if (IsCooldown || IsPerforming) return;
 
-            SetCooldown(skillData.Cooldown);
+            SetCurrentCooldown(skillData.Cooldown);
             _cts = new CancellationTokenSource();
 
             HandleSkillStart();
