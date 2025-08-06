@@ -1,3 +1,4 @@
+using System;
 using Characters.CombatSystems;
 using Characters.FeedbackSystems;
 using Characters.HeathSystems;
@@ -116,6 +117,8 @@ namespace Characters.Controllers
         /// </summary>
         public BaseCharacterDataSo CharacterData => characterData;
         
+        public Action OnResetAllBehavior;
+        
         #endregion
 
         #region Unity Methods
@@ -196,6 +199,8 @@ namespace Characters.Controllers
             statusEffectSystem.ResetStatusEffectSystem();
             damageOnTouch.ResetDamageOnTouch();
             feedbackSystem.ResetFeedbackSystem();
+            
+            OnResetAllBehavior?.Invoke();
         }
 
         #endregion

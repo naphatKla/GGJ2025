@@ -1,4 +1,5 @@
 using Characters.CombatSystems;
+using Characters.Controllers;
 using Characters.HeathSystems;
 using Characters.LevelSystems;
 using DG.Tweening;
@@ -25,8 +26,7 @@ namespace Characters.UIDisplay
         [FoldoutGroup("Combo Display")] public ValueBar comboTimeoutBar;
         [FoldoutGroup("Combo Display")] public float tweenDuration = 0.1f;
         [FoldoutGroup("Combo Display")] public float scaleAmount = 1.2f;
-
-
+        
         [FoldoutGroup("Combat Display")] [SerializeField]
         private CombatSystem combatSystem;
 
@@ -49,45 +49,54 @@ namespace Characters.UIDisplay
 
         private void Start()
         {
-            ComboUISetup();
+            PlayerController.Instance.OnResetAllBehavior += UpdateAllUI;
+            
             comboSystem.OnComboUpdated += UpdateComboScoreText;
+            comboSystem.OnComboTimeUpdated += UpdateComboTimeBar;
+
+            levelSystem.OnLevelUpdate += UpdateLevelUI;
+
+            healthSystem.OnHealthChange += UpdateHealthUI;
+
             combatSystem.OnDealDamage += UpdateDamageText;
-            PoolingManager.Instance.Create<TextMeshProUGUI>(damageTextPrefab.name, PoolingGroupName.UI,
-                CreateDamageText);
+            PoolingManager.Instance.Create<TextMeshProUGUI>(damageTextPrefab.name, PoolingGroupName.UI, CreateDamageText);
         }
 
         private void OnDestroy()
         {
+            PlayerController.Instance.OnResetAllBehavior -= UpdateAllUI;
+            
             comboSystem.OnComboUpdated -= UpdateComboScoreText;
+            comboSystem.OnComboTimeUpdated -= UpdateComboTimeBar;
+
+            levelSystem.OnLevelUpdate -= UpdateLevelUI;
+            
+            healthSystem.OnHealthChange -= UpdateHealthUI;
+            
             combatSystem.OnDealDamage -= UpdateDamageText;
             PoolingManager.Instance.ClearPool(damageTextPrefab.name);
         }
 
-        private void Update()
+        private void UpdateAllUI()
         {
-            UpdateComboUI();
+            comboTimeoutBar.CurrentValue = comboSystem.ComboStartValue;
+            comboTimeoutBar.MaxValue = comboSystem.ComboStartValue;
+            
             UpdateLevelUI();
             UpdateHealthUI();
         }
 
         #region Combo UI
-
-        private void ComboUISetup()
+        private void UpdateComboTimeBar(float currentTime)
         {
-            comboTimeoutBar.CurrentValue = comboSystem.ComboStartValue;
-            comboTimeoutBar.MaxValue = comboSystem.ComboStartValue;
-        }
-
-        private void UpdateComboUI()
-        {
-            if (!comboTimeoutBar && !comboUI) return;
+            if (!comboTimeoutBar || !comboUI) return;
             comboUI.SetActive(comboSystem.ComboActive);
-            comboTimeoutBar.CurrentValue = comboSystem.CurrentComboTime;
+            comboTimeoutBar.CurrentValue = currentTime;
         }
 
         private void UpdateComboScoreText(float streak)
         {
-            comboUI.SetActive(true);
+            comboUI.SetActive(comboSystem.ComboActive);
             if (comboStreakText != null)
                 comboStreakText.text = $"{streak} STRIKE!";
 

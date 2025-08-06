@@ -42,6 +42,8 @@ namespace Characters.ComboSystem
         [SerializeField]
         private List<ComboMilestoneEvent> comboMilestoneEvents = new();
         public event Action<float> OnComboUpdated;
+        public event Action<float> OnComboTimeUpdated;
+
         public bool ComboActive => _IsCombo;
         public float CurrentComboTime => _currentTime;
         public float ComboStartValue => _comboTimeStart;
@@ -103,6 +105,9 @@ namespace Characters.ComboSystem
             _IsCombo = false;
             _comboStreak = 0;
             _currentTime = 0;
+            
+            OnComboTimeUpdated?.Invoke(_currentTime);
+            OnComboUpdated?.Invoke(_comboStreak); 
         }
 
         #endregion
@@ -115,8 +120,12 @@ namespace Characters.ComboSystem
             {
                 _currentDecayRate = comboToDecayRate.Evaluate(_comboStreak);
                 _currentTime -= _currentDecayRate * Time.deltaTime;
+                _currentTime = Mathf.Max(_currentTime, 0);
+
+                OnComboTimeUpdated?.Invoke(_currentTime);
             }
         }
+
         
         /// <summary>
         /// Checks and triggers combo milestone events if conditions are met.
