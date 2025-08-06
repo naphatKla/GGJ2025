@@ -46,8 +46,15 @@ namespace Characters.UIDisplay
         
         private void Start()
         {
-            ComboUISetup();
+            SetupFirstTime();
+            
             comboSystem.OnComboUpdated += UpdateComboScoreText;
+            comboSystem.OnComboTimeUpdated += UpdateComboTimeBar;
+
+            levelSystem.OnLevelUpdate += UpdateLevelUI;
+
+            healthSystem.OnHealthChange += UpdateHealthUI;
+
             combatSystem.OnDealDamage += UpdateDamageText;
             PoolingManager.Instance.Create<TextMeshProUGUI>(damageTextPrefab.name, PoolingGroupName.UI, CreateDamageText);
         }
@@ -55,34 +62,37 @@ namespace Characters.UIDisplay
         private void OnDestroy()
         {
             comboSystem.OnComboUpdated -= UpdateComboScoreText;
+            comboSystem.OnComboTimeUpdated -= UpdateComboTimeBar;
+
+            levelSystem.OnLevelUpdate -= UpdateLevelUI;
+            
+            healthSystem.OnHealthChange -= UpdateHealthUI;
+            
             combatSystem.OnDealDamage -= UpdateDamageText;
             PoolingManager.Instance.ClearPool(damageTextPrefab.name);
         }
 
-        private void Update()
+        private void SetupFirstTime()
         {
-            UpdateComboUI();
+            comboTimeoutBar.CurrentValue = comboSystem.ComboStartValue;
+            comboTimeoutBar.MaxValue = comboSystem.ComboStartValue;
+            
             UpdateLevelUI();
             UpdateHealthUI();
         }
 
         #region Combo UI
-        private void ComboUISetup()
-        {
-            comboTimeoutBar.CurrentValue = comboSystem.ComboStartValue;
-            comboTimeoutBar.MaxValue = comboSystem.ComboStartValue;
-        }
         
-        private void UpdateComboUI()
+        private void UpdateComboTimeBar(float currentTime)
         {
-            if (!comboTimeoutBar && !comboUI) return;
+            if (!comboTimeoutBar || !comboUI) return;
             comboUI.SetActive(comboSystem.ComboActive);
-            comboTimeoutBar.CurrentValue = comboSystem.CurrentComboTime;
+            comboTimeoutBar.CurrentValue = currentTime;
         }
         
         private void UpdateComboScoreText(float streak)
         {
-            comboUI.SetActive(true);
+            comboUI.SetActive(comboSystem.ComboActive);
             if (comboStreakText != null)
                 comboStreakText.text = $"{streak} STRIKE!";
 

@@ -13,6 +13,7 @@ namespace Characters.LevelSystems
         [ShowInInspector, ReadOnly] public float ExpProgress01 => Mathf.Clamp01(Exp / _currentExpToLevelUp);
 
         public event Action<int> OnLevelUp;
+        public event Action OnLevelUpdate;
 
         private float _baseExp;
         private float _multiplier;
@@ -31,6 +32,7 @@ namespace Characters.LevelSystems
         {
             Exp += amount;
             Exp = Mathf.CeilToInt(Exp);
+            OnLevelUpdate?.Invoke();
 
             while (Exp >= _currentExpToLevelUp)
             {
