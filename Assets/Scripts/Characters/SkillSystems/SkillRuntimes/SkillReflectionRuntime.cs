@@ -135,7 +135,7 @@ namespace Characters.SkillSystems.SkillRuntimes
         #endregion
         
         // Pool life cycle
-        public ReflectionSkillObject CreatePoolInstance()
+        private ReflectionSkillObject CreatePoolInstance()
         {
             ReflectionSkillObject skillObj = Instantiate(skillData.ReflectionSkillObject);
             skillObj.gameObject.SetActive(false);
