@@ -20,9 +20,9 @@ namespace Characters.SkillSystems
 
     public class SkillSystem : MonoBehaviour
     {
-        private event Action<float, int> OnSkillCooldownUpdate;
-        private event Action<int> OnSkillCooldownReset;
-        private event Action<BaseSkillDataSo, int> OnNewSkillAssign;
+        public event Action<float, int> OnSkillCooldownUpdate;
+        public event Action<int> OnSkillCooldownReset;
+        public event Action<BaseSkillDataSo, int> OnNewSkillAssign;
 
         protected BaseSkillDataSo primarySkillData;
         protected BaseSkillDataSo secondarySkillData;
