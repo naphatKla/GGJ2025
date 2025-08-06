@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace Characters.SkillSystems.SkillRuntimes
 {
-    public class SkSkillHarmonyOfLight : BaseSkillRuntime<SkillHarmonyOfLightDataSo>
+    public class SkillHarmonyOfLight : BaseSkillRuntime<SkillHarmonyOfLightDataSo>
     {
         private List<HarmonyOfLightSkillObject> _skillObjects = new();
         private Vector3 startPos;
@@ -63,7 +63,7 @@ namespace Characters.SkillSystems.SkillRuntimes
                     obj.transform.RotateAround(center, Vector3.forward, -spinSpeed * delta); // clockwise
                 }
 
-                await UniTask.Yield();
+                await UniTask.Yield(this.destroyCancellationToken);
             }
         }
 
