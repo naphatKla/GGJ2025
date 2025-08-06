@@ -13,6 +13,7 @@ namespace Characters.SkillSystems.SkillRuntimes
     {
         private List<HarmonyOfLightSkillObject> _skillObjects = new();
         private Vector3 startPos;
+        private float startYScale;
 
         public override void AssignSkillData(BaseSkillDataSo skillData, BaseController owner)
         {
@@ -26,12 +27,13 @@ namespace Characters.SkillSystems.SkillRuntimes
         {
             _skillObjects.Clear();
 
-            float angleStep = 360f / skillData.LightAmount;
+            float angleStep = 360f / (skillData.LightAmount * 2);
 
             for (int i = 0; i < skillData.LightAmount; i++)
             {
                 var skillInstance = PoolingManager.Instance.Get<HarmonyOfLightSkillObject>(skillData.LightPrefab.name);
                 skillInstance.transform.position = owner.transform.position;
+                startYScale = skillInstance.transform.localScale.y;
                 
                 float angle = angleStep * i;
                 skillInstance.transform.rotation = Quaternion.Euler(0f, 0f, angle);
@@ -47,7 +49,7 @@ namespace Characters.SkillSystems.SkillRuntimes
         {
             float elapsed = 0f;
             float spinSpeed = 360f * skillData.SpinRatePerSec;
-
+            
             while (elapsed < skillData.SpinDuration)
             {
                 if (cancelToken.IsCancellationRequested) break;
