@@ -13,8 +13,8 @@ namespace GameControl.GameState
 
         public void Enter(GameStateController controller)
         {
-            Time.timeScale = 0.001f;
             UIManager.Instance.CloseAllPanels();
+            Time.timeScale = 0.001f;
             UIManager.Instance.OpenPanel(UIPanelType.MapResult);
         }
 
