@@ -36,18 +36,27 @@ namespace Characters.SkillSystems.SkillRuntimes
             if (!closetTarget) return;
             owner.DamageOnTouch.EnableDamage(owner.gameObject, this, 3);
             var speedMultiplier = 1f;
-            
+            var radius = skillData.StartLightStepRadius;
+
             for (int i = 0; i < skillData.TargetAmount; i++)
             {
                 var randomCurveIndex = Random.Range(0, skillData.RandomCurve.Count);
-                var randomCurve = skillData.RandomCurve.Count > 0? skillData.RandomCurve[randomCurveIndex] : null;
-                
-                if (Time.time - startTime > skillData.IncreaseSpeedAfterDurationPass)
-                    speedMultiplier = Mathf.Clamp(speedMultiplier + 0.5f, 1, skillData.IncreaseSpeedMultiplier);
-                
-                await owner.MovementSystem.TryMoveToPositionBySpeed(closetTarget.position, skillData.LightStepSpeed * speedMultiplier, moveCurve: randomCurve).SetEase(Ease.InSine)
+                var randomCurve = skillData.RandomCurve.Count > 0 ? skillData.RandomCurve[randomCurveIndex] : null;
+
+                speedMultiplier = Mathf.Clamp(speedMultiplier + skillData.NormalPhaseSpeedStepUp, 1,
+                    skillData.NormalPhaseMaxSpeedMultiplier);
+
+                // god speed phase
+                if (Time.time - startTime > skillData.GodSpeedPhaseStartTime)
+                    speedMultiplier = Mathf.Clamp(speedMultiplier + skillData.GodSpeedPhaseSpeedStepUp, 1,
+                        skillData.GodSpeedPhaseMaxSpeedMultiplier);
+
+                await owner.MovementSystem.TryMoveToPositionBySpeed(closetTarget.position,
+                        skillData.LightStepSpeed * speedMultiplier, moveCurve: randomCurve).SetEase(Ease.InSine)
                     .WithCancellation(cancelToken);
-                closetTarget = GetClosestNonRepeatedTarget(skillData.StartLightStepRadius);
+
+                closetTarget = GetClosestNonRepeatedTarget(radius);
+                radius = skillData.LightStepRadius;
                 if (!closetTarget) break;
             }
         }
