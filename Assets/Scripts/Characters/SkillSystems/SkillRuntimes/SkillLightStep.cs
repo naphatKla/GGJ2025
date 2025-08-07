@@ -12,19 +12,34 @@ namespace Characters.SkillSystems.SkillRuntimes
 {
     public class SkillLightStep : BaseSkillRuntime<SkillLightStepDataSo>, ISpecialConditionSkill
     {
-        public bool IsWaitForCondition { get; private set; }
+        public bool IsWaitForCondition => _isWaitForCounterAttack || _isWaitForMovementEnd;
+        private bool _isWaitForCounterAttack;
+        private bool _isWaitForMovementEnd;
         private float startTime;
         private Transform _lastTarget;
 
+        public override void UpdateCoolDown(float deltaTime)
+        {
+            if (IsWaitForCondition && IsPerforming) return;
+            base.UpdateCoolDown(deltaTime);
+        }
+
         protected override void OnSkillStart()
         {
-            IsWaitForCondition = true;
+            _isWaitForCounterAttack = true;
+            _isWaitForMovementEnd = true;
             owner.CombatSystem.OnCounterAttack += TriggerCondition;
+            SetCurrentCooldown(0);
         }
 
         protected override async UniTask OnSkillUpdate(CancellationToken cancelToken)
         {
-            await UniTask.WaitUntil(() => !IsWaitForCondition, cancellationToken: cancelToken);
+            await UniTask.WaitUntil(() => !_isWaitForCounterAttack, cancellationToken: cancelToken);
+            await UniTask.WaitUntil(() => !owner.MovementSystem.IsMoveTweenActive, cancellationToken: cancelToken);
+
+            _isWaitForMovementEnd = false;
+            SetCurrentCooldown(skillData.Cooldown);
+
             if (cancelToken.IsCancellationRequested) return;
             owner.SkillSystem.SetCanUsePrimary(false);
             owner.SkillSystem.SetCanUseSecondary(false);
@@ -37,6 +52,7 @@ namespace Characters.SkillSystems.SkillRuntimes
             owner.DamageOnTouch.EnableDamage(owner.gameObject, this, 3);
             var speedMultiplier = 1f;
             var radius = skillData.StartLightStepRadius;
+            owner.MovementSystem.StopTween();
 
             for (int i = 0; i < skillData.TargetAmount; i++)
             {
@@ -80,9 +96,11 @@ namespace Characters.SkillSystems.SkillRuntimes
             StatusEffectManager.RemoveEffectAt(owner.gameObject, StatusEffectName.Iframe);
             owner.TryStopFeedback(FeedbackName.LightStepUse);
             owner.TryPlayFeedback(FeedbackName.LightStepSuccess);
+            _isWaitForCounterAttack = false;
+            _isWaitForMovementEnd = false;
         }
 
-        private void TriggerCondition() => IsWaitForCondition = false;
+        private void TriggerCondition() => _isWaitForCounterAttack = false;
 
         private Transform GetClosestNonRepeatedTarget(float radius)
         {

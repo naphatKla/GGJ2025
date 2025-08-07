@@ -93,6 +93,8 @@ namespace Characters.MovementSystems
 
         public Vector2 CurrentDirection => currentDirection;
 
+        public bool IsMoveTweenActive => _moveOverTimeTween.IsActive();
+
         #endregion
 
         #region Unity Methods
@@ -226,6 +228,11 @@ namespace Characters.MovementSystems
         {
             _moveOverTimeTween?.Kill();
             _canMove = false;
+        }
+
+        public virtual void StopTween()
+        {
+            _moveOverTimeTween?.Kill();
         }
         
         /// <summary>
