@@ -40,12 +40,8 @@ MonoBehaviour:
   statusEffectOnSkillStart: []
   startLightStepRadius: 20
   lightStepRadius: 15
-  targetAmount: 20
-  lifeStealPercentChance: 10
-  lifeStealEffective: 10
   lightStepSpeed: 36
-  increaseSpeedAfterDurationPass: 0.5
-  increaseSpeedMultiplier: 3
+  targetAmount: 20
   randomCurve:
   - serializedVersion: 2
     m_Curve:
@@ -247,88 +243,13 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  - serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 20
-      outSlope: 20
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 0.25
-      value: 5
-      inSlope: 10
-      outSlope: 10
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 0.45
-      value: 5
-      inSlope: -Infinity
-      outSlope: -Infinity
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 1
-      value: 0
-      inSlope: -9.090909
-      outSlope: -9.090909
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  - serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: -20
-      outSlope: -20
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 0.25
-      value: -5
-      inSlope: -10
-      outSlope: -10
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 0.45
-      value: -5
-      inSlope: -Infinity
-      outSlope: -Infinity
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 1
-      value: 0
-      inSlope: 9.090909
-      outSlope: 9.090909
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
+  lifeStealPercentChance: 10
+  lifeStealEffective: 10
+  normalPhaseSpeedStepUp: 0.2
+  normalPhaseMaxSpeedMultiplier: 2
+  godSpeedPhaseStartTime: 3
+  godSpeedPhaseSpeedStepUp: 1
+  godSpeedPhaseMaxSpeedMultiplier: 6
   effectWhileLightStep:
   - effectData: {fileID: 11400000, guid: aa4dff95f38494c4e876f8f95511ecf0, type: 2}
     isOverrideDuration: 1
