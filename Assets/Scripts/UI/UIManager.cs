@@ -1,8 +1,8 @@
-using System;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using GameControl.Controller;
 using GameControl.GameState;
+using MoreMountains.Feedbacks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -103,6 +103,31 @@ public class UIManager : MonoBehaviour
             panelDict[previous].SetActive(true);
         }
     }
+    
+    public void CloseSpecificPanel(UIPanelType type)
+    {
+        if (!panelDict.ContainsKey(type)) return;
+        if (!panelStack.Contains(type)) return;
+        
+        if (panelStack.Peek() == type)
+        {
+            ClosePanel();
+            return;
+        }
+
+        var tempStack = new Stack<UIPanelType>();
+        while (panelStack.Count > 0)
+        {
+            var current = panelStack.Pop();
+            if (current == type)
+            {
+                panelDict[current].SetActive(false);
+                break;
+            }
+            tempStack.Push(current);
+        }
+        while (tempStack.Count > 0) panelStack.Push(tempStack.Pop());
+    }
 
 
     public void CloseAllPanels()
@@ -113,32 +138,31 @@ public class UIManager : MonoBehaviour
             panelDict[top].SetActive(false);
         }
 
+        MMTimeScaleEvent.Trigger(MMTimeScaleMethods.Reset, 1, -1, false, 0f, false);
         Time.timeScale = 1;
     }
     
     public async void BackMenu()
     {
-        ClearGameController();
         await SceneManager.LoadSceneAsync(menuScene).ToUniTask();
         await UniTask.Yield();
     }
-    
-    public void ClearGameController()
-    {
-        /*if (GameController.Instance == null) return;
-        GameController.Instance.nextStageIndex = 0;
-        GameController.Instance.selectedMapIndex = 0;*/
-    }
-    
+
     public void OpenPausePanel()
     {
-        if (Time.timeScale > 0.002f && Time.timeScale < 1) return;
-        OpenPanel(UIPanelType.Pause);
-        
-        if (GameStateController.Instance.CurrentState is SummaryState) 
-            Time.timeScale = 0.001f;
-        else 
-            Time.timeScale = Time.timeScale <= 0.001f ? 1f : 0.001f;
+        if (!_isPaused)
+        {
+            MMTimeScaleEvent.Trigger(MMTimeScaleMethods.For, 0, -1, true, 10f, true);
+            OpenPanel(UIPanelType.Pause);
+            _isPaused = true;
+        }
+        else
+        {
+            if (GameStateController.Instance.CurrentState is not SummaryState) 
+                MMTimeScaleEvent.Trigger(MMTimeScaleMethods.Reset, 1, -1, false, 0f, false);
+            CloseSpecificPanel(UIPanelType.Pause);
+            _isPaused = false;
+        }
     }
     
     public void OpenSaveGamePanel()

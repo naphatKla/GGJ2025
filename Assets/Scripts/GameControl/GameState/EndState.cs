@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using GameControl;
 using GameControl.Controller;
 using GameControl.Interface;
+using MoreMountains.Feedbacks;
 using UnityEngine;
 
 namespace GameControl.GameState
@@ -20,7 +21,6 @@ namespace GameControl.GameState
             GameTimer.Instance.StopTimer();
             GameTimer.Instance.ClearAllTriggers();
             WaitBeforeSummary().Forget();
-            controller.LerpTimeScaleAsync(0.1f, 0.7f).Forget();
         }
 
         public void Update(GameStateController controller)
