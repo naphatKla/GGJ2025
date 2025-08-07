@@ -40,6 +40,8 @@ namespace Characters.SkillSystems
 
         protected BaseController owner;
         protected bool canUseSkills = true;
+        protected bool canUsePrimary = true;
+        protected bool canUseSecondary = true;
 
         public virtual void AssignData(BaseController owner, BaseSkillDataSo primary, BaseSkillDataSo secondary,
             List<BaseSkillDataSo> autoList, int autoSlot)
@@ -212,6 +214,7 @@ namespace Characters.SkillSystems
             {
                 if (runtime is ISpecialConditionSkill { IsWaitForCondition: true })
                 {
+                    runtime.CancelSkill();
                     Destroy(runtime);
                     if (runtime is IAutoSkillTriggerSource autoSkillTriggerSource)
                         autoSkillTriggerSource.OnTriggerAutoSkill -= OnTriggerAutoSkill;
@@ -259,9 +262,11 @@ namespace Characters.SkillSystems
             switch (type)
             {
                 case SkillType.PrimarySkill:
+                    if (!canUsePrimary) return;
                     GetSkillRuntimeOrDefault(primarySkillData)?.PerformSkill();
                     break;
                 case SkillType.SecondarySkill:
+                    if (!canUseSecondary) return;
                     GetSkillRuntimeOrDefault(secondarySkillData)?.PerformSkill();
                     break;
                 case SkillType.AutoSkill:
@@ -347,15 +352,19 @@ namespace Characters.SkillSystems
         }
 
         public void SetCanUseSkills(bool enable) => canUseSkills = enable;
+        public void SetCanUsePrimary(bool enable) => canUsePrimary = enable;
+        public void SetCanUseSecondary(bool enable) => canUseSecondary = enable;
 
         public virtual void ResetSkillSystem()
         {
             CancelAllSkill();
             ResetToDefaultSkill();
             CleanupUnusedRuntimesAfterReset();
+            SetCanUsePrimary(true);
+            SetCanUseSecondary(true);
+            SetCanUseSkills(true);
         }
-
-
+        
         private void OnEnable()
         {
             FixedUpdateManager.Instance.Register(this);

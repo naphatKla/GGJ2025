@@ -187,6 +187,22 @@ namespace Characters.MovementSystems
             return _moveOverTimeTween;
         }
         
+        public virtual Tween TryMoveToPositionBySpeed(Vector2 position, float speed, AnimationCurve easeCurve = null, AnimationCurve moveCurve = null)
+        {
+            if (!_canMove || speed <= 0f) return null;
+            float distance = Vector2.Distance(transform.position, position);
+            float duration = distance / speed;
+            return TryMoveToPositionOverTime(position, duration, easeCurve, moveCurve);
+        }
+
+        public virtual Tween TryMoveToTargetBySpeed(Transform target, float speed, AnimationCurve easeCurve = null, AnimationCurve moveCurve = null)
+        {
+            if (!_canMove || speed <= 0f || target == null) return null;
+            float distance = Vector2.Distance(transform.position, target.position);
+            float duration = distance / speed;
+            return TryMoveToTargetOverTime(target, duration, easeCurve, moveCurve);
+        }
+        
         public virtual void StopFromStun(bool isStun)
         {
             _isStopFromStun = isStun;
