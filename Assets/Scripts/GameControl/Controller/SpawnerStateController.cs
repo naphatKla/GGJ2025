@@ -94,6 +94,10 @@ namespace GameControl.Controller
             _enemyPatternController.SetEnemyList(_enemySpawnerController.GetEnemyList(), _enemySpawnerController.GetEnemyOption());
             _enemyPatternController.AddRandomPattern();
             
+            //Trigger time will decrease if enable
+            GameTimer.Instance.ScheduleLoopingTrigger(_currentMapData.patternDecreaseInterval, GameTimer.Instance.StartTimerNumber, 
+                () => _enemyPatternController.UpdateTriggerTime());
+            
             //Every 3 minute trigger pattern
             GameTimer.Instance.ScheduleLoopingTrigger(
                 180,
@@ -104,7 +108,7 @@ namespace GameControl.Controller
                     {
                         _enemyPatternController.AddRandomPattern();
                         await UniTask.Delay(100);
-                        _enemyPatternController.TriggerAllPatternsIn3Minutes().Forget();
+                        _enemyPatternController.TriggerAllPatterns().Forget();
                     });
                 });
             
@@ -165,7 +169,7 @@ namespace GameControl.Controller
         [Button("Trigger Pattern" , ButtonSizes.Large), GUIColor(1, 1, 0)]
         private void TriggerPattern()
         {
-            _enemyPatternController.TriggerAllPatternsIn3Minutes().Forget();
+            _enemyPatternController.TriggerAllPatterns().Forget();
         }
         
         [Button("Add Pattern" , ButtonSizes.Large), GUIColor(0, 1, 0)]
