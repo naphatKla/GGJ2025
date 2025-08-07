@@ -16,7 +16,6 @@ namespace Characters.SkillSystems.SkillRuntimes
         private bool _isWaitForCounterAttack;
         private bool _isWaitForMovementEnd;
         private float startTime;
-        private Transform _lastTarget;
 
         public override void UpdateCoolDown(float deltaTime)
         {
@@ -47,7 +46,7 @@ namespace Characters.SkillSystems.SkillRuntimes
             startTime = Time.time;
             StatusEffectManager.ApplyEffectTo(owner.gameObject, skillData.EffectWhileLightStep);
 
-            Transform closetTarget = GetClosestNonRepeatedTarget(skillData.StartLightStepRadius);
+            Transform closetTarget = GetFurthestNonRepeatedTarget(skillData.StartLightStepRadius);
             if (!closetTarget) return;
             owner.DamageOnTouch.EnableDamage(owner.gameObject, this, 3);
             var speedMultiplier = 1f;
@@ -71,7 +70,7 @@ namespace Characters.SkillSystems.SkillRuntimes
                         skillData.LightStepSpeed * speedMultiplier, moveCurve: randomCurve).SetEase(Ease.InSine)
                     .WithCancellation(cancelToken);
 
-                closetTarget = GetClosestNonRepeatedTarget(radius);
+                closetTarget = GetFurthestNonRepeatedTarget(radius);
                 radius = skillData.LightStepRadius;
                 if (!closetTarget) break;
             }
@@ -102,7 +101,7 @@ namespace Characters.SkillSystems.SkillRuntimes
 
         private void TriggerCondition() => _isWaitForCounterAttack = false;
 
-        private Transform GetClosestNonRepeatedTarget(float radius)
+        private Transform GetFurthestNonRepeatedTarget(float radius)
         {
             LayerMask damageLayer = CharacterGlobalSettings.Instance.EnemyLayerDictionary[owner.tag];
             Collider2D[] targetsInRange = Physics2D.OverlapCircleAll(owner.transform.position, radius, damageLayer);
@@ -116,7 +115,6 @@ namespace Characters.SkillSystems.SkillRuntimes
                 if (!collider || collider.transform == owner.transform) continue;
 
                 Transform candidate = collider.transform;
-                if (candidate == _lastTarget) continue;
 
                 float sqrDist = ((Vector2)candidate.position - origin).sqrMagnitude;
                 if (sqrDist > maxSqrDistance)
@@ -125,10 +123,7 @@ namespace Characters.SkillSystems.SkillRuntimes
                     furthest = candidate;
                 }
             }
-
-            if (furthest != null)
-                _lastTarget = furthest;
-
+            
             return furthest;
         }
     }
