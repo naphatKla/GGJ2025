@@ -10,6 +10,7 @@ using DG.Tweening;
 using GameControl.Controller;
 using Manager;
 using MoreMountains.Feedbacks;
+using MoreMountains.Tools;
 using PixelUI;
 using Sirenix.OdinInspector;
 using TMPro;
@@ -275,6 +276,8 @@ namespace Characters.UIDisplay
                 var skill = skillQueue.Dequeue();
                 CreateSkillCard(skill);
             }
+            
+            MMTimeScaleEvent.Trigger(MMTimeScaleMethods.For, 0, -1, true, 6.2f, true);
         }
 
         private void ClearSkillCards()
@@ -299,9 +302,9 @@ namespace Characters.UIDisplay
         private void OnSkillSelected(BaseSkillDataSo skill)
         {
             UIManager.Instance.CloseAllPanels();
+            MMTimeScaleEvent.Trigger(MMTimeScaleMethods.Reset, 1f, 0f, true, 0f, false);
             skillUpgradeController.SelectSkill(skill);
             ClearSkillCards();
-
             ShowNextSkillPopup();
         }
 
