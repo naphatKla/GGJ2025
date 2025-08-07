@@ -274,9 +274,9 @@ namespace Characters.UIDisplay
             for (int i = 0; i < skillsToShow; i++)
             {
                 var skill = skillQueue.Dequeue();
-                CreateSkillCard(skill);
+                CreateSkillCard(skill).Forget();
             }
-            
+            PanelCardFeedback(solfUpgradePanel.transform);
             MMTimeScaleEvent.Trigger(MMTimeScaleMethods.For, 0, -1, true, 6.2f, true);
         }
 
@@ -288,15 +288,41 @@ namespace Characters.UIDisplay
             }
         }
 
-        private void CreateSkillCard(BaseSkillDataSo skill)
+        private async UniTask CreateSkillCard(BaseSkillDataSo skill)
         {
             var skillcard = Instantiate(solfUpgradeModel.gameObject, solfUpgradePanel.transform);
             var modal = skillcard.GetComponent<SolfUpgradeModel>();
             modal.UpdateUIModal(skill);
+            await SkillCardFeedback(skillcard.transform);
+            
             modal.SelectButton.onClick.AddListener(() =>
             {
                 OnSkillSelected(skill);
             });
+        }
+
+        private void PanelCardFeedback(Transform tf)
+        {
+            // === Sequence ===
+            tf.localPosition = new Vector2(1920, 0);
+            var seq = DOTween.Sequence();
+            seq.Append(tf.DOLocalMove(new Vector3(0,0,0), 0.7f).SetEase(Ease.OutBack)).
+                Join(tf.DOShakeRotation(0.7f, 0f, vibrato: 10, randomness: 90).SetEase(Ease.OutBack))
+                .Append(tf.DOScale(1.5f, 0.4f).SetEase(Ease.InOutSine))
+                .Append(tf.DOScale(1f, 0.2f))
+                .Append(tf.DOShakePosition(0.2f, 10f, vibrato: 10, randomness: 40))
+                .SetUpdate(true);
+        }
+        
+        private async UniTask SkillCardFeedback(Transform tf)
+        {
+            await tf.DOLocalRotate(
+                    new Vector3(0, 720f, 0),
+                    0.7f,
+                    RotateMode.FastBeyond360)
+                .SetEase(Ease.OutCubic)
+                .SetUpdate(true)
+                .AsyncWaitForCompletion();
         }
 
         private void OnSkillSelected(BaseSkillDataSo skill)
