@@ -23,37 +23,57 @@ MonoBehaviour:
     enemyPointCanGrowth: 0
     enemyPointGrowthRate: 12.5
     chance: 100
-    enemyChanceCanGrowth: 0
-    enemyChanceGrowthRate: 10
+    enemyChanceCanGrowth: 1
+    enemyChanceGrowthRate: 0
     useCustomInterval: 0
     customInterval: 0.5
-  - id: Enemy_Big
+  - id: Enemy_Tank
     enemyController: {fileID: 1371981663885322251, guid: c825ab4cef105ab40aa986fd07615367, type: 3}
-    spawnPoint: 2
+    spawnPoint: 1.57
     enemyPointCanGrowth: 0
     enemyPointGrowthRate: 12.5
-    chance: 50
-    enemyChanceCanGrowth: 0
-    enemyChanceGrowthRate: 10
+    chance: 1
+    enemyChanceCanGrowth: 1
+    enemyChanceGrowthRate: 1.25
     useCustomInterval: 0
     customInterval: 2
   PatternOptions:
   - pattern: {fileID: 11400000, guid: 1152772dc8e0f114e824dddd694be66b, type: 2}
     delayBetweenEnemy: 0
     delayBetweenRows: 1
-    patternPoint: 10
+    patternPoint: 40
   - pattern: {fileID: 11400000, guid: 098e856c71484744d95d27a8654a8433, type: 2}
     delayBetweenEnemy: 0
     delayBetweenRows: 1
-    patternPoint: 10
+    patternPoint: 20
   - pattern: {fileID: 11400000, guid: 288500a21d61a4540b39a6463d3f4af9, type: 2}
     delayBetweenEnemy: 0
     delayBetweenRows: 1
-    patternPoint: 10
+    patternPoint: 40
   - pattern: {fileID: 11400000, guid: 2bc8bc7d72e130d4382d64794bbc160c, type: 2}
     delayBetweenEnemy: 0.1
     delayBetweenRows: 1
-    patternPoint: 10
+    patternPoint: 50
+  - pattern: {fileID: 11400000, guid: 24b5084f31b90d44090398f20fd2166b, type: 2}
+    delayBetweenEnemy: 0
+    delayBetweenRows: 1
+    patternPoint: 50
+  - pattern: {fileID: 11400000, guid: 3c5159e5638c81a4b9a6d6e9d8853011, type: 2}
+    delayBetweenEnemy: 0
+    delayBetweenRows: 1
+    patternPoint: 40
+  - pattern: {fileID: 11400000, guid: 1e63f424b276e28409899624010d5aaf, type: 2}
+    delayBetweenEnemy: 0
+    delayBetweenRows: 1
+    patternPoint: 20
+  - pattern: {fileID: 11400000, guid: 22206c817f2991344955d785a5ad4457, type: 2}
+    delayBetweenEnemy: 0
+    delayBetweenRows: 1
+    patternPoint: 40
+  - pattern: {fileID: 11400000, guid: 40fb65c3276e22343affa5a5a2d61545, type: 2}
+    delayBetweenEnemy: 0
+    delayBetweenRows: 1
+    patternPoint: 100
   ItemOptions:
   - id: Normal_Exp
     itemObj: {fileID: 8589778046636973207, guid: eb2f8352aac61d446a4ef94d6303afbf, type: 3}
@@ -64,6 +84,6 @@ MonoBehaviour:
   defaultItemSpawnTimer: 1
   PatternCenter: {x: 0, y: 0}
   defaultEnemySpawnTimer: 0.5
-  startEnemyPoint: 100
+  startEnemyPoint: 30
   maxEnemyPoint: 500
-  increaseRateEnemyPoint: 20
+  increaseRateEnemyPoint: 14.5
