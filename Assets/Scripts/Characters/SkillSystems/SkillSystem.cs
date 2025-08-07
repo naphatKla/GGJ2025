@@ -141,6 +141,8 @@ namespace Characters.SkillSystems
         {
             if (!owner || !newSkillData) return;
 
+            BaseSkillRuntime runtime = null;
+
             switch (type)
             {
                 case SkillType.PrimarySkill:
@@ -148,23 +150,52 @@ namespace Characters.SkillSystems
                     if (primarySkillData != null && primarySkillData != newSkillData)
                         RemoveUnusedSkillRuntime(primarySkillData);
                     primarySkillData = newSkillData;
+                    
+                    InstantiateSkillRuntime(primarySkillData);
+                    runtime = GetSkillRuntimeOrDefault(newSkillData);
+
+                    if (runtime is IAutoSkillTriggerSource primaryTriggerSource)
+                    {
+                        primaryTriggerSource.OnTriggerAutoSkill -= OnTriggerAutoSkill;
+                        primaryTriggerSource.OnTriggerAutoSkill += OnTriggerAutoSkill;
+                    }
+                    else
+                    {
+                        Debug.LogError("Primary skill need IAutoSkillTriggerSource to trigger auto skill");
+                        throw new NotImplementedException();
+                    }
+
                     break;
                 case SkillType.SecondarySkill:
                     if (primarySkillData == newSkillData || _autoSkillDatas.Contains(newSkillData)) return;
                     if (secondarySkillData != null && secondarySkillData != newSkillData)
                         RemoveUnusedSkillRuntime(secondarySkillData);
                     secondarySkillData = newSkillData;
+                    
+                    InstantiateSkillRuntime(secondarySkillData);
+                    runtime = GetSkillRuntimeOrDefault(newSkillData);
+
+                    if (runtime is IAutoSkillTriggerSource secondarySkillTriggerSource)
+                    {
+                        secondarySkillTriggerSource.OnTriggerAutoSkill -= OnTriggerAutoSkill;
+                        secondarySkillTriggerSource.OnTriggerAutoSkill += OnTriggerAutoSkill;
+                    }
+                    else
+                    {
+                        Debug.LogError("Secondary skill need IAutoSkillTriggerSource to trigger auto skill");
+                        throw new NotImplementedException();
+                    }
                     break;
                 case SkillType.AutoSkill:
                     if (primarySkillData == newSkillData || secondarySkillData == newSkillData ||
                         _autoSkillDatas.Contains(newSkillData)) return;
                     _autoSkillDatas.Add(newSkillData);
+                    InstantiateSkillRuntime(newSkillData);
+                    runtime = GetSkillRuntimeOrDefault(newSkillData);
                     break;
             }
 
-            InstantiateSkillRuntime(newSkillData);
-            var runtime = GetSkillRuntimeOrDefault(newSkillData);
-            runtime?.SetCurrentCooldown(0);
+            runtime.SetCurrentCooldown(0);
             int index = GetSkillIndex(newSkillData);
             OnNewSkillAssign?.Invoke(newSkillData, index);
         }
@@ -188,6 +219,8 @@ namespace Characters.SkillSystems
             else
             {
                 Destroy(runtime);
+                if (runtime is IAutoSkillTriggerSource autoSkillTriggerSource)
+                    autoSkillTriggerSource.OnTriggerAutoSkill -= OnTriggerAutoSkill;
                 _skillRuntimeDictionary.Remove(oldSkill);
             }
         }
@@ -201,6 +234,8 @@ namespace Characters.SkillSystems
                 if (runtime == null || !runtime.IsPerforming)
                 {
                     Destroy(runtime);
+                    if (runtime is IAutoSkillTriggerSource autoSkillTriggerSource)
+                        autoSkillTriggerSource.OnTriggerAutoSkill -= OnTriggerAutoSkill;
                     _skillRuntimeDictionary.Remove(skill);
                     _pendingRuntimeRemoval.RemoveAt(i);
                 }
@@ -220,7 +255,6 @@ namespace Characters.SkillSystems
             {
                 case SkillType.PrimarySkill:
                     GetSkillRuntimeOrDefault(primarySkillData)?.PerformSkill();
-                    PerformSkill(SkillType.AutoSkill);
                     break;
                 case SkillType.SecondarySkill:
                     GetSkillRuntimeOrDefault(secondarySkillData)?.PerformSkill();
@@ -254,13 +288,18 @@ namespace Characters.SkillSystems
             }
         }
 
+        private void OnTriggerAutoSkill()
+        {
+            PerformSkill(SkillType.AutoSkill);
+        }
+
         public virtual void CancelAllSkill()
         {
             GetSkillRuntimeOrDefault(primarySkillData)?.CancelSkill();
             foreach (var data in _autoSkillDatas)
                 GetSkillRuntimeOrDefault(data)?.CancelSkill();
         }
-        
+
         private void CleanupUnusedRuntimesAfterReset()
         {
             var usedSkills = new HashSet<BaseSkillDataSo>
@@ -285,11 +324,13 @@ namespace Characters.SkillSystems
                 else
                 {
                     Destroy(runtime);
+                    if (runtime is IAutoSkillTriggerSource autoSkillTriggerSource)
+                        autoSkillTriggerSource.OnTriggerAutoSkill -= OnTriggerAutoSkill;
                     _skillRuntimeDictionary.Remove(data);
                 }
             }
         }
-        
+
         private void ResetToDefaultSkill()
         {
             if (!owner) return;

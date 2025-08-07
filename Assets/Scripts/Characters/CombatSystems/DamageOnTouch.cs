@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Manager;
 using Sirenix.OdinInspector;
+using Unity.VisualScripting;
 
 namespace Characters.CombatSystems
 {
@@ -41,6 +43,7 @@ namespace Characters.CombatSystems
         private readonly List<(GameObject, object)> _cooldownRemoveBuffer = new();
 
         private readonly Collider2D[] _overlapResults = new Collider2D[32];
+        public event Action OnHit;
 
         public GameObject Owner => _owner;
         public bool IsEnableDamage => _isEnableDamage;
@@ -178,6 +181,7 @@ namespace Characters.CombatSystems
                 CombatManager.ApplyDamageTo(target, _owner, hitPosition);
                 float cooldown = 1f / instance.HitPerSec;
                 _cooldownMap[key] = now + cooldown;
+                OnHit?.Invoke();
             }
         }
 

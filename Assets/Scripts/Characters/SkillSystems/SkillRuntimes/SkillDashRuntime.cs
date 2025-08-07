@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using Characters.Controllers;
 using Characters.FeedbackSystems;
 using Characters.SO.SkillDataSo;
 using Characters.StatusEffectSystems;
@@ -14,16 +15,25 @@ namespace Characters.SkillSystems.SkillRuntimes
     /// Executes a quick burst movement in the aimed direction using DOTween,
     /// while temporarily disabling movement input and respecting skill lifetime and cancellation.
     /// </summary>
-    public class SkillDashRuntime : BaseSkillRuntime<SkillDashDataSo>
+    public class SkillDashRuntime : BaseSkillRuntime<SkillDashDataSo>, IAutoSkillTriggerSource
     {
         private float _dashEffective;
+        public event Action OnTriggerAutoSkill;
         
         #region Methods
         
+        private void OnDashHit()
+        {
+           OnTriggerAutoSkill?.Invoke();
+        }
+
         protected override void OnSkillStart()
         {
             owner.TryPlayFeedback(FeedbackName.Dash);
             _dashEffective = 1f;
+            
+            owner.DamageOnTouch.OnHit -= OnDashHit;
+            owner.DamageOnTouch.OnHit += OnDashHit;
             owner.DamageOnTouch.EnableDamage(owner.gameObject, this, 1);
 
             if (!skillData.IsFlexibleDash) 
@@ -73,8 +83,14 @@ namespace Characters.SkillSystems.SkillRuntimes
         {
             effectsApplyOnStart = new List<StatusEffectDataPayload>(skillData.StatusEffectOnSkillStart);
             owner.DamageOnTouch.DisableDamage(this);
+            owner.DamageOnTouch.OnHit -= OnDashHit;
         }
 
+        private void OnDisable()
+        {
+            owner.DamageOnTouch.OnHit -= OnDashHit;
+        }
+        
         #endregion
     }
 }

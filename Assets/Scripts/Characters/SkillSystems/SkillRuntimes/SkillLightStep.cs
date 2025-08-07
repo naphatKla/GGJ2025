@@ -1,19 +1,25 @@
+using System.Threading;
+using Characters.SO.SkillDataSo;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 namespace Characters.SkillSystems.SkillRuntimes
 {
-    public class SkillLightStep : MonoBehaviour
+    public class SkillLightStep : BaseSkillRuntime<SkillLightStepDataSo>
     {
-        // Start is called before the first frame update
-        void Start()
+        protected override void OnSkillStart()
         {
-        
+          
         }
 
-        // Update is called once per frame
-        void Update()
+        protected override UniTask OnSkillUpdate(CancellationToken cancelToken)
         {
-        
+            return UniTask.CompletedTask;
+        }
+
+        protected override void OnSkillExit()
+        {
+          
         }
     }
 }

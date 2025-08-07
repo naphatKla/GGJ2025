@@ -10,10 +10,34 @@ using UnityEngine;
 
 namespace Characters.SkillSystems.SkillRuntimes
 {
-    public class SkillParryRuntime : BaseSkillRuntime<SkillParryDataSo>
+    public class SkillParryRuntime : BaseSkillRuntime<SkillParryDataSo>, IAutoSkillTriggerSource
     {
+        public event Action OnTriggerAutoSkill;
         private bool _isParryTrigger;
-        
+
+        private void OnParrySuccess()
+        {
+            OnTriggerAutoSkill?.Invoke();
+
+            owner.TryPlayFeedback(FeedbackName.ParrySuccess);
+            LayerMask damageLayer = CharacterGlobalSettings.Instance.EnemyLayerDictionary[owner.tag];
+            var targetsInRange =
+                Physics2D.OverlapCircleAll(owner.transform.position, skillData.ExplosionRadius, damageLayer);
+
+            foreach (var target in targetsInRange)
+            {
+                StatusEffectManager.ApplyEffectTo(target.gameObject, skillData.ExplosionEffectsToTarget);
+                Vector2 knockBackDirection = target.transform.position - owner.transform.position;
+                Vector2 knockBackDestination = (Vector2)target.transform.position +
+                                               (knockBackDirection.normalized * skillData.KnockBackDistance);
+
+                target.GetComponent<BaseMovementSystem>()
+                    .TryMoveToPositionOverTime(knockBackDestination, skillData.KnockBackDuration);
+                CombatManager.ApplyDamageTo(target.gameObject, owner.gameObject,
+                    target.ClosestPoint(owner.transform.position), skillData.ExplosionDamageMultiplier);
+            }
+        }
+
         protected override void OnSkillStart()
         {
             _isParryTrigger = false;
@@ -26,22 +50,9 @@ namespace Characters.SkillSystems.SkillRuntimes
         {
             await UniTask.WaitUntil(() => _isParryTrigger, cancellationToken: cancelToken)
                 .TimeoutWithoutException(TimeSpan.FromSeconds(skillData.ParryDuration));
-            
-            if (!_isParryTrigger) return;
-            owner.TryPlayFeedback(FeedbackName.ParrySuccess);
-            LayerMask damageLayer = CharacterGlobalSettings.Instance.EnemyLayerDictionary[owner.tag];
-            var targetsInRange = Physics2D.OverlapCircleAll(owner.transform.position, skillData.ExplosionRadius, damageLayer);
-            
-            foreach (var target in targetsInRange)
-            {
-                StatusEffectManager.ApplyEffectTo(target.gameObject, skillData.ExplosionEffectsToTarget);
-                Vector2 knockBackDirection = target.transform.position - owner.transform.position;
-                Vector2 knockBackDestination = (Vector2)target.transform.position + (knockBackDirection.normalized * skillData.KnockBackDistance);
 
-                target.GetComponent<BaseMovementSystem>()
-                    .TryMoveToPositionOverTime(knockBackDestination, skillData.KnockBackDuration);
-                CombatManager.ApplyDamageTo(target.gameObject, owner.gameObject, target.ClosestPoint(owner.transform.position)  , skillData.ExplosionDamageMultiplier);
-            }
+            if (!_isParryTrigger) return;
+            OnParrySuccess();
         }
 
         protected override void OnSkillExit()

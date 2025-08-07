@@ -12,6 +12,12 @@ using UnityEngine;
 
 namespace Characters.SkillSystems.SkillRuntimes
 {
+    // interface for skill which can trigger the another auto skill in skill system
+    public interface IAutoSkillTriggerSource
+    {
+        event Action OnTriggerAutoSkill;
+    }
+    
     public abstract class BaseSkillRuntime : MonoBehaviour
     {
         protected float cooldown;
