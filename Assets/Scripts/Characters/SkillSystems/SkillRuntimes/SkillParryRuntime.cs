@@ -34,7 +34,7 @@ namespace Characters.SkillSystems.SkillRuntimes
             
             foreach (var target in targetsInRange)
             {
-                StatusEffectManager.ApplyEffectTo(target.gameObject, skillData.ExplosionEffects);
+                StatusEffectManager.ApplyEffectTo(target.gameObject, skillData.ExplosionEffectsToTarget);
                 Vector2 knockBackDirection = target.transform.position - owner.transform.position;
                 Vector2 knockBackDestination = (Vector2)target.transform.position + (knockBackDirection.normalized * skillData.KnockBackDistance);
 

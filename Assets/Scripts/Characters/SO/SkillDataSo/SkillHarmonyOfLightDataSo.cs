@@ -1,4 +1,5 @@
 using Characters.SkillSystems.SkillObjects;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace Characters.SO.SkillDataSo
@@ -6,11 +7,20 @@ namespace Characters.SO.SkillDataSo
     [CreateAssetMenu(fileName = "SkillHarmonyOfLightData", menuName = "GameData/SkillData/SkillHarmonyOfLightData")]
     public class SkillHarmonyOfLightDataSo : BaseSkillDataSo
     {
-        [SerializeField] private int lightAmount = 4;
-        [SerializeField] private HarmonyOfLightSkillObject lightPrefab;
+        [FoldoutGroup("Skill Objects")] [SerializeField]
+        private int lightAmount = 4;
+
+        [FoldoutGroup("Skill Objects")] [SerializeField]
+        private HarmonyOfLightSkillObject lightPrefab;
+
+        [FoldoutGroup("Skill Objects")] [SerializeField]
+        private float damageHitPerSec = 5f;
+        
+        [FoldoutGroup("Harmony Configs")]
         [SerializeField] private float spinDuration = 3f;
+        
+        [FoldoutGroup("Harmony Configs")]
         [SerializeField] private float spinRatePerSec = 0.35f;
-        [SerializeField] private float damageHitPerSec = 5f;
 
         public int LightAmount => lightAmount;
         public float SpinDuration => spinDuration;

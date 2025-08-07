@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5056253ad23a97346927fde2743fb996, type: 3}
-  m_Name: LV6_Skill_Refliction
+  m_Name: LV3_Skill_Refliction
   m_EditorClassIdentifier: 
   serializationData:
     SerializedFormat: 2
@@ -31,16 +31,17 @@ MonoBehaviour:
       Entry: 8
       Data: 
   skillIcon: {fileID: 0}
+  skillName: Reflection
   skillDescription: 
-  level: 6
-  cooldown: 10.125
+  previousSkillData: {fileID: 11400000, guid: 099d0d3bb0564e7428cfee6e37f82620, type: 2}
+  nextSkillDataUpgrade: {fileID: 11400000, guid: 2183eec5f09ebc54c92eaed05a2db844, type: 2}
+  level: 3
+  cooldown: 13.125
   statusEffectOnSkillStart: []
-  nextSkillDataUpgrade: {fileID: 0}
-  previousSkillData: {fileID: 11400000, guid: 583f599c8aab6664e9aa0a74217323e7, type: 2}
-  skillObjectAmount: 17
-  damageHitPerSec: 5.9625
+  skillObjectAmount: 9
   reflectionSkillObject: {fileID: -5084912477967523391, guid: 77ab01583acdb514f86262907fd33d07, type: 3}
-  explosionDistance: 7.5
+  damageHitPerSec: 3.1875
+  explosionDistance: 4.5
   explosionEntireDuration: 1
   explosionStartDuration: 0.1
   explosionStartCurve:

@@ -16,31 +16,41 @@ namespace Characters.SO.SkillDataSo
         #region Inspector & Variables
         
         [Unit(Units.Second)]
+        [FoldoutGroup("Dash Configs")]
         [PropertyTooltip("Duration of the dash movement in seconds.")]
         [SerializeField] private float dashDuration = 0.3f;
+        
+        [FoldoutGroup("Dash Configs")]
         [SerializeField] private float damageEnableDuration = 0.35f;
 
+        [FoldoutGroup("Dash Configs")]
         [PropertyTooltip("Total distance the character will dash forward.")]
         [SerializeField] private float dashDistance = 8f;
         
+        [FoldoutGroup("Dash Configs")]
+        [PropertyTooltip("AnimationCurve controlling the dash's easing over time. Used to shape the dash speed progression (e.g., accelerate then decelerate).")]
+        [SerializeField] private AnimationCurve dashEaseCurve;
+        
+        [FoldoutGroup("Dash Configs")]
+        [PropertyTooltip("AnimationCurve that applies lateral displacement during the dash allowing for custom arcing or wave-like motion paths instead of straight-line dashing.")]
+        [SerializeField] private AnimationCurve dashMoveCurve;
+        
+        [FoldoutGroup("Flexible Dash")]
         [PropertyTooltip("If true. dash's distant and duration can be scalable depends on input length.")]
         [SerializeField] private bool isFlexibleDash;
         
+        [FoldoutGroup("Flexible Dash")]
         [EnableIf(nameof(isFlexibleDash))]
         [PropertyTooltip("Maximum length of input that will perform the maximum effective distance")]
         [SerializeField] private float maxInputLength = 6f;
         
+        [FoldoutGroup("Flexible Dash")]
         [EnableIf(nameof(isFlexibleDash))]
         [PropertyTooltip("Minimum & Maximum Value tha dash can perform.")]
         [ValidateInput(nameof(IsMinMaxValid), "Values must be between 0 and 1")]
         [SerializeField] private Vector2 minMaxEffective = new Vector2(0.4f, 1f);
         
-        [PropertyTooltip("AnimationCurve controlling the dash's easing over time. Used to shape the dash speed progression (e.g., accelerate then decelerate).")]
-        [SerializeField] private AnimationCurve dashEaseCurve;
-        
-        [PropertyTooltip("AnimationCurve that applies lateral displacement during the dash allowing for custom arcing or wave-like motion paths instead of straight-line dashing.")]
-        [SerializeField] private AnimationCurve dashMoveCurve;
-        
+        [FoldoutGroup("Flexible Dash")]
         [EnableIf(nameof(isFlexibleDash))]
         [PropertyTooltip("If true. status effect can be scalable depends on input length.")]
         [PropertyOrder(9998)]

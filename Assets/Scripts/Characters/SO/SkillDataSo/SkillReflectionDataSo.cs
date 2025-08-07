@@ -19,38 +19,42 @@ namespace Characters.SO.SkillDataSo
         
         // ------------------ skill object Settings ------------------
         
-        [BoxGroup("Skill Objects", showLabel: true)]
+        [FoldoutGroup("Skill Object")]
         [LabelText("SKill Object Count")]
         [PropertyTooltip("Total number of skill objects spawned by the skill.")]
         [SerializeField]
         private int skillObjectAmount;
-
-        [PropertyTooltip("Total number of skill objects hit per second")]
-        [SerializeField]
-        private float damageHitPerSec = 3;
         
-        [BoxGroup("Skill Objects")]
+        [FoldoutGroup("Skill Object")]
         [LabelText("Skill Object Prefab")]
         [PropertyTooltip("Prefab of skill object instances.")]
         [SerializeField] [Required]
         private ReflectionSkillObject reflectionSkillObject;
+        
+        [FoldoutGroup("Skill Object")]
+        [PropertyTooltip("Total number of skill objects hit per second")]
+        [SerializeField]
+        private float damageHitPerSec = 3;
 
         // ------------------ Explosion Phase ------------------
 
-        [BoxGroup("Explosion Phase", showLabel: true)]
+        [FoldoutGroup("Reflection Configs")]
+        [BoxGroup("Reflection Configs/Explosion Phase", showLabel: true)]
         [LabelText("Explosion Distance")]
         [PropertyTooltip("The distance each skill object moves outward during the explosion phase.")]
         [SerializeField]
         private float explosionDistance;
 
-        [BoxGroup("Explosion Phase")]
+        [FoldoutGroup("Reflection Configs")]
+        [BoxGroup("Reflection Configs/Explosion Phase")]
         [LabelText("Explosion Duration (Entire Phase, sec)")]
         [Unit(Units.Second)]
         [PropertyTooltip("Total duration of the explosion phase from first to last skill object.")]
         [SerializeField]
         private float explosionEntireDuration;
 
-        [BoxGroup("Explosion Phase")]
+        [FoldoutGroup("Reflection Configs")]
+        [BoxGroup("Reflection Configs/Explosion Phase")]
         [LabelText("Start Spread Duration (sec)")]
         [Unit(Units.Second)]
         [PropertyTooltip("Total time span over which skill object explosion start times are spread. This duration is part of the entire duration.")]
@@ -58,19 +62,22 @@ namespace Characters.SO.SkillDataSo
         [SerializeField]
         private float explosionStartDuration;
 
-        [BoxGroup("Explosion Phase")]
+        [FoldoutGroup("Reflection Configs")]
+        [BoxGroup("Reflection Configs/Explosion Phase")]
         [LabelText("Start Curve")]
         [PropertyTooltip("Curve used to determine the relative start offset for each skill object during the explosion phase (normalized from 0 to 1).")]
         [SerializeField]
         private AnimationCurve explosionStartCurve;
 
-        [BoxGroup("Explosion Phase")]
+        [FoldoutGroup("Reflection Configs")]
+        [BoxGroup("Reflection Configs/Explosion Phase")]
         [LabelText("Ease Curve")]
         [PropertyTooltip("Controls the speed progression of each clone during the explosion phase.")]
         [SerializeField]
         private AnimationCurve explosionEaseCurve;
 
-        [BoxGroup("Explosion Phase")]
+        [FoldoutGroup("Reflection Configs")]
+        [BoxGroup("Reflection Configs/Explosion Phase")]
         [LabelText("Move Curve")]
         [PropertyTooltip("Applies lateral offset to create arcing or wave-like motion during explosion movement.")]
         [SerializeField]
@@ -79,14 +86,16 @@ namespace Characters.SO.SkillDataSo
         // ------------------ Merge Phase ------------------
 
         [Space]
-        [BoxGroup("Merge Phase", showLabel: true)]
+        [FoldoutGroup("Reflection Configs")]
+        [BoxGroup("Reflection Configs/Merge Phase")]
         [LabelText("Merge Duration (Entire Phase, sec)")]
         [Unit(Units.Second)]
         [PropertyTooltip("Total duration of the merge phase from first to last skill ojbect.")]
         [SerializeField]
         private float mergeEntireDuration;
 
-        [BoxGroup("Merge Phase")]
+        [FoldoutGroup("Reflection Configs")]
+        [BoxGroup("Reflection Configs/Merge Phase")]
         [LabelText("Start Spread Duration (sec)")]
         [Unit(Units.Second)]
         [PropertyTooltip("Total time span over which skill object merge start times are spread. This duration is part of the entire duration.")]
@@ -94,19 +103,22 @@ namespace Characters.SO.SkillDataSo
         [SerializeField]
         private float mergeStartDuration;
 
-        [BoxGroup("Merge Phase")]
+        [FoldoutGroup("Reflection Configs")]
+        [BoxGroup("Reflection Configs/Merge Phase")]
         [LabelText("Start Curve")]
         [PropertyTooltip("Curve used to determine the relative start offset for each skill object during the merge phase (normalized from 0 to 1).")]
         [SerializeField]
         private AnimationCurve mergeStartCurve;
 
-        [BoxGroup("Merge Phase")]
+        [FoldoutGroup("Reflection Configs")]
+        [BoxGroup("Reflection Configs/Merge Phase")]
         [LabelText("Ease Curve")]
         [PropertyTooltip("Controls the speed progression of each skill object during the merge phase.")]
         [SerializeField]
         private AnimationCurve mergeEaseCurve;
 
-        [BoxGroup("Merge Phase")]
+        [FoldoutGroup("Reflection Configs")]
+        [BoxGroup("Reflection Configs/Merge Phase")]
         [LabelText("Move Curve")]
         [PropertyTooltip("Applies lateral offset to create arcing or wave-like motion during merge movement.")]
         [SerializeField]

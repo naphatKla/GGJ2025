@@ -10,37 +10,52 @@ namespace Characters.SO.SkillDataSo
 {
     public abstract class BaseSkillDataSo : SerializedScriptableObject
     {
-        [SerializeField] 
+        [SerializeField] [PreviewField(Alignment = ObjectFieldAlignment.Center, Height = 128)] [HideLabel, Space(10)]
         private Sprite skillIcon;
         
-        [SerializeField] 
+        [Title("Details")]
+        [SerializeField] private string skillName;
+        
+        [Space] [SerializeField] [LabelText("")] [MultiLineProperty]
         private string skillDescription;
         
-        [MinValue(1)]
+        [HorizontalGroup("SkillChain")]
+        [BoxGroup("SkillChain/<-Previous Skill")]
+        [LabelText("")]
+        [ValidateInput(nameof(IsPreviousSkillValidate),
+            "Previous skill's level must be less than this skill's level, and must chain forward to this node.")]
+        [SerializeField, PropertyTooltip("The previous/base skill node (null = this is base/LV1)")]
+        private BaseSkillDataSo previousSkillData;
+
+        [HorizontalGroup("SkillChain")]
+        [BoxGroup("SkillChain/Next Skill->")]
+        [LabelText("")]
+        [ValidateInput(nameof(IsNextSkillValidate),
+            "Next skill's level must be greater than this skill's level, and must chain back to this node.")]
+        [SerializeField, PropertyTooltip("The next skill's data when this skill is upgraded")]
+        private BaseSkillDataSo nextSkillDataUpgrade;
+        
+        [Space] [Title("Configs")]
+        [ProgressBar(0, 10, ColorGetter = nameof(GetLevelBarColor), Segmented = true, DrawValueLabel = true)]
         [SerializeField, PropertyTooltip("The level of this skill.")]
+        [MinValue(1)]
         private int level = 1;
 
         [Unit(Units.Second)]
-        [SerializeField, PropertyTooltip("Cooldown duration (in seconds) before the skill can be used again after activation.")]
+        [SerializeField,
+         PropertyTooltip("Cooldown duration (in seconds) before the skill can be used again after activation.")]
+        [PropertySpace(SpaceAfter = 10, SpaceBefore = 0)]
         private float cooldown = 1f;
         
-        [Title("Status Effects")]
-        [SerializeField, PropertyTooltip("Status effects that will be applied to the user or others when this skill starts.")]
+        [FoldoutGroup("Status Effects", Order = 100)] 
+        [SerializeField,
+         PropertyTooltip("Status effects that will be applied to the user or others when this skill starts.")]
         private List<StatusEffectDataPayload> statusEffectOnSkillStart;
 
-        [Title("Runtime Binding")]
+        [Space] [Title("Runtime Binding")]
         [ShowInInspector, OdinSerialize, PropertyOrder(10000)]
         [TypeDrawerSettings(BaseType = typeof(BaseSkillRuntime<>))]
         private Type _skillRuntime;
-
-        [Title("Upgrade Chain")]
-        [ValidateInput(nameof(IsNextSkillValidate), "Next skill's level must be greater than this skill's level, and must chain back to this node.")]
-        [SerializeField, PropertyTooltip("The next skill's data when this skill is upgraded")]
-        private BaseSkillDataSo nextSkillDataUpgrade;
-
-        [ValidateInput(nameof(IsPreviousSkillValidate), "Previous skill's level must be less than this skill's level, and must chain forward to this node.")]
-        [SerializeField, PropertyTooltip("The previous/base skill node (null = this is base/LV1)")]
-        private BaseSkillDataSo previousSkillData;
 
         // ---- Validation Methods ----
 
@@ -50,7 +65,7 @@ namespace Characters.SO.SkillDataSo
                 return true;
             // Next ต้อง lv > node ปัจจุบัน และ next.previous == this
             return nextSkillDataUpgrade.level > level
-                && nextSkillDataUpgrade.previousSkillData == this;
+                   && nextSkillDataUpgrade.previousSkillData == this;
         }
 
         private bool IsPreviousSkillValidate()
@@ -59,7 +74,7 @@ namespace Characters.SO.SkillDataSo
                 return true;
             // Previous ต้อง lv < node ปัจจุบัน และ previous.next == this
             return previousSkillData.level < level
-                && previousSkillData.nextSkillDataUpgrade == this;
+                   && previousSkillData.nextSkillDataUpgrade == this;
         }
 
         // ---- Properties ----
@@ -84,6 +99,13 @@ namespace Characters.SO.SkillDataSo
                     root = root.previousSkillData;
                 return root;
             }
+        }
+
+        private Color GetLevelBarColor()
+        {
+            if (level < 4) return Color.green;
+            if (level < 7) return Color.yellow;
+            return Color.cyan;
         }
     }
 }

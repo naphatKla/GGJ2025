@@ -30,17 +30,17 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
+  skillIcon: {fileID: 0}
+  skillName: Dash
+  skillDescription: 
+  previousSkillData: {fileID: 0}
+  nextSkillDataUpgrade: {fileID: 0}
   level: 1
   cooldown: 2
   statusEffectOnSkillStart: []
-  nextSkillDataUpgrade: {fileID: 0}
-  previousSkillData: {fileID: 0}
   dashDuration: 0.3
   damageEnableDuration: 0.25
   dashDistance: 8
-  isFlexibleDash: 0
-  maxInputLength: 0
-  minMaxEffective: {x: 0.4, y: 1}
   dashEaseCurve:
     serializedVersion: 2
     m_Curve:
@@ -107,4 +107,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  isFlexibleDash: 0
+  maxInputLength: 0
+  minMaxEffective: {x: 0.4, y: 1}
   isFlexibleStatusEffectDuration: 0

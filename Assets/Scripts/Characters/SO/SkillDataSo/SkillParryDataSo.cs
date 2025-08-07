@@ -2,27 +2,39 @@ using System.Collections.Generic;
 using Characters.StatusEffectSystems;
 using Sirenix.OdinInspector;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Characters.SO.SkillDataSo
 {
-    
     [CreateAssetMenu(fileName = "SkillParryData", menuName = "GameData/SkillData/SkillParryData")]
     public class SkillParryDataSo : BaseSkillDataSo
     {
-        [SerializeField] private bool stopWhileParry;
-        [SerializeField] private float parryDuration;
+        [FoldoutGroup("Parry Configs")] [SerializeField]
+        private bool stopWhileParry;
 
-        [Title("Parry Succession")] [SerializeField] private float explosionDamageMultiplier;
+        [FoldoutGroup("Parry Configs")] [SerializeField]
+        private float parryDuration;
+
+        [FoldoutGroup("Parry Configs")] [Title("Parry Succession")] [SerializeField]
+        private float explosionDamageMultiplier;
+
+        [FoldoutGroup("Parry Configs")] 
         [SerializeField] private float explosionRadius;
-        [SerializeField] private List<StatusEffectDataPayload> explosionEffects;
-        [SerializeField] private float knockBackDistance;
-        [SerializeField] private float knockBackDuration;
+
+        [FoldoutGroup("Parry Configs")] [SerializeField]
+        private float knockBackDistance;
+
+        [FoldoutGroup("Parry Configs")] [SerializeField]
+        private float knockBackDuration;
+
+        [FoldoutGroup("Status Effects")] [SerializeField]
+        private List<StatusEffectDataPayload> explosionEffectsToTarget;
 
         public bool StopWhileParry => stopWhileParry;
         public float ParryDuration => parryDuration;
         public float ExplosionDamageMultiplier => explosionDamageMultiplier;
         public float ExplosionRadius => explosionRadius;
-        public List<StatusEffectDataPayload> ExplosionEffects => explosionEffects;
+        public List<StatusEffectDataPayload> ExplosionEffectsToTarget => explosionEffectsToTarget;
         public float KnockBackDistance => knockBackDistance;
         public float KnockBackDuration => knockBackDuration;
     }
