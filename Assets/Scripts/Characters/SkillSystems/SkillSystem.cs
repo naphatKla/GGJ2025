@@ -210,6 +210,14 @@ namespace Characters.SkillSystems
             if (!_skillRuntimeDictionary.TryGetValue(oldSkill, out var runtime)) return;
             if (runtime.IsPerforming)
             {
+                if (runtime is ISpecialConditionSkill { IsWaitForCondition: true })
+                {
+                    Destroy(runtime);
+                    if (runtime is IAutoSkillTriggerSource autoSkillTriggerSource)
+                        autoSkillTriggerSource.OnTriggerAutoSkill -= OnTriggerAutoSkill;
+                    _skillRuntimeDictionary.Remove(oldSkill);
+                }
+                
                 if (!_pendingRuntimeRemoval.Contains(oldSkill))
                     _pendingRuntimeRemoval.Add(oldSkill);
             }

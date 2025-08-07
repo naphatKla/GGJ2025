@@ -100,6 +100,8 @@ namespace Characters.Controllers
 
         public SkillSystem SkillSystem => skillSystem;
 
+        public CombatSystem CombatSystem => combatSystem;
+        
         /// <summary>
         /// Reference to the Damage on touch system.
         /// Should be assigned via Inspector or at runtime.

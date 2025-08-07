@@ -36,7 +36,7 @@ namespace Characters.SO.SkillDataSo
         private BaseSkillDataSo nextSkillDataUpgrade;
         
         [Space] [Title("Configs")]
-        [ProgressBar(0, 10, ColorGetter = nameof(GetLevelBarColor), Segmented = true, DrawValueLabel = true)]
+        [ProgressBar(0, 10, ColorGetter = nameof(GetLevelBarColor), Segmented = true, DrawValueLabel = true, Height = 20)]
         [SerializeField, PropertyTooltip("The level of this skill.")]
         [MinValue(1)]
         private int level = 1;

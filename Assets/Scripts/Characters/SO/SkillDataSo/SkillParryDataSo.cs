@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using Characters.StatusEffectSystems;
 using Sirenix.OdinInspector;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Characters.SO.SkillDataSo
 {
