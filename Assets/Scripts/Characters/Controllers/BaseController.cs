@@ -193,6 +193,7 @@ namespace Characters.Controllers
         /// </summary>
         public virtual void ResetAllDependentBehavior()
         {
+            InputSystem.Enable = true;
             movementSystem.ResetMovementSystem();
             skillSystem.ResetSkillSystem();
             healthSystem.ResetHealthSystem();

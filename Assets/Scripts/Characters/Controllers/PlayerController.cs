@@ -60,6 +60,8 @@ namespace Characters.Controllers
         {
             levelSystem.OnLevelUp += skillUpgradeController.OnLevelUp;
             combatSystem.OnDealDamage += comboSystem.RegisterHit;
+            UIManager.Instance.OnAnyPanelOpen += OnAnyUIOpen;
+            UIManager.Instance.OnAllPanelClosed += OnAllUIClosed;
             
             base.SubscribeDependency();
         }
@@ -68,6 +70,8 @@ namespace Characters.Controllers
         {
             levelSystem.OnLevelUp -= skillUpgradeController.OnLevelUp;
             combatSystem.OnDealDamage -= comboSystem.RegisterHit;
+            UIManager.Instance.OnAnyPanelOpen -= OnAnyUIOpen;
+            UIManager.Instance.OnAllPanelClosed -= OnAllUIClosed;
             
             base.UnSubscribeDependency();
         }
@@ -79,6 +83,16 @@ namespace Characters.Controllers
             comboSystem.ResetCombo();
             
             base.ResetAllDependentBehavior();
+        }
+
+        public void OnAnyUIOpen()
+        {
+            InputSystem.Enable = false;
+        }
+
+        public void OnAllUIClosed()
+        {
+            InputSystem.Enable = true;
         }
 
         #endregion

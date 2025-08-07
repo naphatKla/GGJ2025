@@ -1,8 +1,10 @@
+using System;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using GameControl.Controller;
 using GameControl.GameState;
 using MoreMountains.Feedbacks;
+using MoreMountains.Tools;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -27,9 +29,8 @@ public class UIPanelEntry
     public GameObject panel;
 }
 
-public class UIManager : MonoBehaviour
+public class UIManager : MMSingleton<UIManager>
 {
-    public static UIManager Instance { get; private set; }
     [SerializeField] private string menuScene;
     [SerializeField] private string gamePlayScene;
 
@@ -38,16 +39,12 @@ public class UIManager : MonoBehaviour
     private readonly Dictionary<UIPanelType, GameObject> panelDict = new();
     private readonly Stack<UIPanelType> panelStack = new();
     private bool _isPaused = false;
+    public event Action OnAnyPanelOpen;
+    public event Action OnAllPanelClosed;
 
-    private void Awake()
+    protected override void Awake()
     {
-        if (Instance != null && Instance != this)
-        {
-            Destroy(this);
-            return;
-        }
-
-        Instance = this;
+        base.Awake();
 
         foreach (var entry in panelEntries)
             if (!panelDict.ContainsKey(entry.type))
@@ -85,6 +82,7 @@ public class UIManager : MonoBehaviour
             panelDict[current].SetActive(false);
         }
         panelDict[type].SetActive(true);
+        OnAnyPanelOpen?.Invoke();
         panelStack.Push(type);
     }
 
@@ -101,7 +99,10 @@ public class UIManager : MonoBehaviour
         {
             var previous = panelStack.Peek();
             panelDict[previous].SetActive(true);
+            return;
         }
+        
+        OnAllPanelClosed?.Invoke();
     }
     
     public void CloseSpecificPanel(UIPanelType type)
@@ -137,7 +138,8 @@ public class UIManager : MonoBehaviour
             var top = panelStack.Pop();
             panelDict[top].SetActive(false);
         }
-
+            
+        OnAllPanelClosed?.Invoke();
         MMTimeScaleEvent.Trigger(MMTimeScaleMethods.Reset, 1, -1, false, 0f, false);
         Time.timeScale = 1;
     }

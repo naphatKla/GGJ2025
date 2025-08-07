@@ -21,6 +21,8 @@ namespace Characters.InputSystems
             set => _sightDirection = value;
         }
 
+        public bool Enable { get; set; } = true;
+
         /// <summary>
         /// Event triggered when the player moves.
         /// The Vector2 parameter represents the movement position.
@@ -63,6 +65,7 @@ namespace Characters.InputSystems
         
         private void Update()
         {
+            if (!Enable) return;
             _mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             Vector2 mouseDirection = _mousePosition - (Vector2)transform.position;
             _sightDirection.direction = mouseDirection.normalized;
@@ -91,6 +94,7 @@ namespace Characters.InputSystems
         public void OnUsePrimarySkill(InputAction.CallbackContext context)
         {
             if (!context.performed) return;
+            if (!Enable) return;
             OnSkillPerform?.Invoke(SkillType.PrimarySkill);
         }
 
@@ -102,6 +106,7 @@ namespace Characters.InputSystems
         public void OnUseSecondarySkill(InputAction.CallbackContext context)
         {
             if (!context.performed) return;
+            if (!Enable) return;
             OnSkillPerform?.Invoke(SkillType.SecondarySkill);
         }
 

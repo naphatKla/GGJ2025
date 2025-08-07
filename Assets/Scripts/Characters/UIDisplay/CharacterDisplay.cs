@@ -308,8 +308,8 @@ namespace Characters.UIDisplay
             var seq = DOTween.Sequence();
             seq.Append(tf.DOLocalMove(new Vector3(0,0,0), 0.7f).SetEase(Ease.OutBack)).
                 Join(tf.DOShakeRotation(0.7f, 0f, vibrato: 10, randomness: 90).SetEase(Ease.OutBack))
-                .Append(tf.DOScale(1.5f, 0.4f).SetEase(Ease.InOutSine))
-                .Append(tf.DOScale(1f, 0.2f))
+                .Append(tf.DOScale(1.5f, 0.2f).SetEase(Ease.InOutSine))
+                .Append(tf.DOScale(1f, 0.15f))
                 .Append(tf.DOShakePosition(0.2f, 10f, vibrato: 10, randomness: 40))
                 .SetUpdate(true);
         }

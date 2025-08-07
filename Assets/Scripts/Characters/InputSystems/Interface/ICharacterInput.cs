@@ -11,6 +11,7 @@ namespace Characters.InputSystems.Interface
     public interface ICharacterInput
     {
         public DirectionContainer SightDirection { get; protected set; }
+        public bool Enable { get; set; }
         
         /// <summary>
         /// Invoked when a movement input is received.

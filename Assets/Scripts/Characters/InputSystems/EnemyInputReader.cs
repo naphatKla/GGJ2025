@@ -40,6 +40,8 @@ namespace Characters.InputSystems
             set => _sightDirection = value;
         }
 
+        public bool Enable { get; set; } = true;
+
         /// <inheritdoc/>
         public Action<Vector2> OnMove { get; set; }
 
@@ -93,6 +95,7 @@ namespace Characters.InputSystems
             while (true)
             {
                 yield return new WaitForSeconds(timeTick);
+                yield return new WaitUntil(() => Enable);
 
                 if (!PlayerController.Instance) continue;
                 
