@@ -45,20 +45,17 @@ namespace Characters.SkillSystems
             List<BaseSkillDataSo> autoList, int autoSlot)
         {
             this.owner = owner;
-            primarySkillData = primary;
-            secondarySkillData = secondary;
+
             autoSkillSlot = Mathf.Max(0, autoSlot);
-            autoSkillDataList = new List<BaseSkillDataSo>(autoList ?? new List<BaseSkillDataSo>());
+            autoSkillDataList = new List<BaseSkillDataSo>(autoList ?? new());
+
             while (autoSkillDataList.Count > autoSkillSlot)
                 autoSkillDataList.RemoveAt(autoSkillDataList.Count - 1);
 
-            _autoSkillDatas.Clear();
-            foreach (var skill in autoSkillDataList)
-                _autoSkillDatas.Add(skill);
+            _defaultPrimarySkillData = primary;
+            _defaultSecondarySkillData = secondary;
+            _defaultAutoSkillDatas = new(autoSkillDataList);
 
-            _defaultPrimarySkillData = primarySkillData;
-            _defaultSecondarySkillData = secondarySkillData;
-            _defaultAutoSkillDatas = new(_autoSkillDatas);
             ResetToDefaultSkill();
         }
 
