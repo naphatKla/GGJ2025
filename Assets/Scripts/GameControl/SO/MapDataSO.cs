@@ -69,6 +69,11 @@ namespace GameControl.SO
             [FoldoutGroup("$pattern")]
             [Tooltip("the amount of point to use calcalate how many enemy should spawn base on point")]
             public float patternPoint;
+            [FoldoutGroup("$pattern")]
+            [Tooltip("if enable you can set custom center of the pattern")]
+            public bool enablePatternCenter;
+            [FoldoutGroup("$pattern")] [ShowIf("$enablePatternCenter")]
+            public Vector2 patternCenter;
             
             public float DelayBetweenRows => delayBetweenRows;
             public float DelayBetweenEnemy => delayBetweenEnemy;
@@ -120,6 +125,29 @@ namespace GameControl.SO
         [Tooltip("Data of each pattern")]
         public List<PatternOption> PatternOptions;
         
+        [FoldoutGroup("Pattern Setting")]
+        [Tooltip("The time of the pattern to play in trigger time (default player all pattern in 3 minute / 180 seconds)")]
+        public float triggerTime = 180f;
+        
+        [FoldoutGroup("Pattern Setting")]
+        [Tooltip("if this enable trigger time will decrease")]
+        public bool triggerTimeCanDecrease;
+        
+        [FoldoutGroup("Pattern Setting")]
+        [Tooltip("interval of pattern trigger time to decrease (default 30) (enable on start only not in runtime)")]
+        [ShowIf("$triggerTimeCanDecrease")]
+        public float patternDecreaseInterval;
+        
+        [FoldoutGroup("Pattern Setting")]
+        [Tooltip("triggerTime will decrease by this float")]
+        [ShowIf("$triggerTimeCanDecrease")]
+        public float patternDecreaseRate;
+        
+        [FoldoutGroup("Pattern Setting")]
+        [Tooltip("Minimum of triggertime")]
+        [ShowIf("$triggerTimeCanDecrease")]
+        public float patternDecreaseMinimum;
+        
         [FoldoutGroup("Item Setting")]
         [Tooltip("Data of each item")]
         public List<ItemOption> ItemOptions;
@@ -131,10 +159,6 @@ namespace GameControl.SO
         [FoldoutGroup("Item Setting")]
         [Tooltip("Item spawn interval (Default 1)")]
         public float defaultItemSpawnTimer;
-        
-        [FoldoutGroup("Pattern Setting")]
-        [Tooltip("center of pattern")]
-        public Vector2 PatternCenter;
         
         [Space]
         [FoldoutGroup("Data Setting")]

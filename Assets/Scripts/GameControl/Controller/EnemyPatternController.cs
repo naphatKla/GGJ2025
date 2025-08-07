@@ -17,6 +17,7 @@ namespace GameControl.Controller
         private Dictionary<string, ObjectPool<EnemyController>> _storeEnemy;
         private List<MapDataSO.EnemyOption> _storeOption;
         private readonly bool _isDebug;
+        private float _currentTriggertime;
 
         public EnemyPatternController(MapDataSO mapData, SpawnerStateController state, Vector2 spawnRegion, bool debug)
         {
@@ -25,6 +26,7 @@ namespace GameControl.Controller
             _regionSize = spawnRegion;
             _patternEnemy = new List<MapDataSO.PatternOption>();
             _isDebug = debug;
+            _currentTriggertime = mapData.triggerTime;
         }
 
         public void SetEnemyList(Dictionary<string, ObjectPool<EnemyController>> enemyList, List<MapDataSO.EnemyOption> enemyOptions)
@@ -62,12 +64,19 @@ namespace GameControl.Controller
             return elapsed + Mathf.Max(remaining, 0);
         }
 
-        public async UniTaskVoid TriggerAllPatternsIn3Minutes()
+        public void UpdateTriggerTime()
+        {
+            if (_mapdata.triggerTimeCanDecrease && _mapdata.triggerTime < _mapdata.patternDecreaseMinimum)
+            {
+                _currentTriggertime -= _mapdata.patternDecreaseInterval;
+            }
+        }
+
+        public async UniTaskVoid TriggerAllPatterns()
         {
             if (_patternEnemy == null || _patternEnemy.Count == 0) return;
-
-            var totalDuration = 180f;
-            var interval = totalDuration / _patternEnemy.Count;
+            
+            var interval = _currentTriggertime / _patternEnemy.Count;
 
             var totalElapsed = 0f;
 
@@ -139,8 +148,16 @@ namespace GameControl.Controller
 
         private List<List<Vector2>> CalculatePatternRows(MapDataSO.PatternOption patternData, int enemyAmount)
         {
-            var center = _mapdata.PatternCenter;
-            return patternData.pattern.CalculateRows(center, enemyAmount);
+            if (patternData.enablePatternCenter)
+            {
+                var center = patternData.patternCenter;
+                return patternData.pattern.CalculateRows(center, enemyAmount);
+            }
+            else
+            {
+                var center = PlayerController.Instance.transform.position;
+                return patternData.pattern.CalculateRows(center, enemyAmount);
+            }
         }
 
         private async UniTask SpawnEnemyRows(List<List<Vector2>> rows, MapDataSO.EnemyOption enemyType,
