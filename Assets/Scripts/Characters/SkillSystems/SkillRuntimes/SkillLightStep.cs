@@ -1,7 +1,10 @@
 using System.Threading;
 using Characters.SO.SkillDataSo;
+using Characters.StatusEffectSystems;
 using Cysharp.Threading.Tasks;
+using DG.Tweening;
 using GlobalSettings;
+using Manager;
 using UnityEngine;
 
 namespace Characters.SkillSystems.SkillRuntimes
@@ -23,6 +26,7 @@ namespace Characters.SkillSystems.SkillRuntimes
             if (cancelToken.IsCancellationRequested) return;
             owner.SkillSystem.SetCanUsePrimary(false);
             owner.SkillSystem.SetCanUseSecondary(false);
+            StatusEffectManager.ApplyEffectTo(owner.gameObject, skillData.EffectWhileLightStep);
 
             Transform closetTarget = GetClosestNonRepeatedTarget(skillData.StartLightStepRadius);
             if (!closetTarget) return;
@@ -30,7 +34,7 @@ namespace Characters.SkillSystems.SkillRuntimes
 
             for (int i = 0; i < skillData.TargetAmount; i++)
             {
-                await owner.MovementSystem.TryMoveToPositionBySpeed(closetTarget.position, skillData.LightStepSpeed)
+                await owner.MovementSystem.TryMoveToPositionBySpeed(closetTarget.position, skillData.LightStepSpeed).SetEase(Ease.InOutQuad)
                     .WithCancellation(cancelToken);
                 closetTarget = GetClosestNonRepeatedTarget(skillData.StartLightStepRadius);
                 if (!closetTarget) break;
@@ -53,6 +57,7 @@ namespace Characters.SkillSystems.SkillRuntimes
             owner.SkillSystem.SetCanUsePrimary(true);
             owner.SkillSystem.SetCanUseSecondary(true);
             owner.DamageOnTouch.DisableDamage(this);
+            StatusEffectManager.RemoveEffectAt(owner.gameObject, StatusEffectName.Iframe);
         }
 
         private void TriggerCondition() => IsWaitForCondition = false;
@@ -62,8 +67,8 @@ namespace Characters.SkillSystems.SkillRuntimes
             LayerMask damageLayer = CharacterGlobalSettings.Instance.EnemyLayerDictionary[owner.tag];
             Collider2D[] targetsInRange = Physics2D.OverlapCircleAll(owner.transform.position, radius, damageLayer);
 
-            Transform closest = null;
-            float closestSqrDistance = float.MaxValue;
+            Transform furthest = null;
+            float maxSqrDistance = 0f;
             Vector2 origin = owner.transform.position;
 
             foreach (var collider in targetsInRange)
@@ -74,17 +79,17 @@ namespace Characters.SkillSystems.SkillRuntimes
                 if (candidate == _lastTarget) continue;
 
                 float sqrDist = ((Vector2)candidate.position - origin).sqrMagnitude;
-                if (sqrDist < closestSqrDistance)
+                if (sqrDist > maxSqrDistance)
                 {
-                    closestSqrDistance = sqrDist;
-                    closest = candidate;
+                    maxSqrDistance = sqrDist;
+                    furthest = candidate;
                 }
             }
 
-            if (closest != null)
-                _lastTarget = closest;
+            if (furthest != null)
+                _lastTarget = furthest;
 
-            return closest;
+            return furthest;
         }
     }
 }

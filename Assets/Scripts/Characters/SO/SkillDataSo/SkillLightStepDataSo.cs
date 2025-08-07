@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using Characters.StatusEffectSystems;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -32,6 +34,9 @@ namespace Characters.SO.SkillDataSo
         [FoldoutGroup("Light Step Configs"), SerializeField]
         private float increaseSpeedMultiplier = 3f;
 
+        [FoldoutGroup("Status Effects"), SerializeField]
+        private List<StatusEffectDataPayload> effectWhileLightStep;
+
         // Public accessors
         public float StartLightStepRadius => startLightStepRadius;
         public float LightStepRadius => lightStepRadius;
@@ -41,5 +46,7 @@ namespace Characters.SO.SkillDataSo
         public float LightStepSpeed => lightStepSpeed;
         public float IncreaseSpeedAfterDurationPass => increaseSpeedAfterDurationPass;
         public float IncreaseSpeedMultiplier => increaseSpeedMultiplier;
+
+        public List<StatusEffectDataPayload> EffectWhileLightStep => effectWhileLightStep;
     }
 }
