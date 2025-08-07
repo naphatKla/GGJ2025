@@ -39,7 +39,6 @@ namespace GameControl.Controller
                 {
                     id = data.id,
                     itemObj = data.itemObj,
-                    prewarmCount = data.prewarmCount,
                     useCustomInterval = data.useCustomInterval,
                     customInterval = data.customInterval
                 };

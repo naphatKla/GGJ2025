@@ -42,7 +42,6 @@ namespace GameControl.Controller
                 {
                     id = data.id,
                     enemyController = data.enemyController,
-                    prewarmCount = data.prewarmCount,
                     EnemyPoint = data.EnemyPoint,
                     enemyPointGrowthRate = data.enemyPointGrowthRate,
                     enemyCanGrowth = data.enemyCanGrowth,
