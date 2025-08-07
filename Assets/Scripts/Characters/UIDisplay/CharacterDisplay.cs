@@ -318,6 +318,7 @@ namespace Characters.UIDisplay
             if (skillSlotModel[skillIndex] == null) return;
             
             skillSlotModel[skillIndex].skillIcon.sprite = skill.SkillIcon;
+            ResetSkillSlot(skillIndex);
         }
 
         private void UpdateCooldownSlot(float cooldown, int skillIndex)

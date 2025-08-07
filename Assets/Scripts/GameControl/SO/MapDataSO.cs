@@ -21,21 +21,24 @@ namespace GameControl.SO
             public string id;
             [FoldoutGroup("$id")]
             public EnemyController enemyController;
-            [FoldoutGroup("$id")]
-            public int prewarmCount = 30;
             
             [FoldoutGroup("$id")] [Title("Spawn Point")]
             [Tooltip("Start of spawn point")]
             public float spawnPoint;
             [FoldoutGroup("$id")]
             [Tooltip("if this enable this enemy point will increase every 30 seconds")]
-            public bool enemyCanGrowth;
-            [FoldoutGroup("$id")] [ShowIf("$enemyCanGrowth")]
+            public bool enemyPointCanGrowth;
+            [FoldoutGroup("$id")] [ShowIf("$enemyPointCanGrowth")]
             [Tooltip("Growth rate of spawn point (Default 12.5%)")]
             public float enemyPointGrowthRate = 12.5f;
             
             [FoldoutGroup("$id")][Title("Chance Setting")]
             [Range(0, 100)] public float chance = 100;
+            [FoldoutGroup("$id")][Tooltip("if this enable this enemy chance will increase and auto weight every 30 seconds")]
+            public bool enemyChanceCanGrowth;
+            [FoldoutGroup("$id")] [ShowIf("$enemyChanceCanGrowth")]
+            [Tooltip("Growth rate of chance")]
+            public float enemyChanceGrowthRate = 0f;
             
             [FoldoutGroup("$id")][Title("Enemy Interval")]
             public bool useCustomInterval;
@@ -78,8 +81,6 @@ namespace GameControl.SO
             public string id;
             [FoldoutGroup("$id")]
             public BaseCollectableItem itemObj;
-            [FoldoutGroup("$id")]
-            public int prewarmCount = 30;
           
             [FoldoutGroup("$id")][Title("Chance Setting")]
             [Range(0, 100)] public float chance = 100;

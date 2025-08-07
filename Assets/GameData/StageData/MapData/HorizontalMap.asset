@@ -19,20 +19,22 @@ MonoBehaviour:
   EnemyOptions:
   - id: Enemy_Normal
     enemyController: {fileID: 8145196360709479149, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
-    prewarmCount: 100
     spawnPoint: 1
-    enemyCanGrowth: 0
+    enemyPointCanGrowth: 0
     enemyPointGrowthRate: 12.5
     chance: 100
+    enemyChanceCanGrowth: 0
+    enemyChanceGrowthRate: 10
     useCustomInterval: 0
     customInterval: 0.5
   - id: Enemy_Big
     enemyController: {fileID: 1371981663885322251, guid: c825ab4cef105ab40aa986fd07615367, type: 3}
-    prewarmCount: 100
     spawnPoint: 2
-    enemyCanGrowth: 0
+    enemyPointCanGrowth: 0
     enemyPointGrowthRate: 12.5
     chance: 50
+    enemyChanceCanGrowth: 0
+    enemyChanceGrowthRate: 10
     useCustomInterval: 0
     customInterval: 2
   PatternOptions:
@@ -55,11 +57,10 @@ MonoBehaviour:
   ItemOptions:
   - id: Normal_Exp
     itemObj: {fileID: 8589778046636973207, guid: eb2f8352aac61d446a4ef94d6303afbf, type: 3}
-    prewarmCount: 30
     chance: 100
     useCustomInterval: 0
     customInterval: 0
-  maxItemSpawning: 10
+  maxItemSpawning: 30
   defaultItemSpawnTimer: 1
   PatternCenter: {x: 0, y: 0}
   defaultEnemySpawnTimer: 0.5

@@ -112,6 +112,10 @@ namespace GameControl.Controller
             GameTimer.Instance.ScheduleLoopingTrigger(60, GameTimer.Instance.StartTimerNumber, 
                 () => UpgradeMaxSpawnPoint(20f));
             
+            //Upgrade Chance rate every 30 seconds
+            GameTimer.Instance.ScheduleLoopingTrigger(5, GameTimer.Instance.StartTimerNumber, 
+                () => _enemySpawnerController.UpgradeEnemyChance());
+            
             //Upgrade Spawn Ratio every 30 seconds
             GameTimer.Instance.ScheduleLoopingTrigger(30, GameTimer.Instance.StartTimerNumber, 
                 () => _enemySpawnerController.UpgradePointRatio());

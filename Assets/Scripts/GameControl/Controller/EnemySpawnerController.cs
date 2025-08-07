@@ -42,10 +42,11 @@ namespace GameControl.Controller
                 {
                     id = data.id,
                     enemyController = data.enemyController,
-                    prewarmCount = data.prewarmCount,
                     EnemyPoint = data.EnemyPoint,
                     enemyPointGrowthRate = data.enemyPointGrowthRate,
-                    enemyCanGrowth = data.enemyCanGrowth,
+                    enemyPointCanGrowth = data.enemyPointCanGrowth,
+                    enemyChanceGrowthRate = data.enemyChanceGrowthRate,
+                    enemyChanceCanGrowth = data.enemyChanceCanGrowth,
                     useCustomInterval = data.useCustomInterval,
                     customInterval = data.customInterval,
                     EnemyObject = data.EnemyObject
@@ -115,8 +116,26 @@ namespace GameControl.Controller
         {
             foreach (var data in _enemyOptionsList)
             {
-                if (data.enemyCanGrowth)
+                if (data.enemyPointCanGrowth)
                     data.EnemyPoint *= (1 + data.enemyPointGrowthRate / 100f);
+            }
+        }
+        
+        public void UpgradeEnemyChance()
+        {
+            float totalChanceBefore = 0;
+            foreach (var data in _enemyOptionsList)
+            {
+                if (data.enemyChanceCanGrowth)
+                {
+                    data.Chance += data.enemyChanceGrowthRate;
+                }
+
+                totalChanceBefore += data.Chance;
+            }
+            foreach (var data in _enemyOptionsList)
+            {
+                data.Chance = (data.Chance / totalChanceBefore) * 100f;
             }
         }
 
