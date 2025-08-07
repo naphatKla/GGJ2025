@@ -13,6 +13,7 @@ namespace Characters.SkillSystems.SkillRuntimes
     public class SkillLightStep : BaseSkillRuntime<SkillLightStepDataSo>, ISpecialConditionSkill
     {
         public bool IsWaitForCondition { get; private set; }
+        private float startTime;
         private Transform _lastTarget;
 
         protected override void OnSkillStart()
@@ -28,19 +29,23 @@ namespace Characters.SkillSystems.SkillRuntimes
             owner.SkillSystem.SetCanUsePrimary(false);
             owner.SkillSystem.SetCanUseSecondary(false);
             owner.TryPlayFeedback(FeedbackName.LightStepUse);
+            startTime = Time.time;
             StatusEffectManager.ApplyEffectTo(owner.gameObject, skillData.EffectWhileLightStep);
 
             Transform closetTarget = GetClosestNonRepeatedTarget(skillData.StartLightStepRadius);
             if (!closetTarget) return;
             owner.DamageOnTouch.EnableDamage(owner.gameObject, this, 3);
-
+            var speedMultiplier = 1f;
+            
             for (int i = 0; i < skillData.TargetAmount; i++)
             {
                 var randomCurveIndex = Random.Range(0, skillData.RandomCurve.Count);
                 var randomCurve = skillData.RandomCurve.Count > 0? skillData.RandomCurve[randomCurveIndex] : null;
                 
-                Debug.Log(randomCurve == null);
-                await owner.MovementSystem.TryMoveToPositionBySpeed(closetTarget.position, skillData.LightStepSpeed, moveCurve: randomCurve).SetEase(Ease.InOutQuint)
+                if (Time.time - startTime > skillData.IncreaseSpeedAfterDurationPass)
+                    speedMultiplier = Mathf.Clamp(speedMultiplier + 0.5f, 1, skillData.IncreaseSpeedMultiplier);
+                
+                await owner.MovementSystem.TryMoveToPositionBySpeed(closetTarget.position, skillData.LightStepSpeed * speedMultiplier, moveCurve: randomCurve).SetEase(Ease.InSine)
                     .WithCancellation(cancelToken);
                 closetTarget = GetClosestNonRepeatedTarget(skillData.StartLightStepRadius);
                 if (!closetTarget) break;
