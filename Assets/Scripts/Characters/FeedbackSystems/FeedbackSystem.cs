@@ -95,7 +95,7 @@ namespace Characters.FeedbackSystems
         Reflection = 2,
         ParryUSe = 3,
         ParrySuccess = 4,
-        LightStepUse = 5,
-        LightStepSuccess = 6,
+        LightStepNormalPhase = 5,
+        LightStepGodSpeedPhase = 6,
     }
 }

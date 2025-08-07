@@ -15,6 +15,7 @@ namespace Characters.SkillSystems.SkillRuntimes
         public bool IsWaitForCondition => _isWaitForCounterAttack || _isWaitForMovementEnd;
         private bool _isWaitForCounterAttack;
         private bool _isWaitForMovementEnd;
+        private bool _inGodSpeedPhase;
         private float startTime;
 
         public override void UpdateCoolDown(float deltaTime)
@@ -42,7 +43,7 @@ namespace Characters.SkillSystems.SkillRuntimes
             if (cancelToken.IsCancellationRequested) return;
             owner.SkillSystem.SetCanUsePrimary(false);
             owner.SkillSystem.SetCanUseSecondary(false);
-            owner.TryPlayFeedback(FeedbackName.LightStepUse);
+            owner.TryPlayFeedback(FeedbackName.LightStepNormalPhase);
             startTime = Time.time;
             StatusEffectManager.ApplyEffectTo(owner.gameObject, skillData.EffectWhileLightStep);
 
@@ -63,8 +64,17 @@ namespace Characters.SkillSystems.SkillRuntimes
 
                 // god speed phase
                 if (Time.time - startTime > skillData.GodSpeedPhaseStartTime)
+                {
+                    if (!_inGodSpeedPhase)
+                    {
+                        _inGodSpeedPhase = true;
+                        owner.TryStopFeedback(FeedbackName.LightStepNormalPhase);
+                        owner.TryPlayFeedback(FeedbackName.LightStepGodSpeedPhase);
+                    }
+                    
                     speedMultiplier = Mathf.Clamp(speedMultiplier + skillData.GodSpeedPhaseSpeedStepUp, 1,
                         skillData.GodSpeedPhaseMaxSpeedMultiplier);
+                }
 
                 await owner.MovementSystem.TryMoveToPositionBySpeed(closetTarget.position,
                         skillData.LightStepSpeed * speedMultiplier, moveCurve: randomCurve).SetEase(Ease.InSine)
@@ -93,10 +103,9 @@ namespace Characters.SkillSystems.SkillRuntimes
             owner.SkillSystem.SetCanUseSecondary(true);
             owner.DamageOnTouch.DisableDamage(this);
             StatusEffectManager.RemoveEffectAt(owner.gameObject, StatusEffectName.Iframe);
-            owner.TryStopFeedback(FeedbackName.LightStepUse);
-            owner.TryPlayFeedback(FeedbackName.LightStepSuccess);
             _isWaitForCounterAttack = false;
             _isWaitForMovementEnd = false;
+            _inGodSpeedPhase = false;
         }
 
         private void TriggerCondition() => _isWaitForCounterAttack = false;
