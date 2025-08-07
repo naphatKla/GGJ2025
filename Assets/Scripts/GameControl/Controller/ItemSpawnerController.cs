@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Characters.CollectItemSystems.CollectableItems;
 using Characters.Controllers;
+using Cysharp.Threading.Tasks;
 using GameControl.SO;
 using UnityEngine;
 using UnityEngine.Pool;
@@ -20,7 +21,7 @@ namespace GameControl.Controller
         
         private Dictionary<string, ObjectPool<BaseCollectableItem>> _itemPools;
 
-        public ItemSpawnerController(SO.MapDataSO mapData, SpawnerStateController state, Vector2 spawnRegion)
+        public ItemSpawnerController(MapDataSO mapData, SpawnerStateController state, Vector2 spawnRegion)
         {
             _mapdata = mapData;
             _state = state;
@@ -40,7 +41,9 @@ namespace GameControl.Controller
                     id = data.id,
                     itemObj = data.itemObj,
                     useCustomInterval = data.useCustomInterval,
-                    customInterval = data.customInterval
+                    customInterval = data.customInterval,
+                    useLifetimeInterval = data.useLifetimeInterval,
+                    lifetimeInterval = data.lifetimeInterval
                 };
 
                 _storeItem.Add(cloned);
@@ -79,6 +82,22 @@ namespace GameControl.Controller
             _activeItem.Add(obj);
             obj.transform.SetParent(_state.ItemParent);
             obj.gameObject.SetActive(true);
+
+            if (option.useLifetimeInterval)
+            {
+                StartLifetimeCountdown(obj, option).Forget();
+            }
+        }
+        
+        private async UniTask StartLifetimeCountdown(BaseCollectableItem obj, MapDataSO.ItemOption option)
+        {
+            float lifetime = option.lifetimeInterval;
+            
+            await UniTask.Delay(System.TimeSpan.FromSeconds(lifetime));
+            if (obj.gameObject.activeInHierarchy && _activeItem.Contains(obj))
+            {
+                _itemPools[option.id].Release(obj);
+            }
         }
         
         public MapDataSO.ItemOption SpawnItem()

@@ -95,6 +95,13 @@ namespace GameControl.SO
             [FoldoutGroup("$id")] [ShowIf("$useCustomInterval")]
             public float customInterval;
             
+            [FoldoutGroup("$id")][Title("Life time")]
+            [Tooltip("if this enable item can despawn after lifetime")]
+            public bool useLifetimeInterval;
+            [FoldoutGroup("$id")] [ShowIf("$useLifetimeInterval")]
+            [Tooltip("Interval of item lifetime (default 20 seconds)")]
+            public float lifetimeInterval = 20f;
+            
             public float Chance { get => chance; set => chance = value; }
             public string ItemId => id;
             public float ItemCooldown => customInterval;
