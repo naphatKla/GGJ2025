@@ -1,4 +1,5 @@
 using System.Threading;
+using Characters.FeedbackSystems;
 using Characters.SO.SkillDataSo;
 using Characters.StatusEffectSystems;
 using Cysharp.Threading.Tasks;
@@ -26,6 +27,7 @@ namespace Characters.SkillSystems.SkillRuntimes
             if (cancelToken.IsCancellationRequested) return;
             owner.SkillSystem.SetCanUsePrimary(false);
             owner.SkillSystem.SetCanUseSecondary(false);
+            owner.TryPlayFeedback(FeedbackName.LightStepUse);
             StatusEffectManager.ApplyEffectTo(owner.gameObject, skillData.EffectWhileLightStep);
 
             Transform closetTarget = GetClosestNonRepeatedTarget(skillData.StartLightStepRadius);
@@ -34,7 +36,11 @@ namespace Characters.SkillSystems.SkillRuntimes
 
             for (int i = 0; i < skillData.TargetAmount; i++)
             {
-                await owner.MovementSystem.TryMoveToPositionBySpeed(closetTarget.position, skillData.LightStepSpeed).SetEase(Ease.InOutQuad)
+                var randomCurveIndex = Random.Range(0, skillData.RandomCurve.Count);
+                var randomCurve = skillData.RandomCurve.Count > 0? skillData.RandomCurve[randomCurveIndex] : null;
+                
+                Debug.Log(randomCurve == null);
+                await owner.MovementSystem.TryMoveToPositionBySpeed(closetTarget.position, skillData.LightStepSpeed, moveCurve: randomCurve).SetEase(Ease.InOutQuint)
                     .WithCancellation(cancelToken);
                 closetTarget = GetClosestNonRepeatedTarget(skillData.StartLightStepRadius);
                 if (!closetTarget) break;
@@ -58,6 +64,8 @@ namespace Characters.SkillSystems.SkillRuntimes
             owner.SkillSystem.SetCanUseSecondary(true);
             owner.DamageOnTouch.DisableDamage(this);
             StatusEffectManager.RemoveEffectAt(owner.gameObject, StatusEffectName.Iframe);
+            owner.TryStopFeedback(FeedbackName.LightStepUse);
+            owner.TryPlayFeedback(FeedbackName.LightStepSuccess);
         }
 
         private void TriggerCondition() => IsWaitForCondition = false;

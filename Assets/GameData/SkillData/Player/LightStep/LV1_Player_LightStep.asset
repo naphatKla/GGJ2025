@@ -38,11 +38,75 @@ MonoBehaviour:
   level: 1
   cooldown: 10
   statusEffectOnSkillStart: []
-  startLightStepRadius: 12
-  lightStepRadius: 8
+  startLightStepRadius: 20
+  lightStepRadius: 15
   targetAmount: 9
   lifeStealPercentChance: 10
   lifeStealEffective: 10
-  lightStepSpeed: 8
+  lightStepSpeed: 36
   increaseSpeedAfterDurationPass: 3
   increaseSpeedMultiplier: 3
+  randomCurve:
+  - serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0.5
+      inSlope: 0.6827585
+      outSlope: 0.6827585
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.4903475
+      value: 0.8347889
+      inSlope: 3.084489
+      outSlope: 3.084489
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.13878633
+    - serializedVersion: 3
+      time: 0.69564676
+      value: 2.5
+      inSlope: 1.5255046
+      outSlope: 1.5255046
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.09718479
+    - serializedVersion: 3
+      time: 0.96377873
+      value: 1.757542
+      inSlope: -7.8451824
+      outSlope: -7.8451824
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.77459204
+    - serializedVersion: 3
+      time: 0.99475116
+      value: 1.0806371
+      inSlope: -49.04728
+      outSlope: -49.04728
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0.5
+      inSlope: -110.62189
+      outSlope: -110.62189
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  effectWhileLightStep:
+  - effectData: {fileID: 11400000, guid: aa4dff95f38494c4e876f8f95511ecf0, type: 2}
+    isOverrideDuration: 1
+    overrideDuration: 100

@@ -34,6 +34,9 @@ namespace Characters.SO.SkillDataSo
         [FoldoutGroup("Light Step Configs"), SerializeField]
         private float increaseSpeedMultiplier = 3f;
 
+        [FoldoutGroup("Light Step Configs"), SerializeField]
+        private List<AnimationCurve> randomCurve;
+
         [FoldoutGroup("Status Effects"), SerializeField]
         private List<StatusEffectDataPayload> effectWhileLightStep;
 
@@ -46,7 +49,8 @@ namespace Characters.SO.SkillDataSo
         public float LightStepSpeed => lightStepSpeed;
         public float IncreaseSpeedAfterDurationPass => increaseSpeedAfterDurationPass;
         public float IncreaseSpeedMultiplier => increaseSpeedMultiplier;
-
         public List<StatusEffectDataPayload> EffectWhileLightStep => effectWhileLightStep;
+
+        public List<AnimationCurve> RandomCurve => randomCurve;
     }
 }
