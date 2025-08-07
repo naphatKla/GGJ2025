@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Characters.StatusEffectSystems;
 using Sirenix.OdinInspector;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Characters.SO.SkillDataSo
 {
@@ -13,30 +14,40 @@ namespace Characters.SO.SkillDataSo
 
         [FoldoutGroup("Light Step Configs"), SerializeField]
         private float lightStepRadius = 8f;
-
-        [FoldoutGroup("Light Step Configs"), SerializeField]
-        private int targetAmount = 9;
-
-        [Unit(Units.Percent)] 
-        [FoldoutGroup("Light Step Configs"), SerializeField]
-        private float lifeStealPercentChance = 10;
         
-        [Unit(Units.Percent)] 
-        [FoldoutGroup("Light Step Configs"), SerializeField]
-        private float lifeStealEffective = 10;
-
         [FoldoutGroup("Light Step Configs"), SerializeField]
         private float lightStepSpeed = 40f;
 
         [FoldoutGroup("Light Step Configs"), SerializeField]
-        private float increaseSpeedAfterDurationPass = 3f;
-
+        private int targetAmount = 9;
+        
         [FoldoutGroup("Light Step Configs"), SerializeField]
-        private float increaseSpeedMultiplier = 3f;
-
-        [FoldoutGroup("Light Step Configs"), SerializeField]
+        [PropertySpace(SpaceBefore = 5f, SpaceAfter = 10)]
         private List<AnimationCurve> randomCurve;
-
+        
+        [Unit(Units.Percent)] 
+        [FoldoutGroup("Light Step Configs/Life Steal"), SerializeField]
+        private float lifeStealPercentChance = 10;
+        
+        [Unit(Units.Percent)] 
+        [FoldoutGroup("Light Step Configs/Life Steal"), SerializeField]
+        private float lifeStealEffective = 10;
+        
+        [FoldoutGroup("Light Step Configs/Normal Phase"), SerializeField]
+        private float normalPhaseSpeedStepUp = 0.5f;
+        
+        [FoldoutGroup("Light Step Configs/Normal Phase"), SerializeField]
+        private float normalPhaseMaxSpeedMultiplier = 3f;
+        
+        [FoldoutGroup("Light Step Configs/God Speed Phase"), SerializeField]
+        private float godSpeedPhaseStartTime = 3f;
+        
+        [FoldoutGroup("Light Step Configs/God Speed Phase"), SerializeField]
+        private float godSpeedPhaseSpeedStepUp = 1f;
+        
+        [FoldoutGroup("Light Step Configs/God Speed Phase"), SerializeField]
+        private float godSpeedPhaseMaxSpeedMultiplier = 6f;
+        
         [FoldoutGroup("Status Effects"), SerializeField]
         private List<StatusEffectDataPayload> effectWhileLightStep;
 
@@ -44,11 +55,15 @@ namespace Characters.SO.SkillDataSo
         public float StartLightStepRadius => startLightStepRadius;
         public float LightStepRadius => lightStepRadius;
         public float TargetAmount => targetAmount;
+        public float LightStepSpeed => lightStepSpeed;
         public float LifeStealPercentChance => lifeStealPercentChance;
         public float LifeStealEffective => lifeStealEffective;
-        public float LightStepSpeed => lightStepSpeed;
-        public float IncreaseSpeedAfterDurationPass => increaseSpeedAfterDurationPass;
-        public float IncreaseSpeedMultiplier => increaseSpeedMultiplier;
+        public float NormalPhaseSpeedStepUp => normalPhaseSpeedStepUp;
+        public float NormalPhaseMaxSpeedMultiplier => normalPhaseMaxSpeedMultiplier;
+        public float GodSpeedPhaseStartTime => godSpeedPhaseStartTime;
+        public float GodSpeedPhaseSpeedStepUp => godSpeedPhaseSpeedStepUp;
+        public float GodSpeedPhaseMaxSpeedMultiplier => godSpeedPhaseMaxSpeedMultiplier;
+
         public List<StatusEffectDataPayload> EffectWhileLightStep => effectWhileLightStep;
 
         public List<AnimationCurve> RandomCurve => randomCurve;
