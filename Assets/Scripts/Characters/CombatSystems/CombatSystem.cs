@@ -65,12 +65,13 @@ namespace Characters.CombatSystems
         /// Calculates final damage dealt based on the current damage value and a multiplier.
         /// Commonly used during skill or attack execution.
         /// </summary>
-        /// <param name="multiplier">The multiplier applied to current damage (e.g. from skills, crits).</param>
+        /// <param name="multiplier">The multiplier percent% applied to current damage (e.g. from skills, crits).</param>
         /// <returns>The final damage value to be applied to a target.</returns>
-        public DamageData CalculateDamageDeal(GameObject target, Vector2 hitPos , float multiplier)
+        public DamageData CalculateSkillDamageDeal(GameObject target, Vector2 hitPos, float baseSkillDamage, float multiplier)
         {
             bool isCritical = Random.Range(0, 100) < 20;
-            float damageDeal = isCritical? _currentDamage * multiplier * 2 : _currentDamage * multiplier;
+            float damageDeal = baseSkillDamage + ((multiplier/100) * _currentDamage);
+            damageDeal = isCritical ? damageDeal * 2 : damageDeal;
             
             var damageData = new DamageData(gameObject, target, hitPos, damageDeal, isCritical);
             return damageData;

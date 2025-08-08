@@ -53,13 +53,14 @@ namespace Characters.SkillSystems.SkillRuntimes
             owner.TryPlayFeedback(FeedbackName.LightStepUse);
 
             PlayerController player = owner as PlayerController;
-            
+
             if (player)
                 player.CameraController.LerpOrthoSize(15f, 0.5f).Forget();
-            
+
 
             StatusEffectManager.ApplyEffectTo(owner.gameObject, skillData.EffectWhileLightStep);
-            owner.DamageOnTouch.EnableDamage(owner.gameObject, this, 3);
+            owner.DamageOnTouch.EnableDamage(owner.gameObject, this, 1, skillData.BaseDamagePerHit,
+                skillData.DamageMultiplier, 0, 0, skillData.LifeStealPercentChance, skillData.LifeStealEffective);
 
             float radius = skillData.StartLightStepRadius;
 
@@ -70,8 +71,8 @@ namespace Characters.SkillSystems.SkillRuntimes
 
                 owner.MovementSystem.StopTween();
 
-                float speedMultiplier = Mathf.Clamp(1f + i * skillData.NormalPhaseSpeedStepUp,
-                    1, skillData.NormalPhaseMaxSpeedMultiplier);
+                float speedMultiplier = Mathf.Clamp(1f + i * (skillData.NormalPhaseSpeedStepUp/100),
+                    1, skillData.NormalPhaseMaxSpeedMultiplier/100);
 
                 if (i >= skillData.GodSpeedPhaseStartHit)
                 {
@@ -83,8 +84,8 @@ namespace Characters.SkillSystems.SkillRuntimes
                         player?.CameraController.SetFollowTarget(null);
                     }
 
-                    speedMultiplier += skillData.GodSpeedPhaseSpeedStepUp;
-                    speedMultiplier = Mathf.Clamp(speedMultiplier, 1, skillData.GodSpeedPhaseMaxSpeedMultiplier);
+                    speedMultiplier += skillData.GodSpeedPhaseSpeedStepUp/100;
+                    speedMultiplier = Mathf.Clamp(speedMultiplier, 1, skillData.GodSpeedPhaseMaxSpeedMultiplier/100);
                 }
 
                 var curve = skillData.RandomCurve.Count > 0
@@ -170,7 +171,8 @@ namespace Characters.SkillSystems.SkillRuntimes
 
                 foreach (var l in Physics2D.OverlapCircleAll(target.position, lookaheadRadius, damageLayer))
                 {
-                    if (!l || l.transform == owner.transform || l.transform == target || _dashedTargets.Contains(l.transform))
+                    if (!l || l.transform == owner.transform || l.transform == target ||
+                        _dashedTargets.Contains(l.transform))
                         continue;
                     futureTargets++;
                 }

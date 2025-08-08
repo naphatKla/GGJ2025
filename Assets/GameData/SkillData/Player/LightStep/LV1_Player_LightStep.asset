@@ -38,6 +38,8 @@ MonoBehaviour:
   level: 1
   cooldown: 10
   statusEffectOnSkillStart: []
+  baseDamagePerHit: 35
+  damageMultiplier: 100
   startLightStepRadius: 25
   lightStepRadius: 15
   lightStepSpeed: 36
@@ -246,11 +248,11 @@ MonoBehaviour:
     m_RotationOrder: 4
   lifeStealPercentChance: 10
   lifeStealEffective: 10
-  normalPhaseSpeedStepUp: 0.1
-  normalPhaseMaxSpeedMultiplier: 1.75
+  normalPhaseSpeedStepUp: 10
+  normalPhaseMaxSpeedMultiplier: 175
   godSpeedPhaseStartHit: 5
-  godSpeedPhaseSpeedStepUp: 0.5
-  godSpeedPhaseMaxSpeedMultiplier: 4
+  godSpeedPhaseSpeedStepUp: 50
+  godSpeedPhaseMaxSpeedMultiplier: 400
   effectWhileLightStep:
   - effectData: {fileID: 11400000, guid: aa4dff95f38494c4e876f8f95511ecf0, type: 2}
     isOverrideDuration: 1

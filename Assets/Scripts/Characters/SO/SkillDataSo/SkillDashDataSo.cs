@@ -21,6 +21,13 @@ namespace Characters.SO.SkillDataSo
         [SerializeField] private float dashDuration = 0.3f;
         
         [FoldoutGroup("Dash Configs")]
+        [SerializeField] private float dashBaseDamage = 0;
+        
+        [Unit(Units.Percent)]
+        [FoldoutGroup("Dash Configs")]
+        [SerializeField] private float damageMultiplier = 100;
+        
+        [FoldoutGroup("Dash Configs")]
         [SerializeField] private float damageEnableDuration = 0.35f;
 
         [FoldoutGroup("Dash Configs")]
@@ -61,6 +68,10 @@ namespace Characters.SO.SkillDataSo
         /// Determines how long the dash takes from start to finish.
         /// </summary>
         public float DashDuration => dashDuration;
+
+        public float DashBaseDamage => dashBaseDamage;
+
+        public float DamageMultiplier => damageMultiplier;
 
         public float DamageEnableDuration => damageEnableDuration;
 

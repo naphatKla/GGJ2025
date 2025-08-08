@@ -13,9 +13,13 @@ namespace Characters.SO.SkillDataSo
 
         [FoldoutGroup("Parry Configs")] [SerializeField]
         private float parryDuration;
-
+        
         [FoldoutGroup("Parry Configs")] [Title("Parry Succession")] [SerializeField]
-        private float explosionDamageMultiplier;
+        private float explosionBaseDamage = 0;
+
+        [Unit(Units.Percent)] 
+        [FoldoutGroup("Parry Configs")] [SerializeField]
+        private float explosionDamageMultiplier = 100;
 
         [FoldoutGroup("Parry Configs")] 
         [SerializeField] private float explosionRadius;
@@ -31,6 +35,7 @@ namespace Characters.SO.SkillDataSo
 
         public bool StopWhileParry => stopWhileParry;
         public float ParryDuration => parryDuration;
+        public float ExplosionBaseDamage => explosionBaseDamage;
         public float ExplosionDamageMultiplier => explosionDamageMultiplier;
         public float ExplosionRadius => explosionRadius;
         public List<StatusEffectDataPayload> ExplosionEffectsToTarget => explosionEffectsToTarget;

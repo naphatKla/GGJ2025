@@ -10,6 +10,13 @@ namespace Characters.SO.SkillDataSo
     public class SkillLightStepDataSo : BaseSkillDataSo
     {
         [FoldoutGroup("Light Step Configs"), SerializeField]
+        private float baseDamagePerHit = 35f;
+        
+        [Unit(Units.Percent)]
+        [FoldoutGroup("Light Step Configs"), SerializeField]
+        private float damageMultiplier = 100;
+        
+        [FoldoutGroup("Light Step Configs"), SerializeField]
         private float startLightStepRadius = 12f;
 
         [FoldoutGroup("Light Step Configs"), SerializeField]
@@ -36,25 +43,31 @@ namespace Characters.SO.SkillDataSo
         [FoldoutGroup("Light Step Configs/Life Steal"), SerializeField]
         private float lifeStealEffective = 10;
         
+        [Unit(Units.Percent)]
         [FoldoutGroup("Light Step Configs/Normal Phase"), SerializeField]
-        private float normalPhaseSpeedStepUp = 0.5f;
+        private float normalPhaseSpeedStepUp = 10f;
         
+        [Unit(Units.Percent)]
         [FoldoutGroup("Light Step Configs/Normal Phase"), SerializeField]
-        private float normalPhaseMaxSpeedMultiplier = 3f;
+        private float normalPhaseMaxSpeedMultiplier = 175f;
         
         [FormerlySerializedAs("godSpeedPhaseStartTime")] [FoldoutGroup("Light Step Configs/God Speed Phase"), SerializeField]
         private int godSpeedPhaseStartHit = 5;
         
+        [Unit(Units.Percent)]
         [FoldoutGroup("Light Step Configs/God Speed Phase"), SerializeField]
-        private float godSpeedPhaseSpeedStepUp = 1f;
+        private float godSpeedPhaseSpeedStepUp = 50f;
         
+        [Unit(Units.Percent)]
         [FoldoutGroup("Light Step Configs/God Speed Phase"), SerializeField]
-        private float godSpeedPhaseMaxSpeedMultiplier = 6f;
+        private float godSpeedPhaseMaxSpeedMultiplier = 400f;
         
         [FoldoutGroup("Status Effects"), SerializeField]
         private List<StatusEffectDataPayload> effectWhileLightStep;
 
         // Public accessors
+        public float BaseDamagePerHit => baseDamagePerHit;
+        public float DamageMultiplier => damageMultiplier;
         public float StartLightStepRadius => startLightStepRadius;
         public float LightStepRadius => lightStepRadius;
         public float TargetAmount => targetAmount;
