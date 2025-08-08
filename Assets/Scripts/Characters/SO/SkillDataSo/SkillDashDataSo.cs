@@ -16,20 +16,20 @@ namespace Characters.SO.SkillDataSo
         #region Inspector & Variables
         
         [Unit(Units.Second)]
+        [FoldoutGroup("Damage Configs")]
+        [SerializeField] private float dashBaseDamage = 0;
+        
+        [Unit(Units.Percent)]
+        [FoldoutGroup("Damage Configs")]
+        [SerializeField] private float damageMultiplier = 100;
+        
+        [FoldoutGroup("Damage Configs")]
+        [SerializeField] private float damageEnableDuration = 0.35f;
+        
         [FoldoutGroup("Dash Configs")]
         [PropertyTooltip("Duration of the dash movement in seconds.")]
         [SerializeField] private float dashDuration = 0.3f;
         
-        [FoldoutGroup("Dash Configs")]
-        [SerializeField] private float dashBaseDamage = 0;
-        
-        [Unit(Units.Percent)]
-        [FoldoutGroup("Dash Configs")]
-        [SerializeField] private float damageMultiplier = 100;
-        
-        [FoldoutGroup("Dash Configs")]
-        [SerializeField] private float damageEnableDuration = 0.35f;
-
         [FoldoutGroup("Dash Configs")]
         [PropertyTooltip("Total distance the character will dash forward.")]
         [SerializeField] private float dashDistance = 8f;

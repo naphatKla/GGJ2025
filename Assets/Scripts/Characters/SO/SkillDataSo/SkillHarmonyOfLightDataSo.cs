@@ -13,14 +13,14 @@ namespace Characters.SO.SkillDataSo
         [FoldoutGroup("Skill Objects")] [SerializeField]
         private HarmonyOfLightSkillObject lightPrefab;
 
-        [FoldoutGroup("Skill Objects")] [SerializeField]
+        [FoldoutGroup("Damage Configs")] [SerializeField]
         private float damageHitPerSec = 5f;
         
-        [FoldoutGroup("Skill Objects")] [SerializeField]
+        [FoldoutGroup("Damage Configs")] [SerializeField]
         private float baseDamagePerHit = 40f;
         
         [Unit(Units.Percent)]
-        [FoldoutGroup("Skill Objects")] [SerializeField]
+        [FoldoutGroup("Damage Configs")] [SerializeField]
         private float damageMultiplier = 100f;
         
         [FoldoutGroup("Harmony Configs")]

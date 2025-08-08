@@ -9,12 +9,20 @@ namespace Characters.SO.SkillDataSo
     [CreateAssetMenu(fileName = "SkillLightStepData", menuName = "GameData/SkillData/SkillLightStepData")]
     public class SkillLightStepDataSo : BaseSkillDataSo
     {
-        [FoldoutGroup("Light Step Configs"), SerializeField]
+        [FoldoutGroup("Damage Configs"), SerializeField]
         private float baseDamagePerHit = 35f;
         
         [Unit(Units.Percent)]
-        [FoldoutGroup("Light Step Configs"), SerializeField]
+        [FoldoutGroup("Damage Configs"), SerializeField]
         private float damageMultiplier = 100;
+        
+        [Unit(Units.Percent)] 
+        [FoldoutGroup("Damage Configs"), SerializeField]
+        private float lifeStealPercentChance = 10;
+        
+        [Unit(Units.Percent)] 
+        [FoldoutGroup("Damage Configs"), SerializeField]
+        private float lifeStealEffective = 10;
         
         [FoldoutGroup("Light Step Configs"), SerializeField]
         private float startLightStepRadius = 12f;
@@ -34,14 +42,6 @@ namespace Characters.SO.SkillDataSo
         [FoldoutGroup("Light Step Configs"), SerializeField]
         [PropertySpace(SpaceBefore = 5f, SpaceAfter = 10)]
         private List<AnimationCurve> randomCurve;
-        
-        [Unit(Units.Percent)] 
-        [FoldoutGroup("Light Step Configs/Life Steal"), SerializeField]
-        private float lifeStealPercentChance = 10;
-        
-        [Unit(Units.Percent)] 
-        [FoldoutGroup("Light Step Configs/Life Steal"), SerializeField]
-        private float lifeStealEffective = 10;
         
         [Unit(Units.Percent)]
         [FoldoutGroup("Light Step Configs/Normal Phase"), SerializeField]

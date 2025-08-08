@@ -31,17 +31,17 @@ namespace Characters.SO.SkillDataSo
         [SerializeField] [Required]
         private ReflectionSkillObject reflectionSkillObject;
         
-        [FoldoutGroup("Skill Object")]
+        [FoldoutGroup("Damage Configs")]
         [PropertyTooltip("Total number of skill objects hit per second")]
         [SerializeField]
         private float damageHitPerSec = 3;
         
-        [FoldoutGroup("Skill Object")]
+        [FoldoutGroup("Damage Configs")]
         [PropertyTooltip("Total number of skill objects hit per second")]
         [SerializeField]
         private float baseDamagePerHit = 5;
         
-        [FoldoutGroup("Skill Object")]
+        [FoldoutGroup("Damage Configs")]
         [PropertyTooltip("Total number of skill objects hit per second")]
         [SerializeField]  [Unit(Units.Percent)]
         private float damageMultiplier = 100;
