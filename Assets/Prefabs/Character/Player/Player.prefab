@@ -7451,6 +7451,7 @@ GameObject:
   - component: {fileID: 4851925125693906224}
   - component: {fileID: 2247090465659933957}
   - component: {fileID: 2317232942345144483}
+  - component: {fileID: 5785369636543128780}
   - component: {fileID: 7467346900322984913}
   m_Layer: 7
   m_Name: Player
@@ -7501,6 +7502,7 @@ MonoBehaviour:
   comboSystem: {fileID: 2247090465659933957}
   levelSystem: {fileID: 2047403147416900316}
   skillUpgradeController: {fileID: 7127418468070666774}
+  cameraController: {fileID: 5785369636543128780}
 --- !u!114 &1766625338755230343
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7917,6 +7919,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ownerMovementSystem: {fileID: 4786182755069043034}
   _sprite: {fileID: 6549836709308188830}
+--- !u!114 &5785369636543128780
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2726293917207744010}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 043d53974225037418d6ff18b5ef4807, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  virtualCameras:
+  - {fileID: 0}
 --- !u!60 &7467346900322984913
 PolygonCollider2D:
   m_ObjectHideFlags: 0

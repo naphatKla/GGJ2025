@@ -19,6 +19,7 @@ namespace Characters.Controllers
         [SerializeField] protected LevelSystem levelSystem;
         [SerializeField] protected SkillUpgradeController skillUpgradeController;
         [SerializeField] protected Cinemachine2DCameraController cameraController;
+        public Cinemachine2DCameraController CameraController => cameraController;
 
         /// <summary>
         /// A global static reference to the current player instance.

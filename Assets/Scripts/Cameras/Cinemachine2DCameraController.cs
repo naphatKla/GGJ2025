@@ -8,13 +8,16 @@ namespace Cameras
 {
     public class Cinemachine2DCameraController : MonoBehaviour
     {
-        [Header("Camera References")] [SerializeField]
-        private CinemachineVirtualCamera[] virtualCameras;
+        [Header("Camera References")]
+        [SerializeField] private CinemachineVirtualCamera[] virtualCameras;
 
+        private bool _isInit;
         private CinemachineVirtualCamera currentCam;
         private float defaultOrthoSize;
         private float defaultFOV;
         private float defaultFollowDamping;
+        private Transform defaultFollowTarget;
+        private Transform defaultLookAtTarget;
 
         private CancellationTokenSource orthoSizeCTS;
         private CancellationTokenSource fovCTS;
@@ -29,6 +32,7 @@ namespace Cameras
             }
 
             SetActiveCamera(0);
+            _isInit = true;
         }
 
         public void SetActiveCamera(int index)
@@ -50,6 +54,8 @@ namespace Cameras
         {
             defaultOrthoSize = currentCam.m_Lens.OrthographicSize;
             defaultFOV = currentCam.m_Lens.FieldOfView;
+            defaultFollowTarget = currentCam.Follow;
+            defaultLookAtTarget = currentCam.LookAt;
 
             var transposer = currentCam.GetCinemachineComponent<CinemachineFramingTransposer>();
             if (transposer != null)
@@ -114,23 +120,6 @@ namespace Cameras
             }
         }
 
-        public void ResetLerpValues()
-        {
-            if (currentCam == null) return;
-
-            orthoSizeCTS?.Cancel();
-            fovCTS?.Cancel();
-
-            currentCam.m_Lens.OrthographicSize = defaultOrthoSize;
-            currentCam.m_Lens.FieldOfView = defaultFOV;
-
-            var transposer = currentCam.GetCinemachineComponent<CinemachineFramingTransposer>();
-            if (transposer != null)
-            {
-                transposer.m_XDamping = defaultFollowDamping;
-            }
-        }
-
         public void SetFollowSpeed(float newDamping)
         {
             if (currentCam == null) return;
@@ -148,24 +137,43 @@ namespace Cameras
             currentCam.Follow = target;
         }
 
-        public void ResetCamera()
+        public void ResetCamera(float duration = 0.5f)
         {
-            if (currentCam == null) return;
+            if (!_isInit || currentCam == null) return;
 
             orthoSizeCTS?.Cancel();
             fovCTS?.Cancel();
 
-            currentCam.m_Lens.OrthographicSize = defaultOrthoSize;
-            currentCam.m_Lens.FieldOfView = defaultFOV;
+            // Start new lerps
+            LerpOrthoSize(defaultOrthoSize, duration).Forget();
+            LerpFOV(defaultFOV, duration).Forget();
 
-            currentCam.Follow = null;
-            currentCam.LookAt = null;
+            // Restore follow/lookAt
+            currentCam.Follow = defaultFollowTarget;
+            currentCam.LookAt = defaultLookAtTarget;
 
+            // Damping reset
             var transposer = currentCam.GetCinemachineComponent<CinemachineFramingTransposer>();
             if (transposer != null)
             {
-                transposer.m_XDamping = defaultFollowDamping;
+                float startDamping = transposer.m_XDamping;
+                float targetDamping = defaultFollowDamping;
+                LerpDamping(transposer, startDamping, targetDamping, duration).Forget();
             }
+        }
+
+        private async UniTaskVoid LerpDamping(CinemachineFramingTransposer transposer, float start, float target, float duration)
+        {
+            float time = 0;
+            while (time < duration)
+            {
+                time += Time.deltaTime;
+                float t = time / duration;
+                transposer.m_XDamping = Mathf.Lerp(start, target, t);
+                await UniTask.Yield();
+            }
+
+            transposer.m_XDamping = target;
         }
     }
 }

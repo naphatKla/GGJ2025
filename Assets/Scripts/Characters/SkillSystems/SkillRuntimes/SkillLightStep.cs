@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading;
+using Characters.Controllers;
 using Characters.FeedbackSystems;
 using Characters.SO.SkillDataSo;
 using Characters.StatusEffectSystems;
@@ -49,9 +50,17 @@ namespace Characters.SkillSystems.SkillRuntimes
             if (cancelToken.IsCancellationRequested) return;
             owner.SkillSystem.SetCanUsePrimary(false);
             owner.SkillSystem.SetCanUseSecondary(false);
-            owner.TryStopFeedback(FeedbackName.LightStepUse);
+
             owner.TryPlayFeedback(FeedbackName.LightStepUse);
             owner.FeedbackSystem.SetIgnoreFeedback(FeedbackName.CounterAttack, true);
+
+            PlayerController player = null;
+            if (owner is PlayerController playerController)
+            {
+                player = playerController;
+                player.CameraController.LerpOrthoSize(18f, 0.5f).Forget();
+                //player.CameraController.LerpFOV(90, 1).Forget();
+            }
 
             startTime = Time.time;
             StatusEffectManager.ApplyEffectTo(owner.gameObject, skillData.EffectWhileLightStep);
@@ -73,6 +82,8 @@ namespace Characters.SkillSystems.SkillRuntimes
                     if (!_inGodSpeedPhase)
                     {
                         _inGodSpeedPhase = true;
+                        player?.CameraController.LerpOrthoSize(22f, 0.25f).Forget();
+                        player?.CameraController.SetFollowTarget(null);
                         // Enter god speed phase feedback or effect
                     }
 
@@ -101,8 +112,9 @@ namespace Characters.SkillSystems.SkillRuntimes
                     .WithCancellation(cancelToken);
 
                 radius = skillData.LightStepRadius;
+                Debug.Log(i);
             }
-
+            
             _isSuccess = true;
         }
 
@@ -130,6 +142,12 @@ namespace Characters.SkillSystems.SkillRuntimes
             owner.TryPlayFeedback(FeedbackName.LightStepEnd);
             owner.FeedbackSystem.SetIgnoreFeedback(FeedbackName.CounterAttack, false);
             owner.FeedbackSystem.SetIgnoreFeedback(FeedbackName.LightStepEnd, false);
+
+            if (owner is PlayerController player)
+            {
+                player.CameraController.ResetCamera(0.25f);
+            }
+
             await UniTask.WaitForSeconds(0.5f, cancellationToken: destroyCancellationToken);
             StatusEffectManager.RemoveEffectAt(owner.gameObject, StatusEffectName.Iframe);
         }
