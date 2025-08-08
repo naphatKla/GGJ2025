@@ -24,6 +24,21 @@ MonoBehaviour:
   autoSkillDataList: []
   baseExpLevelUp: 500
   expMultiplierPerLevel: 1.25
+  attackHitCameraShakeOption:
+    force: 10
+    frequency: 0.1
+    duration: 0.1
+  counterAttackHitCameraShakeOption:
+    force: 12
+    frequency: 0.1
+    duration: 0.1
+  counterAttackHitOrthoOption:
+    targetSize: 13
+    duration: 0.1
+  takeDamageCameraShakeOption:
+    force: 10
+    frequency: 0.1
+    duration: 0.1
   upgradeChoicesCount: 3
   skillUpgradePool:
   - {fileID: 11400000, guid: 9a46408e5bdddd547be40c1e80dff589, type: 2}

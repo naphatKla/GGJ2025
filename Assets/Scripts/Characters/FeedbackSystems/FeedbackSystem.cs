@@ -19,8 +19,8 @@ namespace Characters.FeedbackSystems
         [PropertyTooltip("List of feedbacks mapped by enum keys. Used to play/stop feedbacks at runtime.")]
         [DictionaryDrawerSettings(KeyLabel = "Feedback Name", ValueLabel = "MMF_Player Reference")]
         [OdinSerialize]
-        private Dictionary<FeedbackName, MMF_Player> _feedbackList;
-        private readonly HashSet<FeedbackName> _ignoreFeedbackList = new();
+        protected Dictionary<FeedbackName, MMF_Player> feedbackList;
+        protected readonly HashSet<FeedbackName> ignoreFeedbackList = new();
 
         [SerializeField] private TrailRenderer trail;
 
@@ -33,38 +33,38 @@ namespace Characters.FeedbackSystems
         /// Typically used by other character systems like skills, movement, or damage events.
         /// </summary>
         /// <param name="feedbackName">The key representing the feedback to play.</param>
-        public void PlayFeedback(FeedbackName feedbackName)
+        public virtual void PlayFeedback(FeedbackName feedbackName)
         {
-            if (!_feedbackList.ContainsKey(feedbackName)) return;
-            if (_ignoreFeedbackList.Contains(feedbackName)) return;
-            _feedbackList[feedbackName]?.PlayFeedbacks();
+            if (!feedbackList.ContainsKey(feedbackName)) return;
+            if (ignoreFeedbackList.Contains(feedbackName)) return;
+            feedbackList[feedbackName]?.PlayFeedbacks();
         }
 
         /// <summary>
         /// Stops the feedback associated with the given key, if currently playing.
         /// </summary>
         /// <param name="feedbackName">The key representing the feedback to stop.</param>
-        public void StopFeedback(FeedbackName feedbackName)
+        public virtual void StopFeedback(FeedbackName feedbackName)
         {
-            if (!_feedbackList.ContainsKey(feedbackName)) return;
-            _feedbackList[feedbackName]?.StopFeedbacks();
+            if (!feedbackList.ContainsKey(feedbackName)) return;
+            feedbackList[feedbackName]?.StopFeedbacks();
         }
 
-        public bool IsFeedbackPlaying(FeedbackName feedbackName)
+        public virtual bool IsFeedbackPlaying(FeedbackName feedbackName)
         {
-            if (!_feedbackList.ContainsKey(feedbackName)) return false;
-            return _feedbackList[feedbackName].IsPlaying;
+            if (!feedbackList.ContainsKey(feedbackName)) return false;
+            return feedbackList[feedbackName].IsPlaying;
         }
 
-        public void SetIgnoreFeedback(FeedbackName feedbackName, bool isIgnore)
+        public virtual void SetIgnoreFeedback(FeedbackName feedbackName, bool isIgnore)
         {
             if (isIgnore)
             {
-                _ignoreFeedbackList.Add(feedbackName);
+                ignoreFeedbackList.Add(feedbackName);
                 return;
             }
 
-            _ignoreFeedbackList.Remove(feedbackName);
+            ignoreFeedbackList.Remove(feedbackName);
         }
 
         public void ShowTrail(bool enable)

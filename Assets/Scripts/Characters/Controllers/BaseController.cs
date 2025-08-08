@@ -152,7 +152,7 @@ namespace Characters.Controllers
             healthSystem.AssignHealthData(
                 characterData.MaxHealth,
                 characterData.InvincibleTimePerHit, this);
-            combatSystem.AssignCombatData(characterData.BaseDamage);
+            combatSystem.AssignCombatData(characterData.BaseDamage, this);
         }
         
         protected virtual void SubscribeDependency()

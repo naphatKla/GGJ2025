@@ -2,14 +2,70 @@ using System;
 using System.Threading;
 using Cinemachine;
 using Cysharp.Threading.Tasks;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace Cameras
 {
+    [Serializable]
+    public class CameraShakeOption
+    {
+        [BoxGroup("Shake Settings")]
+        [LabelText("Shake Force")]
+        [MinValue(0f)]
+        public float force = 15f;
+
+        [BoxGroup("Shake Settings")]
+        [LabelText("Shake Frequency")]
+        [MinValue(0f)]
+        public float frequency = 0.1f;
+
+        [BoxGroup("Shake Settings")]
+        [LabelText("Shake Duration")]
+        [MinValue(0f)]
+        public float duration = 0.3f;
+    }
+
+    [Serializable]
+    public class CameraOrthoOption
+    {
+        [BoxGroup("Ortho Settings")]
+        [LabelText("Target Size")]
+        [MinValue(0f)]
+        public float targetSize = 13.75f;
+
+        [BoxGroup("Ortho Settings")]
+        [LabelText("Lerp Duration")]
+        [MinValue(0f)]
+        public float duration = 0.5f;
+    }
+
+    [Serializable]
+    public class CameraFOVOption
+    {
+        [BoxGroup("FOV Settings")]
+        [LabelText("Target FOV")]
+        [MinValue(0f)]
+        public float targetFOV = 60f;
+
+        [BoxGroup("FOV Settings")]
+        [LabelText("Lerp Duration")]
+        [MinValue(0f)]
+        public float duration = 0.5f;
+    }
+
     public class Cinemachine2DCameraController : MonoBehaviour
     {
-        [Header("Camera References")] [SerializeField]
-        private CinemachineVirtualCamera[] virtualCameras;
+        [Header("Camera References")]
+        [SerializeField] private CinemachineVirtualCamera[] virtualCameras;
+
+        [Header("Impulse Source")]
+        [SerializeField] private CinemachineImpulseSource impulseSource;
+
+        [Header("Shake Config")]
+        [SerializeField] private float defaultShakeForce = 15f;
+        [SerializeField] private float defaultShakeDuration = 0.3f;
+        [SerializeField] private float defaultShakeFrequency = 1f;
 
         private bool _isInit;
         private CinemachineVirtualCamera currentCam;
@@ -27,6 +83,13 @@ namespace Cameras
             if (virtualCameras == null || virtualCameras.Length == 0)
             {
                 Debug.LogError("[CameraController] No virtual cameras assigned!");
+                enabled = false;
+                return;
+            }
+
+            if (impulseSource == null)
+            {
+                Debug.LogError("[CameraController] No impulse source assigned!");
                 enabled = false;
                 return;
             }
@@ -59,9 +122,7 @@ namespace Cameras
 
             var transposer = currentCam.GetCinemachineComponent<CinemachineFramingTransposer>();
             if (transposer != null)
-            {
                 defaultFollowDamping = transposer.m_XDamping;
-            }
         }
 
         public async UniTask LerpOrthoSize(float targetSize, float duration)
@@ -86,10 +147,12 @@ namespace Cameras
 
                 currentCam.m_Lens.OrthographicSize = targetSize;
             }
-            catch (OperationCanceledException)
-            {
-                // Lerp interrupted
-            }
+            catch (OperationCanceledException) { }
+        }
+
+        public async UniTask LerpOrthoSize(CameraOrthoOption option)
+        {
+            await LerpOrthoSize(option.targetSize, option.duration);
         }
 
         public async UniTask LerpFOV(float targetFOV, float duration)
@@ -114,10 +177,12 @@ namespace Cameras
 
                 currentCam.m_Lens.FieldOfView = targetFOV;
             }
-            catch (OperationCanceledException)
-            {
-                // Lerp interrupted
-            }
+            catch (OperationCanceledException) { }
+        }
+
+        public async UniTask LerpFOV(CameraFOVOption option)
+        {
+            await LerpFOV(option.targetFOV, option.duration);
         }
 
         public void SetFollowSpeed(float newDamping)
@@ -126,9 +191,7 @@ namespace Cameras
 
             var transposer = currentCam.GetCinemachineComponent<CinemachineFramingTransposer>();
             if (transposer != null)
-            {
                 transposer.m_XDamping = newDamping;
-            }
         }
 
         public void SetFollowTarget(Transform target)
@@ -144,26 +207,18 @@ namespace Cameras
             orthoSizeCTS?.Cancel();
             fovCTS?.Cancel();
 
-            // Start new lerps
             LerpOrthoSize(defaultOrthoSize, duration).Forget();
             LerpFOV(defaultFOV, duration).Forget();
 
-            // Restore follow/lookAt
             currentCam.Follow = defaultFollowTarget;
             currentCam.LookAt = defaultLookAtTarget;
 
-            // Damping reset
             var transposer = currentCam.GetCinemachineComponent<CinemachineFramingTransposer>();
             if (transposer != null)
-            {
-                float startDamping = transposer.m_XDamping;
-                float targetDamping = defaultFollowDamping;
-                LerpDamping(transposer, startDamping, targetDamping, duration).Forget();
-            }
+                LerpDamping(transposer, transposer.m_XDamping, defaultFollowDamping, duration).Forget();
         }
 
-        private async UniTaskVoid LerpDamping(CinemachineFramingTransposer transposer, float start, float target,
-            float duration)
+        private async UniTaskVoid LerpDamping(CinemachineFramingTransposer transposer, float start, float target, float duration)
         {
             float time = 0;
             while (time < duration)
@@ -173,7 +228,6 @@ namespace Cameras
                 transposer.m_XDamping = Mathf.Lerp(start, target, t);
                 await UniTask.Yield();
             }
-
             transposer.m_XDamping = target;
         }
 
@@ -181,8 +235,47 @@ namespace Cameras
         {
             if (currentCam == null || currentCam.VirtualCameraGameObject == null)
                 return Vector3.zero;
-
             return currentCam.VirtualCameraGameObject.transform.position;
+        }
+
+        public void ShakeCamera(float force = -1f, float? frequency = null, float? duration = null)
+        {
+            if (impulseSource == null)
+            {
+                Debug.LogWarning("[CameraController] No impulse source found for shake!");
+                return;
+            }
+
+            float actualForce = force < 0 ? defaultShakeForce : force;
+            float actualFreq = frequency ?? defaultShakeFrequency;
+            float actualDur = duration ?? defaultShakeDuration;
+
+            var def = impulseSource.m_ImpulseDefinition;
+            def.m_FrequencyGain = actualFreq;
+            def.m_ImpulseDuration = actualDur;
+
+            impulseSource.m_DefaultVelocity = Vector3.one * actualForce;
+            impulseSource.GenerateImpulse();
+        }
+
+        public void ShakeCamera(CameraShakeOption option)
+        {
+            if (option == null)
+            {
+                ShakeCamera();
+                return;
+            }
+
+            float force = option.force <= 0 ? defaultShakeForce : option.force;
+            float frequency = Mathf.Max(option.frequency, 0f);
+            float duration = Mathf.Max(option.duration, 0.01f);
+
+            var def = impulseSource.m_ImpulseDefinition;
+            def.m_FrequencyGain = frequency;
+            def.m_ImpulseDuration = duration;
+
+            impulseSource.m_DefaultVelocity = Vector3.one * force;
+            impulseSource.GenerateImpulse();
         }
     }
 }

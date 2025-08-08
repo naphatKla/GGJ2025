@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Cameras;
 using Characters.SO.SkillDataSo;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -14,6 +15,18 @@ namespace Characters.SO.CharacterDataSO
         [FoldoutGroup("Combat")]
         [SerializeField] private float expMultiplierPerLevel;
 
+        [FoldoutGroup("Camera Settings")] [SerializeField]
+        private CameraShakeOption attackHitCameraShakeOption;
+        
+        [FoldoutGroup("Camera Settings")] [SerializeField]
+        private CameraShakeOption counterAttackHitCameraShakeOption;
+
+        [FoldoutGroup("Camera Settings")] [SerializeField]
+        private CameraOrthoOption counterAttackHitOrthoOption;
+        
+        [FoldoutGroup("Camera Settings")] [SerializeField]
+        private CameraShakeOption takeDamageCameraShakeOption;
+        
         public float BaseExpLevelUp => baseExpLevelUp;
         public float ExpMultiplierPerLevel => expMultiplierPerLevel;
 
@@ -35,5 +48,11 @@ namespace Characters.SO.CharacterDataSO
         // Proxy for Odin (required non-inherited methods)
         public bool IsSkillUpgradePoolUniqueProxy(List<BaseSkillDataSo> pool) => IsSkillPoolUnique(pool);
         public bool IsAllSkillLv1Proxy(List<BaseSkillDataSo> pool) => IsAllLv1(pool);
+
+        public CameraShakeOption AttackHitCameraShakeOption => attackHitCameraShakeOption;
+        public CameraShakeOption CounterAttackHitCameraShakeOption => counterAttackHitCameraShakeOption;
+        public CameraOrthoOption CounterAttackHitOrthoOption => counterAttackHitOrthoOption;
+
+        public CameraShakeOption TakeDamageCameraShakeOption => takeDamageCameraShakeOption;
     }
 }

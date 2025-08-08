@@ -1,6 +1,8 @@
 using System;
 using Characters.Controllers;
 using Characters.FeedbackSystems;
+using Characters.SO.CharacterDataSO;
+using Cysharp.Threading.Tasks;
 using Manager;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -31,7 +33,7 @@ namespace Characters.CombatSystems
         /// Owner controller.
         /// </summary>
         private BaseController _owner;
-
+        
         /// <summary>
         /// Event triggered whenever this character successfully deals damage.
         /// Useful for triggering combo counters, visual effects, or gameplay responses.
@@ -52,10 +54,11 @@ namespace Characters.CombatSystems
         /// Also initializes the current damage value to match the base.
         /// </summary>
         /// <param name="baseDamage">The base damage to be used for combat calculations.</param>
-        public void AssignCombatData(float baseDamage)
+        public void AssignCombatData(float baseDamage, BaseController owner)
         {
             _baseDamage = baseDamage;
             _currentDamage = baseDamage;
+            _owner = owner;
         }
 
         /// <summary>
@@ -76,19 +79,19 @@ namespace Characters.CombatSystems
         public void OnCounterAttackHandler()
         {
             OnCounterAttack?.Invoke();
-            
-            if (!TryGetComponent(out BaseController owner)) return;
-            owner?.TryPlayFeedback(FeedbackName.CounterAttack);
+            _owner.TryPlayFeedback(FeedbackName.CounterAttack);
         }
 
         public void OnDealDamageHandler(DamageData damageData)
         {
             OnDealDamage?.Invoke(damageData);
-            
-            if (!TryGetComponent(out BaseController owner)) return;
-            owner?.TryPlayFeedback(FeedbackName.AttackHit);
+            _owner.TryPlayFeedback(FeedbackName.AttackHit);
         }
 
+        private async UniTask ResetOrthoAfterLerp(float waitTime)
+        {
+            await UniTask.WaitForSeconds(waitTime, this, cancellationToken: this.destroyCancellationToken);
+        }
         #endregion
  
     }
