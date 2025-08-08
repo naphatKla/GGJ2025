@@ -42,8 +42,8 @@ namespace Characters.SO.SkillDataSo
         [FoldoutGroup("Light Step Configs/Normal Phase"), SerializeField]
         private float normalPhaseMaxSpeedMultiplier = 3f;
         
-        [FoldoutGroup("Light Step Configs/God Speed Phase"), SerializeField]
-        private float godSpeedPhaseStartTime = 3f;
+        [FormerlySerializedAs("godSpeedPhaseStartTime")] [FoldoutGroup("Light Step Configs/God Speed Phase"), SerializeField]
+        private int godSpeedPhaseStartHit = 5;
         
         [FoldoutGroup("Light Step Configs/God Speed Phase"), SerializeField]
         private float godSpeedPhaseSpeedStepUp = 1f;
@@ -64,7 +64,7 @@ namespace Characters.SO.SkillDataSo
         public float LifeStealEffective => lifeStealEffective;
         public float NormalPhaseSpeedStepUp => normalPhaseSpeedStepUp;
         public float NormalPhaseMaxSpeedMultiplier => normalPhaseMaxSpeedMultiplier;
-        public float GodSpeedPhaseStartTime => godSpeedPhaseStartTime;
+        public float GodSpeedPhaseStartHit => godSpeedPhaseStartHit;
         public float GodSpeedPhaseSpeedStepUp => godSpeedPhaseSpeedStepUp;
         public float GodSpeedPhaseMaxSpeedMultiplier => godSpeedPhaseMaxSpeedMultiplier;
 

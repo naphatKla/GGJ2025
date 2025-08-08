@@ -18,7 +18,6 @@ namespace Characters.SkillSystems.SkillRuntimes
         private bool _isWaitForCounterAttack;
         private bool _isWaitForMovementEnd;
         private bool _inGodSpeedPhase;
-        private float startTime;
         private bool _isSuccess;
 
         private readonly HashSet<Transform> _dashedTargets = new();
@@ -52,17 +51,15 @@ namespace Characters.SkillSystems.SkillRuntimes
             owner.SkillSystem.SetCanUseSecondary(false);
 
             owner.TryPlayFeedback(FeedbackName.LightStepUse);
-            owner.FeedbackSystem.SetIgnoreFeedback(FeedbackName.CounterAttack, true);
 
             PlayerController player = null;
             if (owner is PlayerController playerController)
             {
                 player = playerController;
                 player.CameraController.LerpOrthoSize(18f, 0.5f).Forget();
-                //player.CameraController.LerpFOV(90, 1).Forget();
+                player.CameraController.LerpFOV(90, 1).Forget();
             }
 
-            startTime = Time.time;
             StatusEffectManager.ApplyEffectTo(owner.gameObject, skillData.EffectWhileLightStep);
             owner.DamageOnTouch.EnableDamage(owner.gameObject, this, 3);
 
@@ -77,11 +74,12 @@ namespace Characters.SkillSystems.SkillRuntimes
 
                 float speedMultiplier = 1f + i * skillData.NormalPhaseSpeedStepUp;
 
-                if (Time.time - startTime > skillData.GodSpeedPhaseStartTime)
+                if (i >= skillData.GodSpeedPhaseStartHit)
                 {
                     if (!_inGodSpeedPhase)
                     {
                         _inGodSpeedPhase = true;
+                        owner.FeedbackSystem.SetIgnoreFeedback(FeedbackName.CounterAttack, true);
                         player?.CameraController.LerpOrthoSize(22f, 0.25f).Forget();
                         player?.CameraController.SetFollowTarget(null);
                         // Enter god speed phase feedback or effect
@@ -99,12 +97,6 @@ namespace Characters.SkillSystems.SkillRuntimes
                     ? skillData.RandomCurve[Random.Range(0, skillData.RandomCurve.Count)]
                     : null;
 
-                if (i >= skillData.TargetAmount - 1)
-                {
-                    owner.TryPlayFeedback(FeedbackName.LightStepEnd);
-                    owner.FeedbackSystem.SetIgnoreFeedback(FeedbackName.LightStepEnd, true);
-                }
-
                 await owner.MovementSystem
                     .TryMoveToPositionBySpeed(targetPosition.Value, skillData.LightStepSpeed * speedMultiplier,
                         moveCurve: curve)
@@ -114,7 +106,7 @@ namespace Characters.SkillSystems.SkillRuntimes
                 radius = skillData.LightStepRadius;
                 Debug.Log(i);
             }
-            
+
             _isSuccess = true;
         }
 
@@ -141,11 +133,13 @@ namespace Characters.SkillSystems.SkillRuntimes
             if (!_isSuccess) return;
             owner.TryPlayFeedback(FeedbackName.LightStepEnd);
             owner.FeedbackSystem.SetIgnoreFeedback(FeedbackName.CounterAttack, false);
-            owner.FeedbackSystem.SetIgnoreFeedback(FeedbackName.LightStepEnd, false);
 
             if (owner is PlayerController player)
             {
                 player.CameraController.ResetCamera(0.25f);
+                player?.MovementSystem.TryMoveToPositionBySpeed(
+                    player.CameraController.GetCameraCenterWorldPosition(),
+                    skillData.LightStepSpeed);
             }
 
             await UniTask.WaitForSeconds(0.5f, cancellationToken: destroyCancellationToken);

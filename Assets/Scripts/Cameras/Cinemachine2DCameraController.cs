@@ -8,8 +8,8 @@ namespace Cameras
 {
     public class Cinemachine2DCameraController : MonoBehaviour
     {
-        [Header("Camera References")]
-        [SerializeField] private CinemachineVirtualCamera[] virtualCameras;
+        [Header("Camera References")] [SerializeField]
+        private CinemachineVirtualCamera[] virtualCameras;
 
         private bool _isInit;
         private CinemachineVirtualCamera currentCam;
@@ -162,7 +162,8 @@ namespace Cameras
             }
         }
 
-        private async UniTaskVoid LerpDamping(CinemachineFramingTransposer transposer, float start, float target, float duration)
+        private async UniTaskVoid LerpDamping(CinemachineFramingTransposer transposer, float start, float target,
+            float duration)
         {
             float time = 0;
             while (time < duration)
@@ -174,6 +175,14 @@ namespace Cameras
             }
 
             transposer.m_XDamping = target;
+        }
+
+        public Vector3 GetCameraCenterWorldPosition()
+        {
+            if (currentCam == null || currentCam.VirtualCameraGameObject == null)
+                return Vector3.zero;
+
+            return currentCam.VirtualCameraGameObject.transform.position;
         }
     }
 }
