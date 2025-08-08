@@ -54,11 +54,9 @@ namespace Characters.SkillSystems.SkillRuntimes
 
             PlayerController player = owner as PlayerController;
             
-            if (player != null)
-            {
+            if (player)
                 player.CameraController.LerpOrthoSize(15f, 0.5f).Forget();
-                player.CameraController.LerpFOV(180, 0.5f).Forget();
-            }
+            
 
             StatusEffectManager.ApplyEffectTo(owner.gameObject, skillData.EffectWhileLightStep);
             owner.DamageOnTouch.EnableDamage(owner.gameObject, this, 3);
@@ -83,7 +81,6 @@ namespace Characters.SkillSystems.SkillRuntimes
                         owner.FeedbackSystem.SetIgnoreFeedback(FeedbackName.CounterAttack, true);
                         player?.CameraController.LerpOrthoSize(22f, 0.25f).Forget();
                         player?.CameraController.SetFollowTarget(null);
-                        //player?.CameraController.ShakeCamera(100, 2f);
                     }
 
                     speedMultiplier += skillData.GodSpeedPhaseSpeedStepUp;

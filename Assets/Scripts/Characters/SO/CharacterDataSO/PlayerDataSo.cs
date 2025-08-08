@@ -20,9 +20,6 @@ namespace Characters.SO.CharacterDataSO
         
         [FoldoutGroup("Camera Settings")] [SerializeField]
         private CameraShakeOption counterAttackHitCameraShakeOption;
-
-        [FoldoutGroup("Camera Settings")] [SerializeField]
-        private CameraOrthoOption counterAttackHitOrthoOption;
         
         [FoldoutGroup("Camera Settings")] [SerializeField]
         private CameraShakeOption takeDamageCameraShakeOption;
@@ -51,8 +48,6 @@ namespace Characters.SO.CharacterDataSO
 
         public CameraShakeOption AttackHitCameraShakeOption => attackHitCameraShakeOption;
         public CameraShakeOption CounterAttackHitCameraShakeOption => counterAttackHitCameraShakeOption;
-        public CameraOrthoOption CounterAttackHitOrthoOption => counterAttackHitOrthoOption;
-
         public CameraShakeOption TakeDamageCameraShakeOption => takeDamageCameraShakeOption;
     }
 }

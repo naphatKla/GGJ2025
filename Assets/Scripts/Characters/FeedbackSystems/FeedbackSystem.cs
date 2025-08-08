@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Characters.Controllers;
 using MoreMountains.Feedbacks;
 using Sirenix.OdinInspector;
 using Sirenix.Serialization;
@@ -23,11 +24,17 @@ namespace Characters.FeedbackSystems
         protected readonly HashSet<FeedbackName> ignoreFeedbackList = new();
 
         [SerializeField] private TrailRenderer trail;
+        private BaseController _owner;
 
         #endregion
 
         #region Methods
 
+        public virtual void AssignData(BaseController owner)
+        {
+            _owner = owner;
+        }
+        
         /// <summary>
         /// Plays the feedback associated with the given key, if available.
         /// Typically used by other character systems like skills, movement, or damage events.
@@ -110,5 +117,6 @@ namespace Characters.FeedbackSystems
         ParrySuccess = 4,
         LightStepUse = 5,
         LightStepEnd = 6,
+        HarmonyOfLight = 7,
     }
 }

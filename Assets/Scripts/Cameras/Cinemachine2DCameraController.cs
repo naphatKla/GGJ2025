@@ -40,20 +40,6 @@ namespace Cameras
         public float duration = 0.5f;
     }
 
-    [Serializable]
-    public class CameraFOVOption
-    {
-        [BoxGroup("FOV Settings")]
-        [LabelText("Target FOV")]
-        [MinValue(0f)]
-        public float targetFOV = 60f;
-
-        [BoxGroup("FOV Settings")]
-        [LabelText("Lerp Duration")]
-        [MinValue(0f)]
-        public float duration = 0.5f;
-    }
-
     public class Cinemachine2DCameraController : MonoBehaviour
     {
         [Header("Camera References")]
@@ -66,8 +52,8 @@ namespace Cameras
         [SerializeField] private float defaultShakeForce = 15f;
         [SerializeField] private float defaultShakeDuration = 0.3f;
         [SerializeField] private float defaultShakeFrequency = 1f;
+        [SerializeField] private float defaultShakeCooldown = 0.1f;
 
-        private bool _isInit;
         private CinemachineVirtualCamera currentCam;
         private float defaultOrthoSize;
         private float defaultFOV;
@@ -76,7 +62,8 @@ namespace Cameras
         private Transform defaultLookAtTarget;
 
         private CancellationTokenSource orthoSizeCTS;
-        private CancellationTokenSource fovCTS;
+        private bool _isInit;
+        private float _nextShakeTime = 0f;
 
         private void Awake()
         {
@@ -150,54 +137,9 @@ namespace Cameras
             catch (OperationCanceledException) { }
         }
 
-        public async UniTask LerpOrthoSize(CameraOrthoOption option)
+        public UniTask LerpOrthoSize(CameraOrthoOption option)
         {
-            await LerpOrthoSize(option.targetSize, option.duration);
-        }
-
-        public async UniTask LerpFOV(float targetFOV, float duration)
-        {
-            if (currentCam == null) return;
-
-            fovCTS?.Cancel();
-            fovCTS = new CancellationTokenSource();
-
-            float startFOV = currentCam.m_Lens.FieldOfView;
-            float time = 0;
-
-            try
-            {
-                while (time < duration)
-                {
-                    time += Time.deltaTime;
-                    float t = time / duration;
-                    currentCam.m_Lens.FieldOfView = Mathf.Lerp(startFOV, targetFOV, t);
-                    await UniTask.Yield(PlayerLoopTiming.Update, fovCTS.Token);
-                }
-
-                currentCam.m_Lens.FieldOfView = targetFOV;
-            }
-            catch (OperationCanceledException) { }
-        }
-
-        public async UniTask LerpFOV(CameraFOVOption option)
-        {
-            await LerpFOV(option.targetFOV, option.duration);
-        }
-
-        public void SetFollowSpeed(float newDamping)
-        {
-            if (currentCam == null) return;
-
-            var transposer = currentCam.GetCinemachineComponent<CinemachineFramingTransposer>();
-            if (transposer != null)
-                transposer.m_XDamping = newDamping;
-        }
-
-        public void SetFollowTarget(Transform target)
-        {
-            if (currentCam == null) return;
-            currentCam.Follow = target;
+            return LerpOrthoSize(option.targetSize, option.duration);
         }
 
         public void ResetCamera(float duration = 0.5f)
@@ -205,10 +147,7 @@ namespace Cameras
             if (!_isInit || currentCam == null) return;
 
             orthoSizeCTS?.Cancel();
-            fovCTS?.Cancel();
-
             LerpOrthoSize(defaultOrthoSize, duration).Forget();
-            LerpFOV(defaultFOV, duration).Forget();
 
             currentCam.Follow = defaultFollowTarget;
             currentCam.LookAt = defaultLookAtTarget;
@@ -228,18 +167,36 @@ namespace Cameras
                 transposer.m_XDamping = Mathf.Lerp(start, target, t);
                 await UniTask.Yield();
             }
+
             transposer.m_XDamping = target;
+        }
+
+        public void SetFollowSpeed(float newDamping)
+        {
+            if (currentCam == null) return;
+
+            var transposer = currentCam.GetCinemachineComponent<CinemachineFramingTransposer>();
+            if (transposer != null)
+                transposer.m_XDamping = newDamping;
+        }
+
+        public void SetFollowTarget(Transform target)
+        {
+            if (currentCam == null) return;
+            currentCam.Follow = target;
         }
 
         public Vector3 GetCameraCenterWorldPosition()
         {
             if (currentCam == null || currentCam.VirtualCameraGameObject == null)
                 return Vector3.zero;
+
             return currentCam.VirtualCameraGameObject.transform.position;
         }
 
         public void ShakeCamera(float force = -1f, float? frequency = null, float? duration = null)
         {
+            if (Time.realtimeSinceStartup < _nextShakeTime) return;
             if (impulseSource == null)
             {
                 Debug.LogWarning("[CameraController] No impulse source found for shake!");
@@ -256,10 +213,13 @@ namespace Cameras
 
             impulseSource.m_DefaultVelocity = Vector3.one * actualForce;
             impulseSource.GenerateImpulse();
+
+            _nextShakeTime = Time.realtimeSinceStartup + defaultShakeCooldown;
         }
 
         public void ShakeCamera(CameraShakeOption option)
         {
+            if (Time.realtimeSinceStartup < _nextShakeTime) return;
             if (option == null)
             {
                 ShakeCamera();
@@ -276,6 +236,8 @@ namespace Cameras
 
             impulseSource.m_DefaultVelocity = Vector3.one * force;
             impulseSource.GenerateImpulse();
+
+            _nextShakeTime = Time.realtimeSinceStartup + defaultShakeCooldown;
         }
     }
 }
