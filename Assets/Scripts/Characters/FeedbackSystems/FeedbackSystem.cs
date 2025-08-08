@@ -20,6 +20,7 @@ namespace Characters.FeedbackSystems
         [DictionaryDrawerSettings(KeyLabel = "Feedback Name", ValueLabel = "MMF_Player Reference")]
         [OdinSerialize]
         private Dictionary<FeedbackName, MMF_Player> _feedbackList;
+        private readonly HashSet<FeedbackName> _ignoreFeedbackList = new();
 
         [SerializeField] private TrailRenderer trail;
 
@@ -35,6 +36,7 @@ namespace Characters.FeedbackSystems
         public void PlayFeedback(FeedbackName feedbackName)
         {
             if (!_feedbackList.ContainsKey(feedbackName)) return;
+            if (_ignoreFeedbackList.Contains(feedbackName)) return;
             _feedbackList[feedbackName]?.PlayFeedbacks();
         }
 
@@ -52,6 +54,17 @@ namespace Characters.FeedbackSystems
         {
             if (!_feedbackList.ContainsKey(feedbackName)) return false;
             return _feedbackList[feedbackName].IsPlaying;
+        }
+
+        public void SetIgnoreFeedback(FeedbackName feedbackName, bool isIgnore)
+        {
+            if (isIgnore)
+            {
+                _ignoreFeedbackList.Add(feedbackName);
+                return;
+            }
+
+            _ignoreFeedbackList.Remove(feedbackName);
         }
 
         public void ShowTrail(bool enable)
@@ -95,7 +108,7 @@ namespace Characters.FeedbackSystems
         Reflection = 2,
         ParryUSe = 3,
         ParrySuccess = 4,
-        LightStepNormalPhase = 5,
-        LightStepGodSpeedPhase = 6,
+        LightStepUse = 5,
+        LightStepEnd = 6,
     }
 }

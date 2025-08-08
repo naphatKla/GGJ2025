@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading;
 using Characters.FeedbackSystems;
 using Characters.SO.SkillDataSo;
@@ -17,6 +18,9 @@ namespace Characters.SkillSystems.SkillRuntimes
         private bool _isWaitForMovementEnd;
         private bool _inGodSpeedPhase;
         private float startTime;
+        private bool _isSuccess;
+
+        private readonly HashSet<Transform> _dashedTargets = new();
 
         public override void UpdateCoolDown(float deltaTime)
         {
@@ -28,7 +32,9 @@ namespace Characters.SkillSystems.SkillRuntimes
         {
             _isWaitForCounterAttack = true;
             _isWaitForMovementEnd = true;
+            _dashedTargets.Clear();
             owner.CombatSystem.OnCounterAttack += TriggerCondition;
+            _isSuccess = false;
             SetCurrentCooldown(0);
         }
 
@@ -43,97 +49,172 @@ namespace Characters.SkillSystems.SkillRuntimes
             if (cancelToken.IsCancellationRequested) return;
             owner.SkillSystem.SetCanUsePrimary(false);
             owner.SkillSystem.SetCanUseSecondary(false);
-            owner.TryPlayFeedback(FeedbackName.LightStepNormalPhase);
+            owner.TryStopFeedback(FeedbackName.LightStepUse);
+            owner.TryPlayFeedback(FeedbackName.LightStepUse);
+            owner.FeedbackSystem.SetIgnoreFeedback(FeedbackName.CounterAttack, true);
+
             startTime = Time.time;
             StatusEffectManager.ApplyEffectTo(owner.gameObject, skillData.EffectWhileLightStep);
-
-            Transform closetTarget = GetFurthestNonRepeatedTarget(skillData.StartLightStepRadius);
-            if (!closetTarget) return;
             owner.DamageOnTouch.EnableDamage(owner.gameObject, this, 3);
-            var speedMultiplier = 1f;
-            var radius = skillData.StartLightStepRadius;
-            owner.MovementSystem.StopTween();
+
+            float radius = skillData.StartLightStepRadius;
 
             for (int i = 0; i < skillData.TargetAmount; i++)
             {
-                var randomCurveIndex = Random.Range(0, skillData.RandomCurve.Count);
-                var randomCurve = skillData.RandomCurve.Count > 0 ? skillData.RandomCurve[randomCurveIndex] : null;
+                var targetPosition = GetBestTargetPosition(radius, skillData.LightStepRadius);
+                if (targetPosition == null) break;
 
-                speedMultiplier = Mathf.Clamp(speedMultiplier + skillData.NormalPhaseSpeedStepUp, 1,
-                    skillData.NormalPhaseMaxSpeedMultiplier);
+                owner.MovementSystem.StopTween();
 
-                // god speed phase
+                float speedMultiplier = 1f + i * skillData.NormalPhaseSpeedStepUp;
+
                 if (Time.time - startTime > skillData.GodSpeedPhaseStartTime)
                 {
                     if (!_inGodSpeedPhase)
                     {
                         _inGodSpeedPhase = true;
-                        owner.TryStopFeedback(FeedbackName.LightStepNormalPhase);
-                        owner.TryPlayFeedback(FeedbackName.LightStepGodSpeedPhase);
+                        // Enter god speed phase feedback or effect
                     }
-                    
-                    speedMultiplier = Mathf.Clamp(speedMultiplier + skillData.GodSpeedPhaseSpeedStepUp, 1,
-                        skillData.GodSpeedPhaseMaxSpeedMultiplier);
+
+                    speedMultiplier += skillData.GodSpeedPhaseSpeedStepUp;
+                    speedMultiplier = Mathf.Clamp(speedMultiplier, 1, skillData.GodSpeedPhaseMaxSpeedMultiplier);
+                }
+                else
+                {
+                    speedMultiplier = Mathf.Clamp(speedMultiplier, 1, skillData.NormalPhaseMaxSpeedMultiplier);
                 }
 
-                await owner.MovementSystem.TryMoveToPositionBySpeed(closetTarget.position,
-                        skillData.LightStepSpeed * speedMultiplier, moveCurve: randomCurve).SetEase(Ease.InSine)
+                var curve = skillData.RandomCurve.Count > 0
+                    ? skillData.RandomCurve[Random.Range(0, skillData.RandomCurve.Count)]
+                    : null;
+
+                if (i >= skillData.TargetAmount - 1)
+                {
+                    owner.TryPlayFeedback(FeedbackName.LightStepEnd);
+                    owner.FeedbackSystem.SetIgnoreFeedback(FeedbackName.LightStepEnd, true);
+                }
+
+                await owner.MovementSystem
+                    .TryMoveToPositionBySpeed(targetPosition.Value, skillData.LightStepSpeed * speedMultiplier,
+                        moveCurve: curve)
+                    .SetEase(Ease.InSine)
                     .WithCancellation(cancelToken);
 
-                closetTarget = GetFurthestNonRepeatedTarget(radius);
                 radius = skillData.LightStepRadius;
-                if (!closetTarget) break;
             }
+
+            _isSuccess = true;
         }
 
         protected override void OnSkillExit()
         {
-            ResetOnEnd();
+            ResetOnEnd().Forget();
         }
 
         private void OnDisable()
         {
-            ResetOnEnd();
+            ResetOnEnd().Forget();
         }
 
-        private void ResetOnEnd()
+        private async UniTaskVoid ResetOnEnd()
         {
             owner.CombatSystem.OnCounterAttack -= TriggerCondition;
             owner.SkillSystem.SetCanUsePrimary(true);
             owner.SkillSystem.SetCanUseSecondary(true);
             owner.DamageOnTouch.DisableDamage(this);
-            StatusEffectManager.RemoveEffectAt(owner.gameObject, StatusEffectName.Iframe);
             _isWaitForCounterAttack = false;
             _isWaitForMovementEnd = false;
             _inGodSpeedPhase = false;
+
+            if (!_isSuccess) return;
+            owner.TryPlayFeedback(FeedbackName.LightStepEnd);
+            owner.FeedbackSystem.SetIgnoreFeedback(FeedbackName.CounterAttack, false);
+            owner.FeedbackSystem.SetIgnoreFeedback(FeedbackName.LightStepEnd, false);
+            await UniTask.WaitForSeconds(0.5f, cancellationToken: destroyCancellationToken);
+            StatusEffectManager.RemoveEffectAt(owner.gameObject, StatusEffectName.Iframe);
         }
 
         private void TriggerCondition() => _isWaitForCounterAttack = false;
 
-        private Transform GetFurthestNonRepeatedTarget(float radius)
+        private Vector2? GetBestTargetPosition(float searchRadius, float lookaheadRadius)
         {
             LayerMask damageLayer = CharacterGlobalSettings.Instance.EnemyLayerDictionary[owner.tag];
-            Collider2D[] targetsInRange = Physics2D.OverlapCircleAll(owner.transform.position, radius, damageLayer);
+            Collider2D[] candidates = Physics2D.OverlapCircleAll(owner.transform.position, searchRadius, damageLayer);
+            if (candidates.Length == 0) return null;
 
-            Transform furthest = null;
-            float maxSqrDistance = 0f;
             Vector2 origin = owner.transform.position;
+            float totalDist = 0f;
+            int count = 0;
+            List<(Transform target, float sqrDist)> validTargets = new();
 
-            foreach (var collider in targetsInRange)
+            foreach (var collider in candidates)
             {
                 if (!collider || collider.transform == owner.transform) continue;
+                Transform target = collider.transform;
+                float sqrDist = ((Vector2)target.position - origin).sqrMagnitude;
+                totalDist += sqrDist;
+                count++;
+                validTargets.Add((target, sqrDist));
+            }
 
-                Transform candidate = collider.transform;
+            if (count == 0) return null;
 
-                float sqrDist = ((Vector2)candidate.position - origin).sqrMagnitude;
-                if (sqrDist > maxSqrDistance)
+            float avgDist = totalDist / count;
+            Transform bestNew = null;
+            Transform bestRepeat = null;
+            float bestNewScore = float.MaxValue;
+            float bestRepeatScore = float.MaxValue;
+
+            foreach (var (target, sqrDist) in validTargets)
+            {
+                float delta = Mathf.Abs(sqrDist - avgDist);
+
+                int futureTargets = 0;
+                Collider2D[] lookahead = Physics2D.OverlapCircleAll(target.position, lookaheadRadius, damageLayer);
+                foreach (var l in lookahead)
                 {
-                    maxSqrDistance = sqrDist;
-                    furthest = candidate;
+                    if (!l || l.transform == owner.transform || l.transform == target) continue;
+                    if (_dashedTargets.Contains(l.transform)) continue;
+                    futureTargets++;
+                }
+
+                float score = delta - futureTargets * 0.1f;
+
+                if (!_dashedTargets.Contains(target))
+                {
+                    if (score < bestNewScore)
+                    {
+                        bestNewScore = score;
+                        bestNew = target;
+                    }
+                }
+                else
+                {
+                    if (score < bestRepeatScore)
+                    {
+                        bestRepeatScore = score;
+                        bestRepeat = target;
+                    }
                 }
             }
-            
-            return furthest;
+
+            var chosen = bestNew ?? bestRepeat;
+            if (chosen != null)
+            {
+                _dashedTargets.Add(chosen);
+                Vector2 pos = chosen.position;
+                float minDist = skillData.MinStepDistance;
+                float currentDist = Vector2.Distance(origin, pos);
+                if (currentDist < minDist)
+                {
+                    Vector2 dir = (pos - origin).normalized;
+                    pos = origin + dir * minDist;
+                }
+
+                return pos;
+            }
+
+            return null;
         }
     }
 }

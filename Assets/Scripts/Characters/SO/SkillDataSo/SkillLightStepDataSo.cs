@@ -19,6 +19,9 @@ namespace Characters.SO.SkillDataSo
         private float lightStepSpeed = 40f;
 
         [FoldoutGroup("Light Step Configs"), SerializeField]
+        private float minStepDistance = 8;
+
+        [FoldoutGroup("Light Step Configs"), SerializeField]
         private int targetAmount = 9;
         
         [FoldoutGroup("Light Step Configs"), SerializeField]
@@ -56,6 +59,7 @@ namespace Characters.SO.SkillDataSo
         public float LightStepRadius => lightStepRadius;
         public float TargetAmount => targetAmount;
         public float LightStepSpeed => lightStepSpeed;
+        public float MinStepDistance => minStepDistance;
         public float LifeStealPercentChance => lifeStealPercentChance;
         public float LifeStealEffective => lifeStealEffective;
         public float NormalPhaseSpeedStepUp => normalPhaseSpeedStepUp;

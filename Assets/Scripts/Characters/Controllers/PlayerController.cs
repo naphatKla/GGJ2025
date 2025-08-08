@@ -1,11 +1,9 @@
 using System;
+using Cameras;
 using Characters.LevelSystems;
 using Characters.SkillSystems;
 using Characters.SO.CharacterDataSO;
-using Characters.UIDisplay;
-using Sirenix.OdinInspector;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Characters.Controllers
 {
@@ -16,20 +14,22 @@ namespace Characters.Controllers
     public class PlayerController : BaseController
     {
         #region Inspector & Variables
+
         [SerializeField] public ComboSystem.ComboSystem comboSystem;
         [SerializeField] protected LevelSystem levelSystem;
         [SerializeField] protected SkillUpgradeController skillUpgradeController;
+        [SerializeField] protected Cinemachine2DCameraController cameraController;
 
         /// <summary>
         /// A global static reference to the current player instance.
         /// Allows other systems to easily access the active player in the scene.
         /// </summary>
         public static PlayerController Instance { get; private set; }
-        
+
         #endregion
 
         #region Unity Methods
-        
+
         /// <summary>
         /// Called when the script instance is being loaded.
         /// Ensures that only one instance of PlayerController exists in the scene.
@@ -40,7 +40,7 @@ namespace Characters.Controllers
             if (Instance) return;
             Instance = this;
         }
-        
+
         public override void AssignCharacterData(BaseCharacterDataSo data)
         {
             if (data is PlayerDataSo playerData)
@@ -52,17 +52,17 @@ namespace Characters.Controllers
             {
                 throw new FormatException();
             }
-           
+
             base.AssignCharacterData(data);
         }
-        
+
         protected override void SubscribeDependency()
         {
             levelSystem.OnLevelUp += skillUpgradeController.OnLevelUp;
             combatSystem.OnDealDamage += comboSystem.RegisterHit;
             UIManager.Instance.OnAnyPanelOpen += OnAnyUIOpen;
             UIManager.Instance.OnAllPanelClosed += OnAllUIClosed;
-            
+
             base.SubscribeDependency();
         }
 
@@ -72,7 +72,7 @@ namespace Characters.Controllers
             combatSystem.OnDealDamage -= comboSystem.RegisterHit;
             UIManager.Instance.OnAnyPanelOpen -= OnAnyUIOpen;
             UIManager.Instance.OnAllPanelClosed -= OnAllUIClosed;
-            
+
             base.UnSubscribeDependency();
         }
 
@@ -81,7 +81,8 @@ namespace Characters.Controllers
             levelSystem.ResetLevel();
             skillUpgradeController.ResetSkillUpgradeController();
             comboSystem.ResetCombo();
-            
+            cameraController.ResetCamera();
+
             base.ResetAllDependentBehavior();
         }
 
