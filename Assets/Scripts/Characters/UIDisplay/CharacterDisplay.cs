@@ -306,9 +306,9 @@ namespace Characters.UIDisplay
             // === Sequence ===
             tf.localPosition = new Vector2(1920, 0);
             var seq = DOTween.Sequence();
-            seq.Append(tf.DOLocalMove(new Vector3(0,0,0), 0.7f).SetEase(Ease.OutBack)).
-                Join(tf.DOShakeRotation(0.7f, 0f, vibrato: 10, randomness: 90).SetEase(Ease.OutBack))
-                .Append(tf.DOScale(1.325f, 0.2f).SetEase(Ease.InOutSine))
+            seq.Append(tf.DOLocalMove(new Vector3(0,0,0), 0.7f).SetEase(Ease.OutBack))
+                .Join(tf.DOShakeRotation(0.7f, 0f, vibrato: 10, randomness: 90).SetEase(Ease.OutBack))
+                .Join(tf.DOScale(1.325f, 0.2f).SetEase(Ease.InOutSine))
                 .Append(tf.DOScale(1f, 0.15f))
                 .Append(tf.DOShakePosition(0.2f, 10f, vibrato: 10, randomness: 40))
                 .SetUpdate(true);
