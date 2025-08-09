@@ -21,13 +21,21 @@ namespace Characters.CombatSystems
         /// Typically defined by character stats or ScriptableObject data.
         /// </summary>
         private float _baseDamage;
+        
+        private float _baseCriRate;
+        
+        private float _baseCriDamage;
+        
+        private float _baseLifeStealPercent;
+        
+        private float _baseLifeStealEffective;
 
         /// <summary>
         /// The current damage value used for actual damage calculations.
         /// Can be modified dynamically through buffs, debuffs, or status effects.
         /// </summary>
         private float _currentDamage;
-
+        
         /// <summary>
         /// Owner controller.
         /// </summary>
@@ -53,11 +61,15 @@ namespace Characters.CombatSystems
         /// Also initializes the current damage value to match the base.
         /// </summary>
         /// <param name="baseDamage">The base damage to be used for combat calculations.</param>
-        public void AssignCombatData(float baseDamage, BaseController owner)
+        public void AssignCombatData(BaseController owner, float baseDamage, float baseCriRate, float baseCriDamage, float baseLifeStealPercent, float baseLifeStealEffective)
         {
-            _baseDamage = baseDamage;
-            _currentDamage = baseDamage;
             _owner = owner;
+            _baseDamage = baseDamage;
+            _baseCriRate = baseCriRate;
+            _baseCriDamage = baseCriDamage;
+            _baseLifeStealPercent = baseLifeStealPercent;
+            _baseLifeStealEffective = baseLifeStealEffective;
+            _currentDamage = baseDamage;
         }
 
         /// <summary>
@@ -67,15 +79,23 @@ namespace Characters.CombatSystems
         /// <param name="multiplier">The multiplier percent% applied to current damage (e.g. from skills, crits).</param>
         /// <returns>The final damage value to be applied to a target.</returns>
         public DamageData CalculateSkillDamageDeal(GameObject target, Vector2 hitPos, float baseSkillDamage,
-            float multiplier, float additionalCriRate, float additionCriDamage, float lifeStealPercent,
-            float lifeStealEffective)
+            float multiplier, float additionalCriRate, float additionCriDamage, float additionalLifeStealPercent,
+            float additionalLifeStealEffective)
         {
-            bool isCritical = Random.Range(0, 100) < 20;
+            var calculatedCriRate = _baseCriRate + additionalCriRate;
+            var calculatedCriDamage = _baseCriDamage + additionCriDamage;
+            var calculatedLifeStealPercent = _baseLifeStealPercent + additionalLifeStealPercent;
+            var calculatedLifeStealEffective = _baseLifeStealEffective + additionalLifeStealEffective;
+            
+            bool isCritical = Random.Range(0, 100) < calculatedCriRate;
             float damageDeal = baseSkillDamage + ((multiplier / 100) * _currentDamage);
-            damageDeal = isCritical ? damageDeal * 2 : damageDeal;
+            damageDeal = isCritical ? damageDeal + (damageDeal * calculatedCriDamage/100) : damageDeal;
 
-            bool isLifeSteal = Random.Range(0, 100) < lifeStealPercent;
-            float lifeSteal = isLifeSteal ? 0 : damageDeal * lifeStealEffective;
+            bool isLifeSteal = Random.Range(0, 100) < calculatedLifeStealPercent;
+            float lifeSteal = isLifeSteal ? damageDeal * (calculatedLifeStealEffective/100) : 0;
+
+            damageDeal = Mathf.Ceil(damageDeal);
+            lifeSteal = Mathf.Ceil(lifeSteal);
             
             var damageData = new DamageData(gameObject, target, hitPos, damageDeal, isCritical, lifeSteal);
             return damageData;

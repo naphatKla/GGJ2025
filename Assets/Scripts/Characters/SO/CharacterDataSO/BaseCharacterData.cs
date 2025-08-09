@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Characters.SO.SkillDataSo;
 using Sirenix.OdinInspector;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Characters.SO.CharacterDataSO
 {
@@ -24,6 +25,18 @@ namespace Characters.SO.CharacterDataSO
 
         [FoldoutGroup("Combat"), PropertyTooltip("Base damage per hit.")]
         [SerializeField] private float baseDamage = 10;
+
+        [FoldoutGroup("Combat")] [Unit(Units.Percent)]
+        [SerializeField] private float baseCriRate;
+
+        [FoldoutGroup("Combat")] [Unit(Units.Percent)] 
+        [SerializeField] private float baseCriDamage = 50;
+        
+        [FoldoutGroup("Combat")] [Unit(Units.Percent)]
+        [SerializeField] private float baseLifeStealPercent;
+        
+        [FoldoutGroup("Combat")] [Unit(Units.Percent)]
+        [SerializeField] private float baseLifeStealEffective;
 
         [FoldoutGroup("Skills"), 
          ValidateInput(nameof(IsSkillDataUnique), "Primary/Secondary/Auto skill must not duplicate!"),
@@ -93,6 +106,10 @@ namespace Characters.SO.CharacterDataSO
         public float MoveAccelerationRate => moveAccelerationRate;
         public float TurnAccelerationRate => turnAccelerationRate;
         public float BaseDamage => baseDamage;
+        public float BaseCriRate => baseCriRate;
+        public float BaseCriDamage => baseCriDamage;
+        public float BaseLifeStealPercent => baseLifeStealPercent;
+        public float BaseLifeStealEffective => baseLifeStealEffective;
 
         public BaseSkillDataSo PrimarySkillData => primarySkillData;
         public BaseSkillDataSo SecondarySkillData => secondarySkillData;

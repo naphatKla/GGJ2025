@@ -26,7 +26,7 @@ namespace Characters.Controllers
         /// Sprite body of this character.
         /// </summary>
         [SerializeField] private SpriteRenderer body;
-        
+
         /// <summary>
         /// Reference to the movement system used to control character motion.
         /// Should be assigned via Inspector or at runtime.
@@ -68,12 +68,12 @@ namespace Characters.Controllers
         /// Should be assigned via Inspector or at runtime.
         /// </summary>
         [SerializeField] private FeedbackSystem feedbackSystem;
-        
+
         /// <summary>
         /// ScriptableObject containing base character stats used to initialize systems.
         /// </summary>
-        [PropertyOrder(9999)]
-        [Title("Data")] [SerializeField] private BaseCharacterDataSo characterData;
+        [PropertyOrder(9999)] [Title("Data")] [SerializeField]
+        private BaseCharacterDataSo characterData;
 
         /// <summary>
         /// Character input handler implementing <see cref="ICharacterInput"/>.
@@ -81,11 +81,11 @@ namespace Characters.Controllers
         /// Fallbacks to auto-fetching via <c>TryGetComponent</c> if not manually assigned.
         /// </summary>
         [OdinSerialize] private ICharacterInput _inputSystem;
-        
+
         public SpriteRenderer Body => body;
-        
+
         public ICharacterInput InputSystem => _inputSystem;
-        
+
         /// <summary>
         /// Reference to the movement system used to control character motion.
         /// Should be assigned via Inspector or at runtime.
@@ -101,7 +101,7 @@ namespace Characters.Controllers
         public SkillSystem SkillSystem => skillSystem;
 
         public CombatSystem CombatSystem => combatSystem;
-        
+
         /// <summary>
         /// Reference to the Damage on touch system.
         /// Should be assigned via Inspector or at runtime.
@@ -118,9 +118,9 @@ namespace Characters.Controllers
         /// ScriptableObject containing base character stats used to initialize systems.
         /// </summary>
         public BaseCharacterDataSo CharacterData => characterData;
-        
+
         public Action OnResetAllBehavior;
-        
+
         #endregion
 
         #region Unity Methods
@@ -139,7 +139,7 @@ namespace Characters.Controllers
         #endregion
 
         #region Methods
-        
+
         public virtual void AssignCharacterData(BaseCharacterDataSo data)
         {
             characterData = data;
@@ -152,10 +152,11 @@ namespace Characters.Controllers
             healthSystem.AssignHealthData(
                 characterData.MaxHealth,
                 characterData.InvincibleTimePerHit, this);
-            combatSystem.AssignCombatData(characterData.BaseDamage, this);
+            combatSystem.AssignCombatData(this, characterData.BaseDamage, characterData.BaseCriRate,
+                characterData.BaseCriDamage, characterData.BaseLifeStealPercent, characterData.BaseLifeStealEffective);
             feedbackSystem.AssignData(this);
         }
-        
+
         protected virtual void SubscribeDependency()
         {
             _inputSystem ??= GetComponent<ICharacterInput>();
@@ -171,7 +172,7 @@ namespace Characters.Controllers
             _inputSystem.OnSkillPerform -= skillSystem.PerformSkill;
             _inputSystem.OnMove -= movementSystem.AssignInputDirection;
         }
-        
+
         public void TryPlayFeedback(FeedbackName feedbackName)
         {
             if (!feedbackSystem) return;
@@ -197,7 +198,7 @@ namespace Characters.Controllers
             statusEffectSystem.ResetStatusEffectSystem();
             damageOnTouch.ResetDamageOnTouch();
             feedbackSystem.ResetFeedbackSystem();
-            
+
             OnResetAllBehavior?.Invoke();
         }
 

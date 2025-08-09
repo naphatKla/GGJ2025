@@ -231,7 +231,7 @@ namespace Characters.UIDisplay
             Transform tf = textInstance.transform;
             tf.position = healthSystem.transform.position;
             tf.localScale = Vector3.zero;
-            textInstance.text = healthChange.ToString();
+            textInstance.text =  healthChange + " HP";
             textInstance.color = Color.red;
 
             // CanvasGroup for fade
@@ -244,7 +244,7 @@ namespace Characters.UIDisplay
 
             if (healthChange >= 0)
             {
-                textInstance.text += " Crit!";
+                textInstance.text = "+" + healthChange + " HP";
                 textInstance.color = Color.green;
                 tf.SetAsLastSibling(); // Ensure appears on top
             }

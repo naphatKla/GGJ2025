@@ -67,6 +67,9 @@ namespace Manager
 
             if (!targetController.HealthSystem.TakeDamage(damageData.Damage)) return;
             attackerController.CombatSystem.OnDealDamageHandler(damageData);
+            
+            if (damageData.LifeSteal <= 0) return;
+            attackerController.HealthSystem.Heal(damageData.LifeSteal);
         }
 
         public static void ApplyRawDamageTo(GameObject target, float damage)
