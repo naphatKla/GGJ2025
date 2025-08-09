@@ -7355,6 +7355,7 @@ GameObject:
   - component: {fileID: 2317232942345144483}
   - component: {fileID: 5785369636543128780}
   - component: {fileID: 4760236408793113694}
+  - component: {fileID: 6543663255383939677}
   - component: {fileID: 7467346900322984913}
   m_Layer: 7
   m_Name: Player
@@ -7907,6 +7908,29 @@ MonoBehaviour:
     m_DissipationDistance: 100
     m_PropagationSpeed: 343
   m_DefaultVelocity: {x: 1, y: 1, z: 0}
+--- !u!114 &6543663255383939677
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2726293917207744010}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 18767377e98eb48438813a741bc1d31e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  shape: 0
+  showOnlyWhenSelected: 1
+  gizmoColor: {r: 0.2, g: 0.9, b: 1, a: 1}
+  startSpace: 0
+  startPos: {x: 0, y: 0}
+  offsetSpace: 1
+  offset: {x: 0, y: 0}
+  radius: 1
+  segments: 32
+  rectSize: {x: 1, y: 1}
+  wireRect: 1
 --- !u!60 &7467346900322984913
 PolygonCollider2D:
   m_ObjectHideFlags: 0

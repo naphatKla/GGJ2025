@@ -12,7 +12,7 @@ using UnityEngine;
 
 namespace Characters.SkillSystems.SkillRuntimes
 {
-    public class SkillLightStep : BaseSkillRuntime<SkillLightStepDataSo>, ISpecialConditionSkill
+    public class SkillLightStepRuntime : BaseSkillRuntime<SkillLightStepDataSo>, ISpecialConditionSkill
     {
         public bool IsWaitForCondition => _isWaitForCounterAttack || _isWaitForMovementEnd;
 

@@ -331,6 +331,7 @@ GameObject:
   - component: {fileID: 8858836943072646866}
   - component: {fileID: 5733554412123996507}
   - component: {fileID: 7312169751311385798}
+  - component: {fileID: 2489850510676935044}
   m_Layer: 6
   m_Name: NormalEnemy
   m_TagString: Enemy
@@ -654,6 +655,29 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 1
+--- !u!114 &2489850510676935044
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3040175372062831934}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 18767377e98eb48438813a741bc1d31e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  shape: 0
+  showOnlyWhenSelected: 1
+  gizmoColor: {r: 0.2, g: 0.9, b: 1, a: 1}
+  startSpace: 0
+  startPos: {x: 0, y: 0}
+  offsetSpace: 1
+  offset: {x: 0, y: 0}
+  radius: 1
+  segments: 32
+  rectSize: {x: 1, y: 1}
+  wireRect: 1
 --- !u!1 &3402418623213190331
 GameObject:
   m_ObjectHideFlags: 0

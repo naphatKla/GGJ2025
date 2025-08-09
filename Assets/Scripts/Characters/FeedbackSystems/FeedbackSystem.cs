@@ -118,5 +118,6 @@ namespace Characters.FeedbackSystems
         LightStepUse = 5,
         LightStepEnd = 6,
         HarmonyOfLight = 7,
+        Pressure = 8,
     }
 }
