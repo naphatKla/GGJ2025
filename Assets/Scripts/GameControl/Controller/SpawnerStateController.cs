@@ -81,7 +81,7 @@ namespace GameControl.Controller
 
         public async UniTaskVoid SetupMapAndEnemy()
         {
-            _enemySpawnerController = new EnemySpawnerController(_currentMapData, this, regionSize);
+            _enemySpawnerController = new EnemySpawnerController(_currentMapData, this, regionSize, debugPattern);
             _enemyPatternController = new EnemyPatternController(_currentMapData, this, regionSize, debugPattern);
             _itemSpawnerController = new ItemSpawnerController(_currentMapData, this, itemdropRegionSize);
             await UniTask.WaitUntil(() => _enemySpawnerController != null && _enemyPatternController != null && _itemSpawnerController != null);

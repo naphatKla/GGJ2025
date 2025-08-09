@@ -11,15 +11,17 @@ namespace Manager
         public GameObject TargetHit { get; }
         public Vector2 HitPosition { get; }
         public float Damage { get; }
+        public float LifeSteal { get; }
         public bool IsCritical { get; }
 
-        public DamageData(GameObject attacker, GameObject targetHit, Vector2 hitPos, float damage, bool isCritical)
+        public DamageData(GameObject attacker, GameObject targetHit, Vector2 hitPos, float damage, bool isCritical,float lifeSteal)
         {
             Attacker = attacker;
             TargetHit = targetHit;
             HitPosition = hitPos;
             Damage = damage;
             IsCritical = isCritical;
+            LifeSteal = lifeSteal;
         }
     }
 
@@ -64,7 +66,7 @@ namespace Manager
             }
 
             var damageData = attackerCombatSystem.CalculateSkillDamageDeal(targetHealth.gameObject, hitPosition,
-                baseSkillDamage, multiplier);
+                baseSkillDamage, multiplier, additionalCriRate, additionCriDamge, lifeStealPercent, lifeStealEffective);
 
             if (!targetHealth.TakeDamage(damageData.Damage)) return;
             attackerCombatSystem.OnDealDamageHandler(damageData);

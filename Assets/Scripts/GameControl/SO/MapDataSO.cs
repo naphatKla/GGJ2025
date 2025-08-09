@@ -33,7 +33,7 @@ namespace GameControl.SO
             public float enemyPointGrowthRate = 12.5f;
             
             [FoldoutGroup("$id")][Title("Chance Setting")]
-            [Range(0, 100)] public float chance = 100;
+            public float chance = 100;
             [FoldoutGroup("$id")][Tooltip("if this enable this enemy chance will increase and auto weight every 30 seconds")]
             public bool enemyChanceCanGrowth;
             [FoldoutGroup("$id")] [ShowIf("$enemyChanceCanGrowth")]

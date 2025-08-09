@@ -33,22 +33,22 @@ namespace Characters.CombatSystems
         /// Owner controller.
         /// </summary>
         private BaseController _owner;
-        
+
         /// <summary>
         /// Event triggered whenever this character successfully deals damage.
         /// Useful for triggering combo counters, visual effects, or gameplay responses.
         /// </summary>
         public Action<DamageData> OnDealDamage { get; set; }
-        
+
         /// <summary>
         /// Event triggered whenever this character and target perform attack in the same time.
         /// </summary>
         public Action OnCounterAttack { get; set; }
-        
+
         #endregion
-        
+
         #region Methods
-        
+
         /// <summary>
         /// Assigns the base damage stat to this combat system.
         /// Also initializes the current damage value to match the base.
@@ -67,13 +67,18 @@ namespace Characters.CombatSystems
         /// </summary>
         /// <param name="multiplier">The multiplier percent% applied to current damage (e.g. from skills, crits).</param>
         /// <returns>The final damage value to be applied to a target.</returns>
-        public DamageData CalculateSkillDamageDeal(GameObject target, Vector2 hitPos, float baseSkillDamage, float multiplier)
+        public DamageData CalculateSkillDamageDeal(GameObject target, Vector2 hitPos, float baseSkillDamage,
+            float multiplier, float additionalCriRate, float additionCriDamage, float lifeStealPercent,
+            float lifeStealEffective)
         {
             bool isCritical = Random.Range(0, 100) < 20;
-            float damageDeal = baseSkillDamage + ((multiplier/100) * _currentDamage);
+            float damageDeal = baseSkillDamage + ((multiplier / 100) * _currentDamage);
             damageDeal = isCritical ? damageDeal * 2 : damageDeal;
+
+            bool isLifeSteal = Random.Range(0, 100) < lifeStealPercent;
+            float lifeSteal = isLifeSteal ? 0 : damageDeal * lifeStealEffective;
             
-            var damageData = new DamageData(gameObject, target, hitPos, damageDeal, isCritical);
+            var damageData = new DamageData(gameObject, target, hitPos, damageDeal, isCritical, lifeSteal);
             return damageData;
         }
 
@@ -93,7 +98,7 @@ namespace Characters.CombatSystems
         {
             await UniTask.WaitForSeconds(waitTime, this, cancellationToken: this.destroyCancellationToken);
         }
+
         #endregion
- 
     }
 }
