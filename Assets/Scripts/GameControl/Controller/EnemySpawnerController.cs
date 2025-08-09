@@ -19,13 +19,15 @@ namespace GameControl.Controller
         private List<EnemyController> _activeEnemy;
         private Dictionary<string, ObjectPool<EnemyController>> _enemyPools;
         private List<MapDataSO.EnemyOption> _enemyOptionsList;
+        private bool _debug;
         
 
-        public EnemySpawnerController(MapDataSO mapData, SpawnerStateController state, Vector2 spawnRegion)
+        public EnemySpawnerController(MapDataSO mapData, SpawnerStateController state, Vector2 spawnRegion, bool debug)
         {
             _mapdata = mapData;
             _state = state;
             _regionSize = spawnRegion;
+            _debug = debug;
 
             PrewarmEnemy();
         }
@@ -49,7 +51,8 @@ namespace GameControl.Controller
                     enemyChanceCanGrowth = data.enemyChanceCanGrowth,
                     useCustomInterval = data.useCustomInterval,
                     customInterval = data.customInterval,
-                    EnemyObject = data.EnemyObject
+                    EnemyObject = data.EnemyObject,
+                    Chance = data.Chance
                 };
                 _enemyOptionsList.Add(cloned);
 
@@ -125,19 +128,29 @@ namespace GameControl.Controller
         {
             float totalChanceBefore = 0;
             foreach (var data in _enemyOptionsList)
-            {
-                if (data.enemyChanceCanGrowth)
-                {
-                    data.Chance += data.enemyChanceGrowthRate;
-                }
-
                 totalChanceBefore += data.Chance;
-            }
+
             foreach (var data in _enemyOptionsList)
             {
-                data.Chance = (data.Chance / totalChanceBefore) * 100f;
+                if (data.enemyChanceCanGrowth)
+                    data.Chance += data.enemyChanceGrowthRate;
+            }
+
+            float totalChanceAfter = 0;
+            foreach (var data in _enemyOptionsList)
+                totalChanceAfter += data.Chance;
+
+            foreach (var data in _enemyOptionsList)
+                data.Chance = (data.Chance / totalChanceAfter) * 100f;
+
+            if (!_debug) return;
+             Debug.Log("---- Enemy Spawn Chance After Normalize ----");
+            foreach (var data in _enemyOptionsList)
+            {
+                Debug.Log($"ID: {data.id} | Chance: {data.Chance:F2}%");
             }
         }
+
 
         public MapDataSO.EnemyOption SpawnEnemy()
         {
