@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Characters.CombatSystems;
+using Characters.Controllers;
 using Characters.HeathSystems;
 using UnityEngine;
 
@@ -14,7 +15,8 @@ namespace Manager
         public float LifeSteal { get; }
         public bool IsCritical { get; }
 
-        public DamageData(GameObject attacker, GameObject targetHit, Vector2 hitPos, float damage, bool isCritical,float lifeSteal)
+        public DamageData(GameObject attacker, GameObject targetHit, Vector2 hitPos, float damage, bool isCritical,
+            float lifeSteal)
         {
             Attacker = attacker;
             TargetHit = targetHit;
@@ -32,9 +34,7 @@ namespace Manager
     public static class CombatManager
     {
         // ----- Component Caches -----
-        private static readonly Dictionary<GameObject, HealthSystem> _healthCache = new();
-        private static readonly Dictionary<GameObject, CombatSystem> _combatCache = new();
-        private static readonly Dictionary<GameObject, DamageOnTouch> _touchCache = new();
+        private static readonly Dictionary<GameObject, BaseController> _characterCaches = new();
 
         /// <summary>
         /// Applies damage from an attacker GameObject to a target GameObject.
@@ -45,51 +45,41 @@ namespace Manager
         /// <param name="target">The GameObject receiving the damage.</param>
         /// <param name="attacker">The GameObject dealing the damage.</param>
         /// <param name="multiplier">A multiplier applied to the attacker's damage (default is 100%).</param>
-        public static void ApplyDamageTo(GameObject target, GameObject attacker, Vector2 hitPosition,
+        public static void ApplyCalculatedDamageTo(GameObject target, GameObject attacker, Vector2 hitPosition,
             float baseSkillDamage, float multiplier, float additionalCriRate, float additionCriDamge,
             float lifeStealPercent, float lifeStealEffective)
         {
-            if (!TryGetCachedComponent(target, _healthCache, out var targetHealth)) return;
+            if (!_characterCaches.ContainsKey(target))
+                _characterCaches.Add(target, target.GetComponent<BaseController>());
 
-            if (!TryGetCachedComponent(attacker, _combatCache, out var attackerCombatSystem))
-            {
-                Debug.LogWarning("Can not apply damage. No attacker CombatSystem.");
-                return;
-            }
+            if (!_characterCaches.ContainsKey(attacker))
+                _characterCaches.Add(attacker, attacker.GetComponent<BaseController>());
+
+            var targetController = _characterCaches[target];
+            var attackerController = _characterCaches[attacker];
 
             // Counter attack: both attacker and target have DamageOnTouch enabled
-            if (TryGetCachedComponent(attacker, _touchCache, out var attackerDamage) &&
-                TryGetCachedComponent(target, _touchCache, out var targetDamage) &&
-                attackerDamage.IsEnableDamage && targetDamage.IsEnableDamage)
-            {
-                attackerCombatSystem.OnCounterAttackHandler();
-            }
+            if (targetController.DamageOnTouch.IsEnableDamage && attackerController.DamageOnTouch.IsEnableDamage)
+                attackerController.CombatSystem.OnCounterAttackHandler();
 
-            var damageData = attackerCombatSystem.CalculateSkillDamageDeal(targetHealth.gameObject, hitPosition,
+            var damageData = attackerController.CombatSystem.CalculateSkillDamageDeal(target, hitPosition,
                 baseSkillDamage, multiplier, additionalCriRate, additionCriDamge, lifeStealPercent, lifeStealEffective);
 
-            if (!targetHealth.TakeDamage(damageData.Damage)) return;
-            attackerCombatSystem.OnDealDamageHandler(damageData);
+            if (!targetController.HealthSystem.TakeDamage(damageData.Damage)) return;
+            attackerController.CombatSystem.OnDealDamageHandler(damageData);
         }
 
-        /// <summary>
-        /// Gets a component with caching to avoid repeated GetComponent calls.
-        /// </summary>
-        private static bool TryGetCachedComponent<T>(GameObject obj, Dictionary<GameObject, T> cache, out T result)
-            where T : Component
+        public static void ApplyRawDamageTo(GameObject target, float damage)
         {
-            if (obj == null)
-            {
-                result = null;
-                return false;
-            }
+            if (!_characterCaches.ContainsKey(target))
+                _characterCaches.Add(target, target.GetComponent<BaseController>());
 
-            if (cache.TryGetValue(obj, out result))
-                return result != null;
+            _characterCaches[target].HealthSystem.TakeDamage(damage);
+        }
 
-            result = obj.GetComponent<T>();
-            cache[obj] = result;
-            return result != null;
+        public static void ClearCache()
+        {
+            _characterCaches.Clear();
         }
     }
 }

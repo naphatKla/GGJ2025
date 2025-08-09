@@ -1,7 +1,6 @@
 using System;
 using Characters.Controllers;
 using Characters.FeedbackSystems;
-using Characters.SO.CharacterDataSO;
 using Cysharp.Threading.Tasks;
 using Manager;
 using UnityEngine;

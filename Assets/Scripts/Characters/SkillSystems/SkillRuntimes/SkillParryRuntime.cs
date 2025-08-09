@@ -33,7 +33,7 @@ namespace Characters.SkillSystems.SkillRuntimes
 
                 target.GetComponent<BaseMovementSystem>()
                     .TryMoveToPositionOverTime(knockBackDestination, skillData.KnockBackDuration);
-                CombatManager.ApplyDamageTo(target.gameObject, owner.gameObject,
+                CombatManager.ApplyCalculatedDamageTo(target.gameObject, owner.gameObject,
                     target.ClosestPoint(owner.transform.position), skillData.ExplosionBaseDamage,
                     skillData.ExplosionDamageMultiplier, 0, 0, 0, 0);
             }

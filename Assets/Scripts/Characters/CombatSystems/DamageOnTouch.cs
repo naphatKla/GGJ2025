@@ -218,7 +218,7 @@ namespace Characters.CombatSystems
                 if (_cooldownMap.TryGetValue(key, out float nextTime) && now < nextTime)
                     continue;
 
-                CombatManager.ApplyDamageTo(
+                CombatManager.ApplyCalculatedDamageTo(
                     target,
                     _owner,
                     hitPosition,
