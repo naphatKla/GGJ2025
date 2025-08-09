@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: VFX_Parry_Triangle
+  m_Name: VFX_HarmonyOfLightUse_Flare 1
   m_Shader: {fileID: 4800000, guid: 337f638ec0835e64e99594b828e4f649, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -28,7 +28,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _ColorTexture:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: ec7c2070e6a411142bd2da4215f517fb, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _DissolveDirection:
@@ -40,7 +40,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _DistortMask:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: 90959d8bba91ea649911de50140690ad, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _DistortionBlendTexture1:
@@ -68,21 +68,21 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _StaticAlphaTexture:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: edca37ff46f7f5949b90fbca8880946a, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Texture:
-        m_Texture: {fileID: 2800000, guid: c023b0c8bb3fa7445803b2c1c9346f53, type: 3}
+        m_Texture: {fileID: 2800000, guid: 124101b6402b1694ba1f6714f5beea8b, type: 3}
         m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: -0.05}
+        m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
     - _AlphaBoldness: 1
     - _AlphaCutoff: 0.5
-    - _Brightness: 2
+    - _Brightness: 1
     - _ColorRotation: 0
     - _ColorTextureHueShift: 0
-    - _ColorTextureSaturationShift: 0
+    - _ColorTextureSaturationShift: -0.23
     - _ColorTextureValueShift: 0
     - _Cull: 0
     - _DepthFadeDivide: 1
@@ -94,7 +94,7 @@ Material:
     - _DistortionBlendInvert1: 0
     - _DistortionBlendMoveWithMain1: 0
     - _DistortionBlendRotation1: 0
-    - _DistortionPower: 0
+    - _DistortionPower: 0.03
     - _Dst: 10
     - _EnableExternalAlpha: 0
     - _FlatAlpha: 0
@@ -127,8 +127,8 @@ Material:
     - _DissolveDirectionChannel: {r: 0, g: 0, b: 0, a: 0}
     - _DissolveMaskChannel: {r: 0, g: 0, b: 0, a: 0}
     - _DissolveMaskPanSpeed: {r: 0, g: 0, b: 0, a: 0}
-    - _DistortMaskChannel: {r: 0, g: 0, b: 0, a: 0}
-    - _DistortPanSpeed: {r: 0, g: 0, b: 0, a: 0}
+    - _DistortMaskChannel: {r: 1, g: 0, b: 0, a: 0}
+    - _DistortPanSpeed: {r: 0, g: 1, b: 0, a: 0}
     - _DistortedTextureCorrection1: {r: 0, g: 0, b: 0, a: 0}
     - _DistortionBlendChannel1: {r: 1, g: 0, b: 0, a: 0}
     - _EmissionColor: {r: 1, g: 1, b: 1, a: 1}
