@@ -414,8 +414,7 @@ namespace Characters.UIDisplay
                 currentCooldown <= 1 ? $"{currentCooldown:F1}" : $"{currentCooldown:F0}";
             skillSlotModel[skillIndex].valueBar.CurrentValue = 1 - progression;
         }
-
-
+        
         private void ResetSkillSlot(int skillIndex)
         {
             if (skillIndex < 0 || skillIndex >= skillSlotModel.Count) return;
