@@ -1,0 +1,54 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dda4035b7f2d34647b6816f4188fe7a9, type: 3}
+  m_Name: LV2_Player_Parry
+  m_EditorClassIdentifier: 
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes:
+    - Name: _skillRuntime
+      Entry: 7
+      Data: 0|System.RuntimeType, mscorlib
+    - Name: 
+      Entry: 1
+      Data: Characters.SkillSystems.SkillRuntimes.SkillParryRuntime, Assembly-CSharp
+    - Name: 
+      Entry: 8
+      Data: 
+  skillIcon: {fileID: 21300000, guid: 4e172c3d6cf32704e9db569f5138820d, type: 3}
+  skillName: Parry
+  skillDescription: 
+  previousSkillData: {fileID: 0}
+  nextSkillDataUpgrade: {fileID: 0}
+  level: 1
+  cooldown: 5
+  statusEffectOnSkillStart:
+  - effectData: {fileID: 11400000, guid: aa4dff95f38494c4e876f8f95511ecf0, type: 2}
+    isOverrideDuration: 1
+    overrideDuration: 0.55
+  explosionBaseDamage: 0
+  explosionDamageMultiplier: 300
+  explosionRadius: 10
+  stopWhileParry: 0
+  parryDuration: 0.5
+  knockBackDistance: 8
+  knockBackDuration: 0.25
+  explosionEffectsToTarget:
+  - effectData: {fileID: 11400000, guid: e5ae6010e3c4a7b43bc80da0bf5a9ef5, type: 2}
+    isOverrideDuration: 1
+    overrideDuration: 0.5
