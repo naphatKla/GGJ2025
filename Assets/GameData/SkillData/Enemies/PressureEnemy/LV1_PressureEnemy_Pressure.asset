@@ -22,10 +22,16 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes:
     - Name: _skillRuntime
-      Entry: 6
+      Entry: 7
+      Data: 0|System.RuntimeType, mscorlib
+    - Name: 
+      Entry: 1
+      Data: Characters.SkillSystems.SkillRuntimes.SkillPressureRuntime, Assembly-CSharp
+    - Name: 
+      Entry: 8
       Data: 
   skillIcon: {fileID: 0}
-  skillName: 
+  skillName: Pressure
   skillDescription: 
   previousSkillData: {fileID: 0}
   nextSkillDataUpgrade: {fileID: 0}
@@ -34,5 +40,5 @@ MonoBehaviour:
   statusEffectOnSkillStart: []
   baseDamage: 0
   damageMultiplier: 100
-  chargeDuration: 0
-  explosionRadius: 0
+  chargeDuration: 2
+  explosionRadius: 8
