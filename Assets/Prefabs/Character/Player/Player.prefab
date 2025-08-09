@@ -1556,7 +1556,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   vfxPrefab: {fileID: 847328084218607017, guid: 8f982e0a9fef7bf4eb2bb312b6c6fe54, type: 3}
   stopOnDisable: 0
-  followMode: 0
+  followMode: 1
   rotationMode: 0
 --- !u!1 &799220216479605111
 GameObject:
@@ -13872,6 +13872,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1385879953400033461}
   - component: {fileID: 4271298968033429460}
+  - component: {fileID: 3490386579769328242}
   m_Layer: 0
   m_Name: PlayerHarmonyOfLight
   m_TagString: Untagged
@@ -14548,6 +14549,22 @@ MonoBehaviour:
           m_RotationOrder: 4
         RemapIntensityZero: 0
         RemapIntensityOne: 0.6
+--- !u!114 &3490386579769328242
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5574508030388668770}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f010f6edecaea2a40adea01bf2111bb8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  vfxPrefab: {fileID: 2538163672343663821, guid: a97f05bab9efe6d48b80040ff8851bec, type: 3}
+  stopOnDisable: 0
+  followMode: 0
+  rotationMode: 0
 --- !u!1 &6130320243812156385
 GameObject:
   m_ObjectHideFlags: 0

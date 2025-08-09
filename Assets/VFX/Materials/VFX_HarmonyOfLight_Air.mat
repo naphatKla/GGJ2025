@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: VFX_Parry_Triangle
+  m_Name: VFX_HarmonyOfLight_Air
   m_Shader: {fileID: 4800000, guid: 337f638ec0835e64e99594b828e4f649, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -36,7 +36,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _DissolveMask:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: 9614dde3f409ea343a69d0a53d275945, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _DistortMask:
@@ -72,14 +72,14 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Texture:
-        m_Texture: {fileID: 2800000, guid: c023b0c8bb3fa7445803b2c1c9346f53, type: 3}
+        m_Texture: {fileID: 2800000, guid: c6856bede80e60740a022487d71e0d48, type: 3}
         m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: -0.05}
+        m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
     - _AlphaBoldness: 1
     - _AlphaCutoff: 0.5
-    - _Brightness: 2
+    - _Brightness: 5
     - _ColorRotation: 0
     - _ColorTextureHueShift: 0
     - _ColorTextureSaturationShift: 0
@@ -125,7 +125,7 @@ Material:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _ColorTexturePanSpeed: {r: 0, g: 0, b: 0, a: 0}
     - _DissolveDirectionChannel: {r: 0, g: 0, b: 0, a: 0}
-    - _DissolveMaskChannel: {r: 0, g: 0, b: 0, a: 0}
+    - _DissolveMaskChannel: {r: 1, g: 0, b: 0, a: 0}
     - _DissolveMaskPanSpeed: {r: 0, g: 0, b: 0, a: 0}
     - _DistortMaskChannel: {r: 0, g: 0, b: 0, a: 0}
     - _DistortPanSpeed: {r: 0, g: 0, b: 0, a: 0}
@@ -136,7 +136,7 @@ Material:
     - _GradientShapeChannel: {r: 0, g: 0, b: 0, a: 0}
     - _GradientShapePanSpeed: {r: 0, g: 0, b: 0, a: 0}
     - _InnerPartColor: {r: 0, g: 0, b: 0, a: 0}
-    - _MainTexturePanSpeed: {r: 0, g: 0, b: 0, a: 0}
+    - _MainTexturePanSpeed: {r: 0, g: -1, b: 0, a: 0}
     - _RendererColor: {r: 1, g: 1, b: 1, a: 1}
     - _StaticAlphaChannel: {r: 1, g: 0, b: 0, a: 0}
     - _TextureChannel: {r: 1, g: 0, b: 0, a: 0}
