@@ -166,7 +166,9 @@ namespace Characters.UIDisplay
 
             // Reset & Prepare
             Transform tf = textInstance.transform;
-            tf.position = damageData.HitPosition;
+            Vector3 p = damageData.HitPosition;
+            Vector2 off = Random.insideUnitCircle * 1f;
+            tf.position = new Vector3(p.x + off.x, p.y + off.y);
             tf.localScale = Vector3.zero;
             textInstance.text = damageData.Damage.ToString();
             textInstance.color = Color.white;
@@ -229,7 +231,9 @@ namespace Characters.UIDisplay
 
             // Reset & Prepare
             Transform tf = textInstance.transform;
-            tf.position = healthSystem.transform.position;
+            Vector3 p = healthSystem.transform.position;
+            Vector2 off = Random.insideUnitCircle * 1f;
+            tf.position = new Vector3(p.x + off.x, p.y + off.y);
             tf.localScale = Vector3.zero;
             textInstance.text = healthChange + " HP";
             textInstance.color = Color.red;
@@ -414,7 +418,7 @@ namespace Characters.UIDisplay
                 currentCooldown <= 1 ? $"{currentCooldown:F1}" : $"{currentCooldown:F0}";
             skillSlotModel[skillIndex].valueBar.CurrentValue = 1 - progression;
         }
-        
+
         private void ResetSkillSlot(int skillIndex)
         {
             if (skillIndex < 0 || skillIndex >= skillSlotModel.Count) return;

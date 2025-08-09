@@ -154,6 +154,7 @@ namespace Characters.HeathSystems
             if (_isDead) return;
             ModifyHealth(healAmount);
             OnHeal?.Invoke();
+            owner?.TryPlayFeedback(FeedbackName.Heal);
         }
 
         private Tween colorTween;

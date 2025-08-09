@@ -158,7 +158,7 @@ namespace Characters.SkillSystems
                         primaryTriggerSource.OnTriggerAutoSkill -= OnTriggerAutoSkill;
                         primaryTriggerSource.OnTriggerAutoSkill += OnTriggerAutoSkill;
                     }
-                    else
+                    else if (autoSkillSlot > 0)
                     {
                         Debug.LogError("Primary skill need IAutoSkillTriggerSource to trigger auto skill");
                         throw new NotImplementedException();
@@ -179,7 +179,7 @@ namespace Characters.SkillSystems
                         secondarySkillTriggerSource.OnTriggerAutoSkill -= OnTriggerAutoSkill;
                         secondarySkillTriggerSource.OnTriggerAutoSkill += OnTriggerAutoSkill;
                     }
-                    else
+                    else if (autoSkillSlot > 0)
                     {
                         Debug.LogError("Secondary skill need IAutoSkillTriggerSource to trigger auto skill");
                         throw new NotImplementedException();
