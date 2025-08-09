@@ -1,4 +1,5 @@
 using PixelUI;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,5 +9,6 @@ namespace UI.IngameModal
     {
         [SerializeField] public Image skillIcon;
         [SerializeField] public ValueBar valueBar;
+        [SerializeField] public TMP_Text cooldownText;
     }
 }

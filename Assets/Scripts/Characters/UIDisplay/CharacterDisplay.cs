@@ -40,7 +40,7 @@ namespace Characters.UIDisplay
         //Combat
         [FoldoutGroup("Combat Display")] [SerializeField]
         private CombatSystem combatSystem;
-        
+
         [FoldoutGroup("Combat Display")] [SerializeField]
         private TextMeshProUGUI worldTextUIPrefab;
 
@@ -231,7 +231,7 @@ namespace Characters.UIDisplay
             Transform tf = textInstance.transform;
             tf.position = healthSystem.transform.position;
             tf.localScale = Vector3.zero;
-            textInstance.text =  healthChange + " HP";
+            textInstance.text = healthChange + " HP";
             textInstance.color = Color.red;
 
             // CanvasGroup for fade
@@ -398,23 +398,30 @@ namespace Characters.UIDisplay
             if (skillIndex < 0 || skillIndex >= skillSlotModel.Count) return;
             if (skillSlotModel[skillIndex] == null) return;
 
+            skillSlotModel[skillIndex].cooldownText.text = "";
             skillSlotModel[skillIndex].skillIcon.sprite = skill.SkillIcon;
             ResetSkillSlot(skillIndex);
         }
 
-        private void UpdateCooldownSlot(float cooldown, int skillIndex)
+        private void UpdateCooldownSlot(float maxCooldown, float progression, int skillIndex)
         {
             if (skillIndex < 0 || skillIndex >= skillSlotModel.Count) return;
             if (skillSlotModel[skillIndex] == null) return;
 
-            skillSlotModel[skillIndex].valueBar.CurrentValue = 1 - cooldown;
+            var currentCooldown = (maxCooldown * (1 - progression));
+
+            skillSlotModel[skillIndex].cooldownText.text =
+                currentCooldown <= 1 ? $"{currentCooldown:F1}" : $"{currentCooldown:F0}";
+            skillSlotModel[skillIndex].valueBar.CurrentValue = 1 - progression;
         }
+
 
         private void ResetSkillSlot(int skillIndex)
         {
             if (skillIndex < 0 || skillIndex >= skillSlotModel.Count) return;
             if (skillSlotModel[skillIndex] == null) return;
 
+            skillSlotModel[skillIndex].cooldownText.text = "";
             skillSlotModel[skillIndex].valueBar.CurrentValue = 0;
         }
 

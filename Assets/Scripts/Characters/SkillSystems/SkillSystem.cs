@@ -21,7 +21,7 @@ namespace Characters.SkillSystems
 
     public class SkillSystem : MonoBehaviour, IFixedUpdateable
     {
-        public event Action<float, int> OnSkillCooldownUpdate;
+        public event Action<float,float, int> OnSkillCooldownUpdate;
         public event Action<int> OnSkillCooldownReset;
         public event Action<BaseSkillDataSo, int> OnNewSkillAssign;
 
@@ -294,7 +294,7 @@ namespace Characters.SkillSystems
                 }
 
                 float progress = 1f - Mathf.Clamp01(runtime.CurrentCooldown / runtime.Cooldown);
-                OnSkillCooldownUpdate?.Invoke(progress, index);
+                OnSkillCooldownUpdate?.Invoke(runtime.Cooldown,progress, index);
             }
         }
 
