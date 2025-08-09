@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using Characters.Controllers;
+using Characters.FeedbackSystems;
 using Characters.SkillSystems.SkillObjects;
 using Characters.SO.SkillDataSo;
 using Cysharp.Threading.Tasks;
@@ -44,6 +45,7 @@ namespace Characters.SkillSystems.SkillRuntimes
             }
 
             startPos = owner.transform.position;
+            owner.TryPlayFeedback(FeedbackName.HarmonyOfLight);
         }
 
         protected override async UniTask OnSkillUpdate(CancellationToken cancelToken)
