@@ -1,6 +1,5 @@
-using System;
-using Characters.Controllers;
 using Cysharp.Threading.Tasks;
+using Manager;
 using UnityEngine;
 
 namespace GameControl.EventMap
@@ -26,13 +25,8 @@ namespace GameControl.EventMap
 
             Collider[] hits = Physics.OverlapBox(center, hitboxSize * 0.5f, firePoint.rotation, hitLayer);
 
-            foreach (var hit in hits)
-            {
-                if (hit.TryGetComponent<PlayerController>(out var damageable))
-                {
-                    damageable.HealthSystem.TakeDamage(damage);
-                }
-            }
+            foreach (var hit in hits) 
+                CombatManager.ApplyRawDamageTo(hit.gameObject, damage);
         }
         
         private void OnDrawGizmos()

@@ -36,13 +36,13 @@ namespace Characters.UIDisplay
         [FoldoutGroup("Combo Display")] public ValueBar comboTimeoutBar;
         [FoldoutGroup("Combo Display")] public float tweenDuration = 0.1f;
         [FoldoutGroup("Combo Display")] public float scaleAmount = 1.2f;
-        
+
         //Combat
         [FoldoutGroup("Combat Display")] [SerializeField]
         private CombatSystem combatSystem;
-
+        
         [FoldoutGroup("Combat Display")] [SerializeField]
-        private TextMeshProUGUI damageTextPrefab;
+        private TextMeshProUGUI worldTextUIPrefab;
 
         //Level
         [FoldoutGroup("Level Display")] [Title("Ref")] [SerializeField]
@@ -59,79 +59,80 @@ namespace Characters.UIDisplay
 
         [Title("UI")] [FoldoutGroup("Health Display")] [SerializeField]
         public SlotBar hpBar;
-        
+
         //Solf Upgrade
-        [FoldoutGroup("SolfUpgrade Display")]
-        [Title("Ref")] [SerializeField]
+        [FoldoutGroup("SolfUpgrade Display")] [Title("Ref")] [SerializeField]
         public SkillUpgradeController skillUpgradeController;
-        
-        [FoldoutGroup("SolfUpgrade Display")] [Title("UI")] 
-        [FoldoutGroup("SolfUpgrade Display")]
+
+        [FoldoutGroup("SolfUpgrade Display")] [Title("UI")] [FoldoutGroup("SolfUpgrade Display")]
         public GameObject solfUpgradePanel;
-        [FoldoutGroup("SolfUpgrade Display")]
-        public SolfUpgradeModel solfUpgradeModel;
-        
+
+        [FoldoutGroup("SolfUpgrade Display")] public SolfUpgradeModel solfUpgradeModel;
+
         private Queue<BaseSkillDataSo> skillQueue = new();
         private bool isChoosingSkill = false;
-        
+
         //Skill Slot
-        [FoldoutGroup("SkillSlot Display")]
-        [Title("Ref")] [SerializeField]
+        [FoldoutGroup("SkillSlot Display")] [Title("Ref")] [SerializeField]
         public SkillSystem skillSystem;
-        
-        [FoldoutGroup("SkillSlot Display")] [Title("UI")] 
-        [FoldoutGroup("SkillSlot Display")] [SerializeField] private List<SkillSlotModel> skillSlotModel;
+
+        [FoldoutGroup("SkillSlot Display")] [Title("UI")] [FoldoutGroup("SkillSlot Display")] [SerializeField]
+        private List<SkillSlotModel> skillSlotModel;
 
         private void Start()
         {
             PlayerController.Instance.OnResetAllBehavior += UpdateAllUI;
-            
+
             comboSystem.OnComboUpdated += UpdateComboScoreText;
             comboSystem.OnComboTimeUpdated += UpdateComboTimeBar;
 
             levelSystem.OnLevelUpdate += UpdateLevelUI;
             skillUpgradeController.OnSkillUpgradeOptionsGenerated += SolfUpgradePopup;
 
-            healthSystem.OnHealthChange += UpdateHealthUI;
+            healthSystem.OnHealthChange += healthChange => UpdateHealthUI();
+            healthSystem.OnHealthChange += UpdateHealthText;
 
             skillSystem.OnNewSkillAssign += AssignSkillSlot;
             skillSystem.OnSkillCooldownUpdate += UpdateCooldownSlot;
             skillSystem.OnSkillCooldownReset += ResetSkillSlot;
 
             combatSystem.OnDealDamage += UpdateDamageText;
-            PoolingManager.Instance.Create<TextMeshProUGUI>(damageTextPrefab.name, PoolingGroupName.UI, CreateDamageText);
+            PoolingManager.Instance.Create<TextMeshProUGUI>(worldTextUIPrefab.name, PoolingGroupName.UI,
+                CreateDamageText);
         }
 
         private void OnDestroy()
         {
             PlayerController.Instance.OnResetAllBehavior -= UpdateAllUI;
-            
+
             comboSystem.OnComboUpdated -= UpdateComboScoreText;
             comboSystem.OnComboTimeUpdated -= UpdateComboTimeBar;
 
             levelSystem.OnLevelUpdate -= UpdateLevelUI;
-            
-            healthSystem.OnHealthChange -= UpdateHealthUI;
-            
+
+            healthSystem.OnHealthChange -= healthChange => UpdateHealthUI();
+            healthSystem.OnHealthChange -= UpdateHealthText;
+
             skillSystem.OnNewSkillAssign -= AssignSkillSlot;
             skillSystem.OnSkillCooldownUpdate -= UpdateCooldownSlot;
             skillSystem.OnSkillCooldownReset -= ResetSkillSlot;
-            
-            
+
+
             combatSystem.OnDealDamage -= UpdateDamageText;
-            PoolingManager.Instance.ClearPool(damageTextPrefab.name);
+            PoolingManager.Instance.ClearPool(worldTextUIPrefab.name);
         }
 
         private void UpdateAllUI()
         {
             comboTimeoutBar.CurrentValue = comboSystem.ComboStartValue;
             comboTimeoutBar.MaxValue = comboSystem.ComboStartValue;
-            
+
             UpdateLevelUI();
             UpdateHealthUI();
         }
 
         #region Combo UI
+
         private void UpdateComboTimeBar(float currentTime)
         {
             if (!comboTimeoutBar || !comboUI) return;
@@ -156,12 +157,12 @@ namespace Characters.UIDisplay
 
         private TextMeshProUGUI CreateDamageText()
         {
-            return Instantiate(damageTextPrefab);
+            return Instantiate(worldTextUIPrefab);
         }
 
         private void UpdateDamageText(DamageData damageData)
         {
-            var textInstance = PoolingManager.Instance.Get<TextMeshProUGUI>(damageTextPrefab.name);
+            var textInstance = PoolingManager.Instance.Get<TextMeshProUGUI>(worldTextUIPrefab.name);
 
             // Reset & Prepare
             Transform tf = textInstance.transform;
@@ -218,7 +219,63 @@ namespace Characters.UIDisplay
                 .AppendCallback(() =>
                 {
                     textInstance.gameObject.SetActive(false);
-                    PoolingManager.Instance.Release(damageTextPrefab.name, textInstance);
+                    PoolingManager.Instance.Release(worldTextUIPrefab.name, textInstance);
+                });
+        }
+
+        private void UpdateHealthText(float healthChange)
+        {
+            var textInstance = PoolingManager.Instance.Get<TextMeshProUGUI>(worldTextUIPrefab.name);
+
+            // Reset & Prepare
+            Transform tf = textInstance.transform;
+            tf.position = healthSystem.transform.position;
+            tf.localScale = Vector3.zero;
+            textInstance.text = healthChange.ToString();
+            textInstance.color = Color.red;
+
+            // CanvasGroup for fade
+            var canvasGroup = textInstance.GetComponent<CanvasGroup>();
+            if (canvasGroup == null)
+                canvasGroup = textInstance.gameObject.AddComponent<CanvasGroup>();
+            canvasGroup.alpha = 1;
+
+            // Critical formatting
+
+            if (healthChange >= 0)
+            {
+                textInstance.text += " Crit!";
+                textInstance.color = Color.green;
+                tf.SetAsLastSibling(); // Ensure appears on top
+            }
+
+            textInstance.gameObject.SetActive(true);
+
+            // === Animation Settings ===
+            float floatDuration = 0.2f; // Total time text will float and stay on screen
+            float fadeOutDuration = 0.3f; // Duration for the fade-out at the end
+            float delayBeforeFade = floatDuration - fadeOutDuration;
+            float riseAmount = 0.75f;
+            float scaleIn = 1.25f;
+            float settleScale = 1.0f; // Final scale after settle
+            float popDuration = 0.15f; // Duration of pop-in animation
+            float settleDuration = 0.15f; // Duration of scale settle after pop
+
+            // Kill any previous tweens on same target
+            DOTween.Kill(tf);
+            DOTween.Kill(canvasGroup);
+
+            // === Sequence ===
+            var seq = DOTween.Sequence();
+            seq.Append(tf.DOScale(scaleIn, popDuration).SetEase(Ease.OutBack)) // Pop!
+                .Append(tf.DOScale(settleScale, settleDuration).SetEase(Ease.InOutSine)) // Settle
+                .Join(tf.DOMoveY(tf.position.y + riseAmount, floatDuration).SetEase(Ease.OutQuad)) // Float up
+                .AppendInterval(delayBeforeFade) // Hold before fade
+                .Append(canvasGroup.DOFade(0, fadeOutDuration)) // Fade out
+                .AppendCallback(() =>
+                {
+                    textInstance.gameObject.SetActive(false);
+                    PoolingManager.Instance.Release(worldTextUIPrefab.name, textInstance);
                 });
         }
 
@@ -276,6 +333,7 @@ namespace Characters.UIDisplay
                 var skill = skillQueue.Dequeue();
                 CreateSkillCard(skill).Forget();
             }
+
             PanelCardFeedback(solfUpgradePanel.transform);
             MMTimeScaleEvent.Trigger(MMTimeScaleMethods.For, 0, -1, true, 6.2f, true);
         }
@@ -294,11 +352,8 @@ namespace Characters.UIDisplay
             var modal = skillcard.GetComponent<SolfUpgradeModel>();
             modal.UpdateUIModal(skill);
             await SkillCardFeedback(skillcard.transform);
-            
-            modal.SelectButton.onClick.AddListener(() =>
-            {
-                OnSkillSelected(skill);
-            });
+
+            modal.SelectButton.onClick.AddListener(() => { OnSkillSelected(skill); });
         }
 
         private void PanelCardFeedback(Transform tf)
@@ -306,14 +361,14 @@ namespace Characters.UIDisplay
             // === Sequence ===
             tf.localPosition = new Vector2(1920, 0);
             var seq = DOTween.Sequence();
-            seq.Append(tf.DOLocalMove(new Vector3(0,0,0), 0.7f).SetEase(Ease.OutBack))
+            seq.Append(tf.DOLocalMove(new Vector3(0, 0, 0), 0.7f).SetEase(Ease.OutBack))
                 .Join(tf.DOShakeRotation(0.7f, 0f, vibrato: 10, randomness: 90).SetEase(Ease.OutBack))
                 .Join(tf.DOScale(1.325f, 0.2f).SetEase(Ease.InOutSine))
                 .Append(tf.DOScale(1f, 0.15f))
                 .Append(tf.DOShakePosition(0.2f, 10f, vibrato: 10, randomness: 40))
                 .SetUpdate(true);
         }
-        
+
         private async UniTask SkillCardFeedback(Transform tf)
         {
             await tf.DOLocalRotate(
@@ -342,7 +397,7 @@ namespace Characters.UIDisplay
         {
             if (skillIndex < 0 || skillIndex >= skillSlotModel.Count) return;
             if (skillSlotModel[skillIndex] == null) return;
-            
+
             skillSlotModel[skillIndex].skillIcon.sprite = skill.SkillIcon;
             ResetSkillSlot(skillIndex);
         }
@@ -351,7 +406,7 @@ namespace Characters.UIDisplay
         {
             if (skillIndex < 0 || skillIndex >= skillSlotModel.Count) return;
             if (skillSlotModel[skillIndex] == null) return;
-    
+
             skillSlotModel[skillIndex].valueBar.CurrentValue = 1 - cooldown;
         }
 
@@ -359,10 +414,9 @@ namespace Characters.UIDisplay
         {
             if (skillIndex < 0 || skillIndex >= skillSlotModel.Count) return;
             if (skillSlotModel[skillIndex] == null) return;
-    
+
             skillSlotModel[skillIndex].valueBar.CurrentValue = 0;
         }
-
 
         #endregion
     }

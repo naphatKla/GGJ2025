@@ -82,7 +82,7 @@ namespace Characters.HeathSystems
         /// <summary>
         /// Event triggered when this character health change.
         /// </summary>
-        public Action OnHealthChange { get; set; }
+        public Action<float> OnHealthChange { get; set; }
 
         /// <summary>
         /// Event triggered when the invincibility state changes.
@@ -213,7 +213,7 @@ namespace Characters.HeathSystems
         {
             _currentHealth += value;
             _currentHealth = Mathf.Clamp(_currentHealth, 0, _maxHealth);
-            OnHealthChange?.Invoke();
+            OnHealthChange?.Invoke(value);
         }
 
         /// <summary>
