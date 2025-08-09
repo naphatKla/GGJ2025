@@ -152,7 +152,8 @@ namespace Characters.Controllers
             healthSystem.AssignHealthData(
                 characterData.MaxHealth,
                 characterData.InvincibleTimePerHit, this);
-            combatSystem.AssignCombatData(characterData.BaseDamage);
+            combatSystem.AssignCombatData(characterData.BaseDamage, this);
+            feedbackSystem.AssignData(this);
         }
         
         protected virtual void SubscribeDependency()
@@ -173,13 +174,7 @@ namespace Characters.Controllers
         
         public void TryPlayFeedback(FeedbackName feedbackName)
         {
-            // handle feedback condition here.
             if (!feedbackSystem) return;
-            if (feedbackName == FeedbackName.AttackHit)
-            {
-                if (FeedbackSystem.IsFeedbackPlaying(FeedbackName.CounterAttack))
-                    return;
-            }
             feedbackSystem.PlayFeedback(feedbackName);
         }
 

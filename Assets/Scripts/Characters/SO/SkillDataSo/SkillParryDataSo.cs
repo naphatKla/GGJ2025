@@ -8,18 +8,22 @@ namespace Characters.SO.SkillDataSo
     [CreateAssetMenu(fileName = "SkillParryData", menuName = "GameData/SkillData/SkillParryData")]
     public class SkillParryDataSo : BaseSkillDataSo
     {
+        [FoldoutGroup("Damage Configs")] [Title("Parry Succession")] [SerializeField]
+        private float explosionBaseDamage = 0;
+
+        [Unit(Units.Percent)] 
+        [FoldoutGroup("Damage Configs")] [SerializeField]
+        private float explosionDamageMultiplier = 100;
+        
+        [FoldoutGroup("Damage Configs")] 
+        [SerializeField] private float explosionRadius;
+        
         [FoldoutGroup("Parry Configs")] [SerializeField]
         private bool stopWhileParry;
 
         [FoldoutGroup("Parry Configs")] [SerializeField]
         private float parryDuration;
-
-        [FoldoutGroup("Parry Configs")] [Title("Parry Succession")] [SerializeField]
-        private float explosionDamageMultiplier;
-
-        [FoldoutGroup("Parry Configs")] 
-        [SerializeField] private float explosionRadius;
-
+        
         [FoldoutGroup("Parry Configs")] [SerializeField]
         private float knockBackDistance;
 
@@ -31,6 +35,7 @@ namespace Characters.SO.SkillDataSo
 
         public bool StopWhileParry => stopWhileParry;
         public float ParryDuration => parryDuration;
+        public float ExplosionBaseDamage => explosionBaseDamage;
         public float ExplosionDamageMultiplier => explosionDamageMultiplier;
         public float ExplosionRadius => explosionRadius;
         public List<StatusEffectDataPayload> ExplosionEffectsToTarget => explosionEffectsToTarget;

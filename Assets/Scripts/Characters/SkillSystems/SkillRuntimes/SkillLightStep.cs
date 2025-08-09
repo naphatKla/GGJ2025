@@ -15,6 +15,7 @@ namespace Characters.SkillSystems.SkillRuntimes
     public class SkillLightStep : BaseSkillRuntime<SkillLightStepDataSo>, ISpecialConditionSkill
     {
         public bool IsWaitForCondition => _isWaitForCounterAttack || _isWaitForMovementEnd;
+
         private bool _isWaitForCounterAttack;
         private bool _isWaitForMovementEnd;
         private bool _inGodSpeedPhase;
@@ -45,23 +46,21 @@ namespace Characters.SkillSystems.SkillRuntimes
 
             _isWaitForMovementEnd = false;
             SetCurrentCooldown(skillData.Cooldown);
-
             if (cancelToken.IsCancellationRequested) return;
+
             owner.SkillSystem.SetCanUsePrimary(false);
             owner.SkillSystem.SetCanUseSecondary(false);
-
             owner.TryPlayFeedback(FeedbackName.LightStepUse);
 
-            PlayerController player = null;
-            if (owner is PlayerController playerController)
-            {
-                player = playerController;
-                player.CameraController.LerpOrthoSize(18f, 0.5f).Forget();
-                player.CameraController.LerpFOV(90, 1).Forget();
-            }
+            PlayerController player = owner as PlayerController;
+
+            if (player)
+                player.CameraController.LerpOrthoSize(15f, 0.5f).Forget();
+
 
             StatusEffectManager.ApplyEffectTo(owner.gameObject, skillData.EffectWhileLightStep);
-            owner.DamageOnTouch.EnableDamage(owner.gameObject, this, 3);
+            owner.DamageOnTouch.EnableDamage(owner.gameObject, this, 1, skillData.BaseDamagePerHit,
+                skillData.DamageMultiplier, 0, 0, skillData.LifeStealPercentChance, skillData.LifeStealEffective);
 
             float radius = skillData.StartLightStepRadius;
 
@@ -72,7 +71,8 @@ namespace Characters.SkillSystems.SkillRuntimes
 
                 owner.MovementSystem.StopTween();
 
-                float speedMultiplier = 1f + i * skillData.NormalPhaseSpeedStepUp;
+                float speedMultiplier = Mathf.Clamp(1f + i * (skillData.NormalPhaseSpeedStepUp/100),
+                    1, skillData.NormalPhaseMaxSpeedMultiplier/100);
 
                 if (i >= skillData.GodSpeedPhaseStartHit)
                 {
@@ -82,15 +82,10 @@ namespace Characters.SkillSystems.SkillRuntimes
                         owner.FeedbackSystem.SetIgnoreFeedback(FeedbackName.CounterAttack, true);
                         player?.CameraController.LerpOrthoSize(22f, 0.25f).Forget();
                         player?.CameraController.SetFollowTarget(null);
-                        // Enter god speed phase feedback or effect
                     }
 
-                    speedMultiplier += skillData.GodSpeedPhaseSpeedStepUp;
-                    speedMultiplier = Mathf.Clamp(speedMultiplier, 1, skillData.GodSpeedPhaseMaxSpeedMultiplier);
-                }
-                else
-                {
-                    speedMultiplier = Mathf.Clamp(speedMultiplier, 1, skillData.NormalPhaseMaxSpeedMultiplier);
+                    speedMultiplier += skillData.GodSpeedPhaseSpeedStepUp/100;
+                    speedMultiplier = Mathf.Clamp(speedMultiplier, 1, skillData.GodSpeedPhaseMaxSpeedMultiplier/100);
                 }
 
                 var curve = skillData.RandomCurve.Count > 0
@@ -104,21 +99,13 @@ namespace Characters.SkillSystems.SkillRuntimes
                     .WithCancellation(cancelToken);
 
                 radius = skillData.LightStepRadius;
-                Debug.Log(i);
             }
 
             _isSuccess = true;
         }
 
-        protected override void OnSkillExit()
-        {
-            ResetOnEnd().Forget();
-        }
-
-        private void OnDisable()
-        {
-            ResetOnEnd().Forget();
-        }
+        protected override void OnSkillExit() => ResetOnEnd().Forget();
+        private void OnDisable() => ResetOnEnd().Forget();
 
         private async UniTaskVoid ResetOnEnd()
         {
@@ -126,18 +113,20 @@ namespace Characters.SkillSystems.SkillRuntimes
             owner.SkillSystem.SetCanUsePrimary(true);
             owner.SkillSystem.SetCanUseSecondary(true);
             owner.DamageOnTouch.DisableDamage(this);
+
             _isWaitForCounterAttack = false;
             _isWaitForMovementEnd = false;
             _inGodSpeedPhase = false;
 
             if (!_isSuccess) return;
+
             owner.TryPlayFeedback(FeedbackName.LightStepEnd);
             owner.FeedbackSystem.SetIgnoreFeedback(FeedbackName.CounterAttack, false);
 
             if (owner is PlayerController player)
             {
                 player.CameraController.ResetCamera(0.25f);
-                player?.MovementSystem.TryMoveToPositionBySpeed(
+                player.MovementSystem.TryMoveToPositionBySpeed(
                     player.CameraController.GetCameraCenterWorldPosition(),
                     skillData.LightStepSpeed);
             }
@@ -172,21 +161,19 @@ namespace Characters.SkillSystems.SkillRuntimes
             if (count == 0) return null;
 
             float avgDist = totalDist / count;
-            Transform bestNew = null;
-            Transform bestRepeat = null;
-            float bestNewScore = float.MaxValue;
-            float bestRepeatScore = float.MaxValue;
+            Transform bestNew = null, bestRepeat = null;
+            float bestNewScore = float.MaxValue, bestRepeatScore = float.MaxValue;
 
             foreach (var (target, sqrDist) in validTargets)
             {
                 float delta = Mathf.Abs(sqrDist - avgDist);
-
                 int futureTargets = 0;
-                Collider2D[] lookahead = Physics2D.OverlapCircleAll(target.position, lookaheadRadius, damageLayer);
-                foreach (var l in lookahead)
+
+                foreach (var l in Physics2D.OverlapCircleAll(target.position, lookaheadRadius, damageLayer))
                 {
-                    if (!l || l.transform == owner.transform || l.transform == target) continue;
-                    if (_dashedTargets.Contains(l.transform)) continue;
+                    if (!l || l.transform == owner.transform || l.transform == target ||
+                        _dashedTargets.Contains(l.transform))
+                        continue;
                     futureTargets++;
                 }
 
@@ -200,33 +187,24 @@ namespace Characters.SkillSystems.SkillRuntimes
                         bestNew = target;
                     }
                 }
-                else
+                else if (score < bestRepeatScore)
                 {
-                    if (score < bestRepeatScore)
-                    {
-                        bestRepeatScore = score;
-                        bestRepeat = target;
-                    }
+                    bestRepeatScore = score;
+                    bestRepeat = target;
                 }
             }
 
             var chosen = bestNew ?? bestRepeat;
-            if (chosen != null)
-            {
-                _dashedTargets.Add(chosen);
-                Vector2 pos = chosen.position;
-                float minDist = skillData.MinStepDistance;
-                float currentDist = Vector2.Distance(origin, pos);
-                if (currentDist < minDist)
-                {
-                    Vector2 dir = (pos - origin).normalized;
-                    pos = origin + dir * minDist;
-                }
+            if (chosen == null) return null;
 
-                return pos;
-            }
+            _dashedTargets.Add(chosen);
+            Vector2 pos = chosen.position;
+            float currentDist = Vector2.Distance(origin, pos);
 
-            return null;
+            if (currentDist < skillData.MinStepDistance)
+                pos = origin + (pos - origin).normalized * skillData.MinStepDistance;
+
+            return pos;
         }
     }
 }

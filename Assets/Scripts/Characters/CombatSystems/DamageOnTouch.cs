@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using Manager;
 using Sirenix.OdinInspector;
-using Unity.VisualScripting;
 
 namespace Characters.CombatSystems
 {
@@ -13,6 +12,12 @@ namespace Characters.CombatSystems
         {
             public object Caller;
             public float HitPerSec;
+            public float BaseSkillDamage;
+            public float DamageMultiplier;
+            public float AdditionalCriRate;
+            public float AdditionalCriDmg;
+            public float LifeStealPercent;
+            public float LifeStealEffective;
         }
 
         public enum OverlapShape
@@ -50,14 +55,34 @@ namespace Characters.CombatSystems
 
         #region Public API
 
-        public void EnableDamage(GameObject owner, object caller, float hitPerSec)
+        public void EnableDamage(
+            GameObject owner,
+            object caller,
+            float hitPerSec,
+            float baseSkillDamage,
+            float damageMultiplier = 100f,
+            float additionalCriRate = 0f,
+            float additionalCriDmg = 0f,
+            float lifeStealPercent = 0f,
+            float lifeStealEffective = 0f)
         {
-            InternalEnableDamage(owner, caller, hitPerSec);
+            InternalEnableDamage(owner, caller, hitPerSec, baseSkillDamage, damageMultiplier, additionalCriRate, additionalCriDmg, lifeStealPercent, lifeStealEffective);
         }
 
-        public void EnableDamage(GameObject owner, object caller, float hitPerSec,
-            OverlapShape shape, LayerMask layerMask,
-            Vector2? box = null, float? circle = null)
+        public void EnableDamage(
+            GameObject owner,
+            object caller,
+            float hitPerSec,
+            OverlapShape shape,
+            LayerMask layerMask,
+            Vector2? box = null,
+            float? circle = null,
+            float baseSkillDamage = 0f,
+            float damageMultiplier = 100f,
+            float additionalCriRate = 0f,
+            float additionalCriDmg = 0f,
+            float lifeStealPercent = 0f,
+            float lifeStealEffective = 0f)
         {
             this.shape = shape;
             this.targetLayer = layerMask;
@@ -65,10 +90,19 @@ namespace Characters.CombatSystems
             if (box.HasValue) boxSize = box.Value;
             if (circle.HasValue) circleRadius = circle.Value;
 
-            InternalEnableDamage(owner, caller, hitPerSec);
+            InternalEnableDamage(owner, caller, hitPerSec, baseSkillDamage, damageMultiplier, additionalCriRate, additionalCriDmg, lifeStealPercent, lifeStealEffective);
         }
 
-        private void InternalEnableDamage(GameObject owner, object caller, float hitPerSec)
+        private void InternalEnableDamage(
+            GameObject owner,
+            object caller,
+            float hitPerSec,
+            float baseSkillDamage,
+            float damageMultiplier,
+            float additionalCriRate,
+            float additionalCriDmg,
+            float lifeStealPercent,
+            float lifeStealEffective)
         {
             if (caller == null || owner == null)
             {
@@ -91,6 +125,12 @@ namespace Characters.CombatSystems
             {
                 Caller = caller,
                 HitPerSec = Mathf.Max(hitPerSec, 0.01f),
+                BaseSkillDamage = baseSkillDamage,
+                DamageMultiplier = damageMultiplier,
+                AdditionalCriRate = additionalCriRate,
+                AdditionalCriDmg = additionalCriDmg,
+                LifeStealPercent = lifeStealPercent,
+                LifeStealEffective = lifeStealEffective,
             });
 
             if (!_isEnableDamage)
@@ -178,7 +218,17 @@ namespace Characters.CombatSystems
                 if (_cooldownMap.TryGetValue(key, out float nextTime) && now < nextTime)
                     continue;
 
-                CombatManager.ApplyDamageTo(target, _owner, hitPosition);
+                CombatManager.ApplyDamageTo(
+                    target,
+                    _owner,
+                    hitPosition,
+                    instance.BaseSkillDamage,
+                    instance.DamageMultiplier,
+                    instance.AdditionalCriRate,
+                    instance.AdditionalCriDmg,
+                    instance.LifeStealPercent,
+                    instance.LifeStealEffective);
+
                 float cooldown = 1f / instance.HitPerSec;
                 _cooldownMap[key] = now + cooldown;
                 OnHit?.Invoke();
@@ -195,7 +245,7 @@ namespace Characters.CombatSystems
 
         #endregion
 
-        #region Safety (Optional)
+        #region Safety
 
         private void OnDisable()
         {
@@ -205,7 +255,7 @@ namespace Characters.CombatSystems
 
         #endregion
 
-    #if UNITY_EDITOR
+#if UNITY_EDITOR
         private void OnDrawGizmosSelected()
         {
             Gizmos.color = Color.red;
@@ -227,6 +277,6 @@ namespace Characters.CombatSystems
                     break;
             }
         }
-    #endif
+#endif
     }
 }

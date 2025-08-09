@@ -38,8 +38,10 @@ MonoBehaviour:
   level: 1
   cooldown: 2
   statusEffectOnSkillStart: []
-  dashDuration: 0.3
+  dashBaseDamage: 0
+  damageMultiplier: 100
   damageEnableDuration: 0.25
+  dashDuration: 0.3
   dashDistance: 8
   dashEaseCurve:
     serializedVersion: 2
@@ -47,30 +49,30 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 0
       value: 0
-      inSlope: 0.13049228
-      outSlope: 0.13049228
+      inSlope: 0.073488235
+      outSlope: 0.073488235
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
-      outWeight: 0.07137873
+      outWeight: 0.28600982
     - serializedVersion: 3
-      time: 0.4707496
-      value: 0.2321493
-      inSlope: 1.2439445
-      outSlope: 1.2439445
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.06109681
-      outWeight: 0.06121441
-    - serializedVersion: 3
-      time: 0.89207774
-      value: 0.9241267
-      inSlope: 1.9507829
-      outSlope: 1.9507829
+      time: 0.48358378
+      value: 0.37195766
+      inSlope: 2.3460052
+      outSlope: 2.3460052
       tangentMode: 0
       weightedMode: 0
       inWeight: 0.33333334
-      outWeight: 0.33333334
+      outWeight: 0.35683227
+    - serializedVersion: 3
+      time: 0.6652451
+      value: 0.81098986
+      inSlope: 1.703014
+      outSlope: 1.703014
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.30538765
+      outWeight: 0.15243578
     - serializedVersion: 3
       time: 1
       value: 1

@@ -13,8 +13,15 @@ namespace Characters.SO.SkillDataSo
         [FoldoutGroup("Skill Objects")] [SerializeField]
         private HarmonyOfLightSkillObject lightPrefab;
 
-        [FoldoutGroup("Skill Objects")] [SerializeField]
+        [FoldoutGroup("Damage Configs")] [SerializeField]
         private float damageHitPerSec = 5f;
+        
+        [FoldoutGroup("Damage Configs")] [SerializeField]
+        private float baseDamagePerHit = 40f;
+        
+        [Unit(Units.Percent)]
+        [FoldoutGroup("Damage Configs")] [SerializeField]
+        private float damageMultiplier = 100f;
         
         [FoldoutGroup("Harmony Configs")]
         [SerializeField] private float spinDuration = 3f;
@@ -30,5 +37,9 @@ namespace Characters.SO.SkillDataSo
         public float SpinRatePerSec => spinRatePerSec;
 
         public float DamageHitPerSec => damageHitPerSec;
+        
+        public float BaseDamagePerHit => baseDamagePerHit;
+        
+        public float DamageMultiplier => damageMultiplier;
     }
 }

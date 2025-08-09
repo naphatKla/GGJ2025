@@ -1,0 +1,259 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d4e07d007c28904b9f3f573645a1787, type: 3}
+  m_Name: LV4_Player_LightStep
+  m_EditorClassIdentifier: 
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes:
+    - Name: _skillRuntime
+      Entry: 7
+      Data: 0|System.RuntimeType, mscorlib
+    - Name: 
+      Entry: 1
+      Data: Characters.SkillSystems.SkillRuntimes.SkillLightStep, Assembly-CSharp
+    - Name: 
+      Entry: 8
+      Data: 
+  skillIcon: {fileID: 0}
+  skillName: Light Step
+  skillDescription: 
+  previousSkillData: {fileID: 11400000, guid: a5f6cc9154e80c0489be5e7beea9676b, type: 2}
+  nextSkillDataUpgrade: {fileID: 11400000, guid: d9cfdf69e82af9647842041d40220886, type: 2}
+  level: 4
+  cooldown: 20
+  statusEffectOnSkillStart: []
+  baseDamagePerHit: 35
+  damageMultiplier: 100
+  lifeStealPercentChance: 11.25
+  lifeStealEffective: 10
+  startLightStepRadius: 25
+  lightStepRadius: 15
+  lightStepSpeed: 36
+  minStepDistance: 8
+  targetAmount: 15
+  randomCurve:
+  - serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: -18.752054
+      outSlope: -18.752054
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.186722
+    - serializedVersion: 3
+      time: 0.2
+      value: -2
+      inSlope: 1.7637382
+      outSlope: 1.7637382
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.38288146
+      value: 0.4739246
+      inSlope: 23.066721
+      outSlope: 23.066721
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.2179279
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.70242083
+      value: 5
+      inSlope: 0.5786452
+      outSlope: 0.5786452
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.91
+      value: 2.3
+      inSlope: -25.396887
+      outSlope: -25.396887
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.3391724
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: -24.55776
+      outSlope: -24.55776
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.46999153
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  - serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 10
+      outSlope: 10
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.2
+      value: 2
+      inSlope: -1.7637382
+      outSlope: -1.7637382
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.38288146
+      value: -0.4739246
+      inSlope: -20.815678
+      outSlope: -20.815678
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.2179279
+      outWeight: 0.2561463
+    - serializedVersion: 3
+      time: 0.70242083
+      value: -5
+      inSlope: -0.5786452
+      outSlope: -0.5786452
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.91
+      value: -2.3
+      inSlope: 25.560658
+      outSlope: 25.560658
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.3391724
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 25.012321
+      outSlope: 25.012321
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.39956978
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  - serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.07410674
+      value: 8
+      inSlope: -8.648448
+      outSlope: -8.648448
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 1
+    - serializedVersion: 3
+      time: 0.3260254
+      value: 5.8
+      inSlope: -8.741333
+      outSlope: -8.741333
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.99219906
+      outWeight: 0.25092962
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: -8.6491165
+      outSlope: -8.6491165
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 1
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  - serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.07410674
+      value: -8
+      inSlope: 8.666201
+      outSlope: 8.666201
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 1
+    - serializedVersion: 3
+      time: 0.3260254
+      value: -5.8
+      inSlope: 8.783237
+      outSlope: 8.783237
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.9976895
+      outWeight: 0.25092962
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 8.59904
+      outSlope: 8.59904
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 1
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  normalPhaseSpeedStepUp: 10
+  normalPhaseMaxSpeedMultiplier: 175
+  godSpeedPhaseStartHit: 5
+  godSpeedPhaseSpeedStepUp: 50
+  godSpeedPhaseMaxSpeedMultiplier: 400
+  effectWhileLightStep:
+  - effectData: {fileID: 11400000, guid: aa4dff95f38494c4e876f8f95511ecf0, type: 2}
+    isOverrideDuration: 1
+    overrideDuration: 100

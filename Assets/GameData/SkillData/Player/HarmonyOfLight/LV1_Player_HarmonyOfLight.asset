@@ -36,10 +36,12 @@ MonoBehaviour:
   previousSkillData: {fileID: 0}
   nextSkillDataUpgrade: {fileID: 11400000, guid: fabf28818a6ff614bac95b03cf1f3e1a, type: 2}
   level: 1
-  cooldown: 30
+  cooldown: 60
   statusEffectOnSkillStart: []
-  lightAmount: 4
+  lightAmount: 2
   lightPrefab: {fileID: 5831398039795138607, guid: 3aa973253e08cce4ab474868e68f9b07, type: 3}
-  spinDuration: 3
-  spinRatePerSec: 0.35
   damageHitPerSec: 5
+  baseDamagePerHit: 40
+  damageMultiplier: 100
+  spinDuration: 3
+  spinRatePerSec: 0.33

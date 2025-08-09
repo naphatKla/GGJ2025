@@ -22,7 +22,7 @@ namespace Manager
             IsCritical = isCritical;
         }
     }
-    
+
     /// <summary>
     /// Static manager responsible for handling combat interactions between entities.
     /// Provides utility methods for applying damage and triggering combat-related callbacks.
@@ -42,8 +42,10 @@ namespace Manager
         /// </summary>
         /// <param name="target">The GameObject receiving the damage.</param>
         /// <param name="attacker">The GameObject dealing the damage.</param>
-        /// <param name="multiplier">A multiplier applied to the attacker's damage (default is 1).</param>
-        public static void ApplyDamageTo(GameObject target, GameObject attacker, Vector2 hitPosition, float multiplier = 1f)
+        /// <param name="multiplier">A multiplier applied to the attacker's damage (default is 100%).</param>
+        public static void ApplyDamageTo(GameObject target, GameObject attacker, Vector2 hitPosition,
+            float baseSkillDamage, float multiplier, float additionalCriRate, float additionCriDamge,
+            float lifeStealPercent, float lifeStealEffective)
         {
             if (!TryGetCachedComponent(target, _healthCache, out var targetHealth)) return;
 
@@ -61,19 +63,11 @@ namespace Manager
                 attackerCombatSystem.OnCounterAttackHandler();
             }
 
-            var damageData = attackerCombatSystem.CalculateDamageDeal(targetHealth.gameObject, hitPosition, multiplier);
-                
+            var damageData = attackerCombatSystem.CalculateSkillDamageDeal(targetHealth.gameObject, hitPosition,
+                baseSkillDamage, multiplier);
+
             if (!targetHealth.TakeDamage(damageData.Damage)) return;
             attackerCombatSystem.OnDealDamageHandler(damageData);
-        }
-
-        /// <summary>
-        /// Applies raw damage directly to a target without an attacker.
-        /// </summary>
-        public static void ApplyDamageTo(GameObject target, float damage)
-        {
-            if (!TryGetCachedComponent(target, _healthCache, out var targetHealth)) return;
-            targetHealth.TakeDamage(damage);
         }
 
         /// <summary>

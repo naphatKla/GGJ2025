@@ -31,11 +31,20 @@ namespace Characters.SO.SkillDataSo
         [SerializeField] [Required]
         private ReflectionSkillObject reflectionSkillObject;
         
-        [FoldoutGroup("Skill Object")]
+        [FoldoutGroup("Damage Configs")]
         [PropertyTooltip("Total number of skill objects hit per second")]
         [SerializeField]
         private float damageHitPerSec = 3;
-
+        
+        [FoldoutGroup("Damage Configs")]
+        [PropertyTooltip("Total number of skill objects hit per second")]
+        [SerializeField]
+        private float baseDamagePerHit = 5;
+        
+        [FoldoutGroup("Damage Configs")]
+        [PropertyTooltip("Total number of skill objects hit per second")]
+        [SerializeField]  [Unit(Units.Percent)]
+        private float damageMultiplier = 100;
         // ------------------ Explosion Phase ------------------
 
         [FoldoutGroup("Reflection Configs")]
@@ -128,6 +137,10 @@ namespace Characters.SO.SkillDataSo
 
         /// <summary>Total number of skill object spawned during the skill.</summary>
         public int SkillObjectAmount => skillObjectAmount;
+
+        public float BaseDamagePerHit => baseDamagePerHit;
+
+        public float DamageMultiplier => damageMultiplier;
 
         public float DamageHitPerSec => damageHitPerSec;
 
