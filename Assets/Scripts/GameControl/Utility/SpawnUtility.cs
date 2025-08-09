@@ -48,7 +48,42 @@ public static class SpawnUtility
         }
         return new Vector2(x, y);
     }
-    
+
+    public static Vector2 RandomSpawnAroundPlayerCamera(Camera playerCamera, float offset = 0.5f)
+    {
+        // หามุมซ้ายล่างและขวาบนของกล้องใน World Space
+        Vector3 bottomLeft = playerCamera.ViewportToWorldPoint(new Vector3(0, 0, playerCamera.nearClipPlane));
+        Vector3 topRight = playerCamera.ViewportToWorldPoint(new Vector3(1, 1, playerCamera.nearClipPlane));
+
+        float minX = bottomLeft.x;
+        float maxX = topRight.x;
+        float minY = bottomLeft.y;
+        float maxY = topRight.y;
+
+        // 0 = ซ้าย, 1 = ขวา, 2 = บน, 3 = ล่าง
+        int side = Random.Range(0, 4);
+        Vector2 spawnPos = Vector2.zero;
+
+        switch (side)
+        {
+            case 0: // ซ้าย (นอกกล้องทางซ้าย)
+                spawnPos = new Vector2(minX - offset, Random.Range(minY, maxY));
+                break;
+            case 1: // ขวา
+                spawnPos = new Vector2(maxX + offset, Random.Range(minY, maxY));
+                break;
+            case 2: // บน
+                spawnPos = new Vector2(Random.Range(minX, maxX), maxY + offset);
+                break;
+            case 3: // ล่าง
+                spawnPos = new Vector2(Random.Range(minX, maxX), minY - offset);
+                break;
+        }
+
+        return spawnPos;
+    }
+
+
     public static Vector2 RandomInsideRegion(Vector2 regionSize)
     {
         float x = Random.Range(-regionSize.x / 2f, regionSize.x / 2f);

@@ -20,14 +20,16 @@ namespace GameControl.Controller
         private Dictionary<string, ObjectPool<EnemyController>> _enemyPools;
         private List<MapDataSO.EnemyOption> _enemyOptionsList;
         private bool _debug;
+        private Camera _mainCamera;
         
 
-        public EnemySpawnerController(MapDataSO mapData, SpawnerStateController state, Vector2 spawnRegion, bool debug)
+        public EnemySpawnerController(MapDataSO mapData, SpawnerStateController state, Vector2 spawnRegion, bool debug, Camera mainCamera)
         {
             _mapdata = mapData;
             _state = state;
             _regionSize = spawnRegion;
             _debug = debug;
+            _mainCamera = mainCamera;
 
             PrewarmEnemy();
         }
@@ -88,7 +90,7 @@ namespace GameControl.Controller
             
             obj.gameObject.SetActive(false);
             obj.FeedbackSystem.ShowTrail(false);
-            obj.transform.position = SpawnUtility.RandomSpawnAroundRegion(_regionSize);
+            obj.transform.position = SpawnUtility.RandomSpawnAroundPlayerCamera(_mainCamera, 10f);
             SpawnerStateController.Instance.CurrentEnemyPoint += option.EnemyPoint;
             _activeEnemy.Remove(obj);
         }
@@ -96,7 +98,7 @@ namespace GameControl.Controller
         private void ActionOnGet(EnemyController obj, MapDataSO.EnemyOption option)
         {
             obj.ResetAllDependentBehavior();
-            obj.transform.position = SpawnUtility.RandomSpawnAroundRegion(_regionSize);
+            obj.transform.position = SpawnUtility.RandomSpawnAroundPlayerCamera(_mainCamera, 10f);
             obj.transform.SetParent(_state.EnemyParent);
             obj.FeedbackSystem.ShowTrail(true);
             obj.gameObject.SetActive(true);
