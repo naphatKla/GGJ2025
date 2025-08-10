@@ -57,8 +57,7 @@ namespace Characters.SkillSystems
 
             base.PerformSkill(type);
         }
-
-
+        
         public override void ResetSkillSystem()
         {
             foreach (var pair in activeBufferCallbacks)
