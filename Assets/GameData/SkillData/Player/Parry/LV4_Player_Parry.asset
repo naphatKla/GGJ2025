@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: dda4035b7f2d34647b6816f4188fe7a9, type: 3}
-  m_Name: LV1_Player_Parry
+  m_Name: LV4_Player_Parry
   m_EditorClassIdentifier: 
   serializationData:
     SerializedFormat: 2
@@ -33,20 +33,20 @@ MonoBehaviour:
   skillIcon: {fileID: 21300000, guid: 4e172c3d6cf32704e9db569f5138820d, type: 3}
   skillName: Parry
   skillDescription: 
-  previousSkillData: {fileID: 0}
-  nextSkillDataUpgrade: {fileID: 11400000, guid: 83acc3d2d53cdf54b8bf3c3c6ee57dfb, type: 2}
-  level: 1
-  cooldown: 5
+  previousSkillData: {fileID: 11400000, guid: bb860ce7882e6824fa12c3cf2461b0d0, type: 2}
+  nextSkillDataUpgrade: {fileID: 11400000, guid: 4f8bf3e8d28d4794d8605787d1cfa472, type: 2}
+  level: 4
+  cooldown: 4
   statusEffectOnSkillStart:
   - effectData: {fileID: 11400000, guid: aa4dff95f38494c4e876f8f95511ecf0, type: 2}
     isOverrideDuration: 1
     overrideDuration: 0.55
   explosionBaseDamage: 0
-  explosionDamageMultiplier: 300
-  explosionRadius: 8
+  explosionDamageMultiplier: 375
+  explosionRadius: 14.8
   stopWhileParry: 0
   parryDuration: 0.5
-  knockBackDistance: 8
+  knockBackDistance: 9.8
   knockBackDuration: 0.25
   explosionEffectsToTarget:
   - effectData: {fileID: 11400000, guid: e5ae6010e3c4a7b43bc80da0bf5a9ef5, type: 2}
