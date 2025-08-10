@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Characters.Controllers;
 using Cysharp.Threading.Tasks;
 using MoreMountains.Tools;
 using Sirenix.OdinInspector;
@@ -37,10 +38,11 @@ namespace GameControl.EventMap
         {
             if (!_mapStorageDict.TryGetValue(id, out var storage)) return;
 
+            var playerPost = PlayerController.Instance.transform.position;
             var eventsToRun = GetFilteredEvents(storage);
             foreach (var entry in eventsToRun)
             {
-                await PlayEntry(entry);
+                await PlayEntry(entry, playerPost);
                 await UniTask.Delay(TimeSpan.FromSeconds(GetDelayForEntry(entry, storage)));
             }
         }
@@ -59,13 +61,13 @@ namespace GameControl.EventMap
             return storage.randomAllEvent ? ShuffleList(events) : events;
         }
 
-        private async UniTask PlayEntry(MapEventStorageEntry entry)
+        private async UniTask PlayEntry(MapEventStorageEntry entry, Vector3 playerPost)
         {
             var pool = GetOrCreatePool(entry.eventPrefab);
             var instance = pool.Get();
-
+            
             instance.SetPool(pool);
-            instance.transform.position = entry.spawnPosition;
+            instance.transform.position = playerPost + entry.spawnPosition;
             instance.transform.rotation = Quaternion.Euler(entry.spawnEulerAngles);
 
             await instance.Play();
