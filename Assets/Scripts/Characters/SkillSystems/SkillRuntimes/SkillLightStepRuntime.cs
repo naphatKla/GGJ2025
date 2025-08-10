@@ -55,6 +55,7 @@ namespace Characters.SkillSystems.SkillRuntimes
 
             owner.SkillSystem.SetCanUsePrimary(false);
             owner.SkillSystem.SetCanUseSecondary(false);
+            owner.MovementSystem.CanInterruptTween = false;
             owner.TryPlayFeedback(FeedbackName.LightStepUse);
 
             PlayerController player = owner as PlayerController;
@@ -116,6 +117,7 @@ namespace Characters.SkillSystems.SkillRuntimes
             owner.CombatSystem.OnCounterAttack -= TriggerCondition;
             owner.SkillSystem.SetCanUsePrimary(true);
             owner.SkillSystem.SetCanUseSecondary(true);
+            owner.MovementSystem.CanInterruptTween = true;
             owner.DamageOnTouch.DisableDamage(this);
 
             _isWaitForCounterAttack = false;

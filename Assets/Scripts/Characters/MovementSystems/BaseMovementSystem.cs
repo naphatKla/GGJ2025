@@ -95,6 +95,8 @@ namespace Characters.MovementSystems
 
         public bool IsMoveTweenActive => _moveOverTimeTween.IsActive();
 
+        public bool CanInterruptTween { get; set; } = true;
+        
         #endregion
 
         #region Unity Methods
@@ -171,6 +173,7 @@ namespace Characters.MovementSystems
             AnimationCurve easeCurve = null, AnimationCurve moveCurve = null)
         {
             if (!_canMove) return null;
+            if (!CanInterruptTween && _moveOverTimeTween.IsActive()) return null;
             _moveOverTimeTween?.Kill();
             _moveOverTimeTween = MoveToPositionOverTime(position, duration, easeCurve, moveCurve);
             return _moveOverTimeTween;
@@ -184,6 +187,7 @@ namespace Characters.MovementSystems
             AnimationCurve moveCurve = null)
         {
             if (!_canMove) return null;
+            if (!CanInterruptTween && _moveOverTimeTween.IsActive()) return null;
             _moveOverTimeTween?.Kill();
             _moveOverTimeTween = MoveToTargetOverTime(target, duration, easeCurve, moveCurve);
             return _moveOverTimeTween;

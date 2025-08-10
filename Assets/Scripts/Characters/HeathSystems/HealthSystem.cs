@@ -90,6 +90,8 @@ namespace Characters.HeathSystems
         /// </summary>
         public Action<bool> OnInvincible { get; set; }
 
+        public bool IsInvincible => _isInvincible;
+
         #endregion
         
         #region Properties
