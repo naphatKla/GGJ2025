@@ -62,7 +62,7 @@ namespace Characters.SkillSystems.SkillRuntimes
                 player.CameraController.LerpOrthoSize(15f, 0.5f).Forget();
 
             StatusEffectManager.ApplyEffectTo(owner.gameObject, skillData.EffectWhileLightStep);
-            owner.DamageOnTouch.EnableDamage(owner.gameObject, this, 1, skillData.BaseDamagePerHit,
+            owner.DamageOnTouch.EnableDamage(owner.gameObject, this, 4.5f, skillData.BaseDamagePerHit,
                 skillData.DamageMultiplier, 0, 0, skillData.LifeStealPercentChance, skillData.LifeStealEffective);
 
             for (int i = 0; i < skillData.TargetAmount; i++)
