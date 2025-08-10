@@ -16,6 +16,11 @@ namespace Characters.SkillSystems.SkillRuntimes
     {
         public bool IsWaitForCondition => _isWaitForCounterAttack || _isWaitForMovementEnd;
 
+        [Header("Camera (optional)")]
+        [Tooltip("If null, will use Camera.main. Must be Orthographic for 2D OverlapArea bounds.")]
+        [SerializeField]
+        private Camera targetCamera;
+
         private bool _isWaitForCounterAttack;
         private bool _isWaitForMovementEnd;
         private bool _inGodSpeedPhase;
@@ -53,26 +58,24 @@ namespace Characters.SkillSystems.SkillRuntimes
             owner.TryPlayFeedback(FeedbackName.LightStepUse);
 
             PlayerController player = owner as PlayerController;
-
             if (player)
                 player.CameraController.LerpOrthoSize(15f, 0.5f).Forget();
-
 
             StatusEffectManager.ApplyEffectTo(owner.gameObject, skillData.EffectWhileLightStep);
             owner.DamageOnTouch.EnableDamage(owner.gameObject, this, 1, skillData.BaseDamagePerHit,
                 skillData.DamageMultiplier, 0, 0, skillData.LifeStealPercentChance, skillData.LifeStealEffective);
 
-            float radius = skillData.StartLightStepRadius;
-
             for (int i = 0; i < skillData.TargetAmount; i++)
             {
-                var targetPosition = GetBestTargetPosition(radius, skillData.LightStepRadius);
+                var targetPosition = GetBestTargetPositionInView();
                 if (targetPosition == null) break;
 
                 owner.MovementSystem.StopTween();
 
-                float speedMultiplier = Mathf.Clamp(1f + i * (skillData.NormalPhaseSpeedStepUp/100),
-                    1, skillData.NormalPhaseMaxSpeedMultiplier/100);
+                float speedMultiplier = Mathf.Clamp(
+                    1f + i * (skillData.NormalPhaseSpeedStepUp / 100f),
+                    1f, skillData.NormalPhaseMaxSpeedMultiplier / 100f
+                );
 
                 if (i >= skillData.GodSpeedPhaseStartHit)
                 {
@@ -84,8 +87,9 @@ namespace Characters.SkillSystems.SkillRuntimes
                         player?.CameraController.SetFollowTarget(null);
                     }
 
-                    speedMultiplier += skillData.GodSpeedPhaseSpeedStepUp/100;
-                    speedMultiplier = Mathf.Clamp(speedMultiplier, 1, skillData.GodSpeedPhaseMaxSpeedMultiplier/100);
+                    speedMultiplier += skillData.GodSpeedPhaseSpeedStepUp / 100f;
+                    speedMultiplier = Mathf.Clamp(speedMultiplier, 1f,
+                        skillData.GodSpeedPhaseMaxSpeedMultiplier / 100f);
                 }
 
                 var curve = skillData.RandomCurve.Count > 0
@@ -98,7 +102,7 @@ namespace Characters.SkillSystems.SkillRuntimes
                     .SetEase(Ease.InSine)
                     .WithCancellation(cancelToken);
 
-                radius = skillData.LightStepRadius;
+                Debug.Log(i);
             }
 
             _isSuccess = true;
@@ -137,74 +141,81 @@ namespace Characters.SkillSystems.SkillRuntimes
 
         private void TriggerCondition() => _isWaitForCounterAttack = false;
 
-        private Vector2? GetBestTargetPosition(float searchRadius, float lookaheadRadius)
+        /// <summary>
+        /// Pick the closest enemy to owner within current camera view (orthographic).
+        /// If distance >= MinStepDistance => dash to enemy position.
+        /// Else => dash MinStepDistance toward that enemy.
+        /// Returns null if no enemy in view.
+        /// </summary>
+        private Vector2? GetBestTargetPositionInView()
         {
+            var cam = targetCamera? targetCamera : Camera.main;
+            if (!cam) return null;
+
+            if (!cam.orthographic)
+            {
+                // Game seems to be 2D with orthographic camera; if not, early out or adapt here.
+                // You can replace this with a perspective-safe bounds calc if needed.
+                return null;
+            }
+
+            // Build world AABB of the current camera view on XY
+            Vector3 cpos = cam.transform.position;
+            float halfH = cam.orthographicSize;
+            float halfW = halfH * cam.aspect;
+
+            Vector2 min = new Vector2(cpos.x - halfW, cpos.y - halfH);
+            Vector2 max = new Vector2(cpos.x + halfW, cpos.y + halfH);
+
             LayerMask damageLayer = CharacterGlobalSettings.Instance.EnemyLayerDictionary[owner.tag];
-            Collider2D[] candidates = Physics2D.OverlapCircleAll(owner.transform.position, searchRadius, damageLayer);
-            if (candidates.Length == 0) return null;
+            Collider2D[] candidates = Physics2D.OverlapAreaAll(min, max, damageLayer);
+            if (candidates == null || candidates.Length == 0) return null;
 
             Vector2 origin = owner.transform.position;
-            float totalDist = 0f;
-            int count = 0;
-            List<(Transform target, float sqrDist)> validTargets = new();
+            float minStepSqr = skillData.MinStepDistance * skillData.MinStepDistance;
 
-            foreach (var collider in candidates)
+            Transform nearest = null;
+            float nearestSqr = float.MaxValue;
+
+            foreach (var col in candidates)
             {
-                if (!collider || collider.transform == owner.transform) continue;
-                Transform target = collider.transform;
-                float sqrDist = ((Vector2)target.position - origin).sqrMagnitude;
-                totalDist += sqrDist;
-                count++;
-                validTargets.Add((target, sqrDist));
-            }
+                if (!col) continue;
+                var t = col.transform;
+                if (t == owner.transform) continue;
 
-            if (count == 0) return null;
+                // (ถ้าต้องการไม่ dash ซ้ำเป้าหมายเดิม ให้เปิดเช็คนี้)
+                // if (_dashedTargets.Contains(t)) continue;
 
-            float avgDist = totalDist / count;
-            Transform bestNew = null, bestRepeat = null;
-            float bestNewScore = float.MaxValue, bestRepeatScore = float.MaxValue;
-
-            foreach (var (target, sqrDist) in validTargets)
-            {
-                float delta = Mathf.Abs(sqrDist - avgDist);
-                int futureTargets = 0;
-
-                foreach (var l in Physics2D.OverlapCircleAll(target.position, lookaheadRadius, damageLayer))
+                float sqr = ((Vector2)t.position - origin).sqrMagnitude;
+                if (sqr < nearestSqr)
                 {
-                    if (!l || l.transform == owner.transform || l.transform == target ||
-                        _dashedTargets.Contains(l.transform))
-                        continue;
-                    futureTargets++;
-                }
-
-                float score = delta - futureTargets * 0.1f;
-
-                if (!_dashedTargets.Contains(target))
-                {
-                    if (score < bestNewScore)
-                    {
-                        bestNewScore = score;
-                        bestNew = target;
-                    }
-                }
-                else if (score < bestRepeatScore)
-                {
-                    bestRepeatScore = score;
-                    bestRepeat = target;
+                    nearestSqr = sqr;
+                    nearest = t;
                 }
             }
 
-            var chosen = bestNew ?? bestRepeat;
-            if (chosen == null) return null;
+            if (!nearest) return null;
 
-            _dashedTargets.Add(chosen);
-            Vector2 pos = chosen.position;
-            float currentDist = Vector2.Distance(origin, pos);
+            _dashedTargets.Add(nearest);
 
-            if (currentDist < skillData.MinStepDistance)
-                pos = origin + (pos - origin).normalized * skillData.MinStepDistance;
+            if (nearestSqr >= minStepSqr)
+            {
+                // far enough: dash to enemy
+                return (Vector2)nearest.position;
+            }
 
-            return pos;
+            // too close: dash MinStepDistance toward enemy
+            Vector2 dir = ((Vector2)nearest.position - origin);
+            if (dir.sqrMagnitude < 1e-6f) return null;
+
+            dir.Normalize();
+            Vector2 fallback = origin + dir * skillData.MinStepDistance;
+
+            // (ถ้าต้องการบังคับไม่ให้ออกนอกหน้าจอ ลอง clamp fallback ให้ยังอยู่ใน [min,max])
+            fallback.x = Mathf.Clamp(fallback.x, min.x, max.x);
+            fallback.y = Mathf.Clamp(fallback.y, min.y, max.y);
+
+            return fallback;
         }
     }
 }

@@ -25,12 +25,6 @@ namespace Characters.SO.SkillDataSo
         private float lifeStealEffective = 10;
         
         [FoldoutGroup("Light Step Configs"), SerializeField]
-        private float startLightStepRadius = 12f;
-
-        [FoldoutGroup("Light Step Configs"), SerializeField]
-        private float lightStepRadius = 8f;
-        
-        [FoldoutGroup("Light Step Configs"), SerializeField]
         private float lightStepSpeed = 40f;
 
         [FoldoutGroup("Light Step Configs"), SerializeField]
@@ -68,8 +62,6 @@ namespace Characters.SO.SkillDataSo
         // Public accessors
         public float BaseDamagePerHit => baseDamagePerHit;
         public float DamageMultiplier => damageMultiplier;
-        public float StartLightStepRadius => startLightStepRadius;
-        public float LightStepRadius => lightStepRadius;
         public float TargetAmount => targetAmount;
         public float LightStepSpeed => lightStepSpeed;
         public float MinStepDistance => minStepDistance;
@@ -80,9 +72,7 @@ namespace Characters.SO.SkillDataSo
         public float GodSpeedPhaseStartHit => godSpeedPhaseStartHit;
         public float GodSpeedPhaseSpeedStepUp => godSpeedPhaseSpeedStepUp;
         public float GodSpeedPhaseMaxSpeedMultiplier => godSpeedPhaseMaxSpeedMultiplier;
-
         public List<StatusEffectDataPayload> EffectWhileLightStep => effectWhileLightStep;
-
         public List<AnimationCurve> RandomCurve => randomCurve;
     }
 }
