@@ -33,6 +33,7 @@ public class UIManager : MMSingleton<UIManager>
 {
     [SerializeField] private string menuScene;
     [SerializeField] private string gamePlayScene;
+    [SerializeField] private string endCreditsScene;
 
     [Header("UI Panels")] public List<UIPanelEntry> panelEntries;
 
@@ -85,8 +86,7 @@ public class UIManager : MMSingleton<UIManager>
         OnAnyPanelOpen?.Invoke();
         panelStack.Push(type);
     }
-
-
+    
     public void ClosePanel()
     {
         if (panelStack.Count == 0)
@@ -129,8 +129,7 @@ public class UIManager : MMSingleton<UIManager>
         }
         while (tempStack.Count > 0) panelStack.Push(tempStack.Pop());
     }
-
-
+    
     public void CloseAllPanels()
     {
         while (panelStack.Count > 0)
@@ -189,6 +188,11 @@ public class UIManager : MMSingleton<UIManager>
     public void OpenQuitPanel()
     {
         OpenPanel(UIPanelType.QuitPanel);
+    }
+    
+    public void LoadToCreditsScene()
+    {
+        SceneManager.LoadScene(endCreditsScene);
     }
     
     public void QuitGame()
