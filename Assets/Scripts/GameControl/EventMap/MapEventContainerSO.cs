@@ -54,6 +54,15 @@ namespace GameControl.EventMap
     {
         [Title("Event List")]
         public List<MapEventStorageEntry> entries = new();
+        
+        [Title("Min Max Config")]
+        public bool enableMinMax = false;
+        
+        [ShowIf("enableMinMax")]
+        public int minPlay;
+        
+        [ShowIf("enableMinMax")]
+        public int maxPlay;
 
         [Title("Delay Config")]
         public DelayMode delayMode = DelayMode.Fixed;
