@@ -19,6 +19,7 @@ namespace Characters.SkillSystems.SkillRuntimes
         protected override async UniTask OnSkillUpdate(CancellationToken cancelToken)
         {
             await UniTask.WaitForSeconds(skillData.ChargeDuration, cancellationToken: cancelToken);
+            if (cancelToken.IsCancellationRequested) return;
 
             var layerMask = CharacterGlobalSettings.Instance.EnemyLayerDictionary[transform.tag];
             var targets = Physics2D.OverlapCircleAll(transform.position, skillData.ExplosionRadius, layerMask);

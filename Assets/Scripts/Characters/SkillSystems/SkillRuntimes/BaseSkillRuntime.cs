@@ -106,7 +106,7 @@ namespace Characters.SkillSystems.SkillRuntimes
         public override async void CancelSkill(int milliSecondDelay = 0)
         {
             await UniTask.Delay(milliSecondDelay);
-            if (IsPerforming) return;
+            if (!IsPerforming) return;
             _cts?.Cancel();
         }
 
