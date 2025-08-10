@@ -3686,6 +3686,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   menuScene: 
   gamePlayScene: GameplayShaoKuy
+  endCreditsScene: Credit
   panelEntries:
   - type: 5
     panel: {fileID: 1673546081}
@@ -6711,10 +6712,22 @@ PrefabInstance:
     - target: {fileID: 8383278552994872669, guid: 9fa5f0cab4c73df45b90d089ba9f2404, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 593444647}
+      objectReference: {fileID: 593444652}
     - target: {fileID: 8383278552994872669, guid: 9fa5f0cab4c73df45b90d089ba9f2404, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8383278552994872669, guid: 9fa5f0cab4c73df45b90d089ba9f2404, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: LoadToCreditsScene
+      objectReference: {fileID: 0}
+    - target: {fileID: 8383278552994872669, guid: 9fa5f0cab4c73df45b90d089ba9f2404, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: UIManager, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 8383278552994872669, guid: 9fa5f0cab4c73df45b90d089ba9f2404, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

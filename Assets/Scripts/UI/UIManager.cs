@@ -31,6 +31,7 @@ public class UIManager : MonoBehaviour
     public static UIManager Instance { get; private set; }
     [SerializeField] private string menuScene;
     [SerializeField] private string gamePlayScene;
+    [SerializeField] private string endCreditsScene;
 
     [Header("UI Panels")] public List<UIPanelEntry> panelEntries;
 
@@ -160,6 +161,11 @@ public class UIManager : MonoBehaviour
     public void OpenQuitPanel()
     {
         OpenPanel(UIPanelType.QuitPanel);
+    }
+    
+    public void LoadToCreditsScene()
+    {
+        SceneManager.LoadScene(endCreditsScene);
     }
     
     public void QuitGame()
