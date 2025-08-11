@@ -102,8 +102,6 @@ namespace Characters.SkillSystems.SkillRuntimes
                         moveCurve: curve)
                     .SetEase(Ease.InSine)
                     .WithCancellation(cancelToken);
-
-                Debug.Log(i);
             }
 
             _isSuccess = true;
