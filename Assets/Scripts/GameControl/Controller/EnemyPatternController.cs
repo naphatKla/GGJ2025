@@ -100,9 +100,14 @@ namespace GameControl.Controller
             if (!CanTriggerPattern(patternData)) return;
 
             var enemyType = RandomType();
-            var enemyAmount = Mathf.FloorToInt(CalculatePoint(enemyType, patternData));
+
+            var pointBudget = Mathf.Min(patternData.patternPoint, SpawnerStateController.Instance.CurrentEnemyPoint);
+            var enemyAmount = Mathf.FloorToInt(pointBudget / enemyType.EnemyPoint);
+
+            SpawnerStateController.Instance.CurrentEnemyPoint -= enemyAmount * enemyType.EnemyPoint;
+
             var rows = CalculatePatternRows(patternData, enemyAmount);
-            await SpawnEnemyRows(rows, enemyType, patternData);
+            await SpawnEnemyRows(rows, enemyType, patternData, enemyAmount);
         }
 
         //RandomPattern to add to list
@@ -143,7 +148,7 @@ namespace GameControl.Controller
         private bool CanTriggerPattern(MapDataSO.PatternOption patternData)
         {
             return patternData.pattern != null &&
-                   SpawnerStateController.Instance.CurrentEnemyPoint > patternData.patternPoint;
+                   SpawnerStateController.Instance.CurrentEnemyPoint >= patternData.patternPoint;
         }
 
         private List<List<Vector2>> CalculatePatternRows(MapDataSO.PatternOption patternData, int enemyAmount)
@@ -160,15 +165,21 @@ namespace GameControl.Controller
             }
         }
 
-        private async UniTask SpawnEnemyRows(List<List<Vector2>> rows, MapDataSO.EnemyOption enemyType,
-            MapDataSO.PatternOption patternData)
+        private async UniTask SpawnEnemyRows(List<List<Vector2>> rows, MapDataSO.EnemyOption enemyType, MapDataSO.PatternOption patternData, int maxEnemyAmount)
         {
+            int spawnedCount = 0;
+
             foreach (var row in rows)
             {
                 foreach (var pos in row)
                 {
+                    if (spawnedCount >= maxEnemyAmount) return;
+
+                    if (SpawnerStateController.Instance.CurrentEnemyPoint < enemyType.EnemyPoint) return;
+
                     SpawnEnemy(enemyType, pos);
-                    
+                    spawnedCount++;
+
                     if (patternData.DelayBetweenEnemy > 0)
                         await UniTask.Delay((int)(patternData.DelayBetweenEnemy * 1000));
                 }
@@ -185,8 +196,6 @@ namespace GameControl.Controller
             var enemyObj = pool.Get();
             enemyObj.transform.position = pos;
             enemyObj.transform.SetParent(_state.EnemyParent);
-                
-            SpawnerStateController.Instance.CurrentEnemyPoint -= enemyType.EnemyPoint;
         }
     }
 }
