@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44ae370c738f33c40b67a26c8a328151, type: 3}
+  m_Name: LV2_Player_Overloop
+  m_EditorClassIdentifier: 
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes:
+    - Name: _skillRuntime
+      Entry: 7
+      Data: 0|System.RuntimeType, mscorlib
+    - Name: 
+      Entry: 1
+      Data: Characters.SkillSystems.SkillRuntimes.SkillOverloopRuntime, Assembly-CSharp
+    - Name: 
+      Entry: 8
+      Data: 
+  skillIcon: {fileID: 21300000, guid: b2541bd186c56194aac51951f4bfb707, type: 3}
+  skillName: 
+  skillDescription: 
+  previousSkillData: {fileID: 11400000, guid: e84ada3c5bce8024fb05f6faad9d978c, type: 2}
+  nextSkillDataUpgrade: {fileID: 11400000, guid: 881668291e471b44f87218e770d07421, type: 2}
+  level: 2
+  cooldown: 10
+  statusEffectOnSkillStart: []
+  overloopDuration: 3
+  targetSkillAmount: 2
+  canTargetSelf: 0
+  cooldownSpeedUpMultiplier: 1000
