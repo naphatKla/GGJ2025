@@ -29,6 +29,8 @@ namespace Feedbacks
         [SerializeField] private RotationMode rotationMode = RotationMode.Identity;
 
         private CancellationTokenSource _cts;
+        private ParticleSystem _currentVFXInstance;
+        public ParticleSystem CurrentVFXInstance => _currentVFXInstance;
 
         private void Awake()
         {
@@ -55,16 +57,16 @@ namespace Feedbacks
 
         public void PlayVFX()
         {
-            var vfxInstance = PoolingManager.Instance.Get<ParticleSystem>(vfxPrefab.name);
-            vfxInstance.transform.position = transform.position;
-            vfxInstance.transform.rotation = rotationMode switch
+            _currentVFXInstance = PoolingManager.Instance.Get<ParticleSystem>(vfxPrefab.name);
+            _currentVFXInstance.transform.position = transform.position;
+            _currentVFXInstance.transform.rotation = rotationMode switch
             {
                 RotationMode.MatchOwner => transform.rotation,
                 _ => Quaternion.identity
             };
-            vfxInstance.gameObject.SetActive(true);
+            _currentVFXInstance.gameObject.SetActive(true);
             
-            PlayAndReleaseAsync(vfxInstance).Forget();
+            PlayAndReleaseAsync(_currentVFXInstance).Forget();
         }
 
         private async UniTaskVoid PlayAndReleaseAsync(ParticleSystem instance)
@@ -87,6 +89,7 @@ namespace Feedbacks
                 instance.Stop();
                 instance.gameObject.SetActive(false);
                 PoolingManager.Instance.Release(vfxPrefab.name, instance);
+                _currentVFXInstance = null;
             }
             catch (OperationCanceledException)
             {

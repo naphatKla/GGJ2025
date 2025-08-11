@@ -1,4 +1,6 @@
+using System;
 using DG.Tweening;
+using Manager;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -11,7 +13,7 @@ namespace Characters.MovementSystems
     /// using the current velocity and surface normal to reflect direction.
     /// Intended to be extended by specific character or enemy movement implementations (e.g., Rigidbody or NavMesh-based).
     /// </summary>
-    public abstract class BaseMovementSystem : MonoBehaviour
+    public abstract class BaseMovementSystem : MonoBehaviour, IFixedUpdateable
     {
         #region Inspector & Variables
 
@@ -82,8 +84,8 @@ namespace Characters.MovementSystems
         /// </summary>
         private bool _isStopFromInput;
         private bool _isStopFromStun;
-
         private bool _isStopFromParry;
+        protected bool _isStopFromPiercerDash;
         
         /// <summary>
         /// The current velocity of the entity movement.
@@ -101,15 +103,22 @@ namespace Characters.MovementSystems
 
         #region Unity Methods
 
-        /// <summary>
-        /// 
-        /// </summary>
-        protected void FixedUpdate()
+        private void OnEnable()
+        {
+            FixedUpdateManager.Instance.Register(this);
+        }
+
+        public void OnFixedUpdate()
         {
             if (inputDirection == Vector2.zero) return;
             TryMoveWithInertia(inputDirection);
         }
-        
+
+        private void OnDisable()
+        {
+            FixedUpdateManager.Instance.Unregister(this);
+        }
+
         #endregion
 
         #region Methods
@@ -144,6 +153,7 @@ namespace Characters.MovementSystems
             if (!_canMove) return;
             if (_isStopFromStun) return;
             if (_isStopFromParry) return;
+            if (_isStopFromPiercerDash) return;
             if (_moveOverTimeTween.IsActive()) return;
             if (currentSpeed == 0) return;
             if (_isStopFromInput)
@@ -222,6 +232,11 @@ namespace Characters.MovementSystems
         public virtual void StopFromParry(bool isParry)
         {
             _isStopFromParry = isParry;
+        }
+
+        public virtual void StopFromPiercerDash(bool isPiercerDash)
+        {
+            _isStopFromPiercerDash = isPiercerDash;
         }
         
         /// <summary>
