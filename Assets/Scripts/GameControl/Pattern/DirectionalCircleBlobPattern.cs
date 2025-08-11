@@ -23,8 +23,8 @@ namespace GameControl.Pattern
                 return finalPositions;
 
             bool isRandomSingleDirection = canRandom && selectedDirs.Count == 1;
-
-            int countPerDirection = isRandomSingleDirection ? enemyCount : enemyCount;
+            
+            int countPerDirection = Mathf.CeilToInt((float)enemyCount / selectedDirs.Count);
 
             for (int i = 0; i < selectedDirs.Count; i++)
             {
@@ -40,7 +40,7 @@ namespace GameControl.Pattern
 
             return finalPositions;
         }
-
+        
 
         private List<SpawnDirectionFlag> GetSelectedDirections()
         {

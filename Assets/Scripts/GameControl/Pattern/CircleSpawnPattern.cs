@@ -50,13 +50,13 @@ namespace GameControl.Pattern
             return positions;
         }
 
-        public override List<List<Vector2>> CalculateRows(Vector2 center, int enemiesPerRow)
+        public override List<List<Vector2>> CalculateRows(Vector2 center, int totalEnemies)
         {
             List<List<Vector2>> result = new();
-
             int rowCount = Mathf.Max(1, rows);
+            int enemiesPerRow = Mathf.CeilToInt((float)totalEnemies / rowCount);
 
-            for (int rowIndex = 0; rowCount > 0 && rowIndex < rowCount; rowIndex++)
+            for (int rowIndex = 0; rowIndex < rowCount; rowIndex++)
             {
                 float radius = baseMinDistance + rowIndex * rowSpacing;
                 List<Vector2> rowPositions = new();
@@ -67,8 +67,7 @@ namespace GameControl.Pattern
                     angle += Mathf.Deg2Rad * Random.Range(-randomAngleOffset, randomAngleOffset);
 
                     float actualDistance = radius + Random.Range(0f, randomDistanceOffset);
-                    Vector2 pos = center + new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * actualDistance;
-                    rowPositions.Add(pos);
+                    rowPositions.Add(center + new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * actualDistance);
                 }
 
                 result.Add(rowPositions);

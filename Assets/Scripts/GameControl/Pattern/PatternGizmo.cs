@@ -7,14 +7,20 @@ namespace GameControl.Pattern
     public class PatternGizmo : MonoBehaviour
     {
         public BaseSpawnPattern spawnPattern;
-        public int enemyCount = 8;
+
+        [Header("Point System")]
+        public int currentPoint = 40;
+        public int enemyPoint = 5;
+
         public Vector2 offset;
         public Color gizmoColor = Color.red;
 
         private void OnDrawGizmos()
         {
-            if (spawnPattern == null || enemyCount <= 0)
+            if (spawnPattern == null || currentPoint <= 0 || enemyPoint <= 0)
                 return;
+            
+            int enemyCount = Mathf.Max(1, currentPoint / enemyPoint);
 
             Gizmos.color = gizmoColor;
             Vector2 center = (Vector2)transform.position + offset;
