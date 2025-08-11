@@ -128,6 +128,14 @@ namespace GameControl.SO
         [Tooltip("Data of each enemy")]
         public List<EnemyOption> EnemyOptions;
         
+        [FoldoutGroup("Enemy Setting")]
+        [Tooltip("interval of enemy chance to upgrade (Default 30)")]
+        public float intervalEnemyChanceUpgrade;
+        
+        [FoldoutGroup("Enemy Setting")]
+        [Tooltip("interval of enemy point ratio to upgrade (Default 30)")]
+        public float intervalEnemyPointRatioUpgrade;
+        
         [FoldoutGroup("Pattern Setting")]
         [Tooltip("Data of each pattern")]
         public List<PatternOption> PatternOptions;
@@ -137,9 +145,13 @@ namespace GameControl.SO
         public float triggerTime = 180f;
         
         [FoldoutGroup("Pattern Setting")]
+        [Tooltip("interval of event will be trigger (Default 180 seconds)")]
+        public float triggerPatternEverySecond = 180f;
+        
+        [FoldoutGroup("Pattern Setting")]
         [Tooltip("if this enable trigger time will decrease")]
         public bool triggerTimeCanDecrease;
-        
+     
         [FoldoutGroup("Pattern Setting")]
         [Tooltip("interval of pattern trigger time to decrease (default 30) (enable on start only not in runtime)")]
         [ShowIf("$triggerTimeCanDecrease")]
@@ -172,6 +184,14 @@ namespace GameControl.SO
         [Tooltip("Enemy spawn interval (Default 1)")]
         public float defaultEnemySpawnTimer;
 
+        [FoldoutGroup("Data Setting")] 
+        [Tooltip("interval of enemy point to increase (Default 60 seconds)")]
+        public float intervalIncreaseEnemyPoint = 60;
+        
+        [FoldoutGroup("Data Setting")] 
+        [Tooltip("Rate of enemy point to increase (Default 20)")]
+        public float rateIncreaseEnemyPoint = 20;
+        
         [FoldoutGroup("Data Setting")] 
         [Tooltip("start spawn point of every enemy to spawn (Default 30)")]
         public float startEnemyPoint = 30;

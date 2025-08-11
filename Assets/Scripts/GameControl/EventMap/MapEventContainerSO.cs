@@ -13,6 +13,12 @@ namespace GameControl.EventMap
         Fixed,
         Additive
     }
+    
+    public enum EventMode
+    {
+        PlaybySort,
+        RandomAndPlay
+    }
 
     [Serializable]
     public class MapEventStorageEntry
@@ -77,8 +83,15 @@ namespace GameControl.EventMap
         [AssetSelector(Paths = "Assets/Prefabs/MapEvent")]
         public BaseMapEvent defaultPrefabAsset;
         
-        [Title("Event Bool")]
-        public bool randomAllEvent;
+        [Title("Event Mod")] [HideIf("enableRandomMode")]
+        public EventMode eventMode;
+        public bool enableRandomMode;
+  
+        [Range(0f, 1f)] [ShowIf("enableRandomMode")]
+        public float playBySortChance = 0.5f;
+        [Range(0f, 1f)] [ShowIf("enableRandomMode")]
+        public float randomAndPlayChance = 0.5f;
+
 
         [Title("Editor Tools")]
         [Button("Capture From Selection (Clear)", ButtonSizes.Medium)]

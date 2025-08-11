@@ -101,7 +101,7 @@ namespace GameControl.Controller
             
             //Every 3 minute trigger pattern
             GameTimer.Instance.ScheduleLoopingTrigger(
-                180,
+                _currentMapData.triggerPatternEverySecond,
                 GameTimer.Instance.StartTimerNumber,
                 () =>
                 {
@@ -114,15 +114,15 @@ namespace GameControl.Controller
                 });
             
             //Upgrade Max Spawn point every 1 minute
-            GameTimer.Instance.ScheduleLoopingTrigger(60, GameTimer.Instance.StartTimerNumber, 
-                () => UpgradeMaxSpawnPoint(20f));
+            GameTimer.Instance.ScheduleLoopingTrigger(_currentMapData.intervalIncreaseEnemyPoint, GameTimer.Instance.StartTimerNumber, 
+                () => UpgradeMaxSpawnPoint(_currentMapData.rateIncreaseEnemyPoint));
             
             //Upgrade Chance rate every 30 seconds
-            GameTimer.Instance.ScheduleLoopingTrigger(5, GameTimer.Instance.StartTimerNumber, 
+            GameTimer.Instance.ScheduleLoopingTrigger(_currentMapData.intervalEnemyChanceUpgrade, GameTimer.Instance.StartTimerNumber, 
                 () => _enemySpawnerController.UpgradeEnemyChance());
             
             //Upgrade Spawn Ratio every 30 seconds
-            GameTimer.Instance.ScheduleLoopingTrigger(30, GameTimer.Instance.StartTimerNumber, 
+            GameTimer.Instance.ScheduleLoopingTrigger(_currentMapData.intervalEnemyPointRatioUpgrade, GameTimer.Instance.StartTimerNumber, 
                 () => _enemySpawnerController.UpgradePointRatio());
         }
         
@@ -146,7 +146,8 @@ namespace GameControl.Controller
 
         public void UpgradeMaxSpawnPoint(float increasePoint)
         {
-            _maxEnemyPoint += increasePoint;
+            _currentEnemyPoint += increasePoint;
+            Debug.Log("Point: " + _maxEnemyPoint);
         }
         
         [Button("Start Spawning" , ButtonSizes.Large), GUIColor(0, 1, 0)]

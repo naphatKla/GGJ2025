@@ -37,6 +37,8 @@ MonoBehaviour:
     enemyChanceGrowthRate: 1.25
     useCustomInterval: 0
     customInterval: 2
+  intervalEnemyChanceUpgrade: 30
+  intervalEnemyPointRatioUpgrade: 30
   PatternOptions:
   - pattern: {fileID: 11400000, guid: 1152772dc8e0f114e824dddd694be66b, type: 2}
     delayBetweenEnemy: 0
@@ -93,6 +95,7 @@ MonoBehaviour:
     enablePatternCenter: 0
     patternCenter: {x: 0, y: 0}
   triggerTime: 60
+  triggerPatternEverySecond: 180
   triggerTimeCanDecrease: 1
   patternDecreaseInterval: 25
   patternDecreaseRate: 1
@@ -108,6 +111,8 @@ MonoBehaviour:
   maxItemSpawning: 30
   defaultItemSpawnTimer: 1
   defaultEnemySpawnTimer: 0.5
+  intervalIncreaseEnemyPoint: 60
+  rateIncreaseEnemyPoint: 20
   startEnemyPoint: 30
   maxEnemyPoint: 500
   increaseRateEnemyPoint: 14.5

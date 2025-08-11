@@ -51,7 +51,11 @@ namespace GameControl.EventMap
         {
             var events = new List<MapEventStorageEntry>();
 
-            //Chance
+            // 1) เลือก EventMode ตามโอกาส
+            EventMode chosenMode = storage.enableRandomMode ? GetRandomEventMode(storage) : storage.eventMode;
+            Debug.Log(chosenMode);
+
+            // 2) Filter ตาม Chance ของแต่ละ Event
             foreach (var entry in storage.entries)
             {
                 bool shouldRun = !entry.enableChance || UnityEngine.Random.value <= entry.chance;
@@ -59,11 +63,11 @@ namespace GameControl.EventMap
                     events.Add(entry);
             }
 
-            //Random
-            if (storage.randomAllEvent)
+            // 3) Random
+            if (chosenMode == EventMode.RandomAndPlay)
                 events = ShuffleList(events);
 
-            //Min Max
+            // 4) Min Max
             if (storage.enableMinMax && events.Count > 0)
             {
                 int playCount = UnityEngine.Random.Range(storage.minPlay, storage.maxPlay + 1);
@@ -75,6 +79,17 @@ namespace GameControl.EventMap
             return events;
         }
 
+        private EventMode GetRandomEventMode(MapEventContainerSO storage)
+        {
+            float total = storage.playBySortChance + storage.randomAndPlayChance;
+            if (total <= 0f) return EventMode.PlaybySort;
+
+            float rand = UnityEngine.Random.value * total;
+            if (rand <= storage.playBySortChance)
+                return EventMode.PlaybySort;
+            else
+                return EventMode.RandomAndPlay;
+        }
 
         private async UniTask PlayEntry(MapEventStorageEntry entry, Vector3 playerPost)
         {
