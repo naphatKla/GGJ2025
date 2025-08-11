@@ -83,6 +83,11 @@ namespace Characters.FeedbackSystems
             trail.emitting = enable;
         }
 
+        public MMF_Player GetFeedback(FeedbackName feedbackName)
+        {
+            return feedbackList.GetValueOrDefault(feedbackName);
+        }
+
         public void ResetFeedbackSystem()
         {
             trail.Clear();
@@ -119,5 +124,6 @@ namespace Characters.FeedbackSystems
         LightStepEnd = 6,
         HarmonyOfLight = 7,
         Pressure = 8,
+        PiercerDash = 9,
     }
 }

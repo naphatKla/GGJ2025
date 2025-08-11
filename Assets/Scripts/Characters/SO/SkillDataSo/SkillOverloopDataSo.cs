@@ -7,10 +7,10 @@ namespace Characters.SO.SkillDataSo
     [CreateAssetMenu(fileName = "SkillOverloopData", menuName = "GameData/SkillData/SkillOverloopData")]
     public class SkillOverloopDataSo : BaseSkillDataSo
     {
-        [FoldoutGroup("Overloop Configs")]
+        [FoldoutGroup("Overloop Configs")] [Min(0)]
         [SerializeField] private float overloopDuration;
         
-        [FoldoutGroup("Overloop Configs")]
+        [FoldoutGroup("Overloop Configs")] [Min(0)]
         [SerializeField] private int targetSkillAmount;
         
         [FoldoutGroup("Overloop Configs")]
