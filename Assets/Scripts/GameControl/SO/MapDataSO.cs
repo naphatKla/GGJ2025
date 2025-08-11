@@ -199,9 +199,5 @@ namespace GameControl.SO
         [FoldoutGroup("Data Setting")] 
         [Tooltip("Max spawn point of every enemy to spawn (Default 500)")]
         public float maxEnemyPoint = 500;
-        
-        [FoldoutGroup("Data Setting")] 
-        [Tooltip("Max spawn point of every enemy to spawn (Default 20)")]
-        public float increaseRateEnemyPoint;
     }
 }

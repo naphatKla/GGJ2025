@@ -89,7 +89,7 @@ namespace GameControl.Controller
             
             _currentEnemyPoint = _currentMapData.startEnemyPoint;
             _maxEnemyPoint = _currentMapData.maxEnemyPoint;
-            _increaseRateEnemyPoint = _currentMapData.increaseRateEnemyPoint;
+            _increaseRateEnemyPoint = _currentMapData.rateIncreaseEnemyPoint;
             
             _itemSpawnerController.PrewarmItem();
             _enemyPatternController.SetEnemyList(_enemySpawnerController.GetEnemyList(), _enemySpawnerController.GetEnemyOption());
@@ -115,7 +115,7 @@ namespace GameControl.Controller
             
             //Upgrade Max Spawn point every 1 minute
             GameTimer.Instance.ScheduleLoopingTrigger(_currentMapData.intervalIncreaseEnemyPoint, GameTimer.Instance.StartTimerNumber, 
-                () => UpgradeMaxSpawnPoint(_currentMapData.rateIncreaseEnemyPoint));
+                () => UpgradeMaxSpawnPoint(_increaseRateEnemyPoint));
             
             //Upgrade Chance rate every 30 seconds
             GameTimer.Instance.ScheduleLoopingTrigger(_currentMapData.intervalEnemyChanceUpgrade, GameTimer.Instance.StartTimerNumber, 
@@ -190,6 +190,12 @@ namespace GameControl.Controller
         private void DebugClearItem()
         {
             ClearItem();
+        }
+        
+        [Button("Add Enemy Point" , ButtonSizes.Large), GUIColor(0, 1, 0)]
+        private void TriggerAddPoint()
+        {
+            UpgradeMaxSpawnPoint(20f);
         }
         
         private void OnDrawGizmos()

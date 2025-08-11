@@ -34,7 +34,8 @@ namespace GameControl.Pattern
             int directionCount = selectedDirections.Count;
 
             if (directionCount == 0) return positions;
-            int enemiesPerDirection = Mathf.Max(1, dummyEnemyCount / directionCount);
+            
+            int enemiesPerRow = Mathf.Max(1, dummyEnemyCount / (directionCount * rowsPerDirection));
 
             foreach (var direction in selectedDirections)
             {
@@ -46,9 +47,9 @@ namespace GameControl.Pattern
                     var rowOffset = mainDir * (spawnDistanceFromCenter + row * spacingBetweenRows);
                     var rowCenter = center + rowOffset;
 
-                    var half = (enemiesPerDirection - 1) * spacingBetweenEnemies / 2f;
+                    var half = (enemiesPerRow - 1) * spacingBetweenEnemies / 2f;
 
-                    for (var i = 0; i < enemiesPerDirection; i++)
+                    for (var i = 0; i < enemiesPerRow; i++)
                     {
                         var sideOffset = sideDir * (i * spacingBetweenEnemies - half);
                         var pos = rowCenter + sideOffset;
@@ -59,6 +60,7 @@ namespace GameControl.Pattern
 
             return positions;
         }
+
 
         public override List<List<Vector2>> CalculateRows(Vector2 center, int enemiesPerRow)
         {
