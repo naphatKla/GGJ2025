@@ -21,9 +21,16 @@ namespace Characters.SkillSystems
 
     public class SkillSystem : MonoBehaviour, IFixedUpdateable
     {
-        public event Action<float,float, int> OnSkillCooldownUpdate;
+        // progress: 0..1, index
+        public event Action<float, float, int> OnSkillCooldownUpdate;
         public event Action<int> OnSkillCooldownReset;
         public event Action<BaseSkillDataSo, int> OnNewSkillAssign;
+
+        /// <summary>
+        /// แจ้ง UI เมื่อมีการเปลี่ยนความเร็วคูณของสล็อต (slot index, speedMultiplier)
+        /// ตัวคูณ 1 = ปกติ, >1 = เร็วขึ้น, 0 = หยุดนับ
+        /// </summary>
+        public event Action<int, float> OnSlotCooldownSpeedChanged;
 
         protected BaseSkillDataSo primarySkillData;
         protected BaseSkillDataSo secondarySkillData;
@@ -43,6 +50,83 @@ namespace Characters.SkillSystems
         protected bool canUsePrimary = true;
         protected bool canUseSecondary = true;
 
+        // ---------- Slot Cooldown Multipliers ----------
+        // index map: 0 = Primary, 1 = Secondary, 2..(2+autoSkillSlot-1) = Auto slots
+        private readonly List<float> _slotCooldownMultipliers = new(); // ค่า default = 1f
+        public int TotalSlots => 2 + Mathf.Max(0, autoSkillSlot);
+
+        public int CurrentActiveSlots
+        {
+            get
+            {
+                int count = 0;
+                if (primarySkillData) count++;
+                if (secondarySkillData) count++;
+                count += _autoSkillDatas.Count; // Auto ที่มีอยู่จริง
+                return count;
+            }
+        }
+
+        public int CurrentAutoSkillActiveSlots => _autoSkillDatas.Count;
+
+
+        // Return slot index ของสกิลนี้: 0 = Primary, 1 = Secondary, 2.. = Auto, ไม่พบ = -1
+        public int GetSlotIndex(BaseSkillDataSo skillData)
+        {
+            if (!skillData) return -1;
+            return GetSkillIndex(skillData);
+        }
+
+        public float GetSlotCooldownMultiplier(int slotIndex)
+        {
+            return (slotIndex >= 0 && slotIndex < _slotCooldownMultipliers.Count)
+                ? _slotCooldownMultipliers[slotIndex]
+                : 1f;
+        }
+
+        public void SetSlotCooldownMultiplier(int slotIndex, float multiplier, bool silent = false)
+        {
+            EnsureMultiplierListSize();
+
+            if (slotIndex < 0 || slotIndex >= _slotCooldownMultipliers.Count)
+                return;
+
+            float clamped = Mathf.Max(0f, multiplier);
+            if (Mathf.Approximately(_slotCooldownMultipliers[slotIndex], clamped))
+                return;
+
+            _slotCooldownMultipliers[slotIndex] = clamped;
+
+            if (!silent)
+                OnSlotCooldownSpeedChanged?.Invoke(slotIndex, clamped);
+        }
+
+        /// <summary>ตั้งค่าทั้งหมดรวดเดียว</summary>
+        public void SetAllSlotCooldownMultiplier(float multiplier, bool silent = false)
+        {
+            EnsureMultiplierListSize();
+            float clamped = Mathf.Max(0f, multiplier);
+            for (int i = 0; i < _slotCooldownMultipliers.Count; i++)
+            {
+                bool changed = !Mathf.Approximately(_slotCooldownMultipliers[i], clamped);
+                _slotCooldownMultipliers[i] = clamped;
+                if (!silent && changed)
+                    OnSlotCooldownSpeedChanged?.Invoke(i, clamped);
+            }
+        }
+
+        private void EnsureMultiplierListSize()
+        {
+            int need = TotalSlots;
+
+            while (_slotCooldownMultipliers.Count < need)
+                _slotCooldownMultipliers.Add(1f);
+
+            if (_slotCooldownMultipliers.Count > need)
+                _slotCooldownMultipliers.RemoveRange(need, _slotCooldownMultipliers.Count - need);
+        }
+        // ------------------------------------------------
+
         public virtual void AssignData(BaseController owner, BaseSkillDataSo primary, BaseSkillDataSo secondary,
             List<BaseSkillDataSo> autoList, int autoSlot)
         {
@@ -58,6 +142,7 @@ namespace Characters.SkillSystems
             _defaultSecondarySkillData = secondary;
             _defaultAutoSkillDatas = new(autoSkillDataList);
 
+            EnsureMultiplierListSize();
             ResetToDefaultSkill();
         }
 
@@ -149,7 +234,7 @@ namespace Characters.SkillSystems
                     if (primarySkillData != null && primarySkillData != newSkillData)
                         RemoveUnusedSkillRuntime(primarySkillData);
                     primarySkillData = newSkillData;
-                    
+
                     InstantiateSkillRuntime(primarySkillData);
                     runtime = GetSkillRuntimeOrDefault(newSkillData);
 
@@ -170,7 +255,7 @@ namespace Characters.SkillSystems
                     if (secondarySkillData != null && secondarySkillData != newSkillData)
                         RemoveUnusedSkillRuntime(secondarySkillData);
                     secondarySkillData = newSkillData;
-                    
+
                     InstantiateSkillRuntime(secondarySkillData);
                     runtime = GetSkillRuntimeOrDefault(newSkillData);
 
@@ -184,6 +269,7 @@ namespace Characters.SkillSystems
                         Debug.LogError("Secondary skill need IAutoSkillTriggerSource to trigger auto skill");
                         throw new NotImplementedException();
                     }
+
                     break;
                 case SkillType.AutoSkill:
                     if (primarySkillData == newSkillData || secondarySkillData == newSkillData ||
@@ -220,7 +306,7 @@ namespace Characters.SkillSystems
                         autoSkillTriggerSource.OnTriggerAutoSkill -= OnTriggerAutoSkill;
                     _skillRuntimeDictionary.Remove(oldSkill);
                 }
-                
+
                 if (!_pendingRuntimeRemoval.Contains(oldSkill))
                     _pendingRuntimeRemoval.Add(oldSkill);
             }
@@ -283,8 +369,15 @@ namespace Characters.SkillSystems
                 var data = kvp.Key;
                 var runtime = kvp.Value;
                 int index = GetSkillIndex(data);
+                if (index < 0) continue;
+
+                // ใช้ตัวคูณตามสล็อตนี้
+                float speed = GetSlotCooldownMultiplier(index);
+
                 bool wasCooling = runtime.IsCooldown;
-                runtime.UpdateCoolDown(Time.fixedDeltaTime);
+
+                // multiplier > 1 = เร็วขึ้น, < 1 = ช้าลง, 0 = freeze
+                runtime.UpdateCoolDown(Time.fixedDeltaTime * speed);
 
                 if (!runtime.IsCooldown)
                 {
@@ -294,7 +387,7 @@ namespace Characters.SkillSystems
                 }
 
                 float progress = 1f - Mathf.Clamp01(runtime.CurrentCooldown / runtime.Cooldown);
-                OnSkillCooldownUpdate?.Invoke(runtime.Cooldown,progress, index);
+                OnSkillCooldownUpdate?.Invoke(runtime.Cooldown, progress, index);
             }
         }
 
@@ -344,11 +437,16 @@ namespace Characters.SkillSystems
         private void ResetToDefaultSkill()
         {
             if (!owner) return;
+
             SetOrAddSkill(_defaultPrimarySkillData, SkillType.PrimarySkill);
             SetOrAddSkill(_defaultSecondarySkillData, SkillType.SecondarySkill);
+
             _autoSkillDatas.Clear();
             foreach (var data in _defaultAutoSkillDatas)
                 SetOrAddSkill(data, SkillType.AutoSkill);
+
+            // ปรับขนาดรายการตัวคูณให้ตรงกับจำนวนสล็อตปัจจุบันเสมอ
+            EnsureMultiplierListSize();
         }
 
         public void SetCanUseSkills(bool enable) => canUseSkills = enable;
@@ -363,11 +461,13 @@ namespace Characters.SkillSystems
             SetCanUsePrimary(true);
             SetCanUseSecondary(true);
             SetCanUseSkills(true);
+            // หมายเหตุ: ไม่รีเซ็ตตัวคูณสล็อต เพื่อให้ค่าที่ผู้เล่น/ระบบตั้งไว้คงอยู่
         }
-        
+
         private void OnEnable()
         {
             FixedUpdateManager.Instance.Register(this);
+            EnsureMultiplierListSize();
         }
 
         private void OnDisable()
