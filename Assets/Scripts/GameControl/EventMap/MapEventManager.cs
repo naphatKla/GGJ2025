@@ -51,6 +51,7 @@ namespace GameControl.EventMap
         {
             var events = new List<MapEventStorageEntry>();
 
+            //Chance
             foreach (var entry in storage.entries)
             {
                 bool shouldRun = !entry.enableChance || UnityEngine.Random.value <= entry.chance;
@@ -58,8 +59,22 @@ namespace GameControl.EventMap
                     events.Add(entry);
             }
 
-            return storage.randomAllEvent ? ShuffleList(events) : events;
+            //Random
+            if (storage.randomAllEvent)
+                events = ShuffleList(events);
+
+            //Min Max
+            if (storage.enableMinMax && events.Count > 0)
+            {
+                int playCount = UnityEngine.Random.Range(storage.minPlay, storage.maxPlay + 1);
+                playCount = Mathf.Clamp(playCount, 0, events.Count);
+
+                if (events.Count > playCount)
+                    events = events.GetRange(0, playCount);
+            }
+            return events;
         }
+
 
         private async UniTask PlayEntry(MapEventStorageEntry entry, Vector3 playerPost)
         {
