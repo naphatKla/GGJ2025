@@ -1,122 +1,77 @@
-using System;
-using System.Collections;
 using Characters.Controllers;
 using Characters.InputSystems.Interface;
 using Characters.MovementSystems;
 using Characters.SkillSystems;
 using Characters.SO.CharacterDataSO;
+using Manager;
 using UnityEngine;
+using System;
 
-namespace Characters.InputSystems
+public class EnemyInputReader : MonoBehaviour, ICharacterInput
 {
-    /// <summary>
-    /// Simulates input for AI-controlled enemies.
-    /// Implements <see cref="ICharacterInput"/> to integrate with the movement and skill systems,
-    /// mimicking player input behavior on a timed loop.
-    /// </summary>
-    public class EnemyInputReader : MonoBehaviour, ICharacterInput
+    private EnemyDataSo _enemy;
+    private BaseMovementSystem _move;
+
+    private DirectionContainer _sight;
+    DirectionContainer ICharacterInput.SightDirection { get => _sight; set => _sight = value; }
+
+    public bool Enable { get; set; } = true;
+    public Action<Vector2> OnMove { get; set; }
+    public Action<SkillType> OnSkillPerform { get; set; }
+
+    private float _stopSqr;
+    private float _performSqr;
+
+    private void OnEnable()
     {
-        #region Inspector & Variables
+        _move = GetComponent<BaseMovementSystem>();
+        var ctrl = GetComponent<Characters.Controllers.EnemyController>();
+        _enemy = ctrl && ctrl.CharacterData is EnemyDataSo e ? e : null;
 
-        private EnemyDataSo _enemyDataSo;
-        private BaseMovementSystem movementSystem;
+        if (_enemy == null) { enabled = false; return; }
 
-        /// <summary>
-        /// Coroutine that periodically updates AI behavior.
-        /// </summary>
-        private Coroutine updateTickCoroutine;
+        _stopSqr = _enemy.StopDistance * _enemy.StopDistance;
+        _performSqr = _enemy.PerformSkillDistance * _enemy.PerformSkillDistance;
 
-        /// <summary>
-        /// Interval (in seconds) between AI update ticks.
-        /// Controls how often movement and skill inputs are simulated.
-        /// </summary>
-        private float timeTick = 0.2f;
+        FixedUpdateManager.Instance.OnTick += HandleTick;   // subscribe tick 0.2s
+    }
 
-        private DirectionContainer _sightDirection;
-        
-        DirectionContainer ICharacterInput.SightDirection
+    private void OnDisable()
+    {
+        if (FixedUpdateManager.Instance != null)
+            FixedUpdateManager.Instance.OnTick -= HandleTick;
+    }
+
+    private void HandleTick()
+    {
+        if (!Enable) return;
+        var player = Characters.Controllers.PlayerController.Instance;
+        if (!player) return;
+
+        Vector2 pos = transform.position;
+        Vector2 toP = (Vector2)player.transform.position - pos;
+        float d2 = toP.sqrMagnitude;
+
+        if (d2 > 1e-6f)
         {
-            get => _sightDirection;
-            set => _sightDirection = value;
+            float inv = 1.0f / Mathf.Sqrt(d2);
+            _sight.direction = toP * inv;
+            _sight.length = 1.0f / inv;
+        }
+        else
+        {
+            _sight.direction = Vector2.zero;
+            _sight.length = 0f;
         }
 
-        public bool Enable { get; set; } = true;
+        bool stop = d2 < _stopSqr;
+        _move?.StopFromInput(stop);
+        OnMove?.Invoke(_sight.direction);
 
-        /// <inheritdoc/>
-        public Action<Vector2> OnMove { get; set; }
-
-        public Action<SkillType> OnSkillPerform { get; set; }
-
-        #endregion
-
-        #region Unity Methods
-
-        /// <summary>
-        /// Unity event called when the object becomes enabled and active.
-        /// Starts the AI update coroutine.
-        /// </summary>
-        private void OnEnable()
+        if (d2 < _performSqr)
         {
-            updateTickCoroutine = StartCoroutine(UpdateTick());
-            movementSystem = GetComponent<BaseMovementSystem>();
-            if (GetComponent<EnemyController>().CharacterData is EnemyDataSo data)
-            {
-                _enemyDataSo = data;
-            }
-            else
-            {
-                throw new FormatException();
-            }
+            OnSkillPerform?.Invoke(SkillType.PrimarySkill);
+            OnSkillPerform?.Invoke(SkillType.SecondarySkill);
         }
-
-        /// <summary>
-        /// Unity event called when the object becomes disabled or inactive.
-        /// Stops the AI update coroutine.
-        /// </summary>
-        private void OnDisable()
-        {
-            if (updateTickCoroutine == null) return;
-            StopCoroutine(updateTickCoroutine);
-        }
-
-        #endregion
-
-        #region Methods
-
-        /// <summary>
-        /// Periodically updates AI behavior every <c>timeTick</c> seconds.
-        /// Simulates movement toward the player and triggers skill input.
-        /// PrimaryMovement will toggle enable if distance > distance between player and enemy
-        /// </summary>
-        private IEnumerator UpdateTick()
-        {
-            bool isStop = false;
-            
-            while (true)
-            {
-                yield return new WaitForSeconds(timeTick);
-                yield return new WaitUntil(() => Enable);
-
-                if (!PlayerController.Instance) continue;
-                
-                _sightDirection.direction  = (PlayerController.Instance.transform.position - transform.position).normalized;
-                _sightDirection.length = Vector2.Distance(PlayerController.Instance.transform.position, transform.position);
-                
-                bool shouldStop = _sightDirection.length < _enemyDataSo.StopDistance;
-                if (shouldStop != isStop)
-                {
-                    movementSystem?.StopFromInput(shouldStop);
-                    isStop = shouldStop;
-                }
-                
-                OnMove?.Invoke(_sightDirection.direction);
-                
-                if (!(_sightDirection.length < _enemyDataSo.PerformSkillDistance)) continue;
-                OnSkillPerform?.Invoke(SkillType.PrimarySkill);
-                OnSkillPerform?.Invoke(SkillType.SecondarySkill);
-            }
-        }
-
-        #endregion
     }
 }
