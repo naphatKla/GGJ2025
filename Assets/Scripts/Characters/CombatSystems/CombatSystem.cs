@@ -51,6 +51,8 @@ namespace Characters.CombatSystems
         /// Event triggered whenever this character and target perform attack in the same time.
         /// </summary>
         public Action OnCounterAttack { get; set; }
+        
+        public Action OnKill { get; set; }
 
         #endregion
 
@@ -111,6 +113,11 @@ namespace Characters.CombatSystems
         {
             OnDealDamage?.Invoke(damageData);
             _owner.TryPlayFeedback(FeedbackName.AttackHit);
+        }
+
+        public void OnKillHandler()
+        {
+            OnKill?.Invoke();
         }
 
         private async UniTask ResetOrthoAfterLerp(float waitTime)

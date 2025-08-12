@@ -12435,7 +12435,7 @@ MonoBehaviour:
   feedbackSystem: {fileID: 5147604314936671000}
   characterData: {fileID: 11400000, guid: 39ed973e8de08f84faa43653bfdd68e7, type: 2}
   collectItemSystem: {fileID: 4851925125693906224}
-  comboSystem: {fileID: 2247090465659933957}
+  comboStreakSystem: {fileID: 2247090465659933957}
   levelSystem: {fileID: 2047403147416900316}
   skillUpgradeController: {fileID: 7127418468070666774}
   cameraController: {fileID: 5785369636543128780}
@@ -12452,7 +12452,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4725e48355ee0534d85ac63c3c44d90d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  comboSystem: {fileID: 2247090465659933957}
+  comboStreakSystem: {fileID: 2247090465659933957}
   comboUI: {fileID: 0}
   comboStreakText: {fileID: 0}
   scoreMultiply: {fileID: 0}
@@ -12840,34 +12840,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a262df3aedbdbe74fb0b326524c23682, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _comboNumber: 1
-  _comboMultiplyer: 1
-  _comboTimeStart: 100
-  comboToDecayRate:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 2
-      outSlope: 2
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 98.41468
-      value: 50.15813
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  comboMilestoneEvents: []
+  data: {fileID: 11400000, guid: 8af15b87ccb71984cab04b4cbff7a709, type: 2}
 --- !u!114 &2317232942345144483
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -68,6 +68,9 @@ namespace Manager
             if (!targetController.HealthSystem.TakeDamage(damageData.Damage)) return;
             attackerController.CombatSystem.OnDealDamageHandler(damageData);
             
+            if (targetController.HealthSystem.IsDead)
+                attackerController.CombatSystem.OnKillHandler();
+            
             if (damageData.LifeSteal <= 0) return;
             attackerController.HealthSystem.Heal(damageData.LifeSteal);
         }

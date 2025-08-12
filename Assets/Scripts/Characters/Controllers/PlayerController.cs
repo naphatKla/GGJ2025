@@ -6,6 +6,7 @@ using Characters.ScoreSystems;
 using Characters.SkillSystems;
 using Characters.SO.CharacterDataSO;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Characters.Controllers
 {
@@ -18,7 +19,7 @@ namespace Characters.Controllers
         #region Inspector & Variables
 
         [SerializeField] private CollectItemSystem collectItemSystem;
-        [SerializeField] public ComboSystem.ComboSystem comboSystem;
+        [FormerlySerializedAs("comboSystem")] [SerializeField] public ComboSystem.ComboStreakSystem comboStreakSystem;
         [SerializeField] protected LevelSystem levelSystem;
         [SerializeField] protected SkillUpgradeController skillUpgradeController;
         [SerializeField] protected Cinemachine2DCameraController cameraController;
@@ -70,7 +71,7 @@ namespace Characters.Controllers
         protected override void SubscribeDependency()
         {
             levelSystem.OnLevelUp += skillUpgradeController.OnLevelUp;
-            combatSystem.OnDealDamage += comboSystem.RegisterHit;
+            combatSystem.OnKill += comboStreakSystem.OnEnemyKilled;
             UIManager.Instance.OnAnyPanelOpen += OnAnyUIOpen;
             UIManager.Instance.OnAllPanelClosed += OnAllUIClosed;
 
@@ -80,7 +81,7 @@ namespace Characters.Controllers
         protected override void UnSubscribeDependency()
         {
             levelSystem.OnLevelUp -= skillUpgradeController.OnLevelUp;
-            combatSystem.OnDealDamage -= comboSystem.RegisterHit;
+            combatSystem.OnKill -= comboStreakSystem.OnEnemyKilled;
             UIManager.Instance.OnAnyPanelOpen -= OnAnyUIOpen;
             UIManager.Instance.OnAllPanelClosed -= OnAllUIClosed;
 
@@ -91,7 +92,7 @@ namespace Characters.Controllers
         {
             levelSystem.ResetLevel();
             skillUpgradeController.ResetSkillUpgradeController();
-            comboSystem.ResetCombo();
+            comboStreakSystem.EndRunReset();
             cameraController.ResetCamera();
             
 

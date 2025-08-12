@@ -1,10 +1,12 @@
 using System.Collections.Generic;
 using Characters.CombatSystems;
+using Characters.ComboSystem;
 using Characters.Controllers;
 using Characters.HeathSystems;
 using Characters.LevelSystems;
 using Characters.ScoreSystems;
 using Characters.SkillSystems;
+using Characters.SO.ComboStreakDataSO;
 using Characters.SO.SkillDataSo;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
@@ -15,85 +17,92 @@ using Sirenix.OdinInspector;
 using TMPro;
 using UI.IngameModal;
 using UnityEngine;
+// ====== เพิ่มเติม ======
+
+// ComboStreakDataSo
+// ถ้า ComboStreakSystem อยู่ในเนมสเปซอื่น ให้แก้ using ให้ตรง
+// using Characters.ComboSystem;
 
 namespace Characters.UIDisplay
 {
     public class CharacterDisplay : MonoBehaviour
     {
-        //Combo
-        [FoldoutGroup("Combo Display")] [Title("Ref")] [SerializeField]
-        public ComboSystem.ComboSystem comboSystem;
-
-        [Title("UI")] [FoldoutGroup("Combo Display")]
+        [FoldoutGroup("Combo Display"), Title("Ref"), SerializeField]
+        private ComboStreakSystem comboStreakSystem;
+        
+        [Title("UI"), FoldoutGroup("Combo Display")]
         public GameObject comboUI;
 
         [FoldoutGroup("Combo Display")] public TMP_Text comboStreakText;
-        [FoldoutGroup("Combo Display")] public TMP_Text scoreMultiply;
+        [FoldoutGroup("Combo Display")] public TMP_Text scoreMultiply;      // แสดงตัวคูณ Boost (xN)
         [FoldoutGroup("Combo Display")] public ValueBar comboTimeoutBar;
         [FoldoutGroup("Combo Display")] public float tweenDuration = 0.1f;
         [FoldoutGroup("Combo Display")] public float scaleAmount = 1.2f;
 
-        //Combat
-        [FoldoutGroup("Combat Display")] [SerializeField]
+        // ========= Combat =========
+        [FoldoutGroup("Combat Display"), SerializeField]
         private CombatSystem combatSystem;
-
-        [FoldoutGroup("Combat Display")] [SerializeField]
+        [FoldoutGroup("Combat Display"), SerializeField]
         private TextMeshProUGUI worldTextUIPrefab;
 
-        //Level
-        [FoldoutGroup("Level Display")] [Title("Ref")] [SerializeField]
+        // ========= Level =========
+        [FoldoutGroup("Level Display"), Title("Ref"), SerializeField]
         public LevelSystem levelSystem;
-
-        [Title("UI")] [FoldoutGroup("Level Display")]
+        [Title("UI"), FoldoutGroup("Level Display")]
         public TMP_Text levelText;
-
         [FoldoutGroup("Level Display")] public ValueBar levelbar;
 
-        //Health
-        [FoldoutGroup("Health Display")] [Title("Ref")] [SerializeField]
+        // ========= Health =========
+        [FoldoutGroup("Health Display"), Title("Ref"), SerializeField]
         public HealthSystem healthSystem;
-
-        [Title("UI")] [FoldoutGroup("Health Display")] [SerializeField]
+        [Title("UI"), FoldoutGroup("Health Display"), SerializeField]
         public SlotBar hpBar;
 
-        //Solf Upgrade
-        [FoldoutGroup("SolfUpgrade Display")] [Title("Ref")] [SerializeField]
+        // ========= Solf Upgrade =========
+        [FoldoutGroup("SolfUpgrade Display"), Title("Ref"), SerializeField]
         public SkillUpgradeController skillUpgradeController;
-
-        [FoldoutGroup("SolfUpgrade Display")] [Title("UI")] [FoldoutGroup("SolfUpgrade Display")]
+        [FoldoutGroup("SolfUpgrade Display"), Title("UI"), FoldoutGroup("SolfUpgrade Display")]
         public GameObject solfUpgradePanel;
-
         [FoldoutGroup("SolfUpgrade Display")] public SolfUpgradeModel solfUpgradeModel;
 
-        private Queue<BaseSkillDataSo> skillQueue = new();
+        private readonly Queue<BaseSkillDataSo> skillQueue = new();
         private bool isChoosingSkill = false;
 
-        //Skill Slot
-        [FoldoutGroup("SkillSlot Display")] [Title("Ref")] [SerializeField]
+        // ========= Skill Slot =========
+        [FoldoutGroup("SkillSlot Display"), Title("Ref"), SerializeField]
         public SkillSystem skillSystem;
-
-        [FoldoutGroup("SkillSlot Display")] [Title("UI")] [FoldoutGroup("SkillSlot Display")] [SerializeField]
+        [FoldoutGroup("SkillSlot Display"), Title("UI"), FoldoutGroup("SkillSlot Display"), SerializeField]
         private List<SkillSlotModel> skillSlotModel;
 
-        [FoldoutGroup("Score Display")] [Title("Ref")]
-        [SerializeField] private ScoreSystem scoreSystem;
-
-        [FoldoutGroup("Score Display")] 
-        [SerializeField] [Title("UI")]
+        // ========= Score =========
+        [FoldoutGroup("Score Display"), Title("Ref"), SerializeField]
+        private ScoreSystem scoreSystem;
+        [FoldoutGroup("Score Display"), SerializeField, Title("UI")]
         private TextMeshProUGUI scoreText;
+        
+        private System.Action<float> _onHealthChangeUpdateUIHandler;
+        private System.Action<float> _onHealthChangeTextHandler;
 
         private void Start()
         {
             PlayerController.Instance.OnResetAllBehavior += UpdateAllUI;
-
-            comboSystem.OnComboUpdated += UpdateComboScoreText;
-            comboSystem.OnComboTimeUpdated += UpdateComboTimeBar;
+            
+            if (comboStreakSystem != null)
+            {
+                comboStreakSystem.OnStreakChanged += UpdateComboStreakText;          // int → UI streak
+                comboStreakSystem.OnStreakTimerTick += UpdateComboTimeBar;           // float seconds
+                comboStreakSystem.OnBoostChanged += UpdateBoostMultiplierText;       // float xN
+                comboStreakSystem.OnFlowStageEnter += OnFlowStageEnterUI;
+                comboStreakSystem.OnFlowStageExit += OnFlowStageExitUI;
+            }
 
             levelSystem.OnLevelUpdate += UpdateLevelUI;
-            skillUpgradeController.OnSkillUpgradeOptionsGenerated += SolfUpgradePopup;
+            
+            _onHealthChangeUpdateUIHandler = OnHealthChange_UpdateHPUI;
+            _onHealthChangeTextHandler = UpdateHealthText;
 
-            healthSystem.OnHealthChange += healthChange => UpdateHealthUI();
-            healthSystem.OnHealthChange += UpdateHealthText;
+            healthSystem.OnHealthChange += _onHealthChangeUpdateUIHandler;
+            healthSystem.OnHealthChange += _onHealthChangeTextHandler;
 
             skillSystem.OnNewSkillAssign += AssignSkillSlot;
             skillSystem.OnSkillCooldownUpdate += UpdateCooldownSlot;
@@ -101,61 +110,97 @@ namespace Characters.UIDisplay
 
             combatSystem.OnDealDamage += UpdateDamageText;
             scoreSystem.OnScoreChange += UpdateScoreUI;
+
+            PoolingManager.Instance.Create<TextMeshProUGUI>(worldTextUIPrefab.name, PoolingGroupName.UI, CreateDamageText);
             
-            PoolingManager.Instance.Create<TextMeshProUGUI>(worldTextUIPrefab.name, PoolingGroupName.UI,
-                CreateDamageText);
+            UpdateAllUI();
         }
 
         private void OnDestroy()
         {
             PlayerController.Instance.OnResetAllBehavior -= UpdateAllUI;
 
-            comboSystem.OnComboUpdated -= UpdateComboScoreText;
-            comboSystem.OnComboTimeUpdated -= UpdateComboTimeBar;
+            if (comboStreakSystem != null)
+            {
+                comboStreakSystem.OnStreakChanged -= UpdateComboStreakText;
+                comboStreakSystem.OnStreakTimerTick -= UpdateComboTimeBar;
+                comboStreakSystem.OnBoostChanged -= UpdateBoostMultiplierText;
+                comboStreakSystem.OnFlowStageEnter -= OnFlowStageEnterUI;
+                comboStreakSystem.OnFlowStageExit -= OnFlowStageExitUI;
+            }
 
             levelSystem.OnLevelUpdate -= UpdateLevelUI;
 
-            healthSystem.OnHealthChange -= healthChange => UpdateHealthUI();
-            healthSystem.OnHealthChange -= UpdateHealthText;
+            if (healthSystem != null)
+            {
+                healthSystem.OnHealthChange -= _onHealthChangeUpdateUIHandler;
+                healthSystem.OnHealthChange -= _onHealthChangeTextHandler;
+            }
 
             skillSystem.OnNewSkillAssign -= AssignSkillSlot;
             skillSystem.OnSkillCooldownUpdate -= UpdateCooldownSlot;
             skillSystem.OnSkillCooldownReset -= ResetSkillSlot;
-            
+
             combatSystem.OnDealDamage -= UpdateDamageText;
             scoreSystem.OnScoreChange -= UpdateScoreUI;
-            
+
             PoolingManager.Instance.ClearPool(worldTextUIPrefab.name);
         }
 
         private void UpdateAllUI()
         {
-            comboTimeoutBar.CurrentValue = comboSystem.ComboStartValue;
-            comboTimeoutBar.MaxValue = comboSystem.ComboStartValue;
+            if (comboTimeoutBar != null && comboStreakSystem.Data != null)
+            {
+                comboTimeoutBar.MaxValue = comboStreakSystem.Data.streakTimeoutSeconds;
+                comboTimeoutBar.CurrentValue = 0f; 
+            }
+            
+            if (comboUI) comboUI.SetActive(false);
+            if (comboStreakText) comboStreakText.text = "0 STRIKE!";
+            if (scoreMultiply) scoreMultiply.text = "x0";
 
             UpdateLevelUI();
             UpdateHealthUI();
         }
 
-        #region Combo UI
+        #region Combo UI (ใหม่)
 
-        private void UpdateComboTimeBar(float currentTime)
+        private void UpdateComboTimeBar(float currentTimeSec)
         {
             if (!comboTimeoutBar || !comboUI) return;
-            comboUI.SetActive(comboSystem.ComboActive);
-            comboTimeoutBar.CurrentValue = currentTime;
+            
+            comboUI.SetActive(currentTimeSec > 0.0001f || (comboStreakText && comboStreakText.text != "0 STRIKE!"));
+            
+            if (comboTimeoutBar.MaxValue <= 0.0001f)
+                comboTimeoutBar.MaxValue = (comboStreakSystem.Data != null) ? comboStreakSystem.Data.streakTimeoutSeconds : 4.5f;
+
+            comboTimeoutBar.CurrentValue = Mathf.Clamp(currentTimeSec, 0f, comboTimeoutBar.MaxValue);
         }
 
-        private void UpdateComboScoreText(float streak)
+        private void UpdateComboStreakText(int streak)
         {
-            comboUI.SetActive(comboSystem.ComboActive);
+            if (!comboUI) return;
+
+            comboUI.SetActive(streak > 0);
+
             if (comboStreakText != null)
                 comboStreakText.text = $"{streak} STRIKE!";
 
-            comboUI.transform.DOScale(new Vector3(scaleAmount, scaleAmount, 1), tweenDuration)
+            // pop tween
+            comboUI.transform
+                .DOScale(new Vector3(scaleAmount, scaleAmount, 1), tweenDuration)
                 .SetEase(Ease.OutBack)
                 .OnComplete(() => comboUI.transform.DOScale(Vector3.one, tweenDuration));
         }
+
+        private void UpdateBoostMultiplierText(float multiplierX)
+        {
+            if (scoreMultiply == null) return;
+            scoreMultiply.text = $"x{multiplierX:0.##}";
+        }
+        
+        private void OnFlowStageEnterUI(FlowStageLevel level) { /* show badge / effects */ }
+        private void OnFlowStageExitUI(FlowStageLevel level) { /* hide / revert */ }
 
         #endregion
 
@@ -185,45 +230,36 @@ namespace Characters.UIDisplay
                 canvasGroup = textInstance.gameObject.AddComponent<CanvasGroup>();
             canvasGroup.alpha = 1;
 
-            // Critical formatting
             bool isCrit = damageData.IsCritical;
             if (isCrit)
             {
                 textInstance.text += " Crit!";
-                textInstance.color = new Color(1f, 0.85f, 0.2f); // Gold-ish
-                tf.SetAsLastSibling(); // Ensure appears on top
+                textInstance.color = new Color(1f, 0.85f, 0.2f);
+                tf.SetAsLastSibling();
             }
 
             textInstance.gameObject.SetActive(true);
 
             // === Animation Settings ===
-            float floatDuration = 0.2f; // Total time text will float and stay on screen
-            float fadeOutDuration = 0.3f; // Duration for the fade-out at the end
+            float floatDuration = 0.2f;
+            float fadeOutDuration = 0.3f;
             float delayBeforeFade = floatDuration - fadeOutDuration;
 
-            float normalRiseAmount = 0.75f; // Distance text rises for normal hit
-            float critRiseAmount = 1.4f; // Distance text rises for critical hit
-            float riseAmount = isCrit ? critRiseAmount : normalRiseAmount;
+            float riseAmount = isCrit ? 1.4f : 0.75f;
+            float scaleIn = isCrit ? 1.4f : 1.2f;
+            float settleScale = 1.0f;
+            float popDuration = 0.15f;
+            float settleDuration = 0.15f;
 
-            float scaleInNormal = 1.2f; // Initial pop scale for normal
-            float scaleInCrit = 1.4f; // Initial pop scale for critical
-            float scaleIn = isCrit ? scaleInCrit : scaleInNormal;
-
-            float settleScale = 1.0f; // Final scale after settle
-            float popDuration = 0.15f; // Duration of pop-in animation
-            float settleDuration = 0.15f; // Duration of scale settle after pop
-
-            // Kill any previous tweens on same target
             DOTween.Kill(tf);
             DOTween.Kill(canvasGroup);
 
-            // === Sequence ===
             var seq = DOTween.Sequence();
-            seq.Append(tf.DOScale(scaleIn, popDuration).SetEase(Ease.OutBack)) // Pop!
-                .Append(tf.DOScale(settleScale, settleDuration).SetEase(Ease.InOutSine)) // Settle
-                .Join(tf.DOMoveY(tf.position.y + riseAmount, floatDuration).SetEase(Ease.OutQuad)) // Float up
-                .AppendInterval(delayBeforeFade) // Hold before fade
-                .Append(canvasGroup.DOFade(0, fadeOutDuration)) // Fade out
+            seq.Append(tf.DOScale(scaleIn, popDuration).SetEase(Ease.OutBack))
+                .Append(tf.DOScale(settleScale, settleDuration).SetEase(Ease.InOutSine))
+                .Join(tf.DOMoveY(tf.position.y + riseAmount, floatDuration).SetEase(Ease.OutQuad))
+                .AppendInterval(delayBeforeFade)
+                .Append(canvasGroup.DOFade(0, fadeOutDuration))
                 .AppendCallback(() =>
                 {
                     textInstance.gameObject.SetActive(false);
@@ -235,7 +271,6 @@ namespace Characters.UIDisplay
         {
             var textInstance = PoolingManager.Instance.Get<TextMeshProUGUI>(worldTextUIPrefab.name);
 
-            // Reset & Prepare
             Transform tf = textInstance.transform;
             Vector3 p = healthSystem.transform.position;
             Vector2 off = Random.insideUnitCircle * 1f;
@@ -244,44 +279,38 @@ namespace Characters.UIDisplay
             textInstance.text = healthChange + " HP";
             textInstance.color = Color.red;
 
-            // CanvasGroup for fade
             var canvasGroup = textInstance.GetComponent<CanvasGroup>();
             if (canvasGroup == null)
                 canvasGroup = textInstance.gameObject.AddComponent<CanvasGroup>();
             canvasGroup.alpha = 1;
 
-            // Critical formatting
-
             if (healthChange >= 0)
             {
                 textInstance.text = "+" + healthChange + " HP";
                 textInstance.color = Color.green;
-                tf.SetAsLastSibling(); // Ensure appears on top
+                tf.SetAsLastSibling();
             }
 
             textInstance.gameObject.SetActive(true);
 
-            // === Animation Settings ===
-            float floatDuration = 0.2f; // Total time text will float and stay on screen
-            float fadeOutDuration = 0.3f; // Duration for the fade-out at the end
+            float floatDuration = 0.2f;
+            float fadeOutDuration = 0.3f;
             float delayBeforeFade = floatDuration - fadeOutDuration;
             float riseAmount = 0.75f;
             float scaleIn = 1.25f;
-            float settleScale = 1.0f; // Final scale after settle
-            float popDuration = 0.15f; // Duration of pop-in animation
-            float settleDuration = 0.15f; // Duration of scale settle after pop
+            float settleScale = 1.0f;
+            float popDuration = 0.15f;
+            float settleDuration = 0.15f;
 
-            // Kill any previous tweens on same target
             DOTween.Kill(tf);
             DOTween.Kill(canvasGroup);
 
-            // === Sequence ===
             var seq = DOTween.Sequence();
-            seq.Append(tf.DOScale(scaleIn, popDuration).SetEase(Ease.OutBack)) // Pop!
-                .Append(tf.DOScale(settleScale, settleDuration).SetEase(Ease.InOutSine)) // Settle
-                .Join(tf.DOMoveY(tf.position.y + riseAmount, floatDuration).SetEase(Ease.OutQuad)) // Float up
-                .AppendInterval(delayBeforeFade) // Hold before fade
-                .Append(canvasGroup.DOFade(0, fadeOutDuration)) // Fade out
+            seq.Append(tf.DOScale(scaleIn, popDuration).SetEase(Ease.OutBack))
+                .Append(tf.DOScale(settleScale, settleDuration).SetEase(Ease.InOutSine))
+                .Join(tf.DOMoveY(tf.position.y + riseAmount, floatDuration).SetEase(Ease.OutQuad))
+                .AppendInterval(delayBeforeFade)
+                .Append(canvasGroup.DOFade(0, fadeOutDuration))
                 .AppendCallback(() =>
                 {
                     textInstance.gameObject.SetActive(false);
@@ -293,10 +322,13 @@ namespace Characters.UIDisplay
 
         #region Health UI
 
+        private void OnHealthChange_UpdateHPUI(float _) => UpdateHealthUI();
+
         private void UpdateHealthUI()
         {
-            float hpAmount = (healthSystem.CurrentHealth / healthSystem.MaxHealth) * 15;
-            hpBar.CurrentSlots = (int)Mathf.Clamp(hpAmount, 0, 15);
+            float hpAmount01 = Mathf.Clamp01(healthSystem.CurrentHealth / Mathf.Max(1f, healthSystem.MaxHealth));
+            // ของคุณคูณ 15 ช่อง
+            hpBar.CurrentSlots = Mathf.RoundToInt(hpAmount01 * 15f);
         }
 
         #endregion
@@ -306,8 +338,8 @@ namespace Characters.UIDisplay
         private void UpdateLevelUI()
         {
             levelText.text = "LEVEL " + levelSystem.Level;
-            float fillAmount = levelSystem.ExpProgress01 * 100;
-            levelbar.CurrentValue = Mathf.Clamp(fillAmount, 0, 100);
+            float fillPercent = Mathf.Clamp01(levelSystem.ExpProgress01) * 100f;
+            levelbar.CurrentValue = fillPercent;
         }
 
         #endregion
@@ -351,9 +383,7 @@ namespace Characters.UIDisplay
         private void ClearSkillCards()
         {
             foreach (Transform child in solfUpgradePanel.transform)
-            {
                 Destroy(child.gameObject);
-            }
         }
 
         private async UniTask CreateSkillCard(BaseSkillDataSo skill)
@@ -368,7 +398,6 @@ namespace Characters.UIDisplay
 
         private void PanelCardFeedback(Transform tf)
         {
-            // === Sequence ===
             tf.localPosition = new Vector2(1920, 0);
             var seq = DOTween.Sequence();
             seq.Append(tf.DOLocalMove(new Vector3(0, 0, 0), 0.7f).SetEase(Ease.OutBack))
@@ -381,10 +410,7 @@ namespace Characters.UIDisplay
 
         private async UniTask SkillCardFeedback(Transform tf)
         {
-            await tf.DOLocalRotate(
-                    new Vector3(0, 720f, 0),
-                    0.7f,
-                    RotateMode.FastBeyond360)
+            await tf.DOLocalRotate(new Vector3(0, 720f, 0), 0.7f, RotateMode.FastBeyond360)
                 .SetEase(Ease.OutCubic)
                 .SetUpdate(true)
                 .AsyncWaitForCompletion();
@@ -419,7 +445,6 @@ namespace Characters.UIDisplay
             if (skillSlotModel[skillIndex] == null) return;
 
             var currentCooldown = (maxCooldown * (1 - progression));
-
             skillSlotModel[skillIndex].cooldownText.text =
                 currentCooldown <= 1 ? $"{currentCooldown:F1}" : $"{currentCooldown:F0}";
             skillSlotModel[skillIndex].valueBar.CurrentValue = 1 - progression;
@@ -442,7 +467,7 @@ namespace Characters.UIDisplay
         {
             scoreText.text = $"{score}";
         }
-        
+
         #endregion
     }
 }
