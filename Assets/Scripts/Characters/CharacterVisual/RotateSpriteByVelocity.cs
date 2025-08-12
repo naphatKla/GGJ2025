@@ -22,7 +22,7 @@ namespace Characters.CharacterVisual
         
         public void OnFixedUpdate()
         {
-            if (ownerMovementSystem.CurrentVelocity.magnitude < 0.001f) return;
+            if (ownerMovementSystem.CurrentVelocity.magnitude < 0.01f) return;
             _sprite.transform.up = ownerMovementSystem.CurrentVelocity.normalized;
         }
     }

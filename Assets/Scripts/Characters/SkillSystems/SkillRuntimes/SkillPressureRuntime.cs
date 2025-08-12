@@ -13,7 +13,7 @@ namespace Characters.SkillSystems.SkillRuntimes
         protected override void OnSkillStart()
         {
             owner.MovementSystem.StopAllMovementAndTween();
-            owner.TryPlayFeedback(FeedbackName.Pressure);
+            owner.TryPlayFeedback(FeedbackName.PressureCharge);
         }
 
         protected override async UniTask OnSkillUpdate(CancellationToken cancelToken)
@@ -24,6 +24,7 @@ namespace Characters.SkillSystems.SkillRuntimes
             var layerMask = CharacterGlobalSettings.Instance.EnemyLayerDictionary[transform.tag];
             var targets = Physics2D.OverlapCircleAll(transform.position, skillData.ExplosionRadius, layerMask);
 
+            owner.TryPlayFeedback(FeedbackName.PressureBomb);
             foreach (var target in targets)
             {
                 CombatManager.ApplyCalculatedDamageTo(target.gameObject, owner.gameObject,
