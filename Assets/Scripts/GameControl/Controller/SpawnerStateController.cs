@@ -29,14 +29,17 @@ namespace GameControl.Controller
         [BoxGroup("Setting")] [SerializeField] private EnemySpawnerController _enemySpawnerController;
         [BoxGroup("Setting")] [SerializeField] private EnemyPatternController _enemyPatternController;
         [BoxGroup("Setting")] [SerializeField] private ItemSpawnerController _itemSpawnerController;
+        [BoxGroup("Setting")] [SerializeField] private MapEventController _mapEventController;
         [BoxGroup("Setting")] [Required] [SerializeField] private Transform enemyParent;
         [BoxGroup("Setting")] [Required] [SerializeField] private Transform itemParent;
         [BoxGroup("Setting")] [SerializeField] private Vector2 regionSize = Vector2.zero;
         [BoxGroup("Setting")] [SerializeField] private Vector2 itemdropRegionSize = Vector2.zero;
         
         [BoxGroup("Debug Zone")] [SerializeField] private bool debugPattern;
+        [BoxGroup("Debug Zone")] [SerializeField] private bool debugMapEvent;
         [ShowInInspector, ReadOnly]
         public float EnemyPoint => _currentEnemyPoint;
+        public MapEventController MapEventController => _mapEventController;
         public EnemySpawnerController EnemySpawnerController => _enemySpawnerController;
         public EnemyPatternController EnemyPatternController => _enemyPatternController;
         public ItemSpawnerController ItemSpawnerController => _itemSpawnerController;
@@ -85,6 +88,7 @@ namespace GameControl.Controller
             _enemySpawnerController = new EnemySpawnerController(_currentMapData, this, regionSize, debugPattern, mainCamera);
             _enemyPatternController = new EnemyPatternController(_currentMapData, this, regionSize, debugPattern);
             _itemSpawnerController = new ItemSpawnerController(_currentMapData, this, itemdropRegionSize);
+            _mapEventController = new MapEventController(_currentMapData, this, debugMapEvent);
             await UniTask.WaitUntil(() => _enemySpawnerController != null && _enemyPatternController != null && _itemSpawnerController != null);
             
             _currentEnemyPoint = _currentMapData.startEnemyPoint;
@@ -101,7 +105,7 @@ namespace GameControl.Controller
             
             //Every 3 minute trigger pattern
             GameTimer.Instance.ScheduleLoopingTrigger(
-                _currentMapData.triggerPatternEverySecond,
+                _currentMapData.playAllPatternIn,
                 GameTimer.Instance.StartTimerNumber,
                 () =>
                 {
@@ -124,6 +128,8 @@ namespace GameControl.Controller
             //Upgrade Spawn Ratio every 30 seconds
             GameTimer.Instance.ScheduleLoopingTrigger(_currentMapData.intervalEnemyPointRatioUpgrade, GameTimer.Instance.StartTimerNumber, 
                 () => _enemySpawnerController.UpgradePointRatio());
+ 
+            _mapEventController.ScheduleAllTriggersUpfront(GameTimer.Instance.StartTimerNumber);
         }
         
         public void ClearEnemy()

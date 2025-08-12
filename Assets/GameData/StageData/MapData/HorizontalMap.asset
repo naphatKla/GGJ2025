@@ -40,15 +40,21 @@ MonoBehaviour:
   intervalEnemyChanceUpgrade: 30
   intervalEnemyPointRatioUpgrade: 30
   PatternOptions:
-  - enableSpecificEnemy: 0
-    specificEnemyList: []
+  - enableThisPattern: 1
+    enableSpecificEnemy: 1
+    specificEnemyList:
+    - enemyID: Enemy_Normal
+      chance: 50
+    - enemyID: Enemy_Tank
+      chance: 50
     pattern: {fileID: 11400000, guid: 1152772dc8e0f114e824dddd694be66b, type: 2}
     delayBetweenEnemy: 0.1
     delayBetweenRows: 1
     patternPoint: 20
     enablePatternCenter: 0
     patternCenter: {x: 0, y: 0}
-  - enableSpecificEnemy: 0
+  - enableThisPattern: 1
+    enableSpecificEnemy: 0
     specificEnemyList: []
     pattern: {fileID: 11400000, guid: 098e856c71484744d95d27a8654a8433, type: 2}
     delayBetweenEnemy: 0.1
@@ -56,7 +62,8 @@ MonoBehaviour:
     patternPoint: 20
     enablePatternCenter: 0
     patternCenter: {x: 0, y: 0}
-  - enableSpecificEnemy: 0
+  - enableThisPattern: 1
+    enableSpecificEnemy: 0
     specificEnemyList: []
     pattern: {fileID: 11400000, guid: 288500a21d61a4540b39a6463d3f4af9, type: 2}
     delayBetweenEnemy: 0.1
@@ -64,7 +71,8 @@ MonoBehaviour:
     patternPoint: 20
     enablePatternCenter: 0
     patternCenter: {x: 0, y: 0}
-  - enableSpecificEnemy: 0
+  - enableThisPattern: 1
+    enableSpecificEnemy: 0
     specificEnemyList: []
     pattern: {fileID: 11400000, guid: 2bc8bc7d72e130d4382d64794bbc160c, type: 2}
     delayBetweenEnemy: 0.1
@@ -72,7 +80,8 @@ MonoBehaviour:
     patternPoint: 20
     enablePatternCenter: 0
     patternCenter: {x: 0, y: 0}
-  - enableSpecificEnemy: 0
+  - enableThisPattern: 1
+    enableSpecificEnemy: 0
     specificEnemyList: []
     pattern: {fileID: 11400000, guid: 24b5084f31b90d44090398f20fd2166b, type: 2}
     delayBetweenEnemy: 0.1
@@ -80,7 +89,8 @@ MonoBehaviour:
     patternPoint: 20
     enablePatternCenter: 0
     patternCenter: {x: 0, y: 0}
-  - enableSpecificEnemy: 0
+  - enableThisPattern: 1
+    enableSpecificEnemy: 0
     specificEnemyList: []
     pattern: {fileID: 11400000, guid: 3c5159e5638c81a4b9a6d6e9d8853011, type: 2}
     delayBetweenEnemy: 0.1
@@ -88,7 +98,8 @@ MonoBehaviour:
     patternPoint: 20
     enablePatternCenter: 0
     patternCenter: {x: 0, y: 0}
-  - enableSpecificEnemy: 0
+  - enableThisPattern: 1
+    enableSpecificEnemy: 0
     specificEnemyList: []
     pattern: {fileID: 11400000, guid: 1e63f424b276e28409899624010d5aaf, type: 2}
     delayBetweenEnemy: 0.1
@@ -96,7 +107,8 @@ MonoBehaviour:
     patternPoint: 20
     enablePatternCenter: 0
     patternCenter: {x: 0, y: 0}
-  - enableSpecificEnemy: 0
+  - enableThisPattern: 1
+    enableSpecificEnemy: 0
     specificEnemyList: []
     pattern: {fileID: 11400000, guid: 22206c817f2991344955d785a5ad4457, type: 2}
     delayBetweenEnemy: 0.1
@@ -104,7 +116,8 @@ MonoBehaviour:
     patternPoint: 20
     enablePatternCenter: 0
     patternCenter: {x: 0, y: 0}
-  - enableSpecificEnemy: 0
+  - enableThisPattern: 1
+    enableSpecificEnemy: 0
     specificEnemyList: []
     pattern: {fileID: 11400000, guid: 40fb65c3276e22343affa5a5a2d61545, type: 2}
     delayBetweenEnemy: 0.1
@@ -128,6 +141,22 @@ MonoBehaviour:
     lifetimeInterval: 20
   maxItemSpawning: 30
   defaultItemSpawnTimer: 1
+  eventmapOptions:
+  - enableThisMapEvent: 1
+    catagolyMapEvent: Test
+    allMapEventID:
+    - mapEventID: Horizontal_LR
+      chance: 40
+      useWeightRandom: 0
+    - mapEventID: Vertical_LR
+      chance: 100
+      useWeightRandom: 0
+    eventMapChance: 100
+    playInterval: 10
+    intervalCanModify: 1
+    rateModify: -1
+    intervalModify: 10
+    minPlayInterval: 5
   defaultEnemySpawnTimer: 0.5
   intervalIncreaseEnemyPoint: 30
   rateIncreaseEnemyPoint: 14.5

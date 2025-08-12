@@ -8,6 +8,7 @@ using GameControl.Pattern;
 using Sirenix.OdinInspector;
 using Sirenix.Serialization;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
 namespace GameControl.SO
@@ -121,6 +122,52 @@ namespace GameControl.SO
             public bool TryPassChance() => Random.Range(0, 100) < chance;
         }
         
+        [Serializable]
+        public class EventMapOption
+        {
+            [FoldoutGroup("$catagolyMapEvent")] [Title("Propertie")]
+            public bool enableThisMapEvent;
+            
+            [FoldoutGroup("$catagolyMapEvent")]
+            public string catagolyMapEvent;
+
+            [Serializable]
+            public struct MapEventKv
+            {
+                public string mapEventID; 
+                public float chance;
+                
+                [GUIColor("@this.useWeightRandom ? Color.green : Color.red")]
+                public bool useWeightRandom;
+            }
+           
+            [FoldoutGroup("$catagolyMapEvent")]
+            public List<MapEventKv> allMapEventID;
+            
+            [FoldoutGroup("$catagolyMapEvent")] [Title("Chance")]
+            public float eventMapChance;
+          
+            [FoldoutGroup("$catagolyMapEvent")] [Title("Interval")]
+            public float playInterval;
+
+            [FoldoutGroup("$catagolyMapEvent")]
+            public bool intervalCanModify;
+            
+            [FoldoutGroup("$catagolyMapEvent")] [Title("Interval Increase Setting")] [ShowIf("intervalCanModify")]
+            [Tooltip("playInterval will modify by this float")]
+            public float rateModify;
+            
+            [FoldoutGroup("$catagolyMapEvent")] [ShowIf("intervalCanModify")]
+            [Tooltip("rate of modify to apply to playInterval")]
+            public float intervalModify;
+            
+            [FoldoutGroup("$catagolyMapEvent")] [ShowIf("intervalCanModify")]
+            [Tooltip("minimum of interval that can be lowest")]
+            public float minPlayInterval;
+            
+            public float Chance { get => eventMapChance; set => eventMapChance = value; }
+        }
+        
         [FoldoutGroup("Map Setting")]
         [Tooltip("Name of this map")]
         public string mapName;
@@ -153,13 +200,15 @@ namespace GameControl.SO
         [Tooltip("Data of each pattern")]
         public List<PatternOption> PatternOptions;
         
-        [FoldoutGroup("Pattern Setting")]
+        [FoldoutGroup("Pattern Setting")] [Title("Time to play")]
+        [InfoBox("Pattern จะถูกเล่นทุกค่านี้ ตามเวลาเกม เช่นเล่น Pattern ทั้งหมดทุกๆ 180 วิ")]
         [Tooltip("The time of the pattern to play in trigger time (default player all pattern in 3 minute / 180 seconds)")]
         public float playAllPatternIn = 180f;
         
-        [FoldoutGroup("Pattern Setting")]
+        [FoldoutGroup("Pattern Setting")] [Title("Pattern Setting")]
+        [InfoBox("เช่น มีทั้งหมด 3 Pattern ใน Pool มันจะเล่น 3 Pattern ภายในเวลานี้ (all pattern in 3 minute / 180 seconds)")]
         [Tooltip("interval of event will be trigger (Default 180 seconds)")]
-        public float triggerPatternEverySecond = 180f;
+        public float triggerAllPatternIn = 180f;
         
         [FoldoutGroup("Pattern Setting")]
         [Tooltip("if this enable trigger time will decrease")]
@@ -167,16 +216,19 @@ namespace GameControl.SO
      
         [FoldoutGroup("Pattern Setting")]
         [Tooltip("interval of pattern trigger time to decrease (default 30) (enable on start only not in runtime)")]
+        [InfoBox("จะลด TriggerTime ทุกๆเท่าไหร่เช่น ค่า triggerAllPatternIn จะถูกลดทุกๆ 25 วิ")]
         [ShowIf("$triggerTimeCanDecrease")]
         public float patternDecreaseInterval;
         
         [FoldoutGroup("Pattern Setting")]
         [Tooltip("triggerTime will decrease by this float")]
+        [InfoBox("TriggerTime จากถูกลดกี่วิจากค่านี้เช่น 180 วิถูกลดลง 10 วิเป็น เล่น Pattern ทั้งหมดภายใน 170 วิ")]
         [ShowIf("$triggerTimeCanDecrease")]
         public float patternDecreaseRate;
         
         [FoldoutGroup("Pattern Setting")]
         [Tooltip("Minimum of triggertime")]
+        [InfoBox("ค่าที่ต่ำที่สุดของ triggerAllPatternIn ที่จะต่ำได้")]
         [ShowIf("$triggerTimeCanDecrease")]
         public float patternDecreaseMinimum;
         
@@ -191,6 +243,10 @@ namespace GameControl.SO
         [FoldoutGroup("Item Setting")]
         [Tooltip("Item spawn interval (Default 1)")]
         public float defaultItemSpawnTimer;
+        
+        [FoldoutGroup("Event Map Setting")]
+        [Tooltip("Data of each map event")]
+        public List<EventMapOption> eventmapOptions;
         
         [Space]
         [FoldoutGroup("Data Setting")]
