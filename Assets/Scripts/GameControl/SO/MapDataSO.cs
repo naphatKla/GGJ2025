@@ -216,16 +216,19 @@ namespace GameControl.SO
      
         [FoldoutGroup("Pattern Setting")]
         [Tooltip("interval of pattern trigger time to decrease (default 30) (enable on start only not in runtime)")]
+        [InfoBox("จะลด TriggerTime ทุกๆเท่าไหร่เช่น ค่า triggerAllPatternIn จะถูกลดทุกๆ 25 วิ")]
         [ShowIf("$triggerTimeCanDecrease")]
         public float patternDecreaseInterval;
         
         [FoldoutGroup("Pattern Setting")]
         [Tooltip("triggerTime will decrease by this float")]
+        [InfoBox("TriggerTime จากถูกลดกี่วิจากค่านี้เช่น 180 วิถูกลดลง 10 วิเป็น เล่น Pattern ทั้งหมดภายใน 170 วิ")]
         [ShowIf("$triggerTimeCanDecrease")]
         public float patternDecreaseRate;
         
         [FoldoutGroup("Pattern Setting")]
         [Tooltip("Minimum of triggertime")]
+        [InfoBox("ค่าที่ต่ำที่สุดของ triggerAllPatternIn ที่จะต่ำได้")]
         [ShowIf("$triggerTimeCanDecrease")]
         public float patternDecreaseMinimum;
         
