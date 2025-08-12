@@ -8,6 +8,7 @@ using GameControl.Pattern;
 using Sirenix.OdinInspector;
 using Sirenix.Serialization;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
 namespace GameControl.SO
@@ -207,7 +208,7 @@ namespace GameControl.SO
         [FoldoutGroup("Pattern Setting")] [Title("Pattern Setting")]
         [InfoBox("เช่น มีทั้งหมด 3 Pattern ใน Pool มันจะเล่น 3 Pattern ภายในเวลานี้ (all pattern in 3 minute / 180 seconds)")]
         [Tooltip("interval of event will be trigger (Default 180 seconds)")]
-        public float triggerPatternEverySecond = 180f;
+        public float triggerAllPatternIn = 180f;
         
         [FoldoutGroup("Pattern Setting")]
         [Tooltip("if this enable trigger time will decrease")]

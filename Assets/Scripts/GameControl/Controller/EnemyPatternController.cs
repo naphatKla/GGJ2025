@@ -36,7 +36,7 @@ namespace GameControl.Controller
             _regionSize = spawnRegion;
             _patternEnemy = new List<MapDataSO.PatternOption>();
             _isDebug = debug;
-            _currentTriggertime = mapData.playAllPatternIn;
+            _currentTriggertime = mapData.triggerAllPatternIn;
         }
 
         public void SetEnemyList(Dictionary<string, ObjectPool<EnemyController>> enemyList, List<MapDataSO.EnemyOption> enemyOptions)
