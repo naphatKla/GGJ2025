@@ -111,6 +111,7 @@ namespace GameControl.Controller
 
         public void RestartMap()
         {
+            SpawnerStateController.Instance.ClearPatternAsync();
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
             //SetState(_prestartState);
         }

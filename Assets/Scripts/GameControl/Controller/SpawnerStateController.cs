@@ -109,7 +109,7 @@ namespace GameControl.Controller
                     {
                         _enemyPatternController.AddRandomPattern();
                         await UniTask.Delay(100);
-                        _enemyPatternController.TriggerAllPatterns().Forget();
+                        //_enemyPatternController.TriggerAllPatterns().Forget();
                     });
                 });
             
@@ -130,6 +130,11 @@ namespace GameControl.Controller
         {
             _enemySpawnerController?.ReleaseAllEnemies();
             _enemySpawnerController?.ClearAllEnemysCompletely();
+        }
+
+        public void ClearPatternAsync()
+        {
+            _enemyPatternController?.StopProcessing();
         }
         
         public void ClearItem()
@@ -171,7 +176,7 @@ namespace GameControl.Controller
         [Button("Trigger Pattern" , ButtonSizes.Large), GUIColor(1, 1, 0)]
         private void TriggerPattern()
         {
-            _enemyPatternController.TriggerAllPatterns().Forget();
+            _enemyPatternController.TriggerAllPatterns();
         }
         
         [Button("Add Pattern" , ButtonSizes.Large), GUIColor(0, 1, 0)]
