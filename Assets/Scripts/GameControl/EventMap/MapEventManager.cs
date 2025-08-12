@@ -53,8 +53,7 @@ namespace GameControl.EventMap
 
             // 1) เลือก EventMode ตามโอกาส
             EventMode chosenMode = storage.enableRandomMode ? GetRandomEventMode(storage) : storage.eventMode;
-            Debug.Log(chosenMode);
-
+            
             // 2) Filter ตาม Chance ของแต่ละ Event
             foreach (var entry in storage.entries)
             {
