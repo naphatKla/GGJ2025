@@ -65,11 +65,11 @@ namespace Manager
             var damageData = attackerController.CombatSystem.CalculateSkillDamageDeal(target, hitPosition,
                 baseSkillDamage, multiplier, additionalCriRate, additionCriDamge, lifeStealPercent, lifeStealEffective);
 
+            targetController.HealthSystem.OnDead -= attackerController.CombatSystem.OnKill;
+            targetController.HealthSystem.OnDead += attackerController.CombatSystem.OnKill;
+            
             if (!targetController.HealthSystem.TakeDamage(damageData.Damage)) return;
             attackerController.CombatSystem.OnDealDamageHandler(damageData);
-            
-            if (targetController.HealthSystem.IsDead)
-                attackerController.CombatSystem.OnKillHandler();
             
             if (damageData.LifeSteal <= 0) return;
             attackerController.HealthSystem.Heal(damageData.LifeSteal);

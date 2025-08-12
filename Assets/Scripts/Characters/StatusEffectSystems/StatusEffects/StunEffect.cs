@@ -32,6 +32,7 @@ namespace Characters.StatusEffectSystems.StatusEffects
         public override void OnExit()
         {
             if (!_isStunSuccess) return;
+            if (!ownerController) return;
             ownerController.MovementSystem.StopFromStun(false);
             ownerController.SkillSystem.SetCanUseSkills(true);
             ownerController = null;

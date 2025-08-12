@@ -133,6 +133,7 @@ namespace Characters.ComboSystem
 
             CurrentStreak = clamped;
             OnStreakChanged?.Invoke(CurrentStreak);
+            Debug.Log("Set Streak!");
         }
 
         private void RecomputeBoost(bool alsoApplyPenalty, float extraPenaltyX)
