@@ -41,7 +41,7 @@ MonoBehaviour:
   intervalEnemyPointRatioUpgrade: 30
   PatternOptions:
   - enableThisPattern: 1
-    enableSpecificEnemy: 1
+    enableSpecificEnemy: 0
     specificEnemyList:
     - enemyID: Enemy_Normal
       chance: 50
@@ -125,8 +125,8 @@ MonoBehaviour:
     patternPoint: 20
     enablePatternCenter: 0
     patternCenter: {x: 0, y: 0}
-  playAllPatternIn: 10
-  triggerPatternEverySecond: 60
+  playAllPatternIn: 60
+  triggerAllPatternIn: 180
   triggerTimeCanDecrease: 0
   patternDecreaseInterval: 25
   patternDecreaseRate: 1
@@ -145,9 +145,6 @@ MonoBehaviour:
   - enableThisMapEvent: 1
     catagolyMapEvent: Test
     allMapEventID:
-    - mapEventID: Horizontal_LR
-      chance: 40
-      useWeightRandom: 0
     - mapEventID: Vertical_LR
       chance: 100
       useWeightRandom: 0

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -5,6 +6,7 @@ using GameControl.SO;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
 using GameControl.EventMap;
+using Random = UnityEngine.Random;
 
 namespace GameControl.Controller
 {
@@ -32,6 +34,28 @@ namespace GameControl.Controller
 
             return Mathf.Max(minInterval, interval);
         }
+
+        public void PlaySpecificCategoryName(string categoryName)
+        {
+            if (string.IsNullOrEmpty(categoryName))
+            {
+                if (_debug) Debug.LogWarning("[PlaySpecificCategoryName] categoryName is null or empty.");
+                return;
+            }
+
+            var eventOption = _mapdata.eventmapOptions.FirstOrDefault(e => 
+                e.enableThisMapEvent && e.catagolyMapEvent.Equals(categoryName, StringComparison.OrdinalIgnoreCase));
+
+            if (eventOption == null)
+            {
+                if (_debug) Debug.LogWarning($"[PlaySpecificCategoryName] No enabled event category found with name '{categoryName}'.");
+                return;
+            }
+
+            if (_debug) Debug.Log($"[PlaySpecificCategoryName] Playing event category '{categoryName}'.");
+            PlayMapEventCatagory(eventOption);
+        }
+
         
         public void ScheduleAllTriggersUpfront(float maxTime)
         {
@@ -69,8 +93,7 @@ namespace GameControl.Controller
  
         private void PlayMapEventCatagory(MapDataSO.EventMapOption eventOption)
         {
-            if (!IsEventChanceSuccessful(eventOption.eventMapChance))
-                return;
+            if (!IsEventChanceSuccessful(eventOption.eventMapChance)) return;
 
             var weightedEvents = GetWeightedEvents(eventOption);
             var nonWeightedEvents = GetNonWeightedEvents(eventOption);
