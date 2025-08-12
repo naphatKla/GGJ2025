@@ -122,8 +122,7 @@ namespace GameControl.Controller
 
         #region Private Method
 
-        private (MapDataSO.EnemyOption enemy, int amount, float usedPoints) ChooseEnemyAndCalculate(
-            MapDataSO.PatternOption pattern)
+        private (MapDataSO.EnemyOption enemy, int amount, float usedPoints) ChooseEnemyAndCalculate(MapDataSO.PatternOption pattern)
         {
             var enemy = RandomType(pattern);
             if (enemy == null)
@@ -136,9 +135,7 @@ namespace GameControl.Controller
 
             if (enemy.EnemyPoint <= 0f)
             {
-                if (_isDebug)
-                    Debug.Log(
-                        $"[EnemyPatternController] Enemy '{enemy.EnemyId}' has non-positive EnemyPoint ({enemy.EnemyPoint}).");
+                if (_isDebug) Debug.Log($"[EnemyPatternController] Enemy '{enemy.EnemyId}' has non-positive EnemyPoint ({enemy.EnemyPoint}).");
                 return (enemy, 0, 0f);
             }
 
@@ -167,33 +164,22 @@ namespace GameControl.Controller
             await SpawnEnemyRows(rows, enemyType, patternData, enemyAmount);
         }
 
-        private async UniTask<bool> WaitForEnoughEnemyPoint(
-            MapDataSO.PatternOption pattern,
-            float? customTimeoutSec = null,
-            CancellationToken ct = default)
+        private async UniTask WaitUntilEnoughEnemyPoint(MapDataSO.PatternOption pattern, CancellationToken ct = default)
         {
-            if (SpawnerStateController.Instance.CurrentEnemyPoint >= pattern.patternPoint) return true;
+            if (_isDebug)
+                Debug.Log($"[EnemyPatternController] Waiting until enough points for '{pattern.pattern.name}'...");
 
-            float timeout = customTimeoutSec ?? (_currentTriggertime + 2f);
-            float timer = 0f;
-
-            if (_isDebug) Debug.Log($"[EnemyPatternController] Waiting up to {timeout:0.00}s for enough points to play '{pattern.pattern.name}'...");
+            if (SpawnerStateController.Instance.CurrentEnemyPoint >= pattern.patternPoint)
+                return;
 
             while (SpawnerStateController.Instance.CurrentEnemyPoint < pattern.patternPoint)
             {
                 ct.ThrowIfCancellationRequested();
                 await UniTask.Yield(PlayerLoopTiming.Update, ct);
-                timer += Time.deltaTime;
-                
-                if (timer >= timeout)
-                {
-                    if (_isDebug) Debug.Log($"[EnemyPatternController] Timeout after {timer:0.00}s waiting for '{pattern.pattern.name}'");
-                    return false;
-                }
             }
 
-            if (_isDebug) Debug.Log($"[EnemyPatternController] Got enough points after {timer:0.00}s for '{pattern.pattern.name}'");
-            return true;
+            if (_isDebug)
+                Debug.Log($"[EnemyPatternController] Got enough points for '{pattern.pattern.name}'");
         }
         
         private bool CanTriggerPattern(MapDataSO.PatternOption patternData)
@@ -271,13 +257,7 @@ namespace GameControl.Controller
                     {
                         var pattern = batch[i];
 
-                        bool enough = await WaitForEnoughEnemyPoint(pattern, null, _cts.Token);
-                        if (!enough)
-                        {
-                            if (_isDebug) Debug.Log($"[EnemyPatternController] Timeout waiting for points for '{pattern.pattern.name}'");
-                            continue;
-                        }
-
+                        await WaitUntilEnoughEnemyPoint(pattern, _cts.Token);
                         await TriggerSinglePattern(pattern);
                         if (i < batch.Count - 1)
                         {
