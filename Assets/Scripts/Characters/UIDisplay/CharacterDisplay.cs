@@ -97,6 +97,7 @@ namespace Characters.UIDisplay
             }
 
             levelSystem.OnLevelUpdate += UpdateLevelUI;
+            skillUpgradeController.OnSkillUpgradeOptionsGenerated += SolfUpgradePopup;
             
             _onHealthChangeUpdateUIHandler = OnHealthChange_UpdateHPUI;
             _onHealthChangeTextHandler = UpdateHealthText;
@@ -130,6 +131,7 @@ namespace Characters.UIDisplay
             }
 
             levelSystem.OnLevelUpdate -= UpdateLevelUI;
+            skillUpgradeController.OnSkillUpgradeOptionsGenerated -= SolfUpgradePopup;
 
             if (healthSystem != null)
             {
