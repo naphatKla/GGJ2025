@@ -1,6 +1,8 @@
 using System;
 using Cameras;
+using Characters.CollectItemSystems;
 using Characters.LevelSystems;
+using Characters.ScoreSystems;
 using Characters.SkillSystems;
 using Characters.SO.CharacterDataSO;
 using UnityEngine;
@@ -15,10 +17,16 @@ namespace Characters.Controllers
     {
         #region Inspector & Variables
 
+        [SerializeField] private CollectItemSystem collectItemSystem;
         [SerializeField] public ComboSystem.ComboSystem comboSystem;
         [SerializeField] protected LevelSystem levelSystem;
         [SerializeField] protected SkillUpgradeController skillUpgradeController;
         [SerializeField] protected Cinemachine2DCameraController cameraController;
+        [SerializeField] protected ScoreSystem scoreSystem;
+
+        public CollectItemSystem CollectItemSystem => collectItemSystem;
+        public LevelSystem LevelSystem => levelSystem;
+        public ScoreSystem ScoreSystem => scoreSystem;
         public Cinemachine2DCameraController CameraController => cameraController;
 
         /// <summary>
@@ -46,14 +54,16 @@ namespace Characters.Controllers
         {
             if (data is PlayerDataSo playerData)
             {
+                collectItemSystem.AssignData(this, playerData.PullItemRadius);
                 skillUpgradeController.AssignData(skillSystem, playerData);
                 levelSystem.AssignData(playerData.BaseExpLevelUp, playerData.ExpMultiplierPerLevel);
+                scoreSystem.AssignData(this);
             }
             else
             {
                 throw new FormatException();
             }
-
+            
             base.AssignCharacterData(data);
         }
 
@@ -83,6 +93,7 @@ namespace Characters.Controllers
             skillUpgradeController.ResetSkillUpgradeController();
             comboSystem.ResetCombo();
             cameraController.ResetCamera();
+            
 
             base.ResetAllDependentBehavior();
         }

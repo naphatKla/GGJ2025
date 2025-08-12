@@ -3,22 +3,18 @@ using Characters.CombatSystems;
 using Characters.Controllers;
 using Characters.HeathSystems;
 using Characters.LevelSystems;
+using Characters.ScoreSystems;
 using Characters.SkillSystems;
 using Characters.SO.SkillDataSo;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
-using GameControl.Controller;
 using Manager;
 using MoreMountains.Feedbacks;
-using MoreMountains.Tools;
 using PixelUI;
 using Sirenix.OdinInspector;
 using TMPro;
 using UI.IngameModal;
 using UnityEngine;
-using UnityEngine.Serialization;
-using UnityEngine.UI;
-using VHierarchy.Libs;
 
 namespace Characters.UIDisplay
 {
@@ -79,6 +75,13 @@ namespace Characters.UIDisplay
         [FoldoutGroup("SkillSlot Display")] [Title("UI")] [FoldoutGroup("SkillSlot Display")] [SerializeField]
         private List<SkillSlotModel> skillSlotModel;
 
+        [FoldoutGroup("Score Display")] [Title("Ref")]
+        [SerializeField] private ScoreSystem scoreSystem;
+
+        [FoldoutGroup("Score Display")] 
+        [SerializeField] [Title("UI")]
+        private TextMeshProUGUI scoreText;
+
         private void Start()
         {
             PlayerController.Instance.OnResetAllBehavior += UpdateAllUI;
@@ -97,6 +100,8 @@ namespace Characters.UIDisplay
             skillSystem.OnSkillCooldownReset += ResetSkillSlot;
 
             combatSystem.OnDealDamage += UpdateDamageText;
+            scoreSystem.OnScoreChange += UpdateScoreUI;
+            
             PoolingManager.Instance.Create<TextMeshProUGUI>(worldTextUIPrefab.name, PoolingGroupName.UI,
                 CreateDamageText);
         }
@@ -116,9 +121,10 @@ namespace Characters.UIDisplay
             skillSystem.OnNewSkillAssign -= AssignSkillSlot;
             skillSystem.OnSkillCooldownUpdate -= UpdateCooldownSlot;
             skillSystem.OnSkillCooldownReset -= ResetSkillSlot;
-
-
+            
             combatSystem.OnDealDamage -= UpdateDamageText;
+            scoreSystem.OnScoreChange -= UpdateScoreUI;
+            
             PoolingManager.Instance.ClearPool(worldTextUIPrefab.name);
         }
 
@@ -428,6 +434,15 @@ namespace Characters.UIDisplay
             skillSlotModel[skillIndex].valueBar.CurrentValue = 0;
         }
 
+        #endregion
+
+        #region Score UI
+
+        public void UpdateScoreUI(int score)
+        {
+            scoreText.text = $"{score}";
+        }
+        
         #endregion
     }
 }

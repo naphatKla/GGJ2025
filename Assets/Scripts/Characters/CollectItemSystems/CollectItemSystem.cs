@@ -1,5 +1,6 @@
 using System;
 using Characters.CollectItemSystems.CollectableItems;
+using Characters.Controllers;
 using GlobalSettings;
 using Manager;
 using Sirenix.OdinInspector;
@@ -15,24 +16,15 @@ namespace Characters.CollectItemSystems
     public class CollectItemSystem : MonoBehaviour, IFixedUpdateable
     {
         #region Inspector & Variables
-
-        /// <summary>
-        /// The radius within which items will be detected and pulled toward the player.
-        /// </summary>
-        [PropertyTooltip("The radius around the player in which collectible items will be detected and pulled.")]
-        [SerializeField] private float pullItemRadius;
-
-        /// <summary>
-        /// Whether to show the detection radius as a Gizmo in the editor.
-        /// </summary>
-        [PropertyTooltip("Show the pull radius as a gizmo in the Scene view for visualization.")]
-        [SerializeField] private bool enableGizmos;
-
+        
         /// <summary>
         /// The LayerMask used to detect which objects are considered collectible.
         /// This value is pulled from global character settings.
         /// </summary>
         private LayerMask collectLayer => CharacterGlobalSettings.Instance.CollectableItemLayerMask;
+        private float _pullItemRadius;
+        private BaseController _owner;
+        public BaseController Owner => _owner;
 
         #endregion
 
@@ -50,7 +42,7 @@ namespace Characters.CollectItemSystems
 
         public void OnFixedUpdate()
         {
-            Collider2D[] objectsDetected = Physics2D.OverlapCircleAll(transform.position, pullItemRadius, collectLayer);
+            Collider2D[] objectsDetected = Physics2D.OverlapCircleAll(transform.position, _pullItemRadius, collectLayer);
 
             foreach (Collider2D obj in objectsDetected)
             {
@@ -58,24 +50,17 @@ namespace Characters.CollectItemSystems
                 item.PullToTarget(transform, () => CollectItem(item));
             }
         }
-
-        /// <summary>
-        /// Draws a visual representation of the item pull radius in the Unity Editor.
-        /// Useful for debugging and visualizing item collection zones.
-        /// </summary>
-        private void OnDrawGizmos()
-        {
-            if (!enableGizmos) return;
-
-            Vector3 position = transform.position;
-            Gizmos.color = new Color(0f, 0.6f, 1f, 0.25f); 
-            Gizmos.DrawWireSphere(position, pullItemRadius);
-        }
-
+        
         #endregion
 
         #region Methods
 
+        public void AssignData(BaseController owner, float pullItemRadius)
+        {
+            _owner = owner;
+            _pullItemRadius = pullItemRadius;
+        }
+        
         /// <summary>
         /// Triggers the collection logic on the specified item.
         /// </summary>

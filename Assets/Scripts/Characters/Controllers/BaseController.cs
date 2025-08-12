@@ -201,7 +201,6 @@ namespace Characters.Controllers
             statusEffectSystem.ResetStatusEffectSystem();
             damageOnTouch.ResetDamageOnTouch();
             feedbackSystem.ResetFeedbackSystem();
-
             OnResetAllBehavior?.Invoke();
         }
 

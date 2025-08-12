@@ -12386,6 +12386,7 @@ GameObject:
   - component: {fileID: 5785369636543128780}
   - component: {fileID: 4760236408793113694}
   - component: {fileID: 6543663255383939677}
+  - component: {fileID: 5144948324511787352}
   - component: {fileID: 7467346900322984913}
   m_Layer: 7
   m_Name: Player
@@ -12433,10 +12434,12 @@ MonoBehaviour:
   damageOnTouch: {fileID: 5678313002177273158}
   feedbackSystem: {fileID: 5147604314936671000}
   characterData: {fileID: 11400000, guid: 39ed973e8de08f84faa43653bfdd68e7, type: 2}
+  collectItemSystem: {fileID: 4851925125693906224}
   comboSystem: {fileID: 2247090465659933957}
   levelSystem: {fileID: 2047403147416900316}
   skillUpgradeController: {fileID: 7127418468070666774}
   cameraController: {fileID: 5785369636543128780}
+  scoreSystem: {fileID: 5144948324511787352}
 --- !u!114 &1766625338755230343
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12476,6 +12479,8 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
+  scoreSystem: {fileID: 5144948324511787352}
+  scoreText: {fileID: 0}
 --- !u!114 &7534513208806243613
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12823,8 +12828,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1d29482e9b1ae7b48ba51f7683eddfad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pullItemRadius: 6
-  enableGizmos: 1
 --- !u!114 &2247090465659933957
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12974,6 +12977,18 @@ MonoBehaviour:
   segments: 32
   rectSize: {x: 1, y: 1}
   wireRect: 1
+--- !u!114 &5144948324511787352
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2726293917207744010}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d4f4d9ce50cb024aa968c3aa322872a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!60 &7467346900322984913
 PolygonCollider2D:
   m_ObjectHideFlags: 0

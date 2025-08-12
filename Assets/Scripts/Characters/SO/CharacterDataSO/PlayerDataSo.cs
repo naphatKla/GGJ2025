@@ -9,6 +9,9 @@ namespace Characters.SO.CharacterDataSO
     [CreateAssetMenu(fileName = "PlayerData", menuName = "GameData/CharacterData/PlayerData")]
     public class PlayerDataSo : BaseCharacterDataSo
     {
+        [FoldoutGroup("Collect Item System")] 
+        [SerializeField] private float pullItemRadius = 8f;
+        
         [FoldoutGroup("Combat")]
         [SerializeField] private float baseExpLevelUp;
         
@@ -39,6 +42,7 @@ namespace Characters.SO.CharacterDataSO
          ValidateInput(nameof(IsAllSkillLv1Proxy), "All skills in the upgrade pool must be Level 1!")]
         private List<BaseSkillDataSo> skillUpgradePool = new();
 
+        public float PullItemRadius => pullItemRadius;
         public List<BaseSkillDataSo> SkillUpgradePool => skillUpgradePool;
         public int UpgradeChoicesCount => upgradeChoicesCount;
 

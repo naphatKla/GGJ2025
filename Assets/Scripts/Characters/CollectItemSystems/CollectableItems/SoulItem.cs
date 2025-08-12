@@ -1,4 +1,5 @@
 using System;
+using Characters.Controllers;
 using Characters.LevelSystems;
 using Characters.SO.CollectableItemDataSO;
 using GameControl;
@@ -17,8 +18,14 @@ namespace Characters.CollectItemSystems.CollectableItems
         /// <param name="ownerSystem"></param>
         protected override void OnCollect(CollectItemSystem ownerSystem)
         {
-            if (!ownerSystem.TryGetComponent(out LevelSystem levelSystem)) return;
-            levelSystem.AddExp(itemData.Exp);
+            if (ownerSystem.Owner is PlayerController player)
+            {
+                player.ScoreSystem.AddScore(itemData.Score);
+                player.LevelSystem.AddExp(itemData.Exp);
+                return;
+            }
+
+            throw new NotImplementedException();
         }
     }
 }
