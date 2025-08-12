@@ -21,8 +21,8 @@ namespace GameControl.Controller
         private List<MapDataSO.EnemyOption> _enemyOptionsList;
         private bool _debug;
         private Camera _mainCamera;
+        public float ExpDropMultiplier { get; set; } = 1;
         
-
         public EnemySpawnerController(MapDataSO mapData, SpawnerStateController state, Vector2 spawnRegion, bool debug, Camera mainCamera)
         {
             _mapdata = mapData;
@@ -85,7 +85,8 @@ namespace GameControl.Controller
         {
             if (obj.CharacterData is EnemyDataSo enemyData)
             {
-                _state.ItemSpawnerController.SpawnExpItem(enemyData.ExpDrop, obj.transform.position);
+                int totalExp = Mathf.CeilToInt(enemyData.ExpDrop * ExpDropMultiplier);
+                _state.ItemSpawnerController.SpawnExpItem(totalExp, obj.transform.position);
             }
             
             obj.gameObject.SetActive(false);
