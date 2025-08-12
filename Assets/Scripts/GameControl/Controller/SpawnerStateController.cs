@@ -109,7 +109,7 @@ namespace GameControl.Controller
                     {
                         _enemyPatternController.AddRandomPattern();
                         await UniTask.Delay(100);
-                        //_enemyPatternController.TriggerAllPatterns().Forget();
+                        _enemyPatternController.TriggerAllPatterns();
                     });
                 });
             
