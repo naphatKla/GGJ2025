@@ -6,6 +6,7 @@ using Characters.Controllers;
 using GameControl.Interface;
 using GameControl.Pattern;
 using Sirenix.OdinInspector;
+using Sirenix.Serialization;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -60,6 +61,18 @@ namespace GameControl.SO
         [Serializable]
         public class PatternOption
         {
+            [FoldoutGroup("$pattern")]
+            public bool enableThisPattern;
+            
+            [FoldoutGroup("$pattern")]
+            public bool enableSpecificEnemy;
+            
+            [Serializable]
+            public struct EnemyKv { public string enemyID; public float chance; }
+            [FoldoutGroup("$pattern")] [Title("Enemy Specific")] [ShowIf("enableSpecificEnemy")] 
+            public List<EnemyKv> specificEnemyList;
+
+            
             [FoldoutGroup("$pattern")] [Title("Setting")]
             public BaseSpawnPattern pattern;
             [FoldoutGroup("$pattern")]
@@ -142,7 +155,7 @@ namespace GameControl.SO
         
         [FoldoutGroup("Pattern Setting")]
         [Tooltip("The time of the pattern to play in trigger time (default player all pattern in 3 minute / 180 seconds)")]
-        public float triggerTime = 180f;
+        public float playAllPatternIn = 180f;
         
         [FoldoutGroup("Pattern Setting")]
         [Tooltip("interval of event will be trigger (Default 180 seconds)")]
