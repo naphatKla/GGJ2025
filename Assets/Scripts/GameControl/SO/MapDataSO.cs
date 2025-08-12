@@ -62,6 +62,9 @@ namespace GameControl.SO
         public class PatternOption
         {
             [FoldoutGroup("$pattern")]
+            public bool enableThisPattern;
+            
+            [FoldoutGroup("$pattern")]
             public bool enableSpecificEnemy;
             
             [Serializable]

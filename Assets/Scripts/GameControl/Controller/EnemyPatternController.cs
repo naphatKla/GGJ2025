@@ -67,8 +67,9 @@ namespace GameControl.Controller
         public void AddRandomPattern()
         {
             if (_mapdata.PatternOptions == null || _mapdata.PatternOptions.Count == 0) return;
-
-            var availablePatterns = _mapdata.PatternOptions.Where(p => !_patternEnemy.Contains(p)).ToList();
+            var availablePatterns = _mapdata.PatternOptions
+                .Where(p => !_patternEnemy.Contains(p) && p.enableThisPattern)
+                .ToList();
 
             if (availablePatterns.Count == 0)
             {
@@ -80,9 +81,9 @@ namespace GameControl.Controller
             var selectedPattern = availablePatterns[randomIndex];
             _patternEnemy.Add(selectedPattern);
 
-            if (_isDebug)
-                Debug.Log($"[EnemyPatternController] Added random pattern: '{selectedPattern.pattern.name}'. Total patterns now: {_patternEnemy.Count}");
+            if (_isDebug) Debug.Log($"[EnemyPatternController] Added random pattern: '{selectedPattern.pattern.name}'. Total patterns now: {_patternEnemy.Count}");
         }
+
 
         //Random Enemy Type
         public MapDataSO.EnemyOption RandomType(MapDataSO.PatternOption patternOption)
