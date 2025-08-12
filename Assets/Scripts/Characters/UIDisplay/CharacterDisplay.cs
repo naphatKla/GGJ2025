@@ -12,6 +12,7 @@ using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using Manager;
 using MoreMountains.Feedbacks;
+using MoreMountains.Tools;
 using PixelUI;
 using Sirenix.OdinInspector;
 using TMPro;
@@ -56,7 +57,7 @@ namespace Characters.UIDisplay
         [FoldoutGroup("Health Display"), Title("Ref"), SerializeField]
         public HealthSystem healthSystem;
         [Title("UI"), FoldoutGroup("Health Display"), SerializeField]
-        public SlotBar hpBar;
+        public MMProgressBar hpProgressBar;
 
         // ========= Solf Upgrade =========
         [FoldoutGroup("SolfUpgrade Display"), Title("Ref"), SerializeField]
@@ -329,8 +330,7 @@ namespace Characters.UIDisplay
         private void UpdateHealthUI()
         {
             float hpAmount01 = Mathf.Clamp01(healthSystem.CurrentHealth / Mathf.Max(1f, healthSystem.MaxHealth));
-            // ของคุณคูณ 15 ช่อง
-            hpBar.CurrentSlots = Mathf.RoundToInt(hpAmount01 * 15f);
+            hpProgressBar.UpdateBar01(hpAmount01);
         }
 
         #endregion
