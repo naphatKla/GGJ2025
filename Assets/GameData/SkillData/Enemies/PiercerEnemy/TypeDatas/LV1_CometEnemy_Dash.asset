@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0623216570b154c418224b91c04fc7a5, type: 3}
-  m_Name: LV1_PiercerEnemy_PiercerDash
+  m_Name: LV1_CometEnemy_Dash
   m_EditorClassIdentifier: 
   serializationData:
     SerializedFormat: 2
@@ -36,15 +36,15 @@ MonoBehaviour:
   previousSkillData: {fileID: 0}
   nextSkillDataUpgrade: {fileID: 0}
   level: 1
-  cooldown: 3
+  cooldown: 2
   statusEffectOnSkillStart: []
   dashBaseDamage: 0
   damageMultiplier: 100
-  damageEnableDuration: 0.25
-  dashChargeTime: 1.5
-  dashPrepareDuration: 0.5
-  dashDuration: 0.25
-  dashDistance: 15
+  damageEnableDuration: 0.15
+  dashChargeTime: 0.5
+  dashPrepareDuration: 0.35
+  dashDuration: 0.15
+  dashDistance: 25
   dashEaseCurve:
     serializedVersion: 2
     m_Curve:
