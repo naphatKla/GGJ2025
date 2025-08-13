@@ -24,43 +24,43 @@ namespace Characters.SkillSystems.SkillRuntimes
         private bool _isWaitForCounterAttack;
         private bool _isWaitForMovementEnd;
         private bool _inGodSpeedPhase;
-        private bool _isSuccess;
 
         private readonly HashSet<Transform> _dashedTargets = new();
 
-        public override void UpdateCoolDown(float deltaTime)
+        public override async void PerformSkill()
         {
-            if (IsWaitForCondition && IsPerforming) return;
-            base.UpdateCoolDown(deltaTime);
-        }
-
-        protected override void OnSkillStart()
-        {
+            if (IsWaitForCondition) return;
+            if (IsCooldown || IsPerforming) return;
+            
             _isWaitForCounterAttack = true;
             _isWaitForMovementEnd = true;
             _dashedTargets.Clear();
             owner.CombatSystem.OnCounterAttack += TriggerCondition;
-            _isSuccess = false;
-            SetCurrentCooldown(0);
+
+            await UniTask.WaitUntil(() => !_isWaitForCounterAttack, cancellationToken: cts.Token);
+            await UniTask.WaitUntil(() => !owner.MovementSystem.IsMoveTweenActive, cancellationToken: cts.Token);
+
+            if (cts.IsCancellationRequested)
+            {
+                ResetWaitingCondition();
+                return;
+            }
+
+            base.PerformSkill();
+        }
+
+        protected override void OnSkillStart()
+        {
+            owner.TryPlayFeedback(FeedbackName.LightStepUse);
+            owner.SkillSystem.SetCanUsePrimary(false);
+            owner.SkillSystem.SetCanUseSecondary(false);
+            owner.MovementSystem.CanInterruptTween = false;
         }
 
         protected override async UniTask OnSkillUpdate(CancellationToken cancelToken)
         {
-            await UniTask.WaitUntil(() => !_isWaitForCounterAttack, cancellationToken: cancelToken);
-            await UniTask.WaitUntil(() => !owner.MovementSystem.IsMoveTweenActive, cancellationToken: cancelToken);
-
-            _isWaitForMovementEnd = false;
-            SetCurrentCooldown(skillData.Cooldown);
-            if (cancelToken.IsCancellationRequested) return;
-
-            owner.SkillSystem.SetCanUsePrimary(false);
-            owner.SkillSystem.SetCanUseSecondary(false);
-            owner.MovementSystem.CanInterruptTween = false;
-            owner.TryPlayFeedback(FeedbackName.LightStepUse);
-
             PlayerController player = owner as PlayerController;
-            if (player)
-                player.CameraController.LerpOrthoSize(15f, 0.5f).Forget();
+            player?.CameraController.LerpOrthoSize(15f, 0.5f).Forget();
 
             StatusEffectManager.ApplyEffectTo(owner.gameObject, skillData.EffectWhileLightStep);
             owner.DamageOnTouch.EnableDamage(owner.gameObject, this, 4.5f, skillData.BaseDamagePerHit,
@@ -102,27 +102,37 @@ namespace Characters.SkillSystems.SkillRuntimes
                         moveCurve: curve)
                     .SetEase(Ease.InSine)
                     .WithCancellation(cancelToken);
-            }
 
-            _isSuccess = true;
+                if (cancelToken.IsCancellationRequested) break;
+            }
         }
 
-        protected override void OnSkillExit() => ResetOnEnd().Forget();
-        private void OnDisable() => ResetOnEnd().Forget();
+        protected override void OnSkillExit()
+        {
+            ResetOnEnd().Forget();
+        }
+
+        private void OnDisable()
+        {
+            ResetOnEnd().Forget();
+        }
+
+        private void ResetWaitingCondition()
+        {
+            _isWaitForCounterAttack = false;
+            _isWaitForMovementEnd = false;
+            owner.CombatSystem.OnCounterAttack -= TriggerCondition;
+        }
 
         private async UniTaskVoid ResetOnEnd()
         {
-            owner.CombatSystem.OnCounterAttack -= TriggerCondition;
+            ResetWaitingCondition();
+
+            _inGodSpeedPhase = false;
             owner.SkillSystem.SetCanUsePrimary(true);
             owner.SkillSystem.SetCanUseSecondary(true);
             owner.MovementSystem.CanInterruptTween = true;
             owner.DamageOnTouch.DisableDamage(this);
-
-            _isWaitForCounterAttack = false;
-            _isWaitForMovementEnd = false;
-            _inGodSpeedPhase = false;
-
-            if (!_isSuccess) return;
 
             owner.TryPlayFeedback(FeedbackName.LightStepEnd);
             owner.FeedbackSystem.SetIgnoreFeedback(FeedbackName.CounterAttack, false);
@@ -144,7 +154,7 @@ namespace Characters.SkillSystems.SkillRuntimes
         /// </summary>
         private Vector2? GetBestTargetPositionInView()
         {
-            var cam = targetCamera? targetCamera : Camera.main;
+            var cam = targetCamera ? targetCamera : Camera.main;
             if (!cam) return null;
 
             if (!cam.orthographic)

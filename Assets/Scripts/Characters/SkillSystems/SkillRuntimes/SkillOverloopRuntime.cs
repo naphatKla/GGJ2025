@@ -13,26 +13,21 @@ namespace Characters.SkillSystems.SkillRuntimes
         private readonly List<int> _buffedSlots = new();
         private float _factor = 1f;
 
-        public override void UpdateCoolDown(float deltaTime)
+        public override void PerformSkill()
         {
-            if (IsWaitForCondition && IsPerforming) return;
-            base.UpdateCoolDown(deltaTime);
+            if (IsWaitForCondition) return;
+            if (IsCooldown || IsPerforming) return;
+            
+            base.PerformSkill();
         }
 
         protected override void OnSkillStart()
         {
             _buffedSlots.Clear();
-            SetCurrentCooldown(0);
         }
 
         protected override async UniTask OnSkillUpdate(CancellationToken cancelToken)
         {
-            await UniTask.WaitUntil(() => !IsWaitForCondition,
-                cancellationToken: cancelToken);
-
-            if (cancelToken.IsCancellationRequested) return;
-            
-            SetCurrentCooldown(skillData.Cooldown);
             int autoCount = owner.SkillSystem.CurrentAutoSkillActiveSlots;
 
             if (autoCount == 0) return;

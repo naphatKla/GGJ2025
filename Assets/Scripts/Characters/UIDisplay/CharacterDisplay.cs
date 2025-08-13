@@ -111,6 +111,7 @@ namespace Characters.UIDisplay
             skillSystem.OnNewSkillAssign += AssignSkillSlot;
             skillSystem.OnSkillCooldownUpdate += UpdateCooldownSlot;
             skillSystem.OnSkillCooldownReset += ResetSkillSlot;
+            skillSystem.OnSkillPerform += SkillPerfrom;
 
             combatSystem.OnDealDamage += UpdateDamageText;
             scoreSystem.OnScoreChange += UpdateScoreUI;
@@ -474,15 +475,15 @@ namespace Characters.UIDisplay
         
         private void SkillPlayFeedback(Transform tf, Image skillframe)
         {
-            var seq = DOTween.Sequence();
-            seq.Append(tf.DOScale(new Vector3(tf.localScale.x + 0.15f, tf.localScale.y + 0.15f, 1), 0.15f)
-                .SetLoops(2, LoopType.Yoyo));
+            /*var seq = DOTween.Sequence();
+            seq.Append(tf.DOScale(new Vector3(tf.localScale.x + -0.05f, tf.localScale.y + -0.05f, 1), 0.15f)
+                .SetLoops(2, LoopType.Yoyo));*/
         }
         
         private void SkillResetFeedback(Transform tf, Image skillframe)
         {
             var seq = DOTween.Sequence();
-            seq.Append(skillframe.DOColor(Color.green, 0.15f).SetDelay(0.1f).SetLoops(2, LoopType.Yoyo));
+            seq.Append(skillframe.DOColor(Color.yellow, 0.15f).SetDelay(0.1f).SetLoops(2, LoopType.Yoyo));
         }
 
         #endregion

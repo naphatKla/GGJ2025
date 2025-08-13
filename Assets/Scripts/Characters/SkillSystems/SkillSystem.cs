@@ -32,6 +32,8 @@ namespace Characters.SkillSystems
         /// </summary>
         public event Action<int, float> OnSlotCooldownSpeedChanged;
 
+        public event Action<int> OnSkillPerform;
+
         protected BaseSkillDataSo primarySkillData;
         protected BaseSkillDataSo secondarySkillData;
         private int autoSkillSlot;
@@ -282,6 +284,8 @@ namespace Characters.SkillSystems
 
             runtime.SetCurrentCooldown(0);
             int index = GetSkillIndex(newSkillData);
+            runtime.SkillPerformCallback = () => OnSkillPerform?.Invoke(index);
+            
             OnNewSkillAssign?.Invoke(newSkillData, index);
         }
 
@@ -304,6 +308,7 @@ namespace Characters.SkillSystems
                     Destroy(runtime);
                     if (runtime is IAutoSkillTriggerSource autoSkillTriggerSource)
                         autoSkillTriggerSource.OnTriggerAutoSkill -= OnTriggerAutoSkill;
+                    
                     _skillRuntimeDictionary.Remove(oldSkill);
                 }
 
@@ -315,6 +320,7 @@ namespace Characters.SkillSystems
                 Destroy(runtime);
                 if (runtime is IAutoSkillTriggerSource autoSkillTriggerSource)
                     autoSkillTriggerSource.OnTriggerAutoSkill -= OnTriggerAutoSkill;
+                
                 _skillRuntimeDictionary.Remove(oldSkill);
             }
         }
@@ -325,11 +331,13 @@ namespace Characters.SkillSystems
             {
                 var skill = _pendingRuntimeRemoval[i];
                 var runtime = GetSkillRuntimeOrDefault(skill);
+
                 if (runtime == null || !runtime.IsPerforming)
                 {
                     Destroy(runtime);
                     if (runtime is IAutoSkillTriggerSource autoSkillTriggerSource)
                         autoSkillTriggerSource.OnTriggerAutoSkill -= OnTriggerAutoSkill;
+                    
                     _skillRuntimeDictionary.Remove(skill);
                     _pendingRuntimeRemoval.RemoveAt(i);
                 }
@@ -429,6 +437,7 @@ namespace Characters.SkillSystems
                     Destroy(runtime);
                     if (runtime is IAutoSkillTriggerSource autoSkillTriggerSource)
                         autoSkillTriggerSource.OnTriggerAutoSkill -= OnTriggerAutoSkill;
+                    
                     _skillRuntimeDictionary.Remove(data);
                 }
             }

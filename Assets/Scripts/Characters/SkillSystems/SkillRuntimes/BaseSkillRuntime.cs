@@ -33,6 +33,7 @@ namespace Characters.SkillSystems.SkillRuntimes
         public bool IsCooldown => currentCooldown > 0;
         public abstract bool IsPerforming { get; protected set; }
         private Action cooldownReadyCallback;
+        public  Action SkillPerformCallback;
 
         public abstract void AssignSkillData(BaseSkillDataSo skillData, BaseController owner);
         public abstract void PerformSkill();
@@ -73,7 +74,7 @@ namespace Characters.SkillSystems.SkillRuntimes
         protected DirectionContainer aimDirection => owner.InputSystem.SightDirection;
         protected List<StatusEffectDataPayload> effectsApplyOnStart;
 
-        private CancellationTokenSource _cts;
+        protected CancellationTokenSource cts = new CancellationTokenSource();
         public override bool IsPerforming { get; protected set; }
 
         public override void AssignSkillData(BaseSkillDataSo skillData, BaseController owner)
@@ -90,12 +91,12 @@ namespace Characters.SkillSystems.SkillRuntimes
             if (IsCooldown || IsPerforming) return;
 
             SetCurrentCooldown(skillData.Cooldown);
-            _cts = new CancellationTokenSource();
+            cts = new CancellationTokenSource();
 
             HandleSkillStart();
             try
             {
-                await OnSkillUpdate(_cts.Token);
+                await OnSkillUpdate(cts.Token);
             }
             catch (OperationCanceledException) { }
 
@@ -107,12 +108,13 @@ namespace Characters.SkillSystems.SkillRuntimes
         {
             await UniTask.Delay(milliSecondDelay);
             if (!IsPerforming) return;
-            _cts?.Cancel();
+            cts?.Cancel();
         }
 
         protected virtual void HandleSkillStart()
         {
             IsPerforming = true;
+            SkillPerformCallback?.Invoke();
             OnSkillStart();
             StatusEffectManager.ApplyEffectTo(owner.gameObject, effectsApplyOnStart);
         }
