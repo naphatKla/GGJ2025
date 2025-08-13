@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using Characters.StatusEffectSystems;
 using Characters.StatusEffectSystems.StatusEffects;
 using Sirenix.OdinInspector;
@@ -33,15 +34,16 @@ namespace Characters.SO.StatusEffectSO
         [SerializeField]
         private string description;
 
+        [Title("Configs")]
+        [PropertyTooltip("Level of the effect used for override priority comparison. Range is 1 (weak) to 4 (strong).")]
+        [ProgressBar(0, 4, ColorGetter = nameof(GetLevelBarColor), Segmented = true, DrawValueLabel = true, Height = 20)]
+        [SerializeField] [MinValue(1)]
+        private int level = 1;
+        
         [PropertyTooltip("Default duration in seconds when this effect is applied.")]
         [SerializeField]
         private float defaultDuration;
-
-        [PropertyTooltip("Level of the effect used for override priority comparison. Range is 1 (weak) to 4 (strong).")]
-        [Range(1, 4)]
-        [SerializeField]
-        private int level = 1;
-
+        
         [Title("Type Binding"), Space(10)]
         [PropertyTooltip("Runtime class that will be instantiated when this effect is applied.")]
         [ShowInInspector, OdinSerialize, PropertyOrder(10000)]
@@ -78,6 +80,21 @@ namespace Characters.SO.StatusEffectSO
         /// Must inherit from BaseStatusEffect.
         /// </summary>
         public Type EffectType => _effectType;
+        
+        private Color GetLevelBarColor()
+        {
+            switch (level)
+            {
+                case 2: 
+                    return Color.yellow;
+                case 3:
+                    return new Color(1f, 0.5f, 0f);  
+                case 4:
+                    return Color.red;
+                default:
+                    return Color.green;
+            }
+        }
         
         #endregion
     }

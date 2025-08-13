@@ -8,7 +8,7 @@ namespace Characters.StatusEffectSystems.StatusEffects
     /// A status effect that makes the target invincible for the duration of the effect.
     /// Tied to the <see cref="HealthSystem"/> component to disable damage processing.
     /// </summary>
-    public class InvincibleEffect : BaseStatusEffect<InvincibleEffectDataSo>
+    public class IframeEffect : BaseStatusEffect<IframeEffectDataSo>
     {
         #region Inspector & Variables
         

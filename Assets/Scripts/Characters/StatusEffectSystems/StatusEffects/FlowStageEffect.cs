@@ -1,18 +1,23 @@
-using System.Collections;
-using System.Collections.Generic;
+using Characters.SO.StatusEffectSO;
 using UnityEngine;
 
-public class FlowStageEffect : MonoBehaviour
+namespace Characters.StatusEffectSystems.StatusEffects
 {
-    // Start is called before the first frame update
-    void Start()
+    public class FlowStageEffect : BaseStatusEffect<FlowStageEffectDataSo>
     {
-        
-    }
+        public override void OnStart(GameObject owner)
+        {
+            throw new System.NotImplementedException();
+        }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        public override void OnUpdate(float deltaTime)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override void OnExit()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }
