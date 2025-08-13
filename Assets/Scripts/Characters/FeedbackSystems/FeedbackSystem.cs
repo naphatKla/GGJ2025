@@ -123,8 +123,6 @@ namespace Characters.FeedbackSystems
         LightStepUse = 5,
         LightStepEnd = 6,
         HarmonyOfLight = 7,
-        PressureCharge = 8,
-        PiercerDash = 9,
         PressureBomb = 10,
     }
 }

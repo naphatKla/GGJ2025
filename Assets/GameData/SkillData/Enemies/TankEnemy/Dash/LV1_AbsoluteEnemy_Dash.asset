@@ -9,8 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0623216570b154c418224b91c04fc7a5, type: 3}
-  m_Name: LV1_PiercerEnemy_PiercerDash
+  m_Script: {fileID: 11500000, guid: 969282f293f7ef54fa8686f27a67f5df, type: 3}
+  m_Name: LV1_AbsoluteEnemy_Dash
   m_EditorClassIdentifier: 
   serializationData:
     SerializedFormat: 2
@@ -26,55 +26,53 @@ MonoBehaviour:
       Data: 0|System.RuntimeType, mscorlib
     - Name: 
       Entry: 1
-      Data: Characters.SkillSystems.SkillRuntimes.SkillPiercerDashRuntime, Assembly-CSharp
+      Data: Characters.SkillSystems.SkillRuntimes.SkillDashRuntime, Assembly-CSharp
     - Name: 
       Entry: 8
       Data: 
   skillIcon: {fileID: 0}
-  skillName: Piercer Dash
+  skillName: 
   skillDescription: 
   previousSkillData: {fileID: 0}
   nextSkillDataUpgrade: {fileID: 0}
   level: 1
-  cooldown: 3
+  cooldown: 1
   statusEffectOnSkillStart: []
   dashBaseDamage: 0
   damageMultiplier: 100
   damageEnableDuration: 0.25
-  dashChargeTime: 1.5
-  dashPrepareDuration: 0.5
-  dashDuration: 0.25
-  dashDistance: 15
+  dashDuration: 0.3
+  dashDistance: 8
   dashEaseCurve:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
       time: 0
       value: 0
-      inSlope: 0.073488235
-      outSlope: 0.073488235
+      inSlope: 0.13049228
+      outSlope: 0.13049228
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
-      outWeight: 0.28600982
+      outWeight: 0.07137873
     - serializedVersion: 3
-      time: 0.48358378
-      value: 0.37195766
-      inSlope: 2.3460052
-      outSlope: 2.3460052
+      time: 0.4707496
+      value: 0.2321493
+      inSlope: 1.2439445
+      outSlope: 1.2439445
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.06109681
+      outWeight: 0.06121441
+    - serializedVersion: 3
+      time: 0.89207774
+      value: 0.9241267
+      inSlope: 1.9507829
+      outSlope: 1.9507829
       tangentMode: 0
       weightedMode: 0
       inWeight: 0.33333334
-      outWeight: 0.35683227
-    - serializedVersion: 3
-      time: 0.6652451
-      value: 0.81098986
-      inSlope: 1.703014
-      outSlope: 1.703014
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.30538765
-      outWeight: 0.15243578
+      outWeight: 0.33333334
     - serializedVersion: 3
       time: 1
       value: 1
@@ -111,3 +109,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  isFlexibleDash: 0
+  maxInputLength: 0
+  minMaxEffective: {x: 0.4, y: 1}
+  isFlexibleStatusEffectDuration: 0

@@ -23,25 +23,45 @@ MonoBehaviour:
     enemyPointCanGrowth: 0
     enemyPointGrowthRate: 12.5
     chance: 100
-    enemyChanceCanGrowth: 1
+    enemyChanceCanGrowth: 0
     enemyChanceGrowthRate: 0
     useCustomInterval: 0
     customInterval: 0.5
   - id: Enemy_Tank
     enemyController: {fileID: 1371981663885322251, guid: c825ab4cef105ab40aa986fd07615367, type: 3}
-    spawnPoint: 1.57
+    spawnPoint: 1.54
     enemyPointCanGrowth: 0
     enemyPointGrowthRate: 12.5
-    chance: 1
+    chance: 0
     enemyChanceCanGrowth: 1
-    enemyChanceGrowthRate: 1.25
+    enemyChanceGrowthRate: 1.33
     useCustomInterval: 0
     customInterval: 2
+  - id: Enemy_Pressure
+    enemyController: {fileID: 241806535288265801, guid: 79dec73735459964a8ca48d4f07d4f9a, type: 3}
+    spawnPoint: 1.56
+    enemyPointCanGrowth: 0
+    enemyPointGrowthRate: 12.5
+    chance: 0
+    enemyChanceCanGrowth: 1
+    enemyChanceGrowthRate: 1.85
+    useCustomInterval: 0
+    customInterval: 0
+  - id: Enemy_Piercer
+    enemyController: {fileID: 5352284219382747297, guid: c31b489d153b0634585086d777023f54, type: 3}
+    spawnPoint: 1.21
+    enemyPointCanGrowth: 0
+    enemyPointGrowthRate: 12.5
+    chance: 0
+    enemyChanceCanGrowth: 1
+    enemyChanceGrowthRate: 1.85
+    useCustomInterval: 0
+    customInterval: 0
   intervalEnemyChanceUpgrade: 30
   intervalEnemyPointRatioUpgrade: 30
   PatternOptions:
   - enableThisPattern: 1
-    enableSpecificEnemy: 0
+    enableSpecificEnemy: 1
     specificEnemyList:
     - enemyID: Enemy_Normal
       chance: 50
@@ -125,7 +145,7 @@ MonoBehaviour:
     patternPoint: 20
     enablePatternCenter: 0
     patternCenter: {x: 0, y: 0}
-  playAllPatternIn: 60
+  playAllPatternIn: 10
   triggerAllPatternIn: 180
   triggerTimeCanDecrease: 0
   patternDecreaseInterval: 25
@@ -145,6 +165,9 @@ MonoBehaviour:
   - enableThisMapEvent: 1
     catagolyMapEvent: Test
     allMapEventID:
+    - mapEventID: Horizontal_LR
+      chance: 40
+      useWeightRandom: 0
     - mapEventID: Vertical_LR
       chance: 100
       useWeightRandom: 0

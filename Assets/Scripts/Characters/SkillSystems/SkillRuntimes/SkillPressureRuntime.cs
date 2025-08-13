@@ -13,7 +13,6 @@ namespace Characters.SkillSystems.SkillRuntimes
         protected override void OnSkillStart()
         {
             owner.MovementSystem.StopAllMovementAndTween();
-            owner.TryPlayFeedback(FeedbackName.PressureCharge);
         }
 
         protected override async UniTask OnSkillUpdate(CancellationToken cancelToken)

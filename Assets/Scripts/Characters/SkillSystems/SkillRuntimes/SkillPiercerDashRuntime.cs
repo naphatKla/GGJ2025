@@ -23,7 +23,7 @@ namespace Characters.SkillSystems.SkillRuntimes
 
         protected override void OnSkillStart()
         {
-            owner.TryPlayFeedback(FeedbackName.PiercerDash);
+            owner.TryPlayFeedback(FeedbackName.Dash);
             owner.MovementSystem.StopFromPiercerDash(true);
 
             if (faceController)
