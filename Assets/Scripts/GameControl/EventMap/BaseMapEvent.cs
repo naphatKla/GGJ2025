@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using Cysharp.Threading.Tasks;
 using MoreMountains.Feedbacks;
 using UnityEngine;
@@ -11,44 +12,93 @@ namespace GameControl.EventMap
         public float deletetime;
         public float delayBeforePerform;
         public float damage;
+        public ParticleSystem previewEffect;
+        public ParticleSystem perfromEffect;
 
         public bool debug;
 
         [SerializeField] protected MMF_Player feedback;
 
         private IObjectPool<BaseMapEvent> _pool;
+        private CancellationTokenSource _cts;
 
         public void SetPool(IObjectPool<BaseMapEvent> pool)
         {
             _pool = pool;
         }
-
-        public async UniTask Play()
+        
+        public void ApplyEffect(MapEventStorageEntry entry)
         {
-            //effect before perform
-            if (debug) Debug.Log("Start Play");
-            await PlayPreview();
+            if (previewEffect == null) return;
+            var main = previewEffect.main;
+            float originalDuration = main.duration;
+            main.simulationSpeed = originalDuration / delayBeforePerform;
 
-            if (debug) Debug.Log("Perform & Feedback");
-            Perform();
-            feedback?.PlayFeedbacks();
-
-            if (debug) Debug.Log("Deleting");
-            ReleaseAfterPlay().Forget();
-            if (debug) Debug.Log("Deleted");
+            
+            switch (entry.hitboxType)
+            { 
+                case HitboxType.Box:
+                    main.startSizeX = entry.boxSize.x;
+                    main.startSizeY = entry.boxSize.y;
+                    main.startSizeZ = 0;
+                    break;
+                case HitboxType.None:
+                    break;
+            }
         }
 
-        private async UniTask ReleaseAfterPlay()
+        public async UniTask Play(CancellationToken externalToken = default)
         {
-            await UniTask.Delay(TimeSpan.FromSeconds(deletetime));
-            _pool?.Release(this);
+            _cts?.Cancel();
+            _cts?.Dispose();
+
+            _cts = new CancellationTokenSource();
+            
+            using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(_cts.Token, externalToken);
+            var token = linkedCts.Token;
+
+            try
+            {
+                if (debug) Debug.Log("Start Play");
+                await PlayPreview();
+                
+                if (debug) Debug.Log("Perform & Feedback");
+                Perform();
+                feedback?.PlayFeedbacks();
+
+                if (debug) Debug.Log("Deleting");
+                ReleaseAfterPlay(token).Forget();
+            }
+            catch (OperationCanceledException)
+            {
+                if (debug) Debug.Log("Play Cancelled");
+            }
+        }
+
+        private async UniTask ReleaseAfterPlay(CancellationToken token)
+        {
+            try
+            {
+                await UniTask.Delay(TimeSpan.FromSeconds(deletetime), cancellationToken: token);
+                _pool?.Release(this);
+                if (debug) Debug.Log("Deleted");
+            }
+            catch (OperationCanceledException)
+            {
+                if (debug) Debug.Log("Release Cancelled");
+            }
+        }
+
+        public void CancelPlay()
+        {
+            _cts?.Cancel();
         }
 
         //Particle
         public abstract UniTask PlayPreview();
         //Projectile or Circle
         protected abstract void Perform();
-        
+
         public void ApplyHitbox(MapEventStorageEntry entry)
         {
             switch (entry.hitboxType)
@@ -80,5 +130,4 @@ namespace GameControl.EventMap
             }
         }
     }
-
 }

@@ -8,7 +8,6 @@ namespace GameControl.EventMap
     public class ProjectileMapEvent : BaseMapEvent, IBoxHitbox
     {
         [SerializeField] private Transform firePoint;
-        [SerializeField] private ParticleSystem previewEffect;
 
         [Header("Hitbox Settings")] [SerializeField] private Vector2 hitboxSize = new Vector3(2f, 80f);
         [SerializeField] private Vector2 hitboxOffset = new Vector3(0, 0f);
@@ -21,24 +20,18 @@ namespace GameControl.EventMap
 
         private void OnValidate()
         {
-            ApplySizeToEffect();
-        }
-
-        private void ApplySizeToEffect()
-        {
-            if (previewEffect != null)
-            {
-                var main = previewEffect.main;
-                main.startSizeX = hitboxSize.x;
-                main.startSizeY = hitboxSize.y;
-                main.startSizeZ = 0;
-            }
+            var main = previewEffect.main;
+            main.startSizeX = hitboxSize.x;
+            main.startSizeY = hitboxSize.y;
+            main.startSizeZ = 0;
         }
 
         public override async UniTask PlayPreview()
         {
-            ApplySizeToEffect();
-            previewEffect?.Play();
+            if (previewEffect == null) return;
+
+            previewEffect.Play();
+            await UniTask.WaitWhile(() => previewEffect.IsAlive(true));
         }
 
         protected override void Perform()
