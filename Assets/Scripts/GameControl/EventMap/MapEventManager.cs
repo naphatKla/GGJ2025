@@ -99,6 +99,7 @@ namespace GameControl.EventMap
             instance.transform.position = playerPost + entry.spawnPosition;
             instance.transform.rotation = Quaternion.Euler(entry.spawnEulerAngles);
 
+            instance.ApplyHitbox(entry);
             await instance.Play();
         }
 
