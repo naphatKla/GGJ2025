@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Cameras;
+using Characters.SO.ComboStreakDataSO;
 using Characters.SO.SkillDataSo;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -18,6 +19,9 @@ namespace Characters.SO.CharacterDataSO
         [FoldoutGroup("Combat")]
         [SerializeField] private float expMultiplierPerLevel;
 
+        [FoldoutGroup("Combat")] 
+        [SerializeField] private ComboStreakDataSo comboStreakData;
+
         [FoldoutGroup("Camera Settings")] [SerializeField]
         private CameraShakeOption attackHitCameraShakeOption;
         
@@ -29,6 +33,8 @@ namespace Characters.SO.CharacterDataSO
         
         public float BaseExpLevelUp => baseExpLevelUp;
         public float ExpMultiplierPerLevel => expMultiplierPerLevel;
+
+        public ComboStreakDataSo ComboStreakData => comboStreakData;
 
         [Space]
         [FoldoutGroup("Skills/Upgrade")]

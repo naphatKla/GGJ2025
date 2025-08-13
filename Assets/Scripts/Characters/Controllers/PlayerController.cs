@@ -59,6 +59,7 @@ namespace Characters.Controllers
                 skillUpgradeController.AssignData(skillSystem, playerData);
                 levelSystem.AssignData(playerData.BaseExpLevelUp, playerData.ExpMultiplierPerLevel);
                 scoreSystem.AssignData(this);
+                comboStreakSystem.AssignData(this, playerData.ComboStreakData);
             }
             else
             {
@@ -92,7 +93,7 @@ namespace Characters.Controllers
         {
             levelSystem.ResetLevel();
             skillUpgradeController.ResetSkillUpgradeController();
-            comboStreakSystem.EndRunReset();
+            comboStreakSystem.ResetComboSystem();
             cameraController.ResetCamera();
             
 

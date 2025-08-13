@@ -1,21 +1,30 @@
 using System;
+using Characters.Controllers;
 using Characters.SO.ComboStreakDataSO;
+using GameControl.Controller;
 using Manager;
 using UnityEngine;
 
 namespace Characters.ComboSystem
 {
-    public enum FlowStageLevel { None = 0, I = 1, II = 2 }
+    public enum FlowStageLevel
+    {
+        None = 0,
+        I = 1,
+        II = 2
+    }
 
     public class ComboStreakSystem : MonoBehaviour, IFixedUpdateable
     {
-        [SerializeField] private ComboStreakDataSo data;
-        public ComboStreakDataSo Data => data;
+        private ComboStreakDataSo _data;
+        public ComboStreakDataSo Data => _data;
+
+        private BaseController _owner;
 
         // ===== State =====
         public int CurrentStreak { get; private set; }
-        public int RewardStreak => Mathf.Min(CurrentStreak, data.maxRewardStreak);
-        
+        public int RewardStreak => Mathf.Min(CurrentStreak, _data.maxRewardStreak);
+
         public float CurrentBoostMultiplierX { get; private set; }
 
         public FlowStageLevel CurrentStage { get; private set; } = FlowStageLevel.None;
@@ -29,7 +38,7 @@ namespace Characters.ComboSystem
         // ===== Events =====
         public event Action<int> OnStreakChanged;
         public event Action<float> OnStreakTimerTick;
-        
+
         /// <summary>ส่งเป็นตัวคูณ x เช่น 0..5</summary>
         public event Action<float> OnBoostChanged;
 
@@ -38,15 +47,23 @@ namespace Characters.ComboSystem
 
         // Bridge ไป Stats/Move/Dash/Heal/UI
         public event Action<int> OnStageI_DamageFlatGranted;
+
         /// <summary>(damageAddPct01, speedAddPct01, dashDeltaSec)</summary>
         public event Action<float, float, float> OnStageII_ModifiersGranted;
+
         public event Action OnStageII_HealTrigger;
 
         private void OnEnable() => FixedUpdateManager.Instance.Register(this);
         private void OnDisable() => FixedUpdateManager.Instance.Unregister(this);
 
         // ===== Public API =====
-        public void EndRunReset()
+        public void AssignData(BaseController owner, ComboStreakDataSo data)
+        {
+            _owner = owner;
+            _data = data;
+        }
+
+        public void ResetComboSystem()
         {
             ExitCurrentStageIfAny(force: true);
             SetStreak(0);
@@ -58,12 +75,12 @@ namespace Characters.ComboSystem
         public void OnEnemyKilled()
         {
             SetStreak(CurrentStreak + 1);
-            _streakTimer = data.streakTimeoutSeconds;
+            _streakTimer = _data.streakTimeoutSeconds;
 
             if (CurrentStage == FlowStageLevel.II)
             {
                 _stageIIHealCounter++;
-                if (_stageIIHealCounter >= data.stageIIHealEveryNStreaks)
+                if (_stageIIHealCounter >= _data.stageIIHealEveryNStreaks)
                 {
                     _stageIIHealCounter = 0;
                     OnStageII_HealTrigger?.Invoke();
@@ -79,14 +96,14 @@ namespace Characters.ComboSystem
             // ลดสตรีค (ถ้าไม่ได้ immunity จาก Stage II)
             if (CurrentStage != FlowStageLevel.II)
             {
-                float reduce01 = data.onHitStreakReducePercent / 100f; // เช่น 0.20
+                float reduce01 = _data.onHitStreakReducePercent / 100f; // เช่น 0.20
                 int reduced = Mathf.FloorToInt(CurrentStreak * (1f - reduce01));
                 SetStreak(reduced);
             }
 
             // ลด Boost จาก Max ตาม % ที่กำหนด
-            float maxX = data.maxBoostPercent / 100f; // เช่น 500% -> 5x
-            float penaltyX = (data.onHitBoostPenaltyPercentOfMax / 100f) * maxX;
+            float maxX = _data.maxBoostPercent / 100f; // เช่น 500% -> 5x
+            float penaltyX = (_data.onHitBoostPenaltyPercentOfMax / 100f) * maxX;
             RecomputeBoost(alsoApplyPenalty: true, extraPenaltyX: penaltyX);
         }
 
@@ -138,24 +155,33 @@ namespace Characters.ComboSystem
 
         private void RecomputeBoost(bool alsoApplyPenalty, float extraPenaltyX)
         {
-            float perStreakX = data.boostPerStreakPercent / 100f;  // 10% -> 0.1x/สตรีค
-            float maxX = data.maxBoostPercent / 100f;               // 500% -> 5x
+            float perStreakX = _data.boostPerStreakPercent / 100f; // 10% -> 0.1x/สตรีค
+            float maxX = _data.maxBoostPercent / 100f; // 500% -> 5x
 
-            float baseX = RewardStreak * perStreakX;                // x ที่ได้จาก streak
-            if (alsoApplyPenalty) baseX -= extraPenaltyX;           // หัก penalty เป็นหน่วย x
+            float baseX = RewardStreak * perStreakX; // x ที่ได้จาก streak
+            if (alsoApplyPenalty) baseX -= extraPenaltyX; // หัก penalty เป็นหน่วย x
 
             CurrentBoostMultiplierX = Mathf.Clamp(baseX, 0f, maxX);
             OnBoostChanged?.Invoke(CurrentBoostMultiplierX);
+
+            if (_owner is PlayerController)
+            {
+                SpawnerStateController.Instance.EnemySpawnerController.ExpDropMultiplier = CurrentBoostMultiplierX;
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
         }
 
         private void TryEnterStages()
         {
-            if (CurrentStage == FlowStageLevel.None && CurrentStreak >= data.stageIThreshold)
+            if (CurrentStage == FlowStageLevel.None && CurrentStreak >= _data.stageIThreshold)
                 EnterStageI();
 
             if (CurrentStage != FlowStageLevel.II
                 && !IsStageIICooldown
-                && CurrentStreak >= data.stageIIThreshold)
+                && CurrentStreak >= _data.stageIIThreshold)
                 EnterStageII();
         }
 
@@ -163,12 +189,12 @@ namespace Characters.ComboSystem
         {
             CurrentStage = FlowStageLevel.I;
             OnFlowStageEnter?.Invoke(FlowStageLevel.I);
-            OnStageI_DamageFlatGranted?.Invoke(data.stageIDamageFlat);
+            OnStageI_DamageFlatGranted?.Invoke(_data.stageIDamageFlat);
         }
 
         private void ExitStageIIfBelowThreshold()
         {
-            if (CurrentStage == FlowStageLevel.I && CurrentStreak < data.stageIThreshold)
+            if (CurrentStage == FlowStageLevel.I && CurrentStreak < _data.stageIThreshold)
                 ExitCurrentStageIfAny();
         }
 
@@ -178,28 +204,28 @@ namespace Characters.ComboSystem
                 OnFlowStageExit?.Invoke(FlowStageLevel.I);
 
             CurrentStage = FlowStageLevel.II;
-            _stageIITimer = data.stageIIDuration;
+            _stageIITimer = _data.stageIIDuration;
             _stageIIHealCounter = 0;
             OnFlowStageEnter?.Invoke(FlowStageLevel.II);
 
             // ส่งค่าเป็น 0..1 (เช่น +50% = 0.5)
             OnStageII_ModifiersGranted?.Invoke(
-                data.stageIIDamagePercent / 100f,
-                data.stageIISpeedPercent / 100f,
-                data.stageIIDashDurationDeltaSeconds
+                _data.stageIIDamagePercent / 100f,
+                _data.stageIISpeedPercent / 100f,
+                _data.stageIIDashDurationDeltaSeconds
             );
         }
 
         private void ExitStageII()
         {
-            SetStreak(Mathf.Max(0, CurrentStreak - data.stageIIEndReduceStreak));
+            SetStreak(Mathf.Max(0, CurrentStreak - _data.stageIIEndReduceStreak));
             OnFlowStageExit?.Invoke(FlowStageLevel.II);
 
             CurrentStage = FlowStageLevel.None;
             _stageIITimer = 0f;
-            _stageIICooldownTimer = data.stageIICooldownSeconds;
+            _stageIICooldownTimer = _data.stageIICooldownSeconds;
 
-            if (CurrentStreak >= data.stageIThreshold)
+            if (CurrentStreak >= _data.stageIThreshold)
                 EnterStageI();
 
             RecomputeBoost(false, 0f);
@@ -216,7 +242,7 @@ namespace Characters.ComboSystem
             {
                 _stageIITimer = 0f;
                 if (!force)
-                    _stageIICooldownTimer = data.stageIICooldownSeconds;
+                    _stageIICooldownTimer = _data.stageIICooldownSeconds;
             }
 
             OnFlowStageExit?.Invoke(stage);
