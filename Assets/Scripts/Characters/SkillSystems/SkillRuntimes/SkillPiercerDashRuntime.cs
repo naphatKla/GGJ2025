@@ -23,7 +23,7 @@ namespace Characters.SkillSystems.SkillRuntimes
 
         protected override void OnSkillStart()
         {
-            owner.TryPlayFeedback(FeedbackName.Dash);
+            owner.TryPlayFeedback(FeedbackName.ChargeDash);
             owner.MovementSystem.StopFromPiercerDash(true);
 
             if (faceController)
@@ -63,6 +63,7 @@ namespace Characters.SkillSystems.SkillRuntimes
 
             if (cancelToken.IsCancellationRequested) return;
 
+            owner.TryPlayFeedback(FeedbackName.Dash);
             owner.DamageOnTouch.EnableDamage(owner.gameObject, this, 1, skillData.DashBaseDamage,
                 skillData.DamageMultiplier);
 

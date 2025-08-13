@@ -113,7 +113,7 @@ namespace Characters.FeedbackSystems
         Bounce = -94,
         AttackHit = -93,
         CounterAttack = -92,
-        Charge = -91,
+        NotifySkill = -91,
         
         // skill
         Dash = 1,
@@ -123,6 +123,8 @@ namespace Characters.FeedbackSystems
         LightStepUse = 5,
         LightStepEnd = 6,
         HarmonyOfLight = 7,
+        ChargeDash = 8,
+        ChargeBomb = 9,
         PressureBomb = 10,
     }
 }

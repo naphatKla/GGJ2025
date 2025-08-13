@@ -1,5 +1,6 @@
 using Sirenix.OdinInspector;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Characters.SO.CharacterDataSO
 {
@@ -17,14 +18,14 @@ namespace Characters.SO.CharacterDataSO
         [FoldoutGroup("Combat/AI")]
         [SerializeField, PropertyTooltip("Begin skill if within this distance.")]
         private float performSkillDistance = 8f;
-
+        
         [FoldoutGroup("Combat/AI")]
         [SerializeField, PropertyTooltip("Delay before performing skill after being eligible.")]
-        private float skillChargeDelay = 0.5f;
+        private float delayBeforePerformSkill = 0.5f;
 
         public int ExpDrop => expDrop;
         public float StopDistance => stopDistance;
         public float PerformSkillDistance => performSkillDistance;
-        public float SkillChargeDelay => skillChargeDelay;
+        public float DelayBeforePerformSkill => delayBeforePerformSkill;
     }
 }

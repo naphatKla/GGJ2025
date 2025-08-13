@@ -12,6 +12,7 @@ namespace Characters.SkillSystems.SkillRuntimes
     {
         protected override void OnSkillStart()
         {
+            owner.TryPlayFeedback(FeedbackName.ChargeBomb);
             owner.MovementSystem.StopAllMovementAndTween();
         }
 

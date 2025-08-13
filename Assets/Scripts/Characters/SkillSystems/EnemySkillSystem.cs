@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using Characters.Controllers;
 using Characters.FeedbackSystems;
 using Characters.SO.CharacterDataSO;
@@ -8,16 +9,17 @@ namespace Characters.SkillSystems
 {
     public class EnemySkillSystem : SkillSystem
     {
-        private float skillChargeDelay = 0.5f;
+        private float skillNotifyDelay = 0.5f;
         
         // TODO: Delete this and implement system, this is for mockup test
         private bool _isCharging;
+        private CancellationTokenSource cts = new();
 
         public override void AssignData(BaseController owner, BaseCharacterDataSo dataSO)
         {
             base.AssignData(owner, dataSO);
             if (dataSO is EnemyDataSo enemyDataSo)
-                skillChargeDelay = enemyDataSo.SkillChargeDelay;
+                skillNotifyDelay = enemyDataSo.DelayBeforePerformSkill;
             else throw new FormatException();
         }
 
@@ -30,14 +32,23 @@ namespace Characters.SkillSystems
                 if (_isCharging) return;
                 var runtime = GetSkillRuntimeOrDefault(primarySkillData);
                 if (!runtime) return;
-                if (runtime.CurrentCooldown > skillChargeDelay) return;
+                if (runtime.CurrentCooldown > skillNotifyDelay) return;
                 _isCharging = true;
-                owner.FeedbackSystem.PlayFeedback(FeedbackName.Charge);
-                await UniTask.WaitForSeconds(skillChargeDelay);
+                owner.FeedbackSystem.PlayFeedback(FeedbackName.NotifySkill);
+                await UniTask.WaitForSeconds(skillNotifyDelay, cancellationToken: cts.Token);
                 _isCharging = false;
             }
             
+            if (cts.IsCancellationRequested) return;
             base.PerformSkill(type);
+        }
+
+        public override void ResetSkillSystem()
+        {
+            cts?.Cancel();
+            cts?.Dispose();
+            cts = new CancellationTokenSource();
+            base.ResetSkillSystem();
         }
     }
 }
