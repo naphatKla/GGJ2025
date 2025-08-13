@@ -229,10 +229,10 @@ namespace GameControl.EventMap
         public HitboxType editType = HitboxType.None;
 
         [Title("Box Settings")] [LabelText("Box Size")] [ShowIf("@editType == HitboxType.Box")]
-        public Vector3 boxSizeInput = new(1, 1, 1);
+        public Vector3 boxSizeInput = new(2, 100, 0);
 
         [LabelText("Box Offset")] [ShowIf("@editType == HitboxType.Box")]
-        public Vector3 boxOffsetInput = Vector3.zero;
+        public Vector3 boxOffsetInput = new(-1, 100, 0);
 
         [Title("Sphere Settings")] [LabelText("Sphere Radius")] [ShowIf("@editType == HitboxType.Sphere")]
         public float sphereRadiusInput = 1f;
