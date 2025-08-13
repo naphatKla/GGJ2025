@@ -1,41 +1,36 @@
 using Characters.Controllers;
 using Characters.SO.StatusEffectSO;
-using UnityEngine;
 
 namespace Characters.StatusEffectSystems.StatusEffects
 {
     public class StunEffect : BaseStatusEffect<StunEffectDataSo>
     {
-        private BaseController ownerController;
         private bool _isStunSuccess;
         
-        public override void OnStart(GameObject owner)
+        public override void OnStart(BaseController owner)
         {
-            ownerController = owner.GetComponent<BaseController>();
-            
-            if (ownerController.HealthSystem.IsInvincible)
+            if (owner.HealthSystem.IsInvincible)
             {
                 ClearThisEffect();
                 return;
             }
 
             _isStunSuccess = true;
-            ownerController.MovementSystem.StopFromStun(true);
-            ownerController.SkillSystem.SetCanUseSkills(false);
+            owner.MovementSystem.StopFromStun(true);
+            owner.SkillSystem.SetCanUseSkills(false);
         }
 
-        public override void OnUpdate(float deltaTime)
+        public override void OnUpdate(BaseController owner, float deltaTime)
         {
             
         }
 
-        public override void OnExit()
+        public override void OnExit(BaseController owner)
         {
             if (!_isStunSuccess) return;
-            if (!ownerController) return;
-            ownerController.MovementSystem.StopFromStun(false);
-            ownerController.SkillSystem.SetCanUseSkills(true);
-            ownerController = null;
+  
+            owner.MovementSystem.StopFromStun(false);
+            owner.SkillSystem.SetCanUseSkills(true);
         }
     }
 }

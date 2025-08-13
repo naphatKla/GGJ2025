@@ -67,18 +67,18 @@ namespace Characters.StatusEffectSystems.StatusEffects
         /// Called when the effect is first applied to the GameObject.
         /// </summary>
         /// <param name="owner">The GameObject receiving the effect.</param>
-        public abstract void OnStart(GameObject owner);
+        public abstract void OnStart(BaseController owner);
 
         /// <summary>
         /// Called every frame while the effect is active.
         /// </summary>
         /// <param name="deltaTime">Time passed since last frame.</param>
-        public abstract void OnUpdate(float deltaTime);
+        public abstract void OnUpdate(BaseController owner, float deltaTime);
 
         /// <summary>
         /// Called once when the effect ends or is removed.
         /// </summary>
-        public abstract void OnExit();
+        public abstract void OnExit(BaseController owner);
 
         /// <summary>
         /// Immediately marks the effect as finished by setting its duration to zero.

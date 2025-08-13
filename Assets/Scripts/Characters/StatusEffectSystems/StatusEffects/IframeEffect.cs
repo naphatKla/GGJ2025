@@ -1,6 +1,6 @@
+using Characters.Controllers;
 using Characters.HeathSystems;
 using Characters.SO.StatusEffectSO;
-using UnityEngine;
 
 namespace Characters.StatusEffectSystems.StatusEffects
 {
@@ -10,47 +10,29 @@ namespace Characters.StatusEffectSystems.StatusEffects
     /// </summary>
     public class IframeEffect : BaseStatusEffect<IframeEffectDataSo>
     {
-        #region Inspector & Variables
-        
-        /// <summary>
-        /// Cached reference to the target's HealthSystem for toggling invincibility.
-        /// </summary>
-        private HealthSystem _ownerHealthSystem;
-        
-        #endregion
-        
-        #region Methods
-        
         /// <summary>
         /// Called when the effect is applied to a GameObject.
         /// Enables invincibility via the HealthSystem. If not found, the effect is cleared immediately.
         /// </summary>
         /// <param name="owner">The GameObject receiving the effect.</param>
-        public override void OnStart(GameObject owner)
+        public override void OnStart(BaseController owner)
         {
-            if (!owner.TryGetComponent(out _ownerHealthSystem))
-            {
-                ClearThisEffect(); // Fail-safe: cancel effect if HealthSystem is missing
-                return;
-            }
-            
-            _ownerHealthSystem.SetInvincible(true);
+            owner.HealthSystem.SetInvincible(true);
         }
 
         /// <summary>
         /// This effect does not require per-frame updates, so the method is empty.
         /// </summary>
         /// <param name="deltaTime">Elapsed time since the last frame.</param>
-        public override void OnUpdate(float deltaTime) {}
+        public override void OnUpdate(BaseController owner, float deltaTime) {}
 
         /// <summary>
         /// Called when the effect ends. Disables invincibility on the target.
         /// </summary>
-        public override void OnExit()
+        public override void OnExit(BaseController owner)
         {
-            _ownerHealthSystem?.SetInvincible(false);
+            owner.HealthSystem.SetInvincible(false);
         }
-        
-        #endregion
+ 
     }
 }

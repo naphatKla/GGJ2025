@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Characters.Controllers;
 using Characters.SO.StatusEffectSO;
 using Characters.StatusEffectSystems.StatusEffects;
 using Manager;
@@ -35,7 +36,7 @@ namespace Characters.StatusEffectSystems
             overrideDuration = newDuration;
         }
     }
-
+    
     public enum StatusEffectName
     {
         Iframe = 0,
@@ -47,7 +48,14 @@ namespace Characters.StatusEffectSystems
     {
         private Dictionary<StatusEffectName, BaseStatusEffect> _activeEffects = new();
         private readonly Queue<BaseStatusEffect> _toRemovesQueue = new();
+        private BaseController _owner;
 
+        
+        public virtual void AssignData(BaseController owner)
+        {
+            _owner = owner;
+        }
+        
         private void OnEnable()
         {
             FixedUpdateManager.Instance.Register(this);
@@ -64,7 +72,7 @@ namespace Characters.StatusEffectSystems
             foreach (var kvp in _activeEffects)
             {
                 var effect = kvp.Value;
-                effect.OnUpdate(dt);
+                effect.OnUpdate(_owner, dt);
                 effect.CurrentDuration -= dt;
 
                 if (!effect.IsDone) continue;
@@ -74,7 +82,7 @@ namespace Characters.StatusEffectSystems
             while (_toRemovesQueue.Count > 0)
             {
                 var effect = _toRemovesQueue.Dequeue();
-                effect.OnExit();
+                effect.OnExit(_owner);
                 _activeEffects.Remove(effect.EffectName);
             }
         }
@@ -88,7 +96,7 @@ namespace Characters.StatusEffectSystems
             }
 
             _activeEffects[newEffect.EffectName] = newEffect;
-            newEffect.OnStart(gameObject);
+            newEffect.OnStart(_owner);
         }
 
         [Button]

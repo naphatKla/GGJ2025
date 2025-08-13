@@ -155,6 +155,7 @@ namespace Characters.Controllers
             combatSystem.AssignCombatData(this, characterData.BaseDamage, characterData.BaseCriRate,
                 characterData.BaseCriDamage, characterData.BaseLifeStealPercent, characterData.BaseLifeStealEffective);
             feedbackSystem.AssignData(this);
+            statusEffectSystem.AssignData(this);
         }
 
         protected virtual void SubscribeDependency()

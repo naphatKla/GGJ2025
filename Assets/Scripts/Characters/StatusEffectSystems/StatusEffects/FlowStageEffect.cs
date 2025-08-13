@@ -1,21 +1,21 @@
+using Characters.Controllers;
 using Characters.SO.StatusEffectSO;
-using UnityEngine;
 
 namespace Characters.StatusEffectSystems.StatusEffects
 {
     public class FlowStageEffect : BaseStatusEffect<FlowStageEffectDataSo>
     {
-        public override void OnStart(GameObject owner)
+        public override void OnStart(BaseController owner)
         {
             throw new System.NotImplementedException();
         }
 
-        public override void OnUpdate(float deltaTime)
+        public override void OnUpdate(BaseController owner, float deltaTime)
         {
             throw new System.NotImplementedException();
         }
 
-        public override void OnExit()
+        public override void OnExit(BaseController owner)
         {
             throw new System.NotImplementedException();
         }
