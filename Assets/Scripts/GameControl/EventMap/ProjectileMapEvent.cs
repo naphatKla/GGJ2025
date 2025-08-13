@@ -43,7 +43,8 @@ namespace GameControl.EventMap
 
         protected override void Perform()
         {
-            Vector3 center = firePoint.TransformPoint(hitboxOffset + hitboxSize/2);
+            Vector3 pos = hitboxOffset + new Vector3(0, hitboxSize.y / 2, 0);
+            Vector3 center = firePoint.TransformPoint(pos);
 
             Collider[] hits = Physics.OverlapBox(center, hitboxSize * 0.5f, firePoint.rotation, hitLayer);
 
@@ -56,7 +57,8 @@ namespace GameControl.EventMap
 
             Gizmos.color = new Color(1f, 0f, 0f, 0.2f);
 
-            Vector3 center = firePoint.TransformPoint(hitboxOffset + hitboxSize/2);
+            Vector3 pos = hitboxOffset + new Vector3(0, hitboxSize.y / 2, 0);
+            Vector3 center = firePoint.TransformPoint(pos);
             
             Matrix4x4 rotationMatrix = Matrix4x4.TRS(
                 center,
