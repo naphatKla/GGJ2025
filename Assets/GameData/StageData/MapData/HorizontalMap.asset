@@ -27,6 +27,26 @@ MonoBehaviour:
     enemyChanceGrowthRate: 0
     useCustomInterval: 0
     customInterval: 0.5
+  - id: Enemy_Worker
+    enemyController: {fileID: 6978469296619682545, guid: 82d6560287672fa4a8c895bc3a10c950, type: 3}
+    spawnPoint: 0.7
+    enemyPointCanGrowth: 0
+    enemyPointGrowthRate: 12.5
+    chance: 0
+    enemyChanceCanGrowth: 1
+    enemyChanceGrowthRate: 2.22
+    useCustomInterval: 0
+    customInterval: 0
+  - id: Enemy_Soldier
+    enemyController: {fileID: 6978469296619682545, guid: a0503233dadc52f46bbd80a4952cd4e1, type: 3}
+    spawnPoint: 1.38
+    enemyPointCanGrowth: 0
+    enemyPointGrowthRate: 12.5
+    chance: 0
+    enemyChanceCanGrowth: 1
+    enemyChanceGrowthRate: 0.37
+    useCustomInterval: 0
+    customInterval: 0
   - id: Enemy_Tank
     enemyController: {fileID: 1371981663885322251, guid: c825ab4cef105ab40aa986fd07615367, type: 3}
     spawnPoint: 1.54
@@ -37,6 +57,26 @@ MonoBehaviour:
     enemyChanceGrowthRate: 1.33
     useCustomInterval: 0
     customInterval: 2
+  - id: Enemy_Absolute
+    enemyController: {fileID: 1371981663885322251, guid: eec6f0bc923ca8c4e8d1f911f0441879, type: 3}
+    spawnPoint: 2.33
+    enemyPointCanGrowth: 0
+    enemyPointGrowthRate: 12.5
+    chance: 0
+    enemyChanceCanGrowth: 1
+    enemyChanceGrowthRate: 0.66
+    useCustomInterval: 0
+    customInterval: 0
+  - id: Enemy_Absorption
+    enemyController: {fileID: 1371981663885322251, guid: fd4d927248ba7894fab69bd0611e5dd6, type: 3}
+    spawnPoint: 3.14
+    enemyPointCanGrowth: 0
+    enemyPointGrowthRate: 12.5
+    chance: 0
+    enemyChanceCanGrowth: 1
+    enemyChanceGrowthRate: 0.13
+    useCustomInterval: 0
+    customInterval: 0
   - id: Enemy_Pressure
     enemyController: {fileID: 241806535288265801, guid: 79dec73735459964a8ca48d4f07d4f9a, type: 3}
     spawnPoint: 1.56
@@ -47,6 +87,26 @@ MonoBehaviour:
     enemyChanceGrowthRate: 1.85
     useCustomInterval: 0
     customInterval: 0
+  - id: Enemy_Firecraker
+    enemyController: {fileID: 241806535288265801, guid: 27b7309a2863d144f92c41ed68909b7a, type: 3}
+    spawnPoint: 1.32
+    enemyPointCanGrowth: 0
+    enemyPointGrowthRate: 12.5
+    chance: 0
+    enemyChanceCanGrowth: 0
+    enemyChanceGrowthRate: 0
+    useCustomInterval: 1
+    customInterval: 0.93
+  - id: Enemy_Bomber
+    enemyController: {fileID: 241806535288265801, guid: e35823daef8ec1d4190c0960c0e7bb8b, type: 3}
+    spawnPoint: 3.41
+    enemyPointCanGrowth: 0
+    enemyPointGrowthRate: 12.5
+    chance: 0
+    enemyChanceCanGrowth: 1
+    enemyChanceGrowthRate: 0.19
+    useCustomInterval: 0
+    customInterval: 0
   - id: Enemy_Piercer
     enemyController: {fileID: 5352284219382747297, guid: c31b489d153b0634585086d777023f54, type: 3}
     spawnPoint: 1.21
@@ -55,6 +115,26 @@ MonoBehaviour:
     chance: 0
     enemyChanceCanGrowth: 1
     enemyChanceGrowthRate: 1.85
+    useCustomInterval: 0
+    customInterval: 0
+  - id: Enemy_Javelin
+    enemyController: {fileID: 5352284219382747297, guid: 9b50d372f60f2b44e8902b9700c8ff75, type: 3}
+    spawnPoint: 1.84
+    enemyPointCanGrowth: 0
+    enemyPointGrowthRate: 12.5
+    chance: 0
+    enemyChanceCanGrowth: 1
+    enemyChanceGrowthRate: 0.93
+    useCustomInterval: 0
+    customInterval: 0
+  - id: Enemy_Comet
+    enemyController: {fileID: 5352284219382747297, guid: f393a17767905ac4ca15da0af7bc1668, type: 3}
+    spawnPoint: 2.44
+    enemyPointCanGrowth: 0
+    enemyPointGrowthRate: 12.5
+    chance: 0
+    enemyChanceCanGrowth: 1
+    enemyChanceGrowthRate: 0.19
     useCustomInterval: 0
     customInterval: 0
   intervalEnemyChanceUpgrade: 30
