@@ -35,11 +35,15 @@ namespace Characters.CombatSystems
         /// Can be modified dynamically through buffs, debuffs, or status effects.
         /// </summary>
         private float _currentDamage;
+
+        private float _currentDamageMultiplier;
         
         /// <summary>
         /// Owner controller.
         /// </summary>
         private BaseController _owner;
+
+        public float CurrentDamage => _currentDamage;
 
         /// <summary>
         /// Event triggered whenever this character successfully deals damage.
@@ -123,6 +127,19 @@ namespace Characters.CombatSystems
         private async UniTask ResetOrthoAfterLerp(float waitTime)
         {
             await UniTask.WaitForSeconds(waitTime, this, cancellationToken: this.destroyCancellationToken);
+        }
+
+        public void AddCurrentDamage(float value)
+        {
+            _currentDamage = Mathf.Max(0, _currentDamage + value);
+        }
+
+        public void AddCurrentDamageMultiplier(float multiplierPercentage)
+        {
+            _currentDamageMultiplier += multiplierPercentage;
+            float damageAdded = _currentDamage * (multiplierPercentage / 100);
+            
+            AddCurrentDamage(damageAdded);
         }
 
         #endregion
