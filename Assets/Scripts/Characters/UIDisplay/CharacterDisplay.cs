@@ -483,7 +483,7 @@ namespace Characters.UIDisplay
         private void SkillResetFeedback(Transform tf, Image skillframe)
         {
             var seq = DOTween.Sequence();
-            seq.Append(skillframe.DOColor(Color.yellow, 0.15f).SetDelay(0.1f).SetLoops(2, LoopType.Yoyo));
+            seq.Append(skillframe.DOColor(Color.green, 0.15f).SetDelay(0.1f).SetLoops(2, LoopType.Yoyo));
         }
 
         #endregion
