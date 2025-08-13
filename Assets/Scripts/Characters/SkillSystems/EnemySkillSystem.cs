@@ -35,7 +35,9 @@ namespace Characters.SkillSystems
                 if (runtime.CurrentCooldown > skillNotifyDelay) return;
                 _isCharging = true;
                 owner.FeedbackSystem.PlayFeedback(FeedbackName.NotifySkill);
-                await UniTask.WaitForSeconds(skillNotifyDelay, cancellationToken: cts.Token);
+                await UniTask
+                    .WaitForSeconds(skillNotifyDelay, cancellationToken: cts.Token)
+                    .SuppressCancellationThrow();
                 _isCharging = false;
             }
             

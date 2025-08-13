@@ -128,12 +128,7 @@ namespace Characters.SkillSystems.SkillRuntimes
             owner.FeedbackSystem.SetIgnoreFeedback(FeedbackName.CounterAttack, false);
 
             if (owner is PlayerController player)
-            {
                 player.CameraController.ResetCamera(0.25f);
-                player.MovementSystem.TryMoveToPositionBySpeed(
-                    player.CameraController.GetCameraCenterWorldPosition(),
-                    skillData.LightStepSpeed);
-            }
 
             await UniTask.WaitForSeconds(0.5f, cancellationToken: destroyCancellationToken);
             StatusEffectManager.RemoveEffectAt(owner.gameObject, StatusEffectName.Iframe);
