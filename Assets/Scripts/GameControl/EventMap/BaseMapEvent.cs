@@ -48,6 +48,37 @@ namespace GameControl.EventMap
         public abstract UniTask PlayPreview();
         //Projectile or Circle
         protected abstract void Perform();
+        
+        public void ApplyHitbox(MapEventStorageEntry entry)
+        {
+            switch (entry.hitboxType)
+            {
+                case HitboxType.Box:
+                    if (this is IBoxHitbox box)
+                    {
+                        box.Size = entry.boxSize;
+                        box.Offset = entry.boxOffset;
+                    }
+                    break;
+                case HitboxType.Sphere:
+                    if (this is ISphereHitbox sphere)
+                    {
+                        sphere.Radius = entry.sphereRadius;
+                        sphere.Offset = entry.sphereOffset;
+                    }
+                    break;
+                case HitboxType.Capsule:
+                    if (this is ICapsuleHitbox capsule)
+                    {
+                        capsule.Radius = entry.capsuleRadius;
+                        capsule.Height = entry.capsuleHeight;
+                        capsule.Offset = entry.capsuleOffset;
+                    }
+                    break;
+                case HitboxType.None:
+                    break;
+            }
+        }
     }
 
 }
