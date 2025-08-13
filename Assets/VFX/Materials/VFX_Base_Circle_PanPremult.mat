@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: VFX_Base_Circle_PanPremult
-  m_Shader: {fileID: 4800000, guid: 324401ff4cd382b4282bf2de1dc919f1, type: 3}
+  m_Shader: {fileID: 4800000, guid: 337f638ec0835e64e99594b828e4f649, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -56,6 +56,10 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _DistortMask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DistortionBlendTexture1:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
@@ -144,11 +148,14 @@ Material:
     - _DissolveMaskInvert: 1
     - _DissolveMaskRotation: 0
     - _DistortMaskRotation: 0
+    - _DistortionBlendInvert1: 0
     - _DistortionBlendInvert2: 0
+    - _DistortionBlendMoveWithMain1: 0
     - _DistortionBlendMoveWithMain2: 0
+    - _DistortionBlendRotation1: 0
     - _DistortionBlendRotation2: 0
     - _DistortionPower: 0
-    - _Dst: 5
+    - _Dst: 10
     - _DstBlend: 0
     - _DstBlendAlpha: 0
     - _EnvironmentReflections: 1
@@ -165,6 +172,7 @@ Material:
     - _GradientMapValueShift2: 0
     - _GradientShapeRotation: 0
     - _InnerPartBrightness: 1
+    - _InnerPartBrightness11: 1
     - _InnerPartBrightness14: 1
     - _InnerPartBrightness4: 1
     - _InnerPartColorIntensity: 0
@@ -184,7 +192,7 @@ Material:
     - _Smoothness: 0.5
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
-    - _Src: 3
+    - _Src: 5
     - _SrcBlend: 1
     - _SrcBlendAlpha: 1
     - _StaticAlphaInvert: 0
@@ -205,7 +213,9 @@ Material:
     - _DissolveMaskPanSpeed: {r: 0, g: 0, b: 0, a: 0}
     - _DistortMaskChannel: {r: 0, g: 0, b: 0, a: 0}
     - _DistortPanSpeed: {r: 0, g: 0, b: 0, a: 0}
+    - _DistortedTextureCorrection1: {r: 0, g: 0, b: 0, a: 0}
     - _DistortedTextureCorrection2: {r: 0, g: 0, b: 0, a: 0}
+    - _DistortionBlendChannel1: {r: 1, g: 0, b: 0, a: 0}
     - _DistortionBlendChannel2: {r: 1, g: 0, b: 0, a: 0}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _GradientShapeChannel: {r: 0, g: 0, b: 0, a: 0}
