@@ -40,12 +40,8 @@ namespace Characters.SkillSystems.SkillRuntimes
             await UniTask.WaitUntil(() => !_isWaitForCounterAttack, cancellationToken: cts.Token);
             await UniTask.WaitUntil(() => !owner.MovementSystem.IsMoveTweenActive, cancellationToken: cts.Token);
 
-            if (cts.IsCancellationRequested)
-            {
-                ResetWaitingCondition();
-                return;
-            }
-
+            ResetWaitingCondition();
+            if (cts.IsCancellationRequested) return;
             base.PerformSkill();
         }
 
