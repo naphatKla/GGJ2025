@@ -18,6 +18,8 @@ using Sirenix.OdinInspector;
 using TMPro;
 using UI.IngameModal;
 using UnityEngine;
+using UnityEngine.UI;
+
 // ====== เพิ่มเติม ======
 
 // ComboStreakDataSo
@@ -139,7 +141,7 @@ namespace Characters.UIDisplay
                 healthSystem.OnHealthChange -= _onHealthChangeUpdateUIHandler;
                 healthSystem.OnHealthChange -= _onHealthChangeTextHandler;
             }
-
+            
             skillSystem.OnNewSkillAssign -= AssignSkillSlot;
             skillSystem.OnSkillCooldownUpdate -= UpdateCooldownSlot;
             skillSystem.OnSkillCooldownReset -= ResetSkillSlot;
@@ -440,6 +442,14 @@ namespace Characters.UIDisplay
             skillSlotModel[skillIndex].skillIcon.sprite = skill.SkillIcon;
             ResetSkillSlot(skillIndex);
         }
+        
+        private void SkillPerfrom(int skillIndex)
+        {
+            if (skillIndex < 0 || skillIndex >= skillSlotModel.Count) return;
+            if (skillSlotModel[skillIndex] == null) return;
+
+            SkillPlayFeedback(skillSlotModel[skillIndex].transform, skillSlotModel[skillIndex].skillframe);
+        }
 
         private void UpdateCooldownSlot(float maxCooldown, float progression, int skillIndex)
         {
@@ -457,8 +467,22 @@ namespace Characters.UIDisplay
             if (skillIndex < 0 || skillIndex >= skillSlotModel.Count) return;
             if (skillSlotModel[skillIndex] == null) return;
 
+            SkillResetFeedback(skillSlotModel[skillIndex].transform, skillSlotModel[skillIndex].skillframe);
             skillSlotModel[skillIndex].cooldownText.text = "";
             skillSlotModel[skillIndex].valueBar.CurrentValue = 0;
+        }
+        
+        private void SkillPlayFeedback(Transform tf, Image skillframe)
+        {
+            var seq = DOTween.Sequence();
+            seq.Append(tf.DOScale(new Vector3(tf.localScale.x + 0.15f, tf.localScale.y + 0.15f, 1), 0.15f)
+                .SetLoops(2, LoopType.Yoyo));
+        }
+        
+        private void SkillResetFeedback(Transform tf, Image skillframe)
+        {
+            var seq = DOTween.Sequence();
+            seq.Append(skillframe.DOColor(Color.green, 0.15f).SetDelay(0.1f).SetLoops(2, LoopType.Yoyo));
         }
 
         #endregion
