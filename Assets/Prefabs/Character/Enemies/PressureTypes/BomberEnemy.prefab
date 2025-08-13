@@ -1,316 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &1628806940356423639
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1586365782945361758}
-  - component: {fileID: 1434936274039284557}
-  - component: {fileID: 4674671480953959339}
-  m_Layer: 0
-  m_Name: PressureEnemyChargeBomb
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1586365782945361758
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1628806940356423639}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 5929465906105201980}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1434936274039284557
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1628806940356423639}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6da43522623d4704e979466dc7650b65, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Feedbacks: []
-  InitializationMode: 2
-  AutoInitialization: 1
-  SafeMode: 3
-  Direction: 0
-  AutoChangeDirectionOnEnd: 0
-  AutoPlayOnStart: 0
-  AutoPlayOnEnable: 0
-  ForceTimescaleMode: 0
-  ForcedTimescaleMode: 1
-  DurationMultiplier: 1
-  RandomizeDuration: 0
-  RandomDurationMultiplier: {x: 0.5, y: 1.5}
-  DisplayFullDurationDetails: 0
-  PlayerTimescaleMode: 1
-  OnlyPlayIfWithinRange: 0
-  RangeCenter: {fileID: 0}
-  RangeDistance: 5
-  UseRangeFalloff: 0
-  RangeFalloff:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 1
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  RemapRangeFalloff: {x: 0, y: 1}
-  IgnoreRangeEvents: 0
-  CooldownDuration: 0
-  InitialDelay: 0
-  CanPlay: 1
-  CanPlayWhileAlreadyPlaying: 1
-  ChanceToPlay: 100
-  FeedbacksIntensity: 1
-  Events:
-    TriggerMMFeedbacksEvents: 0
-    TriggerUnityEvents: 1
-    OnPlay:
-      m_PersistentCalls:
-        m_Calls: []
-    OnPause:
-      m_PersistentCalls:
-        m_Calls: []
-    OnResume:
-      m_PersistentCalls:
-        m_Calls: []
-    OnRevert:
-      m_PersistentCalls:
-        m_Calls: []
-    OnComplete:
-      m_PersistentCalls:
-        m_Calls: []
-    OnRestoreInitialValues:
-      m_PersistentCalls:
-        m_Calls: []
-    OnSkipToTheEnd:
-      m_PersistentCalls:
-        m_Calls: []
-  DebugActive: 0
-  FeedbacksList:
-  - rid: 2975743865254576128
-  - rid: 7334425405478141960
-  KeepPlayModeChanges: 0
-  PerformanceMode: 0
-  StopFeedbacksOnDisable: 0
-  PlayCount: 0
-  references:
-    version: 2
-    RefIds:
-    - rid: 2975743865254576128
-      type: {class: MMF_DebugLog, ns: MoreMountains.Feedbacks, asm: MoreMountains.Feedbacks.MMTools}
-      data:
-        Active: 0
-        UniqueID: -580116986
-        Label: Log
-        ChannelMode: 0
-        Channel: 0
-        MMChannelDefinition: {fileID: 0}
-        Chance: 100
-        DisplayColor: {r: 0, g: 0, b: 0, a: 1}
-        Timing:
-          TimescaleMode: 0
-          ExcludeFromHoldingPauses: 0
-          ContributeToTotalDuration: 1
-          InitialDelay: 0
-          CooldownDuration: 0
-          InterruptsOnStop: 1
-          NumberOfRepeats: 0
-          RepeatForever: 0
-          DelayBetweenRepeats: 1
-          MMFeedbacksDirectionCondition: 0
-          PlayDirection: 0
-          ConstantIntensity: 0
-          UseIntensityInterval: 0
-          IntensityIntervalMin: 0
-          IntensityIntervalMax: 0
-          Sequence: {fileID: 0}
-          TrackID: 0
-          Quantized: 0
-          TargetBPM: 120
-        AutomatedTargetAcquisition:
-          Mode: 0
-          ChildIndex: 0
-        RandomizeOutput: 0
-        RandomMultiplier: {x: 0.8, y: 1}
-        RandomizeDuration: 0
-        RandomDurationMultiplier: {x: 0.5, y: 2}
-        UseRange: 0
-        RangeDistance: 5
-        UseRangeFalloff: 0
-        RangeFalloff:
-          serializedVersion: 2
-          m_Curve:
-          - serializedVersion: 3
-            time: 0
-            value: 1
-            inSlope: 0
-            outSlope: 0
-            tangentMode: 0
-            weightedMode: 0
-            inWeight: 0
-            outWeight: 0
-          - serializedVersion: 3
-            time: 1
-            value: 0
-            inSlope: 0
-            outSlope: 0
-            tangentMode: 0
-            weightedMode: 0
-            inWeight: 0
-            outWeight: 0
-          m_PreInfinity: 2
-          m_PostInfinity: 2
-          m_RotationOrder: 4
-        RemapRangeFalloff: {x: 0, y: 1}
-        Owner: {fileID: 1434936274039284557}
-        DebugActive: 0
-        DebugLogMode: 0
-        DebugMessage: 
-        DebugColor: {r: 0, g: 1, b: 1, a: 1}
-        DisplayFrameCount: 1
-    - rid: 7334425405478141960
-      type: {class: MMF_Events, ns: MoreMountains.Feedbacks, asm: MoreMountains.Feedbacks}
-      data:
-        Active: 1
-        UniqueID: -83230303
-        Label: Unity Events
-        ChannelMode: 0
-        Channel: 0
-        MMChannelDefinition: {fileID: 0}
-        Chance: 100
-        DisplayColor: {r: 0, g: 0, b: 0, a: 1}
-        Timing:
-          TimescaleMode: 0
-          ExcludeFromHoldingPauses: 0
-          ContributeToTotalDuration: 1
-          InitialDelay: 0
-          CooldownDuration: 0
-          InterruptsOnStop: 1
-          NumberOfRepeats: 0
-          RepeatForever: 0
-          DelayBetweenRepeats: 1
-          MMFeedbacksDirectionCondition: 0
-          PlayDirection: 0
-          ConstantIntensity: 0
-          UseIntensityInterval: 0
-          IntensityIntervalMin: 0
-          IntensityIntervalMax: 0
-          Sequence: {fileID: 0}
-          TrackID: 0
-          Quantized: 0
-          TargetBPM: 120
-        AutomatedTargetAcquisition:
-          Mode: 0
-          ChildIndex: 0
-        RandomizeOutput: 0
-        RandomMultiplier: {x: 0.8, y: 1}
-        RandomizeDuration: 0
-        RandomDurationMultiplier: {x: 0.5, y: 2}
-        UseRange: 0
-        RangeDistance: 5
-        UseRangeFalloff: 0
-        RangeFalloff:
-          serializedVersion: 2
-          m_Curve:
-          - serializedVersion: 3
-            time: 0
-            value: 1
-            inSlope: 0
-            outSlope: 0
-            tangentMode: 0
-            weightedMode: 0
-            inWeight: 0
-            outWeight: 0
-          - serializedVersion: 3
-            time: 1
-            value: 0
-            inSlope: 0
-            outSlope: 0
-            tangentMode: 0
-            weightedMode: 0
-            inWeight: 0
-            outWeight: 0
-          m_PreInfinity: 2
-          m_PostInfinity: 2
-          m_RotationOrder: 4
-        RemapRangeFalloff: {x: 0, y: 1}
-        Owner: {fileID: 1434936274039284557}
-        DebugActive: 0
-        PlayEvents:
-          m_PersistentCalls:
-            m_Calls:
-            - m_Target: {fileID: 4674671480953959339}
-              m_TargetAssemblyTypeName: Feedbacks.VFXPlayerPooling, Assembly-CSharp
-              m_MethodName: PlayVFX
-              m_Mode: 1
-              m_Arguments:
-                m_ObjectArgument: {fileID: 0}
-                m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-                m_IntArgument: 0
-                m_FloatArgument: 0
-                m_StringArgument: 
-                m_BoolArgument: 0
-              m_CallState: 2
-        StopEvents:
-          m_PersistentCalls:
-            m_Calls: []
-        InitializationEvents:
-          m_PersistentCalls:
-            m_Calls: []
-        ResetEvents:
-          m_PersistentCalls:
-            m_Calls: []
---- !u!114 &4674671480953959339
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1628806940356423639}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f010f6edecaea2a40adea01bf2111bb8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  vfxPrefab: {fileID: 9031892910825326118, guid: b2f4007d1d8f4a546aa794e864d1a2b1, type: 3}
-  stopOnDisable: 1
-  followMode: 1
-  rotationMode: 0
 --- !u!1 &5823058338720374816
 GameObject:
   m_ObjectHideFlags: 0
@@ -323,7 +12,7 @@ GameObject:
   - component: {fileID: 8517719134570493546}
   - component: {fileID: 7550951498758926622}
   m_Layer: 0
-  m_Name: PressureEnemyBomb
+  m_Name: BomberEnemyBomb
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -672,7 +361,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1943798464071913329, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
       propertyPath: m_Name
-      value: PressureEnemyCharge
+      value: BomberEnemyCharge
       objectReference: {fileID: 0}
     - target: {fileID: 2398513818364634764, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
       propertyPath: vfxPrefab
@@ -708,11 +397,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3040175372062831934, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
       propertyPath: m_Name
-      value: PressureEnemy
+      value: BomberEnemy
       objectReference: {fileID: 0}
     - target: {fileID: 4115155700243525769, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
       propertyPath: m_Name
-      value: PressureEnemyTakeDamage
+      value: BomberEnemyTakeDamage
       objectReference: {fileID: 0}
     - target: {fileID: 5733554412123996507, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
       propertyPath: serializationData.Prefab
@@ -763,12 +452,16 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 21300000, guid: 3fda191e48b908e49bbb23e859cbe1a9, type: 3}
     - target: {fileID: 6182622400446059026, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
+      propertyPath: m_Color.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6182622400446059026, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
       propertyPath: m_Color.g
-      value: 0.35816914
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6182622400446059026, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
       propertyPath: m_Color.r
-      value: 0.62352943
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6429923079801110711, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
       propertyPath: vfxPrefab
@@ -776,7 +469,7 @@ PrefabInstance:
       objectReference: {fileID: 8421433658705362917, guid: b9e9970aa0e37c74b81dfcee1c94c561, type: 3}
     - target: {fileID: 6893798603404414412, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
       propertyPath: m_Name
-      value: PressureEnemyDead
+      value: BomberEnemyDead
       objectReference: {fileID: 0}
     - target: {fileID: 7395592095400793151, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
       propertyPath: m_IsActive
@@ -789,14 +482,42 @@ PrefabInstance:
     - target: {fileID: 8145196360709479149, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
       propertyPath: characterData
       value: 
-      objectReference: {fileID: 11400000, guid: 80187701aacaade4888ecee5f30e8394, type: 2}
+      objectReference: {fileID: 11400000, guid: 54014b93298f7e942acca31b7eae8b9e, type: 2}
     - target: {fileID: 8145196360709479149, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
       propertyPath: feedbackSystem
       value: 
       objectReference: {fileID: 86080726462017718}
+    - target: {fileID: 8664070425611870484, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
+      propertyPath: managedReferences[7334425405478141959].PlayEvents.m_PersistentCalls.m_Calls.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8664070425611870484, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
+      propertyPath: managedReferences[7334425405478141959].PlayEvents.m_PersistentCalls.m_Calls.Array.data[1].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8664070425611870484, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
+      propertyPath: managedReferences[7334425405478141959].PlayEvents.m_PersistentCalls.m_Calls.Array.data[1].m_Target
+      value: 
+      objectReference: {fileID: 6870514593709970269}
+    - target: {fileID: 8664070425611870484, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
+      propertyPath: managedReferences[7334425405478141959].PlayEvents.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8664070425611870484, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
+      propertyPath: managedReferences[7334425405478141959].PlayEvents.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: PlayVFX
+      objectReference: {fileID: 0}
+    - target: {fileID: 8664070425611870484, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
+      propertyPath: managedReferences[7334425405478141959].PlayEvents.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
+      value: Feedbacks.VFXPlayerPooling, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 8664070425611870484, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
+      propertyPath: managedReferences[7334425405478141959].PlayEvents.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
     - target: {fileID: 8738783530377552037, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
       propertyPath: m_Name
-      value: PressureEnemyDash
+      value: BomberEnemyDash
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 5733554412123996507, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
@@ -804,21 +525,21 @@ PrefabInstance:
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 2313492309073572760, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1586365782945361758}
-    - targetCorrespondingSourceObject: {fileID: 2313492309073572760, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
-      insertIndex: -1
       addedObject: {fileID: 4708283955471881643}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 3040175372062831934, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
       insertIndex: 12
       addedObject: {fileID: 86080726462017718}
+    - targetCorrespondingSourceObject: {fileID: 1943798464071913329, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6870514593709970269}
   m_SourcePrefab: {fileID: 100100000, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
 --- !u!114 &751655877476165552 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8664070425611870484, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
   m_PrefabInstance: {fileID: 8237819481152095908}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 7542226779309197781}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6da43522623d4704e979466dc7650b65, type: 3}
@@ -876,7 +597,6 @@ MonoBehaviour:
     - {fileID: 2246351115559431910}
     - {fileID: 751655877476165552}
     - {fileID: 1551828330291705462}
-    - {fileID: 1434936274039284557}
     - {fileID: 8517719134570493546}
     SerializedBytesString: 
     Prefab: {fileID: 0}
@@ -903,7 +623,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 12
-      Data: 6
+      Data: 5
     - Name: 
       Entry: 7
       Data: 
@@ -957,22 +677,10 @@ MonoBehaviour:
       Data: 
     - Name: $k
       Entry: 3
-      Data: 8
-    - Name: $v
-      Entry: 10
-      Data: 4
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 3
       Data: 10
     - Name: $v
       Entry: 10
-      Data: 5
+      Data: 4
     - Name: 
       Entry: 8
       Data: 
@@ -999,3 +707,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6da43522623d4704e979466dc7650b65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &7542226779309197781 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1943798464071913329, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
+  m_PrefabInstance: {fileID: 8237819481152095908}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &6870514593709970269
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7542226779309197781}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f010f6edecaea2a40adea01bf2111bb8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  vfxPrefab: {fileID: 9031892910825326118, guid: b2f4007d1d8f4a546aa794e864d1a2b1, type: 3}
+  stopOnDisable: 1
+  followMode: 1
+  rotationMode: 0
