@@ -10,5 +10,8 @@ namespace Characters.SO.StatusEffectSO
 
         [Unit(Units.Percent)] 
         [SerializeField] private float damagePercentIncrease = 0;
+
+        public float DamageIncrease => damageIncrease;
+        public float DamagePercentIncrease => damagePercentIncrease;
     }
 }

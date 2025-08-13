@@ -134,7 +134,7 @@ namespace Characters.CombatSystems
             _currentDamage = Mathf.Max(0, _currentDamage + value);
         }
 
-        public void AddCurrentDamageMultiplier(float multiplierPercentage)
+        public void AddCurrentDamageMultiplierPercent(float multiplierPercentage)
         {
             _currentDamageMultiplier += multiplierPercentage;
             float damageAdded = _currentDamage * (multiplierPercentage / 100);

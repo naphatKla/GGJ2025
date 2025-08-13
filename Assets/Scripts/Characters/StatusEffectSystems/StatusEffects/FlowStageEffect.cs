@@ -7,17 +7,19 @@ namespace Characters.StatusEffectSystems.StatusEffects
     {
         public override void OnStart(BaseController owner)
         {
-            throw new System.NotImplementedException();
+            owner.CombatSystem.AddCurrentDamage(effectData.DamageIncrease);
+            owner.CombatSystem.AddCurrentDamageMultiplierPercent(effectData.DamagePercentIncrease);
         }
 
         public override void OnUpdate(BaseController owner, float deltaTime)
         {
-            throw new System.NotImplementedException();
+            
         }
 
         public override void OnExit(BaseController owner)
         {
-            throw new System.NotImplementedException();
+            owner.CombatSystem.AddCurrentDamage(-effectData.DamageIncrease);
+            owner.CombatSystem.AddCurrentDamageMultiplierPercent(-effectData.DamagePercentIncrease);
         }
     }
 }

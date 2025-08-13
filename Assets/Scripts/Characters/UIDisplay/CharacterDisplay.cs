@@ -479,11 +479,14 @@ namespace Characters.UIDisplay
             seq.Append(tf.DOScale(new Vector3(tf.localScale.x + -0.05f, tf.localScale.y + -0.05f, 1), 0.15f)
                 .SetLoops(2, LoopType.Yoyo));*/
         }
-        
+
+        private Sequence _skillResetSequence;
         private void SkillResetFeedback(Transform tf, Image skillframe)
         {
-            var seq = DOTween.Sequence();
-            seq.Append(skillframe.DOColor(Color.green, 0.15f).SetDelay(0.1f).SetLoops(2, LoopType.Yoyo));
+            _skillResetSequence.Kill(true);
+            _skillResetSequence = DOTween.Sequence();
+            _skillResetSequence.Append(skillframe.DOColor(Color.green, 0.15f).SetDelay(0.1f).SetLoops(2, LoopType.Yoyo));
+            
         }
 
         #endregion

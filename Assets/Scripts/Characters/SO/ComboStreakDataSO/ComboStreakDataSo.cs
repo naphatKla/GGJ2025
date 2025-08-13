@@ -50,28 +50,5 @@ namespace Characters.SO.ComboStreakDataSO
 
         [FoldoutGroup("Flow Stage"), Unit(Units.Second)]
         public float stageIICooldownSeconds = 20f;
-
-        // ----- Stage I -----
-        [FoldoutGroup("Flow Stage/Flow Stage I Effect")]
-        [LabelText("Stage I: +Flat Damage")]
-        public int stageIDamageFlat = 17;
-
-        // ----- Stage II -----
-        [FoldoutGroup("Flow Stage/Flow Stage II Effect"), Unit(Units.Percent)]
-        [LabelText("Stage II: +Damage (%)")]
-        public float stageIIDamagePercent = 50f;         // 50 = +50%
-
-        [FoldoutGroup("Flow Stage/Flow Stage II Effect"), Unit(Units.Percent)]
-        [LabelText("Stage II: +Max Speed (%)")]
-        public float stageIISpeedPercent = 50f;          // 50 = +50%
-
-        [FoldoutGroup("Flow Stage/Flow Stage II Effect"), Unit(Units.Second)]
-        [LabelText("Stage II: Dash Duration Δ (sec)")]
-        public float stageIIDashDurationDeltaSeconds = -0.1f;
-
-        [FoldoutGroup("Flow Stage/Flow Stage II Effect")]
-        [LabelText("Stage II: Heal Every N Streaks")]
-        [MinValue(1)]
-        public int stageIIHealEveryNStreaks = 10;        // heal ทุก 10 streak ระหว่าง Stage II
     }
 }

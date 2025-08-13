@@ -33,7 +33,6 @@ namespace Characters.ComboSystem
         private float _streakTimer;
         private float _stageIITimer;
         private float _stageIICooldownTimer;
-        private int _stageIIHealCounter;
 
         // ===== Events =====
         public event Action<int> OnStreakChanged;
@@ -41,17 +40,9 @@ namespace Characters.ComboSystem
 
         /// <summary>ส่งเป็นตัวคูณ x เช่น 0..5</summary>
         public event Action<float> OnBoostChanged;
-
         public event Action<FlowStageLevel> OnFlowStageEnter;
         public event Action<FlowStageLevel> OnFlowStageExit;
-
-        // Bridge ไป Stats/Move/Dash/Heal/UI
-        public event Action<int> OnStageI_DamageFlatGranted;
-
-        /// <summary>(damageAddPct01, speedAddPct01, dashDeltaSec)</summary>
-        public event Action<float, float, float> OnStageII_ModifiersGranted;
-
-        public event Action OnStageII_HealTrigger;
+        
 
         private void OnEnable() => FixedUpdateManager.Instance.Register(this);
         private void OnDisable() => FixedUpdateManager.Instance.Unregister(this);
@@ -76,17 +67,6 @@ namespace Characters.ComboSystem
         {
             SetStreak(CurrentStreak + 1);
             _streakTimer = _data.streakTimeoutSeconds;
-
-            if (CurrentStage == FlowStageLevel.II)
-            {
-                _stageIIHealCounter++;
-                if (_stageIIHealCounter >= _data.stageIIHealEveryNStreaks)
-                {
-                    _stageIIHealCounter = 0;
-                    OnStageII_HealTrigger?.Invoke();
-                }
-            }
-
             RecomputeBoost(alsoApplyPenalty: false, extraPenaltyX: 0f);
             TryEnterStages();
         }
@@ -189,7 +169,6 @@ namespace Characters.ComboSystem
         {
             CurrentStage = FlowStageLevel.I;
             OnFlowStageEnter?.Invoke(FlowStageLevel.I);
-            OnStageI_DamageFlatGranted?.Invoke(_data.stageIDamageFlat);
         }
 
         private void ExitStageIIfBelowThreshold()
@@ -205,15 +184,7 @@ namespace Characters.ComboSystem
 
             CurrentStage = FlowStageLevel.II;
             _stageIITimer = _data.stageIIDuration;
-            _stageIIHealCounter = 0;
             OnFlowStageEnter?.Invoke(FlowStageLevel.II);
-
-            // ส่งค่าเป็น 0..1 (เช่น +50% = 0.5)
-            OnStageII_ModifiersGranted?.Invoke(
-                _data.stageIIDamagePercent / 100f,
-                _data.stageIISpeedPercent / 100f,
-                _data.stageIIDashDurationDeltaSeconds
-            );
         }
 
         private void ExitStageII()
