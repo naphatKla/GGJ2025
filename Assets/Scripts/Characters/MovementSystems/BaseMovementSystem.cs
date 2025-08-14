@@ -33,6 +33,7 @@ namespace Characters.MovementSystems
         /// </summary>
         [ShowInInspector, ReadOnly] [ShowIf("@UnityEngine.Application.isPlaying")]
         protected float currentSpeed;
+        protected float currentSpeedMultiplier;
 
         /// <summary>
         /// Controls how quickly the entity accelerates toward its maximum movement speed in a straight line.
@@ -252,6 +253,19 @@ namespace Characters.MovementSystems
         public virtual void StopTween()
         {
             _moveOverTimeTween?.Kill();
+        }
+
+        public virtual void AddCurrentSpeed(float value)
+        { 
+            currentSpeed = Mathf.Max(0, currentSpeed + value);
+        }
+
+        public virtual void AddCurrentSpeedMultiplier(float multiplierPercentage)
+        {
+            currentSpeedMultiplier += multiplierPercentage;
+            float speedAdded = currentSpeed * (currentSpeedMultiplier / 100);
+            
+            AddCurrentSpeed(speedAdded);
         }
         
         /// <summary>

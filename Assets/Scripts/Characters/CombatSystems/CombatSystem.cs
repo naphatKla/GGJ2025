@@ -137,7 +137,7 @@ namespace Characters.CombatSystems
         public void AddCurrentDamageMultiplierPercent(float multiplierPercentage)
         {
             _currentDamageMultiplier += multiplierPercentage;
-            float damageAdded = _currentDamage * (multiplierPercentage / 100);
+            float damageAdded = _currentDamage * (_currentDamageMultiplier / 100);
             
             AddCurrentDamage(damageAdded);
         }

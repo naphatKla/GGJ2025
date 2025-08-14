@@ -9,6 +9,7 @@ namespace Characters.StatusEffectSystems.StatusEffects
         {
             owner.CombatSystem.AddCurrentDamage(effectData.DamageIncrease);
             owner.CombatSystem.AddCurrentDamageMultiplierPercent(effectData.DamagePercentIncrease);
+            owner.MovementSystem.AddCurrentSpeedMultiplier(effectData.SpeedPercentIncrease);
         }
 
         public override void OnUpdate(BaseController owner, float deltaTime)
@@ -20,6 +21,7 @@ namespace Characters.StatusEffectSystems.StatusEffects
         {
             owner.CombatSystem.AddCurrentDamage(-effectData.DamageIncrease);
             owner.CombatSystem.AddCurrentDamageMultiplierPercent(-effectData.DamagePercentIncrease);
+            owner.MovementSystem.AddCurrentSpeedMultiplier(-effectData.SpeedPercentIncrease);
         }
     }
 }

@@ -7,14 +7,6 @@ using UnityEngine;
 
 namespace Characters.ComboSystem
 {
-    // (optional legacy enum)
-    public enum FlowStageLevel
-    {
-        None = 0,
-        I = 1,
-        II = 2
-    }
-
     /// <summary>
     /// - แยก KillCount vs Streak
     /// - ใช้ comboTimer ร่วมกัน
