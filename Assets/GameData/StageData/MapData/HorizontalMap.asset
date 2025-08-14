@@ -38,7 +38,7 @@ MonoBehaviour:
     enemyPointGrowthRate: 12.5
     chance: 0
     enemyChanceCanGrowth: 1
-    enemyChanceGrowthRate: 2.22
+    enemyChanceGrowthRate: 1.5
     useCustomInterval: 0
     customInterval: 0
     useSpawnConditions: 0
@@ -51,7 +51,7 @@ MonoBehaviour:
     enemyPointGrowthRate: 12.5
     chance: 0
     enemyChanceCanGrowth: 1
-    enemyChanceGrowthRate: 0.37
+    enemyChanceGrowthRate: 0.6
     useCustomInterval: 0
     customInterval: 0
     useSpawnConditions: 0
@@ -64,7 +64,7 @@ MonoBehaviour:
     enemyPointGrowthRate: 12.5
     chance: 0
     enemyChanceCanGrowth: 1
-    enemyChanceGrowthRate: 1.33
+    enemyChanceGrowthRate: 0.8
     useCustomInterval: 0
     customInterval: 2
     useSpawnConditions: 0
@@ -77,7 +77,7 @@ MonoBehaviour:
     enemyPointGrowthRate: 12.5
     chance: 0
     enemyChanceCanGrowth: 1
-    enemyChanceGrowthRate: 0.66
+    enemyChanceGrowthRate: 0.5
     useCustomInterval: 0
     customInterval: 0
     useSpawnConditions: 0
@@ -90,7 +90,7 @@ MonoBehaviour:
     enemyPointGrowthRate: 12.5
     chance: 0
     enemyChanceCanGrowth: 1
-    enemyChanceGrowthRate: 0.13
+    enemyChanceGrowthRate: 0.2075
     useCustomInterval: 0
     customInterval: 0
     useSpawnConditions: 0
@@ -103,7 +103,7 @@ MonoBehaviour:
     enemyPointGrowthRate: 12.5
     chance: 0
     enemyChanceCanGrowth: 1
-    enemyChanceGrowthRate: 1.85
+    enemyChanceGrowthRate: 1
     useCustomInterval: 0
     customInterval: 0
     useSpawnConditions: 0
@@ -118,7 +118,7 @@ MonoBehaviour:
     enemyChanceCanGrowth: 0
     enemyChanceGrowthRate: 0
     useCustomInterval: 1
-    customInterval: 0.93
+    customInterval: 1.5
     useSpawnConditions: 0
     conditionLogic: 0
     spawnConditions: []
@@ -129,7 +129,7 @@ MonoBehaviour:
     enemyPointGrowthRate: 12.5
     chance: 0
     enemyChanceCanGrowth: 1
-    enemyChanceGrowthRate: 0.19
+    enemyChanceGrowthRate: 0.3
     useCustomInterval: 0
     customInterval: 0
     useSpawnConditions: 0
@@ -142,7 +142,7 @@ MonoBehaviour:
     enemyPointGrowthRate: 12.5
     chance: 0
     enemyChanceCanGrowth: 1
-    enemyChanceGrowthRate: 1.85
+    enemyChanceGrowthRate: 1
     useCustomInterval: 0
     customInterval: 0
     useSpawnConditions: 0
@@ -155,7 +155,7 @@ MonoBehaviour:
     enemyPointGrowthRate: 12.5
     chance: 0
     enemyChanceCanGrowth: 1
-    enemyChanceGrowthRate: 0.93
+    enemyChanceGrowthRate: 0.7
     useCustomInterval: 0
     customInterval: 0
     useSpawnConditions: 0
@@ -168,7 +168,7 @@ MonoBehaviour:
     enemyPointGrowthRate: 12.5
     chance: 0
     enemyChanceCanGrowth: 1
-    enemyChanceGrowthRate: 0.19
+    enemyChanceGrowthRate: 0.4
     useCustomInterval: 0
     customInterval: 0
     useSpawnConditions: 0
@@ -178,7 +178,7 @@ MonoBehaviour:
   intervalEnemyPointRatioUpgrade: 30
   PatternOptions:
   - enableThisPattern: 1
-    enableSpecificEnemy: 1
+    enableSpecificEnemy: 0
     specificEnemyList:
     - enemyID: Enemy_Normal
       chance: 50
@@ -262,9 +262,9 @@ MonoBehaviour:
     patternPoint: 20
     enablePatternCenter: 0
     patternCenter: {x: 0, y: 0}
-  playAllPatternIn: 10
-  triggerAllPatternIn: 180
-  triggerTimeCanDecrease: 0
+  playAllPatternIn: 60
+  triggerAllPatternIn: 60
+  triggerTimeCanDecrease: 1
   patternDecreaseInterval: 25
   patternDecreaseRate: 1
   patternDecreaseMinimum: 18
