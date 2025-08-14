@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Characters.Controllers;
 using Characters.SO.CharacterDataSO;
 using GameControl.SO;
@@ -54,7 +55,10 @@ namespace GameControl.Controller
                     useCustomInterval = data.useCustomInterval,
                     customInterval = data.customInterval,
                     EnemyObject = data.EnemyObject,
-                    Chance = data.Chance
+                    Chance = data.Chance,
+                    useSpawnConditions = data.useSpawnConditions,
+                    conditionLogic = data.conditionLogic,
+                    spawnConditions = data.spawnConditions != null ? new List<SpawnConditionSO>(data.spawnConditions) : null
                 };
                 _enemyOptionsList.Add(cloned);
 
@@ -126,7 +130,7 @@ namespace GameControl.Controller
                     data.EnemyPoint *= (1 + data.enemyPointGrowthRate / 100f);
             }
         }
-        
+ 
         public void UpgradeEnemyChance()
         {
             float totalChanceBefore = 0;
@@ -154,23 +158,25 @@ namespace GameControl.Controller
             }
         }
 
-
         public MapDataSO.EnemyOption SpawnEnemy()
         {
-            // Random Enemy
-            var randomEnemy = RandomUtility.GetWeightedRandom(_enemyOptionsList);
+            var candidates = _enemyOptionsList
+                .Where(e => e.IsSpawnable(_state, this, _mapdata))
+                .ToList();
+
+            if (candidates.Count == 0)
+                return null;
+            
+            var randomEnemy = RandomUtility.GetWeightedRandom(candidates);
             if (randomEnemy == null) return null;
 
-            // Get GameObject
             if (!_enemyPools.TryGetValue(randomEnemy.id, out var pool)) return null;
             pool.Get();
-            
-            // Spawn Point Decrease
-            SpawnerStateController.Instance.CurrentEnemyPoint -= randomEnemy.EnemyPoint;
 
+            SpawnerStateController.Instance.CurrentEnemyPoint -= randomEnemy.EnemyPoint;
             return randomEnemy;
         }
-        
+
         public void ClearAllEnemysCompletely()
         {
             ReleaseAllEnemies();
