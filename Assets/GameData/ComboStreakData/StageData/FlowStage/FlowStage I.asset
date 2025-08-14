@@ -14,9 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   stageId: flow_i
   displayName: Flow I
-  priority: 0
-  minStreakThreshold: 25
-  durationSeconds: 0
-  cooldownSeconds: 0
-  preventStreakDecrease: 0
-  freezeComboTimer: 0
+  effectOnEnter:
+  - effectData: {fileID: 11400000, guid: cb459ae7d7879dc4f851ae39e9d9de8b, type: 2}
+    isOverrideDuration: 1
+    overrideDuration: 999
+  removeEffectOnExit: 1

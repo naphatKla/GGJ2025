@@ -33,12 +33,12 @@ namespace Characters.UIDisplay
     {
         [FoldoutGroup("Combo Display"), Title("Ref"), SerializeField]
         private ComboStreakSystem comboStreakSystem;
-        
+
         [Title("UI"), FoldoutGroup("Combo Display")]
         public GameObject comboUI;
 
         [FoldoutGroup("Combo Display")] public TMP_Text killComboText;
-        [FoldoutGroup("Combo Display")] public TMP_Text scoreMultiply;      // แสดงตัวคูณ Boost (xN)
+        [FoldoutGroup("Combo Display")] public TMP_Text scoreMultiply; // แสดงตัวคูณ Boost (xN)
         [FoldoutGroup("Combo Display")] public ValueBar comboStreakBar;
         [FoldoutGroup("Combo Display")] public float tweenDuration = 0.1f;
         [FoldoutGroup("Combo Display")] public float scaleAmount = 1.2f;
@@ -46,27 +46,33 @@ namespace Characters.UIDisplay
         // ========= Combat =========
         [FoldoutGroup("Combat Display"), SerializeField]
         private CombatSystem combatSystem;
+
         [FoldoutGroup("Combat Display"), SerializeField]
         private TextMeshProUGUI worldTextUIPrefab;
 
         // ========= Level =========
         [FoldoutGroup("Level Display"), Title("Ref"), SerializeField]
         public LevelSystem levelSystem;
+
         [Title("UI"), FoldoutGroup("Level Display")]
         public TMP_Text levelText;
+
         [FoldoutGroup("Level Display")] public ValueBar levelbar;
 
         // ========= Health =========
         [FoldoutGroup("Health Display"), Title("Ref"), SerializeField]
         public HealthSystem healthSystem;
+
         [Title("UI"), FoldoutGroup("Health Display"), SerializeField]
         public MMProgressBar hpProgressBar;
 
         // ========= Solf Upgrade =========
         [FoldoutGroup("SolfUpgrade Display"), Title("Ref"), SerializeField]
         public SkillUpgradeController skillUpgradeController;
+
         [FoldoutGroup("SolfUpgrade Display"), Title("UI"), FoldoutGroup("SolfUpgrade Display")]
         public GameObject solfUpgradePanel;
+
         [FoldoutGroup("SolfUpgrade Display")] public SolfUpgradeModel solfUpgradeModel;
 
         private readonly Queue<BaseSkillDataSo> skillQueue = new();
@@ -75,27 +81,29 @@ namespace Characters.UIDisplay
         // ========= Skill Slot =========
         [FoldoutGroup("SkillSlot Display"), Title("Ref"), SerializeField]
         public SkillSystem skillSystem;
+
         [FoldoutGroup("SkillSlot Display"), Title("UI"), FoldoutGroup("SkillSlot Display"), SerializeField]
         private List<SkillSlotModel> skillSlotModel;
 
         // ========= Score =========
         [FoldoutGroup("Score Display"), Title("Ref"), SerializeField]
         private ScoreSystem scoreSystem;
+
         [FoldoutGroup("Score Display"), SerializeField, Title("UI")]
         private TextMeshProUGUI scoreText;
-        
+
         private System.Action<float> _onHealthChangeUpdateUIHandler;
         private System.Action<float> _onHealthChangeTextHandler;
 
         private void Start()
         {
             PlayerController.Instance.OnResetAllBehavior += UpdateAllUI;
-            
+
             if (comboStreakSystem != null)
             {
-                comboStreakSystem.OnKillComboChanged += UpdateKillComboText;          // int → UI streak
-                comboStreakSystem.OnStageUpdate += UpdateComboStreakBar;    
-                comboStreakSystem.OnBoostChanged += UpdateBoostMultiplierText;       // float xN
+                comboStreakSystem.OnKillComboChanged += UpdateKillComboText; // int → UI streak
+                comboStreakSystem.OnStageUpdate += UpdateComboStreakBar;
+                comboStreakSystem.OnBoostChanged += UpdateBoostMultiplierText; // float xN
                 //comboStreakSystem.OnTimerTick  // float seconds
                 //comboStreakSystem.OnGradeChanged
                 //comboStreakSystem.OnStageEnter
@@ -104,7 +112,7 @@ namespace Characters.UIDisplay
 
             levelSystem.OnLevelUpdate += UpdateLevelUI;
             skillUpgradeController.OnSkillUpgradeOptionsGenerated += SolfUpgradePopup;
-            
+
             _onHealthChangeUpdateUIHandler = OnHealthChange_UpdateHPUI;
             _onHealthChangeTextHandler = UpdateHealthText;
 
@@ -119,8 +127,9 @@ namespace Characters.UIDisplay
             combatSystem.OnDealDamage += UpdateDamageText;
             scoreSystem.OnScoreChange += UpdateScoreUI;
 
-            PoolingManager.Instance.Create<TextMeshProUGUI>(worldTextUIPrefab.name, PoolingGroupName.UI, CreateDamageText);
-            
+            PoolingManager.Instance.Create<TextMeshProUGUI>(worldTextUIPrefab.name, PoolingGroupName.UI,
+                CreateDamageText);
+
             UpdateAllUI();
         }
 
@@ -132,7 +141,7 @@ namespace Characters.UIDisplay
             {
                 comboStreakSystem.OnStreakChanged -= UpdateKillComboText;
                 comboStreakSystem.OnBoostChanged -= UpdateBoostMultiplierText;
-                comboStreakSystem.OnStageUpdate -= UpdateComboStreakBar; 
+                comboStreakSystem.OnStageUpdate -= UpdateComboStreakBar;
             }
 
             levelSystem.OnLevelUpdate -= UpdateLevelUI;
@@ -143,7 +152,7 @@ namespace Characters.UIDisplay
                 healthSystem.OnHealthChange -= _onHealthChangeUpdateUIHandler;
                 healthSystem.OnHealthChange -= _onHealthChangeTextHandler;
             }
-            
+
             skillSystem.OnNewSkillAssign -= AssignSkillSlot;
             skillSystem.OnSkillCooldownUpdate -= UpdateCooldownSlot;
             skillSystem.OnSkillCooldownReset -= ResetSkillSlot;
@@ -157,11 +166,8 @@ namespace Characters.UIDisplay
         private void UpdateAllUI()
         {
             if (comboStreakBar != null && comboStreakSystem.Data != null)
-            {
-                comboStreakBar.MaxValue = comboStreakSystem.Data.comboTimeoutSeconds;
-                comboStreakBar.CurrentValue = 0f; 
-            }
-            
+                comboStreakBar.CurrentValue = 0f;
+
             if (comboUI) comboUI.SetActive(false);
             if (killComboText) killComboText.text = "0 STRIKE!";
             if (scoreMultiply) scoreMultiply.text = "x0";
@@ -175,10 +181,12 @@ namespace Characters.UIDisplay
         private void UpdateComboStreakBar(int currentStageMinStreak, int currentStreak, int nextStageMinStreak)
         {
             if (!comboStreakBar || !comboUI) return;
-            
+
             comboUI.SetActive(currentStreak > 0);
-            comboStreakBar.MinValue = currentStageMinStreak;
-            comboStreakBar.MaxValue = currentStageMinStreak == nextStageMinStreak? nextStageMinStreak + 1 : nextStageMinStreak;
+            comboStreakBar.MinValue = currentStageMinStreak == nextStageMinStreak
+                ? currentStageMinStreak - 1
+                : currentStageMinStreak;
+            comboStreakBar.MaxValue = nextStageMinStreak;
             var clampValue = Mathf.Clamp(currentStreak, currentStageMinStreak, comboStreakBar.MaxValue);
             comboStreakBar.CurrentValue = clampValue;
         }
@@ -204,7 +212,7 @@ namespace Characters.UIDisplay
             if (scoreMultiply == null) return;
             scoreMultiply.text = $"x{multiplierX:0.##}";
         }
-        
+
         #endregion
 
         #region Combat UI
@@ -440,7 +448,7 @@ namespace Characters.UIDisplay
             skillSlotModel[skillIndex].skillIcon.sprite = skill.SkillIcon;
             ResetSkillSlot(skillIndex);
         }
-        
+
         private void SkillPerfrom(int skillIndex)
         {
             if (skillIndex < 0 || skillIndex >= skillSlotModel.Count) return;
@@ -469,7 +477,7 @@ namespace Characters.UIDisplay
             skillSlotModel[skillIndex].cooldownText.text = "";
             skillSlotModel[skillIndex].valueBar.CurrentValue = 0;
         }
-        
+
         private void SkillPlayFeedback(Transform tf, Image skillframe)
         {
             /*var seq = DOTween.Sequence();
@@ -478,12 +486,13 @@ namespace Characters.UIDisplay
         }
 
         private Sequence _skillResetSequence;
+
         private void SkillResetFeedback(Transform tf, Image skillframe)
         {
             _skillResetSequence.Kill(true);
             _skillResetSequence = DOTween.Sequence();
-            _skillResetSequence.Append(skillframe.DOColor(Color.green, 0.15f).SetDelay(0.1f).SetLoops(2, LoopType.Yoyo));
-            
+            _skillResetSequence.Append(skillframe.DOColor(Color.green, 0.15f).SetDelay(0.1f)
+                .SetLoops(2, LoopType.Yoyo));
         }
 
         #endregion

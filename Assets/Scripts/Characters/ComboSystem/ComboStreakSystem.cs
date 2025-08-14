@@ -73,6 +73,9 @@ namespace Characters.ComboSystem
 
         public event Action<BaseComboStageSo> OnStageExit;
 
+        public event Action OnBerserkEnter;
+        public event Action OnBerserkExit;
+
         /// <summary>ช่องทางส่งสัญญาณให้ระบบอื่น (Stats/FX/Heal ฯลฯ)</summary>
         public event Action<string, float, float, float> OnStageEffect;
 
@@ -89,6 +92,8 @@ namespace Characters.ComboSystem
             // OnGradeChanged += s => Debug.Log(s);
             // OnKillCountChanged += i => Debug.Log($"Kill : {i}");
             // OnStageUpdate += (i, i1, arg3) => Debug.Log($"currentThreshould: {i}, currentStreak: {i1}, nexThreshold: {arg3}");
+            OnBerserkEnter += () => Debug.Log("BerserkEnter");
+            OnBerserkExit += () => Debug.Log("BerserkExit");
 
             ResetAll();
         }
@@ -235,7 +240,7 @@ namespace Characters.ComboSystem
 
         private void SetStreak(int value)
         {
-            int clamped = Mathf.Max(0, value);
+            int clamped = Mathf.Clamp(value, 0, data.maxRewardStreak);
             if (clamped == CurrentStreak) return;
 
             CurrentStreak = clamped;
@@ -323,15 +328,15 @@ namespace Characters.ComboSystem
                 EnterStageTier(nextTierIdx);
 
                 // ถ้าคือขั้นสุดท้าย → จัดการ behavior จาก Manager
-                if (IsInFinalStage)
-                {
-                    if (data.finalStageResetComboTimerOnEnter)
-                        ResetComboTimerToMax();
+                if (!IsInFinalStage) return;
+                if (data.finalStageResetComboTimerOnEnter)
+                    ResetComboTimerToMax();
 
-                    finalStageTimer = data.finalStageAutoExitSeconds > 0f
-                        ? data.finalStageAutoExitSeconds
-                        : 0f;
-                }
+                finalStageTimer = data.finalStageAutoExitSeconds > 0f
+                    ? data.finalStageAutoExitSeconds
+                    : 0f;
+                    
+                OnBerserkEnter?.Invoke();
             }
         }
 
@@ -356,12 +361,15 @@ namespace Characters.ComboSystem
                 return;
             }
 
+            if (IsInFinalStage)
+                OnBerserkExit?.Invoke();
+            
             var exiting = activeStage;
 
             activeStage = null;
             activeTierIndex = -1;
             finalStageTimer = 0f;
-
+            
             exiting.OnExit(new StageContext(this, CurrentStreak));
             OnStageExit?.Invoke(exiting);
         }
