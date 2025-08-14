@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Characters.CombatSystems;
 using Characters.ComboSystem;
@@ -6,7 +7,6 @@ using Characters.HeathSystems;
 using Characters.LevelSystems;
 using Characters.ScoreSystems;
 using Characters.SkillSystems;
-using Characters.SO.ComboStreakDataSO;
 using Characters.SO.ComboStreakDataSO.StageDataSO;
 using Characters.SO.SkillDataSo;
 using Cysharp.Threading.Tasks;
@@ -19,8 +19,8 @@ using Sirenix.OdinInspector;
 using TMPro;
 using UI.IngameModal;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 // ====== เพิ่มเติม ======
 
@@ -44,6 +44,17 @@ namespace Characters.UIDisplay
         [FoldoutGroup("Combo Display")] public ValueBar comboStreakBar;
         [FoldoutGroup("Combo Display")] public float tweenDuration = 0.1f;
         [FoldoutGroup("Combo Display")] public float scaleAmount = 1.2f;
+        
+        
+        [Title("Grade Combo")] [FoldoutGroup("Combo Display")]
+        public Image gradeImage;
+        
+        [Serializable]
+        public struct GradeCombo { public string gradeId; public Sprite gradeImage; }
+           
+        [FoldoutGroup("Combo Display")]
+        public List<GradeCombo> gradeComboList;
+        
 
         // ========= Combat =========
         [FoldoutGroup("Combat Display"), SerializeField]
@@ -107,7 +118,7 @@ namespace Characters.UIDisplay
                 comboStreakSystem.OnStageUpdate += UpdateComboStreakBar;
                 comboStreakSystem.OnBoostChanged += UpdateBoostMultiplierText; // float xN
                 //comboStreakSystem.OnTimerTick  // float seconds
-                //comboStreakSystem.OnGradeChanged
+                comboStreakSystem.OnGradeChanged += UpdateGradeCombo;
                 comboStreakSystem.OnStageEnter += ComboValueBarUpdate;
                 comboStreakSystem.OnStageExit += ComboValueBarUpdate;
                 comboStreakSystem.OnBerserkEnter += OnBerserkEnter;
@@ -151,6 +162,7 @@ namespace Characters.UIDisplay
                 comboStreakSystem.OnStageExit -= ComboValueBarUpdate;
                 comboStreakSystem.OnBerserkEnter -= OnBerserkEnter;
                 comboStreakSystem.OnBerserkExit -= OnBerserkExit;
+                comboStreakSystem.OnGradeChanged -= UpdateGradeCombo;
             }
 
             levelSystem.OnLevelUpdate -= UpdateLevelUI;
@@ -236,6 +248,11 @@ namespace Characters.UIDisplay
                     comboStreakBar.FillImage.color = Color.green;
                     break;
             }
+        }
+
+        private void UpdateGradeCombo(string grade)
+        {
+            
         }
 
         private void OnBerserkEnter()
