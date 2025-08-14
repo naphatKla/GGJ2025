@@ -34,11 +34,13 @@ namespace GameControl.EventMap
     {
         [HideInInspector] public Transform spawnPointRef;
 
+        [Title("➡️ Time & Delay Data")]
+        [FoldoutGroup("$GroupName")] public float deleteTime = 2f;
+        [FoldoutGroup("$GroupName")] public float delayPerform = 1f;
         [PropertySpace] [FoldoutGroup("$GroupName")] [Title("➡️ Runtime Data (Serializable)")]
         public Vector3 spawnPosition;
-
+        
         [FoldoutGroup("$GroupName")] public Vector3 spawnEulerAngles;
-
         [FoldoutGroup("$GroupName")] public HitboxType hitboxType = HitboxType.None;
 
         #region Box
@@ -160,16 +162,17 @@ namespace GameControl.EventMap
                     DelayMode.Additive => cumulativeDelay,
                     _ => 0f
                 };
-
+                var baseEvent = go.GetComponent<BaseMapEvent>();
                 var entry = new MapEventStorageEntry
                 {
                     spawnPosition = go.transform.position,
                     spawnEulerAngles = go.transform.eulerAngles,
                     eventPrefab = prefabAsset,
-                    delayBetweenEvents = delay
+                    delayBetweenEvents = delay,
+                    deleteTime = baseEvent.deletetime,
+                    delayPerform = baseEvent.delayBeforePerform
                 };
-
-                var baseEvent = go.GetComponent<BaseMapEvent>();
+                
                 if (baseEvent is IBoxHitbox box)
                 {
                     entry.hitboxType = HitboxType.Box;
