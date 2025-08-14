@@ -32,7 +32,8 @@ namespace GameControl.EventMap
             if (previewEffect == null) return;
             var main = previewEffect.main;
             float originalDuration = main.duration;
-            main.simulationSpeed = originalDuration / delayBeforePerform;
+            main.simulationSpeed = originalDuration / entry.delayPerform;
+            deletetime = entry.deleteTime;
 
             
             switch (entry.hitboxType)

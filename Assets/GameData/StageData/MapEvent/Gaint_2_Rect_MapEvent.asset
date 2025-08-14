@@ -14,10 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   entries:
   - spawnPointRef: {fileID: 0}
+    deleteTime: 5
+    delayPerform: 3
     spawnPosition: {x: -26.8, y: -40.2, z: 0}
     spawnEulerAngles: {x: -0, y: 0, z: 0}
-    hitboxType: 0
-    boxSize: {x: 10, y: 10, z: 10}
+    hitboxType: 1
+    boxSize: {x: 2, y: 100, z: 0}
     boxOffset: {x: 0, y: 0, z: 0}
     sphereRadius: 0
     sphereOffset: {x: 0, y: 0, z: 0}
@@ -29,10 +31,12 @@ MonoBehaviour:
     enableChance: 0
     chance: 0.5
   - spawnPointRef: {fileID: 0}
+    deleteTime: 5
+    delayPerform: 3
     spawnPosition: {x: 27, y: -40.2, z: 0}
     spawnEulerAngles: {x: -0, y: 0, z: 0}
     hitboxType: 1
-    boxSize: {x: 10, y: 10, z: 10}
+    boxSize: {x: 2, y: 100, z: 0}
     boxOffset: {x: 0, y: 0, z: 0}
     sphereRadius: 0
     sphereOffset: {x: 0, y: 0, z: 0}
