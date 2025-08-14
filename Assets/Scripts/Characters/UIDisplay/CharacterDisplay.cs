@@ -18,6 +18,7 @@ using Sirenix.OdinInspector;
 using TMPro;
 using UI.IngameModal;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 // ====== เพิ่มเติม ======
@@ -36,9 +37,9 @@ namespace Characters.UIDisplay
         [Title("UI"), FoldoutGroup("Combo Display")]
         public GameObject comboUI;
 
-        [FoldoutGroup("Combo Display")] public TMP_Text comboStreakText;
+        [FoldoutGroup("Combo Display")] public TMP_Text killComboText;
         [FoldoutGroup("Combo Display")] public TMP_Text scoreMultiply;      // แสดงตัวคูณ Boost (xN)
-        [FoldoutGroup("Combo Display")] public ValueBar comboTimeoutBar;
+        [FoldoutGroup("Combo Display")] public ValueBar comboStreakBar;
         [FoldoutGroup("Combo Display")] public float tweenDuration = 0.1f;
         [FoldoutGroup("Combo Display")] public float scaleAmount = 1.2f;
 
@@ -92,9 +93,13 @@ namespace Characters.UIDisplay
             
             if (comboStreakSystem != null)
             {
-                comboStreakSystem.OnStreakChanged += UpdateComboStreakText;          // int → UI streak
-                comboStreakSystem.OnTimerTick += UpdateComboTimeBar;           // float seconds
+                comboStreakSystem.OnKillComboChanged += UpdateKillComboText;          // int → UI streak
+                comboStreakSystem.OnStageUpdate += UpdateComboStreakBar;    
                 comboStreakSystem.OnBoostChanged += UpdateBoostMultiplierText;       // float xN
+                //comboStreakSystem.OnTimerTick  // float seconds
+                //comboStreakSystem.OnGradeChanged
+                //comboStreakSystem.OnStageEnter
+                //comboStreakSystem.OnStageExit
             }
 
             levelSystem.OnLevelUpdate += UpdateLevelUI;
@@ -125,9 +130,9 @@ namespace Characters.UIDisplay
 
             if (comboStreakSystem != null)
             {
-                comboStreakSystem.OnStreakChanged -= UpdateComboStreakText;
-                comboStreakSystem.OnTimerTick -= UpdateComboTimeBar;
+                comboStreakSystem.OnStreakChanged -= UpdateKillComboText;
                 comboStreakSystem.OnBoostChanged -= UpdateBoostMultiplierText;
+                comboStreakSystem.OnStageUpdate -= UpdateComboStreakBar; 
             }
 
             levelSystem.OnLevelUpdate -= UpdateLevelUI;
@@ -151,14 +156,14 @@ namespace Characters.UIDisplay
 
         private void UpdateAllUI()
         {
-            if (comboTimeoutBar != null && comboStreakSystem.Data != null)
+            if (comboStreakBar != null && comboStreakSystem.Data != null)
             {
-                comboTimeoutBar.MaxValue = comboStreakSystem.Data.comboTimeoutSeconds;
-                comboTimeoutBar.CurrentValue = 0f; 
+                comboStreakBar.MaxValue = comboStreakSystem.Data.comboTimeoutSeconds;
+                comboStreakBar.CurrentValue = 0f; 
             }
             
             if (comboUI) comboUI.SetActive(false);
-            if (comboStreakText) comboStreakText.text = "0 STRIKE!";
+            if (killComboText) killComboText.text = "0 STRIKE!";
             if (scoreMultiply) scoreMultiply.text = "x0";
 
             UpdateLevelUI();
@@ -167,26 +172,25 @@ namespace Characters.UIDisplay
 
         #region Combo UI (ใหม่)
 
-        private void UpdateComboTimeBar(float currentTimeSec, float maxTimeSec)
+        private void UpdateComboStreakBar(int currentStageMinStreak, int currentStreak, int nextStageMinStreak)
         {
-            if (!comboTimeoutBar || !comboUI) return;
+            if (!comboStreakBar || !comboUI) return;
             
-            comboUI.SetActive(currentTimeSec > 0.0001f || (comboStreakText && comboStreakText.text != "0 STRIKE!"));
-
-            if (comboTimeoutBar.MaxValue <= 0.0001f)
-                comboTimeoutBar.MaxValue = maxTimeSec;
-
-            comboTimeoutBar.CurrentValue = Mathf.Clamp(currentTimeSec, 0f, comboTimeoutBar.MaxValue);
+            comboUI.SetActive(currentStreak > 0);
+            comboStreakBar.MinValue = currentStageMinStreak;
+            comboStreakBar.MaxValue = currentStageMinStreak == nextStageMinStreak? nextStageMinStreak + 1 : nextStageMinStreak;
+            var clampValue = Mathf.Clamp(currentStreak, currentStageMinStreak, comboStreakBar.MaxValue);
+            comboStreakBar.CurrentValue = clampValue;
         }
 
-        private void UpdateComboStreakText(int streak)
+        private void UpdateKillComboText(int streak)
         {
             if (!comboUI) return;
 
             comboUI.SetActive(streak > 0);
 
-            if (comboStreakText != null)
-                comboStreakText.text = $"{streak} STRIKE!";
+            if (killComboText != null)
+                killComboText.text = $"{streak} STRIKE!";
 
             // pop tween
             comboUI.transform

@@ -62,7 +62,7 @@ namespace Characters.ComboSystem
             IsInFinalStage && data.finalStagePreventStreakDecrease;
 
         // ===== Events =====
-        public event Action<int> OnKillCountChanged;
+        public event Action<int> OnKillComboChanged;
         public event Action<string> OnGradeChanged;
         public event Action<int> OnStreakChanged;
 
@@ -122,7 +122,7 @@ namespace Characters.ComboSystem
         {
             // KillCount ไม่มีเพดาน
             KillCount++;
-            OnKillCountChanged?.Invoke(KillCount);
+            OnKillComboChanged?.Invoke(KillCount);
             EvaluateGrade();
 
             // +1 Streak
@@ -222,7 +222,7 @@ namespace Characters.ComboSystem
                     {
                         // คอมโบหมดเวลา → รีเซ็ตทุกอย่าง
                         KillCount = 0;
-                        OnKillCountChanged?.Invoke(KillCount);
+                        OnKillComboChanged?.Invoke(KillCount);
                         SetStreak(0);
 
                         ForceExitStage();
@@ -374,41 +374,19 @@ namespace Characters.ComboSystem
             OnStageExit?.Invoke(exiting);
         }
 
-        /// <summary>ส่งค่าปัจจุบันให้ UI อัปเดตแถบขั้น</summary>
+        /// <summary>
+        /// ส่งค่าอัปเดต UI แบบ “ช่วง” ซ้อนทับกัน:
+        /// [0 -> T0], [T0 -> T1], ..., [T(n-2) -> T(n-1)]
+        /// หากตอนนี้อยู่สเตจสุดท้ายแล้ว จะไม่ส่งอัปเดต
+        /// </summary>
         private void PushStageUpdate()
         {
-            int currentMin = 0;
-            int nextMin = -1;
-
             var tiers = data.stageTiers;
+            if (tiers == null || tiers.Count == 0) return;
 
-            if (tiers != null && tiers.Count > 0)
-            {
-                if (activeTierIndex >= 0 && activeTierIndex < tiers.Count)
-                {
-                    // มีสเตจอยู่ → current = เกณฑ์ของสเตจนั้น
-                    currentMin = tiers[activeTierIndex].minStreak;
-
-                    // next = เกณฑ์ของ tier ถัดไป (ถ้ามี)
-                    int nextIdx = activeTierIndex + 1;
-                    if (nextIdx < tiers.Count)
-                        nextMin = tiers[nextIdx].minStreak;
-                }
-                else
-                {
-                    // ยังไม่มีสเตจ → current = เกณฑ์ของ "ผู้ท้าชิงถัดไป"
-                    int candidateIdx = highestTierReached + 1;
-                    if (candidateIdx >= 0 && candidateIdx < tiers.Count)
-                    {
-                        currentMin = tiers[candidateIdx].minStreak;
-
-                        // next = ของถัดจากนั้น
-                        int nx = candidateIdx + 1;
-                        if (nx < tiers.Count)
-                            nextMin = tiers[nx].minStreak;
-                    }
-                }
-            }
+            var currentMin = activeTierIndex == -1? 0 : tiers[activeTierIndex].minStreak;
+            int nextIndex = activeTierIndex + 1;
+            var nextMin = nextIndex >= tiers.Count ? currentMin : tiers[nextIndex].minStreak;
 
             OnStageUpdate?.Invoke(currentMin, CurrentStreak, nextMin);
         }
