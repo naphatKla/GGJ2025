@@ -90,12 +90,15 @@ namespace PixelUI {
             }
         }
 
-        public float GetPercentage() {
-            return GetNormalized() * 100;
+        public float GetNormalized() {
+            if (Mathf.Approximately(MaxValue, MinValue)) 
+                return 0;
+
+            return (CurrentValue - MinValue) / (MaxValue - MinValue);
         }
 
-        public float GetNormalized() {
-            return CurrentValue / MaxValue;
+        public float GetPercentage() {
+            return GetNormalized() * 100f;
         }
 
         public void OnValidate() {
@@ -121,7 +124,7 @@ namespace PixelUI {
             if (parentRect == null) return;
 
             var parentWidth = parentRect.rect.width;
-            var healthPercentage = Mathf.Clamp(DisplayValue / MaxValue, 0, 1);
+            var healthPercentage = Mathf.Clamp01(GetNormalized());
             var newWidth = parentWidth * healthPercentage;
 
             switch (Mode) {
@@ -145,7 +148,7 @@ namespace PixelUI {
             if (parentRect == null) return;
 
             var parentWidth = parentRect.rect.width;
-            var healthPercentage = Mathf.Clamp(FollowUpValue / MaxValue, 0, 1);
+            var healthPercentage = Mathf.Clamp01(GetNormalized());
             var newWidth = parentWidth * healthPercentage;
 
             switch (Mode) {

@@ -15,7 +15,9 @@ namespace Characters.MovementSystems
         {
             float dt = Time.fixedDeltaTime;
             currentDirection = SmoothVector(currentDirection, direction, turnAccelerationRate);
-            Vector2 desiredVelocity = overrideVelocity ?? currentDirection * currentSpeed;
+            float calculatedCurrentSpeed = currentSpeed + (currentSpeed * (currentSpeedMultiplier / 100));
+            
+            Vector2 desiredVelocity = overrideVelocity ?? currentDirection * calculatedCurrentSpeed;
             currentVelocity = SmoothVector(currentVelocity, desiredVelocity, moveAccelerationRate);
             Vector2 newPos = (Vector2)transform.position + currentVelocity * dt;
             TryMoveRawPosition(newPos);

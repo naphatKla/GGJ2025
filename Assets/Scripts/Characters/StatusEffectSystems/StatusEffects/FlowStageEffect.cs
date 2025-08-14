@@ -1,5 +1,6 @@
 using Characters.Controllers;
 using Characters.SO.StatusEffectSO;
+using UnityEngine;
 
 namespace Characters.StatusEffectSystems.StatusEffects
 {
@@ -7,17 +8,21 @@ namespace Characters.StatusEffectSystems.StatusEffects
     {
         public override void OnStart(BaseController owner)
         {
-            throw new System.NotImplementedException();
+            owner.CombatSystem.AddCurrentDamage(effectData.DamageIncrease);
+            owner.CombatSystem.AddCurrentDamageMultiplierPercent(effectData.DamagePercentIncrease);
+            owner.MovementSystem.AddCurrentSpeedMultiplier(effectData.SpeedPercentIncrease);
         }
 
         public override void OnUpdate(BaseController owner, float deltaTime)
         {
-            throw new System.NotImplementedException();
+            
         }
 
         public override void OnExit(BaseController owner)
         {
-            throw new System.NotImplementedException();
+            owner.CombatSystem.AddCurrentDamage(-effectData.DamageIncrease);
+            owner.CombatSystem.AddCurrentDamageMultiplierPercent(-effectData.DamagePercentIncrease);
+            owner.MovementSystem.AddCurrentSpeedMultiplier(-effectData.SpeedPercentIncrease);
         }
     }
 }

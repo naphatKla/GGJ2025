@@ -42,7 +42,7 @@ namespace GameControl.EventMap
             var eventsToRun = GetFilteredEvents(storage);
             foreach (var entry in eventsToRun)
             {
-                await PlayEntry(entry, playerPost);
+                PlayEntry(entry, playerPost);
                 await UniTask.Delay(TimeSpan.FromSeconds(GetDelayForEntry(entry, storage)));
             }
         }
@@ -90,7 +90,7 @@ namespace GameControl.EventMap
                 return EventMode.RandomAndPlay;
         }
 
-        private async UniTask PlayEntry(MapEventStorageEntry entry, Vector3 playerPost)
+        private void PlayEntry(MapEventStorageEntry entry, Vector3 playerPost)
         {
             var pool = GetOrCreatePool(entry.eventPrefab);
             var instance = pool.Get();
@@ -99,8 +99,9 @@ namespace GameControl.EventMap
             instance.transform.position = playerPost + entry.spawnPosition;
             instance.transform.rotation = Quaternion.Euler(entry.spawnEulerAngles);
 
+            instance.ApplyEffect(entry);
             instance.ApplyHitbox(entry);
-            await instance.Play();
+            instance.Play().Forget();
         }
 
         private float GetDelayForEntry(MapEventStorageEntry entry, MapEventContainerSO storage)

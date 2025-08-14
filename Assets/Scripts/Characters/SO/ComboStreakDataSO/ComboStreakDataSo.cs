@@ -1,77 +1,100 @@
+using System;
+using System.Collections.Generic;
+using Characters.SO.ComboStreakDataSO.StageDataSO;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace Characters.SO.ComboStreakDataSO
 {
-    [CreateAssetMenu(menuName = "GameData/ComboStreak/ComboStreakData")]
+    [Serializable]
+    public class KillGrade
+    {
+        [MinValue(0)] public int minKillCount = 0;
+        public string label = "D"; // D, C, B, A, S, SS, SSS
+    }
+
+    [Serializable]
+    public class StageTierEntry
+    {
+        [MinValue(1)]
+        public int minStreak = 25;
+
+        [Required, AssetsOnly]
+        public BaseComboStageSo stage;
+    }
+
+    [CreateAssetMenu(menuName = "GameData/ComboStreak/ComboStreakData/DefaultComboStreakData")]
     public class ComboStreakDataSo : ScriptableObject
     {
-        [FoldoutGroup("Streak Configs"), Unit(Units.Second)]
-        public float streakTimeoutSeconds = 4.5f;
+        [FoldoutGroup("Timer"), Unit(Units.Second)]
+        public float comboTimeoutSeconds = 4.5f;
 
-        [FoldoutGroup("Streak Configs")]
+        [FoldoutGroup("Streak")]
         [MinValue(0)]
         public int maxRewardStreak = 50;
 
-        [FoldoutGroup("Streak Configs"), Unit(Units.Percent)]
+        [FoldoutGroup("Streak"), Unit(Units.Percent)]
         [LabelText("On-Hit: Reduce Streak (%)")]
-        [MinValue(0f)]
-        public float onHitStreakReducePercent = 20f;     // เช่น 20 = ลด 20% ของสตรีคปัจจุบัน
+        [MinValue(0)]
+        public float onHitStreakReducePercent = 20f; // 20 = ลด 20%
 
-        [FoldoutGroup("Boost Anergy"), Unit(Units.Percent)]
+        [FoldoutGroup("Boost"), Unit(Units.Percent)]
         [LabelText("Boost per Streak (%)")]
-        [MinValue(0f)]
-        public float boostPerStreakPercent = 10f;        // 10 = +10% ต่อ streak
+        [MinValue(0)]
+        public float boostPerStreakPercent = 10f; // 10 = +10% ต่อสตรีค
 
-        [FoldoutGroup("Boost Anergy"), Unit(Units.Percent)]
+        [FoldoutGroup("Boost"), Unit(Units.Percent)]
         [LabelText("Max Boost (%)")]
-        [MinValue(0f)]
-        public float maxBoostPercent = 500f;             // 500 = x5
+        [MinValue(0)]
+        public float maxBoostPercent = 500f; // 500 = x5
 
-        [FoldoutGroup("Boost Anergy"), Unit(Units.Percent)]
+        [FoldoutGroup("Boost"), Unit(Units.Percent)]
         [LabelText("On-Hit: Penalty of Max Boost (%)")]
-        [MinValue(0f)]
-        public float onHitBoostPenaltyPercentOfMax = 10f; // 10 = ลด 10% ของ Max Boost
-
-        [FoldoutGroup("Flow Stage")]
         [MinValue(0)]
-        public int stageIThreshold = 25;
+        public float onHitBoostPenaltyPercentOfMax = 10f; // 10 = -10% ของ Max
 
-        [FoldoutGroup("Flow Stage")]
+        // ===== Kill Grade =====
+        [FoldoutGroup("Grades")]
+        public List<KillGrade> killGrades = new()
+        {
+            new KillGrade{minKillCount=0,  label="D"},
+            new KillGrade{minKillCount=10, label="C"},
+            new KillGrade{minKillCount=25, label="B"},
+            new KillGrade{minKillCount=50, label="A"},
+            new KillGrade{minKillCount=75, label="S"},
+            new KillGrade{minKillCount=100,label="SS"},
+            new KillGrade{minKillCount=150,label="SSS"},
+        };
+
+        // ===== Stages as Tiers (minStreak -> Stage) =====
+        [FoldoutGroup("Stages (Tiers)")]
+        [InfoBox("เรียงจากเกณฑ์น้อย -> มาก; แต่ละ tier ทริกเกอร์ครั้งเดียวต่อรอบคอมโบ")]
+        public List<StageTierEntry> stageTiers = new();
+
+        // ===== Final Stage Controls (คุมโดย Manager) =====
+        [FoldoutGroup("Final Stage Controls")]
+        [Tooltip("รีเซ็ต Combo Timer เป็นค่าสูงสุดทันทีเมื่อเข้าสเตจสุดท้าย")]
+        public bool finalStageResetComboTimerOnEnter = true;
+
+        [FoldoutGroup("Final Stage Controls")]
+        [Tooltip("ในสเตจสุดท้าย: แช่ Combo Timer ไม่ให้ลด")]
+        public bool finalStageFreezeComboTime = true;
+
+        [FoldoutGroup("Final Stage Controls")]
+        [Tooltip("ในสเตจสุดท้าย: ป้องกันการลดสตรีคเมื่อโดนตี")]
+        public bool finalStagePreventStreakDecrease = true;
+
+        [FoldoutGroup("Final Stage Controls"), Unit(Units.Second)]
+        [Tooltip("ถ้า > 0 จะจบสเตจสุดท้ายอัตโนมัติเมื่อเวลาหมด (คุมโดย Manager)")]
+        public float finalStageAutoExitSeconds = 0f; // 0 = ไม่ออโต้
+
+        [FoldoutGroup("Final Stage Controls")]
+        [Tooltip("เมื่อจบสเตจสุดท้าย ให้ลดสตรีคลงจำนวนนี้")]
         [MinValue(0)]
-        public int stageIIThreshold = 50;
+        public int finalStageExitReduceStreak = 25;
 
-        [FoldoutGroup("Flow Stage"), Unit(Units.Second)]
-        public float stageIIDuration = 20f;
-
-        [FoldoutGroup("Flow Stage")]
-        [MinValue(0)]
-        public int stageIIEndReduceStreak = 25;          // จบแล้วตัด 25
-
-        [FoldoutGroup("Flow Stage"), Unit(Units.Second)]
-        public float stageIICooldownSeconds = 20f;
-
-        // ----- Stage I -----
-        [FoldoutGroup("Flow Stage/Flow Stage I Effect")]
-        [LabelText("Stage I: +Flat Damage")]
-        public int stageIDamageFlat = 17;
-
-        // ----- Stage II -----
-        [FoldoutGroup("Flow Stage/Flow Stage II Effect"), Unit(Units.Percent)]
-        [LabelText("Stage II: +Damage (%)")]
-        public float stageIIDamagePercent = 50f;         // 50 = +50%
-
-        [FoldoutGroup("Flow Stage/Flow Stage II Effect"), Unit(Units.Percent)]
-        [LabelText("Stage II: +Max Speed (%)")]
-        public float stageIISpeedPercent = 50f;          // 50 = +50%
-
-        [FoldoutGroup("Flow Stage/Flow Stage II Effect"), Unit(Units.Second)]
-        [LabelText("Stage II: Dash Duration Δ (sec)")]
-        public float stageIIDashDurationDeltaSeconds = -0.1f;
-
-        [FoldoutGroup("Flow Stage/Flow Stage II Effect")]
-        [LabelText("Stage II: Heal Every N Streaks")]
-        [MinValue(1)]
-        public int stageIIHealEveryNStreaks = 10;        // heal ทุก 10 streak ระหว่าง Stage II
+        [FoldoutGroup("Final Stage Controls")]
+        [Tooltip("เมื่อจบสเตจสุดท้าย รีเซ็ต progression ของสเตจ เพื่อให้ผู้เล่นวนเก็บใหม่")]
+        public bool finalStageResetStageProgression = true;
     }
 }

@@ -73,6 +73,7 @@ namespace Characters.Controllers
         {
             levelSystem.OnLevelUp += skillUpgradeController.OnLevelUp;
             combatSystem.OnKill += comboStreakSystem.OnEnemyKilled;
+            HealthSystem.OnTakeDamage += comboStreakSystem.OnPlayerHit;
             UIManager.Instance.OnAnyPanelOpen += OnAnyUIOpen;
             UIManager.Instance.OnAllPanelClosed += OnAllUIClosed;
 
@@ -83,6 +84,7 @@ namespace Characters.Controllers
         {
             levelSystem.OnLevelUp -= skillUpgradeController.OnLevelUp;
             combatSystem.OnKill -= comboStreakSystem.OnEnemyKilled;
+            HealthSystem.OnTakeDamage -= comboStreakSystem.OnPlayerHit;
             UIManager.Instance.OnAnyPanelOpen -= OnAnyUIOpen;
             UIManager.Instance.OnAllPanelClosed -= OnAllUIClosed;
 
@@ -93,7 +95,7 @@ namespace Characters.Controllers
         {
             levelSystem.ResetLevel();
             skillUpgradeController.ResetSkillUpgradeController();
-            comboStreakSystem.ResetComboSystem();
+            comboStreakSystem.ResetAll();
             cameraController.ResetCamera();
             
 
