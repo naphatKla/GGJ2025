@@ -93,10 +93,8 @@ namespace Characters.UIDisplay
             if (comboStreakSystem != null)
             {
                 comboStreakSystem.OnStreakChanged += UpdateComboStreakText;          // int → UI streak
-                comboStreakSystem.OnStreakTimerTick += UpdateComboTimeBar;           // float seconds
+                comboStreakSystem.OnTimerTick += UpdateComboTimeBar;           // float seconds
                 comboStreakSystem.OnBoostChanged += UpdateBoostMultiplierText;       // float xN
-                comboStreakSystem.OnFlowStageEnter += OnFlowStageEnterUI;
-                comboStreakSystem.OnFlowStageExit += OnFlowStageExitUI;
             }
 
             levelSystem.OnLevelUpdate += UpdateLevelUI;
@@ -128,10 +126,8 @@ namespace Characters.UIDisplay
             if (comboStreakSystem != null)
             {
                 comboStreakSystem.OnStreakChanged -= UpdateComboStreakText;
-                comboStreakSystem.OnStreakTimerTick -= UpdateComboTimeBar;
+                comboStreakSystem.OnTimerTick -= UpdateComboTimeBar;
                 comboStreakSystem.OnBoostChanged -= UpdateBoostMultiplierText;
-                comboStreakSystem.OnFlowStageEnter -= OnFlowStageEnterUI;
-                comboStreakSystem.OnFlowStageExit -= OnFlowStageExitUI;
             }
 
             levelSystem.OnLevelUpdate -= UpdateLevelUI;
@@ -157,7 +153,7 @@ namespace Characters.UIDisplay
         {
             if (comboTimeoutBar != null && comboStreakSystem.Data != null)
             {
-                comboTimeoutBar.MaxValue = comboStreakSystem.Data.streakTimeoutSeconds;
+                comboTimeoutBar.MaxValue = comboStreakSystem.Data.comboTimeoutSeconds;
                 comboTimeoutBar.CurrentValue = 0f; 
             }
             
@@ -171,14 +167,14 @@ namespace Characters.UIDisplay
 
         #region Combo UI (ใหม่)
 
-        private void UpdateComboTimeBar(float currentTimeSec)
+        private void UpdateComboTimeBar(float currentTimeSec, float maxTimeSec)
         {
             if (!comboTimeoutBar || !comboUI) return;
             
             comboUI.SetActive(currentTimeSec > 0.0001f || (comboStreakText && comboStreakText.text != "0 STRIKE!"));
-            
+
             if (comboTimeoutBar.MaxValue <= 0.0001f)
-                comboTimeoutBar.MaxValue = (comboStreakSystem.Data != null) ? comboStreakSystem.Data.streakTimeoutSeconds : 4.5f;
+                comboTimeoutBar.MaxValue = maxTimeSec;
 
             comboTimeoutBar.CurrentValue = Mathf.Clamp(currentTimeSec, 0f, comboTimeoutBar.MaxValue);
         }
@@ -205,9 +201,6 @@ namespace Characters.UIDisplay
             scoreMultiply.text = $"x{multiplierX:0.##}";
         }
         
-        private void OnFlowStageEnterUI(FlowStageLevel level) { /* show badge / effects */ }
-        private void OnFlowStageExitUI(FlowStageLevel level) { /* hide / revert */ }
-
         #endregion
 
         #region Combat UI

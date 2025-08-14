@@ -1,12 +1,13 @@
 using System;
 using Characters.Controllers;
 using Characters.SO.ComboStreakDataSO;
-using GameControl.Controller;
+using Characters.SO.ComboStreakDataSO.StageDataSO;
 using Manager;
 using UnityEngine;
 
 namespace Characters.ComboSystem
 {
+    // (optional legacy enum)
     public enum FlowStageLevel
     {
         None = 0,
@@ -14,77 +15,186 @@ namespace Characters.ComboSystem
         II = 2
     }
 
+    /// <summary>
+    /// - แยก KillCount vs Streak
+    /// - ใช้ comboTimer ร่วมกัน
+    /// - Stage เป็นแบบ tier จาก ComboStreakDataSo.stageTiers (minStreak -> stage)
+    /// - แต่ละ tier "ทริกเกอร์ครั้งเดียว" ต่อรอบคอมโบ; ออกด้วยคำสั่งจากระบบ (ไม่มี duration ในสเตจ)
+    /// - สเตจสุดท้ายคุม behavior (Freeze timer / Prevent streak decrease / Exit penalty / Auto-exit) ผ่าน Manager เท่านั้น
+    /// </summary>
     public class ComboStreakSystem : MonoBehaviour, IFixedUpdateable
     {
-        private ComboStreakDataSo _data;
-        public ComboStreakDataSo Data => _data;
+        [SerializeField] private ComboStreakDataSo data;
+        public ComboStreakDataSo Data => data;
 
-        private BaseController _owner;
+        private BaseController owner;
 
-        // ===== State =====
+        // ===== Runtime State =====
+        public int KillCount { get; private set; }
         public int CurrentStreak { get; private set; }
-        public int RewardStreak => Mathf.Min(CurrentStreak, _data.maxRewardStreak);
+        public int RewardStreak => Mathf.Min(CurrentStreak, data.maxRewardStreak);
 
+        /// <summary>ตัวคูณดรอป EXP (x0..xMax)</summary>
         public float CurrentBoostMultiplierX { get; private set; }
 
-        public FlowStageLevel CurrentStage { get; private set; } = FlowStageLevel.None;
-        public bool IsStageIICooldown => _stageIICooldownTimer > 0f;
+        public string CurrentGrade { get; private set; } = "D";
 
-        private float _streakTimer;
-        private float _stageIITimer;
-        private float _stageIICooldownTimer;
+        // ตัวจับเวลาคอมโบ (ใช้ร่วมกันทั้ง KillCount และ Streak)
+        private float comboTimer;
+
+        // Stage runtime (ระบบแบบ tier)
+        private BaseComboStageSo activeStage; // สเตจที่กำลังทำงาน (exclusive)
+        private int activeTierIndex = -1; // index ของ tier ที่กำลัง Active (-1 = ไม่มี)
+        private int highestTierReached = -1; // index สูงสุดของ tier ที่ "เคยเข้าแล้ว" ในรอบคอมโบนี้
+
+        // Final-stage runtime controls (คุมโดย Manager เท่านั้น)
+        private float finalStageTimer; // ใช้เฉพาะถ้ากำหนด auto-exit > 0
+
+        private bool IsInFinalStage =>
+            data.stageTiers != null &&
+            data.stageTiers.Count > 0 &&
+            activeTierIndex == data.stageTiers.Count - 1;
+
+        private bool FreezeComboTimer =>
+            IsInFinalStage && data.finalStageFreezeComboTime;
+
+        private bool PreventStreakDecrease =>
+            IsInFinalStage && data.finalStagePreventStreakDecrease;
 
         // ===== Events =====
+        public event Action<int> OnKillCountChanged;
+        public event Action<string> OnGradeChanged;
         public event Action<int> OnStreakChanged;
-        public event Action<float> OnStreakTimerTick;
 
-        /// <summary>ส่งเป็นตัวคูณ x เช่น 0..5</summary>
+        /// <summary>(currentTime, maxTime)</summary>
+        public event Action<float, float> OnTimerTick;
+
+        /// <summary>x0..x (เช่น 0..5)</summary>
         public event Action<float> OnBoostChanged;
-        public event Action<FlowStageLevel> OnFlowStageEnter;
-        public event Action<FlowStageLevel> OnFlowStageExit;
-        
+
+        public event Action<BaseComboStageSo> OnStageEnter;
+
+        /// <summary>
+        /// UI แถบขั้น: (currentStageMinOrCandidate, currentStreak, nextStageMinOrMinus1)
+        /// </summary>
+        public event Action<int, int, int> OnStageUpdate;
+
+        public event Action<BaseComboStageSo> OnStageExit;
+
+        /// <summary>ช่องทางส่งสัญญาณให้ระบบอื่น (Stats/FX/Heal ฯลฯ)</summary>
+        public event Action<string, float, float, float> OnStageEffect;
 
         private void OnEnable() => FixedUpdateManager.Instance.Register(this);
         private void OnDisable() => FixedUpdateManager.Instance.Unregister(this);
 
-        // ===== Public API =====
-        public void AssignData(BaseController owner, ComboStreakDataSo data)
+        public void AssignData(BaseController ownerCtrl, ComboStreakDataSo so)
         {
-            _owner = owner;
-            _data = data;
+            owner = ownerCtrl;
+            data = so;
+
+            // OnStageEnter += s => Debug.Log($"[Combo] Enter Stage: {s.displayName}");
+            // OnStageExit  += s => Debug.Log($"[Combo] Exit  Stage: {s.displayName}");
+            // OnGradeChanged += s => Debug.Log(s);
+            // OnKillCountChanged += i => Debug.Log($"Kill : {i}");
+            // OnStageUpdate += (i, i1, arg3) => Debug.Log($"currentThreshould: {i}, currentStreak: {i1}, nexThreshold: {arg3}");
+
+            ResetAll();
         }
 
-        public void ResetComboSystem()
+        public void ResetAll()
         {
-            ExitCurrentStageIfAny(force: true);
+            KillCount = 0;
             SetStreak(0);
-            _streakTimer = 0f;
-            _stageIICooldownTimer = 0f;
-            RecomputeBoost(alsoApplyPenalty: false, extraPenaltyX: 0f);
+            comboTimer = 0f;
+
+            ForceExitStage(); // รวมเคลียร์ final timer
+            highestTierReached = -1;
+            activeTierIndex = -1;
+
+            RecomputeBoost(false, 0f);
+            EvaluateGrade();
+            PushStageUpdate();
         }
+
+        // ===== Public API =====
 
         public void OnEnemyKilled()
         {
+            // KillCount ไม่มีเพดาน
+            KillCount++;
+            OnKillCountChanged?.Invoke(KillCount);
+            EvaluateGrade();
+
+            // +1 Streak
             SetStreak(CurrentStreak + 1);
-            _streakTimer = _data.streakTimeoutSeconds;
-            RecomputeBoost(alsoApplyPenalty: false, extraPenaltyX: 0f);
-            TryEnterStages();
+
+            // รีเซ็ตเวลาคอมโบร่วม
+            ResetComboTimerToMax();
+
+            // อัปเดตตัวคูณดรอปตามสตรีค
+            RecomputeBoost(false, 0f);
+
+            // ประเมิน tier (เข้า/อัปเกรด) ตามลิสต์ใน Data
+            EvaluateTierProgression();
+
+            // แจ้ง UI
+            PushStageUpdate();
         }
 
         public void OnPlayerHit()
         {
-            // ลดสตรีค (ถ้าไม่ได้ immunity จาก Stage II)
-            if (CurrentStage != FlowStageLevel.II)
+            // สเตจสุดท้ายคุม "ห้ามลดสตรีค" โดย Manager
+            if (PreventStreakDecrease)
             {
-                float reduce01 = _data.onHitStreakReducePercent / 100f; // เช่น 0.20
-                int reduced = Mathf.FloorToInt(CurrentStreak * (1f - reduce01));
-                SetStreak(reduced);
+                ApplyBoostPenaltyFromHit();
+                PushStageUpdate();
+                return;
             }
 
-            // ลด Boost จาก Max ตาม % ที่กำหนด
-            float maxX = _data.maxBoostPercent / 100f; // เช่น 500% -> 5x
-            float penaltyX = (_data.onHitBoostPenaltyPercentOfMax / 100f) * maxX;
-            RecomputeBoost(alsoApplyPenalty: true, extraPenaltyX: penaltyX);
+            // ลดสตรีคตาม %
+            float reduce01 = data.onHitStreakReducePercent / 100f;
+            int reduced = Mathf.FloorToInt(CurrentStreak * (1f - reduce01));
+            SetStreak(reduced);
+
+            // ลดบูสต์ 10% ของ Max (ในรูป x)
+            ApplyBoostPenaltyFromHit();
+
+            // ไม่ออกรุ่นสเตจอัตโนมัติจากการโดนตี (ออกด้วย Manager เท่านั้น)
+            PushStageUpdate();
+        }
+
+        /// <summary>ให้ระบบอื่นสั่งลดสตรีคโดยตรง</summary>
+        public void ReduceStreakBy(int amount)
+        {
+            SetStreak(Mathf.Max(0, CurrentStreak - Mathf.Max(0, amount)));
+            PushStageUpdate();
+        }
+
+        public void ResetComboTimerToMax() => comboTimer = data.comboTimeoutSeconds;
+
+        public void EmitStageEffect(string key, float v1 = 0, float v2 = 0, float v3 = 0)
+            => OnStageEffect?.Invoke(key, v1, v2, v3);
+
+        /// <summary>สั่งจบสเตจสุดท้าย (หรือสเตจใดๆ) ด้วย Manager: ใช้ตอนจบ Berserk</summary>
+        public void EndFinalStage()
+        {
+            if (!IsInFinalStage) return;
+
+            // ออกจากสเตจ
+            ForceExitStage();
+
+            // ลดสตรีคตามที่กำหนด
+            if (data.finalStageExitReduceStreak > 0)
+                ReduceStreakBy(data.finalStageExitReduceStreak);
+
+            // รีเซ็ต progression เพื่อให้ผู้เล่น "วนเก็บใหม่"
+            if (data.finalStageResetStageProgression)
+            {
+                highestTierReached = -1;
+                activeTierIndex = -1;
+            }
+
+            PushStageUpdate();
         }
 
         // ===== Loop =====
@@ -92,37 +202,45 @@ namespace Characters.ComboSystem
         {
             float dt = Time.fixedDeltaTime;
 
-            // Streak Timer (ยกเว้นตอนอยู่ Stage II)
-            if (CurrentStreak > 0 && CurrentStage != FlowStageLevel.II)
+            // ----- Final stage auto-exit (คุมเวลาโดย Manager เท่านั้น) -----
+            if (IsInFinalStage && data.finalStageAutoExitSeconds > 0f)
             {
-                _streakTimer -= dt;
-                OnStreakTimerTick?.Invoke(Mathf.Max(0f, _streakTimer));
-
-                if (_streakTimer <= 0f)
+                finalStageTimer -= dt;
+                if (finalStageTimer <= 0f)
                 {
-                    SetStreak(0);
-                    RecomputeBoost(false, 0f);
-                    ExitStageIIfBelowThreshold();
+                    EndFinalStage();
                 }
             }
 
-            // Stage II running
-            if (CurrentStage == FlowStageLevel.II)
+            // ----- Shared Combo Timer -----
+            if (!FreezeComboTimer) // แช่เวลาเฉพาะตอนอยู่ Final และเปิด flag
             {
-                _stageIITimer -= dt;
-                if (_stageIITimer <= 0f)
-                    ExitStageII();
+                if (CurrentStreak > 0 || KillCount > 0)
+                {
+                    comboTimer -= dt;
+                    if (comboTimer <= 0f)
+                    {
+                        // คอมโบหมดเวลา → รีเซ็ตทุกอย่าง
+                        KillCount = 0;
+                        OnKillCountChanged?.Invoke(KillCount);
+                        SetStreak(0);
+
+                        ForceExitStage();
+                        highestTierReached = -1;
+                        activeTierIndex = -1;
+
+                        RecomputeBoost(false, 0f);
+                        EvaluateGrade();
+                        PushStageUpdate();
+                    }
+                }
             }
 
-            // Stage II cooldown
-            if (_stageIICooldownTimer > 0f)
-            {
-                _stageIICooldownTimer -= dt;
-                if (_stageIICooldownTimer < 0f) _stageIICooldownTimer = 0f;
-            }
+            OnTimerTick?.Invoke(Mathf.Max(0f, comboTimer), data.comboTimeoutSeconds);
         }
 
         // ===== Internals =====
+
         private void SetStreak(int value)
         {
             int clamped = Mathf.Max(0, value);
@@ -130,93 +248,169 @@ namespace Characters.ComboSystem
 
             CurrentStreak = clamped;
             OnStreakChanged?.Invoke(CurrentStreak);
-            Debug.Log("Set Streak!");
+
+            // อัปเดตบูสต์ทันทีเมื่อสตรีคเปลี่ยน
+            RecomputeBoost(false, 0f);
         }
 
         private void RecomputeBoost(bool alsoApplyPenalty, float extraPenaltyX)
         {
-            float perStreakX = _data.boostPerStreakPercent / 100f; // 10% -> 0.1x/สตรีค
-            float maxX = _data.maxBoostPercent / 100f; // 500% -> 5x
+            float perStreakX = data.boostPerStreakPercent / 100f; // 10% -> 0.1x ต่อสตรีค
+            float maxX = data.maxBoostPercent / 100f; // 500% -> x5
 
-            float baseX = RewardStreak * perStreakX; // x ที่ได้จาก streak
-            if (alsoApplyPenalty) baseX -= extraPenaltyX; // หัก penalty เป็นหน่วย x
+            float baseX = RewardStreak * perStreakX;
+            if (alsoApplyPenalty) baseX -= extraPenaltyX;
 
             CurrentBoostMultiplierX = Mathf.Clamp(baseX, 0f, maxX);
             OnBoostChanged?.Invoke(CurrentBoostMultiplierX);
+        }
 
-            if (_owner is PlayerController)
+        private void ApplyBoostPenaltyFromHit()
+        {
+            float maxX = data.maxBoostPercent / 100f;
+            float penaltyX = (data.onHitBoostPenaltyPercentOfMax / 100f) * maxX;
+            RecomputeBoost(true, penaltyX);
+        }
+
+        private void EvaluateGrade()
+        {
+            if (data.killGrades == null || data.killGrades.Count == 0)
             {
-                SpawnerStateController.Instance.EnemySpawnerController.ExpDropMultiplier = CurrentBoostMultiplierX;
-            }
-            else
-            {
-                throw new NotImplementedException();
-            }
-        }
+                if (CurrentGrade != "D")
+                {
+                    CurrentGrade = "D";
+                    OnGradeChanged?.Invoke(CurrentGrade);
+                }
 
-        private void TryEnterStages()
-        {
-            if (CurrentStage == FlowStageLevel.None && CurrentStreak >= _data.stageIThreshold)
-                EnterStageI();
-
-            if (CurrentStage != FlowStageLevel.II
-                && !IsStageIICooldown
-                && CurrentStreak >= _data.stageIIThreshold)
-                EnterStageII();
-        }
-
-        private void EnterStageI()
-        {
-            CurrentStage = FlowStageLevel.I;
-            OnFlowStageEnter?.Invoke(FlowStageLevel.I);
-        }
-
-        private void ExitStageIIfBelowThreshold()
-        {
-            if (CurrentStage == FlowStageLevel.I && CurrentStreak < _data.stageIThreshold)
-                ExitCurrentStageIfAny();
-        }
-
-        private void EnterStageII()
-        {
-            if (CurrentStage == FlowStageLevel.I)
-                OnFlowStageExit?.Invoke(FlowStageLevel.I);
-
-            CurrentStage = FlowStageLevel.II;
-            _stageIITimer = _data.stageIIDuration;
-            OnFlowStageEnter?.Invoke(FlowStageLevel.II);
-        }
-
-        private void ExitStageII()
-        {
-            SetStreak(Mathf.Max(0, CurrentStreak - _data.stageIIEndReduceStreak));
-            OnFlowStageExit?.Invoke(FlowStageLevel.II);
-
-            CurrentStage = FlowStageLevel.None;
-            _stageIITimer = 0f;
-            _stageIICooldownTimer = _data.stageIICooldownSeconds;
-
-            if (CurrentStreak >= _data.stageIThreshold)
-                EnterStageI();
-
-            RecomputeBoost(false, 0f);
-        }
-
-        private void ExitCurrentStageIfAny(bool force = false)
-        {
-            if (CurrentStage == FlowStageLevel.None) return;
-
-            var stage = CurrentStage;
-            CurrentStage = FlowStageLevel.None;
-
-            if (stage == FlowStageLevel.II)
-            {
-                _stageIITimer = 0f;
-                if (!force)
-                    _stageIICooldownTimer = _data.stageIICooldownSeconds;
+                return;
             }
 
-            OnFlowStageExit?.Invoke(stage);
+            string best = "D";
+            int bestMin = int.MinValue;
+
+            foreach (var g in data.killGrades)
+            {
+                if (KillCount >= g.minKillCount && g.minKillCount >= bestMin)
+                {
+                    best = g.label;
+                    bestMin = g.minKillCount;
+                }
+            }
+
+            if (best != CurrentGrade)
+            {
+                CurrentGrade = best;
+                OnGradeChanged?.Invoke(CurrentGrade);
+            }
+        }
+
+        /// <summary>
+        /// Tier progression:
+        /// - Trigger ทีละขั้นเมื่อ CurrentStreak >= tier.minStreak และ tier นั้นยังไม่เคยเข้าในคอมโบนี้
+        /// - ถ้าแตะหลายขั้นด้วยการขึ้นทีละสตรีค ระบบจะอัปเกรดตามลำดับ (Exit เดิม -> Enter ใหม่)
+        /// - ไม่ออกเพราะสตรีคลดลง (ออกเฉพาะ Reset หรือคำสั่งจาก Manager: EndFinalStage)
+        /// - เมื่อเข้าขั้นสุดท้าย: รีเซ็ตคอมโบไทเมอร์เป็น max และเริ่มจับเวลาสำหรับ auto-exit (ถ้ากำหนด)
+        /// </summary>
+        private void EvaluateTierProgression()
+        {
+            if (data.stageTiers == null || data.stageTiers.Count == 0) return;
+
+            // next tier คือ tier ถัดจากที่เคยเข้าไปสูงสุดแล้ว
+            int nextTierIdx = highestTierReached + 1;
+            if (nextTierIdx >= data.stageTiers.Count) return; // ถึงสุดแล้ว
+
+            var nextTier = data.stageTiers[nextTierIdx];
+            if (nextTier.stage == null) return;
+
+            if (CurrentStreak >= nextTier.minStreak)
+            {
+                // อัปเกรด: ออกจากสเตจเดิมก่อน (ถ้ามี)
+                if (activeStage != null)
+                    ForceExitStage();
+
+                EnterStageTier(nextTierIdx);
+
+                // ถ้าคือขั้นสุดท้าย → จัดการ behavior จาก Manager
+                if (IsInFinalStage)
+                {
+                    if (data.finalStageResetComboTimerOnEnter)
+                        ResetComboTimerToMax();
+
+                    finalStageTimer = data.finalStageAutoExitSeconds > 0f
+                        ? data.finalStageAutoExitSeconds
+                        : 0f;
+                }
+            }
+        }
+
+        private void EnterStageTier(int tierIndex)
+        {
+            highestTierReached = tierIndex;
+            activeTierIndex = tierIndex;
+
+            var tier = data.stageTiers[tierIndex];
+            var s = tier.stage;
+
+            activeStage = s;
+            OnStageEnter?.Invoke(s);
+            s.OnEnter(new StageContext(this, CurrentStreak));
+        }
+
+        private void ForceExitStage()
+        {
+            if (activeStage == null)
+            {
+                finalStageTimer = 0f;
+                return;
+            }
+
+            var exiting = activeStage;
+
+            activeStage = null;
+            activeTierIndex = -1;
+            finalStageTimer = 0f;
+
+            exiting.OnExit(new StageContext(this, CurrentStreak));
+            OnStageExit?.Invoke(exiting);
+        }
+
+        /// <summary>ส่งค่าปัจจุบันให้ UI อัปเดตแถบขั้น</summary>
+        private void PushStageUpdate()
+        {
+            int currentMin = 0;
+            int nextMin = -1;
+
+            var tiers = data.stageTiers;
+
+            if (tiers != null && tiers.Count > 0)
+            {
+                if (activeTierIndex >= 0 && activeTierIndex < tiers.Count)
+                {
+                    // มีสเตจอยู่ → current = เกณฑ์ของสเตจนั้น
+                    currentMin = tiers[activeTierIndex].minStreak;
+
+                    // next = เกณฑ์ของ tier ถัดไป (ถ้ามี)
+                    int nextIdx = activeTierIndex + 1;
+                    if (nextIdx < tiers.Count)
+                        nextMin = tiers[nextIdx].minStreak;
+                }
+                else
+                {
+                    // ยังไม่มีสเตจ → current = เกณฑ์ของ "ผู้ท้าชิงถัดไป"
+                    int candidateIdx = highestTierReached + 1;
+                    if (candidateIdx >= 0 && candidateIdx < tiers.Count)
+                    {
+                        currentMin = tiers[candidateIdx].minStreak;
+
+                        // next = ของถัดจากนั้น
+                        int nx = candidateIdx + 1;
+                        if (nx < tiers.Count)
+                            nextMin = tiers[nx].minStreak;
+                    }
+                }
+            }
+
+            OnStageUpdate?.Invoke(currentMin, CurrentStreak, nextMin);
         }
     }
 }

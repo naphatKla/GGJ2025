@@ -12,19 +12,35 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2fd45b08265df843ae41d256e3fe274, type: 3}
   m_Name: PlayerComboStreakData
   m_EditorClassIdentifier: 
-  streakTimeoutSeconds: 4.5
+  comboTimeoutSeconds: 4.5
   maxRewardStreak: 50
-  onHitStreakReducePct: 0.2
-  boostPerStreak: 0.1
-  maxBoostMultiplier: 5
-  onHitBoostPenaltyPctOfMax: 0.1
-  stageIThreshold: 25
-  stageIIThreshold: 50
-  stageIIDuration: 20
-  stageIIEndReduceStreak: 25
-  stageIICooldownSeconds: 20
-  stageIDamageFlat: 17
-  stageIIDamageMul: 0.5
-  stageIISpeedMul: 0.5
-  stageIIDashDurationDelta: -0.1
-  stageIIHealEveryNStreaks: 10
+  onHitStreakReducePercent: 20
+  boostPerStreakPercent: 10
+  maxBoostPercent: 500
+  onHitBoostPenaltyPercentOfMax: 10
+  killGrades:
+  - minKillCount: 0
+    label: D
+  - minKillCount: 10
+    label: C
+  - minKillCount: 25
+    label: B
+  - minKillCount: 50
+    label: A
+  - minKillCount: 75
+    label: S
+  - minKillCount: 100
+    label: SS
+  - minKillCount: 150
+    label: SSS
+  stageTiers:
+  - minStreak: 25
+    stage: {fileID: 11400000, guid: 15730a0eab5a2ab4e8f943829341b947, type: 2}
+  - minStreak: 50
+    stage: {fileID: 11400000, guid: b6743b007cf75a04294f0a444a72253b, type: 2}
+  finalStageResetComboTimerOnEnter: 1
+  finalStageFreezeComboTime: 1
+  finalStagePreventStreakDecrease: 1
+  finalStageAutoExitSeconds: 20
+  finalStageExitReduceStreak: 25
+  finalStageResetStageProgression: 1

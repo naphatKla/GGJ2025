@@ -93,7 +93,7 @@ namespace Characters.Controllers
         {
             levelSystem.ResetLevel();
             skillUpgradeController.ResetSkillUpgradeController();
-            comboStreakSystem.ResetComboSystem();
+            comboStreakSystem.ResetAll();
             cameraController.ResetCamera();
             
 
