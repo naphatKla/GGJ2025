@@ -92,8 +92,8 @@ namespace Characters.ComboSystem
             // OnGradeChanged += s => Debug.Log(s);
             // OnKillCountChanged += i => Debug.Log($"Kill : {i}");
             // OnStageUpdate += (i, i1, arg3) => Debug.Log($"currentThreshould: {i}, currentStreak: {i1}, nexThreshold: {arg3}");
-            OnBerserkEnter += () => Debug.Log("BerserkEnter");
-            OnBerserkExit += () => Debug.Log("BerserkExit");
+            // OnBerserkEnter += () => Debug.Log("BerserkEnter");
+            // OnBerserkExit += () => Debug.Log("BerserkExit");
 
             ResetAll();
         }
