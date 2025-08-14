@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,6 +9,8 @@ using GameControl.SO;
 using UnityEngine;
 using UnityEngine.Pool;
 using UnityEngine.UIElements;
+using Object = UnityEngine.Object;
+using Random = UnityEngine.Random;
 
 namespace GameControl.Controller
 {
@@ -92,11 +95,18 @@ namespace GameControl.Controller
         private async UniTask StartLifetimeCountdown(BaseCollectableItem obj, MapDataSO.ItemOption option)
         {
             float lifetime = option.lifetimeInterval;
-            
-            await UniTask.Delay(System.TimeSpan.FromSeconds(lifetime));
-            if (obj.gameObject.activeInHierarchy && _activeItem.Contains(obj))
+
+            try
             {
-                _itemPools[option.id].Release(obj);
+                await UniTask.Delay(TimeSpan.FromSeconds(lifetime), cancellationToken: obj.destroyCancellationToken);
+                if (obj.gameObject.activeInHierarchy && _activeItem.Contains(obj))
+                {
+                    _itemPools[option.id].Release(obj);
+                }
+            }
+            catch (Exception e)
+            {
+                // ignored
             }
         }
         
