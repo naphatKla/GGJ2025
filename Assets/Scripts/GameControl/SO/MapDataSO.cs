@@ -70,7 +70,7 @@ namespace GameControl.SO
                         if (c == null) continue;
                         if (!c.IsSatisfied(state, spawner, mapData, this))
                         {
-                            Debug.Log($"[Spawn] {id} blocked by condition {c.name} (All)");
+                            //Debug.Log($"[Spawn] {id} blocked by condition {c.name} (All)");
                             return false;
                         }
                     }
@@ -86,8 +86,6 @@ namespace GameControl.SO
                         return true;
                     }
                 }
-
-                Debug.Log($"[Spawn] {id} blocked: no condition passed (Any)");
                 return false;
             }
 

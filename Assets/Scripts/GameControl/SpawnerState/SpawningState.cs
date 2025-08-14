@@ -28,23 +28,30 @@ namespace GameControl.SpawnerState
             {
                 var selectedEnemyOption = controller.EnemySpawnerController.SpawnEnemy();
                 _enemycurrentTimer = 0f;
-                
-                _enemyCheckTimer = selectedEnemyOption.useCustomInterval
-                    ? selectedEnemyOption.customInterval 
-                    : controller.EnemySpawnTimer;
+
+                if (selectedEnemyOption != null)
+                    _enemyCheckTimer = selectedEnemyOption.useCustomInterval
+                        ? selectedEnemyOption.customInterval
+                        : controller.EnemySpawnTimer;
+                else
+                    _enemyCheckTimer = controller.EnemySpawnTimer;
             }
-            
+
             _itemcurrentTimer += Time.deltaTime;
             if (_itemcurrentTimer >= _itemCheckTimer && controller.ItemSpawnerController.CanSpawnItem())
             {
                 var selectedItemOption = controller.ItemSpawnerController.SpawnItem();
                 _itemcurrentTimer = 0;
-                
-                _itemCheckTimer = selectedItemOption.useCustomInterval
-                    ? selectedItemOption.customInterval 
-                    : controller.ItemSpawnTimer;
+
+                if (selectedItemOption != null)
+                    _itemCheckTimer = selectedItemOption.useCustomInterval
+                        ? selectedItemOption.customInterval
+                        : controller.ItemSpawnTimer;
+                else
+                    _itemCheckTimer = controller.ItemSpawnTimer;
             }
         }
+
 
         public void Exit(SpawnerStateController controller) { }
     }
