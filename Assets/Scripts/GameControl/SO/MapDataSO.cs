@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Characters.CollectItemSystems.CollectableItems;
 using Characters.Controllers;
+using GameControl.Controller;
 using GameControl.Interface;
 using GameControl.Pattern;
 using Sirenix.OdinInspector;
@@ -46,6 +47,48 @@ namespace GameControl.SO
             public bool useCustomInterval;
             [FoldoutGroup("$id")] [ShowIf("$useCustomInterval")]
             public float customInterval;
+            
+            [FoldoutGroup("$id")][Title("Spawn Conditions")]
+            public bool useSpawnConditions = false;
+            [FoldoutGroup("$id")]
+            [ShowIf("$useSpawnConditions")]
+            public ConditionLogic conditionLogic = ConditionLogic.All; // All = AND, Any = OR
+            [FoldoutGroup("$id")]
+            [ShowIf("$useSpawnConditions")]
+            public List<SpawnConditionSO> spawnConditions;
+
+            public enum ConditionLogic { All, Any }
+
+            public bool IsSpawnable(SpawnerStateController state, EnemySpawnerController spawner, MapDataSO mapData)
+            {
+                if (!useSpawnConditions || spawnConditions == null || spawnConditions.Count == 0) return true;
+
+                if (conditionLogic == ConditionLogic.All)
+                {
+                    foreach (var c in spawnConditions)
+                    {
+                        if (c == null) continue;
+                        if (!c.IsSatisfied(state, spawner, mapData, this))
+                        {
+                            //Debug.Log($"[Spawn] {id} blocked by condition {c.name} (All)");
+                            return false;
+                        }
+                    }
+                    return true;
+                }
+
+                // Any
+                foreach (var c in spawnConditions)
+                {
+                    if (c == null) continue;
+                    if (c.IsSatisfied(state, spawner, mapData, this))
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            }
+
             
             public float Chance { get => chance; set => chance = value; }
             public float EnemyPoint { get => spawnPoint; set => spawnPoint = value; }
