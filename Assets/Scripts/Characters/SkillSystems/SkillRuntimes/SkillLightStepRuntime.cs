@@ -47,7 +47,7 @@ namespace Characters.SkillSystems.SkillRuntimes
 
         protected override void OnSkillStart()
         {
-            owner.TryPlayFeedback(FeedbackName.LightStepUse);
+            //owner.TryPlayFeedback(FeedbackName.LightStepUse);
             owner.SkillSystem.SetCanUsePrimary(false);
             owner.SkillSystem.SetCanUseSecondary(false);
             owner.MovementSystem.CanInterruptTween = false;
@@ -79,7 +79,7 @@ namespace Characters.SkillSystems.SkillRuntimes
                     if (!_inGodSpeedPhase)
                     {
                         _inGodSpeedPhase = true;
-                        owner.FeedbackSystem.SetIgnoreFeedback(FeedbackName.CounterAttack, true);
+                        //owner.FeedbackSystem.SetIgnoreFeedback(FeedbackName.CounterAttack, true);
                         player?.CameraController.LerpOrthoSize(22f, 0.25f).Forget();
                         player?.CameraController.SetFollowTarget(null);
                     }
@@ -130,8 +130,8 @@ namespace Characters.SkillSystems.SkillRuntimes
             owner.MovementSystem.CanInterruptTween = true;
             owner.DamageOnTouch.DisableDamage(this);
 
-            owner.TryPlayFeedback(FeedbackName.LightStepEnd);
-            owner.FeedbackSystem.SetIgnoreFeedback(FeedbackName.CounterAttack, false);
+            //owner.TryPlayFeedback(FeedbackName.LightStepEnd);
+            //owner.FeedbackSystem.SetIgnoreFeedback(FeedbackName.CounterAttack, false);
 
             if (owner is PlayerController player)
                 player.CameraController.ResetCamera(0.25f);

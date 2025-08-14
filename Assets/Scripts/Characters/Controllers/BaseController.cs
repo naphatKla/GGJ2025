@@ -177,13 +177,13 @@ namespace Characters.Controllers
             _inputSystem.OnMove -= movementSystem.AssignInputDirection;
         }
 
-        public void TryPlayFeedback(FeedbackName feedbackName)
+        public void TryPlayFeedback(string feedbackName)
         {
             if (!feedbackSystem) return;
             feedbackSystem.PlayFeedback(feedbackName);
         }
 
-        public void TryStopFeedback(FeedbackName feedbackName)
+        public void TryStopFeedback(string feedbackName)
         {
             if (!feedbackSystem) return;
             feedbackSystem.StopFeedback(feedbackName);

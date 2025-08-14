@@ -17,21 +17,21 @@ namespace Characters.FeedbackSystems
             base.AssignData(owner);
         }
 
-        public override void PlayFeedback(FeedbackName feedbackName)
+        public override void PlayFeedback(string feedbackName)
         {
-            if (!feedbackList.ContainsKey(feedbackName)) return;
+            if (!feedbackMap.ContainsKey(feedbackName)) return;
             if (ignoreFeedbackList.Contains(feedbackName)) return;
 
             switch (feedbackName)
             {
-                case FeedbackName.AttackHit :
-                    if (!IsFeedbackPlaying(FeedbackName.CounterAttack))
+                case FeedbackName.Character.AttackHit :
+                    if (!IsFeedbackPlaying(FeedbackName.Character.CounterAttack))
                         _player.CameraController.ShakeCamera(_playerData.AttackHitCameraShakeOption);
                     break;
-                case FeedbackName.CounterAttack :
+                case FeedbackName.Character.CounterAttack :
                     _player.CameraController.ShakeCamera(_playerData.CounterAttackHitCameraShakeOption);
                     break;
-                case FeedbackName.TakeDamage :
+                case FeedbackName.Character.TakeDamage :
                     _player.CameraController.ShakeCamera(_playerData.TakeDamageCameraShakeOption);
                     break;
             }

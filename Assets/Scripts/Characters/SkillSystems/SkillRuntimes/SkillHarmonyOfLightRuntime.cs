@@ -45,7 +45,7 @@ namespace Characters.SkillSystems.SkillRuntimes
             }
 
             startPos = owner.transform.position;
-            owner.TryPlayFeedback(FeedbackName.HarmonyOfLight);
+            //owner.TryPlayFeedback(FeedbackName.HarmonyOfLight_Lv1);
         }
 
         protected override async UniTask OnSkillUpdate(CancellationToken cancelToken)

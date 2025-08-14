@@ -19,7 +19,7 @@ namespace Characters.SkillSystems.SkillRuntimes
         {
             OnTriggerAutoSkill?.Invoke();
 
-            owner.TryPlayFeedback(FeedbackName.ParrySuccess);
+            //owner.TryPlayFeedback(FeedbackName.ParrySuccess);
             LayerMask damageLayer = CharacterGlobalSettings.Instance.EnemyLayerDictionary[owner.tag];
             var targetsInRange =
                 Physics2D.OverlapCircleAll(owner.transform.position, skillData.ExplosionRadius, damageLayer);
@@ -44,7 +44,7 @@ namespace Characters.SkillSystems.SkillRuntimes
             _isParryTrigger = false;
             owner.HealthSystem.OnTakeDamage += TriggerParry;
             owner.MovementSystem.StopFromParry(skillData.StopWhileParry);
-            owner.TryPlayFeedback(FeedbackName.ParryUSe);
+            //owner.TryPlayFeedback(FeedbackName.ParryUSe);
         }
 
         protected override async UniTask OnSkillUpdate(CancellationToken cancelToken)

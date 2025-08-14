@@ -43,7 +43,7 @@ namespace Characters.SkillSystems.SkillRuntimes
                 _skillObjects.Add(skillObject);
             }
             
-            owner.TryPlayFeedback(FeedbackName.Reflection);
+            //owner.TryPlayFeedback(FeedbackName.Reflection);
         }
 
         protected override async UniTask OnSkillUpdate(CancellationToken cancelToken)

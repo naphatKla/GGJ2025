@@ -29,7 +29,7 @@ namespace Characters.SkillSystems.SkillRuntimes
 
         protected override void OnSkillStart()
         {
-            owner.TryPlayFeedback(FeedbackName.Dash);
+            //owner.TryPlayFeedback(FeedbackName.Dash);
             _dashEffective = 1f;
             
             owner.DamageOnTouch.OnHit -= OnDashHit;

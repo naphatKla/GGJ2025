@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Characters.FeedbackSystems;
 using Characters.SkillSystems.SkillRuntimes;
 using Characters.StatusEffectSystems;
 using Sirenix.OdinInspector;
@@ -46,6 +47,14 @@ namespace Characters.SO.SkillDataSo
          PropertyTooltip("Cooldown duration (in seconds) before the skill can be used again after activation.")]
         [PropertySpace(SpaceAfter = 10, SpaceBefore = 0)]
         private float cooldown = 1f;
+
+        [FoldoutGroup("Feedback", Order = 99)]
+        [ValueDropdown("@FeedbackName.Odin.ShortGroupWithNone(\"Skill\")")]
+        [SerializeField] private string startFeedback;
+
+        [FoldoutGroup("Feedback")]
+        [ValueDropdown("@FeedbackName.Odin.ShortGroupWithNone(\"Skill\")")]
+        [SerializeField] private string exitFeedback;
         
         [FoldoutGroup("Status Effects", Order = 100)] 
         [SerializeField,
@@ -84,6 +93,8 @@ namespace Characters.SO.SkillDataSo
         public List<StatusEffectDataPayload> StatusEffectOnSkillStart => statusEffectOnSkillStart;
         public Type SkillRuntime => _skillRuntime;
         public int Level => level;
+        public string StartFeedback => startFeedback;
+        public string ExitFeedback => exitFeedback;
         public BaseSkillDataSo NextSkillDataUpgrade => nextSkillDataUpgrade;
         public BaseSkillDataSo PreviousSkillData => previousSkillData;
 

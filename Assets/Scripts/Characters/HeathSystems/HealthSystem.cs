@@ -135,12 +135,12 @@ namespace Characters.HeathSystems
             ModifyHealth(-damage);
             OnTakeDamage?.Invoke(true);
             
-            owner?.TryPlayFeedback(FeedbackName.TakeDamage);
+            owner?.TryPlayFeedback(FeedbackName.Character.TakeDamage);
             HitCooldownHandler();
 
             if (_currentHealth <= 0)
             {
-                owner?.TryPlayFeedback(FeedbackName.Dead);
+                owner?.TryPlayFeedback(FeedbackName.Character.TakeDamage);
                 Dead();
             }
 
@@ -156,7 +156,7 @@ namespace Characters.HeathSystems
             if (_isDead) return;
             ModifyHealth(healAmount);
             OnHeal?.Invoke();
-            owner?.TryPlayFeedback(FeedbackName.Heal);
+            owner?.TryPlayFeedback(FeedbackName.Character.Heal);
         }
 
         private Tween colorTween;
@@ -175,12 +175,12 @@ namespace Characters.HeathSystems
             if (value)
             {
                 colorTween = owner?.Body.DOColor(Color.cyan, 0.05f);
-                owner?.TryPlayFeedback(FeedbackName.Iframe);
+                owner?.TryPlayFeedback(FeedbackName.Character.Iframe);
             }
             else
             {
                 colorTween = owner?.Body.DOColor(startColor.Value, 0.05f);
-                owner?.TryStopFeedback(FeedbackName.Iframe);
+                owner?.TryStopFeedback(FeedbackName.Character.Iframe);
             }
         }
 

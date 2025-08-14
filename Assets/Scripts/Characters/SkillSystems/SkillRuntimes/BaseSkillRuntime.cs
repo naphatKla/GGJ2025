@@ -115,6 +115,7 @@ namespace Characters.SkillSystems.SkillRuntimes
         {
             IsPerforming = true;
             SkillPerformCallback?.Invoke();
+            owner.TryPlayFeedback(skillData.StartFeedback);
             OnSkillStart();
             StatusEffectManager.ApplyEffectTo(owner.gameObject, effectsApplyOnStart);
         }
@@ -122,6 +123,7 @@ namespace Characters.SkillSystems.SkillRuntimes
         protected virtual void HandleSkillExit()
         {
             IsPerforming = false;
+            owner.TryPlayFeedback(skillData.ExitFeedback);
             OnSkillExit();
         }
 

@@ -113,13 +113,13 @@ namespace Characters.CombatSystems
         public void OnCounterAttackHandler()
         {
             OnCounterAttack?.Invoke();
-            _owner.TryPlayFeedback(FeedbackName.CounterAttack);
+            _owner.TryPlayFeedback(FeedbackName.Character.CounterAttack);
         }
 
         public void OnDealDamageHandler(DamageData damageData)
         {
             OnDealDamage?.Invoke(damageData);
-            _owner.TryPlayFeedback(FeedbackName.AttackHit);
+            _owner.TryPlayFeedback(FeedbackName.Character.AttackHit);
         }
 
         public void OnKillHandler()
