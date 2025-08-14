@@ -15,10 +15,12 @@ public static class RandomUtility
         float totalWeight = 0;
         foreach (var item in list) totalWeight += Mathf.Max(0, item.Chance);
 
-        if (totalWeight == 0)
-            return default;
+        if (totalWeight <= 0f)
+        {
+            return list[Random.Range(0, list.Count)];
+        }
 
-        var randomValue = UnityEngine.Random.Range(0f, totalWeight);
+        var randomValue = Random.Range(0f, totalWeight);
         float currentWeight = 0;
 
         foreach (var item in list)
