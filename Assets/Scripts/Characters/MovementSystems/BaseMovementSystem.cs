@@ -31,8 +31,10 @@ namespace Characters.MovementSystems
         /// The current movement speed of the entity.
         /// Modify this value to increase or decrease speed of the entity.
         /// </summary>
-        [ShowInInspector, ReadOnly] [ShowIf("@UnityEngine.Application.isPlaying")]
+        [ShowInInspector, ReadOnly]
         protected float currentSpeed;
+        
+        [ShowInInspector, ReadOnly]
         protected float currentSpeedMultiplier;
 
         /// <summary>
@@ -263,9 +265,6 @@ namespace Characters.MovementSystems
         public virtual void AddCurrentSpeedMultiplier(float multiplierPercentage)
         {
             currentSpeedMultiplier += multiplierPercentage;
-            float speedAdded = currentSpeed * (currentSpeedMultiplier / 100);
-            
-            AddCurrentSpeed(speedAdded);
         }
         
         /// <summary>
@@ -275,6 +274,7 @@ namespace Characters.MovementSystems
         public void ResetSpeedToDefault()
         {
             currentSpeed = _baseSpeed;
+            currentSpeedMultiplier = 0;
         }
 
         /// <summary>

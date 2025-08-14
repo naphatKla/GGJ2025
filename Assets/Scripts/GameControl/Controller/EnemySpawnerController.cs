@@ -22,7 +22,7 @@ namespace GameControl.Controller
         private List<MapDataSO.EnemyOption> _enemyOptionsList;
         private bool _debug;
         private Camera _mainCamera;
-        public float ExpDropMultiplier { get; set; } = 1;
+        private float _anergyDropMultiplier = 1;
         
         public EnemySpawnerController(MapDataSO mapData, SpawnerStateController state, Vector2 spawnRegion, bool debug, Camera mainCamera)
         {
@@ -89,7 +89,7 @@ namespace GameControl.Controller
         {
             if (obj.CharacterData is EnemyDataSo enemyData)
             {
-                int totalExp = Mathf.CeilToInt(enemyData.ExpDrop * ExpDropMultiplier);
+                int totalExp = Mathf.CeilToInt(enemyData.ExpDrop * _anergyDropMultiplier);
                 _state.ItemSpawnerController.SpawnExpItem(totalExp, obj.transform.position);
             }
             
@@ -98,6 +98,11 @@ namespace GameControl.Controller
             obj.transform.position = SpawnUtility.RandomSpawnAroundPlayerCamera(_mainCamera, 10f);
             SpawnerStateController.Instance.CurrentEnemyPoint += option.EnemyPoint;
             _activeEnemy.Remove(obj);
+        }
+
+        public void SetAnergyDropMultiplier(float value)
+        {
+            _anergyDropMultiplier = Mathf.Max(0, value);
         }
         
         private void ActionOnGet(EnemyController obj, MapDataSO.EnemyOption option)

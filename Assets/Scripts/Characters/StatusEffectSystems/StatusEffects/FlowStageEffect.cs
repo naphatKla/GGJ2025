@@ -1,5 +1,6 @@
 using Characters.Controllers;
 using Characters.SO.StatusEffectSO;
+using UnityEngine;
 
 namespace Characters.StatusEffectSystems.StatusEffects
 {

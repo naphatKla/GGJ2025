@@ -2,6 +2,7 @@ using System;
 using Characters.Controllers;
 using Characters.SO.ComboStreakDataSO;
 using Characters.SO.ComboStreakDataSO.StageDataSO;
+using GameControl.Controller;
 using Manager;
 using UnityEngine;
 
@@ -138,8 +139,10 @@ namespace Characters.ComboSystem
             PushStageUpdate();
         }
 
-        public void OnPlayerHit()
+        public void OnPlayerHit(bool isTakeDamage)
         {
+            if (!isTakeDamage) return;
+            
             // สเตจสุดท้ายคุม "ห้ามลดสตรีค" โดย Manager
             if (PreventStreakDecrease)
             {
@@ -153,7 +156,7 @@ namespace Characters.ComboSystem
             int reduced = Mathf.FloorToInt(CurrentStreak * (1f - reduce01));
             SetStreak(reduced);
 
-            // ลดบูสต์ 10% ของ Max (ในรูป x)
+            // ลดบูสต์ 10% ของ Max 
             ApplyBoostPenaltyFromHit();
 
             // ไม่ออกรุ่นสเตจอัตโนมัติจากการโดนตี (ออกด้วย Manager เท่านั้น)

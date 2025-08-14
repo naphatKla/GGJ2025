@@ -1,3 +1,4 @@
+using Characters.Controllers;
 using Cysharp.Threading.Tasks;
 using GameControl.Interface;
 using MoreMountains.Tools;
@@ -64,7 +65,6 @@ namespace GameControl.Controller
             _currentMapData = GameStateController.Instance.CurrentMap;
         }
         
-        
         private void Start()
         {
             SetState(_stopState);
@@ -89,6 +89,7 @@ namespace GameControl.Controller
             _enemyPatternController = new EnemyPatternController(_currentMapData, this, regionSize, debugPattern);
             _itemSpawnerController = new ItemSpawnerController(_currentMapData, this, itemdropRegionSize);
             _mapEventController = new MapEventController(_currentMapData, this, debugMapEvent);
+            
             await UniTask.WaitUntil(() => _enemySpawnerController != null && _enemyPatternController != null && _itemSpawnerController != null);
             
             _currentEnemyPoint = _currentMapData.startEnemyPoint;
