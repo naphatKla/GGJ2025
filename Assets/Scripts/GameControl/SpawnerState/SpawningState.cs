@@ -1,3 +1,4 @@
+using Characters.Controllers;
 using GameControl.Controller;
 using GameControl.Interface;
 using UnityEngine;
@@ -14,6 +15,7 @@ namespace GameControl.SpawnerState
         public void Enter(SpawnerStateController controller)
         {
             GameTimer.Instance.ResumeTimer();
+            PlayerController.Instance.comboStreakSystem.OnBoostChanged += controller.EnemySpawnerController.SetAnergyDropMultiplier;
             _enemycurrentTimer = 0;
             _itemcurrentTimer = 0;
             
@@ -46,6 +48,9 @@ namespace GameControl.SpawnerState
             }
         }
 
-        public void Exit(SpawnerStateController controller) { }
+        public void Exit(SpawnerStateController controller)
+        {
+            PlayerController.Instance.comboStreakSystem.OnBoostChanged -= controller.EnemySpawnerController.SetAnergyDropMultiplier;
+        }
     }
 }
