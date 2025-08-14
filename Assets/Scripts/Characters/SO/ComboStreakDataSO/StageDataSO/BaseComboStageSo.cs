@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Characters.ComboSystem;
 using Characters.StatusEffectSystems;
+using Cysharp.Threading.Tasks;
 using Manager;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -27,8 +28,7 @@ namespace Characters.SO.ComboStreakDataSO.StageDataSO
         // ---- Hooks ----
         public virtual void OnEnter(StageContext ctx)
         {
-            if (effectOnEnter != null && effectOnEnter.Count > 0)
-                StatusEffectManager.ApplyEffectTo(ctx.System.gameObject, effectOnEnter);
+            ApplyEffectOnStart(ctx).Forget();
         }
 
         public virtual void OnTick(StageContext ctx, float dt) { }
@@ -40,6 +40,13 @@ namespace Characters.SO.ComboStreakDataSO.StageDataSO
 
             foreach (var effectName in effectOnEnter.Select(e => e.EffectData.EffectName))
                 StatusEffectManager.RemoveEffectAt(ctx.System.gameObject, effectName);
+        }
+
+        protected virtual async UniTask ApplyEffectOnStart(StageContext ctx)
+        {
+            await UniTask.NextFrame(); // need to wait the last one removed.
+            if (effectOnEnter != null && effectOnEnter.Count > 0)
+                StatusEffectManager.ApplyEffectTo(ctx.System.gameObject, effectOnEnter);
         }
     }
 

@@ -203,6 +203,7 @@ namespace Characters.Controllers
             damageOnTouch.ResetDamageOnTouch();
             feedbackSystem.ResetFeedbackSystem();
             OnResetAllBehavior?.Invoke();
+            combatSystem.ResetCombatSystem();
         }
 
         #endregion

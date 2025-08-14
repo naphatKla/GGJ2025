@@ -263,9 +263,6 @@ namespace Characters.MovementSystems
         public virtual void AddCurrentSpeedMultiplier(float multiplierPercentage)
         {
             currentSpeedMultiplier += multiplierPercentage;
-            float speedAdded = currentSpeed * (currentSpeedMultiplier / 100);
-            
-            AddCurrentSpeed(speedAdded);
         }
         
         /// <summary>
@@ -275,6 +272,7 @@ namespace Characters.MovementSystems
         public void ResetSpeedToDefault()
         {
             currentSpeed = _baseSpeed;
+            currentSpeedMultiplier = 0;
         }
 
         /// <summary>
