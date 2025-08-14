@@ -291,17 +291,29 @@ MonoBehaviour:
   defaultItemSpawnTimer: 1
   eventmapOptions:
   - enableThisMapEvent: 1
-    catagolyMapEvent: Test
+    catagolyMapEvent: Main
     allMapEventID:
+    - mapEventID: Gaint_2_R
+      chance: 16.7
+      useWeightRandom: 1
     - mapEventID: Horizontal_LR
-      chance: 40
-      useWeightRandom: 0
+      chance: 16.7
+      useWeightRandom: 1
     - mapEventID: Vertical_LR
-      chance: 100
-      useWeightRandom: 0
+      chance: 16.7
+      useWeightRandom: 1
+    - mapEventID: Basket_L_R
+      chance: 16.7
+      useWeightRandom: 1
+    - mapEventID: Firework_TopL_BottomR
+      chance: 16.7
+      useWeightRandom: 1
+    - mapEventID: Firework_TopR_BottomL
+      chance: 16.7
+      useWeightRandom: 1
     eventMapChance: 100
-    playInterval: 45
-    intervalCanModify: 1
+    playInterval: 40
+    intervalCanModify: 0
     rateModify: -1
     intervalModify: 10
     minPlayInterval: 5
