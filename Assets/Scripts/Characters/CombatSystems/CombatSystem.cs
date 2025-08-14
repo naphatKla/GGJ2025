@@ -1,8 +1,8 @@
 using System;
 using Characters.Controllers;
 using Characters.FeedbackSystems;
-using Cysharp.Threading.Tasks;
 using Manager;
+using Sirenix.OdinInspector;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -34,8 +34,10 @@ namespace Characters.CombatSystems
         /// The current damage value used for actual damage calculations.
         /// Can be modified dynamically through buffs, debuffs, or status effects.
         /// </summary>
+        [ShowInInspector, ReadOnly]
         private float _currentDamage;
 
+        [ShowInInspector, ReadOnly]
         private float _currentDamageMultiplier;
         
         /// <summary>

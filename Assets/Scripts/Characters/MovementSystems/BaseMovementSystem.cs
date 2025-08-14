@@ -31,8 +31,10 @@ namespace Characters.MovementSystems
         /// The current movement speed of the entity.
         /// Modify this value to increase or decrease speed of the entity.
         /// </summary>
-        [ShowInInspector, ReadOnly] [ShowIf("@UnityEngine.Application.isPlaying")]
+        [ShowInInspector, ReadOnly]
         protected float currentSpeed;
+        
+        [ShowInInspector, ReadOnly]
         protected float currentSpeedMultiplier;
 
         /// <summary>
