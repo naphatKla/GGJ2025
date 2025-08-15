@@ -163,16 +163,23 @@ namespace GameControl.Controller
             }
         }
 
+        public List<MapDataSO.EnemyOption> ConditionEnemy(bool bypass)
+        {
+            List<MapDataSO.EnemyOption> candidates;
+
+            if (bypass)
+                candidates = _enemyOptionsList.ToList();
+            else
+                candidates = _enemyOptionsList
+                    .Where(e => e.IsSpawnable(_state, _mapdata))
+                    .ToList();
+
+            return candidates.Count == 0 ? null : candidates;
+        }
+        
         public MapDataSO.EnemyOption SpawnEnemy()
         {
-            var candidates = _enemyOptionsList
-                .Where(e => e.IsSpawnable(_state, this, _mapdata))
-                .ToList();
-
-            if (candidates.Count == 0)
-                return null;
-            
-            var randomEnemy = RandomUtility.GetWeightedRandom(candidates);
+            var randomEnemy = RandomUtility.GetWeightedRandom(ConditionEnemy(false));
             if (randomEnemy == null) return null;
 
             if (!_enemyPools.TryGetValue(randomEnemy.id, out var pool)) return null;

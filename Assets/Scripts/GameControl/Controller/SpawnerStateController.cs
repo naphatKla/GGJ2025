@@ -97,7 +97,7 @@ namespace GameControl.Controller
             _increaseRateEnemyPoint = _currentMapData.rateIncreaseEnemyPoint;
             
             _itemSpawnerController.PrewarmItem();
-            _enemyPatternController.SetEnemyList(_enemySpawnerController.GetEnemyList(), _enemySpawnerController.GetEnemyOption());
+            _enemyPatternController.SetEnemySpawner(_enemySpawnerController);
             _enemyPatternController.AddRandomPattern();
             
             //Trigger time will decrease if enable

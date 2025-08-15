@@ -59,7 +59,7 @@ namespace GameControl.SO
 
             public enum ConditionLogic { All, Any }
 
-            public bool IsSpawnable(SpawnerStateController state, EnemySpawnerController spawner, MapDataSO mapData)
+            public bool IsSpawnable(SpawnerStateController state, MapDataSO mapData)
             {
                 if (!useSpawnConditions || spawnConditions == null || spawnConditions.Count == 0) return true;
 
@@ -68,7 +68,7 @@ namespace GameControl.SO
                     foreach (var c in spawnConditions)
                     {
                         if (c == null) continue;
-                        if (!c.IsSatisfied(state, spawner, mapData, this))
+                        if (!c.IsSatisfied(state, mapData, this))
                         {
                             //Debug.Log($"[Spawn] {id} blocked by condition {c.name} (All)");
                             return false;
@@ -81,7 +81,7 @@ namespace GameControl.SO
                 foreach (var c in spawnConditions)
                 {
                     if (c == null) continue;
-                    if (c.IsSatisfied(state, spawner, mapData, this))
+                    if (c.IsSatisfied(state, mapData, this))
                     {
                         return true;
                     }
@@ -100,6 +100,16 @@ namespace GameControl.SO
                 set => enemyController = value?.GetComponent<EnemyController>();
             }
             public bool TryPassChance() => Random.Range(0, 100) < chance;
+            
+            public MapDataSO.EnemyOption Clone()
+            {
+                return new MapDataSO.EnemyOption
+                {
+                    id = this.EnemyId,
+                    chance = this.chance,
+                };
+            }
+
         }
         
         [Serializable]
@@ -109,13 +119,15 @@ namespace GameControl.SO
             public bool enableThisPattern;
             
             [FoldoutGroup("$pattern")]
-            public bool enableSpecificEnemy;
+            public bool bypassSpawnCondition;
             
+            [FoldoutGroup("$pattern")]
+            public bool enableSpecificEnemy;
+
             [Serializable]
             public struct EnemyKv { public string enemyID; public float chance; }
             [FoldoutGroup("$pattern")] [Title("Enemy Specific")] [ShowIf("enableSpecificEnemy")] 
             public List<EnemyKv> specificEnemyList;
-
             
             [FoldoutGroup("$pattern")] [Title("Setting")]
             public BaseSpawnPattern pattern;
