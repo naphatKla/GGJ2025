@@ -182,7 +182,7 @@ namespace GameControl.EventMap
                     eventPrefab = prefabAsset,
                     delayBetweenEvents = delay,
                     deleteTime = baseEvent.deletetime,
-                    delayPerform = baseEvent.delayBeforePerform,
+                    delayPerform = baseEvent.previewDuration,
                     damage = baseEvent.damage
                 };
                 

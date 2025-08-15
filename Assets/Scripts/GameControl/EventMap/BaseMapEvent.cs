@@ -4,16 +4,17 @@ using Cysharp.Threading.Tasks;
 using MoreMountains.Feedbacks;
 using UnityEngine;
 using UnityEngine.Pool;
+using UnityEngine.Serialization;
 
 namespace GameControl.EventMap
 {
     public abstract class BaseMapEvent : MonoBehaviour
     {
         public float deletetime;
-        public float delayBeforePerform;
+        public float previewDuration;
+        public float delayBeforePerformAfterPreview;
         public float damage;
         public ParticleSystem previewEffect;
-        public ParticleSystem perfromEffect;
 
         public bool debug;
 
@@ -63,6 +64,9 @@ namespace GameControl.EventMap
             {
                 if (debug) Debug.Log("Start Play");
                 await PlayPreview();
+
+                await UniTask.WaitForSeconds(delayBeforePerformAfterPreview,
+                    cancellationToken: destroyCancellationToken);
                 
                 if (debug) Debug.Log("Perform & Feedback");
                 Perform();
