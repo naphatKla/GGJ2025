@@ -47,14 +47,7 @@ namespace Characters.UIDisplay
         
         
         [Title("Grade Combo")] [FoldoutGroup("Combo Display")]
-        public Image gradeImage;
-        
-        [Serializable]
-        public struct GradeCombo { public string gradeId; public Sprite gradeImage; }
-           
-        [FoldoutGroup("Combo Display")]
-        public List<GradeCombo> gradeComboList;
-        
+        public GradeComboDisplay gradeComboDisplay;
 
         // ========= Combat =========
         [FoldoutGroup("Combat Display"), SerializeField]
@@ -118,7 +111,7 @@ namespace Characters.UIDisplay
                 comboStreakSystem.OnStageUpdate += UpdateComboStreakBar;
                 comboStreakSystem.OnBoostChanged += UpdateBoostMultiplierText; // float xN
                 //comboStreakSystem.OnTimerTick  // float seconds
-                comboStreakSystem.OnGradeChanged += UpdateGradeCombo;
+                comboStreakSystem.OnGradeChanged += gradeComboDisplay.UpdateGradeCombo;
                 comboStreakSystem.OnStageEnter += ComboValueBarUpdate;
                 comboStreakSystem.OnStageExit += ComboValueBarUpdate;
                 comboStreakSystem.OnBerserkEnter += OnBerserkEnter;
@@ -162,7 +155,7 @@ namespace Characters.UIDisplay
                 comboStreakSystem.OnStageExit -= ComboValueBarUpdate;
                 comboStreakSystem.OnBerserkEnter -= OnBerserkEnter;
                 comboStreakSystem.OnBerserkExit -= OnBerserkExit;
-                comboStreakSystem.OnGradeChanged -= UpdateGradeCombo;
+                comboStreakSystem.OnGradeChanged -= gradeComboDisplay.UpdateGradeCombo;
             }
 
             levelSystem.OnLevelUpdate -= UpdateLevelUI;
@@ -249,38 +242,6 @@ namespace Characters.UIDisplay
                     break;
             }
         }
-
-        private void UpdateGradeCombo(string grade)
-        {
-            gradeImage.gameObject.SetActive(grade != null);
-            foreach (var g in gradeComboList)
-                if (g.gradeId == grade)
-                {
-                    GradeFeedback(gradeImage, g.gradeImage);
-                    break;
-                }
-            
-        }
-
-        private void GradeFeedback(Image obj, Sprite newSprite)
-        {
-            var tf = obj.transform;
-            var cg = obj.GetComponent<CanvasGroup>();
-            if (cg == null) cg = obj.gameObject.AddComponent<CanvasGroup>();
-
-            var sq = DOTween.Sequence();
-
-            sq.Append(cg.DOFade(0f, 0.15f))
-                .AppendCallback(() =>
-                {
-                    obj.sprite = newSprite;
-                })
-                .Append(cg.DOFade(1f, 0.25f))
-                .Join(tf.DOScale(1.6f, 0.25f).SetEase(Ease.OutBack))
-                .Append(tf.DOScale(1f, 0.15f).SetEase(Ease.InBack));
-        }
-
-        
 
         private void OnBerserkEnter()
         {

@@ -5374,6 +5374,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 519609468}
+  - component: {fileID: 519609469}
   m_Layer: 5
   m_Name: ComboUI
   m_TagString: Untagged
@@ -5405,6 +5406,32 @@ RectTransform:
   m_AnchoredPosition: {x: -175, y: 137}
   m_SizeDelta: {x: 350, y: 165}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &519609469
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 519609467}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a48b06ce5ac11c04aa6d0484686e40a3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gradeImage: {fileID: 1908912598}
+  gradeComboList:
+  - gradeId: D
+    gradeImage: {fileID: 21300000, guid: 808025271bc5a214e8080c9f815f2d90, type: 3}
+  - gradeId: C
+    gradeImage: {fileID: 21300000, guid: 5af82db5ce764eb4b98e2d6f5063e272, type: 3}
+  - gradeId: B
+    gradeImage: {fileID: 21300000, guid: 36470d51f455f7940a9655a01fcbeada, type: 3}
+  - gradeId: A
+    gradeImage: {fileID: 21300000, guid: 281d45a4e051aeb4fa3019db3b0ebae5, type: 3}
+  - gradeId: S
+    gradeImage: {fileID: 21300000, guid: 548151c49e329d24bacf44146415d764, type: 3}
+  - gradeId: SS
+    gradeImage: {fileID: 21300000, guid: 0cd221c86846258418344ec2ce0ad281, type: 3}
 --- !u!1 &526661206
 GameObject:
   m_ObjectHideFlags: 0
@@ -25486,6 +25513,10 @@ PrefabInstance:
       propertyPath: solfUpgradePanel
       value: 
       objectReference: {fileID: 1939544330}
+    - target: {fileID: 1766625338755230343, guid: ef87c6aedde00684a81e6139e502fb41, type: 3}
+      propertyPath: gradeComboDisplay
+      value: 
+      objectReference: {fileID: 519609469}
     - target: {fileID: 1766625338755230343, guid: ef87c6aedde00684a81e6139e502fb41, type: 3}
       propertyPath: gradeComboList.Array.size
       value: 6
