@@ -17,7 +17,8 @@ namespace GameControl.Controller
         private readonly SpawnerStateController _state;
         private readonly Vector2 _regionSize;
         private readonly List<MapDataSO.PatternOption> _patternEnemy;
-
+        
+        private EnemySpawnerController _enemySpawner;
         private Dictionary<string, ObjectPool<EnemyController>> _storeEnemy;
         private List<MapDataSO.EnemyOption> _storeOption;
         private readonly Queue<MapDataSO.PatternOption> _patternQueue = new();
@@ -39,10 +40,11 @@ namespace GameControl.Controller
             _currentTriggertime = mapData.triggerAllPatternIn;
         }
 
-        public void SetEnemyList(Dictionary<string, ObjectPool<EnemyController>> enemyList, List<MapDataSO.EnemyOption> enemyOptions)
+        public void SetEnemySpawner(EnemySpawnerController spawner)
         {
-            _storeEnemy = enemyList;
-            _storeOption = enemyOptions;
+            _enemySpawner = spawner;
+            _storeEnemy = spawner.GetEnemyList();
+            _storeOption = spawner.GetEnemyOption();
         }
         
         public void TriggerAllPatterns()
@@ -88,18 +90,23 @@ namespace GameControl.Controller
         //Random Enemy Type
         public MapDataSO.EnemyOption RandomType(MapDataSO.PatternOption patternOption)
         {
-            if (_storeOption == null || _storeOption.Count == 0)
+            if (_enemySpawner == null)
             {
-                if (_isDebug) Debug.Log("[EnemyPatternController] _storeOption is empty/null. Make sure SetEnemyList was called.");
+                if (_isDebug) Debug.Log("[EnemyPatternController] EnemySpawner not set.");
+                return null;
+            }
+            
+            var candidates = _enemySpawner.ConditionEnemy(patternOption != null && patternOption.bypassSpawnCondition);
+            if (candidates == null || candidates.Count == 0)
+            {
+                if (_isDebug) Debug.Log("[EnemyPatternController] No candidates after ConditionEnemy()");
                 return null;
             }
 
             if (patternOption == null || !patternOption.enableSpecificEnemy ||
                 patternOption.specificEnemyList == null || patternOption.specificEnemyList.Count == 0)
             {
-                var fallback = RandomUtility.GetWeightedRandom(_storeOption);
-                if (_isDebug) Debug.Log($"[EnemyPatternController] Specific disabled -> fallback chosen: {(fallback != null ? fallback.EnemyId : "null")}");
-                return fallback;
+                return RandomUtility.GetWeightedRandom(candidates);
             }
 
             var dict = patternOption.specificEnemyList
@@ -107,18 +114,8 @@ namespace GameControl.Controller
                 .GroupBy(k => k.enemyID.Trim().ToLowerInvariant())
                 .ToDictionary(g => g.Key, g => g.Sum(x => x.chance));
 
-            if (_isDebug)
-            {
-                Debug.Log($"[EnemyPatternController] Specific keys: {string.Join(", ", dict.Keys)}");
-                Debug.Log($"[EnemyPatternController] Store ids: {string.Join(", ", _storeOption.Select(o => (o.EnemyId ?? "").Trim().ToLowerInvariant()))}");
-            }
-
-            var chosen = RandomUtility.GetWeightedRandomById(_storeOption, dict,
+            return RandomUtility.GetWeightedRandomById(candidates, dict,
                 o => (o.EnemyId ?? string.Empty).Trim().ToLowerInvariant());
-            if (_isDebug)
-                Debug.Log($"[EnemyPatternController] Chosen (specific): {(chosen != null ? chosen.EnemyId : "null")}");
-
-            return chosen;
         }
 
         #region Private Method
@@ -185,10 +182,9 @@ namespace GameControl.Controller
         
         private bool CanTriggerPattern(MapDataSO.PatternOption patternData)
         {
-            return patternData.pattern != null &&
-                   SpawnerStateController.Instance.CurrentEnemyPoint >= patternData.patternPoint;
+            return patternData.pattern != null && SpawnerStateController.Instance.CurrentEnemyPoint >= patternData.patternPoint;
         }
-
+        
         private List<List<Vector2>> CalculatePatternRows(MapDataSO.PatternOption patternData, int enemyAmount)
         {
             if (patternData.enablePatternCenter)

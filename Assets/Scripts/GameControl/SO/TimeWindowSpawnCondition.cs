@@ -16,7 +16,7 @@ namespace GameControl.SO
         [InfoBox("ถ้าอยากให้มันไม่เกิดหลังจาก 120 วิก็ใส่ไป 120 วิ")]
         public float endAt = -1f;
 
-        public override bool IsSatisfied(SpawnerStateController state, EnemySpawnerController spawner, MapDataSO mapData, MapDataSO.EnemyOption option)
+        public override bool IsSatisfied(SpawnerStateController state, MapDataSO mapData, MapDataSO.EnemyOption option)
         {
             var elapsed = GameTimer.Instance.GlobalTimerDown;
             if (elapsed < startAfter) return false;

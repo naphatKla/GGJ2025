@@ -27,12 +27,24 @@ namespace GameControl.EventMap
         Sphere,
         Capsule
     }
+    
+    public enum DataSetting
+    {
+        damage,
+        deleteTime,
+        delayPerform,
+        delaybetweenEvent,
+        chance
+    }
 
 
     [Serializable]
     public class MapEventStorageEntry
     {
         [HideInInspector] public Transform spawnPointRef;
+        
+        [Title("➡️ Damage")]
+        [FoldoutGroup("$GroupName")] public float damage = 5f;
 
         [Title("➡️ Time & Delay Data")]
         [FoldoutGroup("$GroupName")] public float deleteTime = 2f;
@@ -170,7 +182,8 @@ namespace GameControl.EventMap
                     eventPrefab = prefabAsset,
                     delayBetweenEvents = delay,
                     deleteTime = baseEvent.deletetime,
-                    delayPerform = baseEvent.delayBeforePerform
+                    delayPerform = baseEvent.delayBeforePerform,
+                    damage = baseEvent.damage
                 };
                 
                 if (baseEvent is IBoxHitbox box)
@@ -333,6 +346,37 @@ namespace GameControl.EventMap
             {
                 if (i < 0 || i >= entries.Count) continue;
                 entries[i].hitboxType = type;
+            }
+            
+            EditorUtility.SetDirty(this);
+            AssetDatabase.SaveAssets();
+        }
+        
+        [Title("Batch Set Data")]
+        [Button("Apply Data", ButtonSizes.Medium)]
+        private void ApplyHitboxType(DataSetting data, float num)
+        {
+            foreach (var i in GetTargetIndexes())
+            {
+                if (i < 0 || i >= entries.Count) continue;
+                switch (data)
+                {
+                    case DataSetting.damage:
+                        entries[i].damage = num;
+                        break;
+                    case DataSetting.deleteTime:
+                        entries[i].deleteTime = num;
+                        break;
+                    case DataSetting.delayPerform:
+                        entries[i].delayPerform = num;
+                        break;
+                    case DataSetting.delaybetweenEvent:
+                        entries[i].delayBetweenEvents = num;
+                        break;
+                    case DataSetting.chance:
+                        entries[i].chance = num;
+                        break;
+                }
             }
             
             EditorUtility.SetDirty(this);
