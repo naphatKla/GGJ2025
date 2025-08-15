@@ -10,19 +10,32 @@ namespace Manager
         void OnFixedUpdate();
     }
 
+    /// <summary>
+    /// FixedUpdate manager ที่ปลอดภัยต่อการสลับ Register/Unregister ภายในเฟรมเดียวกัน:
+    /// - ใช้ Last-Op-Wins: รวมคำสั่ง (Enable/Disable) ของแต่ละ instance ในเฟรม แล้วค่อยตัดสินทีเดียวต้นเฟรม
+    /// - ไม่แก้คอลเลกชันขณะ iterate
+    /// - Remove แบบ O(1) ด้วย swap-remove + index map
+    /// - กันอัปเดตให้ตัวที่ถูก "จองถอด" ภายในเฟรมนี้ และกันกรณี UnityEngine.Object ถูกทำลาย
+    /// - รองรับ tick event ทุก ๆ tickInterval วินาที (อาจยิงหลายครั้งในเฟรมถ้า CPU ตก)
+    /// </summary>
     public class FixedUpdateManager : MMSingleton<FixedUpdateManager>
     {
-        // -------- Core storage (remove O(1)) --------
-        private readonly List<IFixedUpdateable> _items = new();                 // active list
-        private readonly Dictionary<IFixedUpdateable, int> _indexOf = new();    // map -> index
+        // ===== Active storage (swap-remove) =====
+        private readonly List<IFixedUpdateable> _items = new();
+        private readonly Dictionary<IFixedUpdateable, int> _indexOf = new();
 
-        // Queues (avoid duplicates)
+        // ===== Queues (apply ที่ต้นเฟรม) =====
         private readonly List<IFixedUpdateable> _toAdd = new();
         private readonly HashSet<IFixedUpdateable> _toAddSet = new();
+
         private readonly List<IFixedUpdateable> _toRemove = new();
         private readonly HashSet<IFixedUpdateable> _toRemoveSet = new();
 
-        // -------- 0.2s tick event --------
+        // ===== Last-Op-Wins (รวมคำสั่งในเฟรม) =====
+        // true = อยากอยู่/Enable/Register, false = อยากออก/Disable/Unregister
+        private readonly Dictionary<IFixedUpdateable, bool> _lastOp = new();
+
+        // ===== Tick event =====
         public event Action OnTick;
         [SerializeField] private float tickInterval = 0.2f;
         private float _tickAccum;
@@ -35,56 +48,80 @@ namespace Manager
 
         public int Count => _items.Count;
 
-        // -------- Public API --------
+        // ---------- Public API ----------
+
+        /// <summary>ประกาศความต้องการ "อยู่ในลิสต์" ของ instance นี้ในเฟรมปัจจุบัน (Last-Op-Wins)</summary>
         public void Register(IFixedUpdateable instance)
         {
             if (instance == null) return;
-
-            if (_indexOf.ContainsKey(instance) || _toAddSet.Contains(instance))
-                return;
-
-            // If it was scheduled to remove, cancel that removal
-            if (_toRemoveSet.Remove(instance))
-            {
-                for (int i = 0; i < _toRemove.Count; i++)
-                {
-                    if (!ReferenceEquals(_toRemove[i], instance)) continue;
-                    _toRemove.RemoveAt(i);
-                    break;
-                }
-                return;
-            }
-
-            _toAdd.Add(instance);
-            _toAddSet.Add(instance);
+            _lastOp[instance] = true;
         }
 
+        /// <summary>ประกาศความต้องการ "ออกจากลิสต์" ของ instance นี้ในเฟรมปัจจุบัน (Last-Op-Wins)</summary>
         public void Unregister(IFixedUpdateable instance)
         {
             if (instance == null) return;
-
-            // If not added yet (in add-queue), cancel add instead
-            if (_toAddSet.Remove(instance))
-            {
-                for (int i = 0; i < _toAdd.Count; i++)
-                {
-                    if (!ReferenceEquals(_toAdd[i], instance)) continue;
-                    _toAdd.RemoveAt(i);
-                    break;
-                }
-                return;
-            }
-
-            if (!_indexOf.ContainsKey(instance) || _toRemoveSet.Contains(instance))
-                return;
-
-            _toRemove.Add(instance);
-            _toRemoveSet.Add(instance);
+            _lastOp[instance] = false;
         }
 
+        // ---------- Main Loop ----------
         private void FixedUpdate()
         {
-            // 1) Apply removals (swap-remove, O(1) per item)
+            // 0) Reconcile last operations (Last-Op-Wins) -> translate เป็นคิว Add/Remove
+            if (_lastOp.Count > 0)
+            {
+                foreach (var kv in _lastOp)
+                {
+                    var inst = kv.Key;
+                    bool wantAdd = kv.Value;
+
+                    if (!wantAdd)
+                    {
+                        // ต้องการถอด
+                        if (_indexOf.ContainsKey(inst) && !_toRemoveSet.Contains(inst))
+                        {
+                            _toRemove.Add(inst);
+                            _toRemoveSet.Add(inst);
+                        }
+                        // ยกเลิกคิวเพิ่มถ้าเผลอคิวไว้
+                        if (_toAddSet.Remove(inst))
+                        {
+                            for (int i = 0; i < _toAdd.Count; i++)
+                            {
+                                if (ReferenceEquals(_toAdd[i], inst))
+                                {
+                                    _toAdd.RemoveAt(i);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // ต้องการอยู่
+                        if (!_indexOf.ContainsKey(inst) && !_toAddSet.Contains(inst))
+                        {
+                            _toAdd.Add(inst);
+                            _toAddSet.Add(inst);
+                        }
+                        // ยกเลิกคิวลบถ้ามี
+                        if (_toRemoveSet.Remove(inst))
+                        {
+                            for (int i = 0; i < _toRemove.Count; i++)
+                            {
+                                if (ReferenceEquals(_toRemove[i], inst))
+                                {
+                                    _toRemove.RemoveAt(i);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+                _lastOp.Clear();
+            }
+
+            // 1) Apply removals (O(1) swap-remove)
             if (_toRemove.Count > 0)
             {
                 for (int i = 0; i < _toRemove.Count; i++)
@@ -97,13 +134,13 @@ namespace Manager
                 _toRemoveSet.Clear();
             }
 
-            // 2) Apply additions (append only)
+            // 2) Apply additions (append)
             if (_toAdd.Count > 0)
             {
                 for (int i = 0; i < _toAdd.Count; i++)
                 {
                     var inst = _toAdd[i];
-                    if (_indexOf.ContainsKey(inst)) continue; // safety
+                    if (_indexOf.ContainsKey(inst)) continue; // safety (อาจถูกเพิ่มไปแล้ว)
                     _indexOf[inst] = _items.Count;
                     _items.Add(inst);
                 }
@@ -111,14 +148,21 @@ namespace Manager
                 _toAddSet.Clear();
             }
 
-            // 3) Update loop (tight for-loop)
+            // 3) Update loop (skip ที่ถูก "จองถอด" + skip ถ้าถูก Destroy)
             var list = _items;
             for (int i = 0, len = list.Count; i < len; i++)
             {
-                list[i]?.OnFixedUpdate();
+                var item = list[i];
+                if (item == null) continue; // เผื่ออินเตอร์เฟซลอย
+                if (_toRemoveSet.Contains(item)) continue; // เฟรมนี้มีคำสั่งถอดแล้ว → ไม่ต้องอัปเดต
+
+                // ถ้าเป็น UnityEngine.Object และถูกลบ/Destroy ไปแล้ว ให้ข้าม
+                if (item is UnityEngine.Object uo && uo == null) continue;
+
+                item.OnFixedUpdate();
             }
 
-            // 4) Tick every tickInterval (may fire multiple times if needed)
+            // 4) Tick every tickInterval (อาจยิงซ้ำหลายครั้งถ้า accum เกิน)
             _tickAccum += Time.fixedDeltaTime;
             if (_tickAccum >= tickInterval)
             {
@@ -134,7 +178,7 @@ namespace Manager
             }
         }
 
-        // ---- Helpers ----
+        // ---------- Helpers ----------
         private void SwapRemoveAt(int idx)
         {
             int last = _items.Count - 1;
