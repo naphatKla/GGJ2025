@@ -189,6 +189,7 @@ MonoBehaviour:
   intervalEnemyPointRatioUpgrade: 30
   PatternOptions:
   - enableThisPattern: 1
+    bypassSpawnCondition: 0
     enableSpecificEnemy: 0
     specificEnemyList:
     - enemyID: Enemy_Normal
@@ -202,6 +203,7 @@ MonoBehaviour:
     enablePatternCenter: 0
     patternCenter: {x: 0, y: 0}
   - enableThisPattern: 1
+    bypassSpawnCondition: 0
     enableSpecificEnemy: 0
     specificEnemyList: []
     pattern: {fileID: 11400000, guid: 098e856c71484744d95d27a8654a8433, type: 2}
@@ -211,6 +213,7 @@ MonoBehaviour:
     enablePatternCenter: 0
     patternCenter: {x: 0, y: 0}
   - enableThisPattern: 1
+    bypassSpawnCondition: 0
     enableSpecificEnemy: 0
     specificEnemyList: []
     pattern: {fileID: 11400000, guid: 288500a21d61a4540b39a6463d3f4af9, type: 2}
@@ -220,6 +223,7 @@ MonoBehaviour:
     enablePatternCenter: 0
     patternCenter: {x: 0, y: 0}
   - enableThisPattern: 1
+    bypassSpawnCondition: 0
     enableSpecificEnemy: 0
     specificEnemyList: []
     pattern: {fileID: 11400000, guid: 2bc8bc7d72e130d4382d64794bbc160c, type: 2}
@@ -229,6 +233,7 @@ MonoBehaviour:
     enablePatternCenter: 0
     patternCenter: {x: 0, y: 0}
   - enableThisPattern: 1
+    bypassSpawnCondition: 0
     enableSpecificEnemy: 0
     specificEnemyList: []
     pattern: {fileID: 11400000, guid: 24b5084f31b90d44090398f20fd2166b, type: 2}
@@ -238,6 +243,7 @@ MonoBehaviour:
     enablePatternCenter: 0
     patternCenter: {x: 0, y: 0}
   - enableThisPattern: 1
+    bypassSpawnCondition: 0
     enableSpecificEnemy: 0
     specificEnemyList: []
     pattern: {fileID: 11400000, guid: 3c5159e5638c81a4b9a6d6e9d8853011, type: 2}
@@ -247,6 +253,7 @@ MonoBehaviour:
     enablePatternCenter: 0
     patternCenter: {x: 0, y: 0}
   - enableThisPattern: 1
+    bypassSpawnCondition: 0
     enableSpecificEnemy: 0
     specificEnemyList: []
     pattern: {fileID: 11400000, guid: 1e63f424b276e28409899624010d5aaf, type: 2}
@@ -256,6 +263,7 @@ MonoBehaviour:
     enablePatternCenter: 0
     patternCenter: {x: 0, y: 0}
   - enableThisPattern: 1
+    bypassSpawnCondition: 0
     enableSpecificEnemy: 0
     specificEnemyList: []
     pattern: {fileID: 11400000, guid: 22206c817f2991344955d785a5ad4457, type: 2}
@@ -265,6 +273,7 @@ MonoBehaviour:
     enablePatternCenter: 0
     patternCenter: {x: 0, y: 0}
   - enableThisPattern: 1
+    bypassSpawnCondition: 0
     enableSpecificEnemy: 0
     specificEnemyList: []
     pattern: {fileID: 11400000, guid: 40fb65c3276e22343affa5a5a2d61545, type: 2}
@@ -275,7 +284,7 @@ MonoBehaviour:
     patternCenter: {x: 0, y: 0}
   playAllPatternIn: 60
   triggerAllPatternIn: 60
-  triggerTimeCanDecrease: 1
+  triggerTimeCanDecrease: 0
   patternDecreaseInterval: 25
   patternDecreaseRate: 1
   patternDecreaseMinimum: 18
@@ -345,8 +354,8 @@ MonoBehaviour:
     rateModify: -1
     intervalModify: 10
     minPlayInterval: 5
-  defaultEnemySpawnTimer: 0.5
+  defaultEnemySpawnTimer: 0.2
   intervalIncreaseEnemyPoint: 30
-  rateIncreaseEnemyPoint: 14.5
-  startEnemyPoint: 30
-  maxEnemyPoint: 500
+  rateIncreaseEnemyPoint: 29
+  startEnemyPoint: 60
+  maxEnemyPoint: 1000
