@@ -135,13 +135,16 @@ namespace Characters.HeathSystems
             ModifyHealth(-damage);
             OnTakeDamage?.Invoke(true);
             
-            owner?.TryPlayFeedback(FeedbackName.Character.TakeDamage);
             HitCooldownHandler();
 
             if (_currentHealth <= 0)
             {
                 owner?.TryPlayFeedback(FeedbackName.Character.Dead);
                 Dead();
+            }
+            else
+            {
+                owner?.TryPlayFeedback(FeedbackName.Character.TakeDamage);
             }
 
             return true;
