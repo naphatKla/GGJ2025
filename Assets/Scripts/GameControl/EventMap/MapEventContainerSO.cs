@@ -32,7 +32,9 @@ namespace GameControl.EventMap
     {
         damage,
         deleteTime,
-        delayPerform
+        delayPerform,
+        delaybetweenEvent,
+        chance
     }
 
 
@@ -363,10 +365,16 @@ namespace GameControl.EventMap
                         entries[i].damage = num;
                         break;
                     case DataSetting.deleteTime:
-                        entries[i].damage = num;
+                        entries[i].deleteTime = num;
                         break;
                     case DataSetting.delayPerform:
-                        entries[i].damage = num;
+                        entries[i].delayPerform = num;
+                        break;
+                    case DataSetting.delaybetweenEvent:
+                        entries[i].delayBetweenEvents = num;
+                        break;
+                    case DataSetting.chance:
+                        entries[i].chance = num;
                         break;
                 }
             }
