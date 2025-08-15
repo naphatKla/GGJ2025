@@ -47,14 +47,7 @@ namespace Characters.UIDisplay
         
         
         [Title("Grade Combo")] [FoldoutGroup("Combo Display")]
-        public Image gradeImage;
-        
-        [Serializable]
-        public struct GradeCombo { public string gradeId; public Sprite gradeImage; }
-           
-        [FoldoutGroup("Combo Display")]
-        public List<GradeCombo> gradeComboList;
-        
+        public GradeComboDisplay gradeComboDisplay;
 
         // ========= Combat =========
         [FoldoutGroup("Combat Display"), SerializeField]
@@ -118,7 +111,7 @@ namespace Characters.UIDisplay
                 comboStreakSystem.OnStageUpdate += UpdateComboStreakBar;
                 comboStreakSystem.OnBoostChanged += UpdateBoostMultiplierText; // float xN
                 //comboStreakSystem.OnTimerTick  // float seconds
-                comboStreakSystem.OnGradeChanged += UpdateGradeCombo;
+                comboStreakSystem.OnGradeChanged += gradeComboDisplay.UpdateGradeCombo;
                 comboStreakSystem.OnStageEnter += ComboValueBarUpdate;
                 comboStreakSystem.OnStageExit += ComboValueBarUpdate;
                 comboStreakSystem.OnBerserkEnter += OnBerserkEnter;
@@ -162,7 +155,7 @@ namespace Characters.UIDisplay
                 comboStreakSystem.OnStageExit -= ComboValueBarUpdate;
                 comboStreakSystem.OnBerserkEnter -= OnBerserkEnter;
                 comboStreakSystem.OnBerserkExit -= OnBerserkExit;
-                comboStreakSystem.OnGradeChanged -= UpdateGradeCombo;
+                comboStreakSystem.OnGradeChanged -= gradeComboDisplay.UpdateGradeCombo;
             }
 
             levelSystem.OnLevelUpdate -= UpdateLevelUI;
@@ -248,11 +241,6 @@ namespace Characters.UIDisplay
                     comboStreakBar.FillImage.color = Color.green;
                     break;
             }
-        }
-
-        private void UpdateGradeCombo(string grade)
-        {
-            
         }
 
         private void OnBerserkEnter()
