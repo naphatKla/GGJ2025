@@ -29,7 +29,7 @@ namespace Characters.ComboSystem
         /// <summary>ตัวคูณดรอป EXP (x0..xMax)</summary>
         public float CurrentBoostMultiplierX { get; private set; }
 
-        public string CurrentGrade { get; private set; } = "D";
+        public string CurrentGrade { get; private set; } = null;
 
         // ตัวจับเวลาคอมโบ (ใช้ร่วมกันทั้ง KillCount และ Streak)
         private float comboTimer;
@@ -273,18 +273,14 @@ namespace Characters.ComboSystem
 
         private void EvaluateGrade()
         {
-            if (data.killGrades == null || data.killGrades.Count == 0)
+            /*if (data.killGrades == null || data.killGrades.Count == 0)
             {
-                if (CurrentGrade != "D")
-                {
-                    CurrentGrade = "D";
-                    OnGradeChanged?.Invoke(CurrentGrade);
-                }
-
+                CurrentGrade = "D";
+                OnGradeChanged?.Invoke(CurrentGrade);
                 return;
-            }
+            }*/
 
-            string best = "D";
+            string best = null;
             int bestMin = int.MinValue;
 
             foreach (var g in data.killGrades)
@@ -302,6 +298,7 @@ namespace Characters.ComboSystem
                 OnGradeChanged?.Invoke(CurrentGrade);
             }
         }
+
 
         /// <summary>
         /// Tier progression:

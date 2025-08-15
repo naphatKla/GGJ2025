@@ -19,7 +19,7 @@ MonoBehaviour:
   maxBoostPercent: 500
   onHitBoostPenaltyPercentOfMax: 10
   killGrades:
-  - minKillCount: 0
+  - minKillCount: 1
     label: D
   - minKillCount: 10
     label: C
@@ -31,8 +31,6 @@ MonoBehaviour:
     label: S
   - minKillCount: 100
     label: SS
-  - minKillCount: 150
-    label: SSS
   stageTiers:
   - minStreak: 25
     stage: {fileID: 11400000, guid: 15730a0eab5a2ab4e8f943829341b947, type: 2}

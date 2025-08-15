@@ -252,8 +252,35 @@ namespace Characters.UIDisplay
 
         private void UpdateGradeCombo(string grade)
         {
+            gradeImage.gameObject.SetActive(grade != null);
+            foreach (var g in gradeComboList)
+                if (g.gradeId == grade)
+                {
+                    GradeFeedback(gradeImage, g.gradeImage);
+                    break;
+                }
             
         }
+
+        private void GradeFeedback(Image obj, Sprite newSprite)
+        {
+            var tf = obj.transform;
+            var cg = obj.GetComponent<CanvasGroup>();
+            if (cg == null) cg = obj.gameObject.AddComponent<CanvasGroup>();
+
+            var sq = DOTween.Sequence();
+
+            sq.Append(cg.DOFade(0f, 0.15f))
+                .AppendCallback(() =>
+                {
+                    obj.sprite = newSprite;
+                })
+                .Append(cg.DOFade(1f, 0.25f))
+                .Join(tf.DOScale(1.6f, 0.25f).SetEase(Ease.OutBack))
+                .Append(tf.DOScale(1f, 0.15f).SetEase(Ease.InBack));
+        }
+
+        
 
         private void OnBerserkEnter()
         {
