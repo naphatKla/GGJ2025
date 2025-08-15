@@ -140,7 +140,7 @@ namespace Characters.HeathSystems
 
             if (_currentHealth <= 0)
             {
-                owner?.TryPlayFeedback(FeedbackName.Character.TakeDamage);
+                owner?.TryPlayFeedback(FeedbackName.Character.Dead);
                 Dead();
             }
 
