@@ -41,6 +41,9 @@ namespace Characters.ComboSystem
 
         // Final-stage runtime controls (คุมโดย Manager เท่านั้น)
         private float finalStageTimer; // ใช้เฉพาะถ้ากำหนด auto-exit > 0
+        public int FlowStageI = 0;
+        public int FlowStageII = 0;
+        
 
         private bool IsInFinalStage =>
             data.stageTiers != null &&
