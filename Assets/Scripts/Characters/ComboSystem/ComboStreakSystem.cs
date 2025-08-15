@@ -2,7 +2,6 @@ using System;
 using Characters.Controllers;
 using Characters.SO.ComboStreakDataSO;
 using Characters.SO.ComboStreakDataSO.StageDataSO;
-using GameControl.Controller;
 using Manager;
 using UnityEngine;
 
@@ -17,7 +16,7 @@ namespace Characters.ComboSystem
     /// </summary>
     public class ComboStreakSystem : MonoBehaviour, IFixedUpdateable
     {
-        [SerializeField] private ComboStreakDataSo data;
+        private ComboStreakDataSo data;
         public ComboStreakDataSo Data => data;
 
         private BaseController owner;

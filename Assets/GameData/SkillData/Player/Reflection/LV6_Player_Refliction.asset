@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5056253ad23a97346927fde2743fb996, type: 3}
-  m_Name: LV3_Skill_Refliction
+  m_Name: LV6_Player_Refliction
   m_EditorClassIdentifier: 
   serializationData:
     SerializedFormat: 2
@@ -30,20 +30,22 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
-  skillIcon: {fileID: 21300000, guid: 6f2c464431e13874cbc8a306ce1fbbed, type: 3}
+  skillIcon: {fileID: 21300000, guid: 13d6d5b6fc6ad3f429d98d3b57766f6d, type: 3}
   skillName: Reflection
   skillDescription: 
-  previousSkillData: {fileID: 11400000, guid: 099d0d3bb0564e7428cfee6e37f82620, type: 2}
-  nextSkillDataUpgrade: {fileID: 11400000, guid: 2183eec5f09ebc54c92eaed05a2db844, type: 2}
-  level: 3
-  cooldown: 13.125
+  previousSkillData: {fileID: 11400000, guid: 583f599c8aab6664e9aa0a74217323e7, type: 2}
+  nextSkillDataUpgrade: {fileID: 0}
+  level: 6
+  cooldown: 10.125
+  startFeedback: Reflection_Lv6
+  exitFeedback: 
   statusEffectOnSkillStart: []
-  skillObjectAmount: 9
+  skillObjectAmount: 17
   reflectionSkillObject: {fileID: -5084912477967523391, guid: 77ab01583acdb514f86262907fd33d07, type: 3}
-  damageHitPerSec: 3.1875
+  damageHitPerSec: 5.9625
   baseDamagePerHit: 5
   damageMultiplier: 100
-  explosionDistance: 6.75
+  explosionDistance: 11.25
   explosionEntireDuration: 1
   explosionStartDuration: 0.1
   explosionStartCurve:

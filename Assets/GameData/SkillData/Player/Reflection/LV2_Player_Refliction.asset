@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5056253ad23a97346927fde2743fb996, type: 3}
-  m_Name: LV1_Skill_Refliction
+  m_Name: LV2_Player_Refliction
   m_EditorClassIdentifier: 
   serializationData:
     SerializedFormat: 2
@@ -30,15 +30,17 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
-  skillIcon: {fileID: 21300000, guid: 3664520fae9d49245aca7de214021452, type: 3}
+  skillIcon: {fileID: 21300000, guid: 3d9fd6ee0d4387247bf13e97a158af04, type: 3}
   skillName: Reflection
   skillDescription: 
-  previousSkillData: {fileID: 0}
-  nextSkillDataUpgrade: {fileID: 11400000, guid: 099d0d3bb0564e7428cfee6e37f82620, type: 2}
-  level: 1
+  previousSkillData: {fileID: 11400000, guid: 9a46408e5bdddd547be40c1e80dff589, type: 2}
+  nextSkillDataUpgrade: {fileID: 11400000, guid: b434804c8b6fbda4ba5c40ef58bec2e7, type: 2}
+  level: 2
   cooldown: 15
+  startFeedback: Reflection_Lv2
+  exitFeedback: 
   statusEffectOnSkillStart: []
-  skillObjectAmount: 6
+  skillObjectAmount: 8
   reflectionSkillObject: {fileID: -5084912477967523391, guid: 77ab01583acdb514f86262907fd33d07, type: 3}
   damageHitPerSec: 3
   baseDamagePerHit: 5
@@ -84,7 +86,7 @@ MonoBehaviour:
       outWeight: 0
     - serializedVersion: 3
       time: 0.23855853
-      value: 0.9
+      value: 0.9059637
       inSlope: 0.20707549
       outSlope: 0.20707549
       tangentMode: 0

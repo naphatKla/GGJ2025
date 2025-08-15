@@ -68,6 +68,12 @@ namespace Characters.FeedbackSystems
             public const string HarmonyOfLightLv4 = "Skill/HarmonyOfLight_Lv4";
             public const string HarmonyOfLightLv5 = "Skill/HarmonyOfLight_Lv5";
             public const string HarmonyOfLightLv6 = "Skill/HarmonyOfLight_Lv6";
+            public const string OverloopLv1 = "Skill/Overloop_Lv1";
+            public const string OverloopLv2 = "Skill/Overloop_Lv2";
+            public const string OverloopLv3 = "Skill/Overloop_Lv3";
+            public const string OverloopLv4 = "Skill/Overloop_Lv4";
+            public const string OverloopLv5 = "Skill/Overloop_Lv5";
+            public const string OverloopLv6 = "Skill/Overloop_Lv6";
             public const string PiercerDashChargeLv1 = "Skill/PiercerDashCharge_Lv1";
             public const string ChargeBombLv1 = "Skill/ChargeBomb_Lv1";
             public const string PressureBombLv1 = "Skill/PressureBomb_Lv1";
