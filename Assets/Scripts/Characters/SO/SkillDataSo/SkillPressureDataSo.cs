@@ -1,3 +1,4 @@
+using Characters.FeedbackSystems;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -18,9 +19,16 @@ namespace Characters.SO.SkillDataSo
         [FoldoutGroup("Skill Configs")]
         [SerializeField] private float explosionRadius;
 
+        [FoldoutGroup("Feedback")]
+        [ValueDropdown("@FeedbackName.Odin.ShortGroupWithNone(\"Skill\")")]
+        [SerializeField] private string bombFeedback;
+
         public float BaseDamage => baseDamage;
         public float DamageMultiplier => damageMultiplier;
         public float ChargeDuration => chargeDuration;
         public float ExplosionRadius => explosionRadius;
+
+        public string BombFeedback => 
+            string.IsNullOrEmpty(bombFeedback) ? null : FeedbackName.ResolveFullKey("Skill", bombFeedback);
     }
 }

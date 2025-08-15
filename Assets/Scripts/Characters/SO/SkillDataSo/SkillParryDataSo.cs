@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Characters.FeedbackSystems;
 using Characters.StatusEffectSystems;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -42,7 +43,8 @@ namespace Characters.SO.SkillDataSo
         public float ExplosionBaseDamage => explosionBaseDamage;
         public float ExplosionDamageMultiplier => explosionDamageMultiplier;
         public float ExplosionRadius => explosionRadius;
-        public string ParrySuccessFeedback => parrySuccessFeedback;
+        public string ParrySuccessFeedback => 
+            string.IsNullOrEmpty(parrySuccessFeedback) ? null : FeedbackName.ResolveFullKey("Skill", parrySuccessFeedback);
         public List<StatusEffectDataPayload> ExplosionEffectsToTarget => explosionEffectsToTarget;
         public float KnockBackDistance => knockBackDistance;
         public float KnockBackDuration => knockBackDuration;

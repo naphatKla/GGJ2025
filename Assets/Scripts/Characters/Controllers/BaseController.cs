@@ -179,12 +179,14 @@ namespace Characters.Controllers
 
         public void TryPlayFeedback(string feedbackName)
         {
+            if (string.IsNullOrEmpty(feedbackName)) return;
             if (!feedbackSystem) return;
             feedbackSystem.PlayFeedback(feedbackName);
         }
 
         public void TryStopFeedback(string feedbackName)
         {
+            if (string.IsNullOrEmpty(feedbackName)) return;
             if (!feedbackSystem) return;
             feedbackSystem.StopFeedback(feedbackName);
         }

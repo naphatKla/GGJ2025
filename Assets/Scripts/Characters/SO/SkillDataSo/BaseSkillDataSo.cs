@@ -93,8 +93,10 @@ namespace Characters.SO.SkillDataSo
         public List<StatusEffectDataPayload> StatusEffectOnSkillStart => statusEffectOnSkillStart;
         public Type SkillRuntime => _skillRuntime;
         public int Level => level;
-        public string StartFeedback => startFeedback;
-        public string ExitFeedback => exitFeedback;
+        public string StartFeedback =>
+            string.IsNullOrEmpty(startFeedback) ? null : FeedbackName.ResolveFullKey("Skill", startFeedback);
+        public string ExitFeedback =>
+            string.IsNullOrEmpty(exitFeedback) ? null : FeedbackName.ResolveFullKey("Skill", exitFeedback);
         public BaseSkillDataSo NextSkillDataUpgrade => nextSkillDataUpgrade;
         public BaseSkillDataSo PreviousSkillData => previousSkillData;
 

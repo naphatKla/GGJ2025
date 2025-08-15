@@ -1,5 +1,38 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &3971591385610382137
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4285916099839101493}
+  m_Layer: 6
+  m_Name: Skills
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4285916099839101493
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3971591385610382137}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 2711300838694342753}
+  - {fileID: 4708283955471881643}
+  m_Father: {fileID: 5929465906105201980}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5823058338720374816
 GameObject:
   m_ObjectHideFlags: 0
@@ -31,7 +64,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 5929465906105201980}
+  m_Father: {fileID: 4285916099839101493}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &8517719134570493546
 MonoBehaviour:
@@ -342,7 +375,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 5929465906105201980}
+  m_Father: {fileID: 4285916099839101493}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &8552139975909470480
 MonoBehaviour:
@@ -715,9 +748,45 @@ PrefabInstance:
       value: FirecrackerEnemyTakeDamage
       objectReference: {fileID: 0}
     - target: {fileID: 5733554412123996507, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
+      propertyPath: skillEntries.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5733554412123996507, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
       propertyPath: serializationData.Prefab
       value: 
       objectReference: {fileID: 5733554412123996507, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
+    - target: {fileID: 5733554412123996507, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
+      propertyPath: skillEntries.Array.data[0].Key
+      value: Skill/ChargeBomb_Lv1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5733554412123996507, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
+      propertyPath: skillEntries.Array.data[1].Key
+      value: Skill/PressureBomb_Lv1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5733554412123996507, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
+      propertyPath: skillEntries.Array.data[2].Key
+      value: Skill/PressureBomb_Lv1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5733554412123996507, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
+      propertyPath: skillEntries.Array.data[0].Player
+      value: 
+      objectReference: {fileID: 8552139975909470480}
+    - target: {fileID: 5733554412123996507, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
+      propertyPath: skillEntries.Array.data[1].Player
+      value: 
+      objectReference: {fileID: 8517719134570493546}
+    - target: {fileID: 5733554412123996507, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
+      propertyPath: skillEntries.Array.data[0].GroupFilter
+      value: Skill
+      objectReference: {fileID: 0}
+    - target: {fileID: 5733554412123996507, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
+      propertyPath: skillEntries.Array.data[1].GroupFilter
+      value: Skill
+      objectReference: {fileID: 0}
+    - target: {fileID: 5733554412123996507, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
+      propertyPath: skillEntries.Array.data[2].GroupFilter
+      value: Skill
+      objectReference: {fileID: 0}
     - target: {fileID: 5733554412123996507, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
       propertyPath: serializationData.PrefabModifications.Array.size
       value: 4
@@ -745,7 +814,7 @@ PrefabInstance:
     - target: {fileID: 5733554412123996507, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
       propertyPath: serializationData.PrefabModificationsReferencedUnityObjects.Array.data[0]
       value: 
-      objectReference: {fileID: 7328916140089884351}
+      objectReference: {fileID: 0}
     - target: {fileID: 5733554412123996507, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
       propertyPath: serializationData.PrefabModificationsReferencedUnityObjects.Array.data[1]
       value: 
@@ -794,10 +863,6 @@ PrefabInstance:
       propertyPath: characterData
       value: 
       objectReference: {fileID: 11400000, guid: f37d343094e49fd4692231bb86858243, type: 2}
-    - target: {fileID: 8145196360709479149, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
-      propertyPath: feedbackSystem
-      value: 
-      objectReference: {fileID: 86080726462017718}
     - target: {fileID: 8664070425611870484, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
       propertyPath: managedReferences[7334425405478141959].PlayEvents.m_PersistentCalls.m_Calls.Array.size
       value: 1
@@ -822,24 +887,13 @@ PrefabInstance:
       propertyPath: managedReferences[7334425405478141959].PlayEvents.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
-    - target: {fileID: 8738783530377552037, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
-      propertyPath: m_Name
-      value: FirecrackerEnemyDash
-      objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 5733554412123996507, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
+    m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 2313492309073572760, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 2711300838694342753}
-    - targetCorrespondingSourceObject: {fileID: 2313492309073572760, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 4708283955471881643}
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 3040175372062831934, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
-      insertIndex: 12
-      addedObject: {fileID: 86080726462017718}
+      insertIndex: 1
+      addedObject: {fileID: 4285916099839101493}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
 --- !u!114 &751655877476165552 stripped
 MonoBehaviour:
@@ -879,151 +933,3 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 2313492309073572760, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
   m_PrefabInstance: {fileID: 8237819481152095908}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &6368725702936572826 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3040175372062831934, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
-  m_PrefabInstance: {fileID: 8237819481152095908}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &86080726462017718
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6368725702936572826}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f28a506aadc27e745a24ceb690bb1189, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  serializationData:
-    SerializedFormat: 2
-    SerializedBytes: 
-    ReferencedUnityObjects:
-    - {fileID: 7328916140089884351}
-    - {fileID: 2246351115559431910}
-    - {fileID: 751655877476165552}
-    - {fileID: 1551828330291705462}
-    - {fileID: 8517719134570493546}
-    - {fileID: 8552139975909470480}
-    SerializedBytesString: 
-    Prefab: {fileID: 0}
-    PrefabModificationsReferencedUnityObjects: []
-    PrefabModifications: []
-    SerializationNodes:
-    - Name: feedbackList
-      Entry: 7
-      Data: 0|UnityEngine.Rendering.SerializedDictionary`2[[Characters.FeedbackSystems.FeedbackName,
-        Assembly-CSharp],[MoreMountains.Feedbacks.MMF_Player, MoreMountains.Feedbacks]],
-        Unity.RenderPipelines.Core.Runtime
-    - Name: comparer
-      Entry: 7
-      Data: 1|System.Collections.Generic.EnumEqualityComparer`1[[Characters.FeedbackSystems.FeedbackName,
-        Assembly-CSharp]], mscorlib
-    - Name: 
-      Entry: 12
-      Data: 0
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 12
-      Data: 6
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 3
-      Data: 1
-    - Name: $v
-      Entry: 10
-      Data: 0
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 3
-      Data: 18446744073709551517
-    - Name: $v
-      Entry: 10
-      Data: 1
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 3
-      Data: 18446744073709551525
-    - Name: $v
-      Entry: 10
-      Data: 2
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 3
-      Data: 18446744073709551520
-    - Name: $v
-      Entry: 10
-      Data: 3
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 3
-      Data: 10
-    - Name: $v
-      Entry: 10
-      Data: 4
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: $k
-      Entry: 3
-      Data: 9
-    - Name: $v
-      Entry: 10
-      Data: 5
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-  trail: {fileID: 6525597573579028761}
---- !u!96 &6525597573579028761 stripped
-TrailRenderer:
-  m_CorrespondingSourceObject: {fileID: 2944519933285449661, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
-  m_PrefabInstance: {fileID: 8237819481152095908}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &7328916140089884351 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1722370990017755163, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
-  m_PrefabInstance: {fileID: 8237819481152095908}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6da43522623d4704e979466dc7650b65, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 

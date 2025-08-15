@@ -23,7 +23,7 @@ namespace Characters.SkillSystems.SkillRuntimes
             var layerMask = CharacterGlobalSettings.Instance.EnemyLayerDictionary[transform.tag];
             var targets = Physics2D.OverlapCircleAll(transform.position, skillData.ExplosionRadius, layerMask);
 
-            //owner.TryPlayFeedback(FeedbackName.PressureBomb);
+            owner.TryPlayFeedback(skillData.BombFeedback);
             foreach (var target in targets)
             {
                 CombatManager.ApplyCalculatedDamageTo(target.gameObject, owner.gameObject,
