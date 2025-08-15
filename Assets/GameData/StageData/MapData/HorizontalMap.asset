@@ -38,12 +38,13 @@ MonoBehaviour:
     enemyPointGrowthRate: 12.5
     chance: 0
     enemyChanceCanGrowth: 1
-    enemyChanceGrowthRate: 2.22
+    enemyChanceGrowthRate: 1.5
     useCustomInterval: 0
     customInterval: 0
-    useSpawnConditions: 0
+    useSpawnConditions: 1
     conditionLogic: 0
-    spawnConditions: []
+    spawnConditions:
+    - {fileID: 11400000, guid: 3f56b5d1fb4b3a542a9ed243f11b9b62, type: 2}
   - id: Enemy_Soldier
     enemyController: {fileID: 6978469296619682545, guid: a0503233dadc52f46bbd80a4952cd4e1, type: 3}
     spawnPoint: 1.38
@@ -51,12 +52,13 @@ MonoBehaviour:
     enemyPointGrowthRate: 12.5
     chance: 0
     enemyChanceCanGrowth: 1
-    enemyChanceGrowthRate: 0.37
+    enemyChanceGrowthRate: 0.6
     useCustomInterval: 0
     customInterval: 0
-    useSpawnConditions: 0
+    useSpawnConditions: 1
     conditionLogic: 0
-    spawnConditions: []
+    spawnConditions:
+    - {fileID: 11400000, guid: 9c8223f7d20d92549b63562686ff8747, type: 2}
   - id: Enemy_Tank
     enemyController: {fileID: 1371981663885322251, guid: c825ab4cef105ab40aa986fd07615367, type: 3}
     spawnPoint: 1.54
@@ -64,12 +66,13 @@ MonoBehaviour:
     enemyPointGrowthRate: 12.5
     chance: 0
     enemyChanceCanGrowth: 1
-    enemyChanceGrowthRate: 1.33
+    enemyChanceGrowthRate: 0.8
     useCustomInterval: 0
     customInterval: 2
-    useSpawnConditions: 0
+    useSpawnConditions: 1
     conditionLogic: 0
-    spawnConditions: []
+    spawnConditions:
+    - {fileID: 11400000, guid: b2759ca457c3c3d49b2eab9d6d81c2f0, type: 2}
   - id: Enemy_Absolute
     enemyController: {fileID: 1371981663885322251, guid: eec6f0bc923ca8c4e8d1f911f0441879, type: 3}
     spawnPoint: 2.33
@@ -77,12 +80,13 @@ MonoBehaviour:
     enemyPointGrowthRate: 12.5
     chance: 0
     enemyChanceCanGrowth: 1
-    enemyChanceGrowthRate: 0.66
+    enemyChanceGrowthRate: 0.5
     useCustomInterval: 0
     customInterval: 0
-    useSpawnConditions: 0
+    useSpawnConditions: 1
     conditionLogic: 0
-    spawnConditions: []
+    spawnConditions:
+    - {fileID: 11400000, guid: b3dd7bb4ce73f58438ee3cb2e5f2c445, type: 2}
   - id: Enemy_Absorption
     enemyController: {fileID: 1371981663885322251, guid: fd4d927248ba7894fab69bd0611e5dd6, type: 3}
     spawnPoint: 3.14
@@ -90,12 +94,13 @@ MonoBehaviour:
     enemyPointGrowthRate: 12.5
     chance: 0
     enemyChanceCanGrowth: 1
-    enemyChanceGrowthRate: 0.13
+    enemyChanceGrowthRate: 0.2075
     useCustomInterval: 0
     customInterval: 0
-    useSpawnConditions: 0
+    useSpawnConditions: 1
     conditionLogic: 0
-    spawnConditions: []
+    spawnConditions:
+    - {fileID: 11400000, guid: f4b764d3576967545ab0873bf66d3ab6, type: 2}
   - id: Enemy_Pressure
     enemyController: {fileID: 241806535288265801, guid: 79dec73735459964a8ca48d4f07d4f9a, type: 3}
     spawnPoint: 1.56
@@ -103,12 +108,13 @@ MonoBehaviour:
     enemyPointGrowthRate: 12.5
     chance: 0
     enemyChanceCanGrowth: 1
-    enemyChanceGrowthRate: 1.85
+    enemyChanceGrowthRate: 1
     useCustomInterval: 0
     customInterval: 0
-    useSpawnConditions: 0
+    useSpawnConditions: 1
     conditionLogic: 0
-    spawnConditions: []
+    spawnConditions:
+    - {fileID: 11400000, guid: fbb198d5f11874a4e99e237c96ccd39e, type: 2}
   - id: Enemy_Firecraker
     enemyController: {fileID: 241806535288265801, guid: 27b7309a2863d144f92c41ed68909b7a, type: 3}
     spawnPoint: 1.32
@@ -118,10 +124,11 @@ MonoBehaviour:
     enemyChanceCanGrowth: 0
     enemyChanceGrowthRate: 0
     useCustomInterval: 1
-    customInterval: 0.93
-    useSpawnConditions: 0
+    customInterval: 1.5
+    useSpawnConditions: 1
     conditionLogic: 0
-    spawnConditions: []
+    spawnConditions:
+    - {fileID: 11400000, guid: 826635642fc3dd242a25e5d0326d9a23, type: 2}
   - id: Enemy_Bomber
     enemyController: {fileID: 241806535288265801, guid: e35823daef8ec1d4190c0960c0e7bb8b, type: 3}
     spawnPoint: 3.41
@@ -129,12 +136,13 @@ MonoBehaviour:
     enemyPointGrowthRate: 12.5
     chance: 0
     enemyChanceCanGrowth: 1
-    enemyChanceGrowthRate: 0.19
+    enemyChanceGrowthRate: 0.3
     useCustomInterval: 0
     customInterval: 0
-    useSpawnConditions: 0
+    useSpawnConditions: 1
     conditionLogic: 0
-    spawnConditions: []
+    spawnConditions:
+    - {fileID: 11400000, guid: a36d2c81a79161946beeda253129118b, type: 2}
   - id: Enemy_Piercer
     enemyController: {fileID: 5352284219382747297, guid: c31b489d153b0634585086d777023f54, type: 3}
     spawnPoint: 1.21
@@ -142,12 +150,13 @@ MonoBehaviour:
     enemyPointGrowthRate: 12.5
     chance: 0
     enemyChanceCanGrowth: 1
-    enemyChanceGrowthRate: 1.85
+    enemyChanceGrowthRate: 1
     useCustomInterval: 0
     customInterval: 0
-    useSpawnConditions: 0
+    useSpawnConditions: 1
     conditionLogic: 0
-    spawnConditions: []
+    spawnConditions:
+    - {fileID: 11400000, guid: 80ca52462799e884b8fd6616cee36084, type: 2}
   - id: Enemy_Javelin
     enemyController: {fileID: 5352284219382747297, guid: 9b50d372f60f2b44e8902b9700c8ff75, type: 3}
     spawnPoint: 1.84
@@ -155,12 +164,13 @@ MonoBehaviour:
     enemyPointGrowthRate: 12.5
     chance: 0
     enemyChanceCanGrowth: 1
-    enemyChanceGrowthRate: 0.93
+    enemyChanceGrowthRate: 0.7
     useCustomInterval: 0
     customInterval: 0
-    useSpawnConditions: 0
+    useSpawnConditions: 1
     conditionLogic: 0
-    spawnConditions: []
+    spawnConditions:
+    - {fileID: 11400000, guid: 374f290d01a025e4abb6c9f95c9685ce, type: 2}
   - id: Enemy_Comet
     enemyController: {fileID: 5352284219382747297, guid: f393a17767905ac4ca15da0af7bc1668, type: 3}
     spawnPoint: 2.44
@@ -168,17 +178,18 @@ MonoBehaviour:
     enemyPointGrowthRate: 12.5
     chance: 0
     enemyChanceCanGrowth: 1
-    enemyChanceGrowthRate: 0.19
+    enemyChanceGrowthRate: 0.4
     useCustomInterval: 0
     customInterval: 0
-    useSpawnConditions: 0
+    useSpawnConditions: 1
     conditionLogic: 0
-    spawnConditions: []
+    spawnConditions:
+    - {fileID: 11400000, guid: 7fe54f688e6e96548afaea6e8475e71b, type: 2}
   intervalEnemyChanceUpgrade: 30
   intervalEnemyPointRatioUpgrade: 30
   PatternOptions:
   - enableThisPattern: 1
-    enableSpecificEnemy: 1
+    enableSpecificEnemy: 0
     specificEnemyList:
     - enemyID: Enemy_Normal
       chance: 50
@@ -262,9 +273,9 @@ MonoBehaviour:
     patternPoint: 20
     enablePatternCenter: 0
     patternCenter: {x: 0, y: 0}
-  playAllPatternIn: 10
-  triggerAllPatternIn: 180
-  triggerTimeCanDecrease: 0
+  playAllPatternIn: 60
+  triggerAllPatternIn: 60
+  triggerTimeCanDecrease: 1
   patternDecreaseInterval: 25
   patternDecreaseRate: 1
   patternDecreaseMinimum: 18
@@ -280,17 +291,29 @@ MonoBehaviour:
   defaultItemSpawnTimer: 1
   eventmapOptions:
   - enableThisMapEvent: 1
-    catagolyMapEvent: Test
+    catagolyMapEvent: Main
     allMapEventID:
+    - mapEventID: Gaint_2_R
+      chance: 16.7
+      useWeightRandom: 1
     - mapEventID: Horizontal_LR
-      chance: 40
-      useWeightRandom: 0
+      chance: 16.7
+      useWeightRandom: 1
     - mapEventID: Vertical_LR
-      chance: 100
-      useWeightRandom: 0
+      chance: 16.7
+      useWeightRandom: 1
+    - mapEventID: Basket_L_R
+      chance: 16.7
+      useWeightRandom: 1
+    - mapEventID: Firework_TopL_BottomR
+      chance: 16.7
+      useWeightRandom: 1
+    - mapEventID: Firework_TopR_BottomL
+      chance: 16.7
+      useWeightRandom: 1
     eventMapChance: 100
-    playInterval: 10
-    intervalCanModify: 1
+    playInterval: 40
+    intervalCanModify: 0
     rateModify: -1
     intervalModify: 10
     minPlayInterval: 5
