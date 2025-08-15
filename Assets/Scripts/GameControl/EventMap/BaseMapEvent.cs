@@ -34,6 +34,7 @@ namespace GameControl.EventMap
             float originalDuration = main.duration;
             main.simulationSpeed = originalDuration / entry.delayPerform;
             deletetime = entry.deleteTime;
+            damage = entry.damage;
 
             
             switch (entry.hitboxType)
