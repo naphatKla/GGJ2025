@@ -9,6 +9,7 @@ using Characters.ScoreSystems;
 using Characters.SkillSystems;
 using Characters.SO.ComboStreakDataSO.StageDataSO;
 using Characters.SO.SkillDataSo;
+using Characters.StatusEffectSystems;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using Manager;
@@ -44,8 +45,8 @@ namespace Characters.UIDisplay
         [FoldoutGroup("Combo Display")] public ValueBar comboStreakBar;
         [FoldoutGroup("Combo Display")] public float tweenDuration = 0.1f;
         [FoldoutGroup("Combo Display")] public float scaleAmount = 1.2f;
-        
-        
+
+
         [Title("Grade Combo")] [FoldoutGroup("Combo Display")]
         public GradeComboDisplay gradeComboDisplay;
 
@@ -98,6 +99,12 @@ namespace Characters.UIDisplay
         [FoldoutGroup("Score Display"), SerializeField, Title("UI")]
         private TextMeshProUGUI scoreText;
 
+        [FoldoutGroup("Status Display"), SerializeField, Title("Ref")]
+        private StatusEffectSystem statusEffectSystem;
+
+        [FoldoutGroup("Status Display"), SerializeField, Title("UI")]
+        private List<StatusSlotModel> statusSlots;
+
         private System.Action<float> _onHealthChangeUpdateUIHandler;
         private System.Action<float> _onHealthChangeTextHandler;
 
@@ -135,6 +142,8 @@ namespace Characters.UIDisplay
 
             combatSystem.OnDealDamage += UpdateDamageText;
             scoreSystem.OnScoreChange += UpdateScoreUI;
+
+            statusEffectSystem.OnStatusUIUpdate += UpdateStatusUI;
 
             PoolingManager.Instance.Create<TextMeshProUGUI>(worldTextUIPrefab.name, PoolingGroupName.UI,
                 CreateDamageText);
@@ -174,6 +183,8 @@ namespace Characters.UIDisplay
             combatSystem.OnDealDamage -= UpdateDamageText;
             scoreSystem.OnScoreChange -= UpdateScoreUI;
 
+            statusEffectSystem.OnStatusUIUpdate -= UpdateStatusUI;
+
             PoolingManager.Instance.ClearPool(worldTextUIPrefab.name);
         }
 
@@ -185,6 +196,9 @@ namespace Characters.UIDisplay
             if (comboUI) comboUI.SetActive(false);
             if (killComboText) killComboText.text = "0 STRIKE!";
             if (scoreMultiply) scoreMultiply.text = "x0";
+
+            foreach (var statusSlotModel in statusSlots)
+                statusSlotModel.gameObject.SetActive(false);
 
             UpdateLevelUI();
             UpdateHealthUI();
@@ -213,7 +227,7 @@ namespace Characters.UIDisplay
 
             if (killComboText != null)
                 killComboText.text = $"{streak} STRIKE!";
-            
+
             // pop tween
             comboUI.transform
                 .DOScale(new Vector3(scaleAmount, scaleAmount, 1), tweenDuration)
@@ -247,7 +261,7 @@ namespace Characters.UIDisplay
         {
             lightningCombo.SetActive(true);
         }
-        
+
         private void OnBerserkExit()
         {
             lightningCombo.SetActive(false);
@@ -542,6 +556,38 @@ namespace Characters.UIDisplay
         public void UpdateScoreUI(int score)
         {
             scoreText.text = $"{score}";
+        }
+
+        #endregion
+
+        #region Status UI
+
+        private void UpdateStatusUI(IReadOnlyList<StatusEffectUIData> datas)
+        {
+            int maxSlot = Mathf.Min(statusSlots.Count, datas.Count);
+
+            for (var i = 0; i < statusSlots.Count; i++)
+            {
+                if (i >= maxSlot)
+                {
+                    statusSlots[i].gameObject.SetActive(false);
+                    continue;
+                }
+
+                var data = datas[i];
+                var slot = statusSlots[i];
+
+                slot.gameObject.SetActive(true);
+                slot.buffIcon.sprite = data.Icon;
+                if (data.CurrentDuration >= 100)
+                    slot.durationText.text = "";
+                else
+                    slot.durationText.text = data.CurrentDuration <= 1
+                        ? $"{data.CurrentDuration:F1}"
+                        : $"{data.CurrentDuration:F0}";
+                slot.valueBar.CurrentValue = 1 - data.CurrentDuration / data.MaxDuration;
+                slot.statusFrame.color = data.isDebuff ? Color.red : Color.green;
+            }
         }
 
         #endregion

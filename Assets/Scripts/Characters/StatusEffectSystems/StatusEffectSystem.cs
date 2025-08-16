@@ -12,12 +12,13 @@ namespace Characters.StatusEffectSystems
     [Serializable]
     public struct StatusEffectDataPayload
     {
-        [PropertyTooltip("The base ScriptableObject data for this status effect.")]
-        [SerializeField] private BaseStatusEffectDataSo effectData;
+        [PropertyTooltip("The base ScriptableObject data for this status effect.")] [SerializeField]
+        private BaseStatusEffectDataSo effectData;
 
         [PropertyTooltip("Whether to override the default duration defined in the effect data.")]
         [SerializeField, HorizontalGroup("OverrideDuration", LabelWidth = 105f)]
-        [LabelText("OverrideDuration")] private bool isOverrideDuration;
+        [LabelText("OverrideDuration")]
+        private bool isOverrideDuration;
 
         [EnableIf(nameof(isOverrideDuration))]
         [PropertyTooltip("Custom duration to override the default value. Used only if override is enabled.")]
@@ -35,6 +36,15 @@ namespace Characters.StatusEffectSystems
         }
     }
 
+    public struct StatusEffectUIData
+    {
+        public StatusEffectName Name;
+        public Sprite Icon;
+        public bool isDebuff;
+        public float MaxDuration;
+        public float CurrentDuration;
+    }
+
     public enum StatusEffectName
     {
         Iframe = 0,
@@ -42,39 +52,37 @@ namespace Characters.StatusEffectSystems
         FlowStage = 3,
     }
 
-    /// <summary>
-    /// Safe, two-phase status effect runner:
-    /// - ไม่แก้ไขดิกชันนารีระหว่าง iterate
-    /// - replace เรียก OnExit ของตัวเก่าเสมอ
-    /// - Exit เรียกครั้งเดียวด้วยคิว + HashSet
-    /// </summary>
     public class StatusEffectSystem : MonoBehaviour, IFixedUpdateable
     {
         private readonly Dictionary<StatusEffectName, BaseStatusEffect> _active = new();
 
-        // คิว Exit + เซ็ตกันซ้ำ
+        // เก็บ “ลำดับที่ถูก Add” ไว้คงลำดับเดิมของบัฟ/ดีบัฟ
+        private readonly List<StatusEffectName> _order = new();
+
         private readonly Queue<BaseStatusEffect> _exitQueue = new();
         private readonly HashSet<BaseStatusEffect> _exitSet = new();
 
-        // คำสั่งที่เกิดระหว่างกำลังอัปเดต (defer)
         private readonly List<BaseStatusEffect> _pendingAdd = new();
         private readonly List<StatusEffectName> _pendingRemove = new();
-
-        private readonly List<BaseStatusEffect> _tmpIter = new(); // snapshot iterate
+        private readonly List<BaseStatusEffect> _tmpIter = new();
 
         private BaseController _owner;
-        private bool _stepping; // กำลัง iterate อยู่ไหม
+        private bool _stepping;
+
+        public event Action<IReadOnlyList<StatusEffectUIData>> OnStatusUIUpdate;
+
+        private readonly List<StatusEffectUIData> _uiBuffer = new(8);
 
         public virtual void AssignData(BaseController owner) => _owner = owner;
 
-        private void OnEnable()  => FixedUpdateManager.Instance.Register(this);
+        private void OnEnable() => FixedUpdateManager.Instance.Register(this);
         private void OnDisable() => FixedUpdateManager.Instance.Unregister(this);
 
         public void OnFixedUpdate()
         {
             float dt = Time.fixedDeltaTime;
 
-            // ----- SNAPSHOT & STEP -----
+            // ----- STEP -----
             _stepping = true;
             _tmpIter.Clear();
             foreach (var kvp in _active) _tmpIter.Add(kvp.Value);
@@ -82,8 +90,8 @@ namespace Characters.StatusEffectSystems
             for (int i = 0; i < _tmpIter.Count; i++)
             {
                 var effect = _tmpIter[i];
-                // อาจถูกคิว exit ไปแล้วในเฟสก่อนหน้า
-                if (effect == null || !_active.TryGetValue(effect.EffectName, out var stillAlive) || stillAlive != effect)
+                if (effect == null || !_active.TryGetValue(effect.EffectName, out var stillAlive) ||
+                    stillAlive != effect)
                     continue;
 
                 effect.OnUpdate(_owner, dt);
@@ -92,6 +100,7 @@ namespace Characters.StatusEffectSystems
                 if (effect.IsDone)
                     EnqueueExit(effect);
             }
+
             _stepping = false;
 
             // ----- APPLY REMOVES -----
@@ -107,8 +116,10 @@ namespace Characters.StatusEffectSystems
                     {
                         EnqueueExit(eff);
                         _active.Remove(name);
+                        RemoveFromOrder(name);
                     }
                 }
+
                 _pendingRemove.Clear();
                 ProcessExitQueue();
             }
@@ -120,6 +131,12 @@ namespace Characters.StatusEffectSystems
                     AddInternal(_pendingAdd[i]);
                 _pendingAdd.Clear();
             }
+
+            // ----- BUILD UI BUFFER (Buff ก่อน / Debuff ท้าย) -----
+            BuildUIBufferPartitioned();
+
+            // ----- PUSH UI -----
+            OnStatusUIUpdate?.Invoke(_uiBuffer);
         }
 
         // ===== Public API =====
@@ -148,7 +165,8 @@ namespace Characters.StatusEffectSystems
             {
                 EnqueueExit(eff);
                 _active.Remove(effectName);
-                ProcessExitQueue(); // ทำเลยเพื่อให้เรียก OnExit ทันทีนอกเฟส
+                RemoveFromOrder(effectName);
+                ProcessExitQueue(); // OnExit ทันที
             }
         }
 
@@ -162,6 +180,7 @@ namespace Characters.StatusEffectSystems
         {
             foreach (var kvp in _active) EnqueueExit(kvp.Value);
             _active.Clear();
+            _order.Clear();
             ProcessExitQueue();
         }
 
@@ -172,26 +191,34 @@ namespace Characters.StatusEffectSystems
 
         // ===== Internals =====
 
-        private void AddInternal(BaseStatusEffect newEffect)
+        private bool AddInternal(BaseStatusEffect newEffect)
         {
-            // ถ้ามีของเก่า → เปรียบเทียบความแรงแล้ว exit ของเก่าเสมอ (ถ้าจะแทน)
+            // ถ้ามีของเก่า → เปรียบเทียบความแรง
             if (_active.TryGetValue(newEffect.EffectName, out var old))
             {
-                if (IsWeakerThan(newEffect, old)) return; // ของใหม่อ่อนกว่า → ไม่ทำอะไร
+                if (IsWeakerThan(newEffect, old)) return false;
 
+                // replace: ออกจากของเก่าก่อน (คงตำแหน่งใน _order ไว้)
                 EnqueueExit(old);
                 _active.Remove(old.EffectName);
-                ProcessExitQueue(); // ให้ OnExit ทำงานก่อน OnStart ของตัวใหม่
+                ProcessExitQueue();
+                // _order ไม่ต้องขยับ เพราะชื่อ effect เหมือนเดิม
+            }
+            else
+            {
+                // effect ใหม่นับเป็น entry ใหม่ → put ไว้ท้ายสุด
+                _order.Add(newEffect.EffectName);
             }
 
             _active[newEffect.EffectName] = newEffect;
             newEffect.OnStart(_owner);
+            return true;
         }
 
         private void EnqueueExit(BaseStatusEffect effect)
         {
             if (effect == null) return;
-            if (_exitSet.Add(effect)) // กัน enqueue ซ้ำ
+            if (_exitSet.Add(effect))
                 _exitQueue.Enqueue(effect);
         }
 
@@ -207,15 +234,82 @@ namespace Characters.StatusEffectSystems
                 }
                 finally
                 {
-                    _active.Remove(eff.EffectName); // เผื่อยังหลงเหลือ
+                    _active.Remove(eff.EffectName);
+                    RemoveFromOrder(eff.EffectName); // ลบออกจากลำดับด้วย
                 }
             }
+        }
+
+        private void RemoveFromOrder(StatusEffectName name)
+        {
+            // O(N) แต่ N มักน้อย (หลักสิบ) — พอใช้และเรียบง่าย
+            int idx = _order.IndexOf(name);
+            if (idx >= 0) _order.RemoveAt(idx);
         }
 
         private static bool IsWeakerThan(BaseStatusEffect newer, BaseStatusEffect older)
         {
             if (newer.Level < older.Level) return true;
             return newer.Level == older.Level && newer.CurrentDuration < older.CurrentDuration;
+        }
+
+        // ===== UI buffer (No sort by name — แยกสองพาส) =====
+        private void BuildUIBufferPartitioned()
+        {
+            _uiBuffer.Clear();
+
+            // 1) ใส่ “บัฟ” ทั้งหมดก่อน ตามลำดับที่ถูก Add เข้ามา
+            for (int i = 0; i < _order.Count; i++)
+            {
+                var key = _order[i];
+                if (!_active.TryGetValue(key, out var eff) || eff == null) continue;
+
+                var data = eff.DataSo;
+                bool isDebuff = data != null && data.IsDebuff;
+                if (isDebuff) continue; // ข้ามก่อน (ไว้ไปรอบถัดไป)
+
+                _uiBuffer.Add(new StatusEffectUIData
+                {
+                    Name = eff.EffectName,
+                    Icon = data ? data.Icon : null,
+                    isDebuff = data.IsDebuff,
+                    MaxDuration = eff.MaxDuration,
+                    CurrentDuration = eff.CurrentDuration
+                });
+            }
+
+            // 2) ตามด้วย “ดีบัฟ” ทั้งหมด ตามลำดับที่ถูก Add เข้ามา
+            for (int i = 0; i < _order.Count; i++)
+            {
+                var key = _order[i];
+                if (!_active.TryGetValue(key, out var eff) || eff == null) continue;
+
+                var data = eff.DataSo;
+                bool isDebuff = data != null && data.IsDebuff;
+                if (!isDebuff) continue;
+
+                _uiBuffer.Add(new StatusEffectUIData
+                {
+                    Name = eff.EffectName,
+                    Icon = data ? data.Icon : null,
+                    isDebuff = data.IsDebuff,
+                    MaxDuration = eff.MaxDuration,
+                    CurrentDuration = eff.CurrentDuration
+                });
+            }
+        }
+    }
+
+    // (ยังคง ListPool ได้ถ้าจะใช้ที่อื่น — ที่นี่ไม่ใช้แล้ว)
+    internal static class ListPool<T>
+    {
+        private static readonly Stack<List<T>> _pool = new();
+        public static List<T> Get() => _pool.Count > 0 ? _pool.Pop() : new List<T>(8);
+
+        public static void Release(List<T> list)
+        {
+            list.Clear();
+            _pool.Push(list);
         }
     }
 }

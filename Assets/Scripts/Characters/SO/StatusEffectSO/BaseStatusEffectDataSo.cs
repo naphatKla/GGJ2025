@@ -43,6 +43,9 @@ namespace Characters.SO.StatusEffectSO
         [PropertyTooltip("Default duration in seconds when this effect is applied.")]
         [SerializeField]
         private float defaultDuration;
+
+        [SerializeField]
+        private bool isDebuff;
         
         [Title("Type Binding"), Space(10)]
         [PropertyTooltip("Runtime class that will be instantiated when this effect is applied.")]
@@ -69,6 +72,8 @@ namespace Characters.SO.StatusEffectSO
         /// Default duration (in seconds) for the status effect.
         /// </summary>
         public float DefaultDuration => defaultDuration;
+
+        public bool IsDebuff => isDebuff;
 
         /// <summary>
         /// Priority level of this effect, used in override logic.
