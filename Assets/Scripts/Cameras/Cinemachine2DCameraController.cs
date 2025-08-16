@@ -55,7 +55,7 @@ namespace Cameras
         [SerializeField] private float defaultShakeCooldown = 0.1f;
 
         private CinemachineVirtualCamera currentCam;
-        private float defaultOrthoSize;
+        public float defaultOrthoSize;
         private float defaultFOV;
         private float defaultFollowDamping;
         private Transform defaultFollowTarget;
@@ -64,6 +64,8 @@ namespace Cameras
         private CancellationTokenSource orthoSizeCTS;
         private bool _isInit;
         private float _nextShakeTime = 0f;
+
+        public CinemachineVirtualCamera CurrentCam => currentCam;
 
         private void Awake()
         {
