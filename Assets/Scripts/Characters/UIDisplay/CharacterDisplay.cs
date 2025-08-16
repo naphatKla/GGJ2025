@@ -570,14 +570,14 @@ namespace Characters.UIDisplay
             {
                 if (i >= maxSlot)
                 {
-                    statusSlots[i].gameObject.SetActive(false);
+                    statusSlots[i].Show(false);
                     continue;
                 }
 
                 var data = datas[i];
                 var slot = statusSlots[i];
 
-                slot.gameObject.SetActive(true);
+                slot.Show(true);
                 slot.buffIcon.sprite = data.Icon;
                 if (data.CurrentDuration >= 100)
                     slot.durationText.text = "";
