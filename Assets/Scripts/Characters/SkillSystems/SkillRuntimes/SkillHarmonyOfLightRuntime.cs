@@ -45,7 +45,7 @@ namespace Characters.SkillSystems.SkillRuntimes
 
             startPos = owner.transform.position;
             if (owner is PlayerController player)
-                player.CameraController.PushOrtho(22f, skillData.SpinDuration, this, 0.25f);
+                player.CameraController.PushOrtho(18f, skillData.SpinDuration, this, 0.25f);
         }
 
         protected override async UniTask OnSkillUpdate(CancellationToken cancelToken)
