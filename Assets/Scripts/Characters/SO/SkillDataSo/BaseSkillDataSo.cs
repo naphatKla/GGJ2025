@@ -88,6 +88,7 @@ namespace Characters.SO.SkillDataSo
 
         // ---- Properties ----
         public Sprite SkillIcon => skillIcon;
+        public string SkillName => skillName;
         public string SkillDescription => skillDescription;
         public float Cooldown => cooldown;
         public List<StatusEffectDataPayload> StatusEffectOnSkillStart => statusEffectOnSkillStart;
