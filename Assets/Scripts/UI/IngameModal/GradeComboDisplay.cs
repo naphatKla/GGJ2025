@@ -29,6 +29,8 @@ namespace UI.IngameModal
         public void UpdateGradeCombo(string grade)
         {
             gradeImage.gameObject.SetActive(grade != null);
+            gradeFlame.gameObject.SetActive(grade != null);
+            gradeText.gameObject.SetActive(grade != null);
             foreach (var g in gradeComboList)
                 if (g.gradeId == grade)
                 {
@@ -44,32 +46,28 @@ namespace UI.IngameModal
             var cg = obj.GetComponent<CanvasGroup>();
             if (cg == null) cg = obj.gameObject.AddComponent<CanvasGroup>();
 
-            // gradeFlame
             var flameCg = gradeFlame.GetComponent<CanvasGroup>();
             if (flameCg == null) flameCg = gradeFlame.gameObject.AddComponent<CanvasGroup>();
 
-            // Kill Tween เก่า
             flameCg.DOKill();
             gradeFlame.transform.DOKill();
-            
+    
             flameCg.alpha = 1f;
             gradeFlame.transform.localScale = Vector3.one;
             gradeFlame.gameObject.SetActive(true);
 
-            var sq = DOTween.Sequence();
+            var sq = DOTween.Sequence().SetUpdate(true);
 
-            sq.Append(cg.DOFade(0f, 0.15f))
-                .AppendCallback(() =>
-                {
-                    obj.sprite = newSprite;
-                })
-                .Append(cg.DOFade(1f, 0.25f))
-                .Join(tf.DOScale(1.6f, 0.25f).SetEase(Ease.OutBack))
-                .Append(tf.DOScale(1f, 0.15f).SetEase(Ease.InBack))
+            sq.Append(cg.DOFade(0f, 0.15f).SetUpdate(true))
+                .AppendCallback(() => { obj.sprite = newSprite; })
+                .Append(cg.DOFade(1f, 0.25f).SetUpdate(true))
+                .Join(tf.DOScale(1.6f, 0.25f).SetEase(Ease.OutBack).SetUpdate(true))
+                .Append(tf.DOScale(1f, 0.15f).SetEase(Ease.InBack).SetUpdate(true))
                 .AppendInterval(1.5f)
                 .AppendCallback(() =>
                 {
-                    flameCg.DOFade(0f, 0.5f).OnComplete(() => gradeFlame.gameObject.SetActive(false));
+                    flameCg.DOFade(0f, 0.5f).SetUpdate(true)
+                        .OnComplete(() => gradeFlame.gameObject.SetActive(false));
                 });
         }
 
