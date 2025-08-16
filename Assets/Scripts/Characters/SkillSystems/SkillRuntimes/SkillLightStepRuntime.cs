@@ -24,6 +24,7 @@ namespace Characters.SkillSystems.SkillRuntimes
         private bool _isWaitForCounterAttack;
         private bool _isWaitForMovementEnd;
         private bool _inGodSpeedPhase;
+        
 
         private readonly HashSet<Transform> _dashedTargets = new();
 
@@ -55,7 +56,7 @@ namespace Characters.SkillSystems.SkillRuntimes
         protected override async UniTask OnSkillUpdate(CancellationToken cancelToken)
         {
             PlayerController player = owner as PlayerController;
-            player?.CameraController.LerpOrthoSize(15.5f, 0.5f).Forget();
+            var camHandle = player?.CameraController.PushOrtho(15.5f, 10, this, 0.25f);
 
             StatusEffectManager.ApplyEffectTo(owner.gameObject, skillData.EffectWhileLightStep);
             owner.DamageOnTouch.EnableDamage(owner.gameObject, this, 4.5f, skillData.BaseDamagePerHit,
@@ -79,7 +80,8 @@ namespace Characters.SkillSystems.SkillRuntimes
                     {
                         _inGodSpeedPhase = true;
                         owner.FeedbackSystem.SetIgnoreFeedback(FeedbackName.Character.CounterAttack, true);
-                        player?.CameraController.LerpOrthoSize(24f, 0.25f).Forget();
+                        player?.CameraController.PushOrtho(24, 10f, this, 0.25f);
+                        player?.CameraController.CancelRequest(camHandle.Value);
                         player?.CameraController.SetFollowTarget(null);
                     }
 
@@ -132,8 +134,11 @@ namespace Characters.SkillSystems.SkillRuntimes
             owner.FeedbackSystem.SetIgnoreFeedback(FeedbackName.Character.CounterAttack, false);
 
             if (owner is PlayerController player)
-                player.CameraController.ResetCamera(0.25f);
-
+            {
+                player.CameraController.CancelByOwner(this);
+                player.CameraController.SetFollowTarget(player.transform);
+            }
+            
             await UniTask.WaitForSeconds(0.5f, cancellationToken: destroyCancellationToken);
             StatusEffectManager.RemoveEffectAt(owner.gameObject, StatusEffectName.Iframe);
         }

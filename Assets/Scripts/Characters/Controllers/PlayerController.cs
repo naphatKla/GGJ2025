@@ -96,7 +96,7 @@ namespace Characters.Controllers
             levelSystem.ResetLevel();
             skillUpgradeController.ResetSkillUpgradeController();
             comboStreakSystem.ResetAll();
-            cameraController.ResetCamera();
+            cameraController.ResetAndClearAllRequests();
             
 
             base.ResetAllDependentBehavior();

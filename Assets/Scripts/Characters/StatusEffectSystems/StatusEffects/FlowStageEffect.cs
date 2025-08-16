@@ -5,9 +5,6 @@ namespace Characters.StatusEffectSystems.StatusEffects
 {
     public class FlowStageEffect : BaseStatusEffect<FlowStageEffectDataSo>
     {
-        private float defaultOrthoSize;
-        private float lastOrtho;
-        
         public override void OnStart(BaseController owner)
         {
             owner.CombatSystem.AddCurrentDamage(effectData.DamageIncrease);
@@ -16,12 +13,8 @@ namespace Characters.StatusEffectSystems.StatusEffects
 
             if (!effectData.ExpandCamera) return;
             if (owner is not PlayerController player) return;
-            defaultOrthoSize = player.CameraController.defaultOrthoSize;
-            lastOrtho = defaultOrthoSize + effectData.AdditionalExpandSize;
-            
-            player.CameraController.defaultOrthoSize = lastOrtho;
-            if (player.CameraController.CurrentCam.m_Lens.OrthographicSize >= lastOrtho) return;
-            player.CameraController.LerpOrthoSize(lastOrtho, 0.5f);
+            player.CameraController.PushOrtho(
+                player.CameraController.defaultOrthoSize + effectData.AdditionalExpandSize, duration, this, 0.25f);
         }
 
         public override void OnUpdate(BaseController owner, float deltaTime)
@@ -37,8 +30,7 @@ namespace Characters.StatusEffectSystems.StatusEffects
 
             if (!effectData.ExpandCamera) return;
             if (owner is not PlayerController player) return;
-            player.CameraController.defaultOrthoSize = defaultOrthoSize;
-            player.CameraController.ResetCamera();
+            player.CameraController.CancelByOwner(this);
         }
     }
 }

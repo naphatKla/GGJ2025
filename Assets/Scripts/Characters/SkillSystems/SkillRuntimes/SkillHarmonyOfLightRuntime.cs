@@ -44,6 +44,8 @@ namespace Characters.SkillSystems.SkillRuntimes
             }
 
             startPos = owner.transform.position;
+            if (owner is PlayerController player)
+                player.CameraController.PushOrtho(22f, skillData.SpinDuration, this, 0.25f);
         }
 
         protected override async UniTask OnSkillUpdate(CancellationToken cancelToken)
@@ -70,6 +72,9 @@ namespace Characters.SkillSystems.SkillRuntimes
 
         protected override void OnSkillExit()
         {
+            if (owner is PlayerController player)
+                player.CameraController.CancelByOwner(this);
+            
             foreach (var obj in _skillObjects)
             {
                 obj.gameObject?.SetActive(false);
