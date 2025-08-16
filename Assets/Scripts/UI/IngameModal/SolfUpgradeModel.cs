@@ -16,7 +16,7 @@ namespace UI.IngameModal
 
         public Button SelectButton => selectButton;
 
-        public void UpdateUIModal(BaseSkillDataSo data)
+        public void UpdateUIModal(BaseSkillDataSo data, bool isNew)
         {
             skillTitle.text = data.SkillName + $" Level {data.Level}";
             skillIcon.sprite = data.SkillIcon;

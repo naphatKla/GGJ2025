@@ -454,7 +454,9 @@ namespace Characters.UIDisplay
         {
             var skillcard = Instantiate(solfUpgradeModel.gameObject, solfUpgradePanel.transform);
             var modal = skillcard.GetComponent<SolfUpgradeModel>();
-            modal.UpdateUIModal(skill);
+
+            bool isNew = !skillSystem.ContainsSkillWithSameRoot(skill);
+            modal.UpdateUIModal(skill, isNew);
             await SkillCardFeedback(skillcard.transform);
 
             modal.SelectButton.onClick.AddListener(() => { OnSkillSelected(skill); });
