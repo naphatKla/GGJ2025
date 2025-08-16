@@ -577,7 +577,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   PercentageText: {fileID: 0}
-  PercentageTextMeshPro: {fileID: 2021511996}
+  PercentageTextMeshPro: {fileID: 0}
   TextPrefix: 
   TextSuffix: ' %'
   TextValueMultiplier: 100
@@ -25647,7 +25647,7 @@ GameObject:
   - component: {fileID: 2021511997}
   - component: {fileID: 2021511996}
   m_Layer: 5
-  m_Name: HealthPercentText
+  m_Name: HealthAmountText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -25669,8 +25669,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 3.561}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -672, y: 377}
-  m_SizeDelta: {x: 131.752, y: 67.9771}
+  m_AnchoredPosition: {x: -672, y: 381.6}
+  m_SizeDelta: {x: 160, y: 67.9771}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2021511996
 MonoBehaviour:
@@ -25692,7 +25692,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 100 %
+  m_text: 50 / 50
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: c09e9b01cbaf8a247821971fd312aeb2, type: 2}
   m_sharedMaterial: {fileID: 4855737462702251181, guid: c09e9b01cbaf8a247821971fd312aeb2, type: 2}
@@ -25719,8 +25719,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 36
-  m_fontSizeBase: 36
+  m_fontSize: 42.5
+  m_fontSizeBase: 42.5
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -25755,7 +25755,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 0}
+  m_margin: {x: -8.05381, y: 0, z: -18.388443, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -27765,6 +27765,10 @@ PrefabInstance:
       propertyPath: managedReferences[660304357532631046].FadeTween.Curve.m_Curve.Array.data[1].weightedMode
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1766625338755230343, guid: ef87c6aedde00684a81e6139e502fb41, type: 3}
+      propertyPath: hpText
+      value: 
+      objectReference: {fileID: 2021511996}
     - target: {fileID: 1766625338755230343, guid: ef87c6aedde00684a81e6139e502fb41, type: 3}
       propertyPath: comboUI
       value: 

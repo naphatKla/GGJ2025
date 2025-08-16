@@ -73,6 +73,9 @@ namespace Characters.UIDisplay
         [Title("UI"), FoldoutGroup("Health Display"), SerializeField]
         public MMProgressBar hpProgressBar;
 
+        [FoldoutGroup("Health Display"), SerializeField]
+        public TextMeshProUGUI hpText;
+
         // ========= Solf Upgrade =========
         [FoldoutGroup("SolfUpgrade Display"), Title("Ref"), SerializeField]
         public SkillUpgradeController skillUpgradeController;
@@ -392,6 +395,7 @@ namespace Characters.UIDisplay
         private void UpdateHealthUI()
         {
             float hpAmount01 = Mathf.Clamp01(healthSystem.CurrentHealth / Mathf.Max(1f, healthSystem.MaxHealth));
+            hpText.text = $"{healthSystem.CurrentHealth} / {healthSystem.MaxHealth}";
             hpProgressBar.UpdateBar01(hpAmount01);
         }
 
