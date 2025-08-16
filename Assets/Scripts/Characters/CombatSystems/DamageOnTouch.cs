@@ -27,7 +27,9 @@ namespace Characters.CombatSystems
         }
 
         [Title("Overlap Config")]
+#if UNITY_EDITOR
         [OnValueChanged(nameof(OnShapeChanged))]
+#endif
         public OverlapShape shape = OverlapShape.Box;
 
         [ShowIf(nameof(IsBox)), BoxGroup("Box"), LabelText("Size")]
@@ -241,8 +243,10 @@ namespace Characters.CombatSystems
 
         private bool IsBox() => shape == OverlapShape.Box;
         private bool IsCircle() => shape == OverlapShape.Circle;
-        private void OnShapeChanged() => UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
 
+#if UNITY_EDITOR
+        private void OnShapeChanged() => UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
+#endif
         #endregion
 
         #region Safety
