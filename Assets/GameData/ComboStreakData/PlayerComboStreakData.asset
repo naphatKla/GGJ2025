@@ -12,24 +12,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2fd45b08265df843ae41d256e3fe274, type: 3}
   m_Name: PlayerComboStreakData
   m_EditorClassIdentifier: 
-  comboTimeoutSeconds: 4.5
+  comboTimeoutSeconds: 4
   maxRewardStreak: 50
-  onHitStreakReducePercent: 20
-  boostPerStreakPercent: 10
-  maxBoostPercent: 500
+  onHitStreakReducePercent: 50
+  boostPerStreakPercent: 4
+  maxBoostPercent: 200
   onHitBoostPenaltyPercentOfMax: 10
   killGrades:
-  - minKillCount: 1
-    label: D
-  - minKillCount: 10
-    label: C
-  - minKillCount: 25
-    label: B
   - minKillCount: 50
-    label: A
-  - minKillCount: 75
-    label: S
+    label: D
   - minKillCount: 100
+    label: C
+  - minKillCount: 250
+    label: B
+  - minKillCount: 500
+    label: A
+  - minKillCount: 750
+    label: S
+  - minKillCount: 1000
     label: SS
   stageTiers:
   - minStreak: 25
