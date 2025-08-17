@@ -21,6 +21,8 @@ namespace Characters.FeedbackSystems
             public const string Iframe = "Character/Iframe";
             public const string Dead = "Character/Dead";
             public const string Spawn = "Character/Spawn";
+            public const string CollectAnergy = "Character/CollectAnergy";
+            public const string LevelUp = "Character/LevelUp";
             public const string NotifySkill = "Character/NotifySkill";
         }
 

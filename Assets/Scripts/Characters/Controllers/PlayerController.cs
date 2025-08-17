@@ -57,7 +57,7 @@ namespace Characters.Controllers
             {
                 collectItemSystem.AssignData(this, playerData.PullItemRadius);
                 skillUpgradeController.AssignData(skillSystem, playerData);
-                levelSystem.AssignData(playerData.BaseExpLevelUp, playerData.ExpMultiplierPerLevel);
+                levelSystem.AssignData(this, playerData.BaseExpLevelUp, playerData.ExpMultiplierPerLevel);
                 scoreSystem.AssignData(this);
                 comboStreakSystem.AssignData(this, playerData.ComboStreakData);
             }

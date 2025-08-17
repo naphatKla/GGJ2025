@@ -1,6 +1,7 @@
 using System;
 using Characters.CollectItemSystems.CollectableItems;
 using Characters.Controllers;
+using Characters.FeedbackSystems;
 using GlobalSettings;
 using Manager;
 using Sirenix.OdinInspector;
@@ -67,6 +68,7 @@ namespace Characters.CollectItemSystems
         /// <param name="item">The item to be collected.</param>
         private void CollectItem(BaseCollectableItem item)
         {
+            _owner.TryPlayFeedback(FeedbackName.Character.CollectAnergy);
             item?.HandleOnCollect(this);
         }
 

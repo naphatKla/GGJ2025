@@ -1,4 +1,6 @@
 using System;
+using Characters.Controllers;
+using Characters.FeedbackSystems;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -11,6 +13,7 @@ namespace Characters.LevelSystems
         [ShowInInspector, ReadOnly] public float Exp { get; private set; } = 0;
         [ShowInInspector, ReadOnly] public float ExpToLevelUp => _currentExpToLevelUp;
         [ShowInInspector, ReadOnly] public float ExpProgress01 => Mathf.Clamp01(Exp / _currentExpToLevelUp);
+        private BaseController _owner;
 
         public event Action<int> OnLevelUp;
         public event Action OnLevelUpdate;
@@ -20,10 +23,11 @@ namespace Characters.LevelSystems
         private float _currentExpToLevelUp;
 
         // Assign base values
-        public void AssignData(float baseExpLevelUp, float expMultiplierPerLevel)
+        public void AssignData(BaseController owner, float baseExpLevelUp, float expMultiplierPerLevel)
         {
             _baseExp = baseExpLevelUp;
             _multiplier = expMultiplierPerLevel;
+            _owner = owner;
             UpdateExpToLevelUp();
         }
 
@@ -53,6 +57,7 @@ namespace Characters.LevelSystems
 
         private void UpdateExpToLevelUp()
         {
+            _owner.TryPlayFeedback(FeedbackName.Character.LevelUp);
             _currentExpToLevelUp = Mathf.Ceil(_baseExp * Mathf.Pow(_multiplier, Level - 1));
         }
     }
