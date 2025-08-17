@@ -3,6 +3,7 @@ using Cysharp.Threading.Tasks;
 using GameControl.Interface;
 using MoreMountains.Tools;
 using Sirenix.OdinInspector;
+using TMPro;
 using UnityEngine;
 
 namespace GameControl.Controller
@@ -37,6 +38,11 @@ namespace GameControl.Controller
         [BoxGroup("Setting")] [SerializeField] private Vector2 itemdropRegionSize = Vector2.zero;
         
         [BoxGroup("Debug Zone")] [SerializeField] private bool debugPattern;
+        [BoxGroup("Debug Zone")] [SerializeField] private bool debugEnemy;
+        
+        [BoxGroup("Debug Zone")] [SerializeField] [ShowIf("$debugEnemy")]
+        private TMP_Text debugChance;
+        
         [BoxGroup("Debug Zone")] [SerializeField] private bool debugMapEvent;
         [ShowInInspector, ReadOnly]
         public float EnemyPoint => _currentEnemyPoint;
@@ -68,11 +74,29 @@ namespace GameControl.Controller
         private void Start()
         {
             SetState(_stopState);
+
+            if (debugEnemy) debugChance.gameObject.SetActive(true);
         }
 
         private void Update()
         {
             _currentState?.Update(this);
+        }
+        
+        private void LateUpdate()
+        {
+            if (debugEnemy && debugChance != null && _enemySpawnerController != null)
+            {
+                var options = _enemySpawnerController.GetEnemyOption();
+                if (options == null || options.Count == 0) return;
+
+                string debugText = "Enemy Chance\n";
+                foreach (var opt in options)
+                {
+                    debugText += $"{opt.id} : {opt.Chance:F2}%\n";
+                }
+                debugChance.text = debugText;
+            }
         }
 
         public void SetState(ISpawnerState newState)
@@ -85,7 +109,7 @@ namespace GameControl.Controller
 
         public async UniTaskVoid SetupMapAndEnemy()
         {
-            _enemySpawnerController = new EnemySpawnerController(_currentMapData, this, regionSize, debugPattern, mainCamera);
+            _enemySpawnerController = new EnemySpawnerController(_currentMapData, this, regionSize, debugEnemy, mainCamera);
             _enemyPatternController = new EnemyPatternController(_currentMapData, this, regionSize, debugPattern);
             _itemSpawnerController = new ItemSpawnerController(_currentMapData, this, itemdropRegionSize);
             _mapEventController = new MapEventController(_currentMapData, this, debugMapEvent);
