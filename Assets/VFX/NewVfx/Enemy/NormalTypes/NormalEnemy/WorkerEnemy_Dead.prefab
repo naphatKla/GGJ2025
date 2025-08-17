@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1001 &1442449557717754364
+--- !u!1001 &6935774893516307091
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -10,7 +10,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 303510003966543986, guid: d4cf91c7aa3e01342be57badfc9a9c9c, type: 3}
       propertyPath: m_Name
-      value: NormalEnemy_Dead
+      value: NormalEnemy_Dead 1
       objectReference: {fileID: 0}
     - target: {fileID: 303510003966543986, guid: d4cf91c7aa3e01342be57badfc9a9c9c, type: 3}
       propertyPath: m_IsActive
@@ -125,12 +125,20 @@ PrefabInstance:
       value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 6608505200564356331, guid: d4cf91c7aa3e01342be57badfc9a9c9c, type: 3}
+      propertyPath: InitialModule.startColor.maxGradient.atime1
+      value: 28913
+      objectReference: {fileID: 0}
+    - target: {fileID: 6608505200564356331, guid: d4cf91c7aa3e01342be57badfc9a9c9c, type: 3}
+      propertyPath: InitialModule.startColor.maxGradient.atime2
+      value: 65535
+      objectReference: {fileID: 0}
+    - target: {fileID: 6608505200564356331, guid: d4cf91c7aa3e01342be57badfc9a9c9c, type: 3}
       propertyPath: InitialModule.startColor.maxGradient.ctime0
-      value: 18697
+      value: 16769
       objectReference: {fileID: 0}
     - target: {fileID: 6608505200564356331, guid: d4cf91c7aa3e01342be57badfc9a9c9c, type: 3}
       propertyPath: InitialModule.startColor.maxGradient.ctime1
-      value: 53585
+      value: 50135
       objectReference: {fileID: 0}
     - target: {fileID: 6608505200564356331, guid: d4cf91c7aa3e01342be57badfc9a9c9c, type: 3}
       propertyPath: InitialModule.startColor.maxGradient.ctime2
@@ -142,22 +150,26 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6608505200564356331, guid: d4cf91c7aa3e01342be57badfc9a9c9c, type: 3}
       propertyPath: InitialModule.startColor.maxGradient.key0.g
-      value: 0
+      value: 0.16666667
       objectReference: {fileID: 0}
     - target: {fileID: 6608505200564356331, guid: d4cf91c7aa3e01342be57badfc9a9c9c, type: 3}
       propertyPath: InitialModule.startColor.maxGradient.key0.r
-      value: 0.6792453
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6608505200564356331, guid: d4cf91c7aa3e01342be57badfc9a9c9c, type: 3}
       propertyPath: InitialModule.startColor.maxGradient.key1.b
-      value: 0.11500001
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6608505200564356331, guid: d4cf91c7aa3e01342be57badfc9a9c9c, type: 3}
       propertyPath: InitialModule.startColor.maxGradient.key1.g
-      value: 0.11500001
+      value: 0.2446572
       objectReference: {fileID: 0}
     - target: {fileID: 6608505200564356331, guid: d4cf91c7aa3e01342be57badfc9a9c9c, type: 3}
       propertyPath: InitialModule.startColor.maxGradient.key1.r
+      value: 0.78431374
+      objectReference: {fileID: 0}
+    - target: {fileID: 6608505200564356331, guid: d4cf91c7aa3e01342be57badfc9a9c9c, type: 3}
+      propertyPath: InitialModule.startColor.maxGradient.key2.a
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6608505200564356331, guid: d4cf91c7aa3e01342be57badfc9a9c9c, type: 3}
@@ -177,8 +189,20 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6608505200564356331, guid: d4cf91c7aa3e01342be57badfc9a9c9c, type: 3}
+      propertyPath: InitialModule.startColor.maxGradient.m_NumAlphaKeys
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6608505200564356331, guid: d4cf91c7aa3e01342be57badfc9a9c9c, type: 3}
       propertyPath: InitialModule.startColor.maxGradient.m_NumColorKeys
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6608505200564356331, guid: d4cf91c7aa3e01342be57badfc9a9c9c, type: 3}
+      propertyPath: EmissionModule.m_Bursts.Array.data[0].countCurve.scalar
+      value: 40
+      objectReference: {fileID: 0}
+    - target: {fileID: 6608505200564356331, guid: d4cf91c7aa3e01342be57badfc9a9c9c, type: 3}
+      propertyPath: EmissionModule.m_Bursts.Array.data[0].countCurve.minScalar
+      value: 20
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects:
