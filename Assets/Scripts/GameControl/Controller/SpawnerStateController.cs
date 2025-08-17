@@ -39,11 +39,8 @@ namespace GameControl.Controller
         
         [BoxGroup("Debug Zone")] [SerializeField] private bool debugPattern;
         [BoxGroup("Debug Zone")] [SerializeField] private bool debugEnemy;
-        
-        [BoxGroup("Debug Zone")] [SerializeField] [ShowIf("$debugEnemy")]
-        private TMP_Text debugChance;
-        
         [BoxGroup("Debug Zone")] [SerializeField] private bool debugMapEvent;
+        
         [ShowInInspector, ReadOnly]
         public float EnemyPoint => _currentEnemyPoint;
         public MapEventController MapEventController => _mapEventController;
@@ -74,29 +71,32 @@ namespace GameControl.Controller
         private void Start()
         {
             SetState(_stopState);
-
-            if (debugEnemy) debugChance.gameObject.SetActive(true);
         }
 
         private void Update()
         {
             _currentState?.Update(this);
         }
-        
-        private void LateUpdate()
+ 
+        private void OnGUI()
         {
-            if (debugEnemy && debugChance != null && _enemySpawnerController != null)
-            {
-                var options = _enemySpawnerController.GetEnemyOption();
-                if (options == null || options.Count == 0) return;
+            if (!debugEnemy || _enemySpawnerController == null) return;
 
-                string debugText = "Enemy Chance\n";
-                foreach (var opt in options)
-                {
-                    debugText += $"{opt.id} : {opt.Chance:F2}%\n";
-                }
-                debugChance.text = debugText;
+            var options = _enemySpawnerController.GetEnemyOption();
+            if (options == null || options.Count == 0) return;
+
+            int width = 250;
+            int height = options.Count * 35;
+            int x = 80;
+            int y = Screen.height - height;
+
+            GUILayout.BeginArea(new Rect(x, y, width, height));
+            GUILayout.Label("<b><size=14>Enemy Chances</size></b>");
+            foreach (var opt in options)
+            {
+                GUILayout.Label($"{opt.id} : {opt.Chance:F2}%");
             }
+            GUILayout.EndArea();
         }
 
         public void SetState(ISpawnerState newState)
