@@ -504,8 +504,7 @@ namespace Characters.UIDisplay
             if (skillIndex < 0 || skillIndex >= skillSlotModel.Count) return;
             if (skillSlotModel[skillIndex] == null) return;
 
-            skillSlotModel[skillIndex].cooldownText.text = "";
-            skillSlotModel[skillIndex].skillIcon.sprite = skill.SkillIcon;
+            skillSlotModel[skillIndex].UpdateLevelText(skill.Level, skill);
             ResetSkillSlot(skillIndex);
         }
 
@@ -534,8 +533,7 @@ namespace Characters.UIDisplay
             if (skillSlotModel[skillIndex] == null) return;
 
             SkillResetFeedback(skillSlotModel[skillIndex].transform, skillSlotModel[skillIndex].skillframe);
-            skillSlotModel[skillIndex].cooldownText.text = "";
-            skillSlotModel[skillIndex].valueBar.CurrentValue = 0;
+            skillSlotModel[skillIndex].ResetSkillSlot();
         }
 
         private void SkillPlayFeedback(Transform tf, Image skillframe)
