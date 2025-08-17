@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1001 &7027106381645060046
+--- !u!1001 &4817626620136758608
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -10,7 +10,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1167228931374033294, guid: 010a90b008f5e4d479bc8ee9695dad76, type: 3}
       propertyPath: m_Name
-      value: Pressure_Dead
+      value: Pressure_Dead (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 5742859516330534167, guid: 010a90b008f5e4d479bc8ee9695dad76, type: 3}
+      propertyPath: ShapeModule.radius.value
+      value: 1.61
       objectReference: {fileID: 0}
     - target: {fileID: 5742859516330534167, guid: 010a90b008f5e4d479bc8ee9695dad76, type: 3}
       propertyPath: InitialModule.startColor.maxGradient.atime1
@@ -60,13 +64,21 @@ PrefabInstance:
       propertyPath: InitialModule.startColor.maxGradient.m_NumAlphaKeys
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 5742859516330534167, guid: 010a90b008f5e4d479bc8ee9695dad76, type: 3}
+      propertyPath: EmissionModule.m_Bursts.Array.data[0].countCurve.scalar
+      value: 150
+      objectReference: {fileID: 0}
+    - target: {fileID: 5742859516330534167, guid: 010a90b008f5e4d479bc8ee9695dad76, type: 3}
+      propertyPath: EmissionModule.m_Bursts.Array.data[0].countCurve.minScalar
+      value: 75
+      objectReference: {fileID: 0}
     - target: {fileID: 6465496800527408936, guid: 010a90b008f5e4d479bc8ee9695dad76, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -7.029495
+      value: 3.53
       objectReference: {fileID: 0}
     - target: {fileID: 6465496800527408936, guid: 010a90b008f5e4d479bc8ee9695dad76, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -7.601306
+      value: -5.08
       objectReference: {fileID: 0}
     - target: {fileID: 6465496800527408936, guid: 010a90b008f5e4d479bc8ee9695dad76, type: 3}
       propertyPath: m_LocalPosition.z
