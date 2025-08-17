@@ -320,7 +320,7 @@ MonoBehaviour:
         m_Calls: []
   DebugActive: 0
   FeedbacksList:
-  - rid: 7334425405478141956
+  - rid: 7334425759836536832
   - rid: 7348870951062470660
   KeepPlayModeChanges: 0
   PerformanceMode: 0
@@ -329,7 +329,7 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
-    - rid: 7334425405478141956
+    - rid: 7334425759836536832
       type: {class: MMF_Events, ns: MoreMountains.Feedbacks, asm: MoreMountains.Feedbacks}
       data:
         Active: 1
@@ -400,7 +400,7 @@ MonoBehaviour:
         PlayEvents:
           m_PersistentCalls:
             m_Calls:
-            - m_Target: {fileID: 586939767890849944}
+            - m_Target: {fileID: 0}
               m_TargetAssemblyTypeName: Feedbacks.VFXPlayerPooling, Assembly-CSharp
               m_MethodName: PlayVFX
               m_Mode: 1
@@ -414,7 +414,19 @@ MonoBehaviour:
               m_CallState: 2
         StopEvents:
           m_PersistentCalls:
-            m_Calls: []
+            m_Calls:
+            - m_Target: {fileID: 586939767890849944}
+              m_TargetAssemblyTypeName: Feedbacks.VFXPlayerPooling, Assembly-CSharp
+              m_MethodName: StopVfx
+              m_Mode: 1
+              m_Arguments:
+                m_ObjectArgument: {fileID: 0}
+                m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+                m_IntArgument: 0
+                m_FloatArgument: 0
+                m_StringArgument: 
+                m_BoolArgument: 0
+              m_CallState: 2
         InitializationEvents:
           m_PersistentCalls:
             m_Calls: []
@@ -608,6 +620,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   vfxPrefab: {fileID: 847328084218607017, guid: 8f982e0a9fef7bf4eb2bb312b6c6fe54, type: 3}
+  overrideOwner: {fileID: 0}
   stopOnDisable: 0
   followMode: 1
   rotationMode: 0
@@ -1021,6 +1034,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   vfxPrefab: {fileID: 1207644259908821758, guid: 0aea4f7415dac3f4bab0d79c40e1b7ee, type: 3}
+  overrideOwner: {fileID: 0}
   stopOnDisable: 0
   followMode: 0
   rotationMode: 0
@@ -1285,6 +1299,10 @@ PrefabInstance:
       propertyPath: vfxPrefab
       value: 
       objectReference: {fileID: 8127464484710613483, guid: 14775368750ad9b48b6ace208bd9f3ac, type: 3}
+    - target: {fileID: 2489850510676935044, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
+      propertyPath: radius
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 2897810046160178058, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
       propertyPath: m_Sprite
       value: 

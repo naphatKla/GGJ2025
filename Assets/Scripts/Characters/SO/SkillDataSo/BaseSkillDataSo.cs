@@ -57,9 +57,14 @@ namespace Characters.SO.SkillDataSo
         [SerializeField] private string exitFeedback;
         
         [FoldoutGroup("Status Effects", Order = 100)] 
+        [SerializeField] private bool clearBuffOnSkillExit;
+        
+        [FoldoutGroup("Status Effects", Order = 100)] 
         [SerializeField,
          PropertyTooltip("Status effects that will be applied to the user or others when this skill starts.")]
         private List<StatusEffectDataPayload> statusEffectOnSkillStart;
+
+   
 
         [Space] [Title("Runtime Binding")]
         [ShowInInspector, OdinSerialize, PropertyOrder(10000)]
@@ -91,6 +96,7 @@ namespace Characters.SO.SkillDataSo
         public string SkillName => skillName;
         public string SkillDescription => skillDescription;
         public float Cooldown => cooldown;
+        public bool ClearBuffOnSkillExit => clearBuffOnSkillExit;
         public List<StatusEffectDataPayload> StatusEffectOnSkillStart => statusEffectOnSkillStart;
         public Type SkillRuntime => _skillRuntime;
         public int Level => level;

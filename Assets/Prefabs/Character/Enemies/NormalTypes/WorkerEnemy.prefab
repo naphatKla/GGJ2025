@@ -25,12 +25,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 192885133254822804}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.066, z: 0}
-  m_LocalScale: {x: 0.60355014, y: 0.60355014, z: 0.8047335}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.088, z: 0}
+  m_LocalScale: {x: 0.8047335, y: 0.8047335, z: 0.8047335}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 680878267081870818}
+  m_Father: {fileID: 4886771522808100617}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &3128698228334802852
 SpriteRenderer:
@@ -226,11 +226,11 @@ PrefabInstance:
       objectReference: {fileID: 8984458508183079006}
     - target: {fileID: 5908794155179464469, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.75
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5908794155179464469, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.75
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6098847012064727986, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
       propertyPath: m_RaycastTarget
@@ -248,6 +248,10 @@ PrefabInstance:
       propertyPath: m_Color.r
       value: 0.38412246
       objectReference: {fileID: 0}
+    - target: {fileID: 6291427219438848774, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -0.15
+      objectReference: {fileID: 0}
     - target: {fileID: 6429923079801110711, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
       propertyPath: vfxPrefab
       value: 
@@ -258,7 +262,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7312169751311385798, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
       propertyPath: m_Radius
-      value: 0.75
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7993008330672070213, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
       propertyPath: vfxPrefab
@@ -270,19 +274,19 @@ PrefabInstance:
       objectReference: {fileID: 11400000, guid: 68b26222eb4fcc540be47e7cd172f61a, type: 2}
     - target: {fileID: 8858836943072646866, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
       propertyPath: circleRadius
-      value: 0.75
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
-    - targetCorrespondingSourceObject: {fileID: 1775538760653090302, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
-      insertIndex: 1
+    - targetCorrespondingSourceObject: {fileID: 5908794155179464469, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
+      insertIndex: -1
       addedObject: {fileID: 3794844806061918042}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
---- !u!4 &680878267081870818 stripped
+--- !u!4 &4886771522808100617 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 1775538760653090302, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
+  m_CorrespondingSourceObject: {fileID: 5908794155179464469, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
   m_PrefabInstance: {fileID: 1283820791977795612}
   m_PrefabAsset: {fileID: 0}
 --- !u!114 &7633031892480606472 stripped

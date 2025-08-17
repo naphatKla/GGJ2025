@@ -18,7 +18,7 @@ namespace Characters.SkillSystems.SkillRuntimes
         private void OnParrySuccess()
         {
             OnTriggerAutoSkill?.Invoke();
-
+            
             owner.TryPlayFeedback(skillData.ParrySuccessFeedback);
             LayerMask damageLayer = CharacterGlobalSettings.Instance.EnemyLayerDictionary[owner.tag];
             var targetsInRange =

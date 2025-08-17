@@ -36,7 +36,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: -0.37}
   m_SizeDelta: {x: 3, y: 3}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!223 &4594269031925201708
@@ -410,6 +410,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   vfxPrefab: {fileID: 4923192885908265, guid: 35a73281f6847994f825fe030ac69e82, type: 3}
+  overrideOwner: {fileID: 0}
   stopOnDisable: 1
   followMode: 1
   rotationMode: 0
@@ -582,7 +583,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   shape: 1
   boxSize: {x: 1, y: 1}
-  circleRadius: 1
+  circleRadius: 1.25
   targetLayer:
     serializedVersion: 2
     m_Bits: 128
@@ -653,7 +654,7 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
-  m_Radius: 1
+  m_Radius: 1.25
 --- !u!114 &2489850510676935044
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1018,6 +1019,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   vfxPrefab: {fileID: 8127464484710613483, guid: 995f4415b6ac98b4b9c7db689b2221fb, type: 3}
+  overrideOwner: {fileID: 0}
   stopOnDisable: 0
   followMode: 0
   rotationMode: 0
@@ -1082,7 +1084,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.25, y: 1.25, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1775538760653090302}
@@ -1447,6 +1449,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   vfxPrefab: {fileID: 5742859516330534167, guid: 010a90b008f5e4d479bc8ee9695dad76, type: 3}
+  overrideOwner: {fileID: 0}
   stopOnDisable: 0
   followMode: 0
   rotationMode: 0

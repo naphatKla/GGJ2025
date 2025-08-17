@@ -123,6 +123,11 @@ namespace Feedbacks
             }
         }
 
+        public void StopVfx()
+        {
+            _cts?.Cancel();
+        }
+
         private CancellationToken GetLinkedToken()
         {
             _cts?.Cancel();

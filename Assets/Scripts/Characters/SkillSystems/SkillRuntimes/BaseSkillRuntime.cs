@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using Characters.Controllers;
 using Characters.InputSystems.Interface;
@@ -125,6 +126,10 @@ namespace Characters.SkillSystems.SkillRuntimes
             IsPerforming = false;
             owner.TryPlayFeedback(skillData.ExitFeedback);
             OnSkillExit();
+            if (!skillData.ClearBuffOnSkillExit) return;
+            
+            foreach (var statusEffectName in skillData.StatusEffectOnSkillStart.Select(effect => effect.EffectData.EffectName))
+                StatusEffectManager.RemoveEffectAt(owner.gameObject, statusEffectName);
         }
 
         protected abstract void OnSkillStart();
