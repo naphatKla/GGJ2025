@@ -32,11 +32,28 @@ MonoBehaviour:
       Data: 
   skillIcon: {fileID: 21300000, guid: 4e172c3d6cf32704e9db569f5138820d, type: 3}
   skillName: Parry
-  skillDescription: 
+  skillDescription: 'Enable a magnetic field barrier for 0.5 seconds to parry incoming
+    damage. <color=#FF5F1F><b>On a successful parry</b></color>, release a burst
+    of Anergy in a <color=#FFD700><b>radius of 17.6 unit</b></color> around the ship,
+    <color=#FF0000><b>dealing 76.5 damage</b></color> and applying <color=#CF9FFF>knockback</b></color>
+    and <color=#CF9FFF>stun</b></color> to all enemies within the radius.
+
+    
+
+    <color=#CF9FFF><b>Knockback</b></color>
+    : Push the enemy away by <color=#FFD700><b>12 units</b></color>.
+
+    <color=#CF9FFF><b>Stun</b></color>
+    : Unable to perform any actions for <color=#FFD700><b>0.5 seconds</b></color>.
+
+    
+
+    Cooldown:
+    <color=#DBDBDB><b>3.5 sec</b></color>.'
   previousSkillData: {fileID: 11400000, guid: b92e57e1f4e57c44598a4b679c04dcca, type: 2}
   nextSkillDataUpgrade: {fileID: 11400000, guid: 6d04f5af1f2acb847b221dd46a0f07e4, type: 2}
   level: 5
-  cooldown: 3
+  cooldown: 3.5
   startFeedback: ParryUse_Lv5
   exitFeedback: 
   statusEffectOnSkillStart:
@@ -45,10 +62,10 @@ MonoBehaviour:
     overrideDuration: 0.55
   explosionBaseDamage: 0
   explosionDamageMultiplier: 600
-  explosionRadius: 19.6
+  explosionRadius: 17.6
   stopWhileParry: 0
   parryDuration: 0.5
-  knockBackDistance: 13.2
+  knockBackDistance: 12
   knockBackDuration: 0.25
   parrySuccessFeedback: ParrySuccess_Lv5
   explosionEffectsToTarget:
