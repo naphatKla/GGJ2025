@@ -22,7 +22,7 @@ MonoBehaviour:
     spawnPoint: 1
     enemyPointCanGrowth: 0
     enemyPointGrowthRate: 12.5
-    chance: 0
+    chance: 0.1
     enemyChanceCanGrowth: 1
     enemyChanceGrowthRate: 2.75
     useCustomInterval: 0
@@ -145,12 +145,12 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 7fe54f688e6e96548afaea6e8475e71b, type: 2}
   - id: Enemy_Pressure
     enemyController: {fileID: 241806535288265801, guid: 79dec73735459964a8ca48d4f07d4f9a, type: 3}
-    spawnPoint: 1.51
+    spawnPoint: 1.49
     enemyPointCanGrowth: 0
     enemyPointGrowthRate: 12.5
     chance: 0
     enemyChanceCanGrowth: 1
-    enemyChanceGrowthRate: 1.33
+    enemyChanceGrowthRate: 1.995
     useCustomInterval: 0
     customInterval: 0
     useSpawnConditions: 1
@@ -159,13 +159,13 @@ MonoBehaviour:
     - {fileID: 11400000, guid: fbb198d5f11874a4e99e237c96ccd39e, type: 2}
   - id: Enemy_Firecraker
     enemyController: {fileID: 241806535288265801, guid: 27b7309a2863d144f92c41ed68909b7a, type: 3}
-    spawnPoint: 1.32
+    spawnPoint: 2.31
     enemyPointCanGrowth: 0
     enemyPointGrowthRate: 12.5
     chance: 0
-    enemyChanceCanGrowth: 0
-    enemyChanceGrowthRate: 0
-    useCustomInterval: 1
+    enemyChanceCanGrowth: 1
+    enemyChanceGrowthRate: 1.33
+    useCustomInterval: 0
     customInterval: 1.995
     useSpawnConditions: 1
     conditionLogic: 0
