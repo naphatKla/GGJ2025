@@ -23,6 +23,8 @@ ShaderVariantCollection:
         passType: 0
       - keywords: COLOR_FILTER EDGE_SHINY TRANSITION_DISSOLVE
         passType: 0
+      - keywords: COLOR_FILTER EDGE_SHINY TRANSITION_SHINY
+        passType: 0
       - keywords: COLOR_FILTER GRADATION_GRADIENT
         passType: 0
       - keywords: COLOR_FILTER SAMPLING_BLUR_FAST
@@ -42,6 +44,8 @@ ShaderVariantCollection:
       - keywords: COLOR_FILTER TRANSITION_SHINY
         passType: 0
       - keywords: DETAIL_ADDITIVE
+        passType: 0
+      - keywords: DETAIL_ADDITIVE EDGE_SHINY TRANSITION_SHINY
         passType: 0
       - keywords: DETAIL_MASKING
         passType: 0
@@ -69,7 +73,23 @@ ShaderVariantCollection:
         passType: 0
       - keywords: EDGE_SHINY GRADATION_GRADIENT TRANSITION_DISSOLVE
         passType: 0
+      - keywords: EDGE_SHINY GRADATION_GRADIENT TRANSITION_PATTERN
+        passType: 0
+      - keywords: EDGE_SHINY GRADATION_GRADIENT TRANSITION_SHINY
+        passType: 0
       - keywords: EDGE_SHINY SAMPLING_EDGE_ALPHA
+        passType: 0
+      - keywords: EDGE_SHINY SAMPLING_PIXELATION TRANSITION_SHINY
+        passType: 0
+      - keywords: EDGE_SHINY SAMPLING_RGB_SHIFT TRANSITION_SHINY
+        passType: 0
+      - keywords: EDGE_SHINY TARGET_HUE TRANSITION_SHINY
+        passType: 0
+      - keywords: EDGE_SHINY TONE_GRAYSCALE TRANSITION_SHINY
+        passType: 0
+      - keywords: EDGE_SHINY TONE_RETRO TRANSITION_SHINY
+        passType: 0
+      - keywords: EDGE_SHINY TONE_SEPIA TRANSITION_SHINY
         passType: 0
       - keywords: EDGE_SHINY TRANSITION_DISSOLVE
         passType: 0
@@ -78,6 +98,8 @@ ShaderVariantCollection:
       - keywords: EDGE_SHINY TRANSITION_SHINY
         passType: 0
       - keywords: GRADATION_COLOR2
+        passType: 0
+      - keywords: GRADATION_COLOR2 TRANSITION_PATTERN
         passType: 0
       - keywords: GRADATION_COLOR2 TRANSITION_SHINY
         passType: 0
@@ -105,7 +127,13 @@ ShaderVariantCollection:
         passType: 0
       - keywords: GRADATION_GRADIENT TONE_SEPIA
         passType: 0
+      - keywords: GRADATION_GRADIENT TRANSITION_BURN
+        passType: 0
+      - keywords: GRADATION_GRADIENT TRANSITION_CUTOFF
+        passType: 0
       - keywords: GRADATION_GRADIENT TRANSITION_DISSOLVE
+        passType: 0
+      - keywords: GRADATION_GRADIENT TRANSITION_MELT
         passType: 0
       - keywords: GRADATION_GRADIENT TRANSITION_PATTERN
         passType: 0
@@ -211,6 +239,8 @@ ShaderVariantCollection:
       - keywords: COLOR_FILTER GRADATION_GRADIENT TRANSITION_SHINY
         passType: 0
       - keywords: COLOR_FILTER SAMPLING_RGB_SHIFT TRANSITION_SHINY
+        passType: 0
+      - keywords: COLOR_FILTER TRANSITION_SHINY
         passType: 0
       - keywords: EDGE_SHINY GRADATION_GRADIENT TRANSITION_SHINY
         passType: 0

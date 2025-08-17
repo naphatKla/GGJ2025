@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
+using DG.Tweening;
 using GameControl.Controller;
 using GameControl.GameState;
 using MoreMountains.Feedbacks;
@@ -200,4 +201,27 @@ public class UIManager : MMSingleton<UIManager>
         Application.Quit();
         Debug.Log("Quit Game");
     }
+    
+    #region Result Menu
+    public void OpenResultMenu()
+    {
+        CloseAllPanels();
+        var panel = panelDict[UIPanelType.MapResult];
+        panel.SetActive(true);
+
+        var cg = panel.GetComponent<CanvasGroup>();
+        if (cg == null) cg = panel.AddComponent<CanvasGroup>();
+        cg.alpha = 0f;
+
+        Sequence glitchSeq = DOTween.Sequence();
+        glitchSeq.Append(cg.DOFade(1f, 0.15f));
+        glitchSeq.OnComplete(() =>
+        {
+            cg.alpha = 1f;
+        });
+
+        OnAnyPanelOpen?.Invoke();
+        panelStack.Push(UIPanelType.MapResult);
+    }
+    #endregion
 }

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Characters.HeathSystems;
 using Cysharp.Threading.Tasks;
+using DG.Tweening;
 using PixelUI;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -39,16 +40,17 @@ namespace Characters.UIDisplay
         private void UpdateHealthUI()
         {
             hpBar.gameObject.SetActive(healthSystem.CurrentHealth < healthSystem.MaxHealth);
-            HealthFeedback().Forget();
+            HealthFeedback();
             float hpAmount = (healthSystem.CurrentHealth / healthSystem.MaxHealth) * 100;
             hpBar.CurrentValue = (int)Mathf.Clamp(hpAmount, 0, 100);
         }
 
-        private async UniTask HealthFeedback()
+        private void HealthFeedback()
         {
+            if (hpBar == null) return;
+            hpBar.FillImage.DOKill();
             hpBar.FillImage.color = Color.white;
-            await UniTask.Delay(TimeSpan.FromSeconds(feedbackDelay));
-            hpBar.FillImage.color = Color.green;
+            hpBar.FillImage.DOColor(Color.green, 0.2f).SetDelay(feedbackDelay);
         }
 
         #endregion
