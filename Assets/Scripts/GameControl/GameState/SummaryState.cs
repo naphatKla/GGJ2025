@@ -15,7 +15,7 @@ namespace GameControl.GameState
         public void Enter(GameStateController controller)
         {
             UIManager.Instance.CloseAllPanels();
-            UIManager.Instance.OpenPanel(UIPanelType.MapResult);
+            UIManager.Instance.OpenResultMenu();
             MMTimeScaleEvent.Trigger(MMTimeScaleMethods.For, 0, -1, true, 6.2f, true);
         }
 
