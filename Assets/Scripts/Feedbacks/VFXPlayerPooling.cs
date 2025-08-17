@@ -21,6 +21,7 @@ namespace Feedbacks
     public class VFXPlayerPooling : MonoBehaviour
     {
         [Header("VFX Setup")] [SerializeField] private ParticleSystem vfxPrefab;
+        [SerializeField] private Transform overrideOwner;
 
         [Header("Playback Mode")] [SerializeField]
         private bool stopOnDisable;
@@ -35,6 +36,9 @@ namespace Feedbacks
         private void Awake()
         {
             var key = vfxPrefab.name;
+            
+            if (!overrideOwner)
+                overrideOwner = transform;
 
             PoolingManager.Instance.Create<ParticleSystem>(
                 key,
@@ -58,10 +62,10 @@ namespace Feedbacks
         public void PlayVFX()
         {
             _currentVFXInstance = PoolingManager.Instance.Get<ParticleSystem>(vfxPrefab.name);
-            _currentVFXInstance.transform.position = transform.position;
+            _currentVFXInstance.transform.position = overrideOwner.position;
             _currentVFXInstance.transform.rotation = rotationMode switch
             {
-                RotationMode.MatchOwner => transform.rotation,
+                RotationMode.MatchOwner => overrideOwner.rotation,
                 _ => Quaternion.identity
             };
             _currentVFXInstance.gameObject.SetActive(true);
@@ -105,10 +109,10 @@ namespace Feedbacks
             {
                 while (instance.IsAlive(true))
                 {
-                    instance.transform.position = transform.position;
+                    instance.transform.position = overrideOwner.position;
 
                     if (rotationMode == RotationMode.MatchOwner)
-                        instance.transform.rotation = transform.rotation;
+                        instance.transform.rotation = overrideOwner.rotation;
 
                     await UniTask.NextFrame(cancellationToken: token);
                 }

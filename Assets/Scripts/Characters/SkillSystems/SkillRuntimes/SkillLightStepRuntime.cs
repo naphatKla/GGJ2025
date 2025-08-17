@@ -59,12 +59,15 @@ namespace Characters.SkillSystems.SkillRuntimes
             var camHandle = player?.CameraController.PushOrtho(15.5f, 10, this, 0.25f);
 
             StatusEffectManager.ApplyEffectTo(owner.gameObject, skillData.EffectWhileLightStep);
-            owner.DamageOnTouch.EnableDamage(owner.gameObject, this, 4.5f, skillData.BaseDamagePerHit,
-                skillData.DamageMultiplier, 0, 0, skillData.LifeStealPercentChance, skillData.LifeStealEffective);
 
             for (int i = 0; i < skillData.TargetAmount; i++)
             {
                 var targetPosition = GetBestTargetPositionInView();
+                
+                owner.DamageOnTouch.DisableDamage(this);
+                owner.DamageOnTouch.EnableDamage(owner.gameObject, this, 7f, skillData.BaseDamagePerHit,
+                    skillData.DamageMultiplier, 0, 0, skillData.LifeStealPercentChance, skillData.LifeStealEffective);
+                
                 if (targetPosition == null) break;
 
                 owner.MovementSystem.StopTween();

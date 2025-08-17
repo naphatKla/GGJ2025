@@ -40,15 +40,15 @@ namespace Characters.SkillSystems.SkillRuntimes
                 timeCount += Time.deltaTime;
 
                 if (_isPlayer)
-                    owner.transform.up = aimDirection.direction;
+                    owner.Body.transform.up = aimDirection.direction;
                 else
                 {
                     var desired = (Vector3)aimDirection.direction; // 2D ใช้ up เป็นแกนหัน
                     if (desired.sqrMagnitude > 0.0001f)
                     {
-                        var upNow = owner.transform.up;
+                        var upNow = owner.Body.transform.up;
                         var upNext = Vector3.RotateTowards(upNow, desired.normalized, rotateSpeedRad * Time.deltaTime, 0f);
-                        owner.transform.up = upNext;
+                        owner.Body.transform.up = upNext;
                     }
                 }
                 
@@ -56,7 +56,7 @@ namespace Characters.SkillSystems.SkillRuntimes
             }
 
             if (cancelToken.IsCancellationRequested) return;
-            Vector2 destination = owner.transform.position + (owner.transform.up * skillData.DashDistance);
+            Vector2 destination = owner.transform.position + (owner.Body.transform.up * skillData.DashDistance);
 
             await UniTask.WaitForSeconds(skillData.DashPrepareDuration, cancellationToken: cancelToken);
 

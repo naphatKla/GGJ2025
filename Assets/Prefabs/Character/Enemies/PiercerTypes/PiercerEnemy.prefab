@@ -437,9 +437,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   vfxPrefab: {fileID: 4837988583817273199, guid: 778fed3bb44bcf749983f211b1018955, type: 3}
+  overrideOwner: {fileID: 7588264341463899481}
   stopOnDisable: 1
   followMode: 1
-  rotationMode: 0
+  rotationMode: 1
 --- !u!114 &4728684009063820825
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -453,6 +454,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   vfxPrefab: {fileID: 1572890559719368324, guid: 44f8b0154d114bf42a72b2e494c0610d, type: 3}
+  overrideOwner: {fileID: 7588264341463899481}
   stopOnDisable: 1
   followMode: 1
   rotationMode: 1
@@ -714,7 +716,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ownerMovementSystem: {fileID: 7710849673089639199}
-  _sprite: {fileID: 1260569913058819954}
+  _sprite: {fileID: 8860387179080215047}
 --- !u!4 &1969623571361036756 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2313492309073572760, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
@@ -769,3 +771,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a5456e4aae07a24387ac324ba9fb272, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &8860387179080215047 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4735752700297748555, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
+  m_PrefabInstance: {fileID: 4273545289913616972}
+  m_PrefabAsset: {fileID: 0}
