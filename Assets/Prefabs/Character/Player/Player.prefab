@@ -1457,6 +1457,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   vfxPrefab: {fileID: 1207644259908821758, guid: 0aea4f7415dac3f4bab0d79c40e1b7ee, type: 3}
+  overrideOwner: {fileID: 0}
   stopOnDisable: 0
   followMode: 0
   rotationMode: 0
@@ -17766,6 +17767,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   vfxPrefab: {fileID: 847328084218607017, guid: 8f982e0a9fef7bf4eb2bb312b6c6fe54, type: 3}
+  overrideOwner: {fileID: 0}
   stopOnDisable: 0
   followMode: 1
   rotationMode: 0
@@ -18737,6 +18739,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   vfxPrefab: {fileID: 5082233202655874772, guid: 7d51ba4ab0e710944acc2b13201b54eb, type: 3}
+  overrideOwner: {fileID: 0}
   stopOnDisable: 0
   followMode: 0
   rotationMode: 0
@@ -34823,6 +34826,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   vfxPrefab: {fileID: 847328084218607017, guid: 8f982e0a9fef7bf4eb2bb312b6c6fe54, type: 3}
+  overrideOwner: {fileID: 0}
   stopOnDisable: 0
   followMode: 1
   rotationMode: 0
@@ -45328,6 +45332,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   vfxPrefab: {fileID: 3627199963637956096, guid: b962e8e45e01b9d418e4786c91a3822a, type: 3}
+  overrideOwner: {fileID: 0}
   stopOnDisable: 0
   followMode: 0
   rotationMode: 0
@@ -52728,6 +52733,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   vfxPrefab: {fileID: 1207644259908821758, guid: 0aea4f7415dac3f4bab0d79c40e1b7ee, type: 3}
+  overrideOwner: {fileID: 0}
   stopOnDisable: 0
   followMode: 0
   rotationMode: 0
@@ -52840,6 +52846,7 @@ MonoBehaviour:
   levelbar: {fileID: 0}
   healthSystem: {fileID: 1611083095111674569}
   hpProgressBar: {fileID: 0}
+  hpText: {fileID: 0}
   skillUpgradeController: {fileID: 7127418468070666774}
   solfUpgradePanel: {fileID: 0}
   solfUpgradeModel: {fileID: 962830566913950826, guid: 56ac69313ddb4ee42b51c120f615702f, type: 3}
@@ -52855,6 +52862,8 @@ MonoBehaviour:
   - {fileID: 0}
   scoreSystem: {fileID: 5144948324511787352}
   scoreText: {fileID: 0}
+  statusEffectSystem: {fileID: 0}
+  statusSlots: []
 --- !u!114 &7534513208806243613
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -52998,7 +53007,7 @@ MonoBehaviour:
     Player: {fileID: 212086162165405184}
     GroupFilter: Character
   - Key: Character/CounterAttack
-    Player: {fileID: 212086162165405184}
+    Player: {fileID: 8214702152260277301}
     GroupFilter: Character
   - Key: Character/TakeDamage
     Player: {fileID: 406790586103967934}
@@ -53217,6 +53226,8 @@ MonoBehaviour:
   defaultShakeDuration: 0.3
   defaultShakeFrequency: 0.1
   defaultShakeCooldown: 0.1
+  defaultBlendTime: 0.25
+  defaultOrthoSize: 0
 --- !u!114 &4760236408793113694
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -54321,6 +54332,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   vfxPrefab: {fileID: 1207644259908821758, guid: 0aea4f7415dac3f4bab0d79c40e1b7ee, type: 3}
+  overrideOwner: {fileID: 0}
   stopOnDisable: 0
   followMode: 0
   rotationMode: 0
@@ -64664,6 +64676,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   vfxPrefab: {fileID: 847328084218607017, guid: 8f982e0a9fef7bf4eb2bb312b6c6fe54, type: 3}
+  overrideOwner: {fileID: 0}
   stopOnDisable: 0
   followMode: 1
   rotationMode: 0
@@ -66124,6 +66137,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   vfxPrefab: {fileID: 8237765706220911034, guid: 29d9843741686d7458e40a9b25f37f5d, type: 3}
+  overrideOwner: {fileID: 0}
   stopOnDisable: 0
   followMode: 0
   rotationMode: 0
@@ -71548,6 +71562,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   vfxPrefab: {fileID: 847328084218607017, guid: 8f982e0a9fef7bf4eb2bb312b6c6fe54, type: 3}
+  overrideOwner: {fileID: 0}
   stopOnDisable: 0
   followMode: 1
   rotationMode: 0
@@ -72258,6 +72273,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   vfxPrefab: {fileID: 3627199963637956096, guid: b962e8e45e01b9d418e4786c91a3822a, type: 3}
+  overrideOwner: {fileID: 0}
   stopOnDisable: 0
   followMode: 0
   rotationMode: 0
@@ -73313,6 +73329,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   vfxPrefab: {fileID: 3905233506594099520, guid: 64b050c29e4dc0d408bffe6e37b125d3, type: 3}
+  overrideOwner: {fileID: 0}
   stopOnDisable: 0
   followMode: 0
   rotationMode: 0
@@ -109513,6 +109530,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   vfxPrefab: {fileID: 3627199963637956096, guid: b962e8e45e01b9d418e4786c91a3822a, type: 3}
+  overrideOwner: {fileID: 0}
   stopOnDisable: 0
   followMode: 0
   rotationMode: 0
@@ -110275,7 +110293,7 @@ MonoBehaviour:
         PlayEvents:
           m_PersistentCalls:
             m_Calls:
-            - m_Target: {fileID: 0}
+            - m_Target: {fileID: 7514996282833627988}
               m_TargetAssemblyTypeName: Feedbacks.VFXPlayerPooling, Assembly-CSharp
               m_MethodName: PlayVFX
               m_Mode: 1
@@ -110309,6 +110327,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   vfxPrefab: {fileID: 7391496659430307907, guid: 32667ee044df1ac48be6c89c8d636640, type: 3}
+  overrideOwner: {fileID: 0}
   stopOnDisable: 0
   followMode: 0
   rotationMode: 0
@@ -122522,6 +122541,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   vfxPrefab: {fileID: 3690740338304516993, guid: 0379fab12bda97c46b2b45c37151c644, type: 3}
+  overrideOwner: {fileID: 0}
   stopOnDisable: 0
   followMode: 0
   rotationMode: 0
@@ -128388,6 +128408,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   vfxPrefab: {fileID: 4951233397929906433, guid: 8920ebdf18156304eb46c0a1d121d224, type: 3}
+  overrideOwner: {fileID: 0}
   stopOnDisable: 0
   followMode: 0
   rotationMode: 0
@@ -129359,6 +129380,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   vfxPrefab: {fileID: 1207644259908821758, guid: 0aea4f7415dac3f4bab0d79c40e1b7ee, type: 3}
+  overrideOwner: {fileID: 0}
   stopOnDisable: 0
   followMode: 0
   rotationMode: 0
@@ -129890,6 +129912,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   vfxPrefab: {fileID: 847328084218607017, guid: 8f982e0a9fef7bf4eb2bb312b6c6fe54, type: 3}
+  overrideOwner: {fileID: 0}
   stopOnDisable: 0
   followMode: 1
   rotationMode: 0
@@ -163148,6 +163171,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   vfxPrefab: {fileID: 8127464484710613483, guid: 626aeb230004ce44ca70feb110750303, type: 3}
+  overrideOwner: {fileID: 0}
   stopOnDisable: 0
   followMode: 0
   rotationMode: 0
@@ -164155,6 +164179,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   vfxPrefab: {fileID: 1207644259908821758, guid: 0aea4f7415dac3f4bab0d79c40e1b7ee, type: 3}
+  overrideOwner: {fileID: 0}
   stopOnDisable: 0
   followMode: 0
   rotationMode: 0
@@ -170014,6 +170039,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   vfxPrefab: {fileID: 1207644259908821758, guid: 0aea4f7415dac3f4bab0d79c40e1b7ee, type: 3}
+  overrideOwner: {fileID: 0}
   stopOnDisable: 0
   followMode: 0
   rotationMode: 0
@@ -170545,6 +170571,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   vfxPrefab: {fileID: 847328084218607017, guid: 8f982e0a9fef7bf4eb2bb312b6c6fe54, type: 3}
+  overrideOwner: {fileID: 0}
   stopOnDisable: 0
   followMode: 1
   rotationMode: 0
@@ -177138,6 +177165,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   vfxPrefab: {fileID: 3627199963637956096, guid: b962e8e45e01b9d418e4786c91a3822a, type: 3}
+  overrideOwner: {fileID: 0}
   stopOnDisable: 0
   followMode: 0
   rotationMode: 0
@@ -178456,6 +178484,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   vfxPrefab: {fileID: 3627199963637956096, guid: b962e8e45e01b9d418e4786c91a3822a, type: 3}
+  overrideOwner: {fileID: 0}
   stopOnDisable: 0
   followMode: 0
   rotationMode: 0
@@ -184534,6 +184563,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   vfxPrefab: {fileID: 2538163672343663821, guid: a97f05bab9efe6d48b80040ff8851bec, type: 3}
+  overrideOwner: {fileID: 0}
   stopOnDisable: 0
   followMode: 0
   rotationMode: 0
@@ -185159,6 +185189,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   vfxPrefab: {fileID: 3627199963637956096, guid: b962e8e45e01b9d418e4786c91a3822a, type: 3}
+  overrideOwner: {fileID: 0}
   stopOnDisable: 0
   followMode: 0
   rotationMode: 0
