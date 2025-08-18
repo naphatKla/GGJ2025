@@ -126,7 +126,7 @@ namespace Characters.UIDisplay
                 //comboStreakSystem.OnTimerTick  // float seconds
                 comboStreakSystem.OnGradeChanged += gradeComboDisplay.UpdateGradeCombo;
                 comboStreakSystem.OnStageEnter += ComboValueBarUpdate;
-                comboStreakSystem.OnStageExit += ComboValueBarUpdate;
+                //comboStreakSystem.OnStageExit += ComboValueBarUpdate;
                 comboStreakSystem.OnBerserkEnter += OnBerserkEnter;
                 comboStreakSystem.OnBerserkExit += OnBerserkExit;
                 //comboStreakSystem.OnStageExit
@@ -167,7 +167,7 @@ namespace Characters.UIDisplay
                 comboStreakSystem.OnBoostChanged -= UpdateBoostMultiplierText;
                 comboStreakSystem.OnStageUpdate -= UpdateComboStreakBar;
                 comboStreakSystem.OnStageEnter -= ComboValueBarUpdate;
-                comboStreakSystem.OnStageExit -= ComboValueBarUpdate;
+                //comboStreakSystem.OnStageExit -= ComboValueBarUpdate;
                 comboStreakSystem.OnBerserkEnter -= OnBerserkEnter;
                 comboStreakSystem.OnBerserkExit -= OnBerserkExit;
                 comboStreakSystem.OnGradeChanged -= gradeComboDisplay.UpdateGradeCombo;
@@ -249,7 +249,15 @@ namespace Characters.UIDisplay
 
         private void ComboValueBarUpdate(BaseComboStageSo combo)
         {
+            if (combo == null)     // unstage
+            {
+                flowStageComboDisplay.CloseCurrent();
+                comboStreakBar.FillImage.color = Color.green;
+                return;
+            }
+            
             flowStageComboDisplay.UpdateFlowSceneFeedback(combo.stageId);
+            
             switch (combo.stageId)
             {
                 case "flow_i":

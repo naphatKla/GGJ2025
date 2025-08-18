@@ -34,5 +34,10 @@ namespace UI.IngameModal
             seq.Append(t.DOScaleX(0.95f, 1f).SetEase(Ease.InOutSine))
                 .Append(t.DOScaleX(1f, 1f).SetEase(Ease.OutBack));
         }
+
+        public void CloseCurrent()
+        {
+            _current?.gameObject.SetActive(false);
+        }
     }
 }

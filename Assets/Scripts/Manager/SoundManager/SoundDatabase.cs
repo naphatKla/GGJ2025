@@ -55,7 +55,7 @@ namespace Manager.SoundManager
         {
             [HideInInspector] public string Key;
 
-            private string FoldoutLabel => string.IsNullOrEmpty(keyShort) ? "SFX" : $"SFX/{keyShort}";
+            private string FoldoutLabel => string.IsNullOrEmpty(keyShort) ? "SFX" : $"{keyShort}";
 
             [FoldoutGroup("$FoldoutLabel")]
             [SerializeField, LabelText("Key")]
@@ -143,7 +143,7 @@ namespace Manager.SoundManager
         {
             [HideInInspector] public string Key;
 
-            private string FoldoutLabel => string.IsNullOrEmpty(keyShort) ? "UI" : $"UI/{keyShort}";
+            private string FoldoutLabel => string.IsNullOrEmpty(keyShort) ? "UI" : $"{keyShort}";
 
             [FoldoutGroup("$FoldoutLabel")]
             [SerializeField, LabelText("Key")]
@@ -223,7 +223,7 @@ namespace Manager.SoundManager
         {
             [HideInInspector] public string Key;
 
-            private string FoldoutLabel => string.IsNullOrEmpty(keyShort) ? "BGM" : $"BGM/{keyShort}";
+            private string FoldoutLabel => string.IsNullOrEmpty(keyShort) ? "BGM" : $"{keyShort}";
 
             [FoldoutGroup("$FoldoutLabel"), LabelText("Key"), SerializeField]
             [ValueDropdown("@SoundName.Odin.ShortGroup(\"BGM\")")]
@@ -263,17 +263,17 @@ namespace Manager.SoundManager
         // ========================= Tabs (แนวตั้ง) =========================
         [TabGroup("DB", "SFX")]
         [ValidateInput(nameof(ValidateSfxList), "Duplicate/invalid keys in SFX, or entries without clips.", InfoMessageType.Error)]
-        [ListDrawerSettings(Expanded = true, DraggableItems = true, ShowIndexLabels = true, NumberOfItemsPerPage = 60)]
+        [ListDrawerSettings(Expanded = true, DraggableItems = true, NumberOfItemsPerPage = 60)]
         public List<SFXEntry> sfx = new();
 
         [TabGroup("DB", "UI")]
         [ValidateInput(nameof(ValidateUiList), "Duplicate/invalid keys in UI, or entries without clips.", InfoMessageType.Error)]
-        [ListDrawerSettings(Expanded = true, DraggableItems = true, ShowIndexLabels = true, NumberOfItemsPerPage = 60)]
+        [ListDrawerSettings(Expanded = true, DraggableItems = true, NumberOfItemsPerPage = 60)]
         public List<UIEntry> ui = new();
 
         [TabGroup("DB", "BGM")]
         [ValidateInput(nameof(ValidateBgmList), "Duplicate/invalid keys in BGM, or entries without clips.", InfoMessageType.Error)]
-        [ListDrawerSettings(Expanded = true, DraggableItems = true, ShowIndexLabels = true, NumberOfItemsPerPage = 60)]
+        [ListDrawerSettings(Expanded = true, DraggableItems = true, NumberOfItemsPerPage = 60)]
         public List<BGMEntry> bgm = new();
 
         // ========================= Overview (ล่างสุด) =========================
