@@ -33,34 +33,34 @@ MonoBehaviour:
   skillIcon: {fileID: 21300000, guid: ebef68bca5da5a6448fb53cec912f09b, type: 3}
   skillName: Light Step
   skillDescription: 'When performing a <color=#FF5F1F><b>Counter Dash</b></color>,
-    dash to the furthest enemy <color=#FFD700><b>23 times</b></color>, dealing <color=#FF0000><b>40
+    dash to the furthest enemy <color=#FFD700><b>26 times</b></color>, dealing <color=#FF0000><b>33
     damage per hit</b></color>. Each hit has an <color=#FFD700><b>10% chance</b></color>
     to trigger <color=#CF9FFF><b>Life Steal</b></color> on hit.
 
-    
+
 
     <color=#CF9FFF><b>Life
     Steal</b></color> : <color=#7CFC00><b>Restores HP</b></color> equal to <color=#FF0000><b>10%
     of the damage dealt</b></color>.
 
-    
 
-    Cooldown: <color=#DBDBDB><b>20
-    sec</b></color>.'
+
+    Cooldown: <color=#DBDBDB><b>20 sec</b></color>.'
   previousSkillData: {fileID: 11400000, guid: de2ccf9ff076e494a9ff09d5333451f5, type: 2}
   nextSkillDataUpgrade: {fileID: 11400000, guid: 07c9729b6aa5f2a4a9e331631cef0aeb, type: 2}
   level: 5
   cooldown: 20
   startFeedback: LightStepUse_Lv5
   exitFeedback: LightStepEnd_Lv5
+  clearBuffOnSkillExit: 0
   statusEffectOnSkillStart: []
-  baseDamagePerHit: 40
+  baseDamagePerHit: 33
   damageMultiplier: 30
   lifeStealPercentChance: 10
   lifeStealEffective: 10
   lightStepSpeed: 36
   minStepDistance: 8
-  targetAmount: 23
+  targetAmount: 26
   randomCurve:
   - serializedVersion: 2
     m_Curve:
