@@ -1,3 +1,4 @@
+// SoundName.cs
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,6 +7,9 @@ using Sirenix.OdinInspector;
 
 namespace Manager.SoundManager
 {
+    /// <summary>
+    /// คีย์เสียง + ตัวช่วย Odin Dropdown (SFX / UI / BGM)
+    /// </summary>
     public static class SoundName
     {
         public static class SFX
@@ -21,15 +25,6 @@ namespace Manager.SoundManager
             public const string Button     = "SFX/Button";
         }
 
-        public static class BGM
-        {
-            public const string Stage_1 = "BGM/Stage_1";
-            public const string Stage_2 = "BGM/Stage_2";
-            public const string Boss    = "BGM/Boss";
-            public const string Menu    = "BGM/Menu";
-        }
-
-        // ✅ ใหม่: กลุ่มเสียง UI (เมนู/ปุ่ม/แจ้งเตือน ฯลฯ)
         public static class UI
         {
             public const string Click        = "UI/Click";
@@ -43,6 +38,14 @@ namespace Manager.SoundManager
             public const string Notification = "UI/Notification";
             public const string Reward       = "UI/Reward";
             public const string Error        = "UI/Error";
+        }
+
+        public static class BGM
+        {
+            public const string Stage_1 = "BGM/Stage_1";
+            public const string Stage_2 = "BGM/Stage_2";
+            public const string Boss    = "BGM/Boss";
+            public const string Menu    = "BGM/Menu";
         }
 
         // ---------- Cache ----------

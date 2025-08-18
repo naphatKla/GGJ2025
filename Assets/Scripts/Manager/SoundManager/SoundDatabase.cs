@@ -1,107 +1,108 @@
+// SoundDatabase.cs
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Sirenix.OdinInspector;
+using Sirenix.Serialization;
 using UnityEngine;
 using UnityEngine.Audio;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace Manager.SoundManager
 {
     [CreateAssetMenu(fileName = "SoundDatabase", menuName = "Audio/Sound Database", order = 0)]
+    [HideReferenceObjectPicker, Searchable]
     public class SoundDatabase : SerializedScriptableObject
     {
-        // =========================
-        // Common
-        // =========================
+        // ========================= Common =========================
         public enum RandomPickMode
         {
-            First = 0,                // เล่นตัวแรกเสมอ (debug/use case เฉพาะ)
-            Random = 1,               // สุ่มเท่ากันทุกตัว
-            WeightedRandom = 2,       // สุ่มตาม weight
-            Sequential = 3,           // เล่นวนตามลำดับ 0..n
-            ShuffleNoRepeat = 4,      // สับไพ่ 1 รอบ ครบค่อยสับใหม่
-            RandomNoImmediateRepeat = 5, // สุ่ม แต่กันติดกันซ้ำตัวเดิม
+            First = 0,
+            Random = 1,
+            WeightedRandom = 2,
+            Sequential = 3,
+            ShuffleNoRepeat = 4,
+            RandomNoImmediateRepeat = 5,
         }
 
-        [Serializable]
+        [Serializable, InlineProperty, HideLabel]
         public struct ClipVariant
         {
-            [HorizontalGroup("row", Width = 220)]
-            [HideLabel] public AudioClip clip;
+            [LabelText("Clip"), PropertyOrder(-10)]
+            public AudioClip clip;
 
-            [HorizontalGroup("row"), LabelText("Vol"), Range(0f, 1f)]
+            [LabelText("Vol"), PropertyOrder(-9), Range(0f, 1f)]
             public float volume;
 
-            [HorizontalGroup("row"), LabelText("Loop")]
+            [LabelText("Loop"), PropertyOrder(-8)]
             public bool loop;
 
-            [HorizontalGroup("row2"), LabelText("Rnd Pitch")]
+            [LabelText("Rnd Pitch"), PropertyOrder(-7)]
             public bool usePitchRandom;
 
-            [HorizontalGroup("row2"), LabelText("Pitch"), ShowIf(nameof(usePitchRandom))]
-            public Vector2 pitchRange; // e.g. (0.95, 1.05)
+            [LabelText("Pitch"), PropertyOrder(-6), ShowIf(nameof(usePitchRandom))]
+            public Vector2 pitchRange;
 
-            [HorizontalGroup("row3"), LabelText("Weight"), MinValue(0f)]
+            [LabelText("Weight"), PropertyOrder(-5), MinValue(0f)]
             public float weight;
-
-            public static ClipVariant Default(AudioClip c) => new ClipVariant
-            {
-                clip = c,
-                volume = 1f,
-                loop = false,
-                usePitchRandom = false,
-                pitchRange = new Vector2(1f, 1f),
-                weight = 1f,
-            };
         }
 
-        // =========================
-        // SFX (World/Gameplay)
-        // =========================
+        // ========================= SFX =========================
         [Serializable]
         public struct SFXEntry
         {
-            [HideInInspector] public string Key; // full key ใช้งานจริง
+            [HideInInspector] public string Key;
 
-            [FoldoutGroup("@FoldoutLabel", expanded: false)]
+            private string FoldoutLabel => string.IsNullOrEmpty(keyShort) ? "SFX" : $"SFX/{keyShort}";
+
+            [FoldoutGroup("$FoldoutLabel")]
             [SerializeField, LabelText("Key")]
             [ValueDropdown("@SoundName.Odin.ShortGroup(\"SFX\")")]
             [ValidateInput(nameof(ValidateShortKey), "Unknown SFX key.", InfoMessageType.Error)]
             private string keyShort;
 
-            // ---- Variants (หลายคลิปต่อคีย์) ----
-            [FoldoutGroup("@FoldoutLabel"), TableList(AlwaysExpanded = true)]
+            [FoldoutGroup("$FoldoutLabel")]
+            [LabelText("Variants")]
+            [ValidateInput(nameof(ValidateVariantsHasClip), "Variants must contain at least one AudioClip.", InfoMessageType.Error)]
+            [ListDrawerSettings(
+                Expanded = true,
+                DraggableItems = true,
+                ShowIndexLabels = true,
+                OnBeginListElementGUI = "__BeginVariantRow_Zebra",
+                OnEndListElementGUI = "__EndVariantRow_Zebra"
+            )]
             public List<ClipVariant> variants;
 
-            // ---- Random mode ----
-            [FoldoutGroup("@FoldoutLabel/Random")]
+            [FoldoutGroup("$FoldoutLabel"), LabelText("Pick Mode")]
             public RandomPickMode pickMode;
 
-            [FoldoutGroup("@FoldoutLabel/Random"), Tooltip("กันสุ่มซ้ำตัวเดิมติดกัน (ใช้กับ Random/Weighted)")]
+            [FoldoutGroup("$FoldoutLabel"), LabelText("Avoid Immediate Repeat")]
+            [ShowIf("@pickMode == RandomPickMode.Random || pickMode == RandomPickMode.WeightedRandom")]
             public bool avoidImmediateRepeat;
 
-            // ---- 3D / Mixer / Cooldown (ระดับ key) ----
-            [FoldoutGroup("@FoldoutLabel/3D")] public bool spatial;
-            [FoldoutGroup("@FoldoutLabel/3D"), ShowIf(nameof(spatial)), Range(0, 1)] public float spatialBlend;
-            [FoldoutGroup("@FoldoutLabel/3D"), ShowIf(nameof(spatial))] public float minDistance;
-            [FoldoutGroup("@FoldoutLabel/3D"), ShowIf(nameof(spatial))] public float maxDistance;
-            [FoldoutGroup("@FoldoutLabel/3D"), ShowIf(nameof(spatial))] public AudioRolloffMode rolloffMode;
+            [FoldoutGroup("$FoldoutLabel"), LabelText("Spatial")] public bool spatial;
+            [FoldoutGroup("$FoldoutLabel"), ShowIf(nameof(spatial)), Range(0, 1), LabelText("Spatial Blend")] public float spatialBlend;
+            [FoldoutGroup("$FoldoutLabel"), ShowIf(nameof(spatial)), LabelText("Min Dist")] public float minDistance;
+            [FoldoutGroup("$FoldoutLabel"), ShowIf(nameof(spatial)), LabelText("Max Dist")] public float maxDistance;
+            [FoldoutGroup("$FoldoutLabel"), ShowIf(nameof(spatial)), LabelText("Rolloff")] public AudioRolloffMode rolloffMode;
 
-            [FoldoutGroup("@FoldoutLabel/Mixer")] public AudioMixerGroup mixerOverride;
+            [FoldoutGroup("$FoldoutLabel"), LabelText("Mixer Override")] public AudioMixerGroup mixerOverride;
 
-            [FoldoutGroup("@FoldoutLabel/Other"), MinValue(0f)]
+            [FoldoutGroup("$FoldoutLabel"), LabelText("Cooldown"), MinValue(0f)]
             public float cooldown;
 
-            // --- label ที่หัว foldout ---
-            private string FoldoutLabel
-                => string.IsNullOrEmpty(keyShort) ? "SFX" : $"SFX/{keyShort}";
-
-            // --- validate & sync ---
+            // ---- Validation ----
             private bool ValidateShortKey(string shortName)
             {
                 if (string.IsNullOrEmpty(shortName)) return true;
                 var full = SoundName.ResolveFullKey("SFX", shortName);
                 return SoundName.IsValid(full);
             }
+
+            private bool ValidateVariantsHasClip(List<ClipVariant> list)
+                => list != null && list.Any(v => v.clip != null);
 
             public void SyncShortToFull()
             {
@@ -115,130 +116,65 @@ namespace Manager.SoundManager
                     keyShort = SoundName.ShortLabel(Key);
             }
 
-            // --- helper เลือก variant ตามโหมดสุ่ม (เก็บ state ภายนอก) ---
-            public int PickIndex(ref int lastIndex, ref List<int> shuffleBag, System.Random rnd = null)
+#if UNITY_EDITOR
+            [NonSerialized] private int __rowDepthGuard;
+
+            private void __BeginVariantRow_Zebra(int index)
             {
-                if (variants == null || variants.Count == 0) return -1;
-                rnd ??= _rnd;
-
-                switch (pickMode)
-                {
-                    case RandomPickMode.First:
-                        lastIndex = 0; return 0;
-
-                    case RandomPickMode.Sequential:
-                        lastIndex = (lastIndex + 1) % variants.Count; return lastIndex;
-
-                    case RandomPickMode.ShuffleNoRepeat:
-                        if (shuffleBag == null || shuffleBag.Count == 0)
-                        {
-                            if (shuffleBag == null) shuffleBag = new List<int>(variants.Count);
-                            shuffleBag.Clear();
-                            for (int i = 0; i < variants.Count; i++) shuffleBag.Add(i);
-                            // shuffle
-                            for (int i = 0; i < shuffleBag.Count; i++)
-                            {
-                                int j = rnd.Next(i, shuffleBag.Count);
-                                (shuffleBag[i], shuffleBag[j]) = (shuffleBag[j], shuffleBag[i]);
-                            }
-                        }
-                        int idx = shuffleBag[^1];
-                        shuffleBag.RemoveAt(shuffleBag.Count - 1);
-                        lastIndex = idx;
-                        return idx;
-
-                    case RandomPickMode.WeightedRandom:
-                    {
-                        float total = 0f;
-                        for (int i = 0; i < variants.Count; i++)
-                            total += Mathf.Max(0f, variants[i].weight);
-                        if (total <= 0f) goto case RandomPickMode.Random;
-
-                        float pick = (float)rnd.NextDouble() * total;
-                        float accum = 0f;
-                        for (int i = 0; i < variants.Count; i++)
-                        {
-                            accum += Mathf.Max(0f, variants[i].weight);
-                            if (pick <= accum)
-                            {
-                                if (avoidImmediateRepeat && i == lastIndex && variants.Count > 1)
-                                    i = (i + 1) % variants.Count;
-                                lastIndex = i;
-                                return i;
-                            }
-                        }
-                        lastIndex = variants.Count - 1;
-                        return lastIndex;
-                    }
-
-                    case RandomPickMode.RandomNoImmediateRepeat:
-                    case RandomPickMode.Random:
-                    default:
-                    {
-                        int c = variants.Count;
-                        if (c == 1) { lastIndex = 0; return 0; }
-                        int i = rnd.Next(0, c);
-                        if (avoidImmediateRepeat && i == lastIndex)
-                            i = (i + 1) % c;
-                        lastIndex = i;
-                        return i;
-                    }
-                }
+                if (__rowDepthGuard++ > 0) return;
+                var rect = GUILayoutUtility.GetRect(GUIContent.none, GUIStyle.none, GUILayout.Height(0f), GUILayout.ExpandWidth(true));
+                var col = (index % 2 == 0)
+                    ? new Color(1f, 1f, 1f, 0.06f)
+                    : new Color(1f, 1f, 1f, 0.12f);
+                EditorGUI.DrawRect(rect, col);
             }
 
-            private static readonly System.Random _rnd = new System.Random();
-
-            public static SFXEntry Default(string keyFull, AudioClip clipRef)
+            private void __EndVariantRow_Zebra(int index)
             {
-                return new SFXEntry
-                {
-                    Key = keyFull,
-                    keyShort = SoundName.ShortLabel(keyFull),
-                    variants = new List<ClipVariant> { ClipVariant.Default(clipRef) },
-                    pickMode = RandomPickMode.Random,
-                    avoidImmediateRepeat = true,
-                    spatial = false,
-                    spatialBlend = 0f,
-                    minDistance = 1f,
-                    maxDistance = 500f,
-                    rolloffMode = AudioRolloffMode.Logarithmic,
-                    mixerOverride = null,
-                    cooldown = 0.02f,
-                };
+                if (--__rowDepthGuard > 0) return;
+                GUILayout.Space(2f);
             }
+#endif
         }
 
-        // =========================
-        // UI (2D/UI sounds)
-        // =========================
+        // ========================= UI =========================
         [Serializable]
         public struct UIEntry
         {
             [HideInInspector] public string Key;
 
-            [FoldoutGroup("@FoldoutLabel", expanded: false)]
+            private string FoldoutLabel => string.IsNullOrEmpty(keyShort) ? "UI" : $"UI/{keyShort}";
+
+            [FoldoutGroup("$FoldoutLabel")]
             [SerializeField, LabelText("Key")]
             [ValueDropdown("@SoundName.Odin.ShortGroup(\"UI\")")]
             [ValidateInput(nameof(ValidateShortKey), "Unknown UI key.", InfoMessageType.Error)]
             private string keyShort;
 
-            [FoldoutGroup("@FoldoutLabel"), TableList(AlwaysExpanded = true)]
+            [FoldoutGroup("$FoldoutLabel")]
+            [LabelText("Variants")]
+            [ValidateInput(nameof(ValidateVariantsHasClip), "Variants must contain at least one AudioClip.", InfoMessageType.Error)]
+            [ListDrawerSettings(
+                Expanded = true,
+                DraggableItems = true,
+                ShowIndexLabels = true,
+                OnBeginListElementGUI = "__BeginVariantRow_Zebra",
+                OnEndListElementGUI = "__EndVariantRow_Zebra"
+            )]
             public List<ClipVariant> variants;
 
-            [FoldoutGroup("@FoldoutLabel/Random")]
+            [FoldoutGroup("$FoldoutLabel"), LabelText("Pick Mode")]
             public RandomPickMode pickMode;
 
-            [FoldoutGroup("@FoldoutLabel/Random"), Tooltip("กันสุ่มซ้ำตัวเดิมติดกัน (ใช้กับ Random/Weighted)")]
+            [FoldoutGroup("$FoldoutLabel"), LabelText("Avoid Immediate Repeat")]
+            [ShowIf("@pickMode == RandomPickMode.Random || pickMode == RandomPickMode.WeightedRandom")]
             public bool avoidImmediateRepeat;
 
-            [FoldoutGroup("@FoldoutLabel/Mixer")]
+            [FoldoutGroup("$FoldoutLabel"), LabelText("Mixer Override")]
             public AudioMixerGroup mixerOverride;
 
-            [FoldoutGroup("@FoldoutLabel/Other"), MinValue(0f)]
+            [FoldoutGroup("$FoldoutLabel"), LabelText("Cooldown"), MinValue(0f)]
             public float cooldown;
-
-            private string FoldoutLabel
-                => string.IsNullOrEmpty(keyShort) ? "UI" : $"UI/{keyShort}";
 
             private bool ValidateShortKey(string shortName)
             {
@@ -246,6 +182,9 @@ namespace Manager.SoundManager
                 var full = SoundName.ResolveFullKey("UI", shortName);
                 return SoundName.IsValid(full);
             }
+
+            private bool ValidateVariantsHasClip(List<ClipVariant> list)
+                => list != null && list.Any(v => v.clip != null);
 
             public void SyncShortToFull()
             {
@@ -259,92 +198,45 @@ namespace Manager.SoundManager
                     keyShort = SoundName.ShortLabel(Key);
             }
 
-            public int PickIndex(ref int lastIndex, ref List<int> shuffleBag, System.Random rnd = null)
+#if UNITY_EDITOR
+            [NonSerialized] private int __rowDepthGuard;
+            private void __BeginVariantRow_Zebra(int index)
             {
-                // ใช้ logic เดียวกับ SFXEntry
-                if (variants == null || variants.Count == 0) return -1;
-                rnd ??= _rnd;
-                // reuse algorithm from SFXEntry for brevity
-                float total;
-                switch (pickMode)
-                {
-                    case RandomPickMode.First: lastIndex = 0; return 0;
-                    case RandomPickMode.Sequential: lastIndex = (lastIndex + 1) % variants.Count; return lastIndex;
-                    case RandomPickMode.ShuffleNoRepeat:
-                        if (shuffleBag == null || shuffleBag.Count == 0)
-                        {
-                            shuffleBag ??= new List<int>(variants.Count);
-                            shuffleBag.Clear();
-                            for (int i = 0; i < variants.Count; i++) shuffleBag.Add(i);
-                            for (int i = 0; i < shuffleBag.Count; i++)
-                            {
-                                int j = rnd.Next(i, shuffleBag.Count);
-                                (shuffleBag[i], shuffleBag[j]) = (shuffleBag[j], shuffleBag[i]);
-                            }
-                        }
-                        int idx = shuffleBag[^1];
-                        shuffleBag.RemoveAt(shuffleBag.Count - 1);
-                        lastIndex = idx; return idx;
-                    case RandomPickMode.WeightedRandom:
-                        total = 0f;
-                        for (int i = 0; i < variants.Count; i++)
-                            total += Mathf.Max(0f, variants[i].weight);
-                        if (total <= 0f) goto case RandomPickMode.Random;
-                        float pick = (float)rnd.NextDouble() * total;
-                        float acc = 0f;
-                        for (int i = 0; i < variants.Count; i++)
-                        {
-                            acc += Mathf.Max(0f, variants[i].weight);
-                            if (pick <= acc)
-                            {
-                                if (avoidImmediateRepeat && i == lastIndex && variants.Count > 1)
-                                    i = (i + 1) % variants.Count;
-                                lastIndex = i;
-                                return i;
-                            }
-                        }
-                        lastIndex = variants.Count - 1; return lastIndex;
-                    case RandomPickMode.RandomNoImmediateRepeat:
-                    case RandomPickMode.Random:
-                    default:
-                        int c = variants.Count;
-                        if (c == 1) { lastIndex = 0; return 0; }
-                        int r = rnd.Next(0, c);
-                        if (avoidImmediateRepeat && r == lastIndex) r = (r + 1) % c;
-                        lastIndex = r; return r;
-                }
+                if (__rowDepthGuard++ > 0) return;
+                var rect = GUILayoutUtility.GetRect(GUIContent.none, GUIStyle.none, GUILayout.Height(0f), GUILayout.ExpandWidth(true));
+                var col = (index % 2 == 0)
+                    ? new Color(1f, 1f, 1f, 0.06f)
+                    : new Color(1f, 1f, 1f, 0.12f);
+                EditorGUI.DrawRect(rect, col);
             }
-            private static readonly System.Random _rnd = new System.Random();
-
-            public static UIEntry Default(string keyFull, AudioClip clipRef) => new UIEntry
+            private void __EndVariantRow_Zebra(int index)
             {
-                Key = keyFull,
-                keyShort = SoundName.ShortLabel(keyFull),
-                variants = new List<ClipVariant> { ClipVariant.Default(clipRef) },
-                pickMode = RandomPickMode.Random,
-                avoidImmediateRepeat = true,
-                mixerOverride = null,
-                cooldown = 0.02f,
-            };
+                if (--__rowDepthGuard > 0) return;
+                GUILayout.Space(2f);
+            }
+#endif
         }
 
-        // =========================
-        // BGM
-        // =========================
+        // ========================= BGM =========================
         [Serializable]
         public struct BGMEntry
         {
             [HideInInspector] public string Key;
 
-            [FoldoutGroup("@keyShort", expanded: false)]
-            [LabelText("Key"), SerializeField]
+            private string FoldoutLabel => string.IsNullOrEmpty(keyShort) ? "BGM" : $"BGM/{keyShort}";
+
+            [FoldoutGroup("$FoldoutLabel"), LabelText("Key"), SerializeField]
             [ValueDropdown("@SoundName.Odin.ShortGroup(\"BGM\")")]
             [ValidateInput(nameof(ValidateShortKey), "Unknown BGM key.", InfoMessageType.Error)]
             private string keyShort;
 
-            [FoldoutGroup("@keyShort/Clip")] public AudioClip clip;
-            [FoldoutGroup("@keyShort/Clip"), Range(0f, 1f)] public float volume;
-            [FoldoutGroup("@keyShort/Mixer")] public AudioMixerGroup mixerOverride;
+            [FoldoutGroup("$FoldoutLabel"), LabelText("Clip")]
+            [ValidateInput(nameof(ValidateClipNotNull), "BGM must have a clip.", InfoMessageType.Error)]
+            public AudioClip clip;
+
+            [FoldoutGroup("$FoldoutLabel"), LabelText("Volume"), Range(0f, 1f)] public float volume;
+
+            [FoldoutGroup("$FoldoutLabel"), LabelText("Mixer Override")] public AudioMixerGroup mixerOverride;
 
             private bool ValidateShortKey(string shortName)
             {
@@ -352,6 +244,8 @@ namespace Manager.SoundManager
                 var full = SoundName.ResolveFullKey("BGM", shortName);
                 return SoundName.IsValid(full);
             }
+
+            private bool ValidateClipNotNull(AudioClip c) => c != null;
 
             public void SyncShortToFull()
             {
@@ -364,104 +258,143 @@ namespace Manager.SoundManager
                 if (!string.IsNullOrEmpty(Key))
                     keyShort = SoundName.ShortLabel(Key);
             }
-
-            public static BGMEntry Default(string keyFull, AudioClip clipRef) => new BGMEntry
-            {
-                Key = keyFull,
-                keyShort = SoundName.ShortLabel(keyFull),
-                clip = clipRef,
-                volume = 1f,
-                mixerOverride = null,
-            };
         }
 
-        // =========================
-        // Lists
-        // =========================
-        [Title("SFX (Gameplay/World)")]
-        [TableList(AlwaysExpanded = true, NumberOfItemsPerPage = 12)]
+        // ========================= Tabs (แนวตั้ง) =========================
+        [TabGroup("DB", "SFX")]
+        [ValidateInput(nameof(ValidateSfxList), "Duplicate/invalid keys in SFX, or entries without clips.", InfoMessageType.Error)]
+        [ListDrawerSettings(Expanded = true, DraggableItems = true, ShowIndexLabels = true, NumberOfItemsPerPage = 60)]
         public List<SFXEntry> sfx = new();
 
-        [Title("UI (2D/UI sounds)")]
-        [TableList(AlwaysExpanded = true, NumberOfItemsPerPage = 12)]
+        [TabGroup("DB", "UI")]
+        [ValidateInput(nameof(ValidateUiList), "Duplicate/invalid keys in UI, or entries without clips.", InfoMessageType.Error)]
+        [ListDrawerSettings(Expanded = true, DraggableItems = true, ShowIndexLabels = true, NumberOfItemsPerPage = 60)]
         public List<UIEntry> ui = new();
 
-        [Title("BGM")]
-        [TableList(AlwaysExpanded = true, NumberOfItemsPerPage = 12)]
+        [TabGroup("DB", "BGM")]
+        [ValidateInput(nameof(ValidateBgmList), "Duplicate/invalid keys in BGM, or entries without clips.", InfoMessageType.Error)]
+        [ListDrawerSettings(Expanded = true, DraggableItems = true, ShowIndexLabels = true, NumberOfItemsPerPage = 60)]
         public List<BGMEntry> bgm = new();
 
-        // Build-time dictionaries
-        [NonSerialized] public Dictionary<string, SFXEntry> SfxMap;
-        [NonSerialized] public Dictionary<string, UIEntry>  UiMap;
-        [NonSerialized] public Dictionary<string, BGMEntry> BgmMap;
+        // ========================= Overview (ล่างสุด) =========================
+        [PropertyOrder(99999)]
+        [BoxGroup("Overview", false)]
+        [ShowInInspector, ReadOnly, LabelText("Counts")]
+        private string __Counts => $"SFX {sfx?.Count ?? 0} • UI {ui?.Count ?? 0} • BGM {bgm?.Count ?? 0}";
 
-        private void OnEnable() => Rebuild();
-
+        [PropertyOrder(99999)]
+        [ButtonGroup("Overview/Buttons")]
+        [Button("Sort Keys (SoundName Order)", ButtonSizes.Medium)]
+        private void __BtnSort()
+        {
+            SortBySoundNameOrder();
 #if UNITY_EDITOR
-        private void OnValidate()
-        {
-            for (int i = 0; i < sfx.Count; i++)
-            {
-                var e = sfx[i];
-                if (!string.IsNullOrEmpty(e.Key)) e.SyncFullToShort();
-                e.SyncShortToFull();
-                sfx[i] = e;
-            }
-
-            for (int i = 0; i < ui.Count; i++)
-            {
-                var e = ui[i];
-                if (!string.IsNullOrEmpty(e.Key)) e.SyncFullToShort();
-                e.SyncShortToFull();
-                ui[i] = e;
-            }
-
-            for (int i = 0; i < bgm.Count; i++)
-            {
-                var e = bgm[i];
-                if (!string.IsNullOrEmpty(e.Key)) e.SyncFullToShort();
-                e.SyncShortToFull();
-                bgm[i] = e;
-            }
-
-            Rebuild();
-        }
+            EditorUtility.SetDirty(this);
 #endif
+        }
 
-        public void Rebuild()
+        [PropertyOrder(99999)]
+        [ButtonGroup("Overview/Buttons")]
+        [Button("Populate Keys", ButtonSizes.Medium)]
+        private void __BtnPopulate()
         {
-            SfxMap = new Dictionary<string, SFXEntry>(StringComparer.Ordinal);
-            foreach (var e in sfx)
+            PopulateKeys();
+#if UNITY_EDITOR
+            EditorUtility.SetDirty(this);
+#endif
+        }
+
+        // ========================= Validation for lists =========================
+        private bool ValidateSfxList(List<SFXEntry> list)
+        {
+            if (list == null) return true;
+            var keys = new HashSet<string>();
+            foreach (var e in list)
             {
-                if (string.IsNullOrEmpty(e.Key)) continue;
-                if (e.variants == null || e.variants.Count == 0) continue;
-                bool anyClip = false;
-                foreach (var v in e.variants) if (v.clip) { anyClip = true; break; }
-                if (!anyClip) continue;
-                if (!SoundName.IsValid(e.Key)) continue;
-                if (!SfxMap.ContainsKey(e.Key)) SfxMap.Add(e.Key, e);
+                if (string.IsNullOrEmpty(e.Key) || !SoundName.IsValid(e.Key)) return false;
+                if (!keys.Add(e.Key)) return false;
+                if (e.variants == null || !e.variants.Any(v => v.clip != null)) return false;
+            }
+            return true;
+        }
+
+        private bool ValidateUiList(List<UIEntry> list)
+        {
+            if (list == null) return true;
+            var keys = new HashSet<string>();
+            foreach (var e in list)
+            {
+                if (string.IsNullOrEmpty(e.Key) || !SoundName.IsValid(e.Key)) return false;
+                if (!keys.Add(e.Key)) return false;
+                if (e.variants == null || !e.variants.Any(v => v.clip != null)) return false;
+            }
+            return true;
+        }
+
+        private bool ValidateBgmList(List<BGMEntry> list)
+        {
+            if (list == null) return true;
+            var keys = new HashSet<string>();
+            foreach (var e in list)
+            {
+                if (string.IsNullOrEmpty(e.Key) || !SoundName.IsValid(e.Key)) return false;
+                if (!keys.Add(e.Key)) return false;
+                if (e.clip == null) return false;
+            }
+            return true;
+        }
+
+        // ========================= Populate & Sort =========================
+        private void PopulateKeys()
+        {
+            // ----- SFX -----
+            var allSfx = SoundName.OrderedKeysOf("SFX");
+            foreach (var key in allSfx)
+            {
+                if (sfx.Any(e => e.Key == key)) continue;
+                var e = new SFXEntry();
+                e.Key = key;
+                sfx.Add(e);
             }
 
-            UiMap = new Dictionary<string, UIEntry>(StringComparer.Ordinal);
-            foreach (var e in ui)
+            // ----- UI -----
+            var allUi = SoundName.OrderedKeysOf("UI");
+            foreach (var key in allUi)
             {
-                if (string.IsNullOrEmpty(e.Key)) continue;
-                if (e.variants == null || e.variants.Count == 0) continue;
-                bool anyClip = false;
-                foreach (var v in e.variants) if (v.clip) { anyClip = true; break; }
-                if (!anyClip) continue;
-                if (!SoundName.IsValid(e.Key)) continue;
-                if (!UiMap.ContainsKey(e.Key)) UiMap.Add(e.Key, e);
+                if (ui.Any(e => e.Key == key)) continue;
+                var e = new UIEntry();
+                e.Key = key;
+                ui.Add(e);
             }
 
-            BgmMap = new Dictionary<string, BGMEntry>(StringComparer.Ordinal);
-            foreach (var e in bgm)
+            // ----- BGM -----
+            var allBgm = SoundName.OrderedKeysOf("BGM");
+            foreach (var key in allBgm)
             {
-                if (string.IsNullOrEmpty(e.Key)) continue;
-                if (e.clip == null) continue;
-                if (!SoundName.IsValid(e.Key)) continue;
-                if (!BgmMap.ContainsKey(e.Key)) BgmMap.Add(e.Key, e);
+                if (bgm.Any(e => e.Key == key)) continue;
+                var e = new BGMEntry();
+                e.Key = key;
+                bgm.Add(e);
             }
+
+            SortBySoundNameOrder();
+        }
+
+        private void SortBySoundNameOrder()
+        {
+            var sfxOrder = SoundName.OrderedKeysOf("SFX")
+                .Select((k, i) => (k, i)).ToDictionary(x => x.k, x => x.i, StringComparer.Ordinal);
+            var uiOrder = SoundName.OrderedKeysOf("UI")
+                .Select((k, i) => (k, i)).ToDictionary(x => x.k, x => x.i, StringComparer.Ordinal);
+            var bgmOrder = SoundName.OrderedKeysOf("BGM")
+                .Select((k, i) => (k, i)).ToDictionary(x => x.k, x => x.i, StringComparer.Ordinal);
+
+            if (sfx != null) sfx.Sort((a, b) => GetOrder(sfxOrder, a.Key).CompareTo(GetOrder(sfxOrder, b.Key)));
+            if (ui  != null) ui .Sort((a, b) => GetOrder(uiOrder,  a.Key).CompareTo(GetOrder(uiOrder,  b.Key)));
+            if (bgm != null) bgm.Sort((a, b) => GetOrder(bgmOrder, a.Key).CompareTo(GetOrder(bgmOrder, b.Key)));
+
+            static int GetOrder(Dictionary<string,int> map, string key)
+                => (key != null && map.TryGetValue(key, out var idx)) ? idx : int.MaxValue;
         }
     }
 }
