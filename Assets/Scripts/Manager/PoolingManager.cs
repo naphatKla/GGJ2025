@@ -14,6 +14,7 @@ namespace Manager
         public static string Item => nameof(Item);
 
         public static string UI => nameof(UI);
+        public static string Sound => nameof(Sound);
     }
 
     public class PoolingManager : MMSingleton<PoolingManager>
