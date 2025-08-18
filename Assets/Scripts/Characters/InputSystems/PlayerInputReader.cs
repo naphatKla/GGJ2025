@@ -43,6 +43,11 @@ namespace Characters.InputSystems
 
         private DirectionContainer _sightDirection;
 
+        private bool _primaryToggle;
+        private bool _secondaryToggle;
+        private float _toggleTickTime = 0.1f;
+        private float _lastTimeToggle;
+
         #endregion
 
         #region Unity Methods
@@ -61,16 +66,32 @@ namespace Characters.InputSystems
         private void OnDisable()
         {
             _playerInputAction.Gameplay.Disable();
+            _primaryToggle = false;
+            _secondaryToggle = false;
         }
         
         private void Update()
         {
-            if (!Enable) return;
+            if (!Enable)
+            {
+                _primaryToggle = false;
+                _secondaryToggle = false;
+                return;
+            }
             _mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             Vector2 mouseDirection = _mousePosition - (Vector2)transform.position;
             _sightDirection.direction = mouseDirection.normalized;
             _sightDirection.length = mouseDirection.magnitude;
             OnMove?.Invoke(_sightDirection.direction);
+            
+            if (Time.time - _lastTimeToggle < _toggleTickTime) return;
+            _lastTimeToggle = Time.time;
+            
+            if (_primaryToggle)
+                OnSkillPerform?.Invoke(SkillType.PrimarySkill);
+            
+            if (_secondaryToggle)
+                OnSkillPerform?.Invoke(SkillType.SecondarySkill);
         }
 
         #endregion
@@ -93,8 +114,14 @@ namespace Characters.InputSystems
         /// <param name="context">The input action context containing skill activation data.</param>
         public void OnUsePrimarySkill(InputAction.CallbackContext context)
         {
-            if (!context.performed) return;
             if (!Enable) return;
+            if (!context.performed)
+            {
+                _primaryToggle = false;
+                return;
+            }
+
+            _primaryToggle = true;
             OnSkillPerform?.Invoke(SkillType.PrimarySkill);
         }
 
@@ -105,8 +132,14 @@ namespace Characters.InputSystems
         /// <param name="context">The input action context containing skill activation data.</param>
         public void OnUseSecondarySkill(InputAction.CallbackContext context)
         {
-            if (!context.performed) return;
             if (!Enable) return;
+            if (!context.performed)
+            {
+                _secondaryToggle = false;
+                return;
+            }
+
+            _secondaryToggle = true;
             OnSkillPerform?.Invoke(SkillType.SecondarySkill);
         }
 
