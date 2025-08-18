@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using Characters.Controllers;
@@ -9,6 +10,7 @@ using DG.Tweening;
 using GlobalSettings;
 using Manager;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Characters.SkillSystems.SkillRuntimes
 {
@@ -142,8 +144,20 @@ namespace Characters.SkillSystems.SkillRuntimes
                 player.CameraController.SetFollowTarget(player.transform);
             }
             
-            await UniTask.WaitForSeconds(0.5f, cancellationToken: destroyCancellationToken);
-            StatusEffectManager.RemoveEffectAt(owner.gameObject, StatusEffectName.Iframe);
+            try
+            {
+                await UniTask.Delay(TimeSpan.FromSeconds(0.5f), cancellationToken: destroyCancellationToken);
+            }
+            catch (OperationCanceledException)
+            {
+                
+            }
+            finally
+            {
+                Debug.Log("Exit");
+                if (owner) 
+                    StatusEffectManager.RemoveEffectAt(owner.gameObject, StatusEffectName.Iframe);
+            }
         }
 
         private void TriggerCondition() => _isWaitForCounterAttack = false;
