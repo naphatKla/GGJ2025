@@ -45,7 +45,7 @@ namespace Characters.InputSystems
 
         private bool _primaryToggle;
         private bool _secondaryToggle;
-        private float _toggleTickTime = 0.1f;
+        private float _toggleTickTime = 0.3f;
         private float _lastTimeToggle;
 
         #endregion
