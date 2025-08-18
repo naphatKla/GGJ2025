@@ -1,8 +1,10 @@
+using System;
 using System.Collections.Generic;
 using Characters.CombatSystems;
 using Characters.Controllers;
 using Characters.HeathSystems;
 using UnityEngine;
+using UnityEngine.XR;
 
 namespace Manager
 {
@@ -64,12 +66,12 @@ namespace Manager
 
             var damageData = attackerController.CombatSystem.CalculateSkillDamageDeal(target, hitPosition,
                 baseSkillDamage, multiplier, additionalCriRate, additionCriDamge, lifeStealPercent, lifeStealEffective);
-
-            targetController.HealthSystem.OnDead -= attackerController.CombatSystem.OnKill;
-            targetController.HealthSystem.OnDead += attackerController.CombatSystem.OnKill;
             
-            if (!targetController.HealthSystem.TakeDamage(damageData.Damage)) return;
+            if (!targetController.HealthSystem.TakeDamage(damageData.Damage, out bool dieThisFrame)) return;
             attackerController.CombatSystem.OnDealDamageHandler(damageData);
+            
+            if (dieThisFrame)
+                attackerController.CombatSystem.OnKill();
             
             if (damageData.LifeSteal <= 0) return;
             attackerController.HealthSystem.Heal(damageData.LifeSteal);
@@ -80,7 +82,7 @@ namespace Manager
             if (!_characterCaches.ContainsKey(target))
                 _characterCaches.Add(target, target.GetComponent<BaseController>());
 
-            _characterCaches[target].HealthSystem.TakeDamage(damage);
+            _characterCaches[target].HealthSystem.TakeDamage(damage, out _);
         }
 
         public static void ClearCache()

@@ -123,8 +123,9 @@ namespace Characters.HeathSystems
         /// </summary>
         /// <param name="damage">The amount of damage to apply.</param>
         /// <returns>True if the damage was applied; otherwise, false.</returns>
-        public bool TakeDamage(float damage)
+        public bool TakeDamage(float damage, out bool dieThisFrame)
         {
+            dieThisFrame = false;
             if (_isDead) return false;
             if (_isInvincible || _isHitCooldown)
             {
@@ -140,6 +141,7 @@ namespace Characters.HeathSystems
             if (_currentHealth <= 0)
             {
                 owner?.TryPlayFeedback(FeedbackName.Character.Dead);
+                dieThisFrame = true;
                 Dead();
             }
             else
