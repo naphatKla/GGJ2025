@@ -21,6 +21,10 @@ ShaderVariantCollection:
         passType: 0
       - keywords: COLOR_FILTER EDGE_SHINY
         passType: 0
+      - keywords: COLOR_FILTER EDGE_SHINY GRADATION_GRADIENT TRANSITION_PATTERN
+        passType: 0
+      - keywords: COLOR_FILTER EDGE_SHINY TRANSITION_BLAZE
+        passType: 0
       - keywords: COLOR_FILTER EDGE_SHINY TRANSITION_DISSOLVE
         passType: 0
       - keywords: COLOR_FILTER EDGE_SHINY TRANSITION_SHINY
@@ -57,11 +61,25 @@ ShaderVariantCollection:
         passType: 0
       - keywords: DETAIL_REPLACE EDGE_SHINY TRANSITION_DISSOLVE
         passType: 0
+      - keywords: DETAIL_REPLACE SAMPLING_BLUR_FAST
+        passType: 0
+      - keywords: DETAIL_REPLACE SAMPLING_EDGE_ALPHA
+        passType: 0
+      - keywords: DETAIL_REPLACE SAMPLING_EDGE_LUMINANCE
+        passType: 0
+      - keywords: DETAIL_REPLACE SAMPLING_PIXELATION
+        passType: 0
+      - keywords: DETAIL_REPLACE SAMPLING_RGB_SHIFT
+        passType: 0
       - keywords: DETAIL_REPLACE TRANSITION_DISSOLVE
+        passType: 0
+      - keywords: DETAIL_REPLACE TRANSITION_PATTERN
         passType: 0
       - keywords: DETAIL_SUBTRACTIVE
         passType: 0
       - keywords: EDGE_PLAIN
+        passType: 0
+      - keywords: EDGE_PLAIN TRANSITION_BLAZE
         passType: 0
       - keywords: EDGE_PLAIN TRANSITION_PATTERN
         passType: 0
@@ -81,6 +99,8 @@ ShaderVariantCollection:
         passType: 0
       - keywords: EDGE_SHINY SAMPLING_PIXELATION TRANSITION_SHINY
         passType: 0
+      - keywords: EDGE_SHINY SAMPLING_RGB_SHIFT TRANSITION_BLAZE
+        passType: 0
       - keywords: EDGE_SHINY SAMPLING_RGB_SHIFT TRANSITION_SHINY
         passType: 0
       - keywords: EDGE_SHINY TARGET_HUE TRANSITION_SHINY
@@ -90,6 +110,8 @@ ShaderVariantCollection:
       - keywords: EDGE_SHINY TONE_RETRO TRANSITION_SHINY
         passType: 0
       - keywords: EDGE_SHINY TONE_SEPIA TRANSITION_SHINY
+        passType: 0
+      - keywords: EDGE_SHINY TRANSITION_BLAZE
         passType: 0
       - keywords: EDGE_SHINY TRANSITION_DISSOLVE
         passType: 0
@@ -155,11 +177,15 @@ ShaderVariantCollection:
         passType: 0
       - keywords: SAMPLING_EDGE_ALPHA
         passType: 0
+      - keywords: SAMPLING_EDGE_ALPHA TRANSITION_BLAZE
+        passType: 0
       - keywords: SAMPLING_EDGE_ALPHA TRANSITION_DISSOLVE
         passType: 0
       - keywords: SAMPLING_EDGE_ALPHA TRANSITION_SHINY
         passType: 0
       - keywords: SAMPLING_EDGE_LUMINANCE
+        passType: 0
+      - keywords: SAMPLING_EDGE_LUMINANCE TRANSITION_BLAZE
         passType: 0
       - keywords: SAMPLING_EDGE_LUMINANCE TRANSITION_DISSOLVE
         passType: 0
@@ -178,6 +204,8 @@ ShaderVariantCollection:
       - keywords: SAMPLING_PIXELATION TRANSITION_SHINY
         passType: 0
       - keywords: SAMPLING_RGB_SHIFT
+        passType: 0
+      - keywords: SAMPLING_RGB_SHIFT TRANSITION_BLAZE
         passType: 0
       - keywords: SAMPLING_RGB_SHIFT TRANSITION_BURN
         passType: 0
