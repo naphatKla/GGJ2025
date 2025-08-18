@@ -34,7 +34,7 @@ MonoBehaviour:
   skillName: Harmony of light
   skillDescription: 'Shoot out <color=#FFD700><b>3 ray of light</b></color> that
     is 75 units long and<color=#98FB98> 4.5 unit wide</b></color>. The light beam
-    spins clockwise once every 0.33 seconds and  hits<color=#FFD700><b> 6 times per
+    spins clockwise once every 0.33 seconds and  hits<color=#FAA0A0><b> 6 times per
     second</b></color>, dealing <color=#FF0000><b>50 damage per hit</b></color>,
     and remains active for 3 seconds.
 
@@ -46,6 +46,7 @@ MonoBehaviour:
   cooldown: 45
   startFeedback: HarmonyOfLight_Lv6
   exitFeedback: 
+  clearBuffOnSkillExit: 0
   statusEffectOnSkillStart: []
   lightAmount: 3
   lightPrefab: {fileID: 5831398039795138607, guid: a967fcb974be18c428bce090534d6ad4, type: 3}
