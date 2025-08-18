@@ -49,6 +49,9 @@ namespace Characters.UIDisplay
 
         [Title("Grade Combo")] [FoldoutGroup("Combo Display")]
         public GradeComboDisplay gradeComboDisplay;
+        
+        [Title("FlowStage Combo")] [FoldoutGroup("Combo Display")]
+        public FlowStageComboDisplay flowStageComboDisplay;
 
         // ========= Combat =========
         [FoldoutGroup("Combat Display"), SerializeField]
@@ -246,6 +249,7 @@ namespace Characters.UIDisplay
 
         private void ComboValueBarUpdate(BaseComboStageSo combo)
         {
+            flowStageComboDisplay.UpdateFlowSceneFeedback(combo.stageId);
             switch (combo.stageId)
             {
                 case "flow_i":
