@@ -29,6 +29,8 @@ ShaderVariantCollection:
         passType: 0
       - keywords: COLOR_FILTER EDGE_SHINY TRANSITION_SHINY
         passType: 0
+      - keywords: COLOR_FILTER GRADATION_COLOR2
+        passType: 0
       - keywords: COLOR_FILTER GRADATION_GRADIENT
         passType: 0
       - keywords: COLOR_FILTER SAMPLING_BLUR_FAST
@@ -133,6 +135,8 @@ ShaderVariantCollection:
         passType: 0
       - keywords: GRADATION_GRADIENT SAMPLING_BLUR_DETAIL
         passType: 0
+      - keywords: GRADATION_GRADIENT SAMPLING_BLUR_FAST
+        passType: 0
       - keywords: GRADATION_GRADIENT SAMPLING_EDGE_ALPHA
         passType: 0
       - keywords: GRADATION_GRADIENT SAMPLING_EDGE_LUMINANCE
@@ -151,11 +155,15 @@ ShaderVariantCollection:
         passType: 0
       - keywords: GRADATION_GRADIENT TONE_SEPIA
         passType: 0
+      - keywords: GRADATION_GRADIENT TRANSITION_BLAZE
+        passType: 0
       - keywords: GRADATION_GRADIENT TRANSITION_BURN
         passType: 0
       - keywords: GRADATION_GRADIENT TRANSITION_CUTOFF
         passType: 0
       - keywords: GRADATION_GRADIENT TRANSITION_DISSOLVE
+        passType: 0
+      - keywords: GRADATION_GRADIENT TRANSITION_FADE
         passType: 0
       - keywords: GRADATION_GRADIENT TRANSITION_MELT
         passType: 0
