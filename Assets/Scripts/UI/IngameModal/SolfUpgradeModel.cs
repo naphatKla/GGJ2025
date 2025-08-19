@@ -20,7 +20,7 @@ namespace UI.IngameModal
 
         public void UpdateUIModal(BaseSkillDataSo data, bool isNew)
         {
-            skillTitle.text = data.SkillName + $" Level {data.Level}";
+            skillTitle.text = data.SkillName + $" <color=yellow>Lv.{data.Level}";
             skillIcon.sprite = data.SkillIcon;
             skillDescription.text = data.SkillDescription;
             
