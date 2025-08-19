@@ -49,10 +49,11 @@ namespace Manager.SoundManager
 
         public static class BGM
         {
-            public const string Stage_1 = "BGM/Stage_1";
-            public const string Stage_2 = "BGM/Stage_2";
-            public const string Boss    = "BGM/Boss";
-            public const string Menu    = "BGM/Menu";
+            private const string Group = nameof(BGM);
+            public const string GamePlayPhase1 = Group + "/" + nameof(GamePlayPhase1);
+            public const string GamePlayPhase2 = Group + "/" + nameof(GamePlayPhase2);
+            public const string Boss = Group + "/" + nameof(Boss);
+            public const string MainMenu = Group + "/" + nameof(MainMenu);
         }
 
         // ---------- Cache ----------
