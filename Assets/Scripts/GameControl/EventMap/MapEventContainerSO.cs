@@ -233,6 +233,51 @@ namespace GameControl.EventMap
         }
 #endif
 
+#if UNITY_EDITOR
+        [Title("Batch Prefab Tool")]
+        [Button("Set Default Prefab", ButtonSizes.Medium)]
+        private void ApplyDefaultPrefab()
+        {
+            if (defaultPrefabAsset == null)
+            {
+                Debug.LogWarning("[MapEventContainerSO] Default prefab asset ยังไม่ถูกตั้งค่า!");
+                return;
+            }
+
+            foreach (var i in GetTargetIndexes())
+            {
+                if (i < 0 || i >= entries.Count) continue;
+                entries[i].eventPrefab = defaultPrefabAsset;
+            }
+
+            MarkDirty();
+            Debug.Log($"[Odin] Set Default Prefab ({defaultPrefabAsset.name}) ให้กับ {GetTargetIndexes().Count} entries");
+        }
+
+        [Button("Get Index From Selection", ButtonSizes.Medium)]
+        private void GetIndexFromSelection()
+        {
+            if (entries == null || entries.Count == 0)
+            {
+                Debug.LogWarning("[MapEventContainerSO] ไม่มี entries");
+                return;
+            }
+
+            foreach (var go in Selection.gameObjects)
+            {
+                // เทียบตำแหน่งกับ spawnPosition (เผื่อ user กดเลือกใน scene)
+                var idx = entries.FindIndex(e => e.spawnPosition == go.transform.position);
+                if (idx >= 0)
+                {
+                    Debug.Log($"[Odin] GameObject '{go.name}' → index {idx}");
+                }
+                else
+                {
+                    Debug.LogWarning($"[Odin] '{go.name}' ไม่พบใน entries");
+                }
+            }
+        }
+#endif
 
 #if UNITY_EDITOR
         [Title("Batch Hitbox Config Tool")] [InfoBox("ปรับ Hitbox ของทุก Entry หรือเฉพาะ Index ที่เลือกได้")]
