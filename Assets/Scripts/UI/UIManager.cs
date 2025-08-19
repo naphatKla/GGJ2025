@@ -21,6 +21,7 @@ public enum UIPanelType
     GameMode,
     MapSelect,
     QuitPanel,
+    TutorialPanel
 }
 
 [System.Serializable]
@@ -200,6 +201,13 @@ public class UIManager : MMSingleton<UIManager>
     {
         Application.Quit();
         Debug.Log("Quit Game");
+    }
+    
+    public void OpenTutorialPanel()
+    {
+        CloseAllPanels();
+        MMTimeScaleEvent.Trigger(MMTimeScaleMethods.For, 0, -1, true, 10f, true);
+        OpenPanel(UIPanelType.TutorialPanel);
     }
     
     #region Result Menu

@@ -25,13 +25,8 @@ namespace GameControl.GameState
             SpawnerStateController.Instance.ClearItem();
             SpawnerStateController.Instance.SetupMapAndEnemy().Forget();
             controller.gameResult = EndResult.None;
-            
-            if (Time.timeScale <= 0f)
-                controller.LerpTimeScaleAsync(1f, 1f).Forget();
-            else
-                Time.timeScale = 1f;
-            
-            CountdownStart().Forget();
+
+            UIManager.Instance.OpenTutorialPanel();
             if (!PlayerController.Instance.gameObject.activeInHierarchy) PlayerController.Instance.gameObject.SetActive(true);
             PlayerController.Instance.ResetAllDependentBehavior();
             PlayerController.Instance.HealthSystem.OnDead += PlayerDeathResult;
@@ -40,12 +35,6 @@ namespace GameControl.GameState
         public void Update(GameStateController controller) { }
 
         public void Exit(GameStateController controller) { }
-
-        private async UniTaskVoid CountdownStart()
-        {
-            await GameTimer.Instance.StartCountdownAsync(5f);
-            GameStateController.Instance.SetState(new StartState());
-        }
 
         private void PlayerDeathResult()
         {
