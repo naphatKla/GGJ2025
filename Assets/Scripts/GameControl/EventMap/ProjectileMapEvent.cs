@@ -31,6 +31,7 @@ namespace GameControl.EventMap
             if (previewEffect == null) return;
 
             previewEffect.Play();
+            notifyFeedback?.PlayFeedbacks();
             await UniTask.WaitWhile(() => previewEffect.IsAlive(true));
         }
 

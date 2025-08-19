@@ -18,7 +18,8 @@ namespace GameControl.EventMap
 
         public bool debug;
 
-        [SerializeField] protected MMF_Player feedback;
+        [SerializeField] protected MMF_Player notifyFeedback;
+        [SerializeField] protected MMF_Player playFeedback;
 
         private IObjectPool<BaseMapEvent> _pool;
         private CancellationTokenSource _cts;
@@ -70,7 +71,7 @@ namespace GameControl.EventMap
                 
                 if (debug) Debug.Log("Perform & Feedback");
                 Perform();
-                feedback?.PlayFeedbacks();
+                playFeedback?.PlayFeedbacks();
 
                 if (debug) Debug.Log("Deleting");
                 ReleaseAfterPlay(token).Forget();

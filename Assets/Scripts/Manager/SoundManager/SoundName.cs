@@ -30,7 +30,7 @@ namespace Manager.SoundManager
             public const string PlayerHarmonyOfLight = Group + "/" + nameof(PlayerHarmonyOfLight);
             public const string PlayerOverloop = Group + "/" + nameof(PlayerOverloop);
             public const string PlayerBaseDown = Group + "/" + nameof(PlayerBaseDown);
-            public const string MapEventNotifySound = Group + "/" + nameof(MapEventNotifySound);
+            public const string MapEventLaserNotify = Group + "/" + nameof(MapEventLaserNotify);
             public const string MapEventLaser = Group + "/" + nameof(MapEventLaser);
         }
 
