@@ -76,7 +76,7 @@ namespace GameControl.Controller
         {
             var obj = Object.Instantiate(option.EnemyObject);
             var controller = obj.GetComponent<EnemyController>();
-            controller.HealthSystem.OnDead = () => _enemyPools[option.id].Release(controller); ;
+            controller.HealthSystem.OnDead = () => _enemyPools[option.id].Release(controller);
             return controller;
         }
         

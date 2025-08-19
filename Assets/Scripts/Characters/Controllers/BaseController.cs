@@ -161,7 +161,6 @@ namespace Characters.Controllers
         protected virtual void SubscribeDependency()
         {
             _inputSystem ??= GetComponent<ICharacterInput>();
-            healthSystem.OnDead += ResetAllDependentBehavior;
 
             if (_inputSystem == null) return;
             _inputSystem.OnSkillPerform += skillSystem.PerformSkill;
@@ -170,8 +169,6 @@ namespace Characters.Controllers
 
         protected virtual void UnSubscribeDependency()
         {
-            healthSystem.OnDead -= ResetAllDependentBehavior;
-            
             if (_inputSystem == null) return;
             _inputSystem.OnSkillPerform -= skillSystem.PerformSkill;
             _inputSystem.OnMove -= movementSystem.AssignInputDirection;
