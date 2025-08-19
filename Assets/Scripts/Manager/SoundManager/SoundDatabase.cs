@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Sirenix.OdinInspector;
-using Sirenix.Serialization;
 using UnityEngine;
 using UnityEngine.Audio;
 #if UNITY_EDITOR
@@ -347,47 +346,141 @@ namespace Manager.SoundManager
         // ========================= Populate & Sort =========================
         private void PopulateKeys()
         {
-            // ----- SFX -----
-            var allSfx = SoundName.OrderedKeysOf("SFX");
-            foreach (var key in allSfx)
+            // 1) ซิงค์รายการเดิมให้ Key ถูกต้องก่อน (ใช้ keyShort -> Key ถ้าว่าง)
+            SyncExistingEntriesShortToFull();
+
+            // 2) เติมรายการที่ขาด พร้อมค่าเริ่มต้น
+            AddMissingSfxKeys();
+            AddMissingUiKeys();
+            AddMissingBgmKeys();
+
+            // 3) เรียงลำดับตาม SoundName
+            SortBySoundNameOrder();
+        }
+
+        private void SyncExistingEntriesShortToFull()
+        {
+            // SFX
+            if (sfx != null)
             {
-                if (sfx.Any(e => e.Key == key)) continue;
-                var e = new SFXEntry();
-                e.Key = key;
+                for (int i = 0; i < sfx.Count; i++)
+                {
+                    var e = sfx[i];
+                    if (string.IsNullOrEmpty(e.Key))
+                        e.SyncShortToFull();
+                    e.SyncFullToShort();
+                    sfx[i] = e; // struct: write back
+                }
+            }
+
+            // UI
+            if (ui != null)
+            {
+                for (int i = 0; i < ui.Count; i++)
+                {
+                    var e = ui[i];
+                    if (string.IsNullOrEmpty(e.Key))
+                        e.SyncShortToFull();
+                    e.SyncFullToShort();
+                    ui[i] = e;
+                }
+            }
+
+            // BGM
+            if (bgm != null)
+            {
+                for (int i = 0; i < bgm.Count; i++)
+                {
+                    var e = bgm[i];
+                    if (string.IsNullOrEmpty(e.Key))
+                        e.SyncShortToFull();
+                    e.SyncFullToShort();
+                    bgm[i] = e;
+                }
+            }
+        }
+
+        private void AddMissingSfxKeys()
+        {
+            var existing = new HashSet<string>(sfx.Where(e => !string.IsNullOrEmpty(e.Key)).Select(e => e.Key), StringComparer.Ordinal);
+
+            foreach (var key in SoundName.OrderedKeysOf("SFX"))
+            {
+                if (existing.Contains(key)) continue;
+
+                var e = new SFXEntry
+                {
+                    Key = key,
+                    variants = new List<ClipVariant>(1)
+                    {
+                        new ClipVariant
+                        {
+                            clip = null,
+                            volume = 1f,
+                            loop = false,
+                            usePitchRandom = true,
+                            pitchRange = new Vector2(0.85f, 1.15f),
+                            weight = 1f
+                        }
+                    }
+                };
+                e.SyncFullToShort();
                 sfx.Add(e);
             }
+        }
 
-            // ----- UI -----
-            var allUi = SoundName.OrderedKeysOf("UI");
-            foreach (var key in allUi)
+        private void AddMissingUiKeys()
+        {
+            var existing = new HashSet<string>(ui.Where(e => !string.IsNullOrEmpty(e.Key)).Select(e => e.Key), StringComparer.Ordinal);
+
+            foreach (var key in SoundName.OrderedKeysOf("UI"))
             {
-                if (ui.Any(e => e.Key == key)) continue;
-                var e = new UIEntry();
-                e.Key = key;
+                if (existing.Contains(key)) continue;
+
+                var e = new UIEntry
+                {
+                    Key = key,
+                    variants = new List<ClipVariant>(1)
+                    {
+                        new ClipVariant
+                        {
+                            clip = null,
+                            volume = 1f,
+                            loop = false,
+                            usePitchRandom = true,
+                            pitchRange = new Vector2(0.85f, 1.15f),
+                            weight = 1f
+                        }
+                    }
+                };
+                e.SyncFullToShort();
                 ui.Add(e);
             }
+        }
 
-            // ----- BGM -----
-            var allBgm = SoundName.OrderedKeysOf("BGM");
-            foreach (var key in allBgm)
+        private void AddMissingBgmKeys()
+        {
+            var existing = new HashSet<string>(bgm.Where(e => !string.IsNullOrEmpty(e.Key)).Select(e => e.Key), StringComparer.Ordinal);
+
+            foreach (var key in SoundName.OrderedKeysOf("BGM"))
             {
-                if (bgm.Any(e => e.Key == key)) continue;
-                var e = new BGMEntry();
-                e.Key = key;
+                if (existing.Contains(key)) continue;
+
+                var e = new BGMEntry
+                {
+                    Key = key,
+                    volume = 1f
+                };
+                e.SyncFullToShort();
                 bgm.Add(e);
             }
-
-            SortBySoundNameOrder();
         }
 
         private void SortBySoundNameOrder()
         {
-            var sfxOrder = SoundName.OrderedKeysOf("SFX")
-                .Select((k, i) => (k, i)).ToDictionary(x => x.k, x => x.i, StringComparer.Ordinal);
-            var uiOrder = SoundName.OrderedKeysOf("UI")
-                .Select((k, i) => (k, i)).ToDictionary(x => x.k, x => x.i, StringComparer.Ordinal);
-            var bgmOrder = SoundName.OrderedKeysOf("BGM")
-                .Select((k, i) => (k, i)).ToDictionary(x => x.k, x => x.i, StringComparer.Ordinal);
+            var sfxOrder = SoundName.OrderedKeysOf("SFX").Select((k, i) => (k, i)).ToDictionary(x => x.k, x => x.i, StringComparer.Ordinal);
+            var uiOrder  = SoundName.OrderedKeysOf("UI") .Select((k, i) => (k, i)).ToDictionary(x => x.k, x => x.i, StringComparer.Ordinal);
+            var bgmOrder = SoundName.OrderedKeysOf("BGM").Select((k, i) => (k, i)).ToDictionary(x => x.k, x => x.i, StringComparer.Ordinal);
 
             if (sfx != null) sfx.Sort((a, b) => GetOrder(sfxOrder, a.Key).CompareTo(GetOrder(sfxOrder, b.Key)));
             if (ui  != null) ui .Sort((a, b) => GetOrder(uiOrder,  a.Key).CompareTo(GetOrder(uiOrder,  b.Key)));
@@ -395,6 +488,83 @@ namespace Manager.SoundManager
 
             static int GetOrder(Dictionary<string,int> map, string key)
                 => (key != null && map.TryGetValue(key, out var idx)) ? idx : int.MaxValue;
+        }
+
+        // ========================= Default seeding when adding by hand =========================
+        private void OnValidate()
+        {
+            // SFX
+            if (sfx != null)
+            {
+                for (int i = 0; i < sfx.Count; i++)
+                {
+                    var e = sfx[i];
+                    e.SyncShortToFull();
+                    e.SyncFullToShort();
+
+                    if (e.variants == null || e.variants.Count == 0)
+                    {
+                        e.variants = new List<ClipVariant>(1)
+                        {
+                            new ClipVariant
+                            {
+                                clip = null,
+                                volume = 1f,
+                                loop = false,
+                                usePitchRandom = true,
+                                pitchRange = new Vector2(0.85f, 1.15f),
+                                weight = 1f
+                            }
+                        };
+                    }
+                    sfx[i] = e;
+                }
+            }
+
+            // UI
+            if (ui != null)
+            {
+                for (int i = 0; i < ui.Count; i++)
+                {
+                    var e = ui[i];
+                    e.SyncShortToFull();
+                    e.SyncFullToShort();
+
+                    if (e.variants == null || e.variants.Count == 0)
+                    {
+                        e.variants = new List<ClipVariant>(1)
+                        {
+                            new ClipVariant
+                            {
+                                clip = null,
+                                volume = 1f,
+                                loop = false,
+                                usePitchRandom = true,
+                                pitchRange = new Vector2(0.85f, 1.15f),
+                                weight = 1f
+                            }
+                        };
+                    }
+                    ui[i] = e;
+                }
+            }
+
+            // BGM
+            if (bgm != null)
+            {
+                for (int i = 0; i < bgm.Count; i++)
+                {
+                    var e = bgm[i];
+                    e.SyncShortToFull();
+                    e.SyncFullToShort();
+
+                    // ตั้งค่าเริ่มต้นเฉพาะกรณีที่ยังไม่ถูกตั้ง (ค่า default Unity = 0)
+                    if (Mathf.Approximately(e.volume, 0f))
+                        e.volume = 1f;
+
+                    bgm[i] = e;
+                }
+            }
         }
     }
 }

@@ -14,15 +14,22 @@ namespace Manager.SoundManager
     {
         public static class SFX
         {
-            public const string SwordSlash = "SFX/SwordSlash";
-            public const string SwordHit   = "SFX/SwordHit";
-            public const string Parry      = "SFX/Parry";
-            public const string Dash       = "SFX/Dash";
-            public const string LevelUp    = "SFX/LevelUp";
-            public const string Collect    = "SFX/Collect";
-            public const string Hurt       = "SFX/Hurt";
-            public const string Death      = "SFX/Death";
-            public const string Button     = "SFX/Button";
+            private const string Group = nameof(SFX);
+            public const string PlayerAttackHit = Group + "/" + nameof(PlayerAttackHit);
+            public const string PlayerHurt = Group + "/" + nameof(PlayerHurt);
+            public const string PlayerHeal = Group + "/" + nameof(PlayerHeal);
+            public const string PlayerDead = Group + "/" + nameof(PlayerDead);
+            public const string PlayerCollectAnergy = Group + "/" + nameof(PlayerCollectAnergy);
+            public const string PlayerDash = Group + "/" + nameof(PlayerDash);
+            public const string PlayerParry = Group + "/" + nameof(PlayerParry);
+            public const string PlayerSuccess = Group + "/" + nameof(PlayerSuccess);
+            public const string PlayerReflection = Group + "/" + nameof(PlayerReflection);
+            public const string PlayerLightStepUse = Group + "/" + nameof(PlayerLightStepUse);
+            public const string PlayerLightStepEnd = Group + "/" + nameof(PlayerLightStepEnd);
+            public const string PlayerHarmonyOfLight = Group + "/" + nameof(PlayerHarmonyOfLight);
+            public const string PlayerOverloop = Group + "/" + nameof(PlayerOverloop);
+            public const string MapEventNotifySound = Group + "/" + nameof(MapEventNotifySound);
+            public const string MapEventLaser = Group + "/" + nameof(MapEventLaser);
         }
 
         public static class UI

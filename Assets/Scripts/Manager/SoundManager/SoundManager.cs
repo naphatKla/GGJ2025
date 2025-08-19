@@ -28,7 +28,7 @@ namespace Manager.SoundManager
 
         [Header("Pools")]
         [SerializeField, Min(1)] private int sfxDefaultCapacity = 16;
-        [SerializeField, Min(1)] private int sfxMaxSize = 64;
+        [SerializeField, Min(1)] private int sfxMaxSize = 100;
         [SerializeField, Min(1)] private int uiDefaultCapacity = 16;
         [SerializeField, Min(1)] private int uiMaxSize = 64;
 
@@ -66,6 +66,7 @@ namespace Manager.SoundManager
 
         // RNG
         private static readonly System.Random _rnd = new System.Random();
+        public SoundDatabase Database => database;
 
         protected override void Awake()
         {

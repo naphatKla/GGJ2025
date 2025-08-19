@@ -21,6 +21,451 @@ MonoBehaviour:
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
     SerializationNodes: []
-  sfx: []
-  ui: []
-  bgm: []
+  sfx:
+  - Key: SFX/PlayerAttackHit
+    keyShort: PlayerAttackHit
+    variants:
+    - clip: {fileID: 8300000, guid: f892ab1b471bd4845aab89e0759ba1a2, type: 3}
+      volume: 1
+      loop: 0
+      usePitchRandom: 1
+      pitchRange: {x: 0.85, y: 1.15}
+      weight: 0
+    - clip: {fileID: 8300000, guid: 54347d5f692bbb94da82e05e015c00e4, type: 3}
+      volume: 1
+      loop: 0
+      usePitchRandom: 1
+      pitchRange: {x: 0.85, y: 1.15}
+      weight: 0
+    - clip: {fileID: 8300000, guid: a35315eb7df23be4ba7557c402af72a6, type: 3}
+      volume: 1
+      loop: 0
+      usePitchRandom: 1
+      pitchRange: {x: 0.85, y: 1.15}
+      weight: 0
+    pickMode: 4
+    avoidImmediateRepeat: 0
+    spatial: 0
+    spatialBlend: 0
+    minDistance: 0
+    maxDistance: 0
+    rolloffMode: 0
+    mixerOverride: {fileID: 0}
+    cooldown: 0.01
+  - Key: SFX/PlayerHurt
+    keyShort: PlayerHurt
+    variants:
+    - clip: {fileID: 0}
+      volume: 1
+      loop: 0
+      usePitchRandom: 1
+      pitchRange: {x: 0.85, y: 1.15}
+      weight: 1
+    pickMode: 0
+    avoidImmediateRepeat: 0
+    spatial: 0
+    spatialBlend: 0
+    minDistance: 0
+    maxDistance: 0
+    rolloffMode: 0
+    mixerOverride: {fileID: 0}
+    cooldown: 0
+  - Key: SFX/PlayerHeal
+    keyShort: PlayerHeal
+    variants:
+    - clip: {fileID: 0}
+      volume: 1
+      loop: 0
+      usePitchRandom: 1
+      pitchRange: {x: 0.85, y: 1.15}
+      weight: 1
+    pickMode: 0
+    avoidImmediateRepeat: 0
+    spatial: 0
+    spatialBlend: 0
+    minDistance: 0
+    maxDistance: 0
+    rolloffMode: 0
+    mixerOverride: {fileID: 0}
+    cooldown: 0
+  - Key: SFX/PlayerDead
+    keyShort: PlayerDead
+    variants:
+    - clip: {fileID: 0}
+      volume: 1
+      loop: 0
+      usePitchRandom: 1
+      pitchRange: {x: 0.85, y: 1.15}
+      weight: 1
+    pickMode: 0
+    avoidImmediateRepeat: 0
+    spatial: 0
+    spatialBlend: 0
+    minDistance: 0
+    maxDistance: 0
+    rolloffMode: 0
+    mixerOverride: {fileID: 0}
+    cooldown: 0
+  - Key: SFX/PlayerCollectAnergy
+    keyShort: PlayerCollectAnergy
+    variants:
+    - clip: {fileID: 0}
+      volume: 1
+      loop: 0
+      usePitchRandom: 1
+      pitchRange: {x: 0.85, y: 1.15}
+      weight: 1
+    pickMode: 0
+    avoidImmediateRepeat: 0
+    spatial: 0
+    spatialBlend: 0
+    minDistance: 0
+    maxDistance: 0
+    rolloffMode: 0
+    mixerOverride: {fileID: 0}
+    cooldown: 0
+  - Key: SFX/PlayerDash
+    keyShort: PlayerDash
+    variants:
+    - clip: {fileID: 0}
+      volume: 1
+      loop: 0
+      usePitchRandom: 1
+      pitchRange: {x: 0.85, y: 1.15}
+      weight: 1
+    pickMode: 0
+    avoidImmediateRepeat: 0
+    spatial: 0
+    spatialBlend: 0
+    minDistance: 0
+    maxDistance: 0
+    rolloffMode: 0
+    mixerOverride: {fileID: 0}
+    cooldown: 0
+  - Key: SFX/PlayerParry
+    keyShort: PlayerParry
+    variants:
+    - clip: {fileID: 0}
+      volume: 1
+      loop: 0
+      usePitchRandom: 1
+      pitchRange: {x: 0.85, y: 1.15}
+      weight: 1
+    pickMode: 0
+    avoidImmediateRepeat: 0
+    spatial: 0
+    spatialBlend: 0
+    minDistance: 0
+    maxDistance: 0
+    rolloffMode: 0
+    mixerOverride: {fileID: 0}
+    cooldown: 0
+  - Key: SFX/PlayerSuccess
+    keyShort: PlayerSuccess
+    variants:
+    - clip: {fileID: 0}
+      volume: 1
+      loop: 0
+      usePitchRandom: 1
+      pitchRange: {x: 0.85, y: 1.15}
+      weight: 1
+    pickMode: 0
+    avoidImmediateRepeat: 0
+    spatial: 0
+    spatialBlend: 0
+    minDistance: 0
+    maxDistance: 0
+    rolloffMode: 0
+    mixerOverride: {fileID: 0}
+    cooldown: 0
+  - Key: SFX/PlayerReflection
+    keyShort: PlayerReflection
+    variants:
+    - clip: {fileID: 0}
+      volume: 1
+      loop: 0
+      usePitchRandom: 1
+      pitchRange: {x: 0.85, y: 1.15}
+      weight: 1
+    pickMode: 0
+    avoidImmediateRepeat: 0
+    spatial: 0
+    spatialBlend: 0
+    minDistance: 0
+    maxDistance: 0
+    rolloffMode: 0
+    mixerOverride: {fileID: 0}
+    cooldown: 0
+  - Key: SFX/PlayerLightStepUse
+    keyShort: PlayerLightStepUse
+    variants:
+    - clip: {fileID: 0}
+      volume: 1
+      loop: 0
+      usePitchRandom: 1
+      pitchRange: {x: 0.85, y: 1.15}
+      weight: 1
+    pickMode: 0
+    avoidImmediateRepeat: 0
+    spatial: 0
+    spatialBlend: 0
+    minDistance: 0
+    maxDistance: 0
+    rolloffMode: 0
+    mixerOverride: {fileID: 0}
+    cooldown: 0
+  - Key: SFX/PlayerLightStepEnd
+    keyShort: PlayerLightStepEnd
+    variants:
+    - clip: {fileID: 0}
+      volume: 1
+      loop: 0
+      usePitchRandom: 1
+      pitchRange: {x: 0.85, y: 1.15}
+      weight: 1
+    pickMode: 0
+    avoidImmediateRepeat: 0
+    spatial: 0
+    spatialBlend: 0
+    minDistance: 0
+    maxDistance: 0
+    rolloffMode: 0
+    mixerOverride: {fileID: 0}
+    cooldown: 0
+  - Key: SFX/PlayerHarmonyOfLight
+    keyShort: PlayerHarmonyOfLight
+    variants:
+    - clip: {fileID: 0}
+      volume: 1
+      loop: 0
+      usePitchRandom: 1
+      pitchRange: {x: 0.85, y: 1.15}
+      weight: 1
+    pickMode: 0
+    avoidImmediateRepeat: 0
+    spatial: 0
+    spatialBlend: 0
+    minDistance: 0
+    maxDistance: 0
+    rolloffMode: 0
+    mixerOverride: {fileID: 0}
+    cooldown: 0
+  - Key: SFX/PlayerOverloop
+    keyShort: PlayerOverloop
+    variants:
+    - clip: {fileID: 0}
+      volume: 1
+      loop: 0
+      usePitchRandom: 1
+      pitchRange: {x: 0.85, y: 1.15}
+      weight: 1
+    pickMode: 0
+    avoidImmediateRepeat: 0
+    spatial: 0
+    spatialBlend: 0
+    minDistance: 0
+    maxDistance: 0
+    rolloffMode: 0
+    mixerOverride: {fileID: 0}
+    cooldown: 0
+  - Key: SFX/MapEventNotifySound
+    keyShort: MapEventNotifySound
+    variants:
+    - clip: {fileID: 0}
+      volume: 1
+      loop: 0
+      usePitchRandom: 1
+      pitchRange: {x: 0.85, y: 1.15}
+      weight: 1
+    pickMode: 0
+    avoidImmediateRepeat: 0
+    spatial: 0
+    spatialBlend: 0
+    minDistance: 0
+    maxDistance: 0
+    rolloffMode: 0
+    mixerOverride: {fileID: 0}
+    cooldown: 0
+  - Key: SFX/MapEventLaser
+    keyShort: MapEventLaser
+    variants:
+    - clip: {fileID: 0}
+      volume: 1
+      loop: 0
+      usePitchRandom: 1
+      pitchRange: {x: 0.85, y: 1.15}
+      weight: 1
+    pickMode: 0
+    avoidImmediateRepeat: 0
+    spatial: 0
+    spatialBlend: 0
+    minDistance: 0
+    maxDistance: 0
+    rolloffMode: 0
+    mixerOverride: {fileID: 0}
+    cooldown: 0
+  ui:
+  - Key: UI/Click
+    keyShort: Click
+    variants:
+    - clip: {fileID: 0}
+      volume: 1
+      loop: 0
+      usePitchRandom: 1
+      pitchRange: {x: 0.85, y: 1.15}
+      weight: 1
+    pickMode: 0
+    avoidImmediateRepeat: 0
+    mixerOverride: {fileID: 0}
+    cooldown: 0
+  - Key: UI/Hover
+    keyShort: Hover
+    variants:
+    - clip: {fileID: 0}
+      volume: 1
+      loop: 0
+      usePitchRandom: 1
+      pitchRange: {x: 0.85, y: 1.15}
+      weight: 1
+    pickMode: 0
+    avoidImmediateRepeat: 0
+    mixerOverride: {fileID: 0}
+    cooldown: 0
+  - Key: UI/Confirm
+    keyShort: Confirm
+    variants:
+    - clip: {fileID: 0}
+      volume: 1
+      loop: 0
+      usePitchRandom: 1
+      pitchRange: {x: 0.85, y: 1.15}
+      weight: 1
+    pickMode: 0
+    avoidImmediateRepeat: 0
+    mixerOverride: {fileID: 0}
+    cooldown: 0
+  - Key: UI/Cancel
+    keyShort: Cancel
+    variants:
+    - clip: {fileID: 0}
+      volume: 1
+      loop: 0
+      usePitchRandom: 1
+      pitchRange: {x: 0.85, y: 1.15}
+      weight: 1
+    pickMode: 0
+    avoidImmediateRepeat: 0
+    mixerOverride: {fileID: 0}
+    cooldown: 0
+  - Key: UI/OpenWindow
+    keyShort: OpenWindow
+    variants:
+    - clip: {fileID: 0}
+      volume: 1
+      loop: 0
+      usePitchRandom: 1
+      pitchRange: {x: 0.85, y: 1.15}
+      weight: 1
+    pickMode: 0
+    avoidImmediateRepeat: 0
+    mixerOverride: {fileID: 0}
+    cooldown: 0
+  - Key: UI/CloseWindow
+    keyShort: CloseWindow
+    variants:
+    - clip: {fileID: 0}
+      volume: 1
+      loop: 0
+      usePitchRandom: 1
+      pitchRange: {x: 0.85, y: 1.15}
+      weight: 1
+    pickMode: 0
+    avoidImmediateRepeat: 0
+    mixerOverride: {fileID: 0}
+    cooldown: 0
+  - Key: UI/ToggleOn
+    keyShort: ToggleOn
+    variants:
+    - clip: {fileID: 0}
+      volume: 1
+      loop: 0
+      usePitchRandom: 1
+      pitchRange: {x: 0.85, y: 1.15}
+      weight: 1
+    pickMode: 0
+    avoidImmediateRepeat: 0
+    mixerOverride: {fileID: 0}
+    cooldown: 0
+  - Key: UI/ToggleOff
+    keyShort: ToggleOff
+    variants:
+    - clip: {fileID: 0}
+      volume: 1
+      loop: 0
+      usePitchRandom: 1
+      pitchRange: {x: 0.85, y: 1.15}
+      weight: 1
+    pickMode: 0
+    avoidImmediateRepeat: 0
+    mixerOverride: {fileID: 0}
+    cooldown: 0
+  - Key: UI/Notification
+    keyShort: Notification
+    variants:
+    - clip: {fileID: 0}
+      volume: 1
+      loop: 0
+      usePitchRandom: 1
+      pitchRange: {x: 0.85, y: 1.15}
+      weight: 1
+    pickMode: 0
+    avoidImmediateRepeat: 0
+    mixerOverride: {fileID: 0}
+    cooldown: 0
+  - Key: UI/Reward
+    keyShort: Reward
+    variants:
+    - clip: {fileID: 0}
+      volume: 1
+      loop: 0
+      usePitchRandom: 1
+      pitchRange: {x: 0.85, y: 1.15}
+      weight: 1
+    pickMode: 0
+    avoidImmediateRepeat: 0
+    mixerOverride: {fileID: 0}
+    cooldown: 0
+  - Key: UI/Error
+    keyShort: Error
+    variants:
+    - clip: {fileID: 0}
+      volume: 1
+      loop: 0
+      usePitchRandom: 1
+      pitchRange: {x: 0.85, y: 1.15}
+      weight: 1
+    pickMode: 0
+    avoidImmediateRepeat: 0
+    mixerOverride: {fileID: 0}
+    cooldown: 0
+  bgm:
+  - Key: BGM/Stage_1
+    keyShort: Stage_1
+    clip: {fileID: 0}
+    volume: 1
+    mixerOverride: {fileID: 0}
+  - Key: BGM/Stage_2
+    keyShort: Stage_2
+    clip: {fileID: 0}
+    volume: 1
+    mixerOverride: {fileID: 0}
+  - Key: BGM/Boss
+    keyShort: Boss
+    clip: {fileID: 0}
+    volume: 1
+    mixerOverride: {fileID: 0}
+  - Key: BGM/Menu
+    keyShort: Menu
+    clip: {fileID: 0}
+    volume: 1
+    mixerOverride: {fileID: 0}
