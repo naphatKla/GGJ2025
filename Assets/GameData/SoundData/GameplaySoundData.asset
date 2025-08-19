@@ -55,13 +55,25 @@ MonoBehaviour:
   - Key: SFX/PlayerHurt
     keyShort: PlayerHurt
     variants:
-    - clip: {fileID: 0}
+    - clip: {fileID: 8300000, guid: 16e48425645701d4299c6198a614f66b, type: 3}
       volume: 1
       loop: 0
       usePitchRandom: 1
       pitchRange: {x: 0.85, y: 1.15}
       weight: 1
-    pickMode: 0
+    - clip: {fileID: 8300000, guid: d0829b6ddf7d5da4185fbd56e54954f3, type: 3}
+      volume: 1
+      loop: 0
+      usePitchRandom: 1
+      pitchRange: {x: 0.85, y: 0.85}
+      weight: 0
+    - clip: {fileID: 8300000, guid: 8832dbe19693d724784fb28961ea7bd4, type: 3}
+      volume: 1
+      loop: 0
+      usePitchRandom: 1
+      pitchRange: {x: 0.85, y: 0.85}
+      weight: 0
+    pickMode: 4
     avoidImmediateRepeat: 0
     spatial: 0
     spatialBlend: 0
@@ -91,7 +103,7 @@ MonoBehaviour:
   - Key: SFX/PlayerDead
     keyShort: PlayerDead
     variants:
-    - clip: {fileID: 0}
+    - clip: {fileID: 8300000, guid: d993504d3e5df5747b4861277c3e01c7, type: 3}
       volume: 1
       loop: 0
       usePitchRandom: 1
@@ -109,7 +121,25 @@ MonoBehaviour:
   - Key: SFX/PlayerCollectAnergy
     keyShort: PlayerCollectAnergy
     variants:
-    - clip: {fileID: 0}
+    - clip: {fileID: 8300000, guid: 4e345a7f2321634498bfc6a96f1459e0, type: 3}
+      volume: 1
+      loop: 0
+      usePitchRandom: 1
+      pitchRange: {x: 0.85, y: 1.15}
+      weight: 1
+    pickMode: 0
+    avoidImmediateRepeat: 0
+    spatial: 0
+    spatialBlend: 0
+    minDistance: 0
+    maxDistance: 0
+    rolloffMode: 0
+    mixerOverride: {fileID: 0}
+    cooldown: 0
+  - Key: SFX/PlayerLevelUp
+    keyShort: PlayerLevelUp
+    variants:
+    - clip: {fileID: 8300000, guid: 7a6447bea23ac6a43adf5821d442f85e, type: 3}
       volume: 1
       loop: 0
       usePitchRandom: 1
@@ -127,7 +157,7 @@ MonoBehaviour:
   - Key: SFX/PlayerDash
     keyShort: PlayerDash
     variants:
-    - clip: {fileID: 0}
+    - clip: {fileID: 8300000, guid: 56cc9d92200872d4eb89bd3153013815, type: 3}
       volume: 1
       loop: 0
       usePitchRandom: 1
@@ -142,10 +172,10 @@ MonoBehaviour:
     rolloffMode: 0
     mixerOverride: {fileID: 0}
     cooldown: 0
-  - Key: SFX/PlayerParry
-    keyShort: PlayerParry
+  - Key: SFX/PlayerParryUse
+    keyShort: PlayerParryUse
     variants:
-    - clip: {fileID: 0}
+    - clip: {fileID: 8300000, guid: efc7b6c711c1d8d439b8b4b05d933566, type: 3}
       volume: 1
       loop: 0
       usePitchRandom: 1
@@ -160,10 +190,10 @@ MonoBehaviour:
     rolloffMode: 0
     mixerOverride: {fileID: 0}
     cooldown: 0
-  - Key: SFX/PlayerSuccess
-    keyShort: PlayerSuccess
+  - Key: SFX/PlayerParrySuccess
+    keyShort: PlayerParrySuccess
     variants:
-    - clip: {fileID: 0}
+    - clip: {fileID: 8300000, guid: fe89e37d846dc974eb8b4a7ad74c8401, type: 3}
       volume: 1
       loop: 0
       usePitchRandom: 1
@@ -181,7 +211,7 @@ MonoBehaviour:
   - Key: SFX/PlayerReflection
     keyShort: PlayerReflection
     variants:
-    - clip: {fileID: 0}
+    - clip: {fileID: 8300000, guid: 5d88aaf89201aea4b957152c58331925, type: 3}
       volume: 1
       loop: 0
       usePitchRandom: 1
@@ -235,7 +265,7 @@ MonoBehaviour:
   - Key: SFX/PlayerHarmonyOfLight
     keyShort: PlayerHarmonyOfLight
     variants:
-    - clip: {fileID: 0}
+    - clip: {fileID: 8300000, guid: f74ea6499afe4864399555506323480b, type: 3}
       volume: 1
       loop: 0
       usePitchRandom: 1
@@ -254,6 +284,24 @@ MonoBehaviour:
     keyShort: PlayerOverloop
     variants:
     - clip: {fileID: 0}
+      volume: 1
+      loop: 0
+      usePitchRandom: 1
+      pitchRange: {x: 0.85, y: 1.15}
+      weight: 1
+    pickMode: 0
+    avoidImmediateRepeat: 0
+    spatial: 0
+    spatialBlend: 0
+    minDistance: 0
+    maxDistance: 0
+    rolloffMode: 0
+    mixerOverride: {fileID: 0}
+    cooldown: 0
+  - Key: SFX/PlayerBaseDown
+    keyShort: PlayerBaseDown
+    variants:
+    - clip: {fileID: 8300000, guid: ca728ba222c2e294c96f550061da0fa8, type: 3}
       volume: 1
       loop: 0
       usePitchRandom: 1

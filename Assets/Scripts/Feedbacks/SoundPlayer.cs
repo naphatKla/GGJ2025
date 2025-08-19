@@ -1,11 +1,8 @@
 // SoundPlayer.cs
-
 using System.Collections.Generic;
 using Manager.SoundManager;
 using Sirenix.OdinInspector;
 using UnityEngine;
-
-// SoundManager, SoundDatabase, SoundName
 
 namespace Feedbacks
 {
@@ -13,35 +10,57 @@ namespace Feedbacks
     [DisallowMultipleComponent]
     public class SoundPlayer : MonoBehaviour
     {
-        public enum Category
-        {
-            SFX = 0,
-            UI  = 1,
-            BGM = 2,
-        }
-        
-        [LabelText("Category")]
-        [SerializeField] private Category category = Category.SFX;
+        public enum Category { SFX = 0, UI = 1, BGM = 2 }
 
-        // ====== Key (เลือกด้วย Short name แล้ว resolve เป็น Full key ตอนเล่น) ======
+        [LabelText("Category")]
+        [SerializeField] protected Category category = Category.SFX;
+
+        // ====== Key หลัก (Short) ======
         [LabelText("Key (Short)")]
         [ValidateInput(nameof(ValidateShortKey), "Unknown key for selected category.", InfoMessageType.Error)]
         [ValueDropdown(nameof(__ShortKeyDropdown))]
         [SerializeField] private string keyShort;
-        
-        private string FullKey => ResolveFullKey();
 
-        // ====== Common options (ไม่มีพารามิเตอร์ตอนเรียกเล่น แต่ปรับผ่าน Inspector) ======
+        private string FullKey => ResolveFullKey();
+        
+        [System.Serializable]
+        public struct ExtraKey
+        {
+            [SerializeField] private Category category;
+            
+            [LabelText("Key (Short)")]
+            [ValueDropdown(nameof(__ShortKeyDropdown))]
+            public string keyShort;
+            
+            private IEnumerable<ValueDropdownItem<string>> __ShortKeyDropdown()
+            {
+#if UNITY_EDITOR
+                string group = category.ToString();
+                return SoundName.Odin.ShortGroup(group);
+#else
+            return System.Array.Empty<ValueDropdownItem<string>>();
+#endif
+            }
+        }
+
+        [ShowIf(nameof(IsSfxOrUi))]
+        [TitleGroup("Extra Keys (SFX/UI)")]
+        [LabelText("Play Extra Keys Together")]
+        public bool useExtraKeys = false;
+
+        [ShowIf("@useExtraKeys && IsSfxOrUi()")]
+        [ListDrawerSettings(Expanded = true, DraggableItems = true)]
+        public List<ExtraKey> extraKeys = new();
+
+        // ====== Common options ======
         [Title("Settings")]
         [LabelText("Play On Enable")] public bool playOnEnable;
-        
         [LabelText("Stop On Disable")] public bool stopOnDisable;
-        
+
         [LabelText("Volume Scale"), Range(0f, 2f)]
         public float volumeScale = 1f;
-        
+
         [LabelText("Override Pitch")] public bool usePitchOverride = false;
-        
         [ShowIf(nameof(usePitchOverride))]
         [LabelText("Pitch"), Range(0.1f, 3f)]
         public float pitch = 1f;
@@ -50,11 +69,11 @@ namespace Feedbacks
         [ShowIf(nameof(IsSfx))]
         [LabelText("Use Transform Position")]
         public bool useTransformPosition = true;
-        
+
         [ShowIf("@IsSfx() && useTransformPosition")]
         [LabelText("Position Source (optional)")]
         public Transform positionSource;
-        
+
         [ShowIf("@IsSfx() && !useTransformPosition")]
         [LabelText("Custom World Position")]
         public Vector3 customWorldPosition;
@@ -63,32 +82,30 @@ namespace Feedbacks
         [ShowIf(nameof(IsBgm))]
         [LabelText("Override Fade In/Out")]
         public bool overrideBgmFade = false;
-        
+
         [ShowIf("@IsBgm() && overrideBgmFade")]
         [LabelText("Fade Out (sec)"), MinValue(0f)]
         public float bgmFadeOut = 0.6f;
-        
+
         [ShowIf("@IsBgm() && overrideBgmFade")]
         [LabelText("Fade In (sec)"), MinValue(0f)]
         public float bgmFadeIn = 0.6f;
 
-        // === last played source (สำหรับ SFX/UI ที่อาจ loop และต้อง Stop/Release เอง) ===
-        private AudioSource _lastSource;
+        // แทน _lastSource → รองรับหลายแหล่งเสียง
+        private readonly List<AudioSource> _activeSources = new(8);
 
         // ---------- Lifecycle ----------
         private void OnEnable()
         {
-            if (playOnEnable)
-                Play();
+            if (playOnEnable) Play();
         }
 
         private void OnDisable()
         {
-            if (stopOnDisable)
-                Stop();
+            if (stopOnDisable) Stop();
         }
 
-        // ---------- Public API (no-params; เรียกจาก UnityEvent ได้) ----------
+        // ---------- Public API ----------
         [Button("Play")]
         public void Play()
         {
@@ -98,6 +115,9 @@ namespace Feedbacks
                 Debug.LogWarning("[SoundPlayer] SoundManager instance not found.");
                 return;
             }
+
+            // เคลียร์รายการก่อนเล่นใหม่ (กันค้าง)
+            CleanupActiveSources();
 
             var fullKey = FullKey;
             if (string.IsNullOrEmpty(fullKey))
@@ -121,33 +141,73 @@ namespace Feedbacks
                         worldPos = customWorldPosition;
                     }
 
-                    _lastSource = sm.PlaySFX(
+                    // หลัก
+                    var src = sm.PlaySFX(
                         fullKey,
                         worldPos,
                         volumeScale,
                         usePitchOverride ? (float?)pitch : null
                     );
+                    if (src) _activeSources.Add(src);
+
+                    // เพิ่มเติม (พร้อมกัน)
+                    if (useExtraKeys && extraKeys != null)
+                    {
+                        foreach (var ek in extraKeys)
+                        {
+                            if (string.IsNullOrEmpty(ek.keyShort)) continue;
+                            var extraFull = ResolveFullKey(category, ek.keyShort);
+                            if (string.IsNullOrEmpty(extraFull)) continue;
+
+                            var s = sm.PlaySFX(
+                                extraFull,
+                                worldPos,
+                                volumeScale,
+                                usePitchOverride ? (float?)pitch : null
+                            );
+                            if (s) _activeSources.Add(s);
+                        }
+                    }
                     break;
                 }
 
                 case Category.UI:
                 {
-                    _lastSource = sm.PlayUI(
+                    // หลัก
+                    var src = sm.PlayUI(
                         fullKey,
                         volumeScale,
                         usePitchOverride ? (float?)pitch : null
                     );
+                    if (src) _activeSources.Add(src);
+
+                    // เพิ่มเติม (พร้อมกัน)
+                    if (useExtraKeys && extraKeys != null)
+                    {
+                        foreach (var ek in extraKeys)
+                        {
+                            if (string.IsNullOrEmpty(ek.keyShort)) continue;
+                            var extraFull = ResolveFullKey(category, ek.keyShort);
+                            if (string.IsNullOrEmpty(extraFull)) continue;
+
+                            var s = sm.PlayUI(
+                                extraFull,
+                                volumeScale,
+                                usePitchOverride ? (float?)pitch : null
+                            );
+                            if (s) _activeSources.Add(s);
+                        }
+                    }
                     break;
                 }
 
                 case Category.BGM:
                 {
-                    sm.PlayBGM(
+                    SoundManager.Instance.PlayBGM(
                         fullKey,
                         overrideBgmFade ? (float?)bgmFadeOut : null,
                         overrideBgmFade ? (float?)bgmFadeIn  : null
                     );
-                    // BGM channel managed internally; no _lastSource needed
                     break;
                 }
             }
@@ -162,13 +222,15 @@ namespace Feedbacks
             switch (category)
             {
                 case Category.SFX:
-                    if (_lastSource) sm.StopSFX(_lastSource, release: true);
-                    _lastSource = null;
+                    for (int i = 0; i < _activeSources.Count; i++)
+                        if (_activeSources[i]) sm.StopSFX(_activeSources[i], release: true);
+                    _activeSources.Clear();
                     break;
 
                 case Category.UI:
-                    if (_lastSource) sm.StopUI(_lastSource, release: true);
-                    _lastSource = null;
+                    for (int i = 0; i < _activeSources.Count; i++)
+                        if (_activeSources[i]) sm.StopUI(_activeSources[i], release: true);
+                    _activeSources.Clear();
                     break;
 
                 case Category.BGM:
@@ -177,14 +239,25 @@ namespace Feedbacks
             }
         }
 
+        private void CleanupActiveSources()
+        {
+            // ลบ element ที่โดน Destroy ไปแล้วออกจากลิสต์
+            for (int i = _activeSources.Count - 1; i >= 0; i--)
+            {
+                if (_activeSources[i] == null)
+                    _activeSources.RemoveAt(i);
+            }
+        }
+
         // ---------- Helpers ----------
         private string ResolveFullKey()
+            => ResolveFullKey(category, keyShort);
+
+        private static string ResolveFullKey(Category cat, string shortKey)
         {
-            string group = category.ToString(); // "SFX" / "UI" / "BGM"
-            if (string.IsNullOrEmpty(keyShort))
-                return "";
-            // แปลง Short label -> Full key ตามกลุ่ม
-            var full = SoundName.ResolveFullKey(group, keyShort);
+            if (string.IsNullOrEmpty(shortKey)) return "";
+            string group = cat.ToString(); // "SFX" / "UI" / "BGM"
+            var full = SoundName.ResolveFullKey(group, shortKey);
             return SoundName.IsValid(full) ? full : "";
         }
 
@@ -199,6 +272,7 @@ namespace Feedbacks
         // ShowIf shorthand
         private bool IsSfx() => category == Category.SFX;
         private bool IsBgm() => category == Category.BGM;
+        private bool IsSfxOrUi() => category == Category.SFX || category == Category.UI;
 
         // Odin: dynamic dropdown per category (Editor only)
         private IEnumerable<ValueDropdownItem<string>> __ShortKeyDropdown()
@@ -214,16 +288,8 @@ namespace Feedbacks
 #if UNITY_EDITOR
         private void OnValidate()
         {
-            // clamp values
-            volumeScale = Mathf.Clamp01(volumeScale);
+            volumeScale = Mathf.Clamp(volumeScale, 0f, 2f);
             if (usePitchOverride) pitch = Mathf.Clamp(pitch, 0.1f, 3f);
-
-            // keep FullKey preview up-to-date in the inspector
-            UnityEditor.EditorApplication.delayCall += () =>
-            {
-                if (this) // object still alive?
-                    UnityEditor.EditorUtility.SetDirty(this);
-            };
         }
 #endif
     }
