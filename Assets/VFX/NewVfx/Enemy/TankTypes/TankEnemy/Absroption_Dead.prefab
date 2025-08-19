@@ -226,9 +226,9 @@ ParticleSystem:
       maxColor: {r: 0.9450981, g: 0.043137256, b: 0.81568635, a: 1}
       maxGradient:
         serializedVersion: 2
-        key0: {r: 0.51654243, g: 0.043137252, b: 0.94509804, a: 1}
-        key1: {r: 0.4716981, g: 0, b: 0.4043127, a: 1}
-        key2: {r: 0, g: 0, b: 0, a: 0}
+        key0: {r: 0.61361194, g: 0, b: 0.8207547, a: 1}
+        key1: {r: 0.71599996, g: 0.017463397, b: 0.6112194, a: 1}
+        key2: {r: 0.3207547, g: 0.0075649684, b: 0.27638623, a: 0}
         key3: {r: 0, g: 0, b: 0, a: 0}
         key4: {r: 0, g: 0, b: 0, a: 0}
         key5: {r: 0, g: 0, b: 0, a: 0}
@@ -236,7 +236,7 @@ ParticleSystem:
         key7: {r: 0, g: 0, b: 0, a: 0}
         ctime0: 33153
         ctime1: 65535
-        ctime2: 0
+        ctime2: 65535
         ctime3: 0
         ctime4: 0
         ctime5: 0
@@ -4899,7 +4899,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 303510003966543986, guid: d4cf91c7aa3e01342be57badfc9a9c9c, type: 3}
       propertyPath: m_Name
-      value: TankEnemy_Dead
+      value: Absroption_Dead
       objectReference: {fileID: 0}
     - target: {fileID: 303510003966543986, guid: d4cf91c7aa3e01342be57badfc9a9c9c, type: 3}
       propertyPath: m_IsActive
@@ -4994,28 +4994,44 @@ PrefabInstance:
       value: 33153
       objectReference: {fileID: 0}
     - target: {fileID: 6608505200564356331, guid: d4cf91c7aa3e01342be57badfc9a9c9c, type: 3}
+      propertyPath: InitialModule.startColor.maxGradient.ctime2
+      value: 65535
+      objectReference: {fileID: 0}
+    - target: {fileID: 6608505200564356331, guid: d4cf91c7aa3e01342be57badfc9a9c9c, type: 3}
       propertyPath: InitialModule.startColor.maxGradient.key0.b
-      value: 0.94509804
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6608505200564356331, guid: d4cf91c7aa3e01342be57badfc9a9c9c, type: 3}
       propertyPath: InitialModule.startColor.maxGradient.key0.g
-      value: 0.043137252
+      value: 0.17647058
       objectReference: {fileID: 0}
     - target: {fileID: 6608505200564356331, guid: d4cf91c7aa3e01342be57badfc9a9c9c, type: 3}
       propertyPath: InitialModule.startColor.maxGradient.key0.r
-      value: 0.51654243
+      value: 0.7908061
       objectReference: {fileID: 0}
     - target: {fileID: 6608505200564356331, guid: d4cf91c7aa3e01342be57badfc9a9c9c, type: 3}
       propertyPath: InitialModule.startColor.maxGradient.key1.b
-      value: 0.4043127
+      value: 0.6112194
       objectReference: {fileID: 0}
     - target: {fileID: 6608505200564356331, guid: d4cf91c7aa3e01342be57badfc9a9c9c, type: 3}
       propertyPath: InitialModule.startColor.maxGradient.key1.g
-      value: 0
+      value: 0.017463397
       objectReference: {fileID: 0}
     - target: {fileID: 6608505200564356331, guid: d4cf91c7aa3e01342be57badfc9a9c9c, type: 3}
       propertyPath: InitialModule.startColor.maxGradient.key1.r
-      value: 0.4716981
+      value: 0.71599996
+      objectReference: {fileID: 0}
+    - target: {fileID: 6608505200564356331, guid: d4cf91c7aa3e01342be57badfc9a9c9c, type: 3}
+      propertyPath: InitialModule.startColor.maxGradient.key2.b
+      value: 0.27638623
+      objectReference: {fileID: 0}
+    - target: {fileID: 6608505200564356331, guid: d4cf91c7aa3e01342be57badfc9a9c9c, type: 3}
+      propertyPath: InitialModule.startColor.maxGradient.key2.g
+      value: 0.0075649684
+      objectReference: {fileID: 0}
+    - target: {fileID: 6608505200564356331, guid: d4cf91c7aa3e01342be57badfc9a9c9c, type: 3}
+      propertyPath: InitialModule.startColor.maxGradient.key2.r
+      value: 0.3207547
       objectReference: {fileID: 0}
     - target: {fileID: 6608505200564356331, guid: d4cf91c7aa3e01342be57badfc9a9c9c, type: 3}
       propertyPath: InitialModule.startColor.maxGradient.m_Mode
