@@ -199,6 +199,7 @@ namespace Characters.HeathSystems
             SetInvincible(false);
             _isHitCooldown = false;
             _isDead = false;
+            owner?.TryPlayFeedback(FeedbackName.Character.Spawn);
         }
 
         /// <summary>
