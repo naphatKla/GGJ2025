@@ -208,6 +208,7 @@ namespace Characters.UIDisplay
 
             UpdateLevelUI();
             UpdateHealthUI();
+            scoreText.text = "0";
         }
 
         #region Combo UI (ใหม่)
@@ -572,7 +573,17 @@ namespace Characters.UIDisplay
         public void UpdateScoreUI(int score)
         {
             scoreText.text = $"{score}";
+
+            scoreText.transform.DOKill();
+            scoreText.transform.localScale = Vector3.one;
+
+            Sequence seq = DOTween.Sequence();
+            seq.Append(scoreText.transform.DOScale(1.3f, 0.2f).SetEase(Ease.OutBack));
+            seq.Append(scoreText.transform.DOScale(1f, 0.2f).SetEase(Ease.InBack));
+            seq.SetUpdate(true);
         }
+
+
 
         #endregion
 
