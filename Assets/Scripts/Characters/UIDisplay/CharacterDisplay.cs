@@ -145,6 +145,7 @@ namespace Characters.UIDisplay
             skillSystem.OnSkillCooldownUpdate += UpdateCooldownSlot;
             skillSystem.OnSkillCooldownReset += ResetSkillSlot;
             skillSystem.OnSkillPerform += SkillPerfrom;
+            skillSystem.OnSlotCooldownSpeedChanged += OverloopFeedback;
 
             combatSystem.OnDealDamage += UpdateDamageText;
             scoreSystem.OnScoreChange += UpdateScoreUI;
@@ -185,6 +186,7 @@ namespace Characters.UIDisplay
             skillSystem.OnNewSkillAssign -= AssignSkillSlot;
             skillSystem.OnSkillCooldownUpdate -= UpdateCooldownSlot;
             skillSystem.OnSkillCooldownReset -= ResetSkillSlot;
+            skillSystem.OnSlotCooldownSpeedChanged -= OverloopFeedback;
 
             combatSystem.OnDealDamage -= UpdateDamageText;
             scoreSystem.OnScoreChange -= UpdateScoreUI;
@@ -564,6 +566,14 @@ namespace Characters.UIDisplay
             _skillResetSequence = DOTween.Sequence();
             _skillResetSequence.Append(skillframe.DOColor(Color.green, 0.15f).SetDelay(0.1f)
                 .SetLoops(2, LoopType.Yoyo));
+        }
+
+        private void OverloopFeedback(int skillIndex, float multiply)
+        {
+            if (skillIndex < 0 || skillIndex >= skillSlotModel.Count) return;
+            if (skillSlotModel[skillIndex] == null) return;
+            
+            skillSlotModel[skillIndex].OverloopFeedback(multiply);
         }
 
         #endregion
