@@ -105,7 +105,12 @@ namespace Characters.SkillSystems.SkillRuntimes
                     .SetEase(Ease.InSine)
                     .WithCancellation(cancelToken);
 
-                if (cancelToken.IsCancellationRequested) break;
+                Debug.Log(i);
+                if (cancelToken.IsCancellationRequested)
+                {
+                    Debug.LogError("break");
+                    break;
+                }
             }
         }
 

@@ -145,6 +145,7 @@ namespace Characters.UIDisplay
             skillSystem.OnSkillCooldownUpdate += UpdateCooldownSlot;
             skillSystem.OnSkillCooldownReset += ResetSkillSlot;
             skillSystem.OnSkillPerform += SkillPerfrom;
+            skillSystem.OnSlotCooldownSpeedChanged += OverloopFeedback;
 
             combatSystem.OnDealDamage += UpdateDamageText;
             scoreSystem.OnScoreChange += UpdateScoreUI;
@@ -185,6 +186,7 @@ namespace Characters.UIDisplay
             skillSystem.OnNewSkillAssign -= AssignSkillSlot;
             skillSystem.OnSkillCooldownUpdate -= UpdateCooldownSlot;
             skillSystem.OnSkillCooldownReset -= ResetSkillSlot;
+            skillSystem.OnSlotCooldownSpeedChanged -= OverloopFeedback;
 
             combatSystem.OnDealDamage -= UpdateDamageText;
             scoreSystem.OnScoreChange -= UpdateScoreUI;
@@ -208,6 +210,7 @@ namespace Characters.UIDisplay
 
             UpdateLevelUI();
             UpdateHealthUI();
+            scoreText.text = "0";
         }
 
         #region Combo UI (ใหม่)
@@ -565,6 +568,14 @@ namespace Characters.UIDisplay
                 .SetLoops(2, LoopType.Yoyo));
         }
 
+        private void OverloopFeedback(int skillIndex, float multiply)
+        {
+            if (skillIndex < 0 || skillIndex >= skillSlotModel.Count) return;
+            if (skillSlotModel[skillIndex] == null) return;
+            
+            skillSlotModel[skillIndex].OverloopFeedback(multiply);
+        }
+
         #endregion
 
         #region Score UI
@@ -572,7 +583,17 @@ namespace Characters.UIDisplay
         public void UpdateScoreUI(int score)
         {
             scoreText.text = $"{score}";
+
+            scoreText.transform.DOKill();
+            scoreText.transform.localScale = Vector3.one;
+
+            Sequence seq = DOTween.Sequence();
+            seq.Append(scoreText.transform.DOScale(1.3f, 0.2f).SetEase(Ease.OutBack));
+            seq.Append(scoreText.transform.DOScale(1f, 0.2f).SetEase(Ease.InBack));
+            seq.SetUpdate(true);
         }
+
+
 
         #endregion
 

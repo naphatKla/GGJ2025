@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Cinemachine;
+using MoreMountains.Tools;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -9,33 +10,23 @@ namespace Cameras
     [Serializable]
     public class CameraShakeOption
     {
-        [BoxGroup("Shake Settings")]
-        [LabelText("Shake Force")]
-        [MinValue(0f)]
+        [BoxGroup("Shake Settings")] [LabelText("Shake Force")] [MinValue(0f)]
         public float force = 15f;
 
-        [BoxGroup("Shake Settings")]
-        [LabelText("Shake Frequency")]
-        [MinValue(0f)]
+        [BoxGroup("Shake Settings")] [LabelText("Shake Frequency")] [MinValue(0f)]
         public float frequency = 0.1f;
 
-        [BoxGroup("Shake Settings")]
-        [LabelText("Shake Duration")]
-        [MinValue(0f)]
+        [BoxGroup("Shake Settings")] [LabelText("Shake Duration")] [MinValue(0f)]
         public float duration = 0.3f;
     }
 
     [Serializable]
     public class CameraOrthoOption
     {
-        [BoxGroup("Ortho Settings")]
-        [LabelText("Target Size")]
-        [MinValue(0f)]
+        [BoxGroup("Ortho Settings")] [LabelText("Target Size")] [MinValue(0f)]
         public float targetSize = 13.75f;
 
-        [BoxGroup("Ortho Settings")]
-        [LabelText("Blend Duration")]
-        [MinValue(0f)]
+        [BoxGroup("Ortho Settings")] [LabelText("Blend Duration")] [MinValue(0f)]
         public float duration = 0.5f;
     }
 
@@ -47,23 +38,23 @@ namespace Cameras
     /// - Shake camera ด้วย CinemachineImpulse
     /// - Lerp follow damping ภายใน (ไม่ใช้ UniTask)
     /// </summary>
-    public class Cinemachine2DCameraController : MonoBehaviour
+    public class Cinemachine2DCameraController : MMSingleton<Cinemachine2DCameraController>
     {
-        [Header("Camera References")]
-        [SerializeField] private CinemachineVirtualCamera[] virtualCameras;
+        [Header("Camera References")] [SerializeField]
+        private CinemachineVirtualCamera[] virtualCameras;
 
-        [Header("Impulse Source")]
-        [SerializeField] private CinemachineImpulseSource impulseSource;
+        [Header("Impulse Source")] [SerializeField]
+        private CinemachineImpulseSource impulseSource;
 
-        [Header("Shake Config")]
-        [SerializeField] private float defaultShakeForce = 15f;
+        [Header("Shake Config")] [SerializeField]
+        private float defaultShakeForce = 15f;
+
         [SerializeField] private float defaultShakeDuration = 0.3f;
         [SerializeField] private float defaultShakeFrequency = 1f;
         [SerializeField] private float defaultShakeCooldown = 0.1f;
 
-        [Header("Ortho Blending")]
-        [Tooltip("ระยะเวลาพื้นฐานในการ blend ไปยังค่าเป้าหมาย (วินาที)")]
-        [SerializeField] private float defaultBlendTime = 0.25f;
+        [Header("Ortho Blending")] [Tooltip("ระยะเวลาพื้นฐานในการ blend ไปยังค่าเป้าหมาย (วินาที)")] [SerializeField]
+        private float defaultBlendTime = 0.25f;
 
         private CinemachineVirtualCamera currentCam;
 
@@ -85,8 +76,8 @@ namespace Cameras
         {
             public int id;
             public float size;
-            public float expireAt;   // Time.time เมื่อหมดอายุ
-            public object owner;     // ตัวต้นทาง (สกิล/ระบบ) ที่ขอ
+            public float expireAt; // Time.time เมื่อหมดอายุ
+            public object owner; // ตัวต้นทาง (สกิล/ระบบ) ที่ขอ
         }
 
         private readonly List<OrthoReq> _requests = new();
@@ -95,7 +86,7 @@ namespace Cameras
         // blending state
         private float _blendFrom;
         private float _blendTo;
-        private float _blendT;     // 0..1
+        private float _blendT; // 0..1
         private float _blendDur;
         private float _lastOrthoApplied;
 
@@ -261,7 +252,7 @@ namespace Cameras
             if (option == null) return;
             PushOrtho(option.targetSize, option.duration, owner: null);
         }
-        
+
 
         private void TickOrthoScheduler()
         {
@@ -399,7 +390,11 @@ namespace Cameras
         public void ShakeCamera(CameraShakeOption option)
         {
             if (Time.realtimeSinceStartup < _nextShakeTime) return;
-            if (option == null) { ShakeCamera(); return; }
+            if (option == null)
+            {
+                ShakeCamera();
+                return;
+            }
 
             float force = option.force <= 0 ? defaultShakeForce : option.force;
             float frequency = Mathf.Max(option.frequency, 0f);
@@ -413,6 +408,48 @@ namespace Cameras
             impulseSource.GenerateImpulse();
 
             _nextShakeTime = Time.realtimeSinceStartup + defaultShakeCooldown;
+        }
+
+        // === Helpers ===
+        private Camera GetOutputCamera()
+        {
+            // ดึงกล้องที่ Cinemachine เรนเดอร์อยู่ (รองรับหลาย Brain)
+            for (int i = 0; i < CinemachineCore.Instance.BrainCount; i++)
+            {
+                var brain = CinemachineCore.Instance.GetActiveBrain(i);
+                if (brain != null && brain.OutputCamera != null)
+                    return brain.OutputCamera;
+            }
+
+            return Camera.main; // fallback
+        }
+
+        /// <summary>
+        /// เช็คตำแหน่งจุดว่าอยู่ในกล้อง (2D orthographic) หรือไม่
+        /// margin = เผื่อขอบ (0 = พอดีหน้าจอ, 0.1 = เผื่อ 10% รอบขอบ)
+        /// </summary>
+        public bool IsWorldPointInView(Vector3 worldPos, float margin = 0f)
+        {
+            var cam = GetOutputCamera();
+            if (cam == null) return false;
+            
+            Vector3 vp = cam.WorldToViewportPoint(worldPos);
+
+            // ถ้าใช้ 2D ให้มั่นใจว่า z เป็นบวก (อยู่หน้ากล้อง)
+            if (vp.z <= 0f) return false;
+
+            float m = Mathf.Clamp01(margin);
+            return vp.x >= -m && vp.x <= 1f + m &&
+                   vp.y >= -m && vp.y <= 1f + m;
+        }
+
+        /// <summary>
+        /// เวอร์ชันสะดวก: เช็คจาก Transform โดยตรง
+        /// </summary>
+        public bool IsTransformInView(Transform t, float margin = 0f)
+        {
+            if (t == null) return false;
+            return IsWorldPointInView(t.position, margin);
         }
     }
 }

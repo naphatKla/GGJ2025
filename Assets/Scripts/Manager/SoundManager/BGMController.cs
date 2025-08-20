@@ -1,19 +1,24 @@
+using Cysharp.Threading.Tasks;
+using GameControl;
+using GameControl.Controller;
+using GameControl.GameState;
 using UnityEngine;
 
 namespace Manager.SoundManager
 {
     public class BGMController : MonoBehaviour
     {
-        // Start is called before the first frame update
         void Start()
         {
-        
+            SoundManager.Instance.PlayBGM(SoundName.BGM.GamePlayPhase1, fadeIn: 2f);
+            PlayNewBGMAfter().Forget();
         }
-
-        // Update is called once per frame
-        void Update()
-        {
         
+        private async UniTaskVoid PlayNewBGMAfter()
+        {
+            await UniTask.WaitUntil(() => GameStateController.Instance.CurrentState is StartState, cancellationToken: destroyCancellationToken);
+            await UniTask.WaitUntil(() => GameTimer.Instance.GlobalTimer < 450,  cancellationToken: destroyCancellationToken);
+            SoundManager.Instance.PlayBGM(SoundName.BGM.GamePlayPhase2, fadeOut:2.5f, fadeIn:2.5f);
         }
     }
 }

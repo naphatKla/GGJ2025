@@ -4,8 +4,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
 using MoreMountains.Tools;
-using Manager;                  // PoolingManager + PoolingGroupName
-using Manager.SoundManager;     // SoundDatabase, SoundName
 
 namespace Manager.SoundManager
 {

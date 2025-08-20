@@ -1,12 +1,14 @@
+using System.Collections.Generic;
 using Characters.SO.SkillDataSo;
 using PixelUI;
+using Sirenix.OdinInspector;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace UI.IngameModal
 {
-    public class SkillSlotModel : MonoBehaviour
+    public class SkillSlotModel : SerializedMonoBehaviour
     {
         [SerializeField] public Image skillIcon;
         [SerializeField] public ValueBar valueBar;
@@ -14,6 +16,11 @@ namespace UI.IngameModal
         [SerializeField] public Image skillframe;
         [SerializeField] public TMP_Text skillslotLv;
         [SerializeField] public GameObject skillLvBanner;
+        
+        [SerializeField] private Dictionary<float, GameObject> VFXPrefabs;
+        private Dictionary<float, GameObject> OverloopVFX;
+
+        const float epsilon = 0.0001f;
 
         public void UpdateLevelText(float level, BaseSkillDataSo skill)
         {
@@ -27,6 +34,30 @@ namespace UI.IngameModal
         {
             cooldownText.text = "";
             valueBar.CurrentValue = 0;
+        }
+
+        public void OverloopFeedback(float multiply)
+        {
+            if (OverloopVFX == null) OverloopVFX = new Dictionary<float, GameObject>();
+            foreach (var kvp in OverloopVFX)
+                if (Mathf.Abs(kvp.Key - multiply) > epsilon && kvp.Value != null)
+                    kvp.Value.SetActive(false);
+
+            if (OverloopVFX.TryGetValue(multiply, out var vfxObj))
+            {
+                if (vfxObj != null) vfxObj.SetActive(true);
+            }
+            else
+            {
+                if (VFXPrefabs.TryGetValue(multiply, out var prefab))
+                {
+                    var newVFX = Instantiate(prefab, transform);
+                    newVFX.name = $"OverloopVFX_{multiply}";
+                    newVFX.SetActive(true);
+
+                    OverloopVFX[multiply] = newVFX;
+                }
+            }
         }
     }
 }
