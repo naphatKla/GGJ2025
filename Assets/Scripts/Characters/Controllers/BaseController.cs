@@ -163,6 +163,7 @@ namespace Characters.Controllers
             _inputSystem ??= GetComponent<ICharacterInput>();
 
             if (_inputSystem == null) return;
+            healthSystem.OnDead += CancelBehaviorOnDead;
             _inputSystem.OnSkillPerform += skillSystem.PerformSkill;
             _inputSystem.OnMove += movementSystem.AssignInputDirection;
         }
@@ -170,6 +171,7 @@ namespace Characters.Controllers
         protected virtual void UnSubscribeDependency()
         {
             if (_inputSystem == null) return;
+            healthSystem.OnDead -= CancelBehaviorOnDead;
             _inputSystem.OnSkillPerform -= skillSystem.PerformSkill;
             _inputSystem.OnMove -= movementSystem.AssignInputDirection;
         }
@@ -202,6 +204,17 @@ namespace Characters.Controllers
             damageOnTouch.ResetDamageOnTouch();
             feedbackSystem.ResetFeedbackSystem();
             OnResetAllBehavior?.Invoke();
+            combatSystem.ResetCombatSystem();
+        }
+
+        public virtual void CancelBehaviorOnDead()
+        {
+            InputSystem.Enable = true;
+            movementSystem.ResetMovementSystem();
+            skillSystem.ResetSkillSystem();
+            statusEffectSystem.ResetStatusEffectSystem();
+            damageOnTouch.ResetDamageOnTouch();
+            feedbackSystem.ResetFeedbackSystem();
             combatSystem.ResetCombatSystem();
         }
 
