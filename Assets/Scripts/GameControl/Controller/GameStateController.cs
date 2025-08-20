@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Characters.Controllers;
 using Cysharp.Threading.Tasks;
+using DG.Tweening;
 using GameControl.GameState;
 using GameControl.Interface;
 using GameControl.SO;
@@ -112,6 +113,7 @@ namespace GameControl.Controller
         public void RestartMap()
         {
             SpawnerStateController.Instance.ClearPatternAsync();
+            DOTween.KillAll();
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
             //SetState(_prestartState);
         }

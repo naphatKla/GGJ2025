@@ -136,6 +136,12 @@ namespace Characters.Controllers
             UnSubscribeDependency();
         }
 
+        private void OnDestroy()
+        {
+            CancelBehaviorOnDead();
+            ResetAllDependentBehavior();
+        }
+
         #endregion
 
         #region Methods
