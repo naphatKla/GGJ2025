@@ -22,29 +22,32 @@ namespace Feedbacks
         [SerializeField] private string keyShort;
 
         private string FullKey => ResolveFullKey();
-        
+
+        // ====== Extra Keys (เล่นพร้อมกัน) ======
         [System.Serializable]
         public struct ExtraKey
         {
-            [SerializeField] private Category category;
-            
+            [LabelText("Category")]
+            [SerializeField] public Category category;
+
             [LabelText("Key (Short)")]
             [ValueDropdown(nameof(__ShortKeyDropdown))]
             public string keyShort;
-            
+
+            // dropdown อิงจาก category ภายใน element เอง
             private IEnumerable<ValueDropdownItem<string>> __ShortKeyDropdown()
             {
 #if UNITY_EDITOR
                 string group = category.ToString();
                 return SoundName.Odin.ShortGroup(group);
 #else
-            return System.Array.Empty<ValueDropdownItem<string>>();
+                return System.Array.Empty<ValueDropdownItem<string>>();
 #endif
             }
         }
 
         [ShowIf(nameof(IsSfxOrUi))]
-        [TitleGroup("Extra Keys (SFX/UI)")]
+        [TitleGroup("Extra Keys")]
         [LabelText("Play Extra Keys Together")]
         public bool useExtraKeys = false;
 
@@ -54,29 +57,51 @@ namespace Feedbacks
 
         // ====== Common options ======
         [Title("Settings")]
-        [LabelText("Play On Enable")] public bool playOnEnable;
-        [LabelText("Stop On Disable")] public bool stopOnDisable;
-
         [LabelText("Volume Scale"), Range(0f, 2f)]
         public float volumeScale = 1f;
+        
+        [LabelText("Play On Enable")] public bool playOnEnable;
+        [LabelText("Stop On Disable")] public bool stopOnDisable;
 
         [LabelText("Override Pitch")] public bool usePitchOverride = false;
         [ShowIf(nameof(usePitchOverride))]
         [LabelText("Pitch"), Range(0.1f, 3f)]
         public float pitch = 1f;
-
-        // ====== SFX-only ======
+        
+        // --- SFX Fade ---
         [ShowIf(nameof(IsSfx))]
-        [LabelText("Use Transform Position")]
-        public bool useTransformPosition = true;
+        [LabelText("Use Fade In")]
+        public bool sfxUseFadeIn = false;
 
-        [ShowIf("@IsSfx() && useTransformPosition")]
-        [LabelText("Position Source (optional)")]
-        public Transform positionSource;
+        [ShowIf("@IsSfx() && sfxUseFadeIn")]
+        [LabelText("Fade In (sec)"), MinValue(0f)]
+        public float sfxFadeIn = 0.08f;
 
-        [ShowIf("@IsSfx() && !useTransformPosition")]
-        [LabelText("Custom World Position")]
-        public Vector3 customWorldPosition;
+        [ShowIf(nameof(IsSfx))]
+        [LabelText("Fade Out On Stop")]
+        public bool sfxFadeOutOnStop = true;
+
+        [ShowIf("@IsSfx() && sfxFadeOutOnStop")]
+        [LabelText("Fade Out (sec)"), MinValue(0f)]
+        public float sfxFadeOut = 0.10f;
+
+        // ====== UI-only (2D) ======
+        // --- UI Fade ---
+        [ShowIf(nameof(IsUi))]
+        [LabelText("Use Fade In")]
+        public bool uiUseFadeIn = false;
+
+        [ShowIf("@IsUi() && uiUseFadeIn")]
+        [ LabelText("Fade In (sec)"), MinValue(0f)]
+        public float uiFadeIn = 0.06f;
+
+        [ShowIf(nameof(IsUi))]
+        [LabelText("Fade Out On Stop")]
+        public bool uiFadeOutOnStop = false;
+
+        [ShowIf("@IsUi() && uiFadeOutOnStop")]
+        [LabelText("Fade Out (sec)"), MinValue(0f)]
+        public float uiFadeOut = 0.08f;
 
         // ====== BGM-only ======
         [ShowIf(nameof(IsBgm))]
@@ -90,9 +115,23 @@ namespace Feedbacks
         [ShowIf("@IsBgm() && overrideBgmFade")]
         [LabelText("Fade In (sec)"), MinValue(0f)]
         public float bgmFadeIn = 0.6f;
+        
+        // ====== SFX-only ======
+        [ShowIf(nameof(IsSfx))] [PropertySpace]
+        [LabelText("Use Transform Position")]
+        public bool useTransformPosition = true;
 
-        // แทน _lastSource → รองรับหลายแหล่งเสียง
-        private readonly List<AudioSource> _activeSources = new(8);
+        [ShowIf("@IsSfx() && useTransformPosition")]
+        [LabelText("Position Source (optional)")] [PropertySpace(spaceAfter:20f,spaceBefore:0)]
+        public Transform positionSource;
+
+        [ShowIf("@IsSfx() && !useTransformPosition")]
+        [LabelText("Custom World Position")] [PropertySpace(spaceAfter:20f,spaceBefore:0)]
+        public Vector3 customWorldPosition;
+
+        // เก็บ source แยกตามชนิด เพื่อจัดการ fade/stop ได้ถูกต้อง
+        private readonly List<AudioSource> _activeSfxSources = new(8);
+        private readonly List<AudioSource> _activeUiSources  = new(8);
 
         // ---------- Lifecycle ----------
         private void OnEnable()
@@ -116,8 +155,7 @@ namespace Feedbacks
                 return;
             }
 
-            // เคลียร์รายการก่อนเล่นใหม่ (กันค้าง)
-            CleanupActiveSources();
+            CleanupDeadRefs();
 
             var fullKey = FullKey;
             if (string.IsNullOrEmpty(fullKey))
@@ -130,85 +168,78 @@ namespace Feedbacks
             {
                 case Category.SFX:
                 {
-                    Vector3? worldPos = null;
-                    if (useTransformPosition)
-                    {
-                        var t = positionSource ? positionSource : transform;
-                        worldPos = t.position;
-                    }
-                    else
-                    {
-                        worldPos = customWorldPosition;
-                    }
+                    Vector3? worldPos = useTransformPosition
+                        ? (positionSource ? positionSource.position : transform.position)
+                        : (Vector3?)customWorldPosition;
 
-                    // หลัก
-                    var src = sm.PlaySFX(
-                        fullKey,
-                        worldPos,
-                        volumeScale,
-                        usePitchOverride ? (float?)pitch : null
-                    );
-                    if (src) _activeSources.Add(src);
+                    AudioSource src = sfxUseFadeIn
+                        ? sm.PlaySFXFadeIn(fullKey, sfxFadeIn, worldPos, volumeScale, usePitchOverride ? (float?)pitch : null)
+                        : sm.PlaySFX(fullKey, worldPos, volumeScale, usePitchOverride ? (float?)pitch : null);
 
-                    // เพิ่มเติม (พร้อมกัน)
-                    if (useExtraKeys && extraKeys != null)
-                    {
-                        foreach (var ek in extraKeys)
-                        {
-                            if (string.IsNullOrEmpty(ek.keyShort)) continue;
-                            var extraFull = ResolveFullKey(category, ek.keyShort);
-                            if (string.IsNullOrEmpty(extraFull)) continue;
-
-                            var s = sm.PlaySFX(
-                                extraFull,
-                                worldPos,
-                                volumeScale,
-                                usePitchOverride ? (float?)pitch : null
-                            );
-                            if (s) _activeSources.Add(s);
-                        }
-                    }
+                    if (src) _activeSfxSources.Add(src);
                     break;
                 }
 
                 case Category.UI:
                 {
-                    // หลัก
-                    var src = sm.PlayUI(
-                        fullKey,
-                        volumeScale,
-                        usePitchOverride ? (float?)pitch : null
-                    );
-                    if (src) _activeSources.Add(src);
+                    AudioSource src = uiUseFadeIn
+                        ? sm.PlayUIFadeIn(fullKey, uiFadeIn, volumeScale, usePitchOverride ? (float?)pitch : null)
+                        : sm.PlayUI(fullKey, volumeScale, usePitchOverride ? (float?)pitch : null);
 
-                    // เพิ่มเติม (พร้อมกัน)
-                    if (useExtraKeys && extraKeys != null)
-                    {
-                        foreach (var ek in extraKeys)
-                        {
-                            if (string.IsNullOrEmpty(ek.keyShort)) continue;
-                            var extraFull = ResolveFullKey(category, ek.keyShort);
-                            if (string.IsNullOrEmpty(extraFull)) continue;
-
-                            var s = sm.PlayUI(
-                                extraFull,
-                                volumeScale,
-                                usePitchOverride ? (float?)pitch : null
-                            );
-                            if (s) _activeSources.Add(s);
-                        }
-                    }
+                    if (src) _activeUiSources.Add(src);
                     break;
                 }
 
                 case Category.BGM:
                 {
-                    SoundManager.Instance.PlayBGM(
-                        fullKey,
+                    sm.PlayBGM(fullKey,
                         overrideBgmFade ? (float?)bgmFadeOut : null,
-                        overrideBgmFade ? (float?)bgmFadeIn  : null
-                    );
+                        overrideBgmFade ? (float?)bgmFadeIn  : null);
                     break;
+                }
+            }
+
+            // ---- Extra keys (เล่นพร้อมกัน) ----
+            if (useExtraKeys && extraKeys != null)
+            {
+                foreach (var ek in extraKeys)
+                {
+                    if (string.IsNullOrEmpty(ek.keyShort)) continue;
+                    var extraFull = ResolveFullKey(ek.category, ek.keyShort);
+                    if (string.IsNullOrEmpty(extraFull)) continue;
+
+                    switch (ek.category)
+                    {
+                        case Category.SFX:
+                        {
+                            Vector3? worldPos = useTransformPosition
+                                ? (positionSource ? positionSource.position : transform.position)
+                                : (Vector3?)customWorldPosition;
+
+                            var s = sfxUseFadeIn
+                                ? sm.PlaySFXFadeIn(extraFull, sfxFadeIn, worldPos, volumeScale, usePitchOverride ? (float?)pitch : null)
+                                : sm.PlaySFX(extraFull, worldPos, volumeScale, usePitchOverride ? (float?)pitch : null);
+                            if (s) _activeSfxSources.Add(s);
+                            break;
+                        }
+
+                        case Category.UI:
+                        {
+                            var u = uiUseFadeIn
+                                ? sm.PlayUIFadeIn(extraFull, uiFadeIn, volumeScale, usePitchOverride ? (float?)pitch : null)
+                                : sm.PlayUI(extraFull, volumeScale, usePitchOverride ? (float?)pitch : null);
+                            if (u) _activeUiSources.Add(u);
+                            break;
+                        }
+
+                        case Category.BGM:
+                        {
+                            sm.PlayBGM(extraFull,
+                                overrideBgmFade ? (float?)bgmFadeOut : null,
+                                overrideBgmFade ? (float?)bgmFadeIn  : null);
+                            break;
+                        }
+                    }
                 }
             }
         }
@@ -219,18 +250,32 @@ namespace Feedbacks
             var sm = SoundManager.Instance;
             if (sm == null) return;
 
+            CleanupDeadRefs();
+
             switch (category)
             {
                 case Category.SFX:
-                    for (int i = 0; i < _activeSources.Count; i++)
-                        if (_activeSources[i]) sm.StopSFX(_activeSources[i], release: true);
-                    _activeSources.Clear();
+                    for (int i = 0; i < _activeSfxSources.Count; i++)
+                    {
+                        var s = _activeSfxSources[i];
+                        if (!s) continue;
+
+                        if (sfxFadeOutOnStop) sm.FadeOutSFX(s, sfxFadeOut, release: true);
+                        else sm.StopSFX(s, release: true);
+                    }
+                    _activeSfxSources.Clear();
                     break;
 
                 case Category.UI:
-                    for (int i = 0; i < _activeSources.Count; i++)
-                        if (_activeSources[i]) sm.StopUI(_activeSources[i], release: true);
-                    _activeSources.Clear();
+                    for (int i = 0; i < _activeUiSources.Count; i++)
+                    {
+                        var u = _activeUiSources[i];
+                        if (!u) continue;
+
+                        if (uiFadeOutOnStop) sm.FadeOutUI(u, uiFadeOut, release: true);
+                        else sm.StopUI(u, release: true);
+                    }
+                    _activeUiSources.Clear();
                     break;
 
                 case Category.BGM:
@@ -239,24 +284,22 @@ namespace Feedbacks
             }
         }
 
-        private void CleanupActiveSources()
+        private void CleanupDeadRefs()
         {
-            // ลบ element ที่โดน Destroy ไปแล้วออกจากลิสต์
-            for (int i = _activeSources.Count - 1; i >= 0; i--)
-            {
-                if (_activeSources[i] == null)
-                    _activeSources.RemoveAt(i);
-            }
+            for (int i = _activeSfxSources.Count - 1; i >= 0; i--)
+                if (_activeSfxSources[i] == null) _activeSfxSources.RemoveAt(i);
+
+            for (int i = _activeUiSources.Count - 1; i >= 0; i--)
+                if (_activeUiSources[i] == null) _activeUiSources.RemoveAt(i);
         }
 
         // ---------- Helpers ----------
-        private string ResolveFullKey()
-            => ResolveFullKey(category, keyShort);
+        private string ResolveFullKey() => ResolveFullKey(category, keyShort);
 
         private static string ResolveFullKey(Category cat, string shortKey)
         {
             if (string.IsNullOrEmpty(shortKey)) return "";
-            string group = cat.ToString(); // "SFX" / "UI" / "BGM"
+            string group = cat.ToString();
             var full = SoundName.ResolveFullKey(group, shortKey);
             return SoundName.IsValid(full) ? full : "";
         }
@@ -269,12 +312,12 @@ namespace Feedbacks
             return SoundName.IsValid(full);
         }
 
-        // ShowIf shorthand
         private bool IsSfx() => category == Category.SFX;
+        private bool IsUi()  => category == Category.UI;
         private bool IsBgm() => category == Category.BGM;
-        private bool IsSfxOrUi() => category == Category.SFX || category == Category.UI;
+        private bool IsSfxOrUi() => IsSfx() || IsUi();
 
-        // Odin: dynamic dropdown per category (Editor only)
+        // Dropdown ของ key หลัก
         private IEnumerable<ValueDropdownItem<string>> __ShortKeyDropdown()
         {
 #if UNITY_EDITOR
@@ -290,6 +333,11 @@ namespace Feedbacks
         {
             volumeScale = Mathf.Clamp(volumeScale, 0f, 2f);
             if (usePitchOverride) pitch = Mathf.Clamp(pitch, 0.1f, 3f);
+
+            sfxFadeIn   = Mathf.Max(0f, sfxFadeIn);
+            sfxFadeOut  = Mathf.Max(0f, sfxFadeOut);
+            uiFadeIn    = Mathf.Max(0f, uiFadeIn);
+            uiFadeOut   = Mathf.Max(0f, uiFadeOut);
         }
 #endif
     }
