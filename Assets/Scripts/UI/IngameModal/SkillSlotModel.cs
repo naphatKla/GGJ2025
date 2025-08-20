@@ -16,8 +16,10 @@ namespace UI.IngameModal
         [SerializeField] public Image skillframe;
         [SerializeField] public TMP_Text skillslotLv;
         [SerializeField] public GameObject skillLvBanner;
+        
+        [SerializeField] private Dictionary<float, GameObject> VFXPrefabs;
+        private Dictionary<float, GameObject> OverloopVFX;
 
-        public Dictionary<float, GameObject> OverloopVFX;
         const float epsilon = 0.0001f;
 
         public void UpdateLevelText(float level, BaseSkillDataSo skill)
@@ -47,11 +49,14 @@ namespace UI.IngameModal
             }
             else
             {
-                var newVFX = new GameObject($"OverloopVFX_{multiply}");
-                newVFX.transform.SetParent(transform, false);
-                newVFX.SetActive(true);
+                if (VFXPrefabs.TryGetValue(multiply, out var prefab))
+                {
+                    var newVFX = Instantiate(prefab, transform);
+                    newVFX.name = $"OverloopVFX_{multiply}";
+                    newVFX.SetActive(true);
 
-                OverloopVFX[multiply] = newVFX;
+                    OverloopVFX[multiply] = newVFX;
+                }
             }
         }
     }
