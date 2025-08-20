@@ -1,4 +1,5 @@
 using System;
+using Cameras;
 using Characters.Controllers;
 using Characters.FeedbackSystems;
 using Cysharp.Threading.Tasks;
@@ -18,26 +19,23 @@ namespace Characters.HeathSystems
         #region Inspectors & Variables
 
         private BaseController owner;
-        
+
         /// <summary>
         /// The maximum health the character can have.
         /// </summary>
-        [ShowInInspector, ReadOnly]
-        [ShowIf("@UnityEngine.Application.isPlaying")]
+        [ShowInInspector, ReadOnly] [ShowIf("@UnityEngine.Application.isPlaying")]
         private float _maxHealth;
 
         /// <summary>
         /// The current health of the character.
         /// </summary>
-        [ShowInInspector, ReadOnly]
-        [ShowIf("@UnityEngine.Application.isPlaying")]
+        [ShowInInspector, ReadOnly] [ShowIf("@UnityEngine.Application.isPlaying")]
         private float _currentHealth;
 
         /// <summary>
         /// Determines if the character is temporarily invincible.
         /// </summary>
-        [ShowInInspector, ReadOnly]
-        [ShowIf("@UnityEngine.Application.isPlaying")]
+        [ShowInInspector, ReadOnly] [ShowIf("@UnityEngine.Application.isPlaying")]
         private bool _isInvincible;
 
         /// <summary>
@@ -55,15 +53,14 @@ namespace Characters.HeathSystems
         /// <summary>
         /// Indicates whether the character is dead.
         /// </summary>
-        [ShowInInspector, ReadOnly]
-        [ShowIf("@UnityEngine.Application.isPlaying")]
+        [ShowInInspector, ReadOnly] [ShowIf("@UnityEngine.Application.isPlaying")]
         private bool _isDead;
 
         /// <summary>
         /// Indicates whether the character is dead.
         /// </summary>
         public bool IsDead => _isDead;
-        
+
         /// <summary>
         /// Event triggered when the character takes damage.
         /// </summary>
@@ -93,12 +90,12 @@ namespace Characters.HeathSystems
         public bool IsInvincible => _isInvincible;
 
         #endregion
-        
+
         #region Properties
 
         public float CurrentHealth => _currentHealth;
         public float MaxHealth => _maxHealth;
-        
+
         #endregion
 
         #region Methods
@@ -132,21 +129,23 @@ namespace Characters.HeathSystems
                 OnTakeDamage?.Invoke(false);
                 return false;
             }
-            
+
             ModifyHealth(-damage);
             OnTakeDamage?.Invoke(true);
-            
+
             HitCooldownHandler();
 
             if (_currentHealth <= 0)
             {
-                owner?.TryPlayFeedback(FeedbackName.Character.Dead);
+                if (Cinemachine2DCameraController.Instance.IsTransformInView(transform))
+                    owner?.TryPlayFeedback(FeedbackName.Character.Dead);
                 dieThisFrame = true;
                 Dead();
             }
             else
             {
-                owner?.TryPlayFeedback(FeedbackName.Character.TakeDamage);
+                if (Cinemachine2DCameraController.Instance.IsTransformInView(transform))
+                    owner?.TryPlayFeedback(FeedbackName.Character.TakeDamage);
             }
 
             return true;
@@ -166,6 +165,7 @@ namespace Characters.HeathSystems
 
         private Tween colorTween;
         private Color? startColor;
+
         /// <summary>
         /// Sets the character's invincibility state.
         /// </summary>
@@ -199,6 +199,8 @@ namespace Characters.HeathSystems
             SetInvincible(false);
             _isHitCooldown = false;
             _isDead = false;
+
+            if (!Cinemachine2DCameraController.Instance.IsTransformInView(transform)) return;
             owner?.TryPlayFeedback(FeedbackName.Character.Spawn);
         }
 
@@ -210,7 +212,7 @@ namespace Characters.HeathSystems
         {
             _isHitCooldown = true;
             await UniTask.WaitForSeconds(_invincibleTimePerHit);
-            _isHitCooldown = false; 
+            _isHitCooldown = false;
         }
 
         /// <summary>
