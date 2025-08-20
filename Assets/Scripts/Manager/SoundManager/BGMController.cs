@@ -10,7 +10,7 @@ namespace Manager.SoundManager
     {
         void Start()
         {
-            SoundManager.Instance.PlayBGM(SoundName.BGM.GamePlayPhase1, fadeIn: 0.6f);
+            SoundManager.Instance.PlayBGM(SoundName.BGM.GamePlayPhase1, fadeIn: 2f);
             PlayNewBGMAfter().Forget();
         }
         
