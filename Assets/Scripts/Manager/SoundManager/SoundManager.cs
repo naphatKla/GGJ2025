@@ -1,50 +1,62 @@
 // SoundManager.cs
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
 using MoreMountains.Tools;
+using ProjectExtensions;
 
 namespace Manager.SoundManager
 {
-    public class SoundManager : MMSingleton<SoundManager>
+    public class SoundManager : NonAutoCreateSingleton<SoundManager>
     {
-        [Header("Database")]
-        [SerializeField] private SoundDatabase database;
+        [Header("Database")] [SerializeField] private SoundDatabase database;
 
-        [Header("Mixer Defaults")]
-        [SerializeField] private AudioMixerGroup defaultSfxMixer;
+        [Header("Mixer Defaults")] [SerializeField]
+        private AudioMixerGroup defaultSfxMixer;
+
         [SerializeField] private AudioMixerGroup defaultUiMixer;
         [SerializeField] private AudioMixerGroup defaultBgmMixer;
 
-        [Header("Pools")]
-        [SerializeField, Min(1)] private int sfxDefaultCapacity = 16;
+        [Header("Pools")] [SerializeField, Min(1)]
+        private int sfxDefaultCapacity = 16;
+
         [SerializeField, Min(1)] private int sfxMaxSize = 100;
         [SerializeField, Min(1)] private int uiDefaultCapacity = 16;
         [SerializeField, Min(1)] private int uiMaxSize = 64;
 
-        [Header("BGM Crossfade")]
-        [SerializeField, Range(0f, 5f)] private float defaultFadeIn = 0.6f;
+        [Header("BGM Crossfade")] [SerializeField, Range(0f, 5f)]
+        private float defaultFadeIn = 0.6f;
+
         [SerializeField, Range(0f, 5f)] private float defaultFadeOut = 0.6f;
+
         [SerializeField, Tooltip("กันเผลอใส่ 0 แล้วดูเหมือนไม่เฟดเลย")]
         private float minFadeSeconds = 0.025f;
 
         private const string POOL_SFX = "SFX_AudioSource";
-        private const string POOL_UI  = "UI_AudioSource";
+        private const string POOL_UI = "UI_AudioSource";
 
         private readonly Dictionary<string, SoundDatabase.SFXEntry> _sfxMap =
             new(System.StringComparer.Ordinal);
+
         private readonly Dictionary<string, SoundDatabase.UIEntry> _uiMap =
             new(System.StringComparer.Ordinal);
+
         private readonly Dictionary<string, SoundDatabase.BGMEntry> _bgmMap =
             new(System.StringComparer.Ordinal);
 
         private readonly Dictionary<string, float> _lastPlayAt =
             new(System.StringComparer.Ordinal);
 
-        private class KeyState { public int lastIndex = -1; public List<int> shuffleBag; }
+        private class KeyState
+        {
+            public int lastIndex = -1;
+            public List<int> shuffleBag;
+        }
+
         private readonly Dictionary<string, KeyState> _sfxStates = new(System.StringComparer.Ordinal);
-        private readonly Dictionary<string, KeyState> _uiStates  = new(System.StringComparer.Ordinal);
+        private readonly Dictionary<string, KeyState> _uiStates = new(System.StringComparer.Ordinal);
 
         // ===== BGM =====
         private AudioSource _bgmA, _bgmB, _bgmActive;
@@ -52,7 +64,7 @@ namespace Manager.SoundManager
 
         // ===== SFX/UI fade bookkeeping =====
         private readonly Dictionary<AudioSource, Coroutine> _sfxFades = new();
-        private readonly Dictionary<AudioSource, Coroutine> _uiFades  = new();
+        private readonly Dictionary<AudioSource, Coroutine> _uiFades = new();
 
         private static readonly System.Random _rnd = new();
 
@@ -72,7 +84,9 @@ namespace Manager.SoundManager
         // ---------- Build caches from database lists ----------
         private void RebuildLocalCachesFromDatabase()
         {
-            _sfxMap.Clear(); _uiMap.Clear(); _bgmMap.Clear();
+            _sfxMap.Clear();
+            _uiMap.Clear();
+            _bgmMap.Clear();
 
             if (database?.sfx != null)
             {
@@ -81,7 +95,15 @@ namespace Manager.SoundManager
                     if (string.IsNullOrEmpty(e.Key) || !SoundName.IsValid(e.Key)) continue;
                     if (e.variants == null || e.variants.Count == 0) continue;
                     bool anyClip = false;
-                    foreach (var v in e.variants) { if (v.clip) { anyClip = true; break; } }
+                    foreach (var v in e.variants)
+                    {
+                        if (v.clip)
+                        {
+                            anyClip = true;
+                            break;
+                        }
+                    }
+
                     if (!anyClip) continue;
                     _sfxMap.TryAdd(e.Key, e);
                 }
@@ -94,7 +116,15 @@ namespace Manager.SoundManager
                     if (string.IsNullOrEmpty(e.Key) || !SoundName.IsValid(e.Key)) continue;
                     if (e.variants == null || e.variants.Count == 0) continue;
                     bool anyClip = false;
-                    foreach (var v in e.variants) { if (v.clip) { anyClip = true; break; } }
+                    foreach (var v in e.variants)
+                    {
+                        if (v.clip)
+                        {
+                            anyClip = true;
+                            break;
+                        }
+                    }
+
                     if (!anyClip) continue;
                     _uiMap.TryAdd(e.Key, e);
                 }
@@ -131,15 +161,28 @@ namespace Manager.SoundManager
                 onRelease: s =>
                 {
                     if (!s) return;
-                    if (_sfxFades.TryGetValue(s, out var c)) { StopCoroutineSafe(c); _sfxFades.Remove(s); }
-                    s.Stop(); s.clip = null; s.loop = false; s.pitch = 1f;
-                    s.spatialBlend = 0f; s.minDistance = 1f; s.maxDistance = 500f;
+                    if (_sfxFades.TryGetValue(s, out var c))
+                    {
+                        StopCoroutineSafe(c);
+                        _sfxFades.Remove(s);
+                    }
+
+                    s.Stop();
+                    s.clip = null;
+                    s.loop = false;
+                    s.pitch = 1f;
+                    s.spatialBlend = 0f;
+                    s.minDistance = 1f;
+                    s.maxDistance = 500f;
                     s.rolloffMode = AudioRolloffMode.Logarithmic;
                     s.transform.localPosition = Vector3.zero;
                     s.outputAudioMixerGroup = defaultSfxMixer;
                     s.gameObject.SetActive(false);
                 },
-                onDestroy: s => { if (s) Destroy(s.gameObject); },
+                onDestroy: s =>
+                {
+                    if (s) Destroy(s.gameObject);
+                },
                 defaultCapacity: sfxDefaultCapacity, maxSize: sfxMaxSize
             );
         }
@@ -163,25 +206,39 @@ namespace Manager.SoundManager
                 onRelease: s =>
                 {
                     if (!s) return;
-                    if (_uiFades.TryGetValue(s, out var c)) { StopCoroutineSafe(c); _uiFades.Remove(s); }
-                    s.Stop(); s.clip = null; s.loop = false; s.pitch = 1f;
-                    s.spatialBlend = 0f; s.transform.localPosition = Vector3.zero;
+                    if (_uiFades.TryGetValue(s, out var c))
+                    {
+                        StopCoroutineSafe(c);
+                        _uiFades.Remove(s);
+                    }
+
+                    s.Stop();
+                    s.clip = null;
+                    s.loop = false;
+                    s.pitch = 1f;
+                    s.spatialBlend = 0f;
+                    s.transform.localPosition = Vector3.zero;
                     s.outputAudioMixerGroup = defaultUiMixer ? defaultUiMixer : defaultSfxMixer;
                     s.gameObject.SetActive(false);
                 },
-                onDestroy: s => { if (s) Destroy(s.gameObject); },
+                onDestroy: s =>
+                {
+                    if (s) Destroy(s.gameObject);
+                },
                 defaultCapacity: uiDefaultCapacity, maxSize: uiMaxSize
             );
         }
 
         // ---------- SFX ----------
-        public AudioSource PlaySFX(string key, Vector3? worldPos = null, float volumeScale = 1f, float? pitchOverride = null)
+        public AudioSource PlaySFX(string key, Vector3? worldPos = null, float volumeScale = 1f,
+            float? pitchOverride = null)
         {
             if (!TryGetSfx(key, out var entry)) return null;
             if (IsOnCooldown(key, entry.cooldown)) return null;
 
             var state = GetOrCreateState(_sfxStates, key);
-            int picked = PickIndex(entry.variants, entry.pickMode, entry.avoidImmediateRepeat, ref state.lastIndex, ref state.shuffleBag);
+            int picked = PickIndex(entry.variants, entry.pickMode, entry.avoidImmediateRepeat, ref state.lastIndex,
+                ref state.shuffleBag);
             if (picked < 0 || picked >= entry.variants.Count) return null;
 
             var variant = entry.variants[picked];
@@ -214,7 +271,8 @@ namespace Manager.SoundManager
         }
 
         // เล่น SFX พร้อม fade-in
-        public AudioSource PlaySFXFadeIn(string key, float fadeInSeconds, Vector3? worldPos = null, float volumeScale = 1f, float? pitchOverride = null)
+        public AudioSource PlaySFXFadeIn(string key, float fadeInSeconds, Vector3? worldPos = null,
+            float volumeScale = 1f, float? pitchOverride = null)
         {
             var src = PlaySFX(key, worldPos, volumeScale, pitchOverride);
             if (!src) return null;
@@ -222,22 +280,32 @@ namespace Manager.SoundManager
 
             float target = src.volume;
             src.volume = 0f;
-            StartSfxFade(src, 0f, target, Mathf.Max(minFadeSeconds, fadeInSeconds), stopAtEnd:false, release:false);
+            StartSfxFade(src, 0f, target, Mathf.Max(minFadeSeconds, fadeInSeconds), stopAtEnd: false, release: false);
             return src;
         }
 
         public void FadeOutSFX(AudioSource src, float fadeOutSeconds, bool release = true)
         {
             if (!src) return;
-            StartSfxFade(src, src.volume, 0f, Mathf.Max(minFadeSeconds, fadeOutSeconds), stopAtEnd:true, release:release);
+            StartSfxFade(src, src.volume, 0f, Mathf.Max(minFadeSeconds, fadeOutSeconds), stopAtEnd: true,
+                release: release);
         }
 
         public void StopSFX(AudioSource src, bool release = true)
         {
             if (!src) return;
-            if (_sfxFades.TryGetValue(src, out var c)) { StopCoroutineSafe(c); _sfxFades.Remove(src); }
+            if (_sfxFades.TryGetValue(src, out var c))
+            {
+                StopCoroutineSafe(c);
+                _sfxFades.Remove(src);
+            }
+
             src.Stop();
-            if (release) PoolingManager.Instance.Release(POOL_SFX, src);
+            if (release)
+            {
+                if (PoolingManager.IsAlive)
+                    PoolingManager.Instance.Release(POOL_SFX, src);
+            }
         }
 
         // ---------- UI ----------
@@ -247,7 +315,8 @@ namespace Manager.SoundManager
             if (IsOnCooldown(key, entry.cooldown)) return null;
 
             var state = GetOrCreateState(_uiStates, key);
-            int picked = PickIndex(entry.variants, entry.pickMode, entry.avoidImmediateRepeat, ref state.lastIndex, ref state.shuffleBag);
+            int picked = PickIndex(entry.variants, entry.pickMode, entry.avoidImmediateRepeat, ref state.lastIndex,
+                ref state.shuffleBag);
             if (picked < 0 || picked >= entry.variants.Count) return null;
 
             var variant = entry.variants[picked];
@@ -260,14 +329,17 @@ namespace Manager.SoundManager
             src.spatialBlend = 0f;
             src.transform.localPosition = Vector3.zero;
 
-            src.outputAudioMixerGroup = entry.mixerOverride ? entry.mixerOverride : (defaultUiMixer ? defaultUiMixer : defaultSfxMixer);
+            src.outputAudioMixerGroup = entry.mixerOverride
+                ? entry.mixerOverride
+                : (defaultUiMixer ? defaultUiMixer : defaultSfxMixer);
 
             src.Play();
             if (!src.loop) StartCoroutine(ReleaseWhenFinished(POOL_UI, src));
             return src;
         }
 
-        public AudioSource PlayUIFadeIn(string key, float fadeInSeconds, float volumeScale = 1f, float? pitchOverride = null)
+        public AudioSource PlayUIFadeIn(string key, float fadeInSeconds, float volumeScale = 1f,
+            float? pitchOverride = null)
         {
             var src = PlayUI(key, volumeScale, pitchOverride);
             if (!src) return null;
@@ -275,22 +347,32 @@ namespace Manager.SoundManager
 
             float target = src.volume;
             src.volume = 0f;
-            StartUiFade(src, 0f, target, Mathf.Max(minFadeSeconds, fadeInSeconds), stopAtEnd:false, release:false);
+            StartUiFade(src, 0f, target, Mathf.Max(minFadeSeconds, fadeInSeconds), stopAtEnd: false, release: false);
             return src;
         }
 
         public void FadeOutUI(AudioSource src, float fadeOutSeconds, bool release = true)
         {
             if (!src) return;
-            StartUiFade(src, src.volume, 0f, Mathf.Max(minFadeSeconds, fadeOutSeconds), stopAtEnd:true, release:release);
+            StartUiFade(src, src.volume, 0f, Mathf.Max(minFadeSeconds, fadeOutSeconds), stopAtEnd: true,
+                release: release);
         }
 
         public void StopUI(AudioSource src, bool release = true)
         {
             if (!src) return;
-            if (_uiFades.TryGetValue(src, out var c)) { StopCoroutineSafe(c); _uiFades.Remove(src); }
+            if (_uiFades.TryGetValue(src, out var c))
+            {
+                StopCoroutineSafe(c);
+                _uiFades.Remove(src);
+            }
+
             src.Stop();
-            if (release) PoolingManager.Instance.Release(POOL_UI, src);
+            if (release)
+            {
+                if (PoolingManager.IsAlive)
+                    PoolingManager.Instance.Release(POOL_UI, src);
+            }
         }
 
         // ---------- BGM ----------
@@ -326,7 +408,7 @@ namespace Manager.SoundManager
             next.Play();
 
             float fo = Mathf.Max(minFadeSeconds, fadeOut ?? defaultFadeOut);
-            float fi = Mathf.Max(minFadeSeconds, fadeIn  ?? defaultFadeIn);
+            float fi = Mathf.Max(minFadeSeconds, fadeIn ?? defaultFadeIn);
 
             if (_bgmFadeRoutine != null) StopCoroutine(_bgmFadeRoutine);
             _bgmFadeRoutine = StartCoroutine(CrossFadeBGM(_bgmActive, next, fo, fi, Mathf.Clamp01(cfg.volume)));
@@ -354,7 +436,8 @@ namespace Manager.SoundManager
             if (_bgmB.clip) _bgmB.UnPause();
         }
 
-        private IEnumerator CrossFadeBGM(AudioSource from, AudioSource to, float fadeOut, float fadeIn, float targetInVolume)
+        private IEnumerator CrossFadeBGM(AudioSource from, AudioSource to, float fadeOut, float fadeIn,
+            float targetInVolume)
         {
             // รองรับรอบแรกที่ from อาจไม่มี clip
             bool hasFrom = from && from.clip;
@@ -389,6 +472,7 @@ namespace Manager.SoundManager
                 from.volume = 0f;
                 from.clip = null;
             }
+
             if (to) to.volume = targetInVolume;
 
             _bgmFadeRoutine = null;
@@ -415,7 +499,8 @@ namespace Manager.SoundManager
         }
 
         // ---------- Internals ----------
-        private static void ApplyVariantToSource(AudioSource src, SoundDatabase.ClipVariant v, float volumeScale, float? pitchOverride)
+        private static void ApplyVariantToSource(AudioSource src, SoundDatabase.ClipVariant v, float volumeScale,
+            float? pitchOverride)
         {
             src.clip = v.clip;
             src.volume = Mathf.Clamp01(v.volume * volumeScale);
@@ -438,9 +523,12 @@ namespace Manager.SoundManager
 
             switch (mode)
             {
-                case SoundDatabase.RandomPickMode.First: lastIndex = 0; return 0;
+                case SoundDatabase.RandomPickMode.First:
+                    lastIndex = 0;
+                    return 0;
                 case SoundDatabase.RandomPickMode.Sequential:
-                    lastIndex = (lastIndex + 1) % variants.Count; return lastIndex;
+                    lastIndex = (lastIndex + 1) % variants.Count;
+                    return lastIndex;
 
                 case SoundDatabase.RandomPickMode.ShuffleNoRepeat:
                     if (shuffleBag == null || shuffleBag.Count == 0)
@@ -454,9 +542,11 @@ namespace Manager.SoundManager
                             (shuffleBag[i], shuffleBag[j]) = (shuffleBag[j], shuffleBag[i]);
                         }
                     }
+
                     int idx = shuffleBag[^1];
                     shuffleBag.RemoveAt(shuffleBag.Count - 1);
-                    lastIndex = idx; return idx;
+                    lastIndex = idx;
+                    return idx;
 
                 case SoundDatabase.RandomPickMode.WeightedRandom:
                     float total = 0f;
@@ -478,22 +568,35 @@ namespace Manager.SoundManager
                             return chosen;
                         }
                     }
-                    lastIndex = variants.Count - 1; return lastIndex;
+
+                    lastIndex = variants.Count - 1;
+                    return lastIndex;
 
                 case SoundDatabase.RandomPickMode.RandomNoImmediateRepeat:
                 case SoundDatabase.RandomPickMode.Random:
                 default:
                     int c = variants.Count;
-                    if (c == 1) { lastIndex = 0; return 0; }
+                    if (c == 1)
+                    {
+                        lastIndex = 0;
+                        return 0;
+                    }
+
                     int r = _rnd.Next(0, c);
                     if (avoidImmediateRepeat && r == lastIndex) r = (r + 1) % c;
-                    lastIndex = r; return r;
+                    lastIndex = r;
+                    return r;
             }
         }
 
         private KeyState GetOrCreateState(Dictionary<string, KeyState> dict, string key)
         {
-            if (!dict.TryGetValue(key, out var st)) { st = new KeyState(); dict[key] = st; }
+            if (!dict.TryGetValue(key, out var st))
+            {
+                st = new KeyState();
+                dict[key] = st;
+            }
+
             return st;
         }
 
@@ -509,9 +612,19 @@ namespace Manager.SoundManager
         private IEnumerator ReleaseWhenFinished(string poolKey, AudioSource src)
         {
             var clip = src.clip;
-            if (!clip) { PoolingManager.Instance.Release(poolKey, src); yield break; }
+            if (!clip)
+            {
+                if (PoolingManager.IsAlive)
+                    PoolingManager.Instance.Release(poolKey, src);
+                yield break;
+            }
+
             while (src && src.isActiveAndEnabled && src.isPlaying) yield return null;
-            if (src) PoolingManager.Instance.Release(poolKey, src);
+            if (src)
+            {
+                if (PoolingManager.IsAlive)
+                    PoolingManager.Instance.Release(poolKey, src);
+            }
         }
 
         private bool TryGetSfx(string key, out SoundDatabase.SFXEntry entry)
@@ -546,17 +659,34 @@ namespace Manager.SoundManager
         {
             if (_sfxFades.TryGetValue(src, out var c)) StopCoroutineSafe(c);
             _sfxFades[src] = StartCoroutine(FadeAudioSource(src, from, to, dur, stopAtEnd,
-                onDone: () => { _sfxFades.Remove(src); if (stopAtEnd && release) PoolingManager.Instance.Release(POOL_SFX, src); }));
+                onDone: () =>
+                {
+                    _sfxFades.Remove(src);
+                    if (stopAtEnd && release)
+                    {
+                        if (PoolingManager.IsAlive)
+                            PoolingManager.Instance.Release(POOL_SFX, src);
+                    }
+                }));
         }
 
         private void StartUiFade(AudioSource src, float from, float to, float dur, bool stopAtEnd, bool release)
         {
             if (_uiFades.TryGetValue(src, out var c)) StopCoroutineSafe(c);
             _uiFades[src] = StartCoroutine(FadeAudioSource(src, from, to, dur, stopAtEnd,
-                onDone: () => { _uiFades.Remove(src); if (stopAtEnd && release) PoolingManager.Instance.Release(POOL_UI, src); }));
+                onDone: () =>
+                {
+                    _uiFades.Remove(src);
+                    if (stopAtEnd && release)
+                    {
+                        if (PoolingManager.IsAlive)
+                            PoolingManager.Instance.Release(POOL_UI, src);
+                    }
+                }));
         }
 
-        private IEnumerator FadeAudioSource(AudioSource src, float from, float to, float dur, bool stopAtEnd, System.Action onDone)
+        private IEnumerator FadeAudioSource(AudioSource src, float from, float to, float dur, bool stopAtEnd,
+            System.Action onDone)
         {
             dur = Mathf.Max(minFadeSeconds, dur);
             float t = 0f;
@@ -575,6 +705,7 @@ namespace Manager.SoundManager
                 src.volume = to;
                 if (stopAtEnd) src.Stop();
             }
+
             onDone?.Invoke();
         }
 

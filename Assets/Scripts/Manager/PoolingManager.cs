@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Pool;
 using MoreMountains.Tools;
+using ProjectExtensions;
 
 namespace Manager
 {
@@ -17,7 +18,7 @@ namespace Manager
         public static string Sound => nameof(Sound);
     }
 
-    public class PoolingManager : MMSingleton<PoolingManager>
+    public class PoolingManager : AutoCreateSingleton<PoolingManager>
     {
         private readonly Dictionary<string, object> _typedPools = new();
         private readonly Dictionary<string, Transform> _parentFolders = new();

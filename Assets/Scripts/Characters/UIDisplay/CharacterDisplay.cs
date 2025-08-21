@@ -346,7 +346,8 @@ namespace Characters.UIDisplay
                 .AppendCallback(() =>
                 {
                     textInstance.gameObject.SetActive(false);
-                    PoolingManager.Instance.Release(worldTextUIPrefab.name, textInstance);
+                    if (PoolingManager.IsAlive)
+                        PoolingManager.Instance.Release(worldTextUIPrefab.name, textInstance);
                 });
         }
 
@@ -397,7 +398,8 @@ namespace Characters.UIDisplay
                 .AppendCallback(() =>
                 {
                     textInstance.gameObject.SetActive(false);
-                    PoolingManager.Instance.Release(worldTextUIPrefab.name, textInstance);
+                    if (PoolingManager.IsAlive)
+                        PoolingManager.Instance.Release(worldTextUIPrefab.name, textInstance);
                 });
         }
 

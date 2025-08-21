@@ -124,7 +124,9 @@ namespace Characters.SkillSystems.SkillRuntimes
                 skillObject.DamageOnTouch.DisableDamage(this);
                 skillObject.gameObject.SetActive(false);
                 skillObject.transform.position = owner.transform.position;
-                PoolingManager.Instance.Release(skillData.ReflectionSkillObject.name, skillObject);
+                
+                if (PoolingManager.IsAlive)
+                    PoolingManager.Instance.Release(skillData.ReflectionSkillObject.name, skillObject);
             }
             
             _skillObjects.Clear();

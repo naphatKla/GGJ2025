@@ -4,8 +4,10 @@ using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using GameControl.Controller;
 using GameControl.GameState;
+using Manager.SoundManager;
 using MoreMountains.Feedbacks;
 using MoreMountains.Tools;
+using ProjectExtensions;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -31,7 +33,7 @@ public class UIPanelEntry
     public GameObject panel;
 }
 
-public class UIManager : MMSingleton<UIManager>
+public class UIManager : NonAutoCreateSingleton<UIManager>
 {
     [SerializeField] private string menuScene;
     [SerializeField] private string gamePlayScene;

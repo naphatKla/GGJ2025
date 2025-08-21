@@ -85,9 +85,13 @@ namespace Characters.Controllers
             levelSystem.OnLevelUp -= skillUpgradeController.OnLevelUp;
             combatSystem.OnKill -= comboStreakSystem.OnEnemyKilled;
             HealthSystem.OnTakeDamage -= comboStreakSystem.OnPlayerHit;
-            UIManager.Instance.OnAnyPanelOpen -= OnAnyUIOpen;
-            UIManager.Instance.OnAllPanelClosed -= OnAllUIClosed;
-
+            
+            if (UIManager.IsAlive)
+            {
+                UIManager.Instance.OnAnyPanelOpen -= OnAnyUIOpen;
+                UIManager.Instance.OnAllPanelClosed -= OnAllUIClosed;
+            }
+            
             base.UnSubscribeDependency();
         }
 

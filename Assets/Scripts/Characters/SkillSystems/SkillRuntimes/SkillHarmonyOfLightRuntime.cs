@@ -79,7 +79,8 @@ namespace Characters.SkillSystems.SkillRuntimes
             {
                 obj.gameObject?.SetActive(false);
                 obj?.DamageOnTouch.DisableDamage(this);
-                PoolingManager.Instance.Release(skillData.LightPrefab.name, obj);
+                if (PoolingManager.IsAlive)
+                    PoolingManager.Instance.Release(skillData.LightPrefab.name, obj);
             }
         }
 

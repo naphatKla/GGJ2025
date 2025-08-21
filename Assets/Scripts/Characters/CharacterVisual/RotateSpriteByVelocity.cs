@@ -17,6 +17,7 @@ namespace Characters.CharacterVisual
 
         private void OnDisable()
         {
+            if (!FixedUpdateManager.IsAlive) return;
             FixedUpdateManager.Instance.Unregister(this);
         }
         

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using MoreMountains.Tools;
+using ProjectExtensions;
 using UnityEngine;
 
 namespace Manager
@@ -18,7 +19,7 @@ namespace Manager
     /// - กันอัปเดตให้ตัวที่ถูก "จองถอด" ภายในเฟรมนี้ และกันกรณี UnityEngine.Object ถูกทำลาย
     /// - รองรับ tick event ทุก ๆ tickInterval วินาที (อาจยิงหลายครั้งในเฟรมถ้า CPU ตก)
     /// </summary>
-    public class FixedUpdateManager : MMSingleton<FixedUpdateManager>
+    public class FixedUpdateManager : AutoCreateSingleton<FixedUpdateManager>
     {
         // ===== Active storage (swap-remove) =====
         private readonly List<IFixedUpdateable> _items = new();

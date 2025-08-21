@@ -92,7 +92,8 @@ namespace Feedbacks
                 
                 instance.Stop();
                 instance.gameObject.SetActive(false);
-                PoolingManager.Instance.Release(vfxPrefab.name, instance);
+                if (PoolingManager.IsAlive)
+                    PoolingManager.Instance.Release(vfxPrefab.name, instance);
                 _currentVFXInstance = null;
             }
             catch (OperationCanceledException)
