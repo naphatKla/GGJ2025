@@ -138,7 +138,7 @@ namespace Characters.SkillSystems
             _currentOptions.Clear();
             _pendingForSelection = 0;
 
-            Debug.Log("[SkillUpgrade] Reset and cancelled all pending upgrades.");
+            //Debug.Log("[SkillUpgrade] Reset and cancelled all pending upgrades.");
         }
 
         private void OnDestroy()

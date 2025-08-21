@@ -104,11 +104,9 @@ namespace Characters.SkillSystems.SkillRuntimes
                         moveCurve: curve)
                     .SetEase(Ease.InSine)
                     .WithCancellation(cancelToken);
-
-                Debug.Log(i);
+                
                 if (cancelToken.IsCancellationRequested)
                 {
-                    Debug.LogError("break");
                     break;
                 }
             }
@@ -159,7 +157,6 @@ namespace Characters.SkillSystems.SkillRuntimes
             }
             finally
             {
-                Debug.Log("Exit");
                 if (owner) 
                     StatusEffectManager.RemoveEffectAt(owner.gameObject, StatusEffectName.Iframe);
             }
