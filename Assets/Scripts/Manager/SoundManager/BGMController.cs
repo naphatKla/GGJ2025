@@ -15,7 +15,7 @@ namespace Manager.SoundManager
         
         private async UniTaskVoid PlayNewBGMAfter()
         {
-            await UniTask.WaitForSeconds(1f);
+            await UniTask.WaitForSeconds(1f, true);
             SoundManager.Instance.PlayBGM(SoundName.BGM.GamePlayPhase1, fadeIn: 2f);
             await UniTask.WaitUntil(() => GameStateController.Instance.CurrentState is StartState, cancellationToken: destroyCancellationToken);
             await UniTask.WaitUntil(() => GameTimer.Instance.GlobalTimer < 450,  cancellationToken: destroyCancellationToken);
