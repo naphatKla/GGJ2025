@@ -43,7 +43,7 @@ MonoBehaviour:
       usePitchRandom: 1
       pitchRange: {x: 0.85, y: 1.15}
       weight: 0
-    pickMode: 4
+    pickMode: 1
     avoidImmediateRepeat: 0
     spatial: 0
     spatialBlend: 0
@@ -51,7 +51,7 @@ MonoBehaviour:
     maxDistance: 0
     rolloffMode: 0
     mixerOverride: {fileID: 0}
-    cooldown: 0.01
+    cooldown: 0.015
   - Key: SFX/PlayerHurt
     keyShort: PlayerHurt
     variants:
@@ -79,7 +79,7 @@ MonoBehaviour:
   - Key: SFX/PlayerHeal
     keyShort: PlayerHeal
     variants:
-    - clip: {fileID: 8300000, guid: eebcc847e18332943af5d05a8338a176, type: 3}
+    - clip: {fileID: 0}
       volume: 1
       loop: 0
       usePitchRandom: 1
@@ -151,7 +151,7 @@ MonoBehaviour:
   - Key: SFX/PlayerDash
     keyShort: PlayerDash
     variants:
-    - clip: {fileID: 8300000, guid: 56cc9d92200872d4eb89bd3153013815, type: 3}
+    - clip: {fileID: 8300000, guid: 6fcfa9948ff9b5d46bf60eab07495800, type: 3}
       volume: 1
       loop: 0
       usePitchRandom: 1
