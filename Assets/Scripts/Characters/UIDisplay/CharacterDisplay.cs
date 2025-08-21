@@ -193,7 +193,7 @@ namespace Characters.UIDisplay
 
             statusEffectSystem.OnStatusUIUpdate -= UpdateStatusUI;
 
-            PoolingManager.Instance.ClearPool(worldTextUIPrefab.name);
+            PoolingManager.Current?.ClearPool(worldTextUIPrefab.name);
         }
 
         private void UpdateAllUI()
@@ -346,8 +346,7 @@ namespace Characters.UIDisplay
                 .AppendCallback(() =>
                 {
                     textInstance.gameObject.SetActive(false);
-                    if (PoolingManager.IsAlive)
-                        PoolingManager.Instance.Release(worldTextUIPrefab.name, textInstance);
+                    PoolingManager.Current?.Release(worldTextUIPrefab.name, textInstance);
                 });
         }
 
@@ -398,8 +397,7 @@ namespace Characters.UIDisplay
                 .AppendCallback(() =>
                 {
                     textInstance.gameObject.SetActive(false);
-                    if (PoolingManager.IsAlive)
-                        PoolingManager.Instance.Release(worldTextUIPrefab.name, textInstance);
+                    PoolingManager.Current?.Release(worldTextUIPrefab.name, textInstance);
                 });
         }
 

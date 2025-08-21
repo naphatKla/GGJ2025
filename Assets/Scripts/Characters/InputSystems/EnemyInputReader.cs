@@ -38,8 +38,8 @@ public class EnemyInputReader : MonoBehaviour, ICharacterInput
 
     private void OnDisable()
     {
-        if (FixedUpdateManager.Instance != null)
-            FixedUpdateManager.Instance.OnTick -= HandleTick;
+        if (!FixedUpdateManager.IsAlive) return;
+        FixedUpdateManager.Current.OnTick -= HandleTick;
     }
 
     private void HandleTick()

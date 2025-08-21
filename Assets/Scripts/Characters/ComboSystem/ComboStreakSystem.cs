@@ -62,7 +62,7 @@ namespace Characters.ComboSystem
         public event Action<string, float, float, float> OnStageEffect;
 
         private void OnEnable() => FixedUpdateManager.Instance.Register(this);
-        private void OnDisable() => FixedUpdateManager.Instance.Unregister(this);
+        private void OnDisable() => FixedUpdateManager.Current?.Unregister(this);
 
         public void AssignData(BaseController ownerCtrl, ComboStreakDataSo so)
         {

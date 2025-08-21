@@ -481,7 +481,7 @@ namespace Characters.SkillSystems
 
         private void OnDisable()
         {
-            FixedUpdateManager.Instance.Unregister(this);
+            FixedUpdateManager.Current?.Unregister(this);
         }
 
         public void OnFixedUpdate()

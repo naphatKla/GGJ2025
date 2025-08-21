@@ -125,8 +125,7 @@ namespace Characters.SkillSystems.SkillRuntimes
                 skillObject.gameObject.SetActive(false);
                 skillObject.transform.position = owner.transform.position;
                 
-                if (PoolingManager.IsAlive)
-                    PoolingManager.Instance.Release(skillData.ReflectionSkillObject.name, skillObject);
+                PoolingManager.Current?.Release(skillData.ReflectionSkillObject.name, skillObject);
             }
             
             _skillObjects.Clear();

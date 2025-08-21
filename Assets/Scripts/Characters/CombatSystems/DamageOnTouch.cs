@@ -160,7 +160,7 @@ namespace Characters.CombatSystems
             {
                 _isEnableDamage = false;
                 _owner = null;
-                FixedUpdateManager.Instance.Unregister(this);
+                FixedUpdateManager.Current?.Unregister(this);
             }
         }
 
@@ -171,7 +171,7 @@ namespace Characters.CombatSystems
             _cooldownRemoveBuffer.Clear();
 
             if (_isEnableDamage)
-                FixedUpdateManager.Instance.Unregister(this);
+                FixedUpdateManager.Current?.Unregister(this);
 
             _isEnableDamage = false;
             _owner = null;
@@ -254,7 +254,7 @@ namespace Characters.CombatSystems
         private void OnDisable()
         {
             if (_isEnableDamage)
-                FixedUpdateManager.Instance.Unregister(this);
+                FixedUpdateManager.Current?.Unregister(this);
         }
 
         #endregion

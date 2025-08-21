@@ -301,10 +301,10 @@ namespace Manager.SoundManager
             }
 
             src.Stop();
+            
             if (release)
             {
-                if (PoolingManager.IsAlive)
-                    PoolingManager.Instance.Release(POOL_SFX, src);
+                PoolingManager.Current?.Release(POOL_SFX, src);
             }
         }
 
@@ -370,8 +370,7 @@ namespace Manager.SoundManager
             src.Stop();
             if (release)
             {
-                if (PoolingManager.IsAlive)
-                    PoolingManager.Instance.Release(POOL_UI, src);
+                PoolingManager.Current?.Release(POOL_UI, src);
             }
         }
 
@@ -614,16 +613,15 @@ namespace Manager.SoundManager
             var clip = src.clip;
             if (!clip)
             {
-                if (PoolingManager.IsAlive)
-                    PoolingManager.Instance.Release(poolKey, src);
+                PoolingManager.Current?.Release(poolKey, src);
                 yield break;
             }
 
             while (src && src.isActiveAndEnabled && src.isPlaying) yield return null;
+            
             if (src)
             {
-                if (PoolingManager.IsAlive)
-                    PoolingManager.Instance.Release(poolKey, src);
+                PoolingManager.Current?.Release(poolKey, src);
             }
         }
 
@@ -664,8 +662,7 @@ namespace Manager.SoundManager
                     _sfxFades.Remove(src);
                     if (stopAtEnd && release)
                     {
-                        if (PoolingManager.IsAlive)
-                            PoolingManager.Instance.Release(POOL_SFX, src);
+                        PoolingManager.Current?.Release(POOL_SFX, src);
                     }
                 }));
         }
@@ -679,8 +676,7 @@ namespace Manager.SoundManager
                     _uiFades.Remove(src);
                     if (stopAtEnd && release)
                     {
-                        if (PoolingManager.IsAlive)
-                            PoolingManager.Instance.Release(POOL_UI, src);
+                        PoolingManager.Current?.Release(POOL_UI, src);
                     }
                 }));
         }

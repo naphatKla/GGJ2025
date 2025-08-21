@@ -119,7 +119,7 @@ namespace Characters.MovementSystems
 
         private void OnDisable()
         {
-            FixedUpdateManager.Instance.Unregister(this);
+            FixedUpdateManager.Current?.Unregister(this);
         }
 
         #endregion

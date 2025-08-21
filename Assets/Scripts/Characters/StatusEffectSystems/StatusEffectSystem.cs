@@ -76,7 +76,7 @@ namespace Characters.StatusEffectSystems
         public virtual void AssignData(BaseController owner) => _owner = owner;
 
         private void OnEnable() => FixedUpdateManager.Instance.Register(this);
-        private void OnDisable() => FixedUpdateManager.Instance.Unregister(this);
+        private void OnDisable() => FixedUpdateManager.Current?.Unregister(this);
 
         public void OnFixedUpdate()
         {
