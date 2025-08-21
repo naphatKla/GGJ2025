@@ -63,6 +63,12 @@ ShaderVariantCollection:
         passType: 0
       - keywords: DETAIL_MASKING EDGE_SHINY TRANSITION_SHINY
         passType: 0
+      - keywords: DETAIL_MASKING GRADATION_COLOR2 TRANSITION_SHINY
+        passType: 0
+      - keywords: DETAIL_MASKING GRADATION_GRADIENT TRANSITION_SHINY
+        passType: 0
+      - keywords: DETAIL_MASKING TRANSITION_SHINY
+        passType: 0
       - keywords: DETAIL_MULTIPLY
         passType: 0
       - keywords: DETAIL_MULTIPLY EDGE_PLAIN GRADATION_GRADIENT
@@ -118,6 +124,8 @@ ShaderVariantCollection:
       - keywords: EDGE_PLAIN TRANSITION_BLAZE
         passType: 0
       - keywords: EDGE_PLAIN TRANSITION_PATTERN
+        passType: 0
+      - keywords: EDGE_PLAIN TRANSITION_SHINY
         passType: 0
       - keywords: EDGE_SHINY
         passType: 0
