@@ -3,7 +3,6 @@ using Sirenix.OdinInspector;
 
 namespace Tools
 {
-    #if UNITY_EDITOR
     /// <summary>
     /// Minimal 2D Gizmos Debugger (Odin)
     /// - Circle / Rect (only shows fields for the active shape)
@@ -13,6 +12,7 @@ namespace Tools
     /// </summary>
     public class GizmosDebugger : MonoBehaviour
     {
+#if UNITY_EDITOR
         public enum Shape2D { Circle, Rect }
         public enum SpaceMode { World, Local }
 
@@ -126,6 +126,8 @@ namespace Tools
             segments = Mathf.Clamp(segments, 3, 128);
             rectSize = new Vector2(Mathf.Max(0f, rectSize.x), Mathf.Max(0f, rectSize.y));
         }
+#endif
     }
-    #endif
 }
+
+
