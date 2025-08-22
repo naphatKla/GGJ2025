@@ -55,6 +55,7 @@ namespace Manager.SoundManager
             public const string Notification = Group + "/" + nameof(Notification);
             public const string Reward       = Group + "/" + nameof(Reward);
             public const string Error        = Group + "/" + nameof(Error);
+            public const string CountDown5Sec        = Group + "/" + nameof(CountDown5Sec);
         }
 
         public static class BGM

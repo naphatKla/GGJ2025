@@ -6,6 +6,7 @@ using DG.Tweening;
 using GameControl;
 using GameControl.Controller;
 using GameControl.GameState;
+using Manager.SoundManager;
 using MoreMountains.Feedbacks;
 using TMPro;
 using UnityEngine;
@@ -163,6 +164,7 @@ namespace UI.Tutorial
         private async UniTaskVoid CountdownStart()
         {
             MMTimeScaleEvent.Trigger(MMTimeScaleMethods.Reset, 1, -1, false, 0f, false);
+            SoundManager.Instance.PlayUI(SoundName.UI.CountDown5Sec);
             await GameTimer.Instance.StartCountdownAsync(5f);
             GameStateController.Instance.SetState(new StartState());
         }
