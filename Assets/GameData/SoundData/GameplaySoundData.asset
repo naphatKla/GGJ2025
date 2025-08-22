@@ -153,7 +153,7 @@ MonoBehaviour:
     maxDistance: 0
     rolloffMode: 0
     mixerOverride: {fileID: 0}
-    cooldown: 0
+    cooldown: 0.1
   - Key: SFX/PlayerDash
     keyShort: PlayerDash
     variants:
@@ -376,6 +376,132 @@ MonoBehaviour:
     rolloffMode: 0
     mixerOverride: {fileID: 0}
     cooldown: 0.1
+  - Key: SFX/PiercerSkillDash
+    keyShort: PiercerSkillDash
+    variants:
+    - clip: {fileID: 8300000, guid: 64c132ab993c8f1428b53ef049cbfc68, type: 3}
+      volume: 1
+      loop: 0
+      usePitchRandom: 1
+      pitchRange: {x: 0.85, y: 1.15}
+      weight: 1
+    - clip: {fileID: 8300000, guid: 234f981b23fd63d499f08298d84ce9f0, type: 3}
+      volume: 0
+      loop: 0
+      usePitchRandom: 0
+      pitchRange: {x: 0, y: 0}
+      weight: 0
+    - clip: {fileID: 8300000, guid: 63f0061b8855c8f4dae5b028efb684ee, type: 3}
+      volume: 0
+      loop: 0
+      usePitchRandom: 0
+      pitchRange: {x: 0, y: 0}
+      weight: 0
+    - clip: {fileID: 8300000, guid: a9e1e48174de26348b19eb9295f6ee8d, type: 3}
+      volume: 0
+      loop: 0
+      usePitchRandom: 0
+      pitchRange: {x: 0, y: 0}
+      weight: 0
+    pickMode: 1
+    avoidImmediateRepeat: 0
+    spatial: 0
+    spatialBlend: 0
+    minDistance: 0
+    maxDistance: 0
+    rolloffMode: 0
+    mixerOverride: {fileID: 0}
+    cooldown: 0.075
+  - Key: SFX/PressureSkillExplosion
+    keyShort: PressureSkillExplosion
+    variants:
+    - clip: {fileID: 8300000, guid: c798a1fcbb6d00144abef81c7e20fe76, type: 3}
+      volume: 1
+      loop: 0
+      usePitchRandom: 1
+      pitchRange: {x: 0.85, y: 1.15}
+      weight: 1
+    pickMode: 0
+    avoidImmediateRepeat: 0
+    spatial: 0
+    spatialBlend: 0
+    minDistance: 0
+    maxDistance: 0
+    rolloffMode: 0
+    mixerOverride: {fileID: 0}
+    cooldown: 0
+  - Key: SFX/FireCrackerSkillExplosion
+    keyShort: FireCrackerSkillExplosion
+    variants:
+    - clip: {fileID: 8300000, guid: c798a1fcbb6d00144abef81c7e20fe76, type: 3}
+      volume: 1
+      loop: 0
+      usePitchRandom: 1
+      pitchRange: {x: 0.85, y: 1.15}
+      weight: 1
+    pickMode: 0
+    avoidImmediateRepeat: 0
+    spatial: 0
+    spatialBlend: 0
+    minDistance: 0
+    maxDistance: 0
+    rolloffMode: 0
+    mixerOverride: {fileID: 0}
+    cooldown: 0
+  - Key: SFX/BomberSkillExplosion
+    keyShort: BomberSkillExplosion
+    variants:
+    - clip: {fileID: 0}
+      volume: 1
+      loop: 0
+      usePitchRandom: 1
+      pitchRange: {x: 0.85, y: 1.15}
+      weight: 1
+    pickMode: 0
+    avoidImmediateRepeat: 0
+    spatial: 0
+    spatialBlend: 0
+    minDistance: 0
+    maxDistance: 0
+    rolloffMode: 0
+    mixerOverride: {fileID: 0}
+    cooldown: 0
+  - Key: SFX/AbsorptionSkillParryUse
+    keyShort: AbsorptionSkillParryUse
+    variants:
+    - clip: {fileID: 8300000, guid: 7061624fea35e284f9a2bdb2d11a2046, type: 3}
+      volume: 1
+      loop: 0
+      usePitchRandom: 1
+      pitchRange: {x: 0.85, y: 1.15}
+      weight: 1
+    pickMode: 0
+    avoidImmediateRepeat: 0
+    spatial: 0
+    spatialBlend: 0
+    minDistance: 0
+    maxDistance: 0
+    rolloffMode: 0
+    mixerOverride: {fileID: 0}
+    cooldown: 0
+  - Key: SFX/AbsorptionSkillParrySuccess
+    keyShort: AbsorptionSkillParrySuccess
+    variants:
+    - clip: {fileID: 8300000, guid: 7eff200615e9b1446bc342e20c581a6b, type: 3}
+      volume: 1
+      loop: 0
+      usePitchRandom: 1
+      pitchRange: {x: 0.85, y: 1.15}
+      weight: 1
+    pickMode: 0
+    avoidImmediateRepeat: 0
+    spatial: 0
+    spatialBlend: 0
+    minDistance: 0
+    maxDistance: 0
+    rolloffMode: 0
+    mixerOverride: {fileID: 0}
+    cooldown: 0
   ui:
   - Key: UI/Click
     keyShort: Click

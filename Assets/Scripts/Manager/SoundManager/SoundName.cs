@@ -32,6 +32,12 @@ namespace Manager.SoundManager
             public const string PlayerBaseDown = Group + "/" + nameof(PlayerBaseDown);
             public const string MapEventLaserNotify = Group + "/" + nameof(MapEventLaserNotify);
             public const string MapEventLaser = Group + "/" + nameof(MapEventLaser);
+            public const string PiercerSkillDash = Group + "/" + nameof(PiercerSkillDash);
+            public const string PressureSkillExplosion = Group + "/" + nameof(PressureSkillExplosion);
+            public const string FireCrackerSkillExplosion = Group + "/" + nameof(FireCrackerSkillExplosion);
+            public const string BomberSkillExplosion = Group + "/" + nameof(BomberSkillExplosion);
+            public const string AbsorptionSkillParryUse = Group + "/" + nameof(AbsorptionSkillParryUse);
+            public const string AbsorptionSkillParrySuccess = Group + "/" + nameof(AbsorptionSkillParrySuccess);
         }
 
         public static class UI
