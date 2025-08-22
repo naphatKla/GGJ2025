@@ -32,7 +32,11 @@ namespace GameControl.EventMap
 
             previewEffect.Play();
             notifyFeedback?.PlayFeedbacks();
-            await UniTask.WaitWhile(() => previewEffect.IsAlive(true));
+            await UniTask.WaitWhile(
+                () => previewEffect != null && previewEffect.IsAlive(true), 
+                cancellationToken: this.GetCancellationTokenOnDestroy()
+            );
+
         }
 
         protected override void Perform()

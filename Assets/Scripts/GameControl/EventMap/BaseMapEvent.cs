@@ -29,6 +29,12 @@ namespace GameControl.EventMap
             _pool = pool;
         }
         
+        private void OnDestroy()
+        {
+            CancelPlay();
+            _cts?.Dispose();
+        }
+        
         public void ApplyEffect(MapEventStorageEntry entry)
         {
             if (previewEffect == null) return;
