@@ -1,8 +1,7 @@
-using GameControl;
+using Characters.Controllers;
 using GameControl.Controller;
 using GameControl.Interface;
 using MoreMountains.Feedbacks;
-using UnityEngine;
 
 namespace GameControl.GameState
 {
@@ -17,6 +16,7 @@ namespace GameControl.GameState
             UIManager.Instance.CloseAllPanels();
             UIManager.Instance.OpenResultMenu();
             MMTimeScaleEvent.Trigger(MMTimeScaleMethods.For, 0, -1, true, 6.2f, true);
+            PlayerController.Instance.GetSummaryStatsOnStateEnd();
         }
 
         public void Update(GameStateController controller) { }

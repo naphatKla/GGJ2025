@@ -1,6 +1,7 @@
 using System;
 using Cameras;
 using Characters.CollectItemSystems;
+using Characters.Data;
 using Characters.LevelSystems;
 using Characters.ScoreSystems;
 using Characters.SkillSystems;
@@ -24,7 +25,7 @@ namespace Characters.Controllers
         [SerializeField] protected SkillUpgradeController skillUpgradeController;
         [SerializeField] protected Cinemachine2DCameraController cameraController;
         [SerializeField] protected ScoreSystem scoreSystem;
-
+        
         public CollectItemSystem CollectItemSystem => collectItemSystem;
         public LevelSystem LevelSystem => levelSystem;
         public ScoreSystem ScoreSystem => scoreSystem;
@@ -76,7 +77,7 @@ namespace Characters.Controllers
             HealthSystem.OnTakeDamage += comboStreakSystem.OnPlayerHit;
             UIManager.Instance.OnAnyPanelOpen += OnAnyUIOpen;
             UIManager.Instance.OnAllPanelClosed += OnAllUIClosed;
-
+            
             base.SubscribeDependency();
         }
 
@@ -102,7 +103,6 @@ namespace Characters.Controllers
             comboStreakSystem.ResetAll();
             cameraController.ResetAndClearAllRequests();
             
-
             base.ResetAllDependentBehavior();
         }
 
@@ -114,6 +114,18 @@ namespace Characters.Controllers
         public void OnAllUIClosed()
         {
             InputSystem.Enable = true;
+        }
+
+        public PlayerSummaryStats GetSummaryStatsOnStateEnd()
+        {
+            PlayerSummaryStats statsPerRun = new PlayerSummaryStats();
+            statsPerRun.totalScore = scoreSystem.CurrentScore;
+            statsPerRun.currentLevel = levelSystem.Level;
+            statsPerRun.highestRank = comboStreakSystem.HighestRank;
+            statsPerRun.highestStreakCount = comboStreakSystem.HighestStreakCount;
+            statsPerRun.averageExpMultiplier = comboStreakSystem.AverageExpMultiplier;
+            statsPerRun.DebugStat();
+            return statsPerRun;
         }
 
         #endregion

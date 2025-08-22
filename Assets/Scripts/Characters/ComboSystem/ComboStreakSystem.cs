@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Characters.Controllers;
 using Characters.SO.ComboStreakDataSO;
 using Characters.SO.ComboStreakDataSO.StageDataSO;
@@ -14,6 +15,12 @@ namespace Characters.ComboSystem
 
         private BaseController owner;
 
+        private float _totalExpMultiplier;
+        private int _totalExpMultiplierModifyTime;
+        public string HighestRank => data.killGrades[_highestGradeIndex].label;
+        public int HighestStreakCount { get; private set; }
+        public float AverageExpMultiplier => _totalExpMultiplier / _totalExpMultiplierModifyTime;
+
         // ===== Runtime State =====
         public int KillCount { get; private set; }
         public int CurrentStreak { get; private set; }
@@ -23,14 +30,15 @@ namespace Characters.ComboSystem
         public float CurrentBoostMultiplierX { get; private set; }
 
         public string CurrentGrade { get; private set; } = null;
+        private int _highestGradeIndex;
 
         // Shared combo timer
         private float comboTimer;
 
         // Stage runtime
-        private BaseComboStageSo activeStage;      // stage ปัจจุบัน (exclusive)
-        private int activeTierIndex = -1;          // index ของ tier ปัจจุบัน (-1 = unstage)
-        private int highestTierReached = -1;       // เก็บไว้เผื่อใช้ภายหลัง (ไม่ผูก logic แล้ว)
+        private BaseComboStageSo activeStage; // stage ปัจจุบัน (exclusive)
+        private int activeTierIndex = -1; // index ของ tier ปัจจุบัน (-1 = unstage)
+        private int highestTierReached = -1; // เก็บไว้เผื่อใช้ภายหลัง (ไม่ผูก logic แล้ว)
 
         // Final-stage runtime controls
         private float finalStageTimer;
@@ -77,7 +85,7 @@ namespace Characters.ComboSystem
             CurrentStreak = 0;
             comboTimer = 0f;
 
-            ForceExitStage();                 // เคลียร์ stage + final timer
+            ForceExitStage(); // เคลียร์ stage + final timer
             highestTierReached = -1;
             activeTierIndex = -1;
 
@@ -194,8 +202,8 @@ namespace Characters.ComboSystem
                         KillCount = 0;
                         OnKillComboChanged?.Invoke(KillCount);
 
-                        SetStreak(0);          // จะจัดการ unstage ให้อัตโนมัติ
-                        ForceExitStage();      // เผื่อกรณีมี stage อยู่ (กันซ้ำซ้อน)
+                        SetStreak(0); // จะจัดการ unstage ให้อัตโนมัติ
+                        ForceExitStage(); // เผื่อกรณีมี stage อยู่ (กันซ้ำซ้อน)
 
                         highestTierReached = -1;
 
@@ -220,6 +228,10 @@ namespace Characters.ComboSystem
             if (clamped == CurrentStreak) return;
 
             CurrentStreak = clamped;
+            
+            if (HighestStreakCount < CurrentStreak)
+                HighestStreakCount = CurrentStreak;
+            
             OnStreakChanged?.Invoke(CurrentStreak);
 
             // อัปเดตบูสต์ทันทีเมื่อสตรีคเปลี่ยน
@@ -303,12 +315,15 @@ namespace Characters.ComboSystem
         private void RecomputeBoost(bool alsoApplyPenalty, float extraPenaltyX)
         {
             float perStreakX = data.boostPerStreakPercent / 100f; // 10% -> 0.1x ต่อสตรีค
-            float maxX = data.maxBoostPercent / 100f;             // 500% -> x5
+            float maxX = data.maxBoostPercent / 100f; // 500% -> x5
 
             float baseX = RewardStreak * perStreakX;
             if (alsoApplyPenalty) baseX -= extraPenaltyX;
 
             CurrentBoostMultiplierX = Mathf.Clamp(baseX, 0f, maxX);
+
+            _totalExpMultiplier += CurrentBoostMultiplierX;
+            _totalExpMultiplierModifyTime++;
             OnBoostChanged?.Invoke(CurrentBoostMultiplierX);
         }
 
@@ -323,6 +338,7 @@ namespace Characters.ComboSystem
         {
             string best = null;
             int bestMin = int.MinValue;
+            int bestIndex = -1;
 
             foreach (var g in data.killGrades)
             {
@@ -330,11 +346,15 @@ namespace Characters.ComboSystem
                 {
                     best = g.label;
                     bestMin = g.minKillCount;
+                    bestIndex = data.killGrades.IndexOf(g);
                 }
             }
 
             if (best != CurrentGrade)
             {
+                if (bestIndex != -1 && bestIndex > _highestGradeIndex)
+                    _highestGradeIndex = bestIndex;
+                
                 CurrentGrade = best;
                 OnGradeChanged?.Invoke(CurrentGrade);
             }
