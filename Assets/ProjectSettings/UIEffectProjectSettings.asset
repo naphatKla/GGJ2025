@@ -53,17 +53,59 @@ ShaderVariantCollection:
         passType: 0
       - keywords: DETAIL_ADDITIVE
         passType: 0
+      - keywords: DETAIL_ADDITIVE EDGE_PLAIN GRADATION_GRADIENT
+        passType: 0
+      - keywords: DETAIL_ADDITIVE EDGE_SHINY GRADATION_GRADIENT
+        passType: 0
       - keywords: DETAIL_ADDITIVE EDGE_SHINY TRANSITION_SHINY
         passType: 0
       - keywords: DETAIL_MASKING
         passType: 0
+      - keywords: DETAIL_MASKING EDGE_PLAIN TRANSITION_SHINY
+        passType: 0
+      - keywords: DETAIL_MASKING EDGE_SHINY GRADATION_GRADIENT
+        passType: 0
+      - keywords: DETAIL_MASKING EDGE_SHINY GRADATION_GRADIENT TRANSITION_SHINY
+        passType: 0
+      - keywords: DETAIL_MASKING EDGE_SHINY TRANSITION_SHINY
+        passType: 0
+      - keywords: DETAIL_MASKING GRADATION_COLOR2 TRANSITION_SHINY
+        passType: 0
+      - keywords: DETAIL_MASKING GRADATION_GRADIENT TRANSITION_SHINY
+        passType: 0
+      - keywords: DETAIL_MASKING TRANSITION_SHINY
+        passType: 0
       - keywords: DETAIL_MULTIPLY
+        passType: 0
+      - keywords: DETAIL_MULTIPLY EDGE_PLAIN GRADATION_GRADIENT
+        passType: 0
+      - keywords: DETAIL_MULTIPLY EDGE_PLAIN GRADATION_GRADIENT SAMPLING_BLUR_FAST
+        passType: 0
+      - keywords: DETAIL_MULTIPLY EDGE_PLAIN GRADATION_GRADIENT TRANSITION_BURN
+        passType: 0
+      - keywords: DETAIL_MULTIPLY EDGE_PLAIN GRADATION_GRADIENT TRANSITION_CUTOFF
+        passType: 0
+      - keywords: DETAIL_MULTIPLY EDGE_PLAIN GRADATION_GRADIENT TRANSITION_DISSOLVE
+        passType: 0
+      - keywords: DETAIL_MULTIPLY EDGE_PLAIN GRADATION_GRADIENT TRANSITION_FADE
+        passType: 0
+      - keywords: DETAIL_MULTIPLY EDGE_PLAIN GRADATION_GRADIENT TRANSITION_MASK
+        passType: 0
+      - keywords: DETAIL_MULTIPLY EDGE_PLAIN GRADATION_GRADIENT TRANSITION_MELT
+        passType: 0
+      - keywords: DETAIL_MULTIPLY EDGE_PLAIN GRADATION_GRADIENT TRANSITION_SHINY
+        passType: 0
+      - keywords: DETAIL_MULTIPLY EDGE_SHINY GRADATION_GRADIENT
+        passType: 0
+      - keywords: DETAIL_MULTIPLY EDGE_SHINY TRANSITION_SHINY
         passType: 0
       - keywords: DETAIL_MULTIPLY_ADDITIVE
         passType: 0
       - keywords: DETAIL_REPLACE
         passType: 0
       - keywords: DETAIL_REPLACE EDGE_SHINY TRANSITION_DISSOLVE
+        passType: 0
+      - keywords: DETAIL_REPLACE EDGE_SHINY TRANSITION_SHINY
         passType: 0
       - keywords: DETAIL_REPLACE SAMPLING_BLUR_FAST
         passType: 0
@@ -81,17 +123,39 @@ ShaderVariantCollection:
         passType: 0
       - keywords: DETAIL_SUBTRACTIVE
         passType: 0
+      - keywords: DETAIL_SUBTRACTIVE EDGE_SHINY TRANSITION_SHINY
+        passType: 0
       - keywords: EDGE_PLAIN
+        passType: 0
+      - keywords: EDGE_PLAIN GRADATION_COLOR2
+        passType: 0
+      - keywords: EDGE_PLAIN GRADATION_GRADIENT
         passType: 0
       - keywords: EDGE_PLAIN TRANSITION_BLAZE
         passType: 0
       - keywords: EDGE_PLAIN TRANSITION_PATTERN
         passType: 0
+      - keywords: EDGE_PLAIN TRANSITION_SHINY
+        passType: 0
       - keywords: EDGE_SHINY
+        passType: 0
+      - keywords: EDGE_SHINY GRADATION_COLOR2
+        passType: 0
+      - keywords: EDGE_SHINY GRADATION_COLOR2 TONE_GRAYSCALE
+        passType: 0
+      - keywords: EDGE_SHINY GRADATION_COLOR2 TONE_NEGATIVE
+        passType: 0
+      - keywords: EDGE_SHINY GRADATION_COLOR2 TONE_POSTERIZE
+        passType: 0
+      - keywords: EDGE_SHINY GRADATION_COLOR2 TONE_RETRO
+        passType: 0
+      - keywords: EDGE_SHINY GRADATION_COLOR2 TONE_SEPIA
         passType: 0
       - keywords: EDGE_SHINY GRADATION_COLOR2 TRANSITION_DISSOLVE
         passType: 0
       - keywords: EDGE_SHINY GRADATION_COLOR2 TRANSITION_PATTERN
+        passType: 0
+      - keywords: EDGE_SHINY GRADATION_GRADIENT
         passType: 0
       - keywords: EDGE_SHINY GRADATION_GRADIENT TRANSITION_DISSOLVE
         passType: 0
@@ -137,6 +201,8 @@ ShaderVariantCollection:
         passType: 0
       - keywords: GRADATION_GRADIENT SAMPLING_BLUR_FAST
         passType: 0
+      - keywords: GRADATION_GRADIENT SAMPLING_BLUR_MEDIUM
+        passType: 0
       - keywords: GRADATION_GRADIENT SAMPLING_EDGE_ALPHA
         passType: 0
       - keywords: GRADATION_GRADIENT SAMPLING_EDGE_LUMINANCE
@@ -147,13 +213,19 @@ ShaderVariantCollection:
         passType: 0
       - keywords: GRADATION_GRADIENT TARGET_HUE
         passType: 0
+      - keywords: GRADATION_GRADIENT TARGET_LUMINANCE
+        passType: 0
       - keywords: GRADATION_GRADIENT TONE_GRAYSCALE
         passType: 0
       - keywords: GRADATION_GRADIENT TONE_NEGATIVE
         passType: 0
+      - keywords: GRADATION_GRADIENT TONE_NEGATIVE TRANSITION_SHINY
+        passType: 0
       - keywords: GRADATION_GRADIENT TONE_RETRO
         passType: 0
       - keywords: GRADATION_GRADIENT TONE_SEPIA
+        passType: 0
+      - keywords: GRADATION_GRADIENT TONE_SEPIA TRANSITION_SHINY
         passType: 0
       - keywords: GRADATION_GRADIENT TRANSITION_BLAZE
         passType: 0
@@ -164,6 +236,8 @@ ShaderVariantCollection:
       - keywords: GRADATION_GRADIENT TRANSITION_DISSOLVE
         passType: 0
       - keywords: GRADATION_GRADIENT TRANSITION_FADE
+        passType: 0
+      - keywords: GRADATION_GRADIENT TRANSITION_MASK
         passType: 0
       - keywords: GRADATION_GRADIENT TRANSITION_MELT
         passType: 0
