@@ -6,9 +6,9 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace UI.IngameModal
+namespace UI.IngameViewholder
 {
-    public class SkillSlotModel : SerializedMonoBehaviour
+    public class SkillSlotViewholder : SerializedMonoBehaviour
     {
         [SerializeField] public Image skillIcon;
         [SerializeField] public ValueBar valueBar;

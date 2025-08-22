@@ -19,7 +19,9 @@ using PixelUI;
 using Sirenix.OdinInspector;
 using TMPro;
 using UI.IngameModal;
+using UI.IngameViewholder;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
@@ -48,10 +50,10 @@ namespace Characters.UIDisplay
 
 
         [Title("Grade Combo")] [FoldoutGroup("Combo Display")]
-        public GradeComboDisplay gradeComboDisplay;
+        public GradeComboViewholder gradeComboViewholder;
         
         [Title("FlowStage Combo")] [FoldoutGroup("Combo Display")]
-        public FlowStageComboDisplay flowStageComboDisplay;
+        public FlowStageComboViewholder flowStageComboViewholder;
 
         // ========= Combat =========
         [FoldoutGroup("Combat Display"), SerializeField]
@@ -86,7 +88,7 @@ namespace Characters.UIDisplay
         [FoldoutGroup("SolfUpgrade Display"), Title("UI"), FoldoutGroup("SolfUpgrade Display")]
         public GameObject solfUpgradePanel;
 
-        [FoldoutGroup("SolfUpgrade Display")] public SolfUpgradeModel solfUpgradeModel;
+        [FoldoutGroup("SolfUpgrade Display")] public SolfUpgradeViewholder solfUpgradeViewholder;
 
         private readonly Queue<BaseSkillDataSo> skillQueue = new();
         private bool isChoosingSkill = false;
@@ -96,7 +98,7 @@ namespace Characters.UIDisplay
         public SkillSystem skillSystem;
 
         [FoldoutGroup("SkillSlot Display"), Title("UI"), FoldoutGroup("SkillSlot Display"), SerializeField]
-        private List<SkillSlotModel> skillSlotModel;
+        private List<SkillSlotViewholder> skillSlotModel;
 
         // ========= Score =========
         [FoldoutGroup("Score Display"), Title("Ref"), SerializeField]
@@ -109,7 +111,7 @@ namespace Characters.UIDisplay
         private StatusEffectSystem statusEffectSystem;
 
         [FoldoutGroup("Status Display"), SerializeField, Title("UI")]
-        private List<StatusSlotModel> statusSlots;
+        private List<StatusSlotViewholder> statusSlots;
 
         private System.Action<float> _onHealthChangeUpdateUIHandler;
         private System.Action<float> _onHealthChangeTextHandler;
@@ -124,7 +126,7 @@ namespace Characters.UIDisplay
                 comboStreakSystem.OnStageUpdate += UpdateComboStreakBar;
                 comboStreakSystem.OnBoostChanged += UpdateBoostMultiplierText; // float xN
                 //comboStreakSystem.OnTimerTick  // float seconds
-                comboStreakSystem.OnGradeChanged += gradeComboDisplay.UpdateGradeCombo;
+                comboStreakSystem.OnGradeChanged += gradeComboViewholder.UpdateGradeCombo;
                 comboStreakSystem.OnStageEnter += ComboValueBarUpdate;
                 //comboStreakSystem.OnStageExit += ComboValueBarUpdate;
                 comboStreakSystem.OnBerserkEnter += OnBerserkEnter;
@@ -171,7 +173,7 @@ namespace Characters.UIDisplay
                 //comboStreakSystem.OnStageExit -= ComboValueBarUpdate;
                 comboStreakSystem.OnBerserkEnter -= OnBerserkEnter;
                 comboStreakSystem.OnBerserkExit -= OnBerserkExit;
-                comboStreakSystem.OnGradeChanged -= gradeComboDisplay.UpdateGradeCombo;
+                comboStreakSystem.OnGradeChanged -= gradeComboViewholder.UpdateGradeCombo;
             }
 
             levelSystem.OnLevelUpdate -= UpdateLevelUI;
@@ -254,12 +256,12 @@ namespace Characters.UIDisplay
         {
             if (combo == null)     // unstage
             {
-                flowStageComboDisplay.CloseCurrent();
+                flowStageComboViewholder.CloseCurrent();
                 comboStreakBar.FillImage.color = Color.green;
                 return;
             }
             
-            flowStageComboDisplay.UpdateFlowSceneFeedback(combo.stageId);
+            flowStageComboViewholder.UpdateFlowSceneFeedback(combo.stageId);
             
             switch (combo.stageId)
             {
@@ -471,8 +473,8 @@ namespace Characters.UIDisplay
 
         private async UniTask CreateSkillCard(BaseSkillDataSo skill)
         {
-            var skillcard = Instantiate(solfUpgradeModel.gameObject, solfUpgradePanel.transform);
-            var modal = skillcard.GetComponent<SolfUpgradeModel>();
+            var skillcard = Instantiate(solfUpgradeViewholder.gameObject, solfUpgradePanel.transform);
+            var modal = skillcard.GetComponent<SolfUpgradeViewholder>();
 
             bool isNew = !skillSystem.ContainsSkillWithSameRoot(skill);
             modal.UpdateUIModal(skill, isNew);

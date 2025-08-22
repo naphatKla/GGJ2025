@@ -5,9 +5,9 @@ using GameControl.Controller;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace UI.IngameModal
+namespace UI.IngameViewholder
 {
-    public class PauseUIModel : MonoBehaviour
+    public class PauseUIViewholder : MonoBehaviour
     {
         [SerializeField] private Button continueButton;
         [SerializeField] private Button restartButton;

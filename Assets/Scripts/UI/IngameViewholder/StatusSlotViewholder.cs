@@ -4,9 +4,9 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace UI.IngameModal
+namespace UI.IngameViewholder
 {
-    public class StatusSlotModel : MonoBehaviour
+    public class StatusSlotViewholder : MonoBehaviour
     {
         [SerializeField] public Image buffIcon;
         [SerializeField] public ValueBar valueBar;

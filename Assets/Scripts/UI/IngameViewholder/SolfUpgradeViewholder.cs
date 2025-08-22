@@ -6,9 +6,9 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace UI.IngameModal
+namespace UI.IngameViewholder
 {
-    public class SolfUpgradeModel : MonoBehaviour
+    public class SolfUpgradeViewholder : MonoBehaviour
     {
         [SerializeField] private TMP_Text skillTitle;
         [SerializeField] private Image skillIcon;

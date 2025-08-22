@@ -4,9 +4,9 @@ using Sirenix.OdinInspector;
 using UnityEngine;
 
 
-namespace UI.IngameModal
+namespace UI.IngameViewholder
 {
-    public class FlowStageComboDisplay : SerializedMonoBehaviour
+    public class FlowStageComboViewholder : SerializedMonoBehaviour
     {
         [InfoBox("เขียน String ให้ตรงเช่น flow_i")]
         public Dictionary<string, GameObject> FlowStateDic;
