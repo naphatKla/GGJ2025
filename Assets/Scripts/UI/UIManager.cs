@@ -23,7 +23,8 @@ public enum UIPanelType
     GameMode,
     MapSelect,
     QuitPanel,
-    TutorialPanel
+    TutorialPanel,
+    MainMenu,
 }
 
 [System.Serializable]
