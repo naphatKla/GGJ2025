@@ -42,17 +42,19 @@ namespace Manager.SoundManager
 
         public static class UI
         {
-            public const string Click        = "UI/Click";
-            public const string Hover        = "UI/Hover";
-            public const string Confirm      = "UI/Confirm";
-            public const string Cancel       = "UI/Cancel";
-            public const string OpenWindow   = "UI/OpenWindow";
-            public const string CloseWindow  = "UI/CloseWindow";
-            public const string ToggleOn     = "UI/ToggleOn";
-            public const string ToggleOff    = "UI/ToggleOff";
-            public const string Notification = "UI/Notification";
-            public const string Reward       = "UI/Reward";
-            public const string Error        = "UI/Error";
+            private const string Group = nameof(UI);
+
+            public const string Click        = Group + "/" + nameof(Click);
+            public const string Hover        = Group + "/" + nameof(Hover);
+            public const string Confirm      = Group + "/" + nameof(Confirm);
+            public const string Cancel       = Group + "/" + nameof(Cancel);
+            public const string OpenWindow   = Group + "/" + nameof(OpenWindow);
+            public const string CloseWindow  = Group + "/" + nameof(CloseWindow);
+            public const string ToggleOn     = Group + "/" + nameof(ToggleOn);
+            public const string ToggleOff    = Group + "/" + nameof(ToggleOff);
+            public const string Notification = Group + "/" + nameof(Notification);
+            public const string Reward       = Group + "/" + nameof(Reward);
+            public const string Error        = Group + "/" + nameof(Error);
         }
 
         public static class BGM

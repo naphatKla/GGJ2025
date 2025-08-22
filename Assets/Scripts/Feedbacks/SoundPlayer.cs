@@ -7,7 +7,6 @@ using UnityEngine;
 namespace Feedbacks
 {
     [AddComponentMenu("Audio/Sound Player")]
-    [DisallowMultipleComponent]
     public class SoundPlayer : MonoBehaviour
     {
         public enum Category { SFX = 0, UI = 1, BGM = 2 }
