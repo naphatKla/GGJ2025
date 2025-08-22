@@ -72,7 +72,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1879283123
   m_SortingLayer: 5
-  m_SortingOrder: 0
+  m_SortingOrder: -1
   m_Sprite: {fileID: 21300000, guid: 6b7f14a7595e8134a9d66dd1f3e4da4b, type: 3}
   m_Color: {r: 0.13731372, g: 0.745, b: 0.18405885, a: 1}
   m_FlipX: 0
@@ -84,6 +84,336 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!1 &1611008539426677154
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 411780915427453159}
+  - component: {fileID: 6403511043337786645}
+  - component: {fileID: 5668491375699070767}
+  m_Layer: 0
+  m_Name: PiercerEnemyDash
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &411780915427453159
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1611008539426677154}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7040071816674790184}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6403511043337786645
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1611008539426677154}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6da43522623d4704e979466dc7650b65, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Feedbacks: []
+  InitializationMode: 2
+  AutoInitialization: 1
+  SafeMode: 3
+  Direction: 0
+  AutoChangeDirectionOnEnd: 0
+  AutoPlayOnStart: 0
+  AutoPlayOnEnable: 0
+  ForceTimescaleMode: 0
+  ForcedTimescaleMode: 1
+  DurationMultiplier: 1
+  RandomizeDuration: 0
+  RandomDurationMultiplier: {x: 0.5, y: 1.5}
+  DisplayFullDurationDetails: 0
+  PlayerTimescaleMode: 1
+  OnlyPlayIfWithinRange: 0
+  RangeCenter: {fileID: 0}
+  RangeDistance: 5
+  UseRangeFalloff: 0
+  RangeFalloff:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  RemapRangeFalloff: {x: 0, y: 1}
+  IgnoreRangeEvents: 0
+  CooldownDuration: 0.5
+  InitialDelay: 0
+  CanPlay: 1
+  CanPlayWhileAlreadyPlaying: 1
+  ChanceToPlay: 100
+  FeedbacksIntensity: 1
+  Events:
+    TriggerMMFeedbacksEvents: 0
+    TriggerUnityEvents: 1
+    OnPlay:
+      m_PersistentCalls:
+        m_Calls: []
+    OnPause:
+      m_PersistentCalls:
+        m_Calls: []
+    OnResume:
+      m_PersistentCalls:
+        m_Calls: []
+    OnRevert:
+      m_PersistentCalls:
+        m_Calls: []
+    OnComplete:
+      m_PersistentCalls:
+        m_Calls: []
+    OnRestoreInitialValues:
+      m_PersistentCalls:
+        m_Calls: []
+    OnSkipToTheEnd:
+      m_PersistentCalls:
+        m_Calls: []
+  DebugActive: 0
+  FeedbacksList:
+  - rid: 2975743865254576128
+  - rid: 7334425405478141959
+  KeepPlayModeChanges: 0
+  PerformanceMode: 0
+  StopFeedbacksOnDisable: 0
+  PlayCount: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: 2975743865254576128
+      type: {class: MMF_DebugLog, ns: MoreMountains.Feedbacks, asm: MoreMountains.Feedbacks.MMTools}
+      data:
+        Active: 0
+        UniqueID: -580116986
+        Label: Log
+        ChannelMode: 0
+        Channel: 0
+        MMChannelDefinition: {fileID: 0}
+        Chance: 100
+        DisplayColor: {r: 0, g: 0, b: 0, a: 1}
+        Timing:
+          TimescaleMode: 0
+          ExcludeFromHoldingPauses: 0
+          ContributeToTotalDuration: 1
+          InitialDelay: 0
+          CooldownDuration: 0
+          InterruptsOnStop: 1
+          NumberOfRepeats: 0
+          RepeatForever: 0
+          DelayBetweenRepeats: 1
+          MMFeedbacksDirectionCondition: 0
+          PlayDirection: 0
+          ConstantIntensity: 0
+          UseIntensityInterval: 0
+          IntensityIntervalMin: 0
+          IntensityIntervalMax: 0
+          Sequence: {fileID: 0}
+          TrackID: 0
+          Quantized: 0
+          TargetBPM: 120
+        AutomatedTargetAcquisition:
+          Mode: 0
+          ChildIndex: 0
+        RandomizeOutput: 0
+        RandomMultiplier: {x: 0.8, y: 1}
+        RandomizeDuration: 0
+        RandomDurationMultiplier: {x: 0.5, y: 2}
+        UseRange: 0
+        RangeDistance: 5
+        UseRangeFalloff: 0
+        RangeFalloff:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 1
+            value: 0
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        RemapRangeFalloff: {x: 0, y: 1}
+        Owner: {fileID: 6403511043337786645}
+        DebugActive: 0
+        DebugLogMode: 0
+        DebugMessage: 
+        DebugColor: {r: 0, g: 1, b: 1, a: 1}
+        DisplayFrameCount: 1
+    - rid: 7334425405478141959
+      type: {class: MMF_Events, ns: MoreMountains.Feedbacks, asm: MoreMountains.Feedbacks}
+      data:
+        Active: 1
+        UniqueID: -164382473
+        Label: Unity Events
+        ChannelMode: 0
+        Channel: 0
+        MMChannelDefinition: {fileID: 0}
+        Chance: 100
+        DisplayColor: {r: 0, g: 0, b: 0, a: 1}
+        Timing:
+          TimescaleMode: 0
+          ExcludeFromHoldingPauses: 0
+          ContributeToTotalDuration: 1
+          InitialDelay: 0
+          CooldownDuration: 0
+          InterruptsOnStop: 1
+          NumberOfRepeats: 0
+          RepeatForever: 0
+          DelayBetweenRepeats: 1
+          MMFeedbacksDirectionCondition: 0
+          PlayDirection: 0
+          ConstantIntensity: 0
+          UseIntensityInterval: 0
+          IntensityIntervalMin: 0
+          IntensityIntervalMax: 0
+          Sequence: {fileID: 0}
+          TrackID: 0
+          Quantized: 0
+          TargetBPM: 120
+        AutomatedTargetAcquisition:
+          Mode: 0
+          ChildIndex: 0
+        RandomizeOutput: 0
+        RandomMultiplier: {x: 0.8, y: 1}
+        RandomizeDuration: 0
+        RandomDurationMultiplier: {x: 0.5, y: 2}
+        UseRange: 0
+        RangeDistance: 5
+        UseRangeFalloff: 0
+        RangeFalloff:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 1
+            value: 0
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        RemapRangeFalloff: {x: 0, y: 1}
+        Owner: {fileID: 6403511043337786645}
+        DebugActive: 0
+        PlayEvents:
+          m_PersistentCalls:
+            m_Calls:
+            - m_Target: {fileID: 5668491375699070767}
+              m_TargetAssemblyTypeName: Feedbacks.SoundPlayer, Assembly-CSharp
+              m_MethodName: Play
+              m_Mode: 1
+              m_Arguments:
+                m_ObjectArgument: {fileID: 0}
+                m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+                m_IntArgument: 0
+                m_FloatArgument: 0
+                m_StringArgument: 
+                m_BoolArgument: 0
+              m_CallState: 2
+        StopEvents:
+          m_PersistentCalls:
+            m_Calls: []
+        InitializationEvents:
+          m_PersistentCalls:
+            m_Calls: []
+        ResetEvents:
+          m_PersistentCalls:
+            m_Calls: []
+--- !u!114 &5668491375699070767
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1611008539426677154}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9becc8a5528cea42ba9ac92fff2dae9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  category: 0
+  keyShort: PiercerSkillDash
+  useExtraKeys: 0
+  extraKeys: []
+  volumeScale: 1
+  playOnEnable: 0
+  stopOnDisable: 0
+  usePitchOverride: 0
+  pitch: 1
+  sfxUseFadeIn: 0
+  sfxFadeIn: 0.08
+  sfxFadeOutOnStop: 1
+  sfxFadeOut: 0.1
+  uiUseFadeIn: 0
+  uiFadeIn: 0.06
+  uiFadeOutOnStop: 0
+  uiFadeOut: 0.08
+  overrideBgmFade: 0
+  bgmFadeOut: 0.6
+  bgmFadeIn: 0.6
+  useTransformPosition: 1
+  positionSource: {fileID: 0}
+  customWorldPosition: {x: 0, y: 0, z: 0}
 --- !u!1 &7011871964297545894
 GameObject:
   m_ObjectHideFlags: 0
@@ -114,6 +444,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4183461203779063230}
+  - {fileID: 411780915427453159}
   m_Father: {fileID: 1969623571361036756}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7163476618811501522
@@ -128,7 +459,6 @@ GameObject:
   - component: {fileID: 7738816475116763088}
   - component: {fileID: 5375508461332974695}
   - component: {fileID: 4728684009063820825}
-  - component: {fileID: 3964059927998412206}
   m_Layer: 0
   m_Name: PiercerEnemyChargeDash
   m_TagString: Untagged
@@ -416,18 +746,6 @@ MonoBehaviour:
                 m_StringArgument: 
                 m_BoolArgument: 0
               m_CallState: 2
-            - m_Target: {fileID: 3964059927998412206}
-              m_TargetAssemblyTypeName: Feedbacks.SoundPlayer, Assembly-CSharp
-              m_MethodName: Play
-              m_Mode: 1
-              m_Arguments:
-                m_ObjectArgument: {fileID: 0}
-                m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-                m_IntArgument: 0
-                m_FloatArgument: 0
-                m_StringArgument: 
-                m_BoolArgument: 0
-              m_CallState: 2
         StopEvents:
           m_PersistentCalls:
             m_Calls: []
@@ -471,41 +789,6 @@ MonoBehaviour:
   stopOnDisable: 1
   followMode: 1
   rotationMode: 1
---- !u!114 &3964059927998412206
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7163476618811501522}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e9becc8a5528cea42ba9ac92fff2dae9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  category: 0
-  keyShort: PiercerSkillDash
-  useExtraKeys: 0
-  extraKeys: []
-  volumeScale: 1
-  playOnEnable: 0
-  stopOnDisable: 0
-  usePitchOverride: 0
-  pitch: 1
-  sfxUseFadeIn: 0
-  sfxFadeIn: 0.08
-  sfxFadeOutOnStop: 1
-  sfxFadeOut: 0.1
-  uiUseFadeIn: 0
-  uiFadeIn: 0.06
-  uiFadeOutOnStop: 0
-  uiFadeOut: 0.08
-  overrideBgmFade: 0
-  bgmFadeOut: 0.6
-  bgmFadeIn: 0.6
-  useTransformPosition: 1
-  positionSource: {fileID: 0}
-  customWorldPosition: {x: 0, y: 0, z: 0}
 --- !u!1001 &4273545289913616972
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -656,7 +939,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5733554412123996507, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
       propertyPath: skillEntries.Array.size
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5733554412123996507, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
       propertyPath: serializationData.Prefab
@@ -667,11 +950,23 @@ PrefabInstance:
       value: Skill/PiercerDashCharge_Lv1
       objectReference: {fileID: 0}
     - target: {fileID: 5733554412123996507, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
+      propertyPath: skillEntries.Array.data[1].Key
+      value: Skill/PiercerDash_Lv1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5733554412123996507, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
       propertyPath: skillEntries.Array.data[0].Player
       value: 
       objectReference: {fileID: 7738816475116763088}
     - target: {fileID: 5733554412123996507, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
+      propertyPath: skillEntries.Array.data[1].Player
+      value: 
+      objectReference: {fileID: 6403511043337786645}
+    - target: {fileID: 5733554412123996507, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
       propertyPath: skillEntries.Array.data[0].GroupFilter
+      value: Skill
+      objectReference: {fileID: 0}
+    - target: {fileID: 5733554412123996507, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
+      propertyPath: skillEntries.Array.data[1].GroupFilter
       value: Skill
       objectReference: {fileID: 0}
     - target: {fileID: 5733554412123996507, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}

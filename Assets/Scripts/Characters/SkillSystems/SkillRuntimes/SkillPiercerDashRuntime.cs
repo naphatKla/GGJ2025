@@ -62,6 +62,7 @@ namespace Characters.SkillSystems.SkillRuntimes
 
             if (cancelToken.IsCancellationRequested) return;
             
+            owner.TryPlayFeedback(skillData.DashFeedback);
             owner.DamageOnTouch.EnableDamage(owner.gameObject, this, 1, skillData.DashBaseDamage,
                 skillData.DamageMultiplier);
 

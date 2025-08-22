@@ -1,3 +1,4 @@
+using Characters.FeedbackSystems;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -41,6 +42,11 @@ namespace Characters.SO.SkillDataSo
         [PropertyTooltip("AnimationCurve that applies lateral displacement during the dash allowing for custom arcing or wave-like motion paths instead of straight-line dashing.")]
         [SerializeField] private AnimationCurve dashMoveCurve;
 
+        [FoldoutGroup("Feedback")] 
+        [ValueDropdown("@FeedbackName.Odin.ShortGroupWithNone(\"Skill\")")] 
+        [SerializeField] private string dashFeedback;
+        
+
         public float DashBaseDamage => dashBaseDamage;
 
         public float DamageMultiplier => damageMultiplier;
@@ -58,5 +64,8 @@ namespace Characters.SO.SkillDataSo
         public AnimationCurve DashEaseCurve => dashEaseCurve;
 
         public AnimationCurve DashMoveCurve => dashMoveCurve;
+
+        public string DashFeedback => 
+            string.IsNullOrEmpty(dashFeedback) ? null : FeedbackName.ResolveFullKey("Skill", dashFeedback);
     }
 }

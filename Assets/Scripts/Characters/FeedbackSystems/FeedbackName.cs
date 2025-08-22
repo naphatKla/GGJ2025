@@ -77,6 +77,7 @@ namespace Characters.FeedbackSystems
             public const string OverloopLv5 = "Skill/Overloop_Lv5";
             public const string OverloopLv6 = "Skill/Overloop_Lv6";
             public const string PiercerDashChargeLv1 = "Skill/PiercerDashCharge_Lv1";
+            public const string PiercerDashLv1 = "Skill/PiercerDash_Lv1";
             public const string ChargeBombLv1 = "Skill/ChargeBomb_Lv1";
             public const string PressureBombLv1 = "Skill/PressureBomb_Lv1";
         }
