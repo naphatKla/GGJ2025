@@ -16,6 +16,7 @@ namespace Manager.SoundManager
         {
             private const string Group = nameof(SFX);
             public const string PlayerAttackHit = Group + "/" + nameof(PlayerAttackHit);
+            public const string PlayerCounterDash = Group + "/" + nameof(PlayerCounterDash);
             public const string PlayerHurt = Group + "/" + nameof(PlayerHurt);
             public const string PlayerHeal = Group + "/" + nameof(PlayerHeal);
             public const string PlayerDead = Group + "/" + nameof(PlayerDead);

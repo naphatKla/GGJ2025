@@ -53890,7 +53890,7 @@ MonoBehaviour:
   hpText: {fileID: 0}
   skillUpgradeController: {fileID: 7127418468070666774}
   solfUpgradePanel: {fileID: 0}
-  solfUpgradeViewholder: {fileID: 0}
+  solfUpgradeViewholder: {fileID: 962830566913950826, guid: 56ac69313ddb4ee42b51c120f615702f, type: 3}
   skillSystem: {fileID: 1367073074030531616}
   skillSlotModel:
   - {fileID: 0}
@@ -110280,6 +110280,7 @@ GameObject:
   - component: {fileID: 75694539701820823}
   - component: {fileID: 8214702152260277301}
   - component: {fileID: 7514996282833627988}
+  - component: {fileID: 2585332794572044499}
   m_Layer: 0
   m_Name: PlayerCounterAttack
   m_TagString: Untagged
@@ -111040,6 +111041,18 @@ MonoBehaviour:
                 m_StringArgument: 
                 m_BoolArgument: 0
               m_CallState: 2
+            - m_Target: {fileID: 2585332794572044499}
+              m_TargetAssemblyTypeName: Feedbacks.SoundPlayer, Assembly-CSharp
+              m_MethodName: Play
+              m_Mode: 1
+              m_Arguments:
+                m_ObjectArgument: {fileID: 0}
+                m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+                m_IntArgument: 0
+                m_FloatArgument: 0
+                m_StringArgument: 
+                m_BoolArgument: 0
+              m_CallState: 2
         StopEvents:
           m_PersistentCalls:
             m_Calls: []
@@ -111066,6 +111079,41 @@ MonoBehaviour:
   stopOnDisable: 0
   followMode: 0
   rotationMode: 0
+--- !u!114 &2585332794572044499
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5055937565625600417}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9becc8a5528cea42ba9ac92fff2dae9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  category: 0
+  keyShort: PlayerCounterDash
+  useExtraKeys: 0
+  extraKeys: []
+  volumeScale: 1
+  playOnEnable: 0
+  stopOnDisable: 0
+  usePitchOverride: 0
+  pitch: 1
+  sfxUseFadeIn: 0
+  sfxFadeIn: 0.08
+  sfxFadeOutOnStop: 1
+  sfxFadeOut: 0.1
+  uiUseFadeIn: 0
+  uiFadeIn: 0.06
+  uiFadeOutOnStop: 0
+  uiFadeOut: 0.08
+  overrideBgmFade: 0
+  bgmFadeOut: 0.6
+  bgmFadeIn: 0.6
+  useTransformPosition: 1
+  positionSource: {fileID: 0}
+  customWorldPosition: {x: 0, y: 0, z: 0}
 --- !u!1 &5075724427726316564
 GameObject:
   m_ObjectHideFlags: 0
