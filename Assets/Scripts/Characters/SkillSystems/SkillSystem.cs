@@ -21,6 +21,10 @@ namespace Characters.SkillSystems
 
     public class SkillSystem : MonoBehaviour, IFixedUpdateable
     {
+        public int TotalPrimarySkillUsed { get; private set; }
+        public int TotalSecondarySkillUsed { get; private set; }
+        public int TotalAutoSkillUsed { get; private set; }
+
         // progress: 0..1, index
         public event Action<float, float, int> OnSkillCooldownUpdate;
         public event Action<int> OnSkillCooldownReset;
@@ -284,8 +288,19 @@ namespace Characters.SkillSystems
 
             runtime.SetCurrentCooldown(0);
             int index = GetSkillIndex(newSkillData);
-            runtime.SkillPerformCallback = () => OnSkillPerform?.Invoke(index);
-            
+
+            runtime.SkillPerformCallback = () =>
+            {
+                if (type == SkillType.PrimarySkill)
+                    TotalPrimarySkillUsed++;
+                else if (type == SkillType.SecondarySkill)
+                    TotalSecondarySkillUsed++;
+                else if (type == SkillType.AutoSkill)
+                    TotalAutoSkillUsed++;
+
+                OnSkillPerform?.Invoke(index);
+            };
+
             OnNewSkillAssign?.Invoke(newSkillData, index);
         }
 
@@ -308,7 +323,7 @@ namespace Characters.SkillSystems
                     Destroy(runtime);
                     if (runtime is IAutoSkillTriggerSource autoSkillTriggerSource)
                         autoSkillTriggerSource.OnTriggerAutoSkill -= OnTriggerAutoSkill;
-                    
+
                     _skillRuntimeDictionary.Remove(oldSkill);
                 }
 
@@ -320,7 +335,7 @@ namespace Characters.SkillSystems
                 Destroy(runtime);
                 if (runtime is IAutoSkillTriggerSource autoSkillTriggerSource)
                     autoSkillTriggerSource.OnTriggerAutoSkill -= OnTriggerAutoSkill;
-                
+
                 _skillRuntimeDictionary.Remove(oldSkill);
             }
         }
@@ -337,7 +352,7 @@ namespace Characters.SkillSystems
                     Destroy(runtime);
                     if (runtime is IAutoSkillTriggerSource autoSkillTriggerSource)
                         autoSkillTriggerSource.OnTriggerAutoSkill -= OnTriggerAutoSkill;
-                    
+
                     _skillRuntimeDictionary.Remove(skill);
                     _pendingRuntimeRemoval.RemoveAt(i);
                 }
@@ -437,7 +452,7 @@ namespace Characters.SkillSystems
                     Destroy(runtime);
                     if (runtime is IAutoSkillTriggerSource autoSkillTriggerSource)
                         autoSkillTriggerSource.OnTriggerAutoSkill -= OnTriggerAutoSkill;
-                    
+
                     _skillRuntimeDictionary.Remove(data);
                 }
             }
@@ -472,7 +487,7 @@ namespace Characters.SkillSystems
             SetCanUseSkills(true);
             // หมายเหตุ: ไม่รีเซ็ตตัวคูณสล็อต เพื่อให้ค่าที่ผู้เล่น/ระบบตั้งไว้คงอยู่
         }
-
+        
         private void OnEnable()
         {
             FixedUpdateManager.Instance.Register(this);

@@ -86,6 +86,9 @@ namespace Characters.HeathSystems
         /// The boolean parameter represents whether the character is now invincible.
         /// </summary>
         public Action<bool> OnInvincible { get; set; }
+        
+        public int TotalDamageTaken { get; set; }
+        public int TotalHeal { get; set; }
 
         public bool IsInvincible => _isInvincible;
 
@@ -131,6 +134,7 @@ namespace Characters.HeathSystems
             }
 
             ModifyHealth(-damage);
+            TotalDamageTaken += (int)damage;
             OnTakeDamage?.Invoke(true);
 
             HitCooldownHandler();
@@ -159,6 +163,7 @@ namespace Characters.HeathSystems
         {
             if (_isDead) return;
             ModifyHealth(healAmount);
+            TotalHeal += (int)healAmount;
             OnHeal?.Invoke();
             owner?.TryPlayFeedback(FeedbackName.Character.Heal);
         }

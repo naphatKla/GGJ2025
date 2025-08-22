@@ -120,11 +120,24 @@ namespace Characters.Controllers
         {
             PlayerSummaryStats statsPerRun = new PlayerSummaryStats();
             statsPerRun.totalScore = scoreSystem.CurrentScore;
+            
             statsPerRun.currentLevel = levelSystem.Level;
+            
             statsPerRun.highestRank = comboStreakSystem.HighestRank;
             statsPerRun.highestStreakCount = comboStreakSystem.HighestStreakCount;
             statsPerRun.averageExpMultiplier = comboStreakSystem.AverageExpMultiplier;
-            statsPerRun.DebugStat();
+            
+            statsPerRun.totalEnemiesEliminated = combatSystem.TotalKill;
+            statsPerRun.totalDamageDeal = combatSystem.TotalDamageDeal;
+            statsPerRun.criticalCount = combatSystem.TotalCriticalCount;
+            statsPerRun.totalCounterDashCount = combatSystem.TotalCounterDashCount;
+
+            statsPerRun.totalPrimarySkillUsed = skillSystem.TotalPrimarySkillUsed;
+            statsPerRun.totalSecondarySkillUsed = skillSystem.TotalSecondarySkillUsed;
+            statsPerRun.totalAutoSkillUsed = skillSystem.TotalAutoSkillUsed;
+
+            statsPerRun.totalDamageTaken = HealthSystem.TotalDamageTaken;
+            statsPerRun.totalHeal = HealthSystem.TotalHeal;
             return statsPerRun;
         }
 

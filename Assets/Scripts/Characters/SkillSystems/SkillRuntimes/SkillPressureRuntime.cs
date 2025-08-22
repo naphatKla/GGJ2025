@@ -34,6 +34,7 @@ namespace Characters.SkillSystems.SkillRuntimes
 
         protected override void OnSkillExit()
         {
+            if (!owner) return;
             owner.MovementSystem.ResetMovementSystem();
             CombatManager.ApplyRawDamageTo(owner.gameObject, owner.HealthSystem.MaxHealth);
         }

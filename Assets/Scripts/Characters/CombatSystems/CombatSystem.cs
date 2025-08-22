@@ -29,6 +29,11 @@ namespace Characters.CombatSystems
         private float _baseLifeStealPercent;
         
         private float _baseLifeStealEffective;
+        
+        public int TotalKill { get; private set; }
+        public int TotalDamageDeal { get; private set; }
+        public int TotalCriticalCount { get; private set; }
+        public int TotalCounterDashCount { get; private set; }
 
         /// <summary>
         /// The current damage value used for actual damage calculations.
@@ -114,17 +119,23 @@ namespace Characters.CombatSystems
         {
             OnCounterAttack?.Invoke();
             _owner.TryPlayFeedback(FeedbackName.Character.CounterAttack);
+            TotalCounterDashCount++;
         }
 
         public void OnDealDamageHandler(DamageData damageData)
         {
             OnDealDamage?.Invoke(damageData);
             _owner.TryPlayFeedback(FeedbackName.Character.AttackHit);
+            TotalDamageDeal += (int)damageData.Damage;
+            
+            if (damageData.IsCritical)
+                TotalCriticalCount++;
         }
 
         public void OnKillHandler()
         {
             OnKill?.Invoke();
+            TotalKill++;
         }
         
         public void AddCurrentDamage(float value)

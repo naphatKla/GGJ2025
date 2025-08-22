@@ -88,7 +88,7 @@ namespace Characters.ComboSystem
             ForceExitStage(); // เคลียร์ stage + final timer
             highestTierReached = -1;
             activeTierIndex = -1;
-
+            
             // แจ้ง unstage เพื่อ sync UI
             OnStageEnter?.Invoke(null);
 

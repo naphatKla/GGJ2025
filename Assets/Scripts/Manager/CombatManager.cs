@@ -71,7 +71,7 @@ namespace Manager
             attackerController.CombatSystem.OnDealDamageHandler(damageData);
             
             if (dieThisFrame)
-                attackerController.CombatSystem.OnKill();
+                attackerController.CombatSystem.OnKillHandler();
             
             if (damageData.LifeSteal <= 0) return;
             attackerController.HealthSystem.Heal(damageData.LifeSteal);
