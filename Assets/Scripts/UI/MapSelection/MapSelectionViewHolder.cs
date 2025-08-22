@@ -20,6 +20,7 @@ namespace UI.MapSelection
         [SerializeField] Button button = default;
         [SerializeField] private Image backgroundSelection;
         [SerializeField] private TMP_Text selectionText;
+        [SerializeField] Button startButton = default;
         
         //Preview
         [Title("Map Preview")]
@@ -36,6 +37,7 @@ namespace UI.MapSelection
         void Start()
         {
             button.onClick.AddListener(() => Context.OnCellClicked?.Invoke(Index));
+            startButton.onClick.AddListener(() => SceneManager.LoadScene("Gameplay"));
         }
 
         public override void UpdateContent(MapSelectionItemModel itemData)
@@ -45,11 +47,6 @@ namespace UI.MapSelection
             mapImage.sprite = itemData.MapImage;
 
             //messageLarge.text = Index.ToString();
-
-            var selected = Context.SelectedIndex == Index;
-            backgroundPreview.color = backgroundSelection.color = selected
-                ? new Color32(0, 255, 255, 100)
-                : new Color32(255, 255, 255, 77);
         }
 
         public override void UpdatePosition(float position)
