@@ -7,9 +7,9 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace UI.IngameModal
+namespace UI.IngameViewholder
 {
-    public class GradeComboDisplay : MonoBehaviour
+    public class GradeComboViewholder : MonoBehaviour
     {
         [Title("Grade Combo")]
         public Image gradeImage;

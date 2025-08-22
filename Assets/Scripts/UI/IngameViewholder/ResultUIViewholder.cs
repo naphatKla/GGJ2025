@@ -8,9 +8,9 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace UI.IngameModal
+namespace UI.IngameViewholder
 {
-    public class ResultUIModel : MonoBehaviour
+    public class ResultUIViewholder : MonoBehaviour
     {
         [SerializeField] private Button restartButton;
         [SerializeField] private Button backButton;
