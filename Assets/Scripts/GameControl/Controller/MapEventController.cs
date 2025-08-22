@@ -161,7 +161,7 @@ namespace GameControl.Controller
         private void TriggerMapEvent(string eventID)
         {
             if (_debug) Debug.Log($"[TriggerMapEvent] Triggering map event ID: {eventID} at timer = {GameTimer.Instance.GlobalTimer:F2}s");
-            MapEventManager.Instance.RunEventMapByID(eventID).Forget();
+            MapEventManager.Instance.RunEvent(eventID);
         }
     }
 }

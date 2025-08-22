@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using Characters.Controllers;
 using Cysharp.Threading.Tasks;
 using MoreMountains.Tools;
@@ -25,16 +26,26 @@ namespace GameControl.EventMap
 
         private Dictionary<string, MapEventContainerSO> _mapStorageDict;
         private Dictionary<BaseMapEvent, ObjectPool<BaseMapEvent>> _poolDict = new();
+        
+        private CancellationTokenSource _cts;
 
         protected override void Awake()
         {
             base.Awake();
+            _cts = new CancellationTokenSource();
             _mapStorageDict = new Dictionary<string, MapEventContainerSO>();
             foreach (var entry in storageEntries)
                 _mapStorageDict[entry.id] = entry.storage;
         }
+        
+        private void OnDisable()
+        {
+            _cts?.Cancel();
+            _cts?.Dispose();
+            _cts = new CancellationTokenSource();
+        }
 
-        public async UniTaskVoid RunEventMapByID(string id)
+        public async UniTask RunEventMapByID(string id, CancellationToken token)
         {
             if (!_mapStorageDict.TryGetValue(id, out var storage)) return;
 
@@ -42,8 +53,12 @@ namespace GameControl.EventMap
             var eventsToRun = GetFilteredEvents(storage);
             foreach (var entry in eventsToRun)
             {
+                token.ThrowIfCancellationRequested();
                 PlayEntry(entry, playerPost);
-                await UniTask.Delay(TimeSpan.FromSeconds(GetDelayForEntry(entry, storage)));
+                await UniTask.Delay(
+                    TimeSpan.FromSeconds(GetDelayForEntry(entry, storage)), 
+                    cancellationToken: token
+                );
             }
         }
 
@@ -144,6 +159,11 @@ namespace GameControl.EventMap
             return pool;
         }
         
+        public void RunEvent(string id)
+        {
+            RunEventMapByID(id, _cts.Token).Forget();
+        }
+        
         [Title("▶️ Test Run (Odin Button)")]
         [InfoBox("ใส่ ID ที่ต้องการทดสอบ แล้วกดปุ่ม Run Test")]
         [SerializeField, LabelText("Event ID")] 
@@ -152,7 +172,7 @@ namespace GameControl.EventMap
         [Button("Run Test"), GUIColor(0.3f, 0.8f, 0.3f)]
         private void RunTestById()
         {
-            RunEventMapByID(_testId).Forget();
+            RunEvent(_testId);
         }
     }
 }
