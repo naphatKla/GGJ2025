@@ -77,7 +77,7 @@ namespace Characters.SkillSystems.SkillRuntimes
             
             foreach (var obj in _skillObjects)
             {
-                obj.gameObject?.SetActive(false);
+                obj?.gameObject?.SetActive(false);
                 obj?.DamageOnTouch.DisableDamage(this);
                 PoolingManager.Current?.Release(skillData.LightPrefab.name, obj);
             }

@@ -45,11 +45,11 @@ namespace UI
         [Header("UI Panels (registry)")] [SerializeField]
         private List<UIPanelEntry> panelEntries = new();
 
-        [Header("Panels that PAUSE the game when open")] [SerializeField]
-        private List<UIPanelType> pauseOnOpenPanels = new()
+        [Header("Panels that PAUSE the game when open")]
+        private List<UIPanelType> _pauseOnOpenPanels = new()
         {
             UIPanelType.Pause,
-            UIPanelType.SkillTree,
+            UIPanelType.SolfUpgrade,
             UIPanelType.TutorialPanel
         };
 
@@ -109,7 +109,7 @@ namespace UI
             _stack.Push(type);
 
             // Mark pause owner if listed
-            if (pauseOnOpenPanels.Contains(type))
+            if (_pauseOnOpenPanels.Contains(type))
                 _pauseOwners.Add(type);
 
             // Fire events
@@ -295,7 +295,7 @@ namespace UI
             OnAnyUIOpenFirst?.Invoke();
             OnAnyPanelOpen?.Invoke();
 
-            if (pauseOnOpenPanels.Contains(UIPanelType.MapResult))
+            if (_pauseOnOpenPanels.Contains(UIPanelType.MapResult))
                 _pauseOwners.Add(UIPanelType.MapResult);
 
             ApplyPauseState();
