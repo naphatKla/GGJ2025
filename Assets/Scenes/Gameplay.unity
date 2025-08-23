@@ -19747,6 +19747,7 @@ GameObject:
   - component: {fileID: 1713170221}
   - component: {fileID: 1713170220}
   - component: {fileID: 1713170222}
+  - component: {fileID: 1713170223}
   m_Layer: 5
   m_Name: ResultModal
   m_TagString: Untagged
@@ -19828,6 +19829,18 @@ MonoBehaviour:
   backButton: {fileID: 1193022168}
   middleText: {fileID: 892629892}
   summaryText: {fileID: 498336385}
+--- !u!225 &1713170223
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1713170218}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &1714217790
 GameObject:
   m_ObjectHideFlags: 0
@@ -20831,7 +20844,6 @@ MonoBehaviour:
     panel: {fileID: 526661206}
   - type: 10
     panel: {fileID: 1848575498}
-  pauseOnOpenPanels: 010000000a000000
 --- !u!1 &1817841937
 GameObject:
   m_ObjectHideFlags: 0

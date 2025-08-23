@@ -1,5 +1,4 @@
 // SoundManager.cs
-
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,6 +10,13 @@ namespace Manager.SoundManager
 {
     public class SoundManager : NonAutoCreateSingleton<SoundManager>
     {
+        public enum TimeScaleMode
+        {
+            Unscaled = 0,        // ไม่ผูกกับ Time.timeScale
+            ScalePitch = 1,      // ปรับ pitch = basePitch * Time.timeScale
+            PauseOnlyAtZero = 2  // timeScale = 0 -> Pause, >0 -> UnPause
+        }
+
         [Header("Database")] [SerializeField] private SoundDatabase database;
 
         [Header("Mixer Defaults")] [SerializeField]
@@ -66,6 +72,10 @@ namespace Manager.SoundManager
         private readonly Dictionary<AudioSource, Coroutine> _sfxFades = new();
         private readonly Dictionary<AudioSource, Coroutine> _uiFades = new();
 
+        // ===== TimeScale tracking =====
+        private readonly Dictionary<AudioSource, TimeScaleMode> _tsModePerSource = new();
+        private readonly Dictionary<AudioSource, float> _srcBasePitch = new();
+
         private static readonly System.Random _rnd = new();
 
         public SoundDatabase Database => database;
@@ -79,6 +89,12 @@ namespace Manager.SoundManager
             EnsureSfxPool();
             EnsureUiPool();
             EnsureBgmChannels();
+        }
+
+        private void Update()
+        {
+            if (_tsModePerSource.Count == 0) return;
+            ApplyTimeScaleToTrackedSources();
         }
 
         // ---------- Build caches from database lists ----------
@@ -97,13 +113,8 @@ namespace Manager.SoundManager
                     bool anyClip = false;
                     foreach (var v in e.variants)
                     {
-                        if (v.clip)
-                        {
-                            anyClip = true;
-                            break;
-                        }
+                        if (v.clip) { anyClip = true; break; }
                     }
-
                     if (!anyClip) continue;
                     _sfxMap.TryAdd(e.Key, e);
                 }
@@ -118,13 +129,8 @@ namespace Manager.SoundManager
                     bool anyClip = false;
                     foreach (var v in e.variants)
                     {
-                        if (v.clip)
-                        {
-                            anyClip = true;
-                            break;
-                        }
+                        if (v.clip) { anyClip = true; break; }
                     }
-
                     if (!anyClip) continue;
                     _uiMap.TryAdd(e.Key, e);
                 }
@@ -166,6 +172,8 @@ namespace Manager.SoundManager
                         StopCoroutineSafe(c);
                         _sfxFades.Remove(s);
                     }
+
+                    UntrackSource(s);
 
                     s.Stop();
                     s.clip = null;
@@ -212,6 +220,8 @@ namespace Manager.SoundManager
                         _uiFades.Remove(s);
                     }
 
+                    UntrackSource(s);
+
                     s.Stop();
                     s.clip = null;
                     s.loop = false;
@@ -230,8 +240,12 @@ namespace Manager.SoundManager
         }
 
         // ---------- SFX ----------
-        public AudioSource PlaySFX(string key, Vector3? worldPos = null, float volumeScale = 1f,
-            float? pitchOverride = null)
+        public AudioSource PlaySFX(
+            string key,
+            Vector3? worldPos = null,
+            float volumeScale = 1f,
+            float? pitchOverride = null,
+            TimeScaleMode timeScaleMode = TimeScaleMode.Unscaled)
         {
             if (!TryGetSfx(key, out var entry)) return null;
             if (IsOnCooldown(key, entry.cooldown)) return null;
@@ -266,29 +280,36 @@ namespace Manager.SoundManager
             src.outputAudioMixerGroup = entry.mixerOverride ? entry.mixerOverride : defaultSfxMixer;
 
             src.Play();
+            TrackSource(src, timeScaleMode);
+
             if (!src.loop) StartCoroutine(ReleaseWhenFinished(POOL_SFX, src));
             return src;
         }
 
-        // เล่น SFX พร้อม fade-in
-        public AudioSource PlaySFXFadeIn(string key, float fadeInSeconds, Vector3? worldPos = null,
-            float volumeScale = 1f, float? pitchOverride = null)
+        public AudioSource PlaySFXFadeIn(
+            string key,
+            float fadeInSeconds,
+            Vector3? worldPos = null,
+            float volumeScale = 1f,
+            float? pitchOverride = null,
+            TimeScaleMode timeScaleMode = TimeScaleMode.Unscaled,
+            bool fadeUsesScaledTime = false)
         {
-            var src = PlaySFX(key, worldPos, volumeScale, pitchOverride);
+            var src = PlaySFX(key, worldPos, volumeScale, pitchOverride, timeScaleMode);
             if (!src) return null;
             if (fadeInSeconds <= 0f) return src;
 
             float target = src.volume;
             src.volume = 0f;
-            StartSfxFade(src, 0f, target, Mathf.Max(minFadeSeconds, fadeInSeconds), stopAtEnd: false, release: false);
+            StartSfxFade(src, 0f, target, Mathf.Max(minFadeSeconds, fadeInSeconds), stopAtEnd: false, release: false, useScaledTime: fadeUsesScaledTime);
             return src;
         }
 
-        public void FadeOutSFX(AudioSource src, float fadeOutSeconds, bool release = true)
+        public void FadeOutSFX(AudioSource src, float fadeOutSeconds, bool release = true, bool useScaledTime = false)
         {
             if (!src) return;
             StartSfxFade(src, src.volume, 0f, Mathf.Max(minFadeSeconds, fadeOutSeconds), stopAtEnd: true,
-                release: release);
+                release: release, useScaledTime: useScaledTime);
         }
 
         public void StopSFX(AudioSource src, bool release = true)
@@ -301,7 +322,7 @@ namespace Manager.SoundManager
             }
 
             src.Stop();
-            
+
             if (release)
             {
                 PoolingManager.Current?.Release(POOL_SFX, src);
@@ -309,7 +330,11 @@ namespace Manager.SoundManager
         }
 
         // ---------- UI ----------
-        public AudioSource PlayUI(string key, float volumeScale = 1f, float? pitchOverride = null)
+        public AudioSource PlayUI(
+            string key,
+            float volumeScale = 1f,
+            float? pitchOverride = null,
+            TimeScaleMode timeScaleMode = TimeScaleMode.Unscaled)
         {
             if (!TryGetUi(key, out var entry)) return null;
             if (IsOnCooldown(key, entry.cooldown)) return null;
@@ -334,28 +359,35 @@ namespace Manager.SoundManager
                 : (defaultUiMixer ? defaultUiMixer : defaultSfxMixer);
 
             src.Play();
+            TrackSource(src, timeScaleMode);
+
             if (!src.loop) StartCoroutine(ReleaseWhenFinished(POOL_UI, src));
             return src;
         }
 
-        public AudioSource PlayUIFadeIn(string key, float fadeInSeconds, float volumeScale = 1f,
-            float? pitchOverride = null)
+        public AudioSource PlayUIFadeIn(
+            string key,
+            float fadeInSeconds,
+            float volumeScale = 1f,
+            float? pitchOverride = null,
+            TimeScaleMode timeScaleMode = TimeScaleMode.Unscaled,
+            bool fadeUsesScaledTime = false)
         {
-            var src = PlayUI(key, volumeScale, pitchOverride);
+            var src = PlayUI(key, volumeScale, pitchOverride, timeScaleMode);
             if (!src) return null;
             if (fadeInSeconds <= 0f) return src;
 
             float target = src.volume;
             src.volume = 0f;
-            StartUiFade(src, 0f, target, Mathf.Max(minFadeSeconds, fadeInSeconds), stopAtEnd: false, release: false);
+            StartUiFade(src, 0f, target, Mathf.Max(minFadeSeconds, fadeInSeconds), stopAtEnd: false, release: false, useScaledTime: fadeUsesScaledTime);
             return src;
         }
 
-        public void FadeOutUI(AudioSource src, float fadeOutSeconds, bool release = true)
+        public void FadeOutUI(AudioSource src, float fadeOutSeconds, bool release = true, bool useScaledTime = false)
         {
             if (!src) return;
             StartUiFade(src, src.volume, 0f, Mathf.Max(minFadeSeconds, fadeOutSeconds), stopAtEnd: true,
-                release: release);
+                release: release, useScaledTime: useScaledTime);
         }
 
         public void StopUI(AudioSource src, bool release = true)
@@ -395,7 +427,12 @@ namespace Manager.SoundManager
             return src;
         }
 
-        public void PlayBGM(string key, float? fadeOut = null, float? fadeIn = null)
+        public void PlayBGM(
+            string key,
+            float? fadeOut = null,
+            float? fadeIn = null,
+            TimeScaleMode timeScaleMode = TimeScaleMode.Unscaled,
+            bool fadeUsesScaledTime = false)
         {
             if (!TryGetBgm(key, out var cfg)) return;
 
@@ -406,21 +443,23 @@ namespace Manager.SoundManager
             next.volume = 0f;
             next.Play();
 
+            TrackSource(next, timeScaleMode);
+
             float fo = Mathf.Max(minFadeSeconds, fadeOut ?? defaultFadeOut);
             float fi = Mathf.Max(minFadeSeconds, fadeIn ?? defaultFadeIn);
 
             if (_bgmFadeRoutine != null) StopCoroutine(_bgmFadeRoutine);
-            _bgmFadeRoutine = StartCoroutine(CrossFadeBGM(_bgmActive, next, fo, fi, Mathf.Clamp01(cfg.volume)));
+            _bgmFadeRoutine = StartCoroutine(CrossFadeBGM(_bgmActive, next, fo, fi, Mathf.Clamp01(cfg.volume), fadeUsesScaledTime));
             _bgmActive = next;
         }
 
-        public void StopBGM(float? fadeOut = null)
+        public void StopBGM(float? fadeOut = null, bool fadeUsesScaledTime = false)
         {
             float fo = Mathf.Max(minFadeSeconds, fadeOut ?? defaultFadeOut);
             if (_bgmFadeRoutine != null) StopCoroutine(_bgmFadeRoutine);
 
             if (_bgmActive && _bgmActive.clip)
-                StartCoroutine(FadeOutThenStop(_bgmActive, fo));
+                StartCoroutine(FadeOutThenStop(_bgmActive, fo, fadeUsesScaledTime));
         }
 
         public void PauseBGM()
@@ -436,9 +475,8 @@ namespace Manager.SoundManager
         }
 
         private IEnumerator CrossFadeBGM(AudioSource from, AudioSource to, float fadeOut, float fadeIn,
-            float targetInVolume)
+            float targetInVolume, bool useScaledTime)
         {
-            // รองรับรอบแรกที่ from อาจไม่มี clip
             bool hasFrom = from && from.clip;
             float fromStart = hasFrom ? from.volume : 0f;
 
@@ -448,7 +486,8 @@ namespace Manager.SoundManager
             float t = 0f;
             while (t < total)
             {
-                t += Time.unscaledDeltaTime;
+                float dt = useScaledTime ? Time.deltaTime : Time.unscaledDeltaTime;
+                t += dt;
 
                 if (hasFrom)
                 {
@@ -470,6 +509,7 @@ namespace Manager.SoundManager
                 from.Stop();
                 from.volume = 0f;
                 from.clip = null;
+                UntrackSource(from);
             }
 
             if (to) to.volume = targetInVolume;
@@ -477,7 +517,7 @@ namespace Manager.SoundManager
             _bgmFadeRoutine = null;
         }
 
-        private IEnumerator FadeOutThenStop(AudioSource src, float fadeOut)
+        private IEnumerator FadeOutThenStop(AudioSource src, float fadeOut, bool useScaledTime = false)
         {
             float start = src.volume;
             float total = Mathf.Max(minFadeSeconds, fadeOut);
@@ -485,7 +525,8 @@ namespace Manager.SoundManager
 
             while (t < total)
             {
-                t += Time.unscaledDeltaTime;
+                float dt = useScaledTime ? Time.deltaTime : Time.unscaledDeltaTime;
+                t += dt;
                 float k = fadeOut > 0f ? Mathf.Clamp01(t / fadeOut) : 1f;
                 src.volume = Mathf.Lerp(start, 0f, k);
                 yield return null;
@@ -494,6 +535,7 @@ namespace Manager.SoundManager
             src.Stop();
             src.clip = null;
             src.volume = 0f;
+            UntrackSource(src);
             _bgmFadeRoutine = null;
         }
 
@@ -525,6 +567,7 @@ namespace Manager.SoundManager
                 case SoundDatabase.RandomPickMode.First:
                     lastIndex = 0;
                     return 0;
+
                 case SoundDatabase.RandomPickMode.Sequential:
                     lastIndex = (lastIndex + 1) % variants.Count;
                     return lastIndex;
@@ -595,7 +638,6 @@ namespace Manager.SoundManager
                 st = new KeyState();
                 dict[key] = st;
             }
-
             return st;
         }
 
@@ -618,7 +660,7 @@ namespace Manager.SoundManager
             }
 
             while (src && src.isActiveAndEnabled && src.isPlaying) yield return null;
-            
+
             if (src)
             {
                 PoolingManager.Current?.Release(poolKey, src);
@@ -652,11 +694,71 @@ namespace Manager.SoundManager
             return _bgmMap.TryGetValue(key, out entry);
         }
 
+        // ===== TimeScale helpers =====
+        private void TrackSource(AudioSource src, TimeScaleMode mode)
+        {
+            if (!src || mode == TimeScaleMode.Unscaled) return;
+            _tsModePerSource[src] = mode;
+            _srcBasePitch[src] = src.pitch <= 0f ? 1f : src.pitch;
+            ApplyTimeScaleToSource(src, mode);
+        }
+
+        private void UntrackSource(AudioSource src)
+        {
+            _tsModePerSource.Remove(src);
+            _srcBasePitch.Remove(src);
+        }
+
+        private void ApplyTimeScaleToTrackedSources()
+        {
+            // ป้องกัน collection modified
+            var snapshot = new List<KeyValuePair<AudioSource, TimeScaleMode>>(_tsModePerSource);
+            foreach (var kv in snapshot)
+            {
+                var src = kv.Key;
+                if (!src) { UntrackSource(src); continue; }
+                ApplyTimeScaleToSource(src, kv.Value);
+            }
+        }
+
+        private void ApplyTimeScaleToSource(AudioSource src, TimeScaleMode mode)
+        {
+            float ts = Time.timeScale;
+            _srcBasePitch.TryGetValue(src, out float basePitch);
+            if (basePitch <= 0f) basePitch = 1f;
+
+            switch (mode)
+            {
+                case TimeScaleMode.ScalePitch:
+                    if (ts <= 0f)
+                    {
+                        if (src.isPlaying) src.Pause();
+                    }
+                    else
+                    {
+                        src.pitch = basePitch * ts;
+                        if (src.clip && !src.isPlaying) src.UnPause();
+                    }
+                    break;
+
+                case TimeScaleMode.PauseOnlyAtZero:
+                    if (ts <= 0f)
+                    {
+                        if (src.isPlaying) src.Pause();
+                    }
+                    else
+                    {
+                        if (src.clip && !src.isPlaying) src.UnPause();
+                    }
+                    break;
+            }
+        }
+
         // ===== shared fade helpers =====
-        private void StartSfxFade(AudioSource src, float from, float to, float dur, bool stopAtEnd, bool release)
+        private void StartSfxFade(AudioSource src, float from, float to, float dur, bool stopAtEnd, bool release, bool useScaledTime)
         {
             if (_sfxFades.TryGetValue(src, out var c)) StopCoroutineSafe(c);
-            _sfxFades[src] = StartCoroutine(FadeAudioSource(src, from, to, dur, stopAtEnd,
+            _sfxFades[src] = StartCoroutine(FadeAudioSource(src, from, to, dur, stopAtEnd, useScaledTime,
                 onDone: () =>
                 {
                     _sfxFades.Remove(src);
@@ -667,10 +769,10 @@ namespace Manager.SoundManager
                 }));
         }
 
-        private void StartUiFade(AudioSource src, float from, float to, float dur, bool stopAtEnd, bool release)
+        private void StartUiFade(AudioSource src, float from, float to, float dur, bool stopAtEnd, bool release, bool useScaledTime)
         {
             if (_uiFades.TryGetValue(src, out var c)) StopCoroutineSafe(c);
-            _uiFades[src] = StartCoroutine(FadeAudioSource(src, from, to, dur, stopAtEnd,
+            _uiFades[src] = StartCoroutine(FadeAudioSource(src, from, to, dur, stopAtEnd, useScaledTime,
                 onDone: () =>
                 {
                     _uiFades.Remove(src);
@@ -681,7 +783,7 @@ namespace Manager.SoundManager
                 }));
         }
 
-        private IEnumerator FadeAudioSource(AudioSource src, float from, float to, float dur, bool stopAtEnd,
+        private IEnumerator FadeAudioSource(AudioSource src, float from, float to, float dur, bool stopAtEnd, bool useScaledTime,
             System.Action onDone)
         {
             dur = Mathf.Max(minFadeSeconds, dur);
@@ -690,7 +792,8 @@ namespace Manager.SoundManager
 
             while (t < dur && src)
             {
-                t += Time.unscaledDeltaTime;
+                float dt = useScaledTime ? Time.deltaTime : Time.unscaledDeltaTime;
+                t += dt;
                 float k = dur > 0f ? Mathf.Clamp01(t / dur) : 1f;
                 src.volume = Mathf.Lerp(from, to, k);
                 yield return null;

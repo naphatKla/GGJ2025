@@ -165,8 +165,7 @@ namespace UI.Tutorial
 
         private async UniTaskVoid CountdownStart()
         {
-            MMTimeScaleEvent.Trigger(MMTimeScaleMethods.Reset, 1, -1, false, 0f, false);
-            SoundManager.Instance.PlayUI(SoundName.UI.CountDown5Sec);
+            SoundManager.Instance.PlayUI(SoundName.UI.CountDown5Sec, timeScaleMode: SoundManager.TimeScaleMode.ScalePitch);
             await GameTimer.Instance.StartCountdownAsync(5f);
             GameStateController.Instance.SetState(new StartState());
         }

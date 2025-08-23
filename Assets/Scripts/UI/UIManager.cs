@@ -50,7 +50,8 @@ namespace UI
         {
             UIPanelType.Pause,
             UIPanelType.SolfUpgrade,
-            UIPanelType.TutorialPanel
+            UIPanelType.TutorialPanel,
+            UIPanelType.MapResult
         };
 
         // === Events ===
@@ -83,6 +84,12 @@ namespace UI
         {
             if (Input.GetKeyDown(KeyCode.Escape))
                 TogglePausePanelByEsc();
+        }
+
+        protected override void OnDestroy()
+        {
+            MMTimeScaleEvent.Trigger(MMTimeScaleMethods.Reset, 1, -1, false, 0f, false);
+            base.OnDestroy();
         }
 
         #endregion
@@ -208,14 +215,10 @@ namespace UI
             }
 
             if (shouldPause || !_isPauseApplied) return;
-
-            // อย่า resume ถ้าอยู่ใน SummaryState
-            if (GameStateController.Instance.CurrentState is not SummaryState)
-            {
-                MMTimeScaleEvent.Trigger(MMTimeScaleMethods.Reset, 1, -1, false, 0f, false);
-                Time.timeScale = 1f;
-            }
-
+            
+            MMTimeScaleEvent.Trigger(MMTimeScaleMethods.Reset, 1, -1, false, 0f, false);
+            Time.timeScale = 1f;
+            
             _isPauseApplied = false;
         }
 

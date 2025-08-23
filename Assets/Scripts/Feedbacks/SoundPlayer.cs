@@ -58,7 +58,7 @@ namespace Feedbacks
         [Title("Settings")]
         [LabelText("Volume Scale"), Range(0f, 2f)]
         public float volumeScale = 1f;
-        
+
         [LabelText("Play On Enable")] public bool playOnEnable;
         [LabelText("Stop On Disable")] public bool stopOnDisable;
 
@@ -66,7 +66,10 @@ namespace Feedbacks
         [ShowIf(nameof(usePitchOverride))]
         [LabelText("Pitch"), Range(0.1f, 3f)]
         public float pitch = 1f;
-        
+
+        [LabelText("Time Scale Mode")]
+        public SoundManager.TimeScaleMode timeScaleMode = SoundManager.TimeScaleMode.Unscaled;
+
         // --- SFX Fade ---
         [ShowIf(nameof(IsSfx))]
         [LabelText("Use Fade In")]
@@ -77,6 +80,10 @@ namespace Feedbacks
         public float sfxFadeIn = 0.08f;
 
         [ShowIf(nameof(IsSfx))]
+        [LabelText("Fade Uses Scaled Time (In)")]
+        public bool sfxFadeInUsesScaledTime = false;
+
+        [ShowIf(nameof(IsSfx))]
         [LabelText("Fade Out On Stop")]
         public bool sfxFadeOutOnStop = true;
 
@@ -84,15 +91,22 @@ namespace Feedbacks
         [LabelText("Fade Out (sec)"), MinValue(0f)]
         public float sfxFadeOut = 0.10f;
 
+        [ShowIf("@IsSfx() && sfxFadeOutOnStop")]
+        [LabelText("Fade Uses Scaled Time (Out)")]
+        public bool sfxFadeOutUsesScaledTime = false;
+
         // ====== UI-only (2D) ======
-        // --- UI Fade ---
         [ShowIf(nameof(IsUi))]
         [LabelText("Use Fade In")]
         public bool uiUseFadeIn = false;
 
         [ShowIf("@IsUi() && uiUseFadeIn")]
-        [ LabelText("Fade In (sec)"), MinValue(0f)]
+        [LabelText("Fade In (sec)"), MinValue(0f)]
         public float uiFadeIn = 0.06f;
+
+        [ShowIf(nameof(IsUi))]
+        [LabelText("Fade Uses Scaled Time (In)")]
+        public bool uiFadeInUsesScaledTime = false;
 
         [ShowIf(nameof(IsUi))]
         [LabelText("Fade Out On Stop")]
@@ -101,6 +115,10 @@ namespace Feedbacks
         [ShowIf("@IsUi() && uiFadeOutOnStop")]
         [LabelText("Fade Out (sec)"), MinValue(0f)]
         public float uiFadeOut = 0.08f;
+
+        [ShowIf("@IsUi() && uiFadeOutOnStop")]
+        [LabelText("Fade Uses Scaled Time (Out)")]
+        public bool uiFadeOutUsesScaledTime = false;
 
         // ====== BGM-only ======
         [ShowIf(nameof(IsBgm))]
@@ -114,7 +132,11 @@ namespace Feedbacks
         [ShowIf("@IsBgm() && overrideBgmFade")]
         [LabelText("Fade In (sec)"), MinValue(0f)]
         public float bgmFadeIn = 0.6f;
-        
+
+        [ShowIf(nameof(IsBgm))]
+        [LabelText("Fade Uses Scaled Time")]
+        public bool bgmFadeUsesScaledTime = false;
+
         // ====== SFX-only ======
         [ShowIf(nameof(IsSfx))] [PropertySpace]
         [LabelText("Use Transform Position")]
@@ -128,7 +150,7 @@ namespace Feedbacks
         [LabelText("Custom World Position")] [PropertySpace(spaceAfter:20f,spaceBefore:0)]
         public Vector3 customWorldPosition;
 
-        // เก็บ source แยกตามชนิด เพื่อจัดการ fade/stop ได้ถูกต้อง
+        // เก็บ source แยกตามชนิด
         private readonly List<AudioSource> _activeSfxSources = new(8);
         private readonly List<AudioSource> _activeUiSources  = new(8);
 
@@ -172,8 +194,8 @@ namespace Feedbacks
                         : (Vector3?)customWorldPosition;
 
                     AudioSource src = sfxUseFadeIn
-                        ? sm.PlaySFXFadeIn(fullKey, sfxFadeIn, worldPos, volumeScale, usePitchOverride ? (float?)pitch : null)
-                        : sm.PlaySFX(fullKey, worldPos, volumeScale, usePitchOverride ? (float?)pitch : null);
+                        ? sm.PlaySFXFadeIn(fullKey, sfxFadeIn, worldPos, volumeScale, usePitchOverride ? (float?)pitch : null, timeScaleMode, sfxFadeInUsesScaledTime)
+                        : sm.PlaySFX(fullKey, worldPos, volumeScale, usePitchOverride ? (float?)pitch : null, timeScaleMode);
 
                     if (src) _activeSfxSources.Add(src);
                     break;
@@ -182,8 +204,8 @@ namespace Feedbacks
                 case Category.UI:
                 {
                     AudioSource src = uiUseFadeIn
-                        ? sm.PlayUIFadeIn(fullKey, uiFadeIn, volumeScale, usePitchOverride ? (float?)pitch : null)
-                        : sm.PlayUI(fullKey, volumeScale, usePitchOverride ? (float?)pitch : null);
+                        ? sm.PlayUIFadeIn(fullKey, uiFadeIn, volumeScale, usePitchOverride ? (float?)pitch : null, timeScaleMode, uiFadeInUsesScaledTime)
+                        : sm.PlayUI(fullKey, volumeScale, usePitchOverride ? (float?)pitch : null, timeScaleMode);
 
                     if (src) _activeUiSources.Add(src);
                     break;
@@ -193,7 +215,9 @@ namespace Feedbacks
                 {
                     sm.PlayBGM(fullKey,
                         overrideBgmFade ? (float?)bgmFadeOut : null,
-                        overrideBgmFade ? (float?)bgmFadeIn  : null);
+                        overrideBgmFade ? (float?)bgmFadeIn  : null,
+                        timeScaleMode,
+                        bgmFadeUsesScaledTime);
                     break;
                 }
             }
@@ -216,8 +240,8 @@ namespace Feedbacks
                                 : (Vector3?)customWorldPosition;
 
                             var s = sfxUseFadeIn
-                                ? sm.PlaySFXFadeIn(extraFull, sfxFadeIn, worldPos, volumeScale, usePitchOverride ? (float?)pitch : null)
-                                : sm.PlaySFX(extraFull, worldPos, volumeScale, usePitchOverride ? (float?)pitch : null);
+                                ? sm.PlaySFXFadeIn(extraFull, sfxFadeIn, worldPos, volumeScale, usePitchOverride ? (float?)pitch : null, timeScaleMode, sfxFadeInUsesScaledTime)
+                                : sm.PlaySFX(extraFull, worldPos, volumeScale, usePitchOverride ? (float?)pitch : null, timeScaleMode);
                             if (s) _activeSfxSources.Add(s);
                             break;
                         }
@@ -225,8 +249,8 @@ namespace Feedbacks
                         case Category.UI:
                         {
                             var u = uiUseFadeIn
-                                ? sm.PlayUIFadeIn(extraFull, uiFadeIn, volumeScale, usePitchOverride ? (float?)pitch : null)
-                                : sm.PlayUI(extraFull, volumeScale, usePitchOverride ? (float?)pitch : null);
+                                ? sm.PlayUIFadeIn(extraFull, uiFadeIn, volumeScale, usePitchOverride ? (float?)pitch : null, timeScaleMode, uiFadeInUsesScaledTime)
+                                : sm.PlayUI(extraFull, volumeScale, usePitchOverride ? (float?)pitch : null, timeScaleMode);
                             if (u) _activeUiSources.Add(u);
                             break;
                         }
@@ -235,7 +259,9 @@ namespace Feedbacks
                         {
                             sm.PlayBGM(extraFull,
                                 overrideBgmFade ? (float?)bgmFadeOut : null,
-                                overrideBgmFade ? (float?)bgmFadeIn  : null);
+                                overrideBgmFade ? (float?)bgmFadeIn  : null,
+                                timeScaleMode,
+                                bgmFadeUsesScaledTime);
                             break;
                         }
                     }
@@ -259,7 +285,7 @@ namespace Feedbacks
                         var s = _activeSfxSources[i];
                         if (!s) continue;
 
-                        if (sfxFadeOutOnStop) sm.FadeOutSFX(s, sfxFadeOut, release: true);
+                        if (sfxFadeOutOnStop) sm.FadeOutSFX(s, sfxFadeOut, release: true, useScaledTime: sfxFadeOutUsesScaledTime);
                         else sm.StopSFX(s, release: true);
                     }
                     _activeSfxSources.Clear();
@@ -271,14 +297,14 @@ namespace Feedbacks
                         var u = _activeUiSources[i];
                         if (!u) continue;
 
-                        if (uiFadeOutOnStop) sm.FadeOutUI(u, uiFadeOut, release: true);
+                        if (uiFadeOutOnStop) sm.FadeOutUI(u, uiFadeOut, release: true, useScaledTime: uiFadeOutUsesScaledTime);
                         else sm.StopUI(u, release: true);
                     }
                     _activeUiSources.Clear();
                     break;
 
                 case Category.BGM:
-                    sm.StopBGM(overrideBgmFade ? (float?)bgmFadeOut : null);
+                    sm.StopBGM(overrideBgmFade ? (float?)bgmFadeOut : null, fadeUsesScaledTime: bgmFadeUsesScaledTime);
                     break;
             }
         }
