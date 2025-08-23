@@ -4,235 +4,338 @@ using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using GameControl.Controller;
 using GameControl.GameState;
-using Manager.SoundManager;
 using MoreMountains.Feedbacks;
-using MoreMountains.Tools;
 using ProjectExtensions;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public enum UIPanelType
+namespace UI
 {
-    None,
-    Pause,
-    MapResult,
-    SkillTree,
-    SolfUpgrade,
-    Setting,
-    SaveGame,
-    GameMode,
-    MapSelect,
-    QuitPanel,
-    TutorialPanel,
-    MainMenu,
-}
-
-[System.Serializable]
-public class UIPanelEntry
-{
-    public UIPanelType type;
-    public GameObject panel;
-}
-
-public class UIManager : NonAutoCreateSingleton<UIManager>
-{
-    [SerializeField] private string menuScene;
-    [SerializeField] private string gamePlayScene;
-    [SerializeField] private string endCreditsScene;
-
-    [Header("UI Panels")] public List<UIPanelEntry> panelEntries;
-
-    private readonly Dictionary<UIPanelType, GameObject> panelDict = new();
-    private readonly Stack<UIPanelType> panelStack = new();
-    private bool _isPaused = false;
-    public event Action OnAnyPanelOpen;
-    public event Action OnAllPanelClosed;
-
-    protected override void Awake()
+    public enum UIPanelType
     {
-        base.Awake();
+        None = 0,
+        Pause = 1,
+        MapResult = 2,
+        SkillTree = 3,
+        SolfUpgrade = 4,
+        Setting = 5,
+        SaveGame = 6,
+        GameMode = 7,
+        MapSelect = 8,
+        QuitPanel = 9,
+        TutorialPanel = 10,
+        MainMenu = 11,
+    }
 
-        foreach (var entry in panelEntries)
-            if (!panelDict.ContainsKey(entry.type))
+    [Serializable]
+    public class UIPanelEntry
+    {
+        public UIPanelType type;
+        public GameObject panel;
+    }
+
+    public class UIManager : NonAutoCreateSingleton<UIManager>
+    {
+        [Header("Scene Names")] [SerializeField]
+        private string menuScene;
+
+        [SerializeField] private string gamePlayScene;
+        [SerializeField] private string endCreditsScene;
+
+        [Header("UI Panels (registry)")] [SerializeField]
+        private List<UIPanelEntry> panelEntries = new();
+
+        [Header("Panels that PAUSE the game when open")] [SerializeField]
+        private List<UIPanelType> pauseOnOpenPanels = new()
+        {
+            UIPanelType.Pause,
+            UIPanelType.SkillTree,
+            UIPanelType.TutorialPanel
+        };
+
+        // === Events ===
+        public event Action OnAnyPanelOpen; // call every time on any Panel open.
+        public event Action OnAnyUIOpenFirst; // call one time when the first panel open.
+        public event Action OnAllPanelClosed; // call when all of the panel was closed.
+
+        // === State ===
+        private readonly Dictionary<UIPanelType, GameObject> _panelMap = new();
+        private readonly Stack<UIPanelType> _stack = new();
+        private readonly HashSet<UIPanelType> _pauseOwners = new();
+        private bool _isPauseApplied;
+
+        // === Shortcuts ===
+        private bool HasOpenPanels => _stack.Count > 0;
+        private UIPanelType TopType => _stack.Count > 0 ? _stack.Peek() : UIPanelType.None;
+
+        #region Unity lifecycle
+
+        protected override void Awake()
+        {
+            base.Awake();
+            BuildPanelMapAndHideAll();
+            _pauseOwners.Clear();
+            _isPauseApplied = false;
+            ApplyPauseState();
+        }
+
+        private void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.Escape))
+                TogglePausePanelByEsc();
+        }
+
+        #endregion
+
+        #region Public API
+
+        public void OpenPanel(UIPanelType type)
+        {
+            if (!TryGetPanel(type, out var panel)) return;
+
+            bool wasEmptyBefore = !HasOpenPanels;
+
+            if (TopType == type)
             {
-                panelDict.Add(entry.type, entry.panel);
-                entry.panel.SetActive(false);
+                ClosePanel();
+                return;
             }
-    }
 
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            OpenPausePanel();
-        }
-    }
+            // Hide previous top (keep in stack)
+            SetActiveIfFound(TopType, false);
 
-    public void OpenPanel(UIPanelType type)
-    {
-        if (!panelDict.ContainsKey(type))
-        {
-            Debug.LogWarning($"[UIManager] panelDict doesn't contain type: {type}");
-            return;
-        }
-        
-        if (panelStack.Count > 0 && panelStack.Peek() == type)
-        {
-            ClosePanel();
-            return;
-        }
-        
-        if (panelStack.Count > 0)
-        {
-            var current = panelStack.Peek();
-            panelDict[current].SetActive(false);
-        }
-        panelDict[type].SetActive(true);
-        OnAnyPanelOpen?.Invoke();
-        panelStack.Push(type);
-    }
-    
-    public void ClosePanel()
-    {
-        if (panelStack.Count == 0)
-            return;
+            // Show new and push
+            panel.SetActive(true);
+            _stack.Push(type);
 
-        var top = panelStack.Pop();
-        panelDict[top].SetActive(false);
-        
-        if (panelStack.Count > 0)
-        {
-            var previous = panelStack.Peek();
-            panelDict[previous].SetActive(true);
-            return;
-        }
-        
-        OnAllPanelClosed?.Invoke();
-    }
-    
-    public void CloseSpecificPanel(UIPanelType type)
-    {
-        if (!panelDict.ContainsKey(type)) return;
-        if (!panelStack.Contains(type)) return;
-        
-        if (panelStack.Peek() == type)
-        {
-            ClosePanel();
-            return;
+            // Mark pause owner if listed
+            if (pauseOnOpenPanels.Contains(type))
+                _pauseOwners.Add(type);
+
+            // Fire events
+            if (wasEmptyBefore) OnAnyUIOpenFirst?.Invoke();
+            OnAnyPanelOpen?.Invoke();
+
+            ApplyPauseState();
         }
 
-        var tempStack = new Stack<UIPanelType>();
-        while (panelStack.Count > 0)
+        // close the top most panel
+        public void ClosePanel()
         {
-            var current = panelStack.Pop();
-            if (current == type)
+            if (!HasOpenPanels) return;
+
+            var closing = _stack.Pop();
+            SetActiveIfFound(closing, false);
+            _pauseOwners.Remove(closing);
+
+            if (HasOpenPanels)
             {
-                panelDict[current].SetActive(false);
-                break;
+                // Reveal previous
+                SetActiveIfFound(TopType, true);
             }
-            tempStack.Push(current);
-        }
-        while (tempStack.Count > 0) panelStack.Push(tempStack.Pop());
-    }
-    
-    public void CloseAllPanels()
-    {
-        while (panelStack.Count > 0)
-        {
-            var top = panelStack.Pop();
-            panelDict[top].SetActive(false);
-        }
-            
-        OnAllPanelClosed?.Invoke();
-        MMTimeScaleEvent.Trigger(MMTimeScaleMethods.Reset, 1, -1, false, 0f, false);
-        Time.timeScale = 1;
-    }
-    
-    public async void BackMenu()
-    {
-        await SceneManager.LoadSceneAsync(menuScene).ToUniTask();
-        await UniTask.Yield();
-    }
+            else
+            {
+                OnAllPanelClosed?.Invoke();
+            }
 
-    public void OpenPausePanel()
-    {
-        if (!_isPaused)
-        {
-            MMTimeScaleEvent.Trigger(MMTimeScaleMethods.For, 0, -1, true, 10f, true);
-            OpenPanel(UIPanelType.Pause);
-            _isPaused = true;
+            ApplyPauseState();
         }
-        else
+
+
+        // close th specific panel in stack.
+        public void CloseSpecificPanel(UIPanelType type)
         {
-            if (GameStateController.Instance.CurrentState is not SummaryState) 
+            if (!HasOpenPanels || !_panelMap.ContainsKey(type) || !_stack.Contains(type))
+                return;
+
+            if (TopType == type)
+            {
+                ClosePanel();
+                return;
+            }
+
+            // Remove from middle
+            var buffer = new Stack<UIPanelType>();
+            while (HasOpenPanels)
+            {
+                var cur = _stack.Pop();
+                if (cur == type)
+                {
+                    SetActiveIfFound(cur, false);
+                    _pauseOwners.Remove(cur);
+                    break;
+                }
+
+                buffer.Push(cur);
+            }
+
+            while (buffer.Count > 0) _stack.Push(buffer.Pop());
+
+            if (!HasOpenPanels)
+                OnAllPanelClosed?.Invoke();
+
+            ApplyPauseState();
+        }
+
+        public void CloseAllPanels()
+        {
+            while (HasOpenPanels)
+                SetActiveIfFound(_stack.Pop(), false);
+
+            _pauseOwners.Clear();
+            OnAllPanelClosed?.Invoke();
+            ApplyPauseState();
+        }
+
+        public bool IsPanelOpen(UIPanelType type)
+        {
+            return _panelMap.TryGetValue(type, out var go) && go.activeSelf;
+        }
+
+        #endregion
+
+        #region Pause handling
+
+        private void ApplyPauseState()
+        {
+            bool shouldPause = _pauseOwners.Count > 0;
+
+            if (shouldPause && !_isPauseApplied)
+            {
+                MMTimeScaleEvent.Trigger(MMTimeScaleMethods.For, 0, -1, true, 10f, true);
+                _isPauseApplied = true;
+                return;
+            }
+
+            if (shouldPause || !_isPauseApplied) return;
+
+            // อย่า resume ถ้าอยู่ใน SummaryState
+            if (GameStateController.Instance.CurrentState is not SummaryState)
+            {
                 MMTimeScaleEvent.Trigger(MMTimeScaleMethods.Reset, 1, -1, false, 0f, false);
-            CloseSpecificPanel(UIPanelType.Pause);
-            _isPaused = false;
+                Time.timeScale = 1f;
+            }
+
+            _isPauseApplied = false;
         }
-    }
-    
-    public void OpenSaveGamePanel()
-    {
-        OpenPanel(UIPanelType.SaveGame);
-    }
-    
-    public void OpenMapSelectPanel()
-    {
-        OpenPanel(UIPanelType.MapSelect);
-    }
-    public void OpenGameModePanel()
-    {
-        OpenPanel(UIPanelType.GameMode);
-    }
 
-    public void LoadToGamePlayScene()
-    {
-        SceneManager.LoadScene(gamePlayScene);
-    }
-    
-    public void OpenQuitPanel()
-    {
-        OpenPanel(UIPanelType.QuitPanel);
-    }
-    
-    public void LoadToCreditsScene()
-    {
-        SceneManager.LoadScene(endCreditsScene);
-    }
-    
-    public void QuitGame()
-    {
-        Application.Quit();
-        Debug.Log("Quit Game");
-    }
-    
-    public void OpenTutorialPanel()
-    {
-        CloseAllPanels();
-        MMTimeScaleEvent.Trigger(MMTimeScaleMethods.For, 0, -1, true, 10f, true);
-        OpenPanel(UIPanelType.TutorialPanel);
-    }
-    
-    #region Result Menu
-    public void OpenResultMenu()
-    {
-        CloseAllPanels();
-        var panel = panelDict[UIPanelType.MapResult];
-        panel.SetActive(true);
-
-        var cg = panel.GetComponent<CanvasGroup>();
-        if (cg == null) cg = panel.AddComponent<CanvasGroup>();
-        cg.alpha = 0f;
-
-        Sequence glitchSeq = DOTween.Sequence();
-        glitchSeq.Append(cg.DOFade(1f, 0.15f));
-        glitchSeq.OnComplete(() =>
+        public void TogglePausePanelByEsc()
         {
-            cg.alpha = 1f;
-        });
+            if (TopType == UIPanelType.Pause)
+            {
+                ClosePanel();
+                return;
+            }
 
-        OnAnyPanelOpen?.Invoke();
-        panelStack.Push(UIPanelType.MapResult);
+            OpenPanel(UIPanelType.Pause);
+        }
+
+        #endregion
+
+        #region Scene helpers
+
+        public async void BackMenu()
+        {
+            CloseAllPanels();
+            await SceneManager.LoadSceneAsync(menuScene).ToUniTask();
+            await UniTask.Yield();
+        }
+
+        public void LoadToGamePlayScene()
+        {
+            CloseAllPanels();
+            SceneManager.LoadScene(gamePlayScene);
+        }
+
+        public void LoadToCreditsScene()
+        {
+            CloseAllPanels();
+            SceneManager.LoadScene(endCreditsScene);
+        }
+
+        public void QuitGame()
+        {
+            Application.Quit();
+            Debug.Log("Quit Game");
+        }
+
+        #endregion
+
+        #region Preset open helpers
+
+        public void OpenSaveGamePanel() => OpenPanel(UIPanelType.SaveGame);
+        public void OpenMapSelectPanel() => OpenPanel(UIPanelType.MapSelect);
+        public void OpenGameModePanel() => OpenPanel(UIPanelType.GameMode);
+        public void OpenQuitPanel() => OpenPanel(UIPanelType.QuitPanel);
+
+        public void OpenTutorialPanel()
+        {
+            CloseAllPanels();
+            OpenPanel(UIPanelType.TutorialPanel);
+        }
+
+        public void OpenResultMenu()
+        {
+            CloseAllPanels();
+
+            if (!TryGetPanel(UIPanelType.MapResult, out var panel)) return;
+
+            panel.SetActive(true);
+            _stack.Push(UIPanelType.MapResult);
+
+            var cg = panel.GetComponent<CanvasGroup>() ?? panel.AddComponent<CanvasGroup>();
+            cg.alpha = 0f;
+
+            DOTween.Kill(panel, complete: true);
+            DOTween.Sequence()
+                .Append(cg.DOFade(1f, 0.15f))
+                .OnComplete(() => cg.alpha = 1f)
+                .SetTarget(panel);
+
+            OnAnyUIOpenFirst?.Invoke();
+            OnAnyPanelOpen?.Invoke();
+
+            if (pauseOnOpenPanels.Contains(UIPanelType.MapResult))
+                _pauseOwners.Add(UIPanelType.MapResult);
+
+            ApplyPauseState();
+        }
+
+        #endregion
+
+        #region Internals
+
+        private void BuildPanelMapAndHideAll()
+        {
+            _panelMap.Clear();
+            foreach (var e in panelEntries)
+            {
+                if (e == null || e.panel == null) continue;
+                if (_panelMap.ContainsKey(e.type)) continue;
+
+                _panelMap.Add(e.type, e.panel);
+                e.panel.SetActive(false);
+            }
+        }
+
+        private bool TryGetPanel(UIPanelType type, out GameObject go)
+        {
+            if (!_panelMap.TryGetValue(type, out go) || go == null)
+            {
+                Debug.LogWarning($"[UIManager] Panel not registered or null: {type}");
+                return false;
+            }
+
+            return true;
+        }
+
+        private void SetActiveIfFound(UIPanelType type, bool active)
+        {
+            if (type == UIPanelType.None) return;
+            if (_panelMap.TryGetValue(type, out var go) && go != null)
+                go.SetActive(active);
+        }
+
+        #endregion
     }
-    #endregion
 }

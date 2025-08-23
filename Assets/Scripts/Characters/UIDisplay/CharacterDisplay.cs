@@ -18,6 +18,7 @@ using MoreMountains.Tools;
 using PixelUI;
 using Sirenix.OdinInspector;
 using TMPro;
+using UI;
 using UI.IngameModal;
 using UI.IngameViewholder;
 using UnityEngine;

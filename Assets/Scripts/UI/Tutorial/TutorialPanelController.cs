@@ -158,6 +158,8 @@ namespace UI.Tutorial
 
             PlayerPrefs.SetInt("HasSeenTutorial", 1);
             PlayerPrefs.Save();
+            
+            UIManager.Instance.CloseAllPanels();
             CountdownStart().Forget();
         }
 

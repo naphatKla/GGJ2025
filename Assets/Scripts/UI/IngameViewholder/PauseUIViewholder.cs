@@ -44,7 +44,7 @@ namespace UI.IngameViewholder
 
         private void ContinueClick()
         {
-            UIManager.Instance.OpenPausePanel();
+            UIManager.Instance.TogglePausePanelByEsc();
         }
         
         private void QuitClick()

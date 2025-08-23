@@ -6,6 +6,7 @@ using Characters.LevelSystems;
 using Characters.ScoreSystems;
 using Characters.SkillSystems;
 using Characters.SO.CharacterDataSO;
+using UI;
 using UnityEngine;
 using UnityEngine.Serialization;
 
