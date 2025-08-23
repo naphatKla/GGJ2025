@@ -115,6 +115,7 @@ namespace Characters.InputSystems
         public void OnUsePrimarySkill(InputAction.CallbackContext context)
         {
             if (!Enable) return;
+            if (Time.timeScale == 0) return;
             if (!context.performed)
             {
                 _primaryToggle = false;
@@ -133,6 +134,7 @@ namespace Characters.InputSystems
         public void OnUseSecondarySkill(InputAction.CallbackContext context)
         {
             if (!Enable) return;
+            if (Time.timeScale == 0) return;
             if (!context.performed)
             {
                 _secondaryToggle = false;

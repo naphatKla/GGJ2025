@@ -84,7 +84,6 @@ namespace Characters.SkillSystems.SkillRuntimes
                     if (!_inGodSpeedPhase)
                     {
                         _inGodSpeedPhase = true;
-                        owner.FeedbackSystem.SetIgnoreFeedback(FeedbackName.Character.CounterAttack, true);
                         player?.CameraController.PushOrtho(24, 10f, this, 0.25f);
                         player?.CameraController.CancelRequest(camHandle.Value);
                         player?.CameraController.SetFollowTarget(null);
@@ -138,8 +137,6 @@ namespace Characters.SkillSystems.SkillRuntimes
             owner.SkillSystem.SetCanUseSecondary(true);
             owner.MovementSystem.CanInterruptTween = true;
             owner.DamageOnTouch.DisableDamage(this);
-            
-            owner.FeedbackSystem.SetIgnoreFeedback(FeedbackName.Character.CounterAttack, false);
 
             if (owner is PlayerController player)
             {

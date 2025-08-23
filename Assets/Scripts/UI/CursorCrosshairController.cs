@@ -20,7 +20,7 @@ namespace UI
         [Header("Feedback")] 
         [SerializeField] private Transform cursorIn;
         [SerializeField] private Transform cursorOut;
-        private Sequence feedbackSequence;
+        private Tween feedbackTween;
         public event Action OnClicked;
         private RectTransform _rect;
         private Vector2 _vel;
@@ -87,10 +87,8 @@ namespace UI
             if (ctx.performed)
             {
                 OnClicked?.Invoke();
-                if (!feedbackSequence.IsActive())
-                    feedbackSequence = DOTween.Sequence().SetUpdate(true)
-                        .Join(cursorOut.DOScale(new Vector3(1.2f, 1.2f, 1), 0.15f)).SetLoops(2, LoopType.Yoyo)
-                        .SetLink(gameObject, LinkBehaviour.KillOnDestroy);
+                if (feedbackTween.IsActive()) return;
+                feedbackTween = cursorOut.DOScale(new Vector3(1.3f, 1.3f, 1), 0.125f).SetLoops(2, LoopType.Yoyo);
             }
         }
     }
