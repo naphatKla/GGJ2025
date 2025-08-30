@@ -59,6 +59,7 @@ namespace Cameras
         private CinemachineVirtualCamera currentCam;
 
         // defaults
+        public float startOrthoSize;
         public float defaultOrthoSize;
         private float defaultFOV;
         private float defaultFollowDamping;
@@ -93,7 +94,7 @@ namespace Cameras
         // ---------- Damping blend ----------
         private float _dampFrom, _dampTo, _dampT, _dampDur;
 
-        private void Awake()
+        protected override void Awake()
         {
             if (virtualCameras == null || virtualCameras.Length == 0)
             {
@@ -111,6 +112,8 @@ namespace Cameras
 
             SetActiveCamera(0);
             _isInit = true;
+            
+            base.Awake();
         }
 
         public void SetActiveCamera(int index)
@@ -144,6 +147,7 @@ namespace Cameras
 
         private void CacheDefaults()
         {
+            startOrthoSize = currentCam.m_Lens.OrthographicSize;
             defaultOrthoSize = currentCam.m_Lens.OrthographicSize;
             defaultFOV = currentCam.m_Lens.FieldOfView;
             defaultFollowTarget = currentCam.Follow;
@@ -231,7 +235,7 @@ namespace Cameras
         public void ResetAndClearAllRequests(float? blend = null)
         {
             _requests.Clear();
-            BeginOrthoBlendTo(defaultOrthoSize, blend ?? defaultBlendTime);
+            BeginOrthoBlendTo(startOrthoSize, blend ?? defaultBlendTime);
         }
 
         /// <summary>

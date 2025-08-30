@@ -27,6 +27,17 @@ namespace Characters.SkillSystems.SkillRuntimes
            OnTriggerAutoSkill?.Invoke();
         }
 
+        public override void AssignSkillData(BaseSkillDataSo skillData, BaseController owner)
+        {
+            base.AssignSkillData(skillData, owner);
+            if (owner is not PlayerController playerController) return;
+            
+            float camSize =    playerController.CameraController.startOrthoSize + (skillData.Level - 1) * 0.135f;
+            playerController.CameraController.defaultOrthoSize = camSize;
+
+            playerController.CameraController.PushOrtho(camSize, 1f, this, 0.25f);
+        }
+
         protected override void OnSkillStart()
         {
             //owner.TryPlayFeedback(FeedbackName.Dash);

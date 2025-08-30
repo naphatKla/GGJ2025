@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
-using GameControl.Controller;
 using MoreMountains.Tools;
 using Sirenix.OdinInspector;
 using TMPro;
@@ -174,7 +173,7 @@ namespace GameControl
                 {
                     countdownText.text = displayNum.ToString();
                     countdownText.transform.localScale = Vector3.one * 2.5f;
-                    countdownText.transform.DOScale(1f, 0.5f).SetEase(Ease.OutBack);
+                    countdownText.transform.DOScale(1.25f, 0.5f).SetEase(Ease.OutBack);
                 }
 
                 await UniTask.Delay(1000, cancellationToken: cts.Token);
@@ -183,9 +182,9 @@ namespace GameControl
 
             if (countdownText != null)
             {
-                countdownText.text = "START!";
+                countdownText.text = $"<color=yellow>START!";
                 countdownText.transform.localScale = Vector3.one * 3f;
-                countdownText.transform.DOScale(1f, 0.5f).SetEase(Ease.OutBack);
+                countdownText.transform.DOScale(1.25f, 0.5f).SetEase(Ease.OutBack);
             }
 
             await UniTask.Delay(1000, cancellationToken: cts.Token);
