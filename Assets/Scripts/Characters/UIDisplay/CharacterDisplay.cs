@@ -327,8 +327,8 @@ namespace Characters.UIDisplay
             textInstance.gameObject.SetActive(true);
 
             // === Animation Settings ===
-            float floatDuration = 0.2f;
-            float fadeOutDuration = 0.3f;
+            float floatDuration = 0.25f;
+            float fadeOutDuration = 0.25f;
             float delayBeforeFade = floatDuration - fadeOutDuration;
 
             float riseAmount = isCrit ? 1.4f : 0.75f;

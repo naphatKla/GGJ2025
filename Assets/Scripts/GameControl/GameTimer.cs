@@ -183,7 +183,7 @@ namespace GameControl
 
             if (countdownText != null)
             {
-                countdownText.text = "Start!";
+                countdownText.text = "START!";
                 countdownText.transform.localScale = Vector3.one * 3f;
                 countdownText.transform.DOScale(1f, 0.5f).SetEase(Ease.OutBack);
             }
