@@ -264,11 +264,7 @@ namespace UI
         public void OpenMapSelectPanel() => OpenPanel(UIPanelType.MapSelect);
         public void OpenGameModePanel() => OpenPanel(UIPanelType.GameMode);
         public void OpenQuitPanel() => OpenPanel(UIPanelType.QuitPanel);
-        public void OpenTutorialPanel()
-        {
-            CloseAllPanels();
-            OpenPanel(UIPanelType.TutorialPanel);
-        }
+        public void OpenTutorialPanel() => OpenPanel(UIPanelType.TutorialPanel);
         public void OpenResultMenu()
         {
             CloseAllPanels();
