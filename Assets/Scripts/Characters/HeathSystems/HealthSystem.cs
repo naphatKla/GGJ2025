@@ -91,6 +91,7 @@ namespace Characters.HeathSystems
         public int TotalHeal { get; set; }
 
         public bool IsInvincible => _isInvincible;
+        public float HealthPercentage01 => _currentHealth / _maxHealth;
 
         #endregion
 
