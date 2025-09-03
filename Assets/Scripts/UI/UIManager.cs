@@ -198,17 +198,18 @@ namespace UI
         // close th specific panel in stack.
         public async UniTask CloseSpecificPanel(UIPanelType type)
         {
-            if (!HasOpenPanels || !_panelMap.ContainsKey(type) || !_stack.Contains(type) || _isTransitioning) return;
-
+            if (!HasOpenPanels || _isTransitioning) return;
+            
             _isTransitioning = true;
             try
             {
                 if (TopType == type)
                 {
+                    _isTransitioning = false;
                     await ClosePanelAsync();
                     return;
                 }
-
+                
                 RemoveFromStack(type);
                 await HidePanel(type);
 
@@ -315,30 +316,7 @@ namespace UI
         public void OpenGameModePanel() => OpenPanel(UIPanelType.GameMode);
         public void OpenQuitPanel() => OpenPanel(UIPanelType.QuitPanel);
         public void OpenTutorialPanel() => OpenPanel(UIPanelType.TutorialPanel);
-        public void OpenResultMenu() => OpenPanel(UIPanelType.TutorialPanel);
-        /*{
-            CloseAllPanels();
-
-            if (!TryGetPanel(UIPanelType.MapResult, out var panel)) return;
-
-            _stack.Push(UIPanelType.MapResult);
-            ShowPanel(UIPanelType.MapResult).Forget();
-
-            var cg = panel.GetComponent<CanvasGroup>() ?? panel.AddComponent<CanvasGroup>();
-            cg.alpha = 0f;
-
-            DOTween.Kill(panel, complete: true);
-            DOTween.Sequence()
-                .Append(cg.DOFade(1f, 0.15f))
-                .OnComplete(() => cg.alpha = 1f)
-                .SetUpdate(true)
-                .SetTarget(panel);
-
-            OnAnyUIOpenFirst?.Invoke();
-            OnAnyPanelOpen?.Invoke();
-            ApplyPauseState();
-            RefreshTopAsync().Forget();
-        }*/
+        public void OpenResultMenu() => OpenPanel(UIPanelType.MapResult);
         
         #endregion
 

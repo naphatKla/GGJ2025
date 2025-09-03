@@ -13048,6 +13048,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1025966918}
   - component: {fileID: 1025966921}
+  - component: {fileID: 1025966922}
   - component: {fileID: 1025966920}
   - component: {fileID: 1025966919}
   m_Layer: 5
@@ -13132,6 +13133,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1025966917}
   m_CullTransparentMesh: 1
+--- !u!225 &1025966922
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1025966917}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &1035592849
 GameObject:
   m_ObjectHideFlags: 0
@@ -20628,21 +20641,29 @@ MonoBehaviour:
     pauseGameWhileOpen: 1
     blockInputBehind: 1
     panel: {fileID: 1713170218}
+    appearTransition: {fileID: 11400000, guid: 2cc4c473f4dfa9242b28372ebe121788, type: 2}
+    disappearTransition: {fileID: 11400000, guid: 2cc4c473f4dfa9242b28372ebe121788, type: 2}
   - type: 1
     stackType: 0
     pauseGameWhileOpen: 1
     blockInputBehind: 1
     panel: {fileID: 1025966917}
+    appearTransition: {fileID: 11400000, guid: 2cc4c473f4dfa9242b28372ebe121788, type: 2}
+    disappearTransition: {fileID: 11400000, guid: 2cc4c473f4dfa9242b28372ebe121788, type: 2}
   - type: 4
     stackType: 0
     pauseGameWhileOpen: 1
     blockInputBehind: 1
     panel: {fileID: 526661206}
+    appearTransition: {fileID: 0}
+    disappearTransition: {fileID: 0}
   - type: 10
     stackType: 2
     pauseGameWhileOpen: 1
     blockInputBehind: 1
     panel: {fileID: 1848575498}
+    appearTransition: {fileID: 11400000, guid: 2cc4c473f4dfa9242b28372ebe121788, type: 2}
+    disappearTransition: {fileID: 11400000, guid: 2cc4c473f4dfa9242b28372ebe121788, type: 2}
   inputBlockerPrefab: {fileID: 6963269928758055005, guid: ceff00547041e154cbc196b6957c8ba2, type: 3}
 --- !u!1 &1817841937
 GameObject:
