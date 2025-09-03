@@ -19765,7 +19765,7 @@ MonoBehaviour:
     - rid: 3335892418657255428
       type: {class: MMF_ChromaticAberration_URP, ns: MoreMountains.FeedbacksForThirdParty, asm: MoreMountains.Feedbacks.URP}
       data:
-        Active: 1
+        Active: 0
         UniqueID: 567728846
         Label: Chromatic Aberration URP
         ChannelMode: 0
@@ -53902,7 +53902,7 @@ GameObject:
   - component: {fileID: 4760236408793113694}
   - component: {fileID: 6543663255383939677}
   - component: {fileID: 5144948324511787352}
-  - component: {fileID: 7467346900322984913}
+  - component: {fileID: 8511207443460752088}
   m_Layer: 7
   m_Name: Player
   m_TagString: Player
@@ -54119,7 +54119,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   shape: 0
-  boxSize: {x: 2.35, y: 2.51}
+  boxSize: {x: 4, y: 4}
   circleRadius: 0.5
   targetLayer:
     serializedVersion: 2
@@ -54469,8 +54469,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d4f4d9ce50cb024aa968c3aa322872a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!60 &7467346900322984913
-PolygonCollider2D:
+--- !u!61 &8511207443460752088
+BoxCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -54498,10 +54498,10 @@ PolygonCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: 0, y: -0.15}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -54511,12 +54511,9 @@ PolygonCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Points:
-    m_Paths:
-    - - {x: -0.6185107, y: -0.962645}
-      - {x: 0.62875295, y: -0.96264493}
-      - {x: -0.0014372487, y: 1.2512689}
-  m_UseDelaunayMesh: 0
+  serializedVersion: 2
+  m_Size: {x: 2, y: 2.5}
+  m_EdgeRadius: 0
 --- !u!1 &2869158608663820740
 GameObject:
   m_ObjectHideFlags: 0
@@ -89238,7 +89235,7 @@ MonoBehaviour:
     - rid: 3335892418657255428
       type: {class: MMF_ChromaticAberration_URP, ns: MoreMountains.FeedbacksForThirdParty, asm: MoreMountains.Feedbacks.URP}
       data:
-        Active: 1
+        Active: 0
         UniqueID: 567728846
         Label: Chromatic Aberration URP
         ChannelMode: 0
@@ -111135,7 +111132,7 @@ MonoBehaviour:
     - rid: 3335892418657255426
       type: {class: MMF_LensDistortion_URP, ns: MoreMountains.FeedbacksForThirdParty, asm: MoreMountains.Feedbacks.URP}
       data:
-        Active: 1
+        Active: 0
         UniqueID: -670406101
         Label: Lens Distortion URP
         ChannelMode: 0
@@ -111600,7 +111597,7 @@ MonoBehaviour:
     - rid: 3335892418657255428
       type: {class: MMF_ChromaticAberration_URP, ns: MoreMountains.FeedbacksForThirdParty, asm: MoreMountains.Feedbacks.URP}
       data:
-        Active: 1
+        Active: 0
         UniqueID: 567728846
         Label: Chromatic Aberration URP
         ChannelMode: 0
@@ -152633,7 +152630,7 @@ MonoBehaviour:
     - rid: 3335892418657255428
       type: {class: MMF_ChromaticAberration_URP, ns: MoreMountains.FeedbacksForThirdParty, asm: MoreMountains.Feedbacks.URP}
       data:
-        Active: 1
+        Active: 0
         UniqueID: 567728846
         Label: Chromatic Aberration URP
         ChannelMode: 0
@@ -153085,7 +153082,7 @@ MonoBehaviour:
     - rid: 3335892418657255428
       type: {class: MMF_ChromaticAberration_URP, ns: MoreMountains.FeedbacksForThirdParty, asm: MoreMountains.Feedbacks.URP}
       data:
-        Active: 1
+        Active: 0
         UniqueID: 567728846
         Label: Chromatic Aberration URP
         ChannelMode: 0
@@ -164581,8 +164578,8 @@ MonoBehaviour:
         Owner: {fileID: 406790586103967934}
         DebugActive: 0
         Mode: 0
-        TimeScale: 0.1
-        TimeScaleDuration: 0.75
+        TimeScale: 0.01
+        TimeScaleDuration: 0.8
         ResetTimescaleOnStop: 0
         TimeScaleLerp: 1
         TimescaleLerpMode: 0
@@ -179502,7 +179499,7 @@ MonoBehaviour:
     - rid: 3335892418657255428
       type: {class: MMF_ChromaticAberration_URP, ns: MoreMountains.FeedbacksForThirdParty, asm: MoreMountains.Feedbacks.URP}
       data:
-        Active: 1
+        Active: 0
         UniqueID: 567728846
         Label: Chromatic Aberration URP
         ChannelMode: 0
