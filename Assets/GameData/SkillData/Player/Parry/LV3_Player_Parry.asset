@@ -32,30 +32,19 @@ MonoBehaviour:
       Data: 
   skillIcon: {fileID: 21300000, guid: 4e172c3d6cf32704e9db569f5138820d, type: 3}
   skillName: Parry
-  skillDescription: 'Enable a magnetic field barrier for 0.5 seconds to parry incoming
-    damage. <color=#FF5F1F><b>On a successful parry</b></color>, release a burst
-    of Anergy in a <color=#FFD700><b>radius of 13.2 unit</b></color> around the ship,
-    <color=#FF0000><b>dealing 51 damage</b></color> and applying <color=#CF9FFF>knockback</b></color>
-    and <color=#CF9FFF>stun</b></color> to all enemies within the radius.
-
-    
-
-    <color=#CF9FFF><b>Knockback</b></color>
-    : Push the enemy away by <color=#FFD700><b>8 units</b></color>.
-
-    <color=#CF9FFF><b>Stun</b></color>
-    : Unable to perform any actions for <color=#FFD700><b>0.5 seconds</b></color>.
-
-    
-
-    Cooldown:
-    <color=#DBDBDB><b>4.5 sec</b></color>.'
+  skillDescription: "[Protect]\r\nActivate a barrier for a brief moment to parry
+    incoming damage, upon a successful parry releasing a burst of energy that deals
+    damage, stuns, and knocks back enemies.\n\nSkills stats\r\nDamage: 51\u2190(<color=#899499>51</color>)\r\nBarrier
+    duration: 0.5s\u2190(<color=#899499>0.5</color>)\r\nBurst radius: 13.2 units\u2190(<color=#899499>10</color>)\r\nKnockback:
+    8 units\u2190(<color=#899499>8</color>)\r\nStun: 0.5s\u2190(<color=#899499>0.5</color>)\r\nCooldown:
+    4.5s\u2190(<color=#899499>5</color>)"
   previousSkillData: {fileID: 11400000, guid: 83acc3d2d53cdf54b8bf3c3c6ee57dfb, type: 2}
   nextSkillDataUpgrade: {fileID: 11400000, guid: b92e57e1f4e57c44598a4b679c04dcca, type: 2}
   level: 3
   cooldown: 4.5
   startFeedback: ParryUse_Lv3
   exitFeedback: 
+  clearBuffOnSkillExit: 0
   statusEffectOnSkillStart:
   - effectData: {fileID: 11400000, guid: aa4dff95f38494c4e876f8f95511ecf0, type: 2}
     isOverrideDuration: 1
