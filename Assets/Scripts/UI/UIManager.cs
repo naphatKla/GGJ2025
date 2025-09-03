@@ -173,7 +173,7 @@ namespace UI
 
                 if (HasOpenPanels)
                 {
-                    await ShowPanel(TopType);
+                    await ShowPanel(TopType, false);
                     RestoreOverlayChainFromTop();
                 }
                 else
@@ -369,7 +369,7 @@ namespace UI
             return entry;
         }
         
-        private async UniTask ShowPanel(UIPanelType type)
+        private async UniTask ShowPanel(UIPanelType type, bool playTransition = true)
         {
             if (type == UIPanelType.None) return;
             if (!_panelMap.TryGetValue(type, out var go) || go == null)return;
@@ -381,13 +381,13 @@ namespace UI
             if (_pauseFlagMap.TryGetValue(type, out var p) && p)
                 _pauseOwners.Add(type);
 
-            if (entry.appearTransition != null)
+            if (playTransition && entry.appearTransition != null)
             {
                 await entry.appearTransition.PlayAsync(go, true, destroyCancellationToken);
             }
         }
 
-        private async UniTask HidePanel(UIPanelType type)
+        private async UniTask HidePanel(UIPanelType type, bool playTransition = true)
         {
             if (type == UIPanelType.None) return;
             if (!_panelMap.TryGetValue(type, out var go) || go == null) return;
@@ -398,7 +398,7 @@ namespace UI
             DOTween.Kill(go, complete: false);
             _pauseOwners.Remove(type);
             
-            if (entry.disappearTransition != null)
+            if (playTransition && entry.disappearTransition != null)
             {
                 await entry.disappearTransition.PlayAsync(go, false, destroyCancellationToken);
             }
