@@ -421,19 +421,29 @@ namespace UI
         private async UniTask ClearStackAsync(bool invokeClosedEvent)
         {
             if (_isTransitioning) return;
-      
-            _isTransitioning = true;
-            while (HasOpenPanels)
-            {
-                var t = _stack.Pop();
-                await HidePanel(t);
-            }
 
-            _pauseOwners.Clear();
-            if (invokeClosedEvent) OnAllPanelClosed?.Invoke();
-            ApplyPauseState();
-            RefreshTopAsync().Forget();
-            _isTransitioning = false;
+            _isTransitioning = true;
+            try
+            {
+                while (HasOpenPanels)
+                {
+                    var t = _stack.Pop();
+                    await HidePanel(t, playTransition: true);
+                }
+
+                _pauseOwners.Clear();
+                if (invokeClosedEvent) OnAllPanelClosed?.Invoke();
+                ApplyPauseState();
+                RefreshTopAsync().Forget();
+            }
+            catch (OperationCanceledException)
+            {
+                Debug.Log("[UIManager] ClearStackAsync was cancelled");
+            }
+            finally
+            {
+                _isTransitioning = false;
+            }
         }
  
         private bool RemoveFromStack(UIPanelType type)
