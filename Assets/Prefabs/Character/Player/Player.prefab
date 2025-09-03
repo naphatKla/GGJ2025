@@ -54043,6 +54043,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5dd45224fe3c4d4ca1bd168263f9430, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  takeDamageDelayAfterHit: 0
 --- !u!114 &2047403147416900316
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -164580,12 +164581,12 @@ MonoBehaviour:
         Owner: {fileID: 406790586103967934}
         DebugActive: 0
         Mode: 0
-        TimeScale: 0
+        TimeScale: 0.1
         TimeScaleDuration: 0.75
         ResetTimescaleOnStop: 0
         TimeScaleLerp: 1
         TimescaleLerpMode: 0
-        TimeScaleLerpSpeed: 5
+        TimeScaleLerpSpeed: 8
         TimescaleLerpCurve:
           MMTweenDefinitionType: 1
           MMTweenCurve: 4
