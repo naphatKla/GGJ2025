@@ -105,6 +105,7 @@ namespace UI
             _isPauseApplied = false;
             ApplyPauseState();
         }
+        
 
         private void Update()
         {
@@ -328,6 +329,7 @@ namespace UI
             _stackTypeMap.Clear();
             _pauseFlagMap.Clear();
             _blockFlagMap.Clear();
+            _pauseOwners.Clear();
 
             foreach (var e in panelEntries)
             {
