@@ -95,7 +95,7 @@ namespace UI
         private bool HasOpenPanels => _stack.Count > 0;
         private UIPanelType TopType => _stack.Count > 0 ? _stack.Peek() : UIPanelType.None;
 
-        #region Unity lifecycle
+            #region Unity lifecycle
 
         protected override void Awake()
         {
@@ -117,6 +117,24 @@ namespace UI
         {
             MMTimeScaleEvent.Trigger(MMTimeScaleMethods.Reset, 1, -1, false, 0f, false);
             base.OnDestroy();
+        }
+
+        private void OnEnable()
+        {
+            SceneManager.sceneLoaded += OnSceneChange;
+        }
+
+        private void OnDisable()
+        {
+            SceneManager.sceneLoaded -= OnSceneChange;
+        }
+
+        private async void OnSceneChange(Scene scene, LoadSceneMode mode)
+        {
+            await UniTask.Yield(PlayerLoopTiming.LastPostLateUpdate);
+            _pauseOwners.Clear();
+            MMTimeScaleEvent.Trigger(MMTimeScaleMethods.Reset, 1f, -1, false, 0f, true);
+            Time.timeScale = 1f;
         }
 
         #endregion
@@ -160,6 +178,7 @@ namespace UI
             finally
             {
                 _isTransitioning = false;
+                ApplyPauseState();
             }
         }
 
@@ -192,6 +211,7 @@ namespace UI
             finally
             {
                 _isTransitioning = false;
+                ApplyPauseState();
             }
         }
 
@@ -225,6 +245,7 @@ namespace UI
             finally
             {
                 _isTransitioning = false;
+                ApplyPauseState();
             }
         }
 
@@ -445,6 +466,7 @@ namespace UI
             finally
             {
                 _isTransitioning = false;
+                ApplyPauseState();
             }
         }
  
