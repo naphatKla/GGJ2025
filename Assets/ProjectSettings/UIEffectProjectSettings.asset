@@ -155,6 +155,8 @@ ShaderVariantCollection:
         passType: 0
       - keywords: EDGE_SHINY GRADATION_COLOR2 TRANSITION_PATTERN
         passType: 0
+      - keywords: EDGE_SHINY GRADATION_COLOR4
+        passType: 0
       - keywords: EDGE_SHINY GRADATION_GRADIENT
         passType: 0
       - keywords: EDGE_SHINY GRADATION_GRADIENT TRANSITION_DISSOLVE
@@ -163,15 +165,31 @@ ShaderVariantCollection:
         passType: 0
       - keywords: EDGE_SHINY GRADATION_GRADIENT TRANSITION_SHINY
         passType: 0
+      - keywords: EDGE_SHINY SAMPLING_BLUR_DETAIL
+        passType: 0
+      - keywords: EDGE_SHINY SAMPLING_BLUR_FAST
+        passType: 0
+      - keywords: EDGE_SHINY SAMPLING_BLUR_MEDIUM
+        passType: 0
       - keywords: EDGE_SHINY SAMPLING_EDGE_ALPHA
         passType: 0
+      - keywords: EDGE_SHINY SAMPLING_EDGE_LUMINANCE
+        passType: 0
+      - keywords: EDGE_SHINY SAMPLING_PIXELATION
+        passType: 0
       - keywords: EDGE_SHINY SAMPLING_PIXELATION TRANSITION_SHINY
+        passType: 0
+      - keywords: EDGE_SHINY SAMPLING_RGB_SHIFT
         passType: 0
       - keywords: EDGE_SHINY SAMPLING_RGB_SHIFT TRANSITION_BLAZE
         passType: 0
       - keywords: EDGE_SHINY SAMPLING_RGB_SHIFT TRANSITION_SHINY
         passType: 0
+      - keywords: EDGE_SHINY TARGET_HUE
+        passType: 0
       - keywords: EDGE_SHINY TARGET_HUE TRANSITION_SHINY
+        passType: 0
+      - keywords: EDGE_SHINY TONE_GRAYSCALE
         passType: 0
       - keywords: EDGE_SHINY TONE_GRAYSCALE TRANSITION_SHINY
         passType: 0
@@ -182,6 +200,8 @@ ShaderVariantCollection:
       - keywords: EDGE_SHINY TRANSITION_BLAZE
         passType: 0
       - keywords: EDGE_SHINY TRANSITION_DISSOLVE
+        passType: 0
+      - keywords: EDGE_SHINY TRANSITION_FADE
         passType: 0
       - keywords: EDGE_SHINY TRANSITION_PATTERN
         passType: 0
@@ -413,7 +433,21 @@ ShaderVariantCollection:
         passType: 0
       - keywords: COLOR_FILTER TRANSITION_SHINY
         passType: 0
+      - keywords: DETAIL_SUBTRACTIVE EDGE_SHINY OUTLINE_ON TRANSITION_SHINY
+        passType: 0
       - keywords: EDGE_PLAIN
+        passType: 0
+      - keywords: EDGE_SHINY OUTLINE_ON TRANSITION_DISSOLVE
+        passType: 0
+      - keywords: EDGE_SHINY OUTLINE_ON TRANSITION_SHINY
+        passType: 0
+      - keywords: GRADATION_COLOR2 OUTLINE_ON TRANSITION_SHINY
+        passType: 0
+      - keywords: GRADATION_GRADIENT OUTLINE_ON
+        passType: 0
+      - keywords: GRADATION_GRADIENT OUTLINE_ON TRANSITION_SHINY
+        passType: 0
+      - keywords: OUTLINE_ON TRANSITION_SHINY
         passType: 0
       - keywords: SAMPLING_BLUR_DETAIL
         passType: 0
