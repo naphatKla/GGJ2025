@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using Characters.CombatSystems;
 using Characters.ComboSystem;
@@ -13,16 +12,13 @@ using Characters.StatusEffectSystems;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using Manager;
-using MoreMountains.Feedbacks;
 using MoreMountains.Tools;
 using PixelUI;
 using Sirenix.OdinInspector;
 using TMPro;
 using UI;
-using UI.IngameModal;
 using UI.IngameViewholder;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
@@ -365,7 +361,7 @@ namespace Characters.UIDisplay
 
             Transform tf = textInstance.transform;
             Vector3 p = healthSystem.transform.position;
-            Vector2 off = Random.insideUnitCircle * 1f;
+            Vector2 off = Random.insideUnitCircle * 2.65f;
             tf.position = new Vector3(p.x + off.x, p.y + off.y);
             tf.localScale = Vector3.zero;
             textInstance.text = healthChange + " HP";
@@ -389,7 +385,7 @@ namespace Characters.UIDisplay
             float fadeOutDuration = 0.3f;
             float delayBeforeFade = floatDuration - fadeOutDuration;
             float riseAmount = 0.75f;
-            float scaleIn = 1.25f;
+            float scaleIn = 1.0f;
             float settleScale = 1.0f;
             float popDuration = 0.15f;
             float settleDuration = 0.15f;
