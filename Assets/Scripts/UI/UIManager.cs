@@ -382,6 +382,7 @@ namespace UI
             if (TopType == UIPanelType.Pause)
             {
                 ClosePanelAsync().Forget();
+                ForceCloseActiveConfirmInstant();
                 return;
             }
 
