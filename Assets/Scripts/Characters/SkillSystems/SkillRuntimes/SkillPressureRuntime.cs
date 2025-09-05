@@ -36,7 +36,7 @@ namespace Characters.SkillSystems.SkillRuntimes
         {
             if (!owner) return;
             owner.MovementSystem.ResetMovementSystem();
-            CombatManager.ApplyRawDamageTo(owner.gameObject, owner.HealthSystem.MaxHealth);
+            CombatManager.ApplyRawDamageTo(owner.gameObject, owner.gameObject, owner.HealthSystem.MaxHealth);
         }
     }
 }

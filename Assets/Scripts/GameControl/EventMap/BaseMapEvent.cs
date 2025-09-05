@@ -76,8 +76,10 @@ namespace GameControl.EventMap
                     cancellationToken: destroyCancellationToken);
                 
                 if (debug) Debug.Log("Perform & Feedback");
-                Perform();
+                
                 playFeedback?.PlayFeedbacks();
+                Perform();
+               
 
                 if (debug) Debug.Log("Deleting");
                 ReleaseAfterPlay(token).Forget();

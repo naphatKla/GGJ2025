@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Characters.CombatSystems;
 using Characters.Controllers;
+using Characters.FeedbackSystems;
 using Characters.HeathSystems;
 using UnityEngine;
 using UnityEngine.XR;
@@ -69,6 +70,9 @@ namespace Manager
             
             if (!targetController.HealthSystem.TakeDamage(damageData.Damage, out bool dieThisFrame)) return;
             attackerController.CombatSystem.OnDealDamageHandler(damageData);
+
+            if (targetController.FeedbackSystem is PlayerFeedbackSystem playerFeedback)
+                playerFeedback.OpenFocusBlackDropOnHit(0.65f, attacker);
             
             if (dieThisFrame)
                 attackerController.CombatSystem.OnKillHandler();
@@ -77,12 +81,17 @@ namespace Manager
             attackerController.HealthSystem.Heal(damageData.LifeSteal);
         }
 
-        public static void ApplyRawDamageTo(GameObject target, float damage)
+        public static void ApplyRawDamageTo(GameObject target, GameObject attacker, float damage)
         {
             if (!_characterCaches.ContainsKey(target))
                 _characterCaches.Add(target, target.GetComponent<BaseController>());
 
-            _characterCaches[target].HealthSystem.TakeDamage(damage, out _);
+            var targetController = _characterCaches[target];
+            
+            if (!targetController.HealthSystem.TakeDamage(damage, out _)) return;
+            
+            if (targetController.FeedbackSystem is PlayerFeedbackSystem playerFeedback)
+                playerFeedback.OpenFocusBlackDropOnHit(0.65f, attacker);
         }
 
         public static void ClearCache()
