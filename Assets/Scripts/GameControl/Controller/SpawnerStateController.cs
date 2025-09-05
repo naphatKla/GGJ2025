@@ -4,6 +4,7 @@ using GameControl.Interface;
 using MoreMountains.Tools;
 using Sirenix.OdinInspector;
 using TMPro;
+using UI;
 using UnityEngine;
 
 namespace GameControl.Controller
@@ -154,7 +155,7 @@ namespace GameControl.Controller
             GameTimer.Instance.ScheduleLoopingTrigger(_currentMapData.intervalEnemyPointRatioUpgrade, GameTimer.Instance.StartTimerNumber, 
                 () => _enemySpawnerController.UpgradePointRatio());
 
-            GameTimer.Instance.ScheduleOnceAtRemaining(60, () => Debug.Log("Last 1 Minute"));
+            GameTimer.Instance.ScheduleOnceAtRemaining(60, () => PopupUIManager.Instance.ShowPopup("Warning", 2.0f, bypassStack: true));
  
             _mapEventController.ScheduleAllTriggersUpfront(GameTimer.Instance.StartTimerNumber);
         }
