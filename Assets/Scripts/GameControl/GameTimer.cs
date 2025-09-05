@@ -334,10 +334,6 @@ namespace GameControl
             SkipToRemaining(targetRemaining, invokeEnd);
         }
 
-        public void SkipToFinalMinute(bool invokeEnd = true)
-        {
-            SkipToRemaining(60f, invokeEnd);
-        }
         #endregion
         
         #region Trigger Event
