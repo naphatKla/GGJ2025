@@ -72,7 +72,7 @@ namespace Manager
             attackerController.CombatSystem.OnDealDamageHandler(damageData);
 
             if (targetController.FeedbackSystem is PlayerFeedbackSystem playerFeedback)
-                playerFeedback.OpenFocusBlackDropOnHit(0.525f, attacker);
+                playerFeedback.OpenFocusBlackDropOnHit(0.4f, attacker);
             
             if (dieThisFrame)
                 attackerController.CombatSystem.OnKillHandler();
@@ -91,7 +91,7 @@ namespace Manager
             if (!targetController.HealthSystem.TakeDamage(damage, out _)) return;
             
             if (targetController.FeedbackSystem is PlayerFeedbackSystem playerFeedback)
-                playerFeedback.OpenFocusBlackDropOnHit(0.525f, attacker);
+                playerFeedback.OpenFocusBlackDropOnHit(0.4f, attacker);
         }
 
         public static void ClearCache()
