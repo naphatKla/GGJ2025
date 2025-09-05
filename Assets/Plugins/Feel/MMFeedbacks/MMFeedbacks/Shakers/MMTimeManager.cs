@@ -398,6 +398,7 @@ namespace MoreMountains.Feedbacks
 		{
 			MMFreezeFrameEvent.Unregister(OnMMFreezeFrameEvent);
 			MMTimeScaleEvent.Unregister(OnTimeScaleEvent);
+			OnTimeScaleEvent(MMTimeScaleMethods.Reset, 1, 0,false,0,false);
 		}		
 	}
 }

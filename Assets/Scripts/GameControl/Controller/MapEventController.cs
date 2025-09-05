@@ -84,7 +84,7 @@ namespace GameControl.Controller
                     {
                         if (_debug) Debug.Log($"[PlayMapEventCatagory] Triggered event category '{eventOption.catagolyMapEvent}' at timer = {GameTimer.Instance.GlobalTimer:F2}s");
                         PlayMapEventCatagory(eventOption);
-                    });
+                    }, false);
 
                     elapsedTime = nextTriggerTime;
                 }

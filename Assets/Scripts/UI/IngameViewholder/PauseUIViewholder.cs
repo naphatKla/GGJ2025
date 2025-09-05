@@ -32,14 +32,25 @@ namespace UI.IngameViewholder
         
         private void BackClick()
         {
-            UIManager.Instance.BackMenu();
-            UIManager.Instance.CloseAllPanels();
+            UIManager.Instance.ShowConfirmButton(
+                "Leave",
+                onYes: () => 
+                { 
+                    UIManager.Instance.BackMenu();
+                },
+                onNo: null,
+                durationSec: 8f
+            ).Forget();
         }
 
         private void RestartClick()
         {
-            GameStateController.Instance.RestartMap();
-            UIManager.Instance.CloseAllPanels();
+            UIManager.Instance.ShowConfirmButton(
+                "Restart",
+                onYes: () => GameStateController.Instance.RestartMap(),
+                onNo: null,
+                durationSec: 8f
+            ).Forget();
         }
 
         private void ContinueClick()
@@ -49,7 +60,12 @@ namespace UI.IngameViewholder
         
         private void QuitClick()
         {
-            UIManager.Instance.QuitGame();
+            UIManager.Instance.ShowConfirmButton(
+                "Quit",
+                onYes: () => UIManager.Instance.QuitGame(),
+                onNo: null,
+                durationSec: 8f
+            ).Forget();
         }
     }
 }

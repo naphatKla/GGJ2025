@@ -16,7 +16,6 @@ namespace GameControl.GameState
         {
             UIManager.Instance.CloseAllPanels();
             UIManager.Instance.OpenResultMenu();
-            MMTimeScaleEvent.Trigger(MMTimeScaleMethods.For, 0, -1, true, 6.2f, true);
         }
 
         public void Update(GameStateController controller) { }

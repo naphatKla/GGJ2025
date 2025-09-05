@@ -6,6 +6,7 @@ using DG.Tweening;
 using GameControl.GameState;
 using GameControl.Interface;
 using GameControl.SO;
+using MoreMountains.Feedbacks;
 using MoreMountains.Tools;
 using UnityEngine;
 using Sirenix.OdinInspector;
@@ -96,20 +97,6 @@ namespace GameControl.Controller
             currentMapIndex = MapSelectionSender.Instance.currentMapSelectionIndex;
             _currentMapData = CurrentMap;
             SetState(_tutorialState);
-        }
-        
-        public async UniTask LerpTimeScaleAsync(float target, float duration)
-        {
-            float start = Time.timeScale;
-            float elapsed = 0f;
-
-            while (elapsed < duration)
-            {
-                elapsed += Time.unscaledDeltaTime;
-                Time.timeScale = Mathf.Lerp(start, target, elapsed / duration);
-                await UniTask.Yield(PlayerLoopTiming.Update);
-            }
-            Time.timeScale = target;
         }
 
         public void RestartMap()
