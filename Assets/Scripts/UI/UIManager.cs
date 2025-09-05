@@ -240,6 +240,12 @@ namespace UI
             }
         }
 
+        public async void ClosePanel()
+        {
+            await ClosePanelAsync();
+        }
+        
+
         public bool IsPanelOpen(UIPanelType type)
         {
             return _panelMap.TryGetValue(type, out var go) && go.activeSelf;
