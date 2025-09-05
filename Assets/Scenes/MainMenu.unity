@@ -2798,6 +2798,34 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -50
       objectReference: {fileID: 0}
+    - target: {fileID: 2228794881874565788, guid: c88b0f965e9d10b4fb2016997ed325f2, type: 3}
+      propertyPath: OnPointerExited.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2228794881874565788, guid: c88b0f965e9d10b4fb2016997ed325f2, type: 3}
+      propertyPath: OnPointerExited.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2228794881874565788, guid: c88b0f965e9d10b4fb2016997ed325f2, type: 3}
+      propertyPath: OnPointerExited.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 593444652}
+    - target: {fileID: 2228794881874565788, guid: c88b0f965e9d10b4fb2016997ed325f2, type: 3}
+      propertyPath: OnPointerExited.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2228794881874565788, guid: c88b0f965e9d10b4fb2016997ed325f2, type: 3}
+      propertyPath: OnPointerExited.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: CancelInvoke
+      objectReference: {fileID: 0}
+    - target: {fileID: 2228794881874565788, guid: c88b0f965e9d10b4fb2016997ed325f2, type: 3}
+      propertyPath: OnPointerExited.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: UnityEngine.MonoBehaviour, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 2228794881874565788, guid: c88b0f965e9d10b4fb2016997ed325f2, type: 3}
+      propertyPath: OnPointerExited.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
     - target: {fileID: 4226952336465164750, guid: c88b0f965e9d10b4fb2016997ed325f2, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
       value: 1
@@ -2816,7 +2844,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4226952336465164750, guid: c88b0f965e9d10b4fb2016997ed325f2, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: ClosePanel
+      value: CloseAllPanels
       objectReference: {fileID: 0}
     - target: {fileID: 4226952336465164750, guid: c88b0f965e9d10b4fb2016997ed325f2, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
@@ -2941,6 +2969,34 @@ PrefabInstance:
     - target: {fileID: 7890288189080418922, guid: c88b0f965e9d10b4fb2016997ed325f2, type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8047774750346401431, guid: c88b0f965e9d10b4fb2016997ed325f2, type: 3}
+      propertyPath: OnPointerExited.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8047774750346401431, guid: c88b0f965e9d10b4fb2016997ed325f2, type: 3}
+      propertyPath: OnPointerExited.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8047774750346401431, guid: c88b0f965e9d10b4fb2016997ed325f2, type: 3}
+      propertyPath: OnPointerExited.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 593444652}
+    - target: {fileID: 8047774750346401431, guid: c88b0f965e9d10b4fb2016997ed325f2, type: 3}
+      propertyPath: OnPointerExited.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8047774750346401431, guid: c88b0f965e9d10b4fb2016997ed325f2, type: 3}
+      propertyPath: OnPointerExited.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: QuitGame
+      objectReference: {fileID: 0}
+    - target: {fileID: 8047774750346401431, guid: c88b0f965e9d10b4fb2016997ed325f2, type: 3}
+      propertyPath: OnPointerExited.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: UI.UIManager, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 8047774750346401431, guid: c88b0f965e9d10b4fb2016997ed325f2, type: 3}
+      propertyPath: OnPointerExited.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 8469931511662624579, guid: c88b0f965e9d10b4fb2016997ed325f2, type: 3}
       propertyPath: m_AnchorMax.y
@@ -3369,13 +3425,34 @@ MonoBehaviour:
   endCreditsScene: Credit
   panelEntries:
   - type: 6
+    stackType: 0
+    pauseGameWhileOpen: 0
+    blockInputBehind: 0
     panel: {fileID: 1673546081}
+    appearTransition: {fileID: 0}
+    disappearTransition: {fileID: 0}
   - type: 7
+    stackType: 0
+    pauseGameWhileOpen: 0
+    blockInputBehind: 0
     panel: {fileID: 1501110633}
+    appearTransition: {fileID: 0}
+    disappearTransition: {fileID: 0}
   - type: 8
+    stackType: 0
+    pauseGameWhileOpen: 0
+    blockInputBehind: 0
     panel: {fileID: 1698017316}
+    appearTransition: {fileID: 0}
+    disappearTransition: {fileID: 0}
   - type: 9
+    stackType: 0
+    pauseGameWhileOpen: 0
+    blockInputBehind: 1
     panel: {fileID: 2054272028}
+    appearTransition: {fileID: 11400000, guid: 2cc4c473f4dfa9242b28372ebe121788, type: 2}
+    disappearTransition: {fileID: 11400000, guid: 2cc4c473f4dfa9242b28372ebe121788, type: 2}
+  inputBlockerPrefab: {fileID: 156866321337092875, guid: 8820d975f0ad3a04b89bdac9517f8d6a, type: 3}
 --- !u!1 &597054485
 GameObject:
   m_ObjectHideFlags: 0
