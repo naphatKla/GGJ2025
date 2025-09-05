@@ -64,7 +64,6 @@ namespace Characters.FeedbackSystems
             {
                 var r = arr[i];
                 if (!r || r == skip) continue;
-                Debug.Log("add");
                 set.Add(r);
             }
         }
