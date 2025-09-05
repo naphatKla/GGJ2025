@@ -199,9 +199,15 @@ ShaderVariantCollection:
         passType: 0
       - keywords: EDGE_SHINY TRANSITION_BLAZE
         passType: 0
+      - keywords: EDGE_SHINY TRANSITION_BURN
+        passType: 0
       - keywords: EDGE_SHINY TRANSITION_DISSOLVE
         passType: 0
       - keywords: EDGE_SHINY TRANSITION_FADE
+        passType: 0
+      - keywords: EDGE_SHINY TRANSITION_MASK
+        passType: 0
+      - keywords: EDGE_SHINY TRANSITION_MELT
         passType: 0
       - keywords: EDGE_SHINY TRANSITION_PATTERN
         passType: 0
@@ -364,7 +370,11 @@ ShaderVariantCollection:
   - first: {fileID: 4800000, guid: 935b7be1c88464d2eb87204fdfab5a38, type: 3}
     second:
       variants:
+      - keywords: COLOR_FILTER
+        passType: 0
       - keywords: COLOR_FILTER DETAIL_REPLACE SAMPLING_RGB_SHIFT TRANSITION_SHINY
+        passType: 0
+      - keywords: COLOR_FILTER EDGE_SHINY
         passType: 0
       - keywords: COLOR_FILTER GRADATION_GRADIENT
         passType: 0
@@ -375,6 +385,10 @@ ShaderVariantCollection:
       - keywords: COLOR_FILTER SAMPLING_RGB_SHIFT TRANSITION_SHINY
         passType: 0
       - keywords: COLOR_FILTER TRANSITION_SHINY
+        passType: 0
+      - keywords: EDGE_PLAIN
+        passType: 0
+      - keywords: EDGE_SHINY
         passType: 0
       - keywords: EDGE_SHINY GRADATION_GRADIENT TRANSITION_SHINY
         passType: 0

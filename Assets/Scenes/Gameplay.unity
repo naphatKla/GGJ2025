@@ -21051,13 +21051,19 @@ MonoBehaviour:
   uiEntries:
   - confirmID: Quit
     confirmButtonUI: {fileID: 2602139707383159695, guid: c88b0f965e9d10b4fb2016997ed325f2, type: 3}
-    pauseGameWhileOpen: 1
+    pauseGameWhileOpen: 0
     blockInputBehind: 1
     appearTransition: {fileID: 11400000, guid: 2cc4c473f4dfa9242b28372ebe121788, type: 2}
     disappearTransition: {fileID: 11400000, guid: 2cc4c473f4dfa9242b28372ebe121788, type: 2}
   - confirmID: Restart
     confirmButtonUI: {fileID: 2639770470914716485, guid: 855f7c1b8cfa9b14d8be3e582f41e50f, type: 3}
-    pauseGameWhileOpen: 1
+    pauseGameWhileOpen: 0
+    blockInputBehind: 1
+    appearTransition: {fileID: 11400000, guid: 2cc4c473f4dfa9242b28372ebe121788, type: 2}
+    disappearTransition: {fileID: 11400000, guid: 2cc4c473f4dfa9242b28372ebe121788, type: 2}
+  - confirmID: Leave
+    confirmButtonUI: {fileID: 4919572612208487640, guid: 39c372acc489af44f812180d3a6b667c, type: 3}
+    pauseGameWhileOpen: 0
     blockInputBehind: 1
     appearTransition: {fileID: 11400000, guid: 2cc4c473f4dfa9242b28372ebe121788, type: 2}
     disappearTransition: {fileID: 11400000, guid: 2cc4c473f4dfa9242b28372ebe121788, type: 2}
@@ -23218,6 +23224,10 @@ PrefabInstance:
     - target: {fileID: 4343785922224413195, guid: a087658cdfa80ae41bfabae6ef229f18, type: 3}
       propertyPath: m_Name
       value: FlowState (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 4343785922224413195, guid: a087658cdfa80ae41bfabae6ef229f18, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
