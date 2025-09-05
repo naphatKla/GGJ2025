@@ -46,7 +46,7 @@ namespace UI.Tutorial
 
             leftButton.onClick.AddListener(() => ChangePage(-1));
             rightButton.onClick.AddListener(() => ChangePage(1));
-            skipButton.onClick.AddListener(CloseTutorial);
+            skipButton.onClick.AddListener(() => CloseTutorial().Forget());
 
             ShowPage(currentIndex, true);
         }
@@ -149,25 +149,20 @@ namespace UI.Tutorial
                 indicators[i].color = i == index ? activeColor : inactiveColor;
         }
 
-        private void CloseTutorial()
+        private async UniTask CloseTutorial()
         {
-            canvasGroup
-                .DOFade(0, 0.5f)
-                .SetUpdate(true)
-                .OnComplete(() => gameObject.SetActive(false));
-
-            PlayerPrefs.SetInt("HasSeenTutorial", 1);
-            PlayerPrefs.Save();
+            try
+            {
+                PlayerPrefs.SetInt("HasSeenTutorial", 1);
+                PlayerPrefs.Save();
             
-            UIManager.Instance.CloseAllPanels();
-            CountdownStart().Forget();
-        }
-
-        private async UniTaskVoid CountdownStart()
-        {
-            SoundManager.Instance.PlayUI(SoundName.UI.CountDown5Sec, timeScaleMode: SoundManager.TimeScaleMode.ScalePitch);
-            await GameTimer.Instance.StartCountdownAsync(5f);
-            GameStateController.Instance.SetState(new StartState());
+                await UIManager.Instance.CloseSpecificPanel(UIPanelType.TutorialPanel);
+                GameStateController.Instance.SetState(new PrestartState());
+            }
+            catch (OperationCanceledException)
+            {
+                Debug.Log("Tutorial Cancel");
+            }
         }
     }
 }

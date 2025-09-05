@@ -17,7 +17,7 @@ namespace Characters.SO.SkillDataSo
         [Title("Details")]
         [SerializeField] private string skillName;
         
-        [Space] [SerializeField] [LabelText("")] [MultiLineProperty]
+        [Space] [SerializeField] [LabelText("")] [MultiLineProperty(12)]
         private string skillDescription;
         
         [HorizontalGroup("SkillChain")]

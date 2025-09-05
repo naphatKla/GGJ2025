@@ -33,14 +33,14 @@ namespace UI.IngameViewholder
 
         private void RestartClick()
         {
-            GameStateController.Instance.RestartMap();
             UIManager.Instance.CloseAllPanels();
+            GameStateController.Instance.RestartMap();
         }
         
         private void BackClick()
         {
-            UIManager.Instance.BackMenu();
             UIManager.Instance.CloseAllPanels();
+            UIManager.Instance.BackMenu();
         }
 
         private void UpdateUIText()

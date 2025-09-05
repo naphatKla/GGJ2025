@@ -16,15 +16,24 @@ namespace Characters.SkillSystems
 
         private readonly Dictionary<SkillType, Action> activeBufferCallbacks = new();
 
+        // string = context failed.
+        public event Action<string> OnSkillPerformFail;
+
         public override void PerformSkill(SkillType type)
         {
             if (!owner || !canUseSkills)
                 return;
-
+            
             var runtime = GetRuntime(type);
 
             if (useInputBuffering && runtime && runtime.IsCooldown)
             {
+                if (runtime.Cooldown >= 1f && runtime.CurrentCooldown > bufferWindow &&
+                    type == SkillType.PrimarySkill || type == SkillType.SecondarySkill)
+                {
+                    OnSkillPerformFail?.Invoke("Cooldown is not ready!");
+                }
+                
                 runtime.ClearCooldownReadyCallback();
                 var capturedRuntime = runtime;
 
@@ -54,7 +63,7 @@ namespace Characters.SkillSystems
 
                 return;
             }
-
+            
             base.PerformSkill(type);
         }
         

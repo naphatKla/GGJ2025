@@ -34,7 +34,7 @@ using Random = UnityEngine.Random;
 
 namespace Characters.UIDisplay
 {
-    public class CharacterDisplay : MonoBehaviour
+    public class PlayerDisplay : MonoBehaviour
     {
         [FoldoutGroup("Combo Display"), Title("Ref"), SerializeField]
         private ComboStreakSystem comboStreakSystem;
@@ -96,9 +96,12 @@ namespace Characters.UIDisplay
 
         // ========= Skill Slot =========
         [FoldoutGroup("SkillSlot Display"), Title("Ref"), SerializeField]
-        public SkillSystem skillSystem;
+        public PlayerSkillSystem skillSystem;
 
         [FoldoutGroup("SkillSlot Display"), Title("UI"), FoldoutGroup("SkillSlot Display"), SerializeField]
+        private TextMeshProUGUI cooldownIsNotReadyText;
+        
+        [FoldoutGroup("SkillSlot Display"), FoldoutGroup("SkillSlot Display"), SerializeField, PropertySpace(10,0)]
         private List<SkillSlotViewholder> skillSlotModel;
 
         // ========= Score =========
@@ -149,6 +152,7 @@ namespace Characters.UIDisplay
             skillSystem.OnSkillCooldownReset += ResetSkillSlot;
             skillSystem.OnSkillPerform += SkillPerfrom;
             skillSystem.OnSlotCooldownSpeedChanged += OverloopFeedback;
+            skillSystem.OnSkillPerformFail += NotifySkillPerformFail;
 
             combatSystem.OnDealDamage += UpdateDamageText;
             scoreSystem.OnScoreChange += UpdateScoreUI;
@@ -190,6 +194,7 @@ namespace Characters.UIDisplay
             skillSystem.OnSkillCooldownUpdate -= UpdateCooldownSlot;
             skillSystem.OnSkillCooldownReset -= ResetSkillSlot;
             skillSystem.OnSlotCooldownSpeedChanged -= OverloopFeedback;
+            skillSystem.OnSkillPerformFail -= NotifySkillPerformFail;
 
             combatSystem.OnDealDamage -= UpdateDamageText;
             scoreSystem.OnScoreChange -= UpdateScoreUI;
@@ -214,6 +219,7 @@ namespace Characters.UIDisplay
             UpdateLevelUI();
             UpdateHealthUI();
             scoreText.text = "0";
+            cooldownIsNotReadyText.alpha = 0;
         }
 
         #region Combo UI (ใหม่)
@@ -577,6 +583,29 @@ namespace Characters.UIDisplay
             if (skillSlotModel[skillIndex] == null) return;
             
             skillSlotModel[skillIndex].OverloopFeedback(multiply);
+        }
+
+
+        private Sequence _skillPerformFailSequence;
+        private void NotifySkillPerformFail(string contextReason)
+        {
+            if (_skillPerformFailSequence.IsActive()) return;
+
+            var originPos = cooldownIsNotReadyText.transform.position;
+            cooldownIsNotReadyText.text = contextReason;
+            cooldownIsNotReadyText.alpha = 0;
+            cooldownIsNotReadyText.transform.localScale = Vector3.zero;
+            _skillPerformFailSequence = DOTween.Sequence();
+            _skillPerformFailSequence
+                .Join(cooldownIsNotReadyText.transform.DOScale(Vector3.one, 0.2f))
+                .Join(cooldownIsNotReadyText.transform.DOMoveY(originPos.y + 0.15f, 0.5f))
+                .Join(cooldownIsNotReadyText.DOFade(1, 0.3f))
+                .AppendInterval(0.85f).Append(cooldownIsNotReadyText.DOFade(0, 0.3f))
+                .OnComplete(() =>
+                {
+                    cooldownIsNotReadyText.transform.position = originPos;
+                    cooldownIsNotReadyText.transform.localScale = Vector3.zero;
+                });
         }
 
         #endregion

@@ -44,7 +44,7 @@ namespace Characters.InputSystems
         private DirectionContainer _sightDirection;
 
         private bool _primaryToggle;
-        private bool _secondaryToggle;
+        //private bool _secondaryToggle;
         private float _toggleTickTime = 0.3f;
         private float _lastTimeToggle;
 
@@ -67,7 +67,7 @@ namespace Characters.InputSystems
         {
             _playerInputAction.Gameplay.Disable();
             _primaryToggle = false;
-            _secondaryToggle = false;
+            //_secondaryToggle = false;
         }
         
         private void Update()
@@ -75,7 +75,7 @@ namespace Characters.InputSystems
             if (!Enable)
             {
                 _primaryToggle = false;
-                _secondaryToggle = false;
+                //_secondaryToggle = false;
                 return;
             }
             _mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -90,8 +90,8 @@ namespace Characters.InputSystems
             if (_primaryToggle)
                 OnSkillPerform?.Invoke(SkillType.PrimarySkill);
             
-            if (_secondaryToggle)
-                OnSkillPerform?.Invoke(SkillType.SecondarySkill);
+            /*if (_secondaryToggle)
+                OnSkillPerform?.Invoke(SkillType.SecondarySkill);*/
         }
 
         #endregion
@@ -137,11 +137,11 @@ namespace Characters.InputSystems
             if (Time.timeScale <= 0.01) return;
             if (!context.performed)
             {
-                _secondaryToggle = false;
+                //_secondaryToggle = false;
                 return;
             }
 
-            _secondaryToggle = true;
+            //_secondaryToggle = true;
             OnSkillPerform?.Invoke(SkillType.SecondarySkill);
         }
 

@@ -26,6 +26,7 @@ namespace GameControl.Controller
     {
         private IGameState _currentState;
         
+        private TutorialState _tutorialState;
         private PrestartState _prestartState;
         private StartState _startState;
         private EndState _endState;
@@ -53,6 +54,7 @@ namespace GameControl.Controller
         protected override void Awake()
         {
             base.Awake();
+            _tutorialState = new TutorialState();
             _prestartState = new PrestartState();
             _startState = new StartState();
             _endState = new EndState();
@@ -93,7 +95,7 @@ namespace GameControl.Controller
             await UniTask.WaitUntil(() => MapSelectionSender.Instance != null);
             currentMapIndex = MapSelectionSender.Instance.currentMapSelectionIndex;
             _currentMapData = CurrentMap;
-            SetState(_prestartState);
+            SetState(_tutorialState);
         }
         
         public async UniTask LerpTimeScaleAsync(float target, float duration)

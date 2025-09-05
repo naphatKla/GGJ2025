@@ -19765,7 +19765,7 @@ MonoBehaviour:
     - rid: 3335892418657255428
       type: {class: MMF_ChromaticAberration_URP, ns: MoreMountains.FeedbacksForThirdParty, asm: MoreMountains.Feedbacks.URP}
       data:
-        Active: 1
+        Active: 0
         UniqueID: 567728846
         Label: Chromatic Aberration URP
         ChannelMode: 0
@@ -46083,6 +46083,7 @@ Transform:
   m_Children:
   - {fileID: 5226707632448140488}
   - {fileID: 75694539701820823}
+  - {fileID: 8946366980223575753}
   - {fileID: 2590548656291356399}
   - {fileID: 6113649524923489186}
   - {fileID: 9168042976954481279}
@@ -53901,7 +53902,7 @@ GameObject:
   - component: {fileID: 4760236408793113694}
   - component: {fileID: 6543663255383939677}
   - component: {fileID: 5144948324511787352}
-  - component: {fileID: 7467346900322984913}
+  - component: {fileID: 8511207443460752088}
   m_Layer: 7
   m_Name: Player
   m_TagString: Player
@@ -53988,6 +53989,7 @@ MonoBehaviour:
   solfUpgradePanel: {fileID: 0}
   solfUpgradeViewholder: {fileID: 962830566913950826, guid: 56ac69313ddb4ee42b51c120f615702f, type: 3}
   skillSystem: {fileID: 1367073074030531616}
+  cooldownIsNotReadyText: {fileID: 0}
   skillSlotModel:
   - {fileID: 0}
   - {fileID: 0}
@@ -54117,7 +54119,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   shape: 0
-  boxSize: {x: 2.35, y: 2.51}
+  boxSize: {x: 4, y: 4}
   circleRadius: 0.5
   targetLayer:
     serializedVersion: 2
@@ -54377,6 +54379,7 @@ MonoBehaviour:
   defaultShakeFrequency: 0.1
   defaultShakeCooldown: 0.1
   defaultBlendTime: 0.25
+  startOrthoSize: 0
   defaultOrthoSize: 0
 --- !u!114 &4760236408793113694
 MonoBehaviour:
@@ -54466,8 +54469,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d4f4d9ce50cb024aa968c3aa322872a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!60 &7467346900322984913
-PolygonCollider2D:
+--- !u!61 &8511207443460752088
+BoxCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -54495,10 +54498,10 @@ PolygonCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: 0, y: -0.15}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -54508,12 +54511,9 @@ PolygonCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Points:
-    m_Paths:
-    - - {x: -0.6185107, y: -0.962645}
-      - {x: 0.62875295, y: -0.96264493}
-      - {x: -0.0014372487, y: 1.2512689}
-  m_UseDelaunayMesh: 0
+  serializedVersion: 2
+  m_Size: {x: 2, y: 2.5}
+  m_EdgeRadius: 0
 --- !u!1 &2869158608663820740
 GameObject:
   m_ObjectHideFlags: 0
@@ -72476,6 +72476,7 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 8373931722188493609}
   - {fileID: 3158729327997044810}
   - {fileID: 6979000827802612924}
   - {fileID: 7989106683261859276}
@@ -72532,6 +72533,56 @@ MonoBehaviour:
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
   m_PresetInfoIsWorld: 0
+--- !u!1 &3558473645047061448
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8946366980223575753}
+  - component: {fileID: 9090371402621577335}
+  m_Layer: 0
+  m_Name: PlayerLowHpFeedback
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8946366980223575753
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3558473645047061448}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3736772975553267430}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &9090371402621577335
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3558473645047061448}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 705e2527bd0d5244bb7480d2e6b1c154, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ownerHealth: {fileID: 1611083095111674569}
+  hpCanvas: {fileID: 4470315753218637389}
+  canvasActivateOnHpPercent01: 0.5
+  fadeDuration: 0.15
+  breathDuration: 0.5
+  shakeAlphaRange: 0.3
 --- !u!1 &3626855033299637131
 GameObject:
   m_ObjectHideFlags: 0
@@ -89184,7 +89235,7 @@ MonoBehaviour:
     - rid: 3335892418657255428
       type: {class: MMF_ChromaticAberration_URP, ns: MoreMountains.FeedbacksForThirdParty, asm: MoreMountains.Feedbacks.URP}
       data:
-        Active: 1
+        Active: 0
         UniqueID: 567728846
         Label: Chromatic Aberration URP
         ChannelMode: 0
@@ -111081,7 +111132,7 @@ MonoBehaviour:
     - rid: 3335892418657255426
       type: {class: MMF_LensDistortion_URP, ns: MoreMountains.FeedbacksForThirdParty, asm: MoreMountains.Feedbacks.URP}
       data:
-        Active: 1
+        Active: 0
         UniqueID: -670406101
         Label: Lens Distortion URP
         ChannelMode: 0
@@ -111546,7 +111597,7 @@ MonoBehaviour:
     - rid: 3335892418657255428
       type: {class: MMF_ChromaticAberration_URP, ns: MoreMountains.FeedbacksForThirdParty, asm: MoreMountains.Feedbacks.URP}
       data:
-        Active: 1
+        Active: 0
         UniqueID: 567728846
         Label: Chromatic Aberration URP
         ChannelMode: 0
@@ -152579,7 +152630,7 @@ MonoBehaviour:
     - rid: 3335892418657255428
       type: {class: MMF_ChromaticAberration_URP, ns: MoreMountains.FeedbacksForThirdParty, asm: MoreMountains.Feedbacks.URP}
       data:
-        Active: 1
+        Active: 0
         UniqueID: 567728846
         Label: Chromatic Aberration URP
         ChannelMode: 0
@@ -153031,7 +153082,7 @@ MonoBehaviour:
     - rid: 3335892418657255428
       type: {class: MMF_ChromaticAberration_URP, ns: MoreMountains.FeedbacksForThirdParty, asm: MoreMountains.Feedbacks.URP}
       data:
-        Active: 1
+        Active: 0
         UniqueID: 567728846
         Label: Chromatic Aberration URP
         ChannelMode: 0
@@ -154174,6 +154225,81 @@ MonoBehaviour:
   useTransformPosition: 1
   positionSource: {fileID: 0}
   customWorldPosition: {x: 0, y: 0, z: 0}
+--- !u!1 &7345111148488959315
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1839740461763266777}
+  - component: {fileID: 4845612392456908613}
+  - component: {fileID: 7088520195770659293}
+  m_Layer: 7
+  m_Name: LowHpFeedbackImage
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1839740461763266777
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7345111148488959315}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8373931722188493609}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &4845612392456908613
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7345111148488959315}
+  m_CullTransparentMesh: 1
+--- !u!114 &7088520195770659293
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7345111148488959315}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: 48e25f46ef83a1c4c98bfc486d677e42, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &7357570655628806411
 GameObject:
   m_ObjectHideFlags: 0
@@ -164375,6 +164501,7 @@ MonoBehaviour:
   FeedbacksList:
   - rid: 6347591105996128256
   - rid: 7334425405478141955
+  - rid: 5581445452717096960
   KeepPlayModeChanges: 0
   PerformanceMode: 0
   StopFeedbacksOnDisable: 0
@@ -164382,6 +164509,140 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
+    - rid: 5581445452717096960
+      type: {class: MMF_TimescaleModifier, ns: MoreMountains.Feedbacks, asm: MoreMountains.Feedbacks}
+      data:
+        Active: 1
+        UniqueID: 253560634
+        Label: Timescale Modifier
+        ChannelMode: 0
+        Channel: 0
+        MMChannelDefinition: {fileID: 0}
+        Chance: 100
+        DisplayColor: {r: 0, g: 0, b: 0, a: 1}
+        Timing:
+          TimescaleMode: 0
+          ExcludeFromHoldingPauses: 0
+          ContributeToTotalDuration: 1
+          InitialDelay: 0
+          CooldownDuration: 0
+          InterruptsOnStop: 1
+          NumberOfRepeats: 0
+          RepeatForever: 0
+          DelayBetweenRepeats: 1
+          MMFeedbacksDirectionCondition: 0
+          PlayDirection: 0
+          ConstantIntensity: 0
+          UseIntensityInterval: 0
+          IntensityIntervalMin: 0
+          IntensityIntervalMax: 0
+          Sequence: {fileID: 0}
+          TrackID: 0
+          Quantized: 0
+          TargetBPM: 120
+        AutomatedTargetAcquisition:
+          Mode: 0
+          ChildIndex: 0
+        RandomizeOutput: 0
+        RandomMultiplier: {x: 0.8, y: 1}
+        RandomizeDuration: 0
+        RandomDurationMultiplier: {x: 0.5, y: 2}
+        UseRange: 0
+        RangeDistance: 5
+        UseRangeFalloff: 0
+        RangeFalloff:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 1
+            value: 0
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        RemapRangeFalloff: {x: 0, y: 1}
+        Owner: {fileID: 406790586103967934}
+        DebugActive: 0
+        Mode: 0
+        TimeScale: 0.05
+        TimeScaleDuration: 0.675
+        ResetTimescaleOnStop: 0
+        TimeScaleLerp: 1
+        TimescaleLerpMode: 0
+        TimeScaleLerpSpeed: 6
+        TimescaleLerpCurve:
+          MMTweenDefinitionType: 1
+          MMTweenCurve: 4
+          Curve:
+            serializedVersion: 2
+            m_Curve:
+            - serializedVersion: 3
+              time: 0
+              value: 0
+              inSlope: 0
+              outSlope: 0
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0
+            - serializedVersion: 3
+              time: 1
+              value: 1
+              inSlope: 0
+              outSlope: 0
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0
+            m_PreInfinity: 2
+            m_PostInfinity: 2
+            m_RotationOrder: 4
+          Initialized: 0
+        TimescaleLerpDuration: 1
+        TimeScaleLerpOnReset: 0
+        TimescaleLerpCurveOnReset:
+          MMTweenDefinitionType: 1
+          MMTweenCurve: 4
+          Curve:
+            serializedVersion: 2
+            m_Curve:
+            - serializedVersion: 3
+              time: 0
+              value: 0
+              inSlope: 0
+              outSlope: 0
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0
+            - serializedVersion: 3
+              time: 1
+              value: 1
+              inSlope: 0
+              outSlope: 0
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0
+            m_PreInfinity: 2
+            m_PostInfinity: 2
+            m_RotationOrder: 4
+          Initialized: 0
+        TimescaleLerpDurationOnReset: 1
     - rid: 6347591105996128256
       type: {class: MMF_CanvasGroup, ns: MoreMountains.Feedbacks, asm: MoreMountains.Feedbacks.MMTools}
       data:
@@ -164451,7 +164712,7 @@ MonoBehaviour:
         Owner: {fileID: 406790586103967934}
         DebugActive: 0
         Mode: 0
-        Duration: 0.6
+        Duration: 0.65
         StartsOff: 0
         EndsOff: 0
         RelativeValues: 0
@@ -164475,22 +164736,31 @@ MonoBehaviour:
               inWeight: 0
               outWeight: 0
             - serializedVersion: 3
-              time: 0.3
-              value: 0.49764252
-              inSlope: 0
-              outSlope: 0
+              time: 0.14877178
+              value: 0.9967249
+              inSlope: 0.10776745
+              outSlope: 0.10776745
               tangentMode: 0
               weightedMode: 0
               inWeight: 0
-              outWeight: 0
+              outWeight: 0.07866484
+            - serializedVersion: 3
+              time: 0.6735215
+              value: 0.2517085
+              inSlope: -1.4596912
+              outSlope: -1.4596912
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0.33333334
+              outWeight: 0.07558404
             - serializedVersion: 3
               time: 1
               value: 0
-              inSlope: 0
-              outSlope: 0
+              inSlope: 0.050327044
+              outSlope: 0.050327044
               tangentMode: 0
               weightedMode: 0
-              inWeight: 0
+              inWeight: 0.08869701
               outWeight: 0
             m_PreInfinity: 2
             m_PostInfinity: 2
@@ -179229,7 +179499,7 @@ MonoBehaviour:
     - rid: 3335892418657255428
       type: {class: MMF_ChromaticAberration_URP, ns: MoreMountains.FeedbacksForThirdParty, asm: MoreMountains.Feedbacks.URP}
       data:
-        Active: 1
+        Active: 0
         UniqueID: 567728846
         Label: Chromatic Aberration URP
         ChannelMode: 0
@@ -179746,6 +180016,64 @@ MonoBehaviour:
         DebugMessage: 
         DebugColor: {r: 0, g: 1, b: 1, a: 1}
         DisplayFrameCount: 1
+--- !u!1 &8813195977951385186
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8373931722188493609}
+  - component: {fileID: 5057964368441828329}
+  - component: {fileID: 4470315753218637389}
+  m_Layer: 7
+  m_Name: LowHpFeedbackGroup
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &8373931722188493609
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8813195977951385186}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1839740461763266777}
+  m_Father: {fileID: 8541549430451615173}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &5057964368441828329
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8813195977951385186}
+  m_CullTransparentMesh: 1
+--- !u!225 &4470315753218637389
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8813195977951385186}
+  m_Enabled: 1
+  m_Alpha: 0
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &8825090794891186489
 GameObject:
   m_ObjectHideFlags: 0

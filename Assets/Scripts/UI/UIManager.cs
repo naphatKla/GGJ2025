@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
-using GameControl.Controller;
-using GameControl.GameState;
 using MoreMountains.Feedbacks;
 using ProjectExtensions;
+using Sirenix.OdinInspector;
+using UI.Transition;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -26,12 +26,37 @@ namespace UI
         TutorialPanel = 10,
         MainMenu = 11,
     }
+    
+    public enum StackType
+    {
+        /// <summary>ซ่อนเฉพาะตัวบนสุดเดิม แล้วเปิดตัวใหม่; ถ้าตัวใหม่นี้อยู่ในกองอยู่แล้ว จะปิดตัวที่อยู่เหนือมันจนมันขึ้นมาอยู่บนสุด</summary>
+        PushStack,
+
+        /// <summary>ซ่อนทุกตัวในกอง (ไม่ลบกอง) แล้วค่อย push ตัวใหม่; ปิดตัวใหม่เมื่อไหร่ ตัวก่อนหน้าบนสุดจะกลับมาโชว์</summary>
+        ShowOnlyPushStack,
+
+        /// <summary>ซ่อนและล้างกองทั้งหมดแบบเงียบๆ จากนั้น push ตัวเอง (ปิดแล้วจะไม่มีตัวก่อนหน้าให้ย้อน)</summary>
+        CloseAllAndPush
+    }
 
     [Serializable]
     public class UIPanelEntry
     {
+        [FoldoutGroup("$type")]
         public UIPanelType type;
+        [FoldoutGroup("$type")]
+        public StackType stackType = StackType.PushStack;
+        
+        [FoldoutGroup("$type")][Tooltip("Open this panel will make game TimeScale=0")]
+        public bool pauseGameWhileOpen = false;
+        [FoldoutGroup("$type")][Tooltip("Block all input behide this panel")]
+        public bool blockInputBehind;
+        [FoldoutGroup("$type")]
         public GameObject panel;
+
+        [Title("Transition")] 
+        [FoldoutGroup("$type")] public TransitionBase appearTransition;
+        [FoldoutGroup("$type")] public TransitionBase disappearTransition;
     }
 
     public class UIManager : NonAutoCreateSingleton<UIManager>
@@ -41,18 +66,14 @@ namespace UI
 
         [SerializeField] private string gamePlayScene;
         [SerializeField] private string endCreditsScene;
-
+      
         [Header("UI Panels (registry)")] [SerializeField]
         private List<UIPanelEntry> panelEntries = new();
-
-        [Header("Panels that PAUSE the game when open")]
-        private List<UIPanelType> _pauseOnOpenPanels = new()
-        {
-            UIPanelType.Pause,
-            UIPanelType.SolfUpgrade,
-            UIPanelType.TutorialPanel,
-            UIPanelType.MapResult
-        };
+        
+        // === Blocker ===
+        [Space]
+        [SerializeField] private GameObject inputBlockerPrefab;
+        private GameObject _blocker;
 
         // === Events ===
         public event Action OnAnyPanelOpen; // call every time on any Panel open.
@@ -60,10 +81,15 @@ namespace UI
         public event Action OnAllPanelClosed; // call when all of the panel was closed.
 
         // === State ===
+        private readonly Dictionary<UIPanelType, bool> _pauseFlagMap = new();
+        private readonly Dictionary<UIPanelType, bool> _blockFlagMap = new();
         private readonly Dictionary<UIPanelType, GameObject> _panelMap = new();
+        private readonly Dictionary<UIPanelType, StackType> _stackTypeMap = new();
         private readonly Stack<UIPanelType> _stack = new();
+        
         private readonly HashSet<UIPanelType> _pauseOwners = new();
         private bool _isPauseApplied;
+        private bool _isTransitioning;
 
         // === Shortcuts ===
         private bool HasOpenPanels => _stack.Count > 0;
@@ -74,11 +100,12 @@ namespace UI
         protected override void Awake()
         {
             base.Awake();
-            BuildPanelMapAndHideAll();
+            BuildPanelRegistryAndHideAll();
             _pauseOwners.Clear();
             _isPauseApplied = false;
             ApplyPauseState();
         }
+        
 
         private void Update()
         {
@@ -96,102 +123,121 @@ namespace UI
 
         #region Public API
 
-        public void OpenPanel(UIPanelType type)
+        public async void OpenPanel(UIPanelType type)
         {
-            if (!TryGetPanel(type, out var panel)) return;
+            if (_isTransitioning) return;
+            if (!TryGetPanel(type, out _)) return;
 
-            bool wasEmptyBefore = !HasOpenPanels;
-
-            if (TopType == type)
+            _isTransitioning = true;
+            try
             {
-                ClosePanel();
-                return;
+                var before = _stack.Count;
+                var mode = GetStackTypeFor(type);
+
+                if (TopType == type)
+                {
+                    await ClosePanelAsync();
+                    return;
+                }
+
+                switch (mode)
+                {
+                    case StackType.PushStack: await Open_PushStackAsync(type); break;
+                    case StackType.ShowOnlyPushStack: await Open_PushNonActiveStackAsync(type); break;
+                    case StackType.CloseAllAndPush: await Open_CloseAllAndPushAsync(type); break;
+                }
+
+                var isFirst = before == 0 && _stack.Count > 0;
+                if (isFirst) OnAnyUIOpenFirst?.Invoke();
+
+                OnAnyPanelOpen?.Invoke();
+                ApplyPauseState();
             }
-
-            // Hide previous top (keep in stack)
-            SetActiveIfFound(TopType, false);
-
-            // Show new and push
-            panel.SetActive(true);
-            _stack.Push(type);
-
-            // Mark pause owner if listed
-            if (_pauseOnOpenPanels.Contains(type))
-                _pauseOwners.Add(type);
-
-            // Fire events
-            if (wasEmptyBefore) OnAnyUIOpenFirst?.Invoke();
-            OnAnyPanelOpen?.Invoke();
-
-            ApplyPauseState();
+            catch (OperationCanceledException)
+            {
+                Debug.Log($"[UIManager] OpenPanel {type} was cancelled");
+            }
+            finally
+            {
+                _isTransitioning = false;
+            }
         }
 
-        // close the top most panel
-        public void ClosePanel()
+        public async UniTask ClosePanelAsync()
         {
-            if (!HasOpenPanels) return;
-
-            var closing = _stack.Pop();
-            SetActiveIfFound(closing, false);
-            _pauseOwners.Remove(closing);
-
-            if (HasOpenPanels)
+            if (!HasOpenPanels || _isTransitioning) return;
+            _isTransitioning = true;
+            try
             {
-                // Reveal previous
-                SetActiveIfFound(TopType, true);
-            }
-            else
-            {
-                OnAllPanelClosed?.Invoke();
-            }
+                var closing = _stack.Pop();
+                await HidePanel(closing);
 
-            ApplyPauseState();
+                if (HasOpenPanels)
+                {
+                    await ShowPanel(TopType, false);
+                    RestoreOverlayChainFromTop();
+                }
+                else
+                {
+                    OnAllPanelClosed?.Invoke();
+                }
+
+                ApplyPauseState();
+                RefreshTopAsync().Forget();
+            }
+            catch (OperationCanceledException)
+            {
+                Debug.Log("[UIManager] ClosePanelAsync was cancelled");
+            }
+            finally
+            {
+                _isTransitioning = false;
+            }
         }
 
 
         // close th specific panel in stack.
-        public void CloseSpecificPanel(UIPanelType type)
+        public async UniTask CloseSpecificPanel(UIPanelType type)
         {
-            if (!HasOpenPanels || !_panelMap.ContainsKey(type) || !_stack.Contains(type))
-                return;
-
-            if (TopType == type)
+            if (!HasOpenPanels || _isTransitioning) return;
+            
+            _isTransitioning = true;
+            try
             {
-                ClosePanel();
-                return;
-            }
-
-            // Remove from middle
-            var buffer = new Stack<UIPanelType>();
-            while (HasOpenPanels)
-            {
-                var cur = _stack.Pop();
-                if (cur == type)
+                if (TopType == type)
                 {
-                    SetActiveIfFound(cur, false);
-                    _pauseOwners.Remove(cur);
-                    break;
+                    _isTransitioning = false;
+                    await ClosePanelAsync();
+                    return;
                 }
+                
+                RemoveFromStack(type);
+                await HidePanel(type);
 
-                buffer.Push(cur);
+                if (!HasOpenPanels) OnAllPanelClosed?.Invoke();
+                ApplyPauseState();
+                RefreshTopAsync().Forget();
             }
-
-            while (buffer.Count > 0) _stack.Push(buffer.Pop());
-
-            if (!HasOpenPanels)
-                OnAllPanelClosed?.Invoke();
-
-            ApplyPauseState();
+            catch (OperationCanceledException)
+            {
+                Debug.Log($"[UIManager] CloseSpecificPanel {type} was cancelled");
+            }
+            finally
+            {
+                _isTransitioning = false;
+            }
         }
 
-        public void CloseAllPanels()
+        public async void CloseAllPanels()
         {
-            while (HasOpenPanels)
-                SetActiveIfFound(_stack.Pop(), false);
-
-            _pauseOwners.Clear();
-            OnAllPanelClosed?.Invoke();
-            ApplyPauseState();
+            try
+            {
+                await ClearStackAsync(invokeClosedEvent: true);
+            }
+            catch (OperationCanceledException)
+            {
+                Debug.Log("[UIManager] CloseAllPanels was cancelled");
+            }
         }
 
         public bool IsPanelOpen(UIPanelType type)
@@ -226,7 +272,7 @@ namespace UI
         {
             if (TopType == UIPanelType.Pause)
             {
-                ClosePanel();
+                ClosePanelAsync().Forget();
                 return;
             }
 
@@ -270,54 +316,36 @@ namespace UI
         public void OpenMapSelectPanel() => OpenPanel(UIPanelType.MapSelect);
         public void OpenGameModePanel() => OpenPanel(UIPanelType.GameMode);
         public void OpenQuitPanel() => OpenPanel(UIPanelType.QuitPanel);
-
-        public void OpenTutorialPanel()
-        {
-            CloseAllPanels();
-            OpenPanel(UIPanelType.TutorialPanel);
-        }
-
-        public void OpenResultMenu()
-        {
-            CloseAllPanels();
-
-            if (!TryGetPanel(UIPanelType.MapResult, out var panel)) return;
-
-            panel.SetActive(true);
-            _stack.Push(UIPanelType.MapResult);
-
-            var cg = panel.GetComponent<CanvasGroup>() ?? panel.AddComponent<CanvasGroup>();
-            cg.alpha = 0f;
-
-            DOTween.Kill(panel, complete: true);
-            DOTween.Sequence()
-                .Append(cg.DOFade(1f, 0.15f))
-                .OnComplete(() => cg.alpha = 1f)
-                .SetTarget(panel);
-
-            OnAnyUIOpenFirst?.Invoke();
-            OnAnyPanelOpen?.Invoke();
-
-            if (_pauseOnOpenPanels.Contains(UIPanelType.MapResult))
-                _pauseOwners.Add(UIPanelType.MapResult);
-
-            ApplyPauseState();
-        }
-
+        public void OpenTutorialPanel() => OpenPanel(UIPanelType.TutorialPanel);
+        public void OpenResultMenu() => OpenPanel(UIPanelType.MapResult);
+        
         #endregion
 
         #region Internals
 
-        private void BuildPanelMapAndHideAll()
+        private void BuildPanelRegistryAndHideAll()
         {
             _panelMap.Clear();
+            _stackTypeMap.Clear();
+            _pauseFlagMap.Clear();
+            _blockFlagMap.Clear();
+            _pauseOwners.Clear();
+
             foreach (var e in panelEntries)
             {
                 if (e == null || e.panel == null) continue;
                 if (_panelMap.ContainsKey(e.type)) continue;
-
                 _panelMap.Add(e.type, e.panel);
+                _stackTypeMap[e.type] = e.stackType;
+                _pauseFlagMap[e.type] = e.pauseGameWhileOpen;
+                _blockFlagMap[e.type] = e.blockInputBehind;
                 e.panel.SetActive(false);
+            }
+            
+            if (!_blocker && inputBlockerPrefab)
+            {
+                _blocker = Instantiate(inputBlockerPrefab, transform);
+                _blocker.SetActive(false);
             }
         }
 
@@ -328,15 +356,229 @@ namespace UI
                 Debug.LogWarning($"[UIManager] Panel not registered or null: {type}");
                 return false;
             }
-
             return true;
         }
-
-        private void SetActiveIfFound(UIPanelType type, bool active)
+        
+        private StackType GetStackTypeFor(UIPanelType type)
+        {
+            return _stackTypeMap.TryGetValue(type, out var st) ? st : StackType.PushStack;
+        }
+        
+        private UIPanelEntry GetType(UIPanelType type)
+        {
+            var entry = panelEntries.Find(e => e.type == type);
+            if (entry == null) return null;
+            return entry;
+        }
+        
+        private async UniTask ShowPanel(UIPanelType type, bool playTransition = true)
         {
             if (type == UIPanelType.None) return;
-            if (_panelMap.TryGetValue(type, out var go) && go != null)
-                go.SetActive(active);
+            if (!_panelMap.TryGetValue(type, out var go) || go == null)return;
+   
+            var entry = GetType(type);
+            if (entry == null)return;
+
+            if (!go.activeSelf) go.SetActive(true);
+            if (_pauseFlagMap.TryGetValue(type, out var p) && p)
+                _pauseOwners.Add(type);
+
+            if (playTransition && entry.appearTransition != null)
+            {
+                await entry.appearTransition.PlayAsync(go, true, destroyCancellationToken);
+            }
+        }
+
+        private async UniTask HidePanel(UIPanelType type, bool playTransition = true)
+        {
+            if (type == UIPanelType.None) return;
+            if (!_panelMap.TryGetValue(type, out var go) || go == null) return;
+
+            var entry = GetType(type);
+            if (entry == null)return;
+
+            DOTween.Kill(go, complete: false);
+            _pauseOwners.Remove(type);
+            
+            if (playTransition && entry.disappearTransition != null)
+            {
+                await entry.disappearTransition.PlayAsync(go, false, destroyCancellationToken);
+            }
+
+            if (go.activeSelf) go.SetActive(false);
+        }
+
+        private void RestoreOverlayChainFromTop()
+        {
+            if (!HasOpenPanels) return;
+            var arr = _stack.ToArray();
+            for (int i = 1; i < arr.Length; i++)
+            {
+                var t = arr[i];
+                if (_stackTypeMap.TryGetValue(t, out var st) && st == StackType.PushStack) ShowPanel(t).Forget();
+                else break;
+            }
+        }
+        
+        private async UniTask ClearStackAsync(bool invokeClosedEvent)
+        {
+            if (_isTransitioning) return;
+
+            _isTransitioning = true;
+            try
+            {
+                while (HasOpenPanels)
+                {
+                    var t = _stack.Pop();
+                    await HidePanel(t, playTransition: true);
+                }
+
+                _pauseOwners.Clear();
+                if (invokeClosedEvent) OnAllPanelClosed?.Invoke();
+                ApplyPauseState();
+                RefreshTopAsync().Forget();
+            }
+            catch (OperationCanceledException)
+            {
+                Debug.Log("[UIManager] ClearStackAsync was cancelled");
+            }
+            finally
+            {
+                _isTransitioning = false;
+            }
+        }
+ 
+        private bool RemoveFromStack(UIPanelType type)
+        {
+            if (!_stack.Contains(type)) return false;
+
+            var buffer = new Stack<UIPanelType>();
+            var removed = false;
+
+            while (_stack.Count > 0)
+            {
+                var cur = _stack.Pop();
+                if (cur == type)
+                {
+                    removed = true;
+                    break;
+                }
+
+                buffer.Push(cur);
+            }
+
+            while (buffer.Count > 0) _stack.Push(buffer.Pop());
+            return removed;
+        }
+
+        #endregion
+
+        #region Blocker Helper
+        
+        /// <summary>
+        /// Refresh top panel
+        /// </summary>
+        private void RefreshTop()
+        {
+            if (!HasOpenPanels)
+            {
+                if (_blocker) _blocker.SetActive(false);
+                return;
+            }
+
+            if (!_panelMap.TryGetValue(TopType, out var go) || go == null)
+            {
+                if (_blocker) _blocker.SetActive(false);
+                return;
+            }
+
+            ShowBlockerUnderPanel(go);
+            go.transform.SetAsLastSibling();
+        }
+
+        private void ShowBlockerUnderPanel(GameObject go)
+        {
+            var needBlock = _blockFlagMap.TryGetValue(TopType, out var b) && b && go.activeInHierarchy;
+
+            if (needBlock && _blocker)
+            {
+                var bt = _blocker.transform;
+                var pt = go.transform;
+                if (bt.parent != pt.parent)
+                    bt.SetParent(pt.parent, false);
+
+                _blocker.SetActive(true);
+                bt.SetAsLastSibling();
+            }
+            else if (_blocker)
+            {
+                _blocker.SetActive(false);
+            }
+        }
+
+        private async UniTaskVoid RefreshTopAsync()
+        {
+            await UniTask.Yield(PlayerLoopTiming.LastPostLateUpdate, destroyCancellationToken);
+            RefreshTop();
+        }
+
+        #endregion
+        
+        #region Push Type
+        private async UniTask Open_PushStackAsync(UIPanelType type)
+        {
+            try
+            {
+                if (_stack.Contains(type) && TopType != type)
+                {
+                    while (HasOpenPanels && TopType != type)
+                    {
+                        var above = _stack.Pop();
+                        await HidePanel(above);
+                    }
+                    RefreshTopAsync().Forget();
+                    await ShowPanel(type);
+                    return;
+                }
+                _stack.Push(type);
+                RefreshTopAsync().Forget();
+                await ShowPanel(type);
+            }
+            catch (OperationCanceledException)
+            {
+                Debug.Log($"[UIManager] Open_PushStackAsync {type} was cancelled");
+            }
+        }
+        
+        private async UniTask Open_PushNonActiveStackAsync(UIPanelType type)
+        {
+            try
+            {
+                foreach (var t in _stack.ToArray()) await HidePanel(t);
+                RemoveFromStack(type);
+                _stack.Push(type);
+                RefreshTopAsync().Forget();
+                await ShowPanel(type);
+            }
+            catch (OperationCanceledException)
+            {
+                Debug.Log($"[UIManager] Open_PushNonActiveStackAsync {type} was cancelled");
+            }
+        }
+        
+        private async UniTask Open_CloseAllAndPushAsync(UIPanelType type)
+        {
+            try
+            {
+                await ClearStackAsync(invokeClosedEvent: false);
+                _stack.Push(type);
+                RefreshTopAsync().Forget();
+                await ShowPanel(type);
+            }
+            catch (OperationCanceledException)
+            {
+                Debug.Log($"[UIManager] Open_CloseAllAndPushAsync {type} was cancelled");
+            }
         }
 
         #endregion

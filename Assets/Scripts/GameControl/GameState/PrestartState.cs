@@ -1,10 +1,9 @@
 using Characters.Controllers;
 using Cysharp.Threading.Tasks;
-using GameControl;
 using GameControl.Controller;
 using GameControl.Interface;
+using Manager.SoundManager;
 using UI;
-using UnityEngine;
 
 namespace GameControl.GameState
 {
@@ -26,11 +25,12 @@ namespace GameControl.GameState
             SpawnerStateController.Instance.ClearItem();
             SpawnerStateController.Instance.SetupMapAndEnemy().Forget();
             controller.gameResult = EndResult.None;
-
-            UIManager.Instance.OpenTutorialPanel();
+            
             if (!PlayerController.Instance.gameObject.activeInHierarchy) PlayerController.Instance.gameObject.SetActive(true);
             PlayerController.Instance.ResetAllDependentBehavior();
             PlayerController.Instance.HealthSystem.OnDead += PlayerDeathResult;
+            
+            CountdownStart().Forget();
         }
 
         public void Update(GameStateController controller) { }
@@ -42,6 +42,13 @@ namespace GameControl.GameState
             GameStateController.Instance.gameResult = EndResult.Failed;
             PlayerController.Instance.HealthSystem.OnDead -= PlayerDeathResult;
             GameStateController.Instance.SetState(new EndState());
+        }
+        
+        private async UniTaskVoid CountdownStart()
+        {
+            SoundManager.Instance.PlayUI(SoundName.UI.CountDown5Sec, timeScaleMode: SoundManager.TimeScaleMode.ScalePitch);
+            await GameTimer.Instance.StartCountdownAsync(5f);
+            GameStateController.Instance.SetState(new StartState());
         }
     }
 }
