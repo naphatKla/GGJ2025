@@ -46,9 +46,9 @@ public class CameraShakeSetting : MonoBehaviour
         Current = p;
 
         // อัปเดตหน้าตาง่าย ๆ: ปุ่มที่ถูกเลือกกดซ้ำไม่ได้ (ดูออกว่า active)
-        if (lowButton)    lowButton.interactable    = p != Preset.Low;
+        /*if (lowButton)    lowButton.interactable    = p != Preset.Low;
         if (mediumButton) mediumButton.interactable = p != Preset.Medium;
-        if (highButton)   highButton.interactable   = p != Preset.High;
+        if (highButton)   highButton.interactable   = p != Preset.High;*/
 
         if (!invoke) return;
 
