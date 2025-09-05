@@ -177,7 +177,7 @@ namespace UI
             _isPauseApplied = false;
             _allLoad = true;
             
-            MMTimeScaleEvent.Trigger(MMTimeScaleMethods.Reset, 1f, 0, false, 100f, true);
+            MMTimeScaleEvent.Trigger(MMTimeScaleMethods.Reset, 1f, 0, false, 0, false);
             base.OnDestroy();
         }
 
@@ -355,14 +355,14 @@ namespace UI
             bool shouldPause = _pauseOwners.Count > 0;
             if (shouldPause && !_isPauseApplied)
             {
-                MMTimeScaleEvent.Trigger(MMTimeScaleMethods.For, 0f, 0, false, 1f, true);
+                MMTimeScaleEvent.Trigger(MMTimeScaleMethods.For, 0f, 0, true, 4.25f, true);
                 _isPauseApplied = true;
                 return;
             }
 
             if (shouldPause || !_isPauseApplied) return;
             
-            MMTimeScaleEvent.Trigger(MMTimeScaleMethods.Reset, 1f, 0, false, 100f, true);
+            MMTimeScaleEvent.Trigger(MMTimeScaleMethods.Reset, 1f, 0, false, 0f, false);
             _isPauseApplied = false;
         }
         
@@ -570,9 +570,7 @@ namespace UI
                 _isTransitioning = false;
                 ApplyPauseState();
                 RefreshTopAsync().Forget();
-                if (MMTimeManager.Instance != null) 
-                    MMTimeScaleEvent.Trigger(MMTimeScaleMethods.Reset, 1f, 0, false, 100f, true);
-                Time.timeScale = 1;
+                MMTimeScaleEvent.Trigger(MMTimeScaleMethods.Reset, 1f, 0, false, 0f, false);
             }
         }
  
