@@ -157,8 +157,6 @@ namespace UI
         {
             if (Input.GetKeyDown(KeyCode.Escape))
                 TogglePausePanelByEsc();
-            
-            Debug.Log(Time.timeScale);
         }
         
         private void OnEnable()
@@ -572,7 +570,8 @@ namespace UI
                 _isTransitioning = false;
                 ApplyPauseState();
                 RefreshTopAsync().Forget();
-                MMTimeScaleEvent.Trigger(MMTimeScaleMethods.Reset, 1f, 0, false, 100f, true);
+                if (MMTimeManager.Instance != null) 
+                    MMTimeScaleEvent.Trigger(MMTimeScaleMethods.Reset, 1f, 0, false, 100f, true);
                 Time.timeScale = 1;
             }
         }
