@@ -157,6 +157,7 @@ namespace UI
         {
             if (Input.GetKeyDown(KeyCode.Escape))
                 TogglePausePanelByEsc();
+            
             Debug.Log(Time.timeScale);
         }
         
@@ -214,7 +215,15 @@ namespace UI
         {
             if (_isTransitioning) return;
             if (!TryGetPanel(type, out _)) return;
-
+            
+            if (TopType == type)
+            {
+                await ClosePanelAsync();
+                return;
+            }
+            
+            bool prePaused = TryPreApplyPause(type);
+            
             _isTransitioning = true;
             try
             {
@@ -222,12 +231,6 @@ namespace UI
                 
                 var before = _stack.Count;
                 var mode = GetStackTypeFor(type);
-
-                if (TopType == type)
-                {
-                    await ClosePanelAsync();
-                    return;
-                }
 
                 switch (mode)
                 {
@@ -240,7 +243,6 @@ namespace UI
                 if (isFirst) OnAnyUIOpenFirst?.Invoke();
 
                 OnAnyPanelOpen?.Invoke();
-                ApplyPauseState();
             }
             catch (OperationCanceledException)
             {
@@ -249,6 +251,10 @@ namespace UI
             finally
             {
                 _isTransitioning = false;
+                if (prePaused && !_stack.Contains(type) && !IsPanelOpen(type))
+                {
+                    _pauseOwners.Remove(type);
+                }
                 ApplyPauseState();
             }
         }
@@ -271,7 +277,7 @@ namespace UI
                 {
                     OnAllPanelClosed?.Invoke();
                 }
-
+                
                 ApplyPauseState();
                 RefreshTopAsync().Forget();
             }
@@ -352,7 +358,6 @@ namespace UI
             if (shouldPause && !_isPauseApplied)
             {
                 MMTimeScaleEvent.Trigger(MMTimeScaleMethods.For, 0f, 0, false, 1f, true);
-                Debug.LogWarning("ApplyPause");
                 _isPauseApplied = true;
                 return;
             }
@@ -360,10 +365,20 @@ namespace UI
             if (shouldPause || !_isPauseApplied) return;
             
             MMTimeScaleEvent.Trigger(MMTimeScaleMethods.Reset, 1f, 0, false, 100f, true);
-            Debug.LogWarning("ResetPause");
             _isPauseApplied = false;
         }
-
+        
+        private bool TryPreApplyPause(UIPanelType type)
+        {
+            if (_pauseFlagMap.TryGetValue(type, out var wantsPause) && wantsPause)
+            {
+                _pauseOwners.Add(type);
+                ApplyPauseState();
+                return true;
+            }
+            return false;
+        }
+        
         public void TogglePausePanelByEsc()
         {
             if (TopType == UIPanelType.Pause)
@@ -514,7 +529,7 @@ namespace UI
                 await entry.disappearTransition.PlayAsync(go, false, destroyCancellationToken);
             }
 
-            if (go.activeSelf) go.SetActive(false);
+            if (go != null && go.activeSelf) go.SetActive(false);
         }
 
         private void RestoreOverlayChainFromTop()
@@ -553,8 +568,12 @@ namespace UI
             }
             finally
             {
+                _pauseOwners.Clear();
                 _isTransitioning = false;
                 ApplyPauseState();
+                RefreshTopAsync().Forget();
+                MMTimeScaleEvent.Trigger(MMTimeScaleMethods.Reset, 1f, 0, false, 100f, true);
+                Time.timeScale = 1;
             }
         }
  

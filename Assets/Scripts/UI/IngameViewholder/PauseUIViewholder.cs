@@ -37,7 +37,6 @@ namespace UI.IngameViewholder
                 onYes: () => 
                 { 
                     UIManager.Instance.BackMenu();
-                    UIManager.Instance.CloseAllPanels();
                 },
                 onNo: null,
                 durationSec: 8f
