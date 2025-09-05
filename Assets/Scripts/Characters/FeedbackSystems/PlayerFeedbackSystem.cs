@@ -12,6 +12,7 @@ namespace Characters.FeedbackSystems
         [SerializeField] private SpriteRenderer focusBlackDrop;
         [SerializeField] private int focusOrderBase = 0; // จุดเริ่ม order ของฝั่ง player
         [SerializeField] private int focusOrderGap = 4; // เว้นช่องไฟก่อนเริ่ม attacker
+        [SerializeField] private float focusFadeDuration = 0.1f;
         private PlayerController _player;
         private PlayerDataSo _playerData;
 
@@ -46,6 +47,7 @@ namespace Characters.FeedbackSystems
 
         // ============================================ Focus Backdrop ===============================================
         private Tween backDropTween;
+
         private struct RendererSnapshot
         {
             public Renderer renderer;
@@ -159,21 +161,17 @@ namespace Characters.FeedbackSystems
 // ===== Main =====
         public void OpenFocusBlackDropOnHit(float duration, GameObject attacker)
         {
-            // จบเอฟเฟกต์เก่าพร้อมคืนค่าก่อนเริ่มใหม่เสมอ
+            // จบเอฟเฟกต์เก่าพร้อมคืนค่าก่อนเริ่มใหม่เสมอ (กันซ้อน)
             backDropTween?.Kill(true);
-
-            if (focusBlackDrop) focusBlackDrop.gameObject.SetActive(true);
 
             var focusRenderer = focusBlackDrop ? (Renderer)focusBlackDrop : null;
 
-            // ฝั่ง player
+            // --- เก็บเรนเดอร์ของ player/attacker รวม VFX จากพูลใต้ root ---
             var playerRoot = _player && _player.Body ? _player.Body.gameObject : null;
             var playerRenderers = CollectRenderersFromRoot(playerRoot, focusRenderer);
-
-            // ฝั่ง attacker
             var attackerRenderers = CollectRenderersFromRoot(attacker, focusRenderer);
 
-            // สแนปช็อต + เรียง “คงซ้อนทับเดิม”
+            // --- สแนปช็อต + เรียงคงลำดับซ้อนทับเดิม ---
             int seq = 0;
             var playerSnaps = SnapshotRenderers(playerRenderers, ref seq);
             var attackerSnaps = SnapshotRenderers(attackerRenderers, ref seq);
@@ -181,31 +179,72 @@ namespace Characters.FeedbackSystems
             SortByOriginalStack(playerSnaps);
             SortByOriginalStack(attackerSnaps);
 
-            // ย้ายไป focus layer: player ก่อน แล้ว attacker ทับด้านบน
+            // --- ย้ายทั้งหมดขึ้น focus layer ---
             int targetLayerId = focusBlackDrop ? focusBlackDrop.sortingLayerID : SortingLayer.NameToID("Default");
-
             int basePlayerOrder = focusOrderBase;
             int baseAttackerOrder = basePlayerOrder + playerSnaps.Count + focusOrderGap;
 
             ApplyToFocusLayer(playerSnaps, targetLayerId, basePlayerOrder);
             ApplyToFocusLayer(attackerSnaps, targetLayerId, baseAttackerOrder);
 
-            // คืนค่าเมื่อครบเวลา หรือโดน Kill
+            // --- เตรียม fade (เก็บสถานะเดิมไว้คืนค่า) ---
             bool reverted = false;
+            bool originalActive = false;
+            Color originalColor = Color.black;
+
+            if (focusBlackDrop)
+            {
+                originalActive = focusBlackDrop.gameObject.activeSelf;
+                originalColor = focusBlackDrop.color;
+
+                // เปิด + ตั้ง alpha เริ่มต้นเป็น 0 ก่อนค่อยเฟดเข้า
+                focusBlackDrop.gameObject.SetActive(true);
+                var c = focusBlackDrop.color;
+                c.a = 0f;
+                focusBlackDrop.color = c;
+            }
 
             void RevertAll()
             {
                 if (reverted) return;
                 reverted = true;
 
+                // คืนค่า renderer ทั้งหมด
                 RevertRenderers(playerSnaps);
                 RevertRenderers(attackerSnaps);
 
-                if (focusBlackDrop) focusBlackDrop.gameObject.SetActive(false);
+                // คืนสถานะ backdrop
+                if (focusBlackDrop)
+                {
+                    // คืนสีเดิม (รวม alpha เดิม) และสถานะการแอคทีฟเดิม
+                    focusBlackDrop.color = originalColor;
+                    focusBlackDrop.gameObject.SetActive(originalActive);
+                }
             }
 
-            backDropTween = DOVirtual.DelayedCall(Mathf.Max(0.0001f, duration), RevertAll)
+            // --- สร้างลำดับเฟดเข้า → ค้าง → เฟดออก ---
+            float hold = Mathf.Max(0.0001f, duration);
+            var seqTween = DOTween.Sequence();
+
+            if (focusBlackDrop)
+            {
+                float targetAlpha = (originalColor.a > 0.001f) ? originalColor.a : 1f;
+
+                seqTween.Append(focusBlackDrop.DOFade(targetAlpha, focusFadeDuration)) // fade-in
+                    .AppendInterval(hold) // hold
+                    .Append(focusBlackDrop.DOFade(0f, focusFadeDuration)); // fade-out
+            }
+            else
+            {
+                // ไม่มี backdrop ก็แค่หน่วงเวลาเพื่อให้คืนค่าทีหลัง
+                seqTween.AppendInterval(hold);
+            }
+
+            // ครบลำดับ → คืนค่า
+            seqTween.OnComplete(RevertAll)
                 .OnKill(RevertAll);
+
+            backDropTween = seqTween;
         }
     }
 }
