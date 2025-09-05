@@ -38,8 +38,12 @@ namespace UI.IngameViewholder
 
         private void RestartClick()
         {
-            GameStateController.Instance.RestartMap();
-            UIManager.Instance.CloseAllPanels();
+            UIManager.Instance.ShowConfirmButton(
+                "Restart",
+                onYes: () => GameStateController.Instance.RestartMap(),
+                onNo: null,
+                durationSec: 8f
+            ).Forget();
         }
 
         private void ContinueClick()

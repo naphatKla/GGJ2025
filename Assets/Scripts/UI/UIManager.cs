@@ -1,13 +1,17 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using MoreMountains.Feedbacks;
 using ProjectExtensions;
 using Sirenix.OdinInspector;
+using UI.ConfirmButton;
 using UI.Transition;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 namespace UI
 {
@@ -24,7 +28,7 @@ namespace UI
         MapSelect = 8,
         QuitPanel = 9,
         TutorialPanel = 10,
-        MainMenu = 11,
+        MainMenu = 11
     }
     
     public enum StackType
@@ -46,17 +50,36 @@ namespace UI
         public UIPanelType type;
         [FoldoutGroup("$type")]
         public StackType stackType = StackType.PushStack;
-        
+     
         [FoldoutGroup("$type")][Tooltip("Open this panel will make game TimeScale=0")]
         public bool pauseGameWhileOpen = false;
         [FoldoutGroup("$type")][Tooltip("Block all input behide this panel")]
         public bool blockInputBehind;
+  
         [FoldoutGroup("$type")]
         public GameObject panel;
-
+        
         [Title("Transition")] 
         [FoldoutGroup("$type")] public TransitionBase appearTransition;
         [FoldoutGroup("$type")] public TransitionBase disappearTransition;
+    }
+    
+    [Serializable]
+    public class ConfirmPanelEntry
+    {
+        [FoldoutGroup("$confirmID")]
+        public string confirmID;
+        [FoldoutGroup("$confirmID")][Title("Confirm Button")]
+        public ConfirmButtonViewholder confirmButtonUI;
+        
+        [FoldoutGroup("$confirmID")][Tooltip("Open this panel will make game TimeScale=0")]
+        public bool pauseGameWhileOpen = false;
+        [FoldoutGroup("$confirmID")][Tooltip("Block all input behide this panel")]
+        public bool blockInputBehind;
+        
+        [Title("Transition")] 
+        [FoldoutGroup("$confirmID")] public TransitionBase appearTransition;
+        [FoldoutGroup("$confirmID")] public TransitionBase disappearTransition;
     }
 
     public class UIManager : NonAutoCreateSingleton<UIManager>
@@ -70,10 +93,17 @@ namespace UI
         [Header("UI Panels (registry)")] [SerializeField]
         private List<UIPanelEntry> panelEntries = new();
         
+        [Header("Confirm UI Panels (registry)")] [SerializeField]
+        private List<ConfirmPanelEntry> uiEntries = new();
+        
         // === Blocker ===
         [Space]
         [SerializeField] private GameObject inputBlockerPrefab;
         private GameObject _blocker;
+        [Space]
+        [Header("Confirm Container")]
+        [SerializeField] private Transform confirmContainer;
+
 
         // === Events ===
         public event Action OnAnyPanelOpen; // call every time on any Panel open.
@@ -86,8 +116,13 @@ namespace UI
         private readonly Dictionary<UIPanelType, GameObject> _panelMap = new();
         private readonly Dictionary<UIPanelType, StackType> _stackTypeMap = new();
         private readonly Stack<UIPanelType> _stack = new();
-        
+        private readonly Dictionary<string, ConfirmPanelEntry> _confirmMap = new();
         private readonly HashSet<UIPanelType> _pauseOwners = new();
+        
+        private readonly Dictionary<string, ConfirmButtonViewholder> _confirmInstances = new();
+        
+        private ConfirmPanelEntry _activeConfirm;
+        private CancellationTokenSource _confirmCts;
         private bool _isPauseApplied;
         private bool _isTransitioning;
         private bool _allLoad;
@@ -103,6 +138,7 @@ namespace UI
         {
             base.Awake();
             BuildPanelRegistryAndHideAll();
+            BuildConfirmRegistryAndHideAll();
             _pauseOwners.Clear();
             _isPauseApplied = false;
             ApplyPauseState();
@@ -134,18 +170,20 @@ namespace UI
             SceneManager.sceneLoaded += OnSceneChange;
         }
 
-        private void OnDisable()
+        private void OnSceneChange(Scene scene, LoadSceneMode mode)
         {
-            SceneManager.sceneLoaded -= OnSceneChange;
-        }
+            _confirmCts?.Cancel();
+            _confirmCts?.Dispose();
+            _confirmCts = null;
 
-        private async void OnSceneChange(Scene scene, LoadSceneMode mode)
-        {
-            await UniTask.Yield(PlayerLoopTiming.LastPostLateUpdate, destroyCancellationToken);
+            _activeConfirm = null;
+            _confirmInstances.Clear();
+
             _pauseOwners.Clear();
-            MMTimeScaleEvent.Trigger(MMTimeScaleMethods.Reset, 1f, -1, false, 0f, true);
-            Time.timeScale = 1f;
+            _isPauseApplied = false;
             _allLoad = true;
+            MMTimeScaleEvent.Trigger(MMTimeScaleMethods.Reset, 1f, -1, false, 0f, false);
+            SceneManager.sceneLoaded -= OnSceneChange;
         }
         
         private UniTask WaitSceneReadyAsync()
@@ -240,7 +278,6 @@ namespace UI
         public async UniTask CloseSpecificPanel(UIPanelType type)
         {
             if (!HasOpenPanels || _isTransitioning) return;
-            
             _isTransitioning = true;
             try
             {
@@ -299,7 +336,6 @@ namespace UI
         private void ApplyPauseState()
         {
             bool shouldPause = _pauseOwners.Count > 0;
-
             if (shouldPause && !_isPauseApplied)
             {
                 MMTimeScaleEvent.Trigger(MMTimeScaleMethods.For, 0, -1, true, 10f, true);
@@ -310,8 +346,6 @@ namespace UI
             if (shouldPause || !_isPauseApplied) return;
             
             MMTimeScaleEvent.Trigger(MMTimeScaleMethods.Reset, 1, -1, false, 0f, false);
-            Time.timeScale = 1f;
-            
             _isPauseApplied = false;
         }
 
@@ -323,7 +357,7 @@ namespace UI
                 return;
             }
 
-            OpenPanel(UIPanelType.Pause);
+            OpenPanel(UIPanelType.Pause).Forget();
         }
 
         #endregion
@@ -359,12 +393,12 @@ namespace UI
 
         #region Preset open helpers
 
-        public void OpenSaveGamePanel() => OpenPanel(UIPanelType.SaveGame);
-        public void OpenMapSelectPanel() => OpenPanel(UIPanelType.MapSelect);
-        public void OpenGameModePanel() => OpenPanel(UIPanelType.GameMode);
-        public void OpenQuitPanel() => OpenPanel(UIPanelType.QuitPanel);
-        public void OpenTutorialPanel() => OpenPanel(UIPanelType.TutorialPanel);
-        public void OpenResultMenu() => OpenPanel(UIPanelType.MapResult);
+        public void OpenSaveGamePanel() => OpenPanel(UIPanelType.SaveGame).Forget();
+        public void OpenMapSelectPanel() => OpenPanel(UIPanelType.MapSelect).Forget();
+        public void OpenGameModePanel() => OpenPanel(UIPanelType.GameMode).Forget();
+        public void OpenQuitPanel() => OpenPanel(UIPanelType.QuitPanel).Forget();
+        public void OpenTutorialPanel() => OpenPanel(UIPanelType.TutorialPanel).Forget();
+        public void OpenResultMenu() => OpenPanel(UIPanelType.MapResult).Forget();
         
         #endregion
 
@@ -395,6 +429,18 @@ namespace UI
                 _blocker.SetActive(false);
             }
         }
+        
+        private void BuildConfirmRegistryAndHideAll()
+        {
+            _confirmMap.Clear();
+            foreach (var e in uiEntries)
+            {
+                if (e == null || string.IsNullOrWhiteSpace(e.confirmID) || e.confirmButtonUI == null) continue;
+                if (!_confirmMap.ContainsKey(e.confirmID))
+                    _confirmMap.Add(e.confirmID, e);
+            }
+        }
+
 
         private bool TryGetPanel(UIPanelType type, out GameObject go)
         {
@@ -629,6 +675,206 @@ namespace UI
             }
         }
 
+        #endregion
+
+        #region Confirm Button
+
+        private Transform GetConfirmParent()
+        {
+            if (confirmContainer) return confirmContainer;
+            var canvas = GetComponentInParent<Canvas>();
+            if (canvas) return canvas.transform;
+            var anyCanvas = FindFirstObjectByType<Canvas>();
+            return anyCanvas ? anyCanvas.transform : transform;
+        }
+        
+        private ConfirmButtonViewholder GetOrCreateConfirmInstance(ConfirmPanelEntry e)
+        {
+            if (e == null || string.IsNullOrWhiteSpace(e.confirmID) || !e.confirmButtonUI) return null;
+
+            if (_confirmInstances.TryGetValue(e.confirmID, out var inst) && inst)
+                return inst;
+
+            var parent = GetConfirmParent();
+            var newInst = Instantiate(e.confirmButtonUI, parent);
+            newInst.gameObject.SetActive(false);
+            _confirmInstances[e.confirmID] = newInst;
+            return newInst;
+        }
+        
+        private void ForceCloseActiveConfirmInstant()
+        {
+            _confirmCts?.Cancel();
+            _confirmCts?.Dispose();
+            _confirmCts = null;
+
+            if (_activeConfirm != null)
+            {
+                if (_confirmInstances.TryGetValue(_activeConfirm.confirmID, out var inst) && inst)
+                {
+                    var go = inst.gameObject;
+                    if (go)
+                    {
+                        DOTween.Kill(go, complete: false);
+                        go.SetActive(false);
+                    }
+                }
+
+                if (!HasOpenPanels && _blocker) _blocker.SetActive(false);
+                _pauseOwners.Remove(UIPanelType.None);
+                ApplyPauseState();
+                _activeConfirm = null;
+            }
+        }
+        
+        private static void SafeClearAndAdd(Button btn, UnityAction onClick)
+        {
+            if (!btn) return;
+#if UNITY_EDITOR
+            btn.onClick.RemoveAllListeners();
+#else
+    btn.onClick.RemoveAllListeners();
+#endif
+            if (onClick != null) btn.onClick.AddListener(onClick);
+        }
+
+        private async UniTask ShowConfirmEntryAsync(ConfirmPanelEntry e, bool playTransition = true)
+        {
+            var vh = GetOrCreateConfirmInstance(e);
+            if (!vh) return;
+            var go = vh.gameObject;
+            if (!go) return;
+
+            if (_blocker)
+            {
+                var bt = _blocker.transform;
+                var pt = go.transform;
+                if (bt.parent != pt.parent) bt.SetParent(pt.parent, false);
+                _blocker.SetActive(e.blockInputBehind);
+                if (e.blockInputBehind) _blocker.transform.SetAsLastSibling();
+            }
+
+            if (e.pauseGameWhileOpen) _pauseOwners.Add(UIPanelType.None);
+            ApplyPauseState();
+
+            if (!go.activeSelf) go.SetActive(true);
+            go.transform.SetAsLastSibling();
+
+            if (playTransition && e.appearTransition != null)
+            {
+                using var linked = CancellationTokenSource.CreateLinkedTokenSource(
+                    destroyCancellationToken, go.GetCancellationTokenOnDestroy());
+                try
+                {
+                    await e.appearTransition.PlayAsync(go, true, linked.Token);
+                }
+                catch (OperationCanceledException) { }
+            }
+        }
+
+        private async UniTask HideConfirmEntryAsync(ConfirmPanelEntry e, bool playTransition = true)
+        {
+            _confirmInstances.TryGetValue(e.confirmID, out var vh);
+            if (!vh) return;
+            var go = vh.gameObject;
+            if (!go) return;
+            try
+            {
+                DOTween.Kill(go);
+                if (playTransition && e.disappearTransition != null)
+                {
+                    using var linked = CancellationTokenSource.CreateLinkedTokenSource(
+                        destroyCancellationToken, go.GetCancellationTokenOnDestroy());
+                    try
+                    {
+                        await e.disappearTransition.PlayAsync(go, false, linked.Token);
+                    }
+                    catch (OperationCanceledException)
+                    {
+                    }
+                }
+
+                if (go) go.SetActive(false);
+            }
+            finally
+            {
+                if (!HasOpenPanels && _blocker) _blocker.SetActive(false);
+                _pauseOwners.Remove(UIPanelType.None);
+                ApplyPauseState();
+            }
+        }
+
+        private async UniTask CloseActiveConfirm()
+        {
+            _confirmCts?.Cancel();
+            _confirmCts?.Dispose();
+            _confirmCts = null;
+
+            if (_activeConfirm != null)
+            {
+                try { await HideConfirmEntryAsync(_activeConfirm, playTransition: true); }
+                catch (OperationCanceledException) { }
+                _activeConfirm = null;
+            }
+        }
+
+        /// <summary>
+        ///  Confirm id:
+        ///  onYes/onNo can be null
+        ///  durationSec <= 0 no auto-cancel
+        ///  close current confirm if it showing
+        /// </summary>
+        public async UniTaskVoid ShowConfirmButton(string confirmId, Action onYes, Action onNo, float durationSec = 0f)
+        {
+            if (string.IsNullOrWhiteSpace(confirmId) || !_confirmMap.TryGetValue(confirmId, out var entry)) return;
+
+            _confirmCts?.Cancel();
+            _confirmCts?.Dispose();
+            _confirmCts = null;
+
+            if (_activeConfirm != null)
+            {
+                ForceCloseActiveConfirmInstant();
+            }
+
+            var vh = GetOrCreateConfirmInstance(entry);
+            if (!vh || !vh.yesButton || !vh.noButton) return;
+
+            _activeConfirm = entry;
+            _confirmCts = CancellationTokenSource.CreateLinkedTokenSource(destroyCancellationToken);
+            var token = _confirmCts.Token;
+
+            SafeClearAndAdd(vh.yesButton, () =>
+            {
+                if (token.IsCancellationRequested) return;
+                ForceCloseActiveConfirmInstant();
+                onYes?.Invoke();
+            });
+
+            SafeClearAndAdd(vh.noButton, () =>
+            {
+                if (token.IsCancellationRequested) return;
+                ForceCloseActiveConfirmInstant();
+                onNo?.Invoke();
+            });
+
+            try
+            {
+                await ShowConfirmEntryAsync(entry, true);
+
+                if (durationSec > 0f)
+                {
+                    await UniTask.Delay(TimeSpan.FromSeconds(durationSec), cancellationToken: token);
+                    if (!token.IsCancellationRequested)
+                    {
+                        ForceCloseActiveConfirmInstant();
+                        onNo?.Invoke();
+                    }
+                }
+            }
+            catch (OperationCanceledException) { }
+        }
+        
         #endregion
     }
 }
