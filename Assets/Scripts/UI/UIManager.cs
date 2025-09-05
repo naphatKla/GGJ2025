@@ -324,6 +324,7 @@ namespace UI
         public void OpenQuitPanel() => OpenPanel(UIPanelType.QuitPanel);
         public void OpenTutorialPanel() => OpenPanel(UIPanelType.TutorialPanel);
         public void OpenResultMenu() => OpenPanel(UIPanelType.MapResult);
+        public void OpenSettingsPanel() => OpenPanel(UIPanelType.Setting);
         
         #endregion
 
