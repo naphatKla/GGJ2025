@@ -140,7 +140,7 @@ namespace GameControl.Controller
                         await UniTask.Delay(100);
                         _enemyPatternController.TriggerAllPatterns();
                     });
-                });
+                }, false);
             
             //Upgrade Max Spawn point every 1 minute
             GameTimer.Instance.ScheduleLoopingTrigger(_currentMapData.intervalIncreaseEnemyPoint, GameTimer.Instance.StartTimerNumber, 
@@ -153,6 +153,8 @@ namespace GameControl.Controller
             //Upgrade Spawn Ratio every 30 seconds
             GameTimer.Instance.ScheduleLoopingTrigger(_currentMapData.intervalEnemyPointRatioUpgrade, GameTimer.Instance.StartTimerNumber, 
                 () => _enemySpawnerController.UpgradePointRatio());
+
+            GameTimer.Instance.ScheduleOnceAtRemaining(60, () => Debug.Log("Last 1 Minute"));
  
             _mapEventController.ScheduleAllTriggersUpfront(GameTimer.Instance.StartTimerNumber);
         }

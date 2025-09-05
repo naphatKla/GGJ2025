@@ -90,8 +90,10 @@ namespace UI
         private readonly HashSet<UIPanelType> _pauseOwners = new();
         private bool _isPauseApplied;
         private bool _isTransitioning;
+        private bool _allLoad;
 
         // === Shortcuts ===
+        public bool AllLoad => _allLoad;
         private bool HasOpenPanels => _stack.Count > 0;
         private UIPanelType TopType => _stack.Count > 0 ? _stack.Peek() : UIPanelType.None;
 
@@ -104,6 +106,14 @@ namespace UI
             _pauseOwners.Clear();
             _isPauseApplied = false;
             ApplyPauseState();
+            
+            _allLoad = false;
+        }
+        
+        private async void Start()
+        {
+            await UniTask.Yield(PlayerLoopTiming.LastPostLateUpdate);
+            if (!_allLoad) _allLoad = true;
         }
         
 
@@ -131,17 +141,25 @@ namespace UI
 
         private async void OnSceneChange(Scene scene, LoadSceneMode mode)
         {
-            await UniTask.Yield(PlayerLoopTiming.LastPostLateUpdate);
+            await UniTask.Yield(PlayerLoopTiming.LastPostLateUpdate, destroyCancellationToken);
             _pauseOwners.Clear();
             MMTimeScaleEvent.Trigger(MMTimeScaleMethods.Reset, 1f, -1, false, 0f, true);
             Time.timeScale = 1f;
+            _allLoad = true;
+        }
+        
+        private UniTask WaitSceneReadyAsync()
+        {
+            return _allLoad 
+                ? UniTask.CompletedTask 
+                : UniTask.WaitUntil(() => _allLoad, cancellationToken: destroyCancellationToken);
         }
 
         #endregion
 
         #region Public API
 
-        public async void OpenPanel(UIPanelType type)
+        public async UniTaskVoid OpenPanel(UIPanelType type)
         {
             if (_isTransitioning) return;
             if (!TryGetPanel(type, out _)) return;
@@ -149,6 +167,8 @@ namespace UI
             _isTransitioning = true;
             try
             {
+                await WaitSceneReadyAsync();
+                
                 var before = _stack.Count;
                 var mode = GetStackTypeFor(type);
 
