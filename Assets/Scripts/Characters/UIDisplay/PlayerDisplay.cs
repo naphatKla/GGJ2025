@@ -469,7 +469,6 @@ namespace Characters.UIDisplay
             }
 
             PanelCardFeedback(solfUpgradePanel.transform);
-            MMTimeScaleEvent.Trigger(MMTimeScaleMethods.For, 0, -1, true, 6.2f, true);
         }
 
         private void ClearSkillCards()
@@ -513,7 +512,6 @@ namespace Characters.UIDisplay
         private void OnSkillSelected(BaseSkillDataSo skill)
         {
             UIManager.Instance.CloseAllPanels();
-            MMTimeScaleEvent.Trigger(MMTimeScaleMethods.Reset, 1f, 0f, true, 0f, false);
             skillUpgradeController.SelectSkill(skill);
             ClearSkillCards();
             ShowNextSkillPopup();

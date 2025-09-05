@@ -157,20 +157,15 @@ namespace UI
         {
             if (Input.GetKeyDown(KeyCode.Escape))
                 TogglePausePanelByEsc();
+            Debug.Log(Time.timeScale);
+        }
+        
+        private void OnEnable()
+        {
+            //SceneManager.sceneLoaded += OnSceneChange;
         }
 
         protected override void OnDestroy()
-        {
-            MMTimeScaleEvent.Trigger(MMTimeScaleMethods.Reset, 1, -1, false, 0f, false);
-            base.OnDestroy();
-        }
-
-        private void OnEnable()
-        {
-            SceneManager.sceneLoaded += OnSceneChange;
-        }
-
-        private void OnSceneChange(Scene scene, LoadSceneMode mode)
         {
             _confirmCts?.Cancel();
             _confirmCts?.Dispose();
@@ -182,9 +177,27 @@ namespace UI
             _pauseOwners.Clear();
             _isPauseApplied = false;
             _allLoad = true;
-            MMTimeScaleEvent.Trigger(MMTimeScaleMethods.Reset, 1f, -1, false, 0f, false);
-            SceneManager.sceneLoaded -= OnSceneChange;
+            
+            MMTimeScaleEvent.Trigger(MMTimeScaleMethods.Reset, 1f, 0, false, 100f, true);
+            base.OnDestroy();
         }
+
+        /*private void OnSceneChange(Scene scene, LoadSceneMode mode)
+        {
+            _confirmCts?.Cancel();
+            _confirmCts?.Dispose();
+            _confirmCts = null;
+
+            _activeConfirm = null;
+            _confirmInstances.Clear();
+
+            _pauseOwners.Clear();
+            _isPauseApplied = false;
+            _allLoad = true;
+            Debug.Log("Scene Reset");
+            //MMTimeScaleEvent.Trigger(MMTimeScaleMethods.Reset, 1, 0, false, 0f, false);
+            SceneManager.sceneLoaded -= OnSceneChange;
+        }*/
         
         private UniTask WaitSceneReadyAsync()
         {
@@ -338,14 +351,16 @@ namespace UI
             bool shouldPause = _pauseOwners.Count > 0;
             if (shouldPause && !_isPauseApplied)
             {
-                MMTimeScaleEvent.Trigger(MMTimeScaleMethods.For, 0, -1, true, 10f, true);
+                MMTimeScaleEvent.Trigger(MMTimeScaleMethods.For, 0f, 0, false, 1f, true);
+                Debug.LogWarning("ApplyPause");
                 _isPauseApplied = true;
                 return;
             }
 
             if (shouldPause || !_isPauseApplied) return;
             
-            MMTimeScaleEvent.Trigger(MMTimeScaleMethods.Reset, 1, -1, false, 0f, false);
+            MMTimeScaleEvent.Trigger(MMTimeScaleMethods.Reset, 1f, 0, false, 100f, true);
+            Debug.LogWarning("ResetPause");
             _isPauseApplied = false;
         }
 
@@ -399,6 +414,7 @@ namespace UI
         public void OpenQuitPanel() => OpenPanel(UIPanelType.QuitPanel).Forget();
         public void OpenTutorialPanel() => OpenPanel(UIPanelType.TutorialPanel).Forget();
         public void OpenResultMenu() => OpenPanel(UIPanelType.MapResult).Forget();
+        public void OpenSettingsPanel() => OpenPanel(UIPanelType.Setting);
         
         #endregion
 
