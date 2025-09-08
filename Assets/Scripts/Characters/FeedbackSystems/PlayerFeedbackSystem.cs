@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Cameras;
 using Characters.Controllers;
 using Characters.SO.CharacterDataSO;
 using DG.Tweening;
@@ -32,13 +33,13 @@ namespace Characters.FeedbackSystems
             {
                 case FeedbackName.Character.AttackHit:
                     if (!IsFeedbackPlaying(FeedbackName.Character.CounterAttack))
-                        _player.CameraController.ShakeCamera(_playerData.AttackHitCameraShakeOption);
+                        Cinemachine2DCameraController.Instance.ShakeCamera(_playerData.AttackHitCameraShakeOption);
                     break;
                 case FeedbackName.Character.CounterAttack:
-                    _player.CameraController.ShakeCamera(_playerData.CounterAttackHitCameraShakeOption);
+                    Cinemachine2DCameraController.Instance.ShakeCamera(_playerData.CounterAttackHitCameraShakeOption);
                     break;
                 case FeedbackName.Character.TakeDamage:
-                    _player.CameraController.ShakeCamera(_playerData.TakeDamageCameraShakeOption);
+                    Cinemachine2DCameraController.Instance.ShakeCamera(_playerData.TakeDamageCameraShakeOption);
                     break;
             }
 

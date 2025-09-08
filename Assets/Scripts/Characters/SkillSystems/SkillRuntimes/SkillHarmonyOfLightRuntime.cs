@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading;
+using Cameras;
 using Characters.Controllers;
 using Characters.SkillSystems.SkillObjects;
 using Characters.SO.SkillDataSo;
@@ -45,7 +46,7 @@ namespace Characters.SkillSystems.SkillRuntimes
 
             startPos = owner.transform.position;
             if (owner is PlayerController player)
-                player.CameraController.PushOrtho(22f, 2f, this, 0.5f);
+                Cinemachine2DCameraController.Instance.PushOrtho(22f, 2f, this, 0.5f);
         }
 
         protected override async UniTask OnSkillUpdate(CancellationToken cancelToken)
@@ -73,7 +74,7 @@ namespace Characters.SkillSystems.SkillRuntimes
         protected override void OnSkillExit()
         {
             if (owner is PlayerController player)
-                player.CameraController.CancelByOwner(this);
+                Cinemachine2DCameraController.Instance.CancelByOwner(this);
             
             foreach (var obj in _skillObjects)
             {

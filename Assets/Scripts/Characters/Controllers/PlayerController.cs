@@ -24,13 +24,11 @@ namespace Characters.Controllers
         [FormerlySerializedAs("comboSystem")] [SerializeField] public ComboSystem.ComboStreakSystem comboStreakSystem;
         [SerializeField] protected LevelSystem levelSystem;
         [SerializeField] protected SkillUpgradeController skillUpgradeController;
-        [SerializeField] protected Cinemachine2DCameraController cameraController;
         [SerializeField] protected ScoreSystem scoreSystem;
         
         public CollectItemSystem CollectItemSystem => collectItemSystem;
         public LevelSystem LevelSystem => levelSystem;
         public ScoreSystem ScoreSystem => scoreSystem;
-        public Cinemachine2DCameraController CameraController => cameraController;
 
         /// <summary>
         /// A global static reference to the current player instance.
@@ -102,7 +100,7 @@ namespace Characters.Controllers
             levelSystem.ResetLevel();
             skillUpgradeController.ResetSkillUpgradeController();
             comboStreakSystem.ResetAll();
-            cameraController.ResetAndClearAllRequests();
+            Cinemachine2DCameraController.Instance.ResetAndClearAllRequests();
             
             base.ResetAllDependentBehavior();
         }
