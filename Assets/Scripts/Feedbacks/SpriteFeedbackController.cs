@@ -46,6 +46,6 @@ public class SpriteFeedbackController : MonoBehaviour
     public void ChangeSpriteColor()
     {
         if (colorChangeSpriteTween.IsActive()) return;
-        colorChangeSpriteTween = body.DOColor(hitColor,toWhiteDuration).OnComplete(() => body.DOColor(baseColor,toBaseDuration));
+        colorChangeSpriteTween = flashBody.DOColor(hitColor,toWhiteDuration).OnComplete(() => flashBody.DOColor(baseColor,toBaseDuration));
     }
 }
