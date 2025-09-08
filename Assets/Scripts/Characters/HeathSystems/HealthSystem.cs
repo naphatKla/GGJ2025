@@ -217,9 +217,6 @@ namespace Characters.HeathSystems
         private void Dead()
         {
             if (_isDead) return;
-            _isDead = true;
-            OnDead?.Invoke();
-
             // ยกเลิกงานเก่า แล้วสร้าง cts ใหม่
             CancelAndDispose(ref _linkedDeadCts);
             CancelAndDispose(ref _deadCts);
@@ -228,6 +225,9 @@ namespace Characters.HeathSystems
             _linkedDeadCts = CancellationTokenSource.CreateLinkedTokenSource(_deadCts.Token, destroyCancellationToken);
 
             WaitDeadAnim(_linkedDeadCts.Token).Forget();
+            
+            _isDead = true;
+            OnDead?.Invoke();
         }
 
         private CancellationTokenSource _deadCts; // ยกเลิกเมื่อ revive/reset
@@ -239,8 +239,9 @@ namespace Characters.HeathSystems
                 Cinemachine2DCameraController.Instance.IsTransformInView(transform))
             {
                 owner?.TryPlayFeedback(FeedbackName.Character.Dead);
+                Debug.Log("dead");
             }
-
+            
             try
             {
                 if (owner != null && owner.FeedbackSystem != null)
