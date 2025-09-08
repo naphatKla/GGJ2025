@@ -89,6 +89,7 @@ namespace Characters.UIDisplay
 
         [FoldoutGroup("SolfUpgrade Display")] public SolfUpgradeViewholder solfUpgradeViewholder;
         [FoldoutGroup("SolfUpgrade Display")] public Button solfUpgradeSelectButton;
+        [FoldoutGroup("SolfUpgrade Display")] public ParticleSystem buttonFeedBack;
 
         private readonly Queue<BaseSkillDataSo> skillQueue = new();
         private readonly List<SolfUpgradeViewholder> _cards = new();
@@ -563,6 +564,7 @@ namespace Characters.UIDisplay
             var t = solfUpgradeSelectButton.transform;
             t.DOKill();
             t.DOPunchScale(t.localScale * 0.08f, 0.2f, 8, 0.9f).SetUpdate(true);
+            if (_currentSelect != null) buttonFeedBack.Play();
         }
 
         #endregion
