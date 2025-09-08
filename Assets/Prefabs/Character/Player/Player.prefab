@@ -53888,7 +53888,7 @@ GameObject:
   - component: {fileID: 7534513208806243613}
   - component: {fileID: 4786182755069043034}
   - component: {fileID: 1611083095111674569}
-  - component: {fileID: 2047403147416900316}
+  - component: {fileID: 1454970709746529031}
   - component: {fileID: 7127418468070666774}
   - component: {fileID: 1367073074030531616}
   - component: {fileID: 4177936962492003484}
@@ -53952,7 +53952,7 @@ MonoBehaviour:
   characterData: {fileID: 11400000, guid: 39ed973e8de08f84faa43653bfdd68e7, type: 2}
   collectItemSystem: {fileID: 4851925125693906224}
   comboStreakSystem: {fileID: 2247090465659933957}
-  levelSystem: {fileID: 2047403147416900316}
+  levelSystem: {fileID: 1454970709746529031}
   skillUpgradeController: {fileID: 7127418468070666774}
   cameraController: {fileID: 5785369636543128780}
   scoreSystem: {fileID: 5144948324511787352}
@@ -53980,15 +53980,17 @@ MonoBehaviour:
   flowStageComboViewholder: {fileID: 0}
   combatSystem: {fileID: 7330480618453326501}
   worldTextUIPrefab: {fileID: 3505668433232323823, guid: 5f9a0b920a9bf3d458d1cba11d917f1c, type: 3}
-  levelSystem: {fileID: 2047403147416900316}
+  levelSystem: {fileID: 1454970709746529031}
   levelText: {fileID: 0}
   levelbar: {fileID: 0}
   healthSystem: {fileID: 1611083095111674569}
   hpProgressBar: {fileID: 0}
   hpText: {fileID: 0}
   skillUpgradeController: {fileID: 7127418468070666774}
+  cardsPerShow: 3
   solfUpgradePanel: {fileID: 0}
   solfUpgradeViewholder: {fileID: 962830566913950826, guid: 56ac69313ddb4ee42b51c120f615702f, type: 3}
+  solfUpgradeSelectButton: {fileID: 0}
   skillSystem: {fileID: 1367073074030531616}
   cooldownIsNotReadyText: {fileID: 0}
   skillSlotModel:
@@ -54045,7 +54047,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5dd45224fe3c4d4ca1bd168263f9430, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &2047403147416900316
+--- !u!114 &1454970709746529031
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -54054,9 +54056,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 2726293917207744010}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ce2f5e6d797c1d24d96e9555f516b478, type: 3}
+  m_Script: {fileID: 11500000, guid: f089975b9696de6409bd9bb5b514426e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  useExplosionOnLevelUp: 1
+  explosionRadius: 20
+  explosionKnockBackDistance: 15
+  explosionKnocbackDuration: 0.35
+  targetLayerMask:
+    serializedVersion: 2
+    m_Bits: 64
 --- !u!114 &7127418468070666774
 MonoBehaviour:
   m_ObjectHideFlags: 0

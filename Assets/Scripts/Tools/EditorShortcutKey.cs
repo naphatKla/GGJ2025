@@ -16,7 +16,7 @@ namespace Tools
 
     public class EditorShortcutKey : SerializedMonoBehaviour
     {
-        [FoldoutGroup("References")] [SerializeField]
+        [FoldoutGroup("References")] [SerializeField] [Required]
         private LevelSystem _levelSystem;
 
         [DictionaryDrawerSettings] [SerializeField]
@@ -64,7 +64,7 @@ namespace Tools
             {
                 case EditorAction.LevelUp:
                 {
-                    _levelSystem.LevelUp();
+                    _levelSystem.ForceLevelUp();
                     break;
                 }
             }

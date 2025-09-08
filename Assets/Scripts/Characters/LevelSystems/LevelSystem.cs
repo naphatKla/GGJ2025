@@ -56,12 +56,12 @@ namespace Characters.LevelSystems
         }
 
         
-        public void LevelUp()
+        public void ForceLevelUp()
         {
             AddExp( Mathf.RoundToInt(_currentExpToLevelUp) );
         }
 
-        private void UpdateExpToLevelUp()
+        protected virtual void UpdateExpToLevelUp()
         {
             _owner.TryPlayFeedback(FeedbackName.Character.LevelUp);
             _currentExpToLevelUp = Mathf.Ceil(_baseExp * Mathf.Pow(_multiplier, Level - 1));
