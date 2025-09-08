@@ -18,6 +18,7 @@ namespace UI.IngameViewholder
         [SerializeField] private TMP_Text newSkillText;
         [SerializeField] private Button raycast;
 
+        private Vector3 _startSize;
         public BaseSkillDataSo Data { get; private set; }
         public bool IsSelected { get; private set; }
 
@@ -31,6 +32,7 @@ namespace UI.IngameViewholder
             Clicked = null;
             Clicked += onClick;
             raycast.onClick.AddListener(() => Clicked?.Invoke(this));
+            _startSize = transform.localScale;
             
             SetSelected(false, instant: true);
         }
@@ -39,12 +41,24 @@ namespace UI.IngameViewholder
         {
             IsSelected = selected;
             selectEffect.SetActive(selected);
+            var t = transform;
+            t.localScale = _startSize;
 
             if (selected && !instant)
             {
-                var t = transform;
                 t.DOKill();
-                t.DOPunchScale(t.localScale * 0.02f, 0.3f, vibrato: 12, elasticity: 1.2f).SetUpdate(true);
+                var seq = DOTween.Sequence();
+                seq.Append(t.DOScale(new Vector3(6.45f, 6.45f, 1f), 0.2f).SetEase(Ease.InOutSine))
+                    .Append(t.DOShakePosition(0.2f, 10f, vibrato: 10, randomness: 40))
+                    .SetUpdate(true);
+            }
+            else
+            {
+                t.DOKill();
+                var seq = DOTween.Sequence();
+                seq.Append(t.DOLocalRotate(new Vector3(0, 360f, 0), 0.3f, RotateMode.FastBeyond360))
+                    .Append(t.DOScale(new Vector3(6f, 6f, 1f), 0.2f).SetEase(Ease.InOutSine))
+                    .SetUpdate(true);
             }
         }
 
