@@ -21,21 +21,15 @@ namespace Characters.HeathSystems
 
         private BaseController owner;
 
-        /// <summary>
-        /// The maximum health the character can have.
-        /// </summary>
+        /// <summary>The maximum health the character can have.</summary>
         [ShowInInspector, ReadOnly] [ShowIf("@UnityEngine.Application.isPlaying")]
         private float _maxHealth;
 
-        /// <summary>
-        /// The current health of the character.
-        /// </summary>
+        /// <summary>The current health of the character.</summary>
         [ShowInInspector, ReadOnly] [ShowIf("@UnityEngine.Application.isPlaying")]
         private float _currentHealth;
 
-        /// <summary>
-        /// Determines if the character is temporarily invincible.
-        /// </summary>
+        /// <summary>Determines if the character is temporarily invincible.</summary>
         [ShowInInspector, ReadOnly] [ShowIf("@UnityEngine.Application.isPlaying")]
         private bool _isInvincible;
 
@@ -45,51 +39,32 @@ namespace Characters.HeathSystems
         /// </summary>
         private float _invincibleTimePerHit;
 
-        /// <summary>
-        /// Whether the character is currently in hit cooldown state.
-        /// Prevents taking consecutive damage.
-        /// </summary>
+        /// <summary>Whether the character is currently in hit cooldown state.</summary>
         private bool _isHitCooldown;
 
-        /// <summary>
-        /// Indicates whether the character is dead.
-        /// </summary>
+        /// <summary>Indicates whether the character is dead.</summary>
         [ShowInInspector, ReadOnly] [ShowIf("@UnityEngine.Application.isPlaying")]
         private bool _isDead;
 
-        /// <summary>
-        /// Indicates whether the character is dead.
-        /// </summary>
         public bool IsDead => _isDead;
 
-        /// <summary>
-        /// Event triggered when the character takes damage.
-        /// </summary>
+        /// <summary>Event triggered when the character takes damage.</summary>
         public Action<bool> OnTakeDamage { get; set; }
 
-        /// <summary>
-        /// Event triggered when the character heals.
-        /// </summary>
+        /// <summary>Event triggered when the character heals.</summary>
         public Action OnHeal { get; set; }
 
-        /// <summary>
-        /// Event triggered when this character dies.
-        /// </summary>
+        /// <summary>Event triggered when this character dies.</summary>
         public Action OnDead { get; set; }
 
         public Action OnDeadAnimationFinish { get; set; }
 
-        /// <summary>
-        /// Event triggered when this character health change.
-        /// </summary>
+        /// <summary>Event triggered when this character health change.</summary>
         public Action<float> OnHealthChange { get; set; }
 
-        /// <summary>
-        /// Event triggered when the invincibility state changes.
-        /// The boolean parameter represents whether the character is now invincible.
-        /// </summary>
+        /// <summary>Event triggered when the invincibility state changes.</summary>
         public Action<bool> OnInvincible { get; set; }
-        
+
         public int TotalDamageTaken { get; set; }
         public int TotalHeal { get; set; }
 
@@ -125,8 +100,6 @@ namespace Characters.HeathSystems
         /// Reduces the character's health by the given damage amount.
         /// Prevents damage if the character is invincible, in cooldown, or already dead.
         /// </summary>
-        /// <param name="damage">The amount of damage to apply.</param>
-        /// <returns>True if the damage was applied; otherwise, false.</returns>
         public bool TakeDamage(float damage, out bool dieThisFrame)
         {
             dieThisFrame = false;
@@ -141,7 +114,7 @@ namespace Characters.HeathSystems
             TotalDamageTaken += (int)damage;
             OnTakeDamage?.Invoke(true);
 
-            HitCooldownHandler();
+            HitCooldownHandler().Forget();
 
             if (_currentHealth <= 0)
             {
@@ -150,17 +123,17 @@ namespace Characters.HeathSystems
             }
             else
             {
-                if (Cinemachine2DCameraController.Instance.IsTransformInView(transform))
+                if (Cinemachine2DCameraController.Instance != null &&
+                    Cinemachine2DCameraController.Instance.IsTransformInView(transform))
+                {
                     owner?.TryPlayFeedback(FeedbackName.Character.TakeDamage);
+                }
             }
 
             return true;
         }
 
-        /// <summary>
-        /// Increases the character's health by the given amount, up to the maximum health.
-        /// </summary>
-        /// <param name="healAmount">The amount of health to restore.</param>
+        /// <summary>Increases the character's health by the given amount, up to the maximum health.</summary>
         public void Heal(float healAmount)
         {
             if (_isDead) return;
@@ -173,27 +146,25 @@ namespace Characters.HeathSystems
         private Tween colorTween;
         private Color? startColor;
 
-        /// <summary>
-        /// Sets the character's invincibility state.
-        /// </summary>
-        /// <param name="value">True to make the character invincible, false to disable invincibility.</param>
+        /// <summary>Sets the character's invincibility state.</summary>
         public void SetInvincible(bool value)
         {
             _isInvincible = value;
             OnInvincible?.Invoke(_isInvincible);
+
+            // ป้องกัน NRE หาก owner หรือ Body ไม่มี
+            if (owner?.Body == null) return;
+
             startColor ??= owner.Body.color;
 
             colorTween?.Kill();
-            if (value)
-            {
-                colorTween = owner?.Body.DOColor(Color.cyan, 0.05f);
-                owner?.TryPlayFeedback(FeedbackName.Character.Iframe);
-            }
-            else
-            {
-                colorTween = owner?.Body.DOColor(startColor.Value, 0.05f);
-                owner?.TryStopFeedback(FeedbackName.Character.Iframe);
-            }
+            var target = value ? Color.cyan : startColor.Value;
+
+            colorTween = owner.Body
+                .DOColor(target, 0.05f)
+                .SetLink(owner.Body.gameObject, LinkBehaviour.KillOnDestroy); // ผูก lifecycle
+            if (value) owner?.TryPlayFeedback(FeedbackName.Character.Iframe);
+            else owner?.TryStopFeedback(FeedbackName.Character.Iframe);
         }
 
         /// <summary>
@@ -206,28 +177,35 @@ namespace Characters.HeathSystems
             SetInvincible(false);
             _isHitCooldown = false;
             _isDead = false;
-            _deadCts?.Cancel();
 
-            if (!Cinemachine2DCameraController.Instance.IsTransformInView(transform)) return;
-            owner?.TryPlayFeedback(FeedbackName.Character.Spawn);
+            // ยกเลิกงานรอ-dead ค้างทั้งหมด
+            CancelAndDispose(ref _linkedDeadCts);
+            CancelAndDispose(ref _deadCts);
+
+            if (Cinemachine2DCameraController.Instance != null &&
+                Cinemachine2DCameraController.Instance.IsTransformInView(transform))
+            {
+                owner?.TryPlayFeedback(FeedbackName.Character.Spawn);
+            }
         }
 
-        /// <summary>
-        /// Starts the hit cooldown period after the character takes damage.
-        /// Prevents additional damage for the configured duration.
-        /// </summary>
-        public async void HitCooldownHandler()
+        /// <summary>Starts the hit cooldown period after the character takes damage.</summary>
+        public async UniTaskVoid HitCooldownHandler()
         {
             _isHitCooldown = true;
-            await UniTask.WaitForSeconds(_invincibleTimePerHit, cancellationToken: destroyCancellationToken);
-            _isHitCooldown = false;
+            try
+            {
+                await UniTask.WaitForSeconds(_invincibleTimePerHit, cancellationToken: destroyCancellationToken);
+            }
+            catch (OperationCanceledException)
+            {
+                // object destroyed → ignore
+            }
+
+            if (this) _isHitCooldown = false;
         }
 
-        /// <summary>
-        /// Modifies the character's health by a given value.
-        /// Ensures health does not exceed the maximum or drop below zero.
-        /// </summary>
-        /// <param name="value">The amount to modify health by (positive for healing, negative for damage).</param>
+        /// <summary>Modifies the character's health by a given value.</summary>
         private void ModifyHealth(float value)
         {
             _currentHealth += value;
@@ -235,36 +213,85 @@ namespace Characters.HeathSystems
             OnHealthChange?.Invoke(value);
         }
 
-        /// <summary>
-        /// Triggers the character's death state if their health reaches zero.
-        /// Ensures the death logic is executed only once.
-        /// </summary>
+        /// <summary>Triggers the character's death state if their health reaches zero.</summary>
         private void Dead()
         {
             if (_isDead) return;
             _isDead = true;
             OnDead?.Invoke();
+
+            // ยกเลิกงานเก่า แล้วสร้าง cts ใหม่
+            CancelAndDispose(ref _linkedDeadCts);
+            CancelAndDispose(ref _deadCts);
+
             _deadCts = new CancellationTokenSource();
-            
-            WaitDeadAnim().Forget();
+            _linkedDeadCts = CancellationTokenSource.CreateLinkedTokenSource(_deadCts.Token, destroyCancellationToken);
+
+            WaitDeadAnim(_linkedDeadCts.Token).Forget();
         }
 
-        private CancellationTokenSource _deadCts = new CancellationTokenSource();
-        
-        private async UniTaskVoid WaitDeadAnim()
+        private CancellationTokenSource _deadCts; // ยกเลิกเมื่อ revive/reset
+        private CancellationTokenSource _linkedDeadCts; // ลิงก์กับ destroyCancellationToken
+
+        private async UniTaskVoid WaitDeadAnim(CancellationToken token)
         {
-            if (Cinemachine2DCameraController.Instance.IsTransformInView(transform))
-                owner?.TryPlayFeedback(FeedbackName.Character.Dead);
-            
-            if (owner && owner.FeedbackSystem)
+            if (Cinemachine2DCameraController.Instance != null &&
+                Cinemachine2DCameraController.Instance.IsTransformInView(transform))
             {
-                await UniTask.WaitUntil(() => !owner.FeedbackSystem.IsFeedbackPlaying(FeedbackName.Character.Dead), cancellationToken: _deadCts.Token);
+                owner?.TryPlayFeedback(FeedbackName.Character.Dead);
             }
-            
+
+            try
+            {
+                if (owner != null && owner.FeedbackSystem != null)
+                {
+                    // รอจนกว่าจะหยุดเล่นอนิเมชันตาย หรือโดนยกเลิก
+                    await UniTask.WaitUntil(
+                        () => !owner.FeedbackSystem.IsFeedbackPlaying(FeedbackName.Character.Dead),
+                        cancellationToken: token
+                    );
+                    // หรือจะกัน soft-lock:
+                    // await UniTask.WhenAny(
+                    //     UniTask.WaitUntil(() => !owner.FeedbackSystem.IsFeedbackPlaying(FeedbackName.Character.Dead), token),
+                    //     UniTask.Delay(TimeSpan.FromSeconds(2.0), cancellationToken: token)
+                    // );
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                // ถูกยกเลิกจาก Reset/Destroy → ออกเฉย ๆ
+                return;
+            }
+
             OnDeadAnimationFinish?.Invoke();
-            gameObject.SetActive(false);
+            if (this && gameObject) gameObject.SetActive(false);
         }
-        
+
+        // -------- CTS utilities & cleanup --------
+        private static void CancelAndDispose(ref CancellationTokenSource cts)
+        {
+            if (cts == null) return;
+            try
+            {
+                cts.Cancel();
+            }
+            catch
+            {
+                /* ignore */
+            }
+
+            cts.Dispose();
+            cts = null;
+        }
+
+        private void OnDestroy()
+        {
+            CancelAndDispose(ref _linkedDeadCts);
+            CancelAndDispose(ref _deadCts);
+
+            colorTween?.Kill();
+        }
+
         #endregion
     }
 }
