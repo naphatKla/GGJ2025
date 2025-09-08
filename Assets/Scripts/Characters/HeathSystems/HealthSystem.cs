@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using Cameras;
 using Characters.Controllers;
 using Characters.FeedbackSystems;
@@ -76,6 +77,8 @@ namespace Characters.HeathSystems
         /// </summary>
         public Action OnDead { get; set; }
 
+        public Action OnDeadAnimationFinish { get; set; }
+
         /// <summary>
         /// Event triggered when this character health change.
         /// </summary>
@@ -142,8 +145,6 @@ namespace Characters.HeathSystems
 
             if (_currentHealth <= 0)
             {
-                if (Cinemachine2DCameraController.Instance.IsTransformInView(transform))
-                    owner?.TryPlayFeedback(FeedbackName.Character.Dead);
                 dieThisFrame = true;
                 Dead();
             }
@@ -205,6 +206,7 @@ namespace Characters.HeathSystems
             SetInvincible(false);
             _isHitCooldown = false;
             _isDead = false;
+            _deadCts?.Cancel();
 
             if (!Cinemachine2DCameraController.Instance.IsTransformInView(transform)) return;
             owner?.TryPlayFeedback(FeedbackName.Character.Spawn);
@@ -217,7 +219,7 @@ namespace Characters.HeathSystems
         public async void HitCooldownHandler()
         {
             _isHitCooldown = true;
-            await UniTask.WaitForSeconds(_invincibleTimePerHit);
+            await UniTask.WaitForSeconds(_invincibleTimePerHit, cancellationToken: destroyCancellationToken);
             _isHitCooldown = false;
         }
 
@@ -242,9 +244,27 @@ namespace Characters.HeathSystems
             if (_isDead) return;
             _isDead = true;
             OnDead?.Invoke();
-            gameObject.SetActive(false);
+            _deadCts = new CancellationTokenSource();
+            
+            WaitDeadAnim().Forget();
         }
 
+        private CancellationTokenSource _deadCts = new CancellationTokenSource();
+        
+        private async UniTaskVoid WaitDeadAnim()
+        {
+            if (Cinemachine2DCameraController.Instance.IsTransformInView(transform))
+                owner?.TryPlayFeedback(FeedbackName.Character.Dead);
+            
+            if (owner && owner.FeedbackSystem)
+            {
+                await UniTask.WaitUntil(() => !owner.FeedbackSystem.IsFeedbackPlaying(FeedbackName.Character.Dead), cancellationToken: _deadCts.Token);
+            }
+            
+            OnDeadAnimationFinish?.Invoke();
+            gameObject.SetActive(false);
+        }
+        
         #endregion
     }
 }
