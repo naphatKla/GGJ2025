@@ -55,6 +55,12 @@ namespace Characters.LevelSystems
             UpdateExpToLevelUp();
         }
 
+        
+        public void LevelUp()
+        {
+            AddExp( Mathf.RoundToInt(_currentExpToLevelUp) );
+        }
+
         private void UpdateExpToLevelUp()
         {
             _owner.TryPlayFeedback(FeedbackName.Character.LevelUp);

@@ -6466,6 +6466,7 @@ GameObject:
   - component: {fileID: 681150451}
   - component: {fileID: 681150452}
   - component: {fileID: 681150453}
+  - component: {fileID: 681150454}
   m_Layer: 0
   m_Name: GameController
   m_TagString: Untagged
@@ -6552,6 +6553,66 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   currentMapData: {fileID: 0}
   mapName: {fileID: 0}
+--- !u!114 &681150454
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 681150447}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3631cbfc4efaa494896076a5ab11f9fd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes:
+    - Name: KeyMap
+      Entry: 7
+      Data: 0|UnityEngine.Rendering.SerializedDictionary`2[[UnityEngine.KeyCode,
+        UnityEngine.CoreModule],[Tools.EditorAction, Assembly-CSharp]], Unity.RenderPipelines.Core.Runtime
+    - Name: comparer
+      Entry: 7
+      Data: 1|System.Collections.Generic.EnumEqualityComparer`1[[UnityEngine.KeyCode,
+        UnityEngine.CoreModule]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 12
+      Data: 1
+    - Name: 
+      Entry: 7
+      Data: 
+    - Name: $k
+      Entry: 3
+      Data: 117
+    - Name: $v
+      Entry: 3
+      Data: 0
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+  _levelSystem: {fileID: 970226703}
 --- !u!1 &695175194
 GameObject:
   m_ObjectHideFlags: 0
@@ -13007,6 +13068,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 8974750955813567560, guid: ef87c6aedde00684a81e6139e502fb41, type: 3}
   m_PrefabInstance: {fileID: 6860519980066294386}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &970226703 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2047403147416900316, guid: ef87c6aedde00684a81e6139e502fb41, type: 3}
+  m_PrefabInstance: {fileID: 6860519980066294386}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce2f5e6d797c1d24d96e9555f516b478, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &982171195
 GameObject:
   m_ObjectHideFlags: 0
