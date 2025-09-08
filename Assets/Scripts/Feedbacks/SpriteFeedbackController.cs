@@ -1,19 +1,30 @@
 using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 public class SpriteFeedbackController : MonoBehaviour
 {
     [SerializeField] private SpriteRenderer body;
     [SerializeField] private GameObject bodyObj;
-    [SerializeField] private float shakeDuration = 0.25f;
-    [SerializeField] private Vector3 shakeStrength = new Vector3(1,1,0);
-    [SerializeField] private float shakeVibrato = 1f;
-    [SerializeField] private float shakeRandomness = 90;
-    [SerializeField] private bool shakeSnapping = false;
-    [SerializeField] private bool shakeFadeOut = true;
-    [SerializeField] private ShakeRandomnessMode randomnessMode = ShakeRandomnessMode.Harmonic; 
+    [SerializeField] private SpriteRenderer flashBody;
+    
+    [SerializeField] [FoldoutGroup("Shake")] private float shakeDuration = 0.25f;
+    [SerializeField] [FoldoutGroup("Shake")] private Vector3 shakeStrength = new Vector3(1,1,0);
+    [SerializeField] [FoldoutGroup("Shake")] private int shakeVibrato = 1;
+    [SerializeField] [FoldoutGroup("Shake")] private float shakeRandomness = 90;
+    [SerializeField] [FoldoutGroup("Shake")] private bool shakeSnapping = false;
+    [SerializeField] [FoldoutGroup("Shake")] private bool shakeFadeOut = true;
+    [SerializeField] [FoldoutGroup("Shake")] private ShakeRandomnessMode randomnessMode = ShakeRandomnessMode.Harmonic;
+
+    [SerializeField] [FoldoutGroup("Sprite")] private Color baseColor = Color.clear;
+    [SerializeField] [FoldoutGroup("Sprite")] [ColorPalette] private Color hitColor = Color.white;
+    [SerializeField] [FoldoutGroup("Sprite")] float toWhiteDuration = 0.15f;
+    [SerializeField] [FoldoutGroup("Sprite")] float toBaseDuration = 0.15f;
+
+    private Tween shakeSpriteTween;
+    private Tween colorChangeSpriteTween;
     void Start()
     {
         
@@ -25,8 +36,16 @@ public class SpriteFeedbackController : MonoBehaviour
         
     }
 
-    void ShakeSprite()
+    public void ShakeSprite()
     {
-        bodyObj.transform.DOShakePosition(shakeDuration, shakeStrength, 1,shakeRandomness,shakeSnapping,shakeFadeOut,ShakeRandomnessMode.Harmonic);
+        if (shakeSpriteTween.IsActive()) return;
+        shakeSpriteTween = bodyObj.transform.DOShakePosition(shakeDuration, shakeStrength, 1,
+            shakeRandomness,shakeSnapping,shakeFadeOut,ShakeRandomnessMode.Harmonic);
+    }
+
+    public void ChangeSpriteColor()
+    {
+        if (colorChangeSpriteTween.IsActive()) return;
+        colorChangeSpriteTween = body.DOColor(hitColor,toWhiteDuration).OnComplete(() => body.DOColor(baseColor,toBaseDuration));
     }
 }
