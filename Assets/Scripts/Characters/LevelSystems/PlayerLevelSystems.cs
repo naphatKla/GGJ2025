@@ -1,4 +1,7 @@
+using System.Collections.Generic;
 using Characters.MovementSystems;
+using Characters.StatusEffectSystems;
+using Manager;
 using UnityEngine;
 
 namespace Characters.LevelSystems
@@ -10,11 +13,16 @@ namespace Characters.LevelSystems
         [SerializeField] protected float explosionKnockBackDistance = 10f;
         [SerializeField] private float explosionKnocbackDuration = 0.35f;
         [SerializeField] private LayerMask targetLayerMask;
+        [SerializeField] protected List<StatusEffectDataPayload> selfStatusEffectsOnLevelUp;
+        [SerializeField] protected List<StatusEffectDataPayload> targetStatusEffectOnExplosion;
         
         
         protected override void UpdateExpToLevelUp()
         {
             base.UpdateExpToLevelUp();
+            
+            if (Level == 1) return;
+            StatusEffectManager.ApplyEffectTo(gameObject, selfStatusEffectsOnLevelUp);
             
             if (!useExplosionOnLevelUp) return;
             ExplosionOnLevelUp();
@@ -31,6 +39,8 @@ namespace Characters.LevelSystems
                 Vector2 knockBackDestination = (Vector2)target.transform.position +
                                                (knockBackDirection.normalized * explosionKnockBackDistance);
 
+                StatusEffectManager.ApplyEffectTo(target.gameObject, targetStatusEffectOnExplosion);
+                
                 target.GetComponent<BaseMovementSystem>()
                     .TryMoveToPositionOverTime(knockBackDestination, explosionKnocbackDuration);
             }
