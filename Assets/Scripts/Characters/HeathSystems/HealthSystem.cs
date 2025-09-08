@@ -19,6 +19,8 @@ namespace Characters.HeathSystems
     {
         #region Inspectors & Variables
 
+        [SerializeField] private bool blockTakeDamageFeedbackOnFinalHit;
+        
         private BaseController owner;
 
         /// <summary>The maximum health the character can have.</summary>
@@ -121,13 +123,13 @@ namespace Characters.HeathSystems
                 dieThisFrame = true;
                 Dead();
             }
-            else
+
+            if (dieThisFrame && blockTakeDamageFeedbackOnFinalHit) return true;
+            
+            if (Cinemachine2DCameraController.Instance != null &&
+                Cinemachine2DCameraController.Instance.IsTransformInView(transform))
             {
-                if (Cinemachine2DCameraController.Instance != null &&
-                    Cinemachine2DCameraController.Instance.IsTransformInView(transform))
-                {
-                    owner?.TryPlayFeedback(FeedbackName.Character.TakeDamage);
-                }
+                owner?.TryPlayFeedback(FeedbackName.Character.TakeDamage);
             }
 
             return true;
@@ -239,7 +241,6 @@ namespace Characters.HeathSystems
                 Cinemachine2DCameraController.Instance.IsTransformInView(transform))
             {
                 owner?.TryPlayFeedback(FeedbackName.Character.Dead);
-                Debug.Log("dead");
             }
             
             try
@@ -248,7 +249,7 @@ namespace Characters.HeathSystems
                 {
                     // รอจนกว่าจะหยุดเล่นอนิเมชันตาย หรือโดนยกเลิก
                     await UniTask.WaitUntil(
-                        () => !owner.FeedbackSystem.IsFeedbackPlaying(FeedbackName.Character.Dead),
+                        () => !owner.FeedbackSystem.IsFeedbackPlaying(FeedbackName.Character.Dead) || !gameObject.activeSelf,
                         cancellationToken: token
                     );
                     // หรือจะกัน soft-lock:
@@ -263,7 +264,7 @@ namespace Characters.HeathSystems
                 // ถูกยกเลิกจาก Reset/Destroy → ออกเฉย ๆ
                 return;
             }
-
+            
             OnDeadAnimationFinish?.Invoke();
             if (this && gameObject) gameObject.SetActive(false);
         }
