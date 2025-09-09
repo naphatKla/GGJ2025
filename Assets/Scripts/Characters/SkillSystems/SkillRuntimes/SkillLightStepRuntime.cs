@@ -4,6 +4,7 @@ using System.Threading;
 using Cameras;
 using Characters.Controllers;
 using Characters.FeedbackSystems;
+using Characters.InputSystems;
 using Characters.SO.SkillDataSo;
 using Characters.StatusEffectSystems;
 using Cysharp.Threading.Tasks;
@@ -59,6 +60,7 @@ namespace Characters.SkillSystems.SkillRuntimes
         protected override async UniTask OnSkillUpdate(CancellationToken cancelToken)
         {
             var camHandle = Cinemachine2DCameraController.Instance.PushOrtho(15.5f, 10, this, 0.25f);
+            float speedMultiplier = 1f;
 
             StatusEffectManager.ApplyEffectTo(owner.gameObject, skillData.EffectWhileLightStep);
 
@@ -74,7 +76,7 @@ namespace Characters.SkillSystems.SkillRuntimes
 
                 owner.MovementSystem.StopTween();
 
-                float speedMultiplier = Mathf.Clamp(
+                speedMultiplier = Mathf.Clamp(
                     1f + i * (skillData.NormalPhaseSpeedStepUp / 100f),
                     1f, skillData.NormalPhaseMaxSpeedMultiplier / 100f
                 );
@@ -114,6 +116,14 @@ namespace Characters.SkillSystems.SkillRuntimes
         protected override void OnSkillExit()
         {
             ResetOnEnd().Forget();
+            
+            if (!owner || !owner.gameObject.activeSelf) return;
+            Vector2 endPos = (Vector2)owner.transform.position +
+                             (owner.InputSystem.SightDirection.direction * 15f);
+
+            owner.MovementSystem
+                .TryMoveToPositionBySpeed(endPos, skillData.LightStepSpeed)
+                .SetEase(Ease.InSine);
         }
 
         private void OnDisable()
