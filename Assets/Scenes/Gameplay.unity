@@ -6798,7 +6798,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 12
-      Data: 1
+      Data: 2
     - Name: 
       Entry: 7
       Data: 
@@ -6812,12 +6812,23 @@ MonoBehaviour:
       Entry: 8
       Data: 
     - Name: 
+      Entry: 7
+      Data: 
+    - Name: $k
+      Entry: 3
+      Data: 100
+    - Name: $v
+      Entry: 3
+      Data: 1
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
       Entry: 13
       Data: 
     - Name: 
       Entry: 8
       Data: 
-  _levelSystem: {fileID: 6860519980066294387}
 --- !u!1 &695175194
 GameObject:
   m_ObjectHideFlags: 0
@@ -23924,6 +23935,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 159241545103338559, guid: ef87c6aedde00684a81e6139e502fb41, type: 3}
+      propertyPath: FeedbacksList.Array.size
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 159241545103338559, guid: ef87c6aedde00684a81e6139e502fb41, type: 3}
+      propertyPath: FeedbacksList.Array.data[3]
+      value: 5581445570735112192
+      objectReference: {fileID: 0}
     - target: {fileID: 1766625338755230343, guid: ef87c6aedde00684a81e6139e502fb41, type: 3}
       propertyPath: hpText
       value: 
@@ -24089,17 +24108,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ef87c6aedde00684a81e6139e502fb41, type: 3}
---- !u!114 &6860519980066294387 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1454970709746529031, guid: ef87c6aedde00684a81e6139e502fb41, type: 3}
-  m_PrefabInstance: {fileID: 6860519980066294386}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f089975b9696de6409bd9bb5b514426e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!224 &7295713375619561799
 RectTransform:
   m_ObjectHideFlags: 0

@@ -1,5 +1,6 @@
 #if UNITY_EDITOR
 using System.Collections.Generic;
+using Characters.Controllers;
 using Characters.LevelSystems;
 using Sirenix.OdinInspector;
 using TMPro;
@@ -12,13 +13,11 @@ namespace Tools
     public enum EditorAction
     {
         LevelUp = 0,
+        ForceDie = 1,
     }
 
     public class EditorShortcutKey : SerializedMonoBehaviour
     {
-        [FoldoutGroup("References")] [SerializeField] [Required]
-        private LevelSystem _levelSystem;
-
         [DictionaryDrawerSettings] [SerializeField]
         private Dictionary<KeyCode, EditorAction> KeyMap;
 
@@ -64,9 +63,15 @@ namespace Tools
             {
                 case EditorAction.LevelUp:
                 {
-                    _levelSystem.ForceLevelUp();
+                    PlayerController.Instance.LevelSystem.ForceLevelUp();
                     break;
                 }
+                case EditorAction.ForceDie:
+                {
+                    PlayerController.Instance.HealthSystem.TakeDamage(PlayerController.Instance.HealthSystem.MaxHealth, out bool _);
+                    break;
+                }
+                
             }
         }
     }

@@ -105,6 +105,12 @@ namespace Characters.Controllers
             base.ResetAllDependentBehavior();
         }
 
+        public override void CancelBehaviorOnDead()
+        {
+            base.CancelBehaviorOnDead();
+            levelSystem.Active = false;
+        }
+
         public void OnAnyUIOpen()
         {
             InputSystem.Enable = false;

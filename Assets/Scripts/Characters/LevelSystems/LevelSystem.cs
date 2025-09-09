@@ -14,9 +14,16 @@ namespace Characters.LevelSystems
         [ShowInInspector, ReadOnly] public float ExpToLevelUp => _currentExpToLevelUp;
         [ShowInInspector, ReadOnly] public float ExpProgress01 => Mathf.Clamp01(Exp / _currentExpToLevelUp);
         private BaseController _owner;
+        private bool _active = true;
 
         public event Action<int> OnLevelUp;
         public event Action OnLevelUpdate;
+
+        public bool Active
+        {
+            get => _active;
+            set => _active = value;
+        }
 
         private float _baseExp;
         private float _multiplier;
@@ -34,6 +41,8 @@ namespace Characters.LevelSystems
         [Button("Add Exp (Test)")]
         public void AddExp(int amount)
         {
+            if (!_active) return;
+            
             Exp += amount;
             Exp = Mathf.CeilToInt(Exp);
             OnLevelUpdate?.Invoke();
@@ -52,6 +61,7 @@ namespace Characters.LevelSystems
         {
             Level = 1;
             Exp = 0;
+            _active = true;
             UpdateExpToLevelUp();
         }
 
