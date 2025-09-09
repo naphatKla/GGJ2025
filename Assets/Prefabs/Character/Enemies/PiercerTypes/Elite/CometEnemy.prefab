@@ -484,17 +484,23 @@ MonoBehaviour:
   stopOnDisable: 0
   usePitchOverride: 0
   pitch: 1
+  timeScaleMode: 0
   sfxUseFadeIn: 0
   sfxFadeIn: 0.08
+  sfxFadeInUsesScaledTime: 0
   sfxFadeOutOnStop: 1
   sfxFadeOut: 0.1
+  sfxFadeOutUsesScaledTime: 0
   uiUseFadeIn: 0
   uiFadeIn: 0.06
+  uiFadeInUsesScaledTime: 0
   uiFadeOutOnStop: 0
   uiFadeOut: 0.08
+  uiFadeOutUsesScaledTime: 0
   overrideBgmFade: 0
   bgmFadeOut: 0.6
   bgmFadeIn: 0.6
+  bgmFadeUsesScaledTime: 0
   useTransformPosition: 1
   positionSource: {fileID: 0}
   customWorldPosition: {x: 0, y: 0, z: 0}
@@ -1223,11 +1229,11 @@ PrefabInstance:
       objectReference: {fileID: 8503638934788849431, guid: 30f91ec67bfd8a344a164a1ac6426918, type: 3}
     - target: {fileID: 1775538760653090302, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 7.5787334
+      value: -13.981194
       objectReference: {fileID: 0}
     - target: {fileID: 1775538760653090302, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.8650209
+      value: 7.5984945
       objectReference: {fileID: 0}
     - target: {fileID: 1775538760653090302, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
       propertyPath: m_LocalPosition.z
@@ -1288,6 +1294,14 @@ PrefabInstance:
     - target: {fileID: 2489850510676935044, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
       propertyPath: rectSize.y
       value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 2581598645903207821, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
+      propertyPath: m_SortingLayer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 2581598645903207821, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
+      propertyPath: m_SortingLayerID
+      value: -1451114625
       objectReference: {fileID: 0}
     - target: {fileID: 2897810046160178058, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
       propertyPath: m_Size.x
@@ -1882,6 +1896,22 @@ PrefabInstance:
     - target: {fileID: 6893798603404414412, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
       propertyPath: m_Name
       value: CometEnemyDead
+      objectReference: {fileID: 0}
+    - target: {fileID: 6947014090700330803, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.94
+      objectReference: {fileID: 0}
+    - target: {fileID: 6947014090700330803, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.94
+      objectReference: {fileID: 0}
+    - target: {fileID: 6947014090700330803, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.94
+      objectReference: {fileID: 0}
+    - target: {fileID: 6947014090700330803, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7312169751311385798, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
       propertyPath: m_Radius

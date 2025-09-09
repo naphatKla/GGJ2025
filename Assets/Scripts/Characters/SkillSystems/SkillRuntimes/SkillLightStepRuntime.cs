@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using Cameras;
 using Characters.Controllers;
 using Characters.FeedbackSystems;
 using Characters.SO.SkillDataSo;
@@ -57,8 +58,7 @@ namespace Characters.SkillSystems.SkillRuntimes
 
         protected override async UniTask OnSkillUpdate(CancellationToken cancelToken)
         {
-            PlayerController player = owner as PlayerController;
-            var camHandle = player?.CameraController.PushOrtho(15.5f, 10, this, 0.25f);
+            var camHandle = Cinemachine2DCameraController.Instance.PushOrtho(15.5f, 10, this, 0.25f);
 
             StatusEffectManager.ApplyEffectTo(owner.gameObject, skillData.EffectWhileLightStep);
 
@@ -84,9 +84,9 @@ namespace Characters.SkillSystems.SkillRuntimes
                     if (!_inGodSpeedPhase)
                     {
                         _inGodSpeedPhase = true;
-                        player?.CameraController.PushOrtho(24, 10f, this, 0.25f);
-                        player?.CameraController.CancelRequest(camHandle.Value);
-                        player?.CameraController.SetFollowTarget(null);
+                        Cinemachine2DCameraController.Instance.PushOrtho(24, 10f, this, 0.25f);
+                        Cinemachine2DCameraController.Instance.CancelRequest(camHandle);
+                        Cinemachine2DCameraController.Instance.SetFollowTarget(null);
                     }
 
                     speedMultiplier += skillData.GodSpeedPhaseSpeedStepUp / 100f;
@@ -140,8 +140,8 @@ namespace Characters.SkillSystems.SkillRuntimes
 
             if (owner is PlayerController player)
             {
-                player.CameraController.CancelByOwner(this);
-                player.CameraController.SetFollowTarget(player.transform);
+                Cinemachine2DCameraController.Instance.CancelByOwner(this);
+                Cinemachine2DCameraController.Instance.SetFollowTarget(player.transform);
             }
             
             try

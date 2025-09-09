@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using Characters.CombatSystems;
 using Characters.ComboSystem;
@@ -13,17 +12,15 @@ using Characters.StatusEffectSystems;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using Manager;
-using MoreMountains.Feedbacks;
 using MoreMountains.Tools;
 using PixelUI;
 using Sirenix.OdinInspector;
 using TMPro;
 using UI;
-using UI.IngameModal;
 using UI.IngameViewholder;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
+using Button = UnityEngine.UI.Button;
 using Random = UnityEngine.Random;
 
 // ====== เพิ่มเติม ======
@@ -85,14 +82,21 @@ namespace Characters.UIDisplay
         // ========= Solf Upgrade =========
         [FoldoutGroup("SolfUpgrade Display"), Title("Ref"), SerializeField]
         public SkillUpgradeController skillUpgradeController;
+        [FoldoutGroup("SolfUpgrade Display")][SerializeField] private int cardsPerShow = 3;
 
         [FoldoutGroup("SolfUpgrade Display"), Title("UI"), FoldoutGroup("SolfUpgrade Display")]
-        public GameObject solfUpgradePanel;
+        [FoldoutGroup("SolfUpgrade Display")]public GameObject solfUpgradePanel;
 
         [FoldoutGroup("SolfUpgrade Display")] public SolfUpgradeViewholder solfUpgradeViewholder;
+        [FoldoutGroup("SolfUpgrade Display")] public Button solfUpgradeSelectButton;
+        [FoldoutGroup("SolfUpgrade Display")] public ParticleSystem buttonFeedBack;
 
         private readonly Queue<BaseSkillDataSo> skillQueue = new();
-        private bool isChoosingSkill = false;
+        private readonly List<SolfUpgradeViewholder> _cards = new();
+
+        private SolfUpgradeViewholder _currentSelectVH;
+        private BaseSkillDataSo _currentSelect;
+        private bool isChoosingSkill;
 
         // ========= Skill Slot =========
         [FoldoutGroup("SkillSlot Display"), Title("Ref"), SerializeField]
@@ -123,6 +127,12 @@ namespace Characters.UIDisplay
         private void Start()
         {
             PlayerController.Instance.OnResetAllBehavior += UpdateAllUI;
+            if (solfUpgradeSelectButton != null)
+            {
+                solfUpgradeSelectButton.transform.DOKill();
+                solfUpgradeSelectButton.onClick.RemoveAllListeners();
+                solfUpgradeSelectButton.onClick.AddListener(() => OnConfirmPressed());
+            }
 
             if (comboStreakSystem != null)
             {
@@ -168,6 +178,8 @@ namespace Characters.UIDisplay
         private void OnDestroy()
         {
             PlayerController.Instance.OnResetAllBehavior -= UpdateAllUI;
+            if (solfUpgradeSelectButton != null)
+                solfUpgradeSelectButton.transform.DOKill();
 
             if (comboStreakSystem != null)
             {
@@ -365,7 +377,7 @@ namespace Characters.UIDisplay
 
             Transform tf = textInstance.transform;
             Vector3 p = healthSystem.transform.position;
-            Vector2 off = Random.insideUnitCircle * 1f;
+            Vector2 off = Random.insideUnitCircle * 2.65f;
             tf.position = new Vector3(p.x + off.x, p.y + off.y);
             tf.localScale = Vector3.zero;
             textInstance.text = healthChange + " HP";
@@ -389,7 +401,7 @@ namespace Characters.UIDisplay
             float fadeOutDuration = 0.3f;
             float delayBeforeFade = floatDuration - fadeOutDuration;
             float riseAmount = 0.75f;
-            float scaleIn = 1.25f;
+            float scaleIn = 1.0f;
             float settleScale = 1.0f;
             float popDuration = 0.15f;
             float settleDuration = 0.15f;
@@ -438,11 +450,12 @@ namespace Characters.UIDisplay
 
         #region Solf Upgrade
 
-        private void SolfUpgradePopup(List<BaseSkillDataSo> skillList)
+        public void SolfUpgradePopup(List<BaseSkillDataSo> skillList)
         {
-            if (skillList.Count <= 0) return;
+            if (skillList == null || skillList.Count == 0) return;
 
-            foreach (var skill in skillList) skillQueue.Enqueue(skill);
+            foreach (var skill in skillList)
+                skillQueue.Enqueue(skill);
 
             if (!isChoosingSkill)
                 ShowNextSkillPopup();
@@ -458,35 +471,40 @@ namespace Characters.UIDisplay
 
             isChoosingSkill = true;
 
-            UIManager.Instance.OpenPanel(UIPanelType.SolfUpgrade);
+            UIManager.Instance.OpenPanel(UIPanelType.SolfUpgrade).Forget();
             ClearSkillCards();
 
-            int skillsToShow = Mathf.Min(3, skillQueue.Count);
-            for (int i = 0; i < skillsToShow; i++)
+            int count = Mathf.Min(cardsPerShow, skillQueue.Count);
+            for (int i = 0; i < count; i++)
             {
                 var skill = skillQueue.Dequeue();
                 CreateSkillCard(skill).Forget();
             }
 
+            UpdateConfirmButtonState();
             PanelCardFeedback(solfUpgradePanel.transform);
         }
 
         private void ClearSkillCards()
         {
+            _currentSelectVH = null;
+            _currentSelect = null;
+
             foreach (Transform child in solfUpgradePanel.transform)
                 Destroy(child.gameObject);
+            _cards.Clear();
         }
-
+        
         private async UniTask CreateSkillCard(BaseSkillDataSo skill)
         {
             var skillcard = Instantiate(solfUpgradeViewholder.gameObject, solfUpgradePanel.transform);
-            var modal = skillcard.GetComponent<SolfUpgradeViewholder>();
+            var vh = skillcard.GetComponent<SolfUpgradeViewholder>();
+            _cards.Add(vh);
 
             bool isNew = !skillSystem.ContainsSkillWithSameRoot(skill);
-            modal.UpdateUIModal(skill, isNew);
+            vh.UpdateUIModal(skill, isNew);
+            vh.Bind(skill, isNew, HandleCardClicked);
             await SkillCardFeedback(skillcard.transform);
-
-            modal.SelectButton.onClick.AddListener(() => { OnSkillSelected(skill); });
         }
 
         private void PanelCardFeedback(Transform tf)
@@ -509,12 +527,44 @@ namespace Characters.UIDisplay
                 .AsyncWaitForCompletion();
         }
 
-        private void OnSkillSelected(BaseSkillDataSo skill)
+        private void HandleCardClicked(SolfUpgradeViewholder vh)
+        {
+            if (vh == null) return;
+            if (_currentSelectVH == vh) return;
+            if (_currentSelectVH != null) _currentSelectVH.SetSelected(false);
+            
+            _currentSelectVH = vh;
+            _currentSelect = vh.Data;
+            _currentSelectVH.SetSelected(true);
+            
+            UpdateConfirmButtonState();
+        }
+        
+        public void OnConfirmPressed()
+        {
+            if (_currentSelect == null) return;
+            OnChooseSkill(_currentSelect);
+        }
+
+        private void OnChooseSkill(BaseSkillDataSo skill)
         {
             UIManager.Instance.CloseAllPanels();
-            skillUpgradeController.SelectSkill(skill);
+            skillUpgradeController.SelectSkill(_currentSelect);
+            
             ClearSkillCards();
             ShowNextSkillPopup();
+            _currentSelect = null;
+        }
+        
+        private void UpdateConfirmButtonState()
+        {
+            if (solfUpgradeSelectButton == null) return;
+          
+            solfUpgradeSelectButton.gameObject.SetActive(_currentSelect != null);
+            var t = solfUpgradeSelectButton.transform;
+            t.DOKill();
+            t.DOPunchScale(t.localScale * 0.08f, 0.2f, 8, 0.9f).SetUpdate(true);
+            if (_currentSelect != null) buttonFeedBack.Play();
         }
 
         #endregion

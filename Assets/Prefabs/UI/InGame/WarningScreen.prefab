@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5190672055554422620}
   - component: {fileID: 8797242400186666062}
+  - component: {fileID: 9095301315336913154}
   m_Layer: 5
   m_Name: WarningScreen
   m_TagString: Untagged
@@ -51,6 +52,47 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!114 &9095301315336913154
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2730323947833459123}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9becc8a5528cea42ba9ac92fff2dae9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  category: 1
+  keyShort: WarningAlert
+  useExtraKeys: 0
+  extraKeys: []
+  volumeScale: 1
+  playOnEnable: 1
+  stopOnDisable: 0
+  usePitchOverride: 0
+  pitch: 1
+  timeScaleMode: 0
+  sfxUseFadeIn: 0
+  sfxFadeIn: 0.08
+  sfxFadeInUsesScaledTime: 0
+  sfxFadeOutOnStop: 1
+  sfxFadeOut: 0.1
+  sfxFadeOutUsesScaledTime: 0
+  uiUseFadeIn: 0
+  uiFadeIn: 0.06
+  uiFadeInUsesScaledTime: 0
+  uiFadeOutOnStop: 0
+  uiFadeOut: 0.08
+  uiFadeOutUsesScaledTime: 0
+  overrideBgmFade: 0
+  bgmFadeOut: 0.6
+  bgmFadeIn: 0.6
+  bgmFadeUsesScaledTime: 0
+  useTransformPosition: 1
+  positionSource: {fileID: 0}
+  customWorldPosition: {x: 0, y: 0, z: 0}
 --- !u!1 &3875034336598174368
 GameObject:
   m_ObjectHideFlags: 0

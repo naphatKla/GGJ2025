@@ -209,8 +209,8 @@ namespace Characters.Controllers
 
         public virtual void CancelBehaviorOnDead()
         {
-            InputSystem.Enable = true;
-            movementSystem.ResetMovementSystem();
+            InputSystem.Enable = false;
+            movementSystem.StopAllMovementAndTween();
             skillSystem.ResetSkillSystem();
             statusEffectSystem.ResetStatusEffectSystem();
             damageOnTouch.ResetDamageOnTouch();

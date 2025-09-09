@@ -1,3 +1,4 @@
+using Cameras;
 using Characters.Controllers;
 using Characters.SO.StatusEffectSO;
 
@@ -13,8 +14,8 @@ namespace Characters.StatusEffectSystems.StatusEffects
 
             if (!effectData.ExpandCamera) return;
             if (owner is not PlayerController player) return;
-            player.CameraController.PushOrtho(
-                player.CameraController.defaultOrthoSize + effectData.AdditionalExpandSize, duration, this, 0.25f);
+            Cinemachine2DCameraController.Instance.PushOrtho(
+                Cinemachine2DCameraController.Instance.defaultOrthoSize + effectData.AdditionalExpandSize, duration, this, 0.25f);
         }
 
         public override void OnUpdate(BaseController owner, float deltaTime)
@@ -30,7 +31,7 @@ namespace Characters.StatusEffectSystems.StatusEffects
 
             if (!effectData.ExpandCamera) return;
             if (owner is not PlayerController player) return;
-            player.CameraController.CancelByOwner(this);
+            Cinemachine2DCameraController.Instance.CancelByOwner(this);
         }
     }
 }

@@ -28,7 +28,7 @@ namespace GameControl.GameState
             
             if (!PlayerController.Instance.gameObject.activeInHierarchy) PlayerController.Instance.gameObject.SetActive(true);
             PlayerController.Instance.ResetAllDependentBehavior();
-            PlayerController.Instance.HealthSystem.OnDead += PlayerDeathResult;
+            PlayerController.Instance.HealthSystem.OnDeadAnimationFinish += PlayerDeathResult;
             
             CountdownStart().Forget();
         }

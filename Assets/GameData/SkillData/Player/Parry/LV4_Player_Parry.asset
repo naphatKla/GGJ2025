@@ -32,40 +32,32 @@ MonoBehaviour:
       Data: 
   skillIcon: {fileID: 21300000, guid: 4e172c3d6cf32704e9db569f5138820d, type: 3}
   skillName: Parry
-  skillDescription: 'Enable a magnetic field barrier for 0.5 seconds to parry incoming
-    damage. <color=#FF5F1F><b>On a successful parry</b></color>, release a burst
-    of Anergy in a <color=#FFD700><b>radius of 14.8 unit</b></color> around the ship,
-    <color=#FF0000><b>dealing 63.75 damage</b></color> and applying <color=#CF9FFF>knockback</b></color>
-    and <color=#CF9FFF>stun</b></color> to all enemies within the radius.
-
-    
-
-    <color=#CF9FFF><b>Knockback</b></color>
-    : Push the enemy away by <color=#FFD700><b>9.6 units</b></color>.
-
-    <color=#CF9FFF><b>Stun</b></color>
-    : Unable to perform any actions for <color=#FFD700><b>0.5 seconds</b></color>.
-
-    
-
-    Cooldown:
-    <color=#DBDBDB><b>4 sec</b></color>.'
+  skillDescription: "<color=#FFD700><b>[Parry]</b></color>\r\n<color=#adadad><i>[AOE],
+    [Knockback], [Stun]</i></color>\r\n- Activate a barrier to <color=#FFE02E>Parry</color>
+    incoming damage. \r\n- <color=#FFE02E>Successfully</color> parrying stuns and
+    knocks back enemies around the ship.\r\n\nSkills stats\r\nDamage: <color=#899499>51</color>
+    \u2192 <color=#FFE02E>63.75</color>\r\nBarrier duration: <color=#899499>0.5</color>
+    \u2192 <color=#FFE02E>0.5s</color>\r\nBurst radius: <color=#899499>13.2</color>
+    \u2192 <color=#FFE02E>14.8 units</color>\r\nKnockback: <color=#899499>8</color>
+    \u2192 <color=#FFE02E>8 units</color>\r\nStun: <color=#899499>0.5</color> \u2192
+    <color=#FFE02E>0.5s</color>\r\nCooldown: <color=#899499>4.5</color> \u2192 <color=#FFE02E>4s</color>"
   previousSkillData: {fileID: 11400000, guid: bb860ce7882e6824fa12c3cf2461b0d0, type: 2}
   nextSkillDataUpgrade: {fileID: 11400000, guid: 4f8bf3e8d28d4794d8605787d1cfa472, type: 2}
   level: 4
   cooldown: 4
   startFeedback: ParryUse_Lv4
   exitFeedback: 
+  clearBuffOnSkillExit: 0
   statusEffectOnSkillStart:
   - effectData: {fileID: 11400000, guid: aa4dff95f38494c4e876f8f95511ecf0, type: 2}
     isOverrideDuration: 1
     overrideDuration: 0.55
   explosionBaseDamage: 0
-  explosionDamageMultiplier: 375
-  explosionRadius: 14.8
+  explosionDamageMultiplier: 435
+  explosionRadius: 9.6
   stopWhileParry: 0
   parryDuration: 0.5
-  knockBackDistance: 9.6
+  knockBackDistance: 9.2
   knockBackDuration: 0.25
   parrySuccessFeedback: ParrySuccess_Lv4
   explosionEffectsToTarget:
