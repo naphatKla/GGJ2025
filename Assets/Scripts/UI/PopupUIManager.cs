@@ -29,6 +29,10 @@ namespace UI
 
         [FoldoutGroup("$popupId")] [Tooltip("ถ้ากำลังแสดงอยู่ แล้วถูกเรียกซ้ำให้รีสตาร์ทเวลา")]
         public bool restartIfAlreadyVisible = true;
+
+        [FoldoutGroup("$popupId")]
+        [Tooltip("ถ้าเปิดไว้ Popup นี้จะแสดงซ้อนกับตัวอื่นได้ทันที (ไม่เข้าคิว)")]
+        public bool allowOverlayStack = false;
     }
 
     public class PopupUIManager : NonAutoCreateSingleton<PopupUIManager>
@@ -70,7 +74,7 @@ namespace UI
             _scopeCts = new CancellationTokenSource();
             BuildRegistry();
         }
-        
+
         private void OnEnable()
         {
             SceneManager.activeSceneChanged += OnSceneChanged;
@@ -92,7 +96,7 @@ namespace UI
 
             base.OnDestroy();
         }
-        
+
         private void OnSceneChanged(Scene oldScene, Scene newScene)
         {
             _scopeCts?.Cancel();
@@ -113,7 +117,7 @@ namespace UI
                 DOTween.Kill(go, complete: false);
                 go.SetActive(false);
             }
-            
+
             var dead = new List<string>();
             foreach (var kv in _instances) if (!kv.Value) dead.Add(kv.Key);
             foreach (var k in dead) _instances.Remove(k);
@@ -179,8 +183,8 @@ namespace UI
             bool bypassStack = false, bool playTransition = true)
         {
             if (string.IsNullOrWhiteSpace(popupId) || !_entryMap.TryGetValue(popupId, out var entry)) return;
-
-            if (bypassStack)
+            
+            if (bypassStack || entry.allowOverlayStack)
             {
                 ShowNowAsync(entry, setup, durationSec, playTransition).Forget();
                 return;
@@ -254,6 +258,7 @@ namespace UI
                 }
             }
 
+            // ให้ขึ้นบนสุดเสมอ (จะได้ซ้อนได้จริง)
             go.transform.SetAsLastSibling();
 
             if (!go.activeSelf) go.SetActive(true);
@@ -337,6 +342,12 @@ namespace UI
                 {
                     var req = _queue.Dequeue();
                     if (!_entryMap.TryGetValue(req.id, out var entry)) continue;
+                    
+                    if (entry.allowOverlayStack)
+                    {
+                        ShowNowAsync(entry, req.setup, req.duration, req.playTransition).Forget();
+                        continue;
+                    }
 
                     _exclusiveActiveId = req.id;
 
