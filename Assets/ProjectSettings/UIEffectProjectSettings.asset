@@ -384,13 +384,25 @@ ShaderVariantCollection:
         passType: 0
       - keywords: COLOR_FILTER EDGE_SHINY
         passType: 0
+      - keywords: COLOR_FILTER GRADATION_COLOR2 TRANSITION_BURN
+        passType: 0
       - keywords: COLOR_FILTER GRADATION_GRADIENT
+        passType: 0
+      - keywords: COLOR_FILTER GRADATION_GRADIENT SAMPLING_EDGE_ALPHA TRANSITION_BURN
+        passType: 0
+      - keywords: COLOR_FILTER GRADATION_GRADIENT SAMPLING_EDGE_LUMINANCE TRANSITION_BURN
+        passType: 0
+      - keywords: COLOR_FILTER GRADATION_GRADIENT SAMPLING_RGB_SHIFT TRANSITION_BURN
+        passType: 0
+      - keywords: COLOR_FILTER GRADATION_GRADIENT TRANSITION_BURN
         passType: 0
       - keywords: COLOR_FILTER GRADATION_GRADIENT TRANSITION_PATTERN
         passType: 0
       - keywords: COLOR_FILTER GRADATION_GRADIENT TRANSITION_SHINY
         passType: 0
       - keywords: COLOR_FILTER SAMPLING_RGB_SHIFT TRANSITION_SHINY
+        passType: 0
+      - keywords: COLOR_FILTER TRANSITION_BURN
         passType: 0
       - keywords: COLOR_FILTER TRANSITION_SHINY
         passType: 0
@@ -439,6 +451,16 @@ ShaderVariantCollection:
       - keywords: SAMPLING_RGB_SHIFT TRANSITION_SHINY
         passType: 0
       - keywords: TRANSITION_BLAZE
+        passType: 0
+      - keywords: TRANSITION_BURN
+        passType: 0
+      - keywords: TRANSITION_CUTOFF
+        passType: 0
+      - keywords: TRANSITION_DISSOLVE
+        passType: 0
+      - keywords: TRANSITION_MASK
+        passType: 0
+      - keywords: TRANSITION_MELT
         passType: 0
       - keywords: TRANSITION_PATTERN
         passType: 0

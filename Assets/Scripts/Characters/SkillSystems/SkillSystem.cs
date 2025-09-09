@@ -36,7 +36,7 @@ namespace Characters.SkillSystems
         /// </summary>
         public event Action<int, float> OnSlotCooldownSpeedChanged;
 
-        public event Action<int> OnSkillPerform;
+        public event Action<BaseSkillDataSo, int> OnSkillPerform;
 
         protected BaseSkillDataSo primarySkillData;
         protected BaseSkillDataSo secondarySkillData;
@@ -298,7 +298,7 @@ namespace Characters.SkillSystems
                 else if (type == SkillType.AutoSkill)
                     TotalAutoSkillUsed++;
 
-                OnSkillPerform?.Invoke(index);
+                OnSkillPerform?.Invoke(newSkillData, index);
             };
 
             OnNewSkillAssign?.Invoke(newSkillData, index);

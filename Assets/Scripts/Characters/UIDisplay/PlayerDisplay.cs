@@ -59,6 +59,10 @@ namespace Characters.UIDisplay
 
         [FoldoutGroup("Combat Display"), SerializeField]
         private TextMeshProUGUI worldTextUIPrefab;
+        
+        // ========= UI Feedback =========
+        [FoldoutGroup("Feedback UI Display"), SerializeField]
+        private TextMeshProUGUI worldTextUIFeedbackPrefab;
 
         // ========= Level =========
         [FoldoutGroup("Level Display"), Title("Ref"), SerializeField]
@@ -171,6 +175,9 @@ namespace Characters.UIDisplay
 
             PoolingManager.Instance.Create<TextMeshProUGUI>(worldTextUIPrefab.name, PoolingGroupName.UI,
                 CreateDamageText);
+            
+            PoolingManager.Instance.Create<TextMeshProUGUI>(worldTextUIFeedbackPrefab.name, PoolingGroupName.UI,
+                CreateFeedbackText);
 
             UpdateAllUI();
         }
@@ -313,6 +320,11 @@ namespace Characters.UIDisplay
         private TextMeshProUGUI CreateDamageText()
         {
             return Instantiate(worldTextUIPrefab);
+        }
+        
+        private TextMeshProUGUI CreateFeedbackText()
+        {
+            return Instantiate(worldTextUIFeedbackPrefab);
         }
 
         private void UpdateDamageText(DamageData damageData)
@@ -580,12 +592,12 @@ namespace Characters.UIDisplay
             ResetSkillSlot(skillIndex);
         }
 
-        private void SkillPerfrom(int skillIndex)
+        private void SkillPerfrom(BaseSkillDataSo skilldata,int skillIndex)
         {
             if (skillIndex < 0 || skillIndex >= skillSlotModel.Count) return;
             if (skillSlotModel[skillIndex] == null) return;
 
-            SkillPlayFeedback(skillSlotModel[skillIndex].transform, skillSlotModel[skillIndex].skillframe);
+            SkillPlayFeedback(skilldata, skillIndex);
         }
 
         private void UpdateCooldownSlot(float maxCooldown, float progression, int skillIndex)
@@ -608,11 +620,59 @@ namespace Characters.UIDisplay
             skillSlotModel[skillIndex].ResetSkillSlot();
         }
 
-        private void SkillPlayFeedback(Transform tf, Image skillframe)
+        private void SkillPlayFeedback(BaseSkillDataSo skillDataSo, int skillIndex )
         {
-            /*var seq = DOTween.Sequence();
-            seq.Append(tf.DOScale(new Vector3(tf.localScale.x + -0.05f, tf.localScale.y + -0.05f, 1), 0.15f)
-                .SetLoops(2, LoopType.Yoyo));*/
+            if (skillIndex > 1)
+            {
+                UpdateFeedbackText(skillDataSo);
+            }
+        }
+        
+        private void UpdateFeedbackText(BaseSkillDataSo skillDataSo)
+        {
+            var textInstance = PoolingManager.Instance.Get<TextMeshProUGUI>(worldTextUIFeedbackPrefab.name);
+
+            // Reset & Prepare
+            Transform tf = textInstance.transform;
+            tf.position = PlayerController.Instance.transform.position;
+            tf.localScale = Vector3.zero;
+            textInstance.text = skillDataSo.SkillName;
+            textInstance.color = Color.white;
+
+            // CanvasGroup for fade
+            var canvasGroup = textInstance.GetComponent<CanvasGroup>();
+            if (canvasGroup == null)
+                canvasGroup = textInstance.gameObject.AddComponent<CanvasGroup>();
+            canvasGroup.alpha = 1;
+            tf.SetAsLastSibling();
+
+            textInstance.gameObject.SetActive(true);
+
+            // === Animation Settings ===
+            float floatDuration = 1f;
+            float fadeOutDuration = 0.25f;
+            float delayBeforeFade = floatDuration - fadeOutDuration;
+
+            float riseAmount = 1.4f;
+            float scaleIn =1.4f;
+            float settleScale = 1.0f;
+            float popDuration = 0.15f;
+            float settleDuration = 0.15f;
+
+            DOTween.Kill(tf);
+            DOTween.Kill(canvasGroup);
+
+            var seq = DOTween.Sequence();
+            seq.Append(tf.DOScale(scaleIn, popDuration).SetEase(Ease.OutBack))
+                .Append(tf.DOScale(settleScale, settleDuration).SetEase(Ease.InOutSine))
+                .Join(tf.DOMoveY(tf.position.y + riseAmount, floatDuration).SetEase(Ease.OutQuad))
+                .AppendInterval(delayBeforeFade)
+                .Append(canvasGroup.DOFade(0, fadeOutDuration))
+                .AppendCallback(() =>
+                {
+                    textInstance.gameObject.SetActive(false);
+                    PoolingManager.Current?.Release(worldTextUIPrefab.name, textInstance);
+                });
         }
 
         private Sequence _skillResetSequence;
