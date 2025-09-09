@@ -62,7 +62,10 @@ namespace Characters.UIDisplay
         
         // ========= UI Feedback =========
         [FoldoutGroup("Feedback UI Display"), SerializeField]
-        private TextMeshProUGUI worldTextUIFeedbackPrefab;
+        private TextMeshProUGUI worldTextUISkillFeedbackPrefab;
+        
+        [FoldoutGroup("Feedback UI Display"), SerializeField]
+        private TextMeshProUGUI worldTextUIParryFeedbackPrefab;
 
         // ========= Level =========
         [FoldoutGroup("Level Display"), Title("Ref"), SerializeField]
@@ -167,6 +170,7 @@ namespace Characters.UIDisplay
             skillSystem.OnSkillPerform += SkillPerfrom;
             skillSystem.OnSlotCooldownSpeedChanged += OverloopFeedback;
             skillSystem.OnSkillPerformFail += NotifySkillPerformFail;
+            skillSystem.OnSecondarySuccess += UpdateParryFeedbackText;
 
             combatSystem.OnDealDamage += UpdateDamageText;
             scoreSystem.OnScoreChange += UpdateScoreUI;
@@ -176,9 +180,12 @@ namespace Characters.UIDisplay
             PoolingManager.Instance.Create<TextMeshProUGUI>(worldTextUIPrefab.name, PoolingGroupName.UI,
                 CreateDamageText);
             
-            PoolingManager.Instance.Create<TextMeshProUGUI>(worldTextUIFeedbackPrefab.name, PoolingGroupName.UI,
+            PoolingManager.Instance.Create<TextMeshProUGUI>(worldTextUISkillFeedbackPrefab.name, PoolingGroupName.UI,
                 CreateFeedbackText);
 
+            PoolingManager.Instance.Create<TextMeshProUGUI>(worldTextUIParryFeedbackPrefab.name, PoolingGroupName.UI,
+                CreateParryFeedbackText);
+            
             UpdateAllUI();
         }
 
@@ -575,6 +582,62 @@ namespace Characters.UIDisplay
         }
 
         #endregion
+        
+        #region Parry Success
+        
+        private TextMeshProUGUI CreateParryFeedbackText()
+        {
+            return Instantiate(worldTextUIParryFeedbackPrefab);
+        }
+        
+        private void UpdateParryFeedbackText(BaseSkillDataSo skillDataSo)
+        {
+            var textInstance = PoolingManager.Instance.Get<TextMeshProUGUI>(worldTextUIParryFeedbackPrefab.name);
+
+            // Reset & Prepare
+            Transform tf = textInstance.transform;
+            tf.position = PlayerController.Instance.transform.position;
+            tf.localScale = Vector3.zero;
+            textInstance.text = "PARRY SUCCESS!";
+            textInstance.color = Color.white;
+
+            // CanvasGroup for fade
+            var canvasGroup = textInstance.GetComponent<CanvasGroup>();
+            if (canvasGroup == null)
+                canvasGroup = textInstance.gameObject.AddComponent<CanvasGroup>();
+            canvasGroup.alpha = 1;
+            tf.SetAsLastSibling();
+
+            textInstance.gameObject.SetActive(true);
+
+            // === Animation Settings ===
+            float floatDuration = 1f;
+            float fadeOutDuration = 0.25f;
+            float delayBeforeFade = floatDuration - fadeOutDuration;
+
+            float riseAmount = 1.4f;
+            float scaleIn =1.4f;
+            float settleScale = 1.0f;
+            float popDuration = 0.15f;
+            float settleDuration = 0.15f;
+
+            DOTween.Kill(tf);
+            DOTween.Kill(canvasGroup);
+
+            var seq = DOTween.Sequence();
+            seq.Append(tf.DOScale(scaleIn, popDuration).SetEase(Ease.OutBack))
+                .Append(tf.DOScale(settleScale, settleDuration).SetEase(Ease.InOutSine))
+                .Join(tf.DOMoveY(tf.position.y + riseAmount, floatDuration).SetEase(Ease.OutQuad))
+                .AppendInterval(delayBeforeFade)
+                .Append(canvasGroup.DOFade(0, fadeOutDuration))
+                .AppendCallback(() =>
+                {
+                    textInstance.gameObject.SetActive(false);
+                    PoolingManager.Current?.Release(worldTextUIParryFeedbackPrefab.name, textInstance);
+                });
+        }
+        
+        #endregion
 
         #region Skill Slot
 
@@ -625,12 +688,12 @@ namespace Characters.UIDisplay
         
         private TextMeshProUGUI CreateFeedbackText()
         {
-            return Instantiate(worldTextUIFeedbackPrefab);
+            return Instantiate(worldTextUISkillFeedbackPrefab);
         }
         
         private void UpdateFeedbackText(BaseSkillDataSo skillDataSo)
         {
-            var textInstance = PoolingManager.Instance.Get<TextMeshProUGUI>(worldTextUIFeedbackPrefab.name);
+            var textInstance = PoolingManager.Instance.Get<TextMeshProUGUI>(worldTextUISkillFeedbackPrefab.name);
 
             // Reset & Prepare
             Transform tf = textInstance.transform;
@@ -671,7 +734,7 @@ namespace Characters.UIDisplay
                 .AppendCallback(() =>
                 {
                     textInstance.gameObject.SetActive(false);
-                    PoolingManager.Current?.Release(worldTextUIFeedbackPrefab.name, textInstance);
+                    PoolingManager.Current?.Release(worldTextUISkillFeedbackPrefab.name, textInstance);
                 });
         }
 
