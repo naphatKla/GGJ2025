@@ -322,11 +322,6 @@ namespace Characters.UIDisplay
             return Instantiate(worldTextUIPrefab);
         }
         
-        private TextMeshProUGUI CreateFeedbackText()
-        {
-            return Instantiate(worldTextUIFeedbackPrefab);
-        }
-
         private void UpdateDamageText(DamageData damageData)
         {
             var textInstance = PoolingManager.Instance.Get<TextMeshProUGUI>(worldTextUIPrefab.name);
@@ -626,6 +621,11 @@ namespace Characters.UIDisplay
             {
                 UpdateFeedbackText(skillDataSo);
             }
+        }
+        
+        private TextMeshProUGUI CreateFeedbackText()
+        {
+            return Instantiate(worldTextUIFeedbackPrefab);
         }
         
         private void UpdateFeedbackText(BaseSkillDataSo skillDataSo)

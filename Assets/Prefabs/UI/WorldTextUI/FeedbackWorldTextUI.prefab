@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 7688672618728680710}
   - component: {fileID: 1608161545710376915}
   m_Layer: 5
-  m_Name: WorldTextUI_Text
+  m_Name: FeedbackWorldTextUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -69,8 +69,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: XXXXX
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 2dc7aeb059816db4192dac5f7d09c010, type: 2}
-  m_sharedMaterial: {fileID: 3646004497337031475, guid: 2dc7aeb059816db4192dac5f7d09c010, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 9020c5996700fc549b8086c191596a79, type: 2}
+  m_sharedMaterial: {fileID: 3646004497337031475, guid: 9020c5996700fc549b8086c191596a79, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -155,11 +155,11 @@ MonoBehaviour:
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_ColorGlow: 0
   m_SamplingFilter: 5
-  m_SamplingIntensity: 0.7927166
+  m_SamplingIntensity: 0.032835443
   m_SamplingWidth: 1
   m_SamplingScale: 1
   m_TransitionFilter: 7
-  m_TransitionRate: 0.7927166
+  m_TransitionRate: 0.032835443
   m_TransitionReverse: 0
   m_TransitionTex: {fileID: 2800000, guid: 3a87e98e830a24617ab95c19122cb1e0, type: 3}
   m_TransitionTexScale: {x: 1, y: 1}
@@ -168,7 +168,7 @@ MonoBehaviour:
   m_TransitionRotation: 60
   m_TransitionKeepAspectRatio: 1
   m_TransitionWidth: 0.67
-  m_TransitionSoftness: 0.21
+  m_TransitionSoftness: 0.3
   m_TransitionRange:
     m_Min: 0
     m_Max: 1
@@ -260,7 +260,7 @@ MonoBehaviour:
     m_ColorSpace: 0
     m_NumColorKeys: 2
     m_NumAlphaKeys: 2
-  m_GradationOffset: 0.58543324
+  m_GradationOffset: -0.9343291
   m_GradationScale: 0.024646342
   m_GradationRotation: 319.83652
   m_GradationWrapMode: 2
@@ -314,10 +314,19 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
+      time: 0.9476918
+      value: 0.3628107
+      inSlope: 1.4997822
+      outSlope: 1.4997822
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
       time: 1
       value: 1
-      inSlope: 2
-      outSlope: 2
+      inSlope: 0
+      outSlope: 0
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
@@ -350,13 +359,13 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  m_Delay: 0
-  m_Duration: 5
+  m_Delay: 1
+  m_Duration: 4
   m_Interval: 0
-  m_PlayOnEnable: 1
+  m_PlayOnEnable: 2
   m_ResetTimeOnEnable: 1
   m_WrapMode: 0
-  m_UpdateMode: 1
+  m_UpdateMode: 0
   m_OnComplete:
     m_PersistentCalls:
       m_Calls: []
