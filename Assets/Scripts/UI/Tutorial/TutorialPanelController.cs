@@ -32,11 +32,11 @@ namespace UI.Tutorial
         private void Start()
         {
             // PlayerPrefs.DeleteAll(); // ใช้เฉพาะตอนทดสอบ
-            if (PlayerPrefs.GetInt("HasSeenTutorial", 0) == 1)
+            /*if (PlayerPrefs.GetInt("HasSeenTutorial", 0) == 1)
             {
                 gameObject.SetActive(false);
                 return;
-            }
+            }*/
 
             GeneratePages();
             GenerateIndicators();

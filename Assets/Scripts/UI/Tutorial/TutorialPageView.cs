@@ -11,7 +11,7 @@ namespace UI.Tutorial
         [Header("UI Refs")]
         [SerializeField] private TMP_Text titleText;
         [SerializeField] private TMP_Text descriptionText;
-        [SerializeField] private Image image;   // ใช้ตัวลูกชื่อ "Image" เดิมได้เลย
+        [SerializeField] private Image image;
 
         private TutorialPageData data;
         private TMP_FontAsset titleFont, bodyFont;
