@@ -671,7 +671,7 @@ namespace Characters.UIDisplay
                 .AppendCallback(() =>
                 {
                     textInstance.gameObject.SetActive(false);
-                    PoolingManager.Current?.Release(worldTextUIPrefab.name, textInstance);
+                    PoolingManager.Current?.Release(worldTextUIFeedbackPrefab.name, textInstance);
                 });
         }
 

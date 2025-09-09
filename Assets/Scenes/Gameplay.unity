@@ -4965,6 +4965,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 2016555332}
   - {fileID: 1669532776}
   - {fileID: 1633799294}
   - {fileID: 1538648925}
@@ -4974,7 +4975,6 @@ RectTransform:
   - {fileID: 982171196}
   - {fileID: 500197488}
   - {fileID: 904682608}
-  - {fileID: 2016555332}
   m_Father: {fileID: 747525725}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -13944,6 +13944,7 @@ MonoBehaviour:
     appearTransition: {fileID: 11400000, guid: 2cc4c473f4dfa9242b28372ebe121788, type: 2}
     disappearTransition: {fileID: 11400000, guid: 2cc4c473f4dfa9242b28372ebe121788, type: 2}
     restartIfAlreadyVisible: 1
+    allowOverlayStack: 1
   popupContainer: {fileID: 1821467392}
 --- !u!1001 &1072374230
 PrefabInstance:
