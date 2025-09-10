@@ -12,6 +12,7 @@ using Characters.StatusEffectSystems;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using Manager;
+using Manager.SoundManager;
 using MoreMountains.Tools;
 using PixelUI;
 using Sirenix.OdinInspector;
@@ -736,6 +737,8 @@ namespace Characters.UIDisplay
                     textInstance.gameObject.SetActive(false);
                     PoolingManager.Current?.Release(worldTextUISkillFeedbackPrefab.name, textInstance);
                 });
+
+            SoundManager.Instance.PlayUI(SoundName.UI.Gameplay_SkillNotify);
         }
 
         private Sequence _skillResetSequence;

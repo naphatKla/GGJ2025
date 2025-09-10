@@ -56,8 +56,10 @@ namespace Manager.SoundManager
             public const string Notification = Group + "/" + nameof(Notification);
             public const string Reward       = Group + "/" + nameof(Reward);
             public const string Error        = Group + "/" + nameof(Error);
-            public const string CountDown5Sec        = Group + "/" + nameof(CountDown5Sec);
-            public const string WarningAlert = Group + "/" + nameof(WarningAlert);
+            public const string CardSelection = Group + "/" + nameof(CardSelection);
+            public const string Gameplay_CountDown5Sec        = Group + "/" + nameof(Gameplay_CountDown5Sec);
+            public const string Gameplay_WarningAlert = Group + "/" + nameof(Gameplay_WarningAlert);
+            public const string Gameplay_SkillNotify = Group + "/" + nameof(Gameplay_SkillNotify);
         }
 
         public static class BGM
