@@ -16,6 +16,7 @@ namespace UI.IngameViewholder
         [SerializeField] public Image skillframe;
         [SerializeField] public TMP_Text skillslotLv;
         [SerializeField] public GameObject skillLvBanner;
+        [SerializeField] public ParticleSystem cooldownFinishParticle;
         
         [SerializeField] private Dictionary<float, GameObject> VFXPrefabs;
         private Dictionary<float, GameObject> OverloopVFX;
@@ -28,6 +29,11 @@ namespace UI.IngameViewholder
             skillslotLv.text = $"LV.<color=#FFD700>{level:F0}</color>";
             cooldownText.text = "";
             skillIcon.sprite = skill.SkillIcon;
+        }
+        
+        public void PlayCooldownFinishFeedback()
+        {
+            cooldownFinishParticle.Play();
         }
         
         public void ResetSkillSlot()

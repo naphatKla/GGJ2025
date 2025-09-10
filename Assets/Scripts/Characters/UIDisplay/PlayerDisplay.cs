@@ -674,9 +674,11 @@ namespace Characters.UIDisplay
         {
             if (skillIndex < 0 || skillIndex >= skillSlotModel.Count) return;
             if (skillSlotModel[skillIndex] == null) return;
-
+            
             SkillResetFeedback(skillSlotModel[skillIndex].transform, skillSlotModel[skillIndex].skillframe);
             skillSlotModel[skillIndex].ResetSkillSlot();
+            
+            if (skillIndex != 0) skillSlotModel[skillIndex].PlayCooldownFinishFeedback();
         }
 
         private void SkillPlayFeedback(BaseSkillDataSo skillDataSo, int skillIndex )
