@@ -149,6 +149,8 @@ GameObject:
   - component: {fileID: 1745293259716151571}
   - component: {fileID: 5454079190084469490}
   - component: {fileID: 6489342559956912764}
+  - component: {fileID: 2303008321953931725}
+  - component: {fileID: 5081339083380702784}
   m_Layer: 5
   m_Name: SolfUpgradeButton
   m_TagString: Untagged
@@ -272,10 +274,34 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   OnSelected:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 2303008321953931725}
+        m_TargetAssemblyTypeName: Feedbacks.SoundPlayer, Assembly-CSharp
+        m_MethodName: Play
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   OnPointerEntered:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 5081339083380702784}
+        m_TargetAssemblyTypeName: Feedbacks.SoundPlayer, Assembly-CSharp
+        m_MethodName: Play
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   OnPointerExited:
     m_PersistentCalls:
       m_Calls: []
@@ -506,3 +532,85 @@ MonoBehaviour:
   m_OnChangedRate:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &2303008321953931725
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8890227828467179191}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9becc8a5528cea42ba9ac92fff2dae9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  category: 1
+  keyShort: Click
+  useExtraKeys: 0
+  extraKeys: []
+  volumeScale: 1
+  playOnEnable: 0
+  stopOnDisable: 0
+  usePitchOverride: 0
+  pitch: 1
+  timeScaleMode: 0
+  sfxUseFadeIn: 0
+  sfxFadeIn: 0.08
+  sfxFadeInUsesScaledTime: 0
+  sfxFadeOutOnStop: 1
+  sfxFadeOut: 0.1
+  sfxFadeOutUsesScaledTime: 0
+  uiUseFadeIn: 0
+  uiFadeIn: 0.06
+  uiFadeInUsesScaledTime: 0
+  uiFadeOutOnStop: 0
+  uiFadeOut: 0.08
+  uiFadeOutUsesScaledTime: 0
+  overrideBgmFade: 0
+  bgmFadeOut: 0.6
+  bgmFadeIn: 0.6
+  bgmFadeUsesScaledTime: 0
+  useTransformPosition: 1
+  positionSource: {fileID: 0}
+  customWorldPosition: {x: 0, y: 0, z: 0}
+--- !u!114 &5081339083380702784
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8890227828467179191}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9becc8a5528cea42ba9ac92fff2dae9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  category: 1
+  keyShort: Hover
+  useExtraKeys: 0
+  extraKeys: []
+  volumeScale: 1
+  playOnEnable: 0
+  stopOnDisable: 0
+  usePitchOverride: 0
+  pitch: 1
+  timeScaleMode: 0
+  sfxUseFadeIn: 0
+  sfxFadeIn: 0.08
+  sfxFadeInUsesScaledTime: 0
+  sfxFadeOutOnStop: 1
+  sfxFadeOut: 0.1
+  sfxFadeOutUsesScaledTime: 0
+  uiUseFadeIn: 0
+  uiFadeIn: 0.06
+  uiFadeInUsesScaledTime: 0
+  uiFadeOutOnStop: 0
+  uiFadeOut: 0.08
+  uiFadeOutUsesScaledTime: 0
+  overrideBgmFade: 0
+  bgmFadeOut: 0.6
+  bgmFadeIn: 0.6
+  bgmFadeUsesScaledTime: 0
+  useTransformPosition: 1
+  positionSource: {fileID: 0}
+  customWorldPosition: {x: 0, y: 0, z: 0}
