@@ -528,7 +528,7 @@ namespace Characters.UIDisplay
             var seq = DOTween.Sequence();
             seq.Append(tf.DOLocalMove(new Vector3(0, 0, 0), 0.7f).SetEase(Ease.OutBack))
                 .Join(tf.DOShakeRotation(0.7f, 0f, vibrato: 10, randomness: 90).SetEase(Ease.OutBack))
-                .Join(tf.DOScale(1.325f, 0.2f).SetEase(Ease.InOutSine))
+                .Join(tf.DOScale(1.125f, 0.2f).SetEase(Ease.InOutSine))
                 .Append(tf.DOScale(1f, 0.15f))
                 .Append(tf.DOShakePosition(0.2f, 10f, vibrato: 10, randomness: 40))
                 .SetUpdate(true);
@@ -697,6 +697,8 @@ namespace Characters.UIDisplay
         private void UpdateFeedbackText(BaseSkillDataSo skillDataSo)
         {
             var textInstance = PoolingManager.Instance.Get<TextMeshProUGUI>(worldTextUISkillFeedbackPrefab.name);
+            PopupUIManager.Instance.ShowPopup("SkillTopPullup", 6f);
+            PopupUIManager.Instance.ShowPopup("SkillBottomPullup", 6f);
 
             // Reset & Prepare
             Transform tf = textInstance.transform;
