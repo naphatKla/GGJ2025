@@ -36,11 +36,6 @@ namespace UI
         [FoldoutGroup("$popupId")] [Tooltip("ถ้ากำลังแสดงอยู่ แล้วถูกเรียกซ้ำให้รีสตาร์ทเวลา")]
         public bool restartIfAlreadyVisible = true;
 
-        [FoldoutGroup("$popupId")]
-        [Tooltip("ถ้า Popup แสดงอยู่และสั่งแสดงซ้ำโดยรีสตาร์ทเวลา: ไม่เล่น appear transition อีกรอบ")]
-        [ShowIf("restartIfAlreadyVisible")]
-        public bool skipAppearOnTimerRestart = true;
-
         [FoldoutGroup("$popupId")] [Tooltip("ถ้าเปิดไว้ Popup นี้จะแสดงซ้อนกับตัวอื่นได้ทันที (ไม่เข้าคิว)")]
         public bool allowOverlayStack;
 
@@ -269,14 +264,12 @@ namespace UI
             setup?.Invoke(go);
 
             var alreadyVisible = go.activeSelf;
-            var skipAppear = false;
-
+          
             if (alreadyVisible)
             {
                 if (entry.restartIfAlreadyVisible)
                 {
                     KillTimer(entry.popupId);
-                    skipAppear = entry.skipAppearOnTimerRestart;
                 }
                 else
                 {
@@ -289,9 +282,7 @@ namespace UI
 
             if (!go.activeSelf) go.SetActive(true);
 
-            if (!skipAppear) DOTween.Kill(go);
-
-            if (playTransition && entry.appearTransition != null && !skipAppear)
+            if (playTransition && entry.appearTransition != null)
             {
                 using var linked = CancellationTokenSource.CreateLinkedTokenSource(
                     destroyCancellationToken, go.GetCancellationTokenOnDestroy());
