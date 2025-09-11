@@ -11,6 +11,12 @@ using UnityEngine.SceneManagement;
 
 namespace UI
 {
+    public enum TimeScaleType
+    {
+        Scaled = 0,
+        Unscaled = 1
+    }
+
     [Serializable]
     public class PopupEntry
     {
@@ -31,8 +37,16 @@ namespace UI
         public bool restartIfAlreadyVisible = true;
 
         [FoldoutGroup("$popupId")]
-        [Tooltip("ถ้าเปิดไว้ Popup นี้จะแสดงซ้อนกับตัวอื่นได้ทันที (ไม่เข้าคิว)")]
-        public bool allowOverlayStack = false;
+        [Tooltip("ถ้า Popup แสดงอยู่และสั่งแสดงซ้ำโดยรีสตาร์ทเวลา: ไม่เล่น appear transition อีกรอบ")]
+        [ShowIf("restartIfAlreadyVisible")]
+        public bool skipAppearOnTimerRestart = true;
+
+        [FoldoutGroup("$popupId")] [Tooltip("ถ้าเปิดไว้ Popup นี้จะแสดงซ้อนกับตัวอื่นได้ทันที (ไม่เข้าคิว)")]
+        public bool allowOverlayStack;
+
+        [FoldoutGroup("$popupId")]
+        [Tooltip("ชนิดเวลาที่ใช้กับตัวนับ auto-hide: Scaled จะอิง Time.timeScale, Unscaled จะไม่อิง")]
+        public TimeScaleType timeScale = TimeScaleType.Scaled;
     }
 
     public class PopupUIManager : NonAutoCreateSingleton<PopupUIManager>
@@ -85,7 +99,10 @@ namespace UI
             SceneManager.activeSceneChanged -= OnSceneChanged;
         }
 
-        private void OnApplicationQuit() => _isQuitting = true;
+        private void OnApplicationQuit()
+        {
+            _isQuitting = true;
+        }
 
         protected override void OnDestroy()
         {
@@ -107,19 +124,26 @@ namespace UI
 
         private void ForceClearAllNow()
         {
-            foreach (var kv in _timers) { kv.Value.Cancel(); kv.Value.Dispose(); }
+            foreach (var kv in _timers)
+            {
+                kv.Value.Cancel();
+                kv.Value.Dispose();
+            }
+
             _timers.Clear();
 
             foreach (var kv in _instances)
             {
                 var go = kv.Value;
                 if (!go) continue;
-                DOTween.Kill(go, complete: false);
+                DOTween.Kill(go, false);
                 go.SetActive(false);
             }
 
             var dead = new List<string>();
-            foreach (var kv in _instances) if (!kv.Value) dead.Add(kv.Key);
+            foreach (var kv in _instances)
+                if (!kv.Value)
+                    dead.Add(kv.Key);
             foreach (var k in dead) _instances.Remove(k);
 
             _queue.Clear();
@@ -183,7 +207,7 @@ namespace UI
             bool bypassStack = false, bool playTransition = true)
         {
             if (string.IsNullOrWhiteSpace(popupId) || !_entryMap.TryGetValue(popupId, out var entry)) return;
-            
+
             if (bypassStack || entry.allowOverlayStack)
             {
                 ShowNowAsync(entry, setup, durationSec, playTransition).Forget();
@@ -245,11 +269,14 @@ namespace UI
             setup?.Invoke(go);
 
             var alreadyVisible = go.activeSelf;
+            var skipAppear = false;
+
             if (alreadyVisible)
             {
                 if (entry.restartIfAlreadyVisible)
                 {
                     KillTimer(entry.popupId);
+                    skipAppear = entry.skipAppearOnTimerRestart;
                 }
                 else
                 {
@@ -258,13 +285,13 @@ namespace UI
                 }
             }
 
-            // ให้ขึ้นบนสุดเสมอ (จะได้ซ้อนได้จริง)
             go.transform.SetAsLastSibling();
 
             if (!go.activeSelf) go.SetActive(true);
-            DOTween.Kill(go);
 
-            if (playTransition && entry.appearTransition != null)
+            if (!skipAppear) DOTween.Kill(go);
+
+            if (playTransition && entry.appearTransition != null && !skipAppear)
             {
                 using var linked = CancellationTokenSource.CreateLinkedTokenSource(
                     destroyCancellationToken, go.GetCancellationTokenOnDestroy());
@@ -292,9 +319,13 @@ namespace UI
 
         private async UniTask AutoHideAsync(PopupEntry entry, float dur, CancellationToken token)
         {
+            var delayType = entry.timeScale == TimeScaleType.Unscaled
+                ? DelayType.UnscaledDeltaTime
+                : DelayType.DeltaTime;
+
             try
             {
-                await UniTask.Delay(TimeSpan.FromSeconds(dur), cancellationToken: token);
+                await UniTask.Delay(TimeSpan.FromSeconds(dur), delayType, cancellationToken: token);
                 if (!token.IsCancellationRequested) await HidePopupInternal(entry, true);
             }
             catch (OperationCanceledException)
@@ -316,8 +347,7 @@ namespace UI
 
             if (playTransition && entry.disappearTransition != null)
             {
-                using var linked = CancellationTokenSource.CreateLinkedTokenSource(
-                    destroyCancellationToken, go.GetCancellationTokenOnDestroy());
+                using var linked = CancellationTokenSource.CreateLinkedTokenSource(destroyCancellationToken, go.GetCancellationTokenOnDestroy());
                 try
                 {
                     await entry.disappearTransition.PlayAsync(go, false, linked.Token);
@@ -342,7 +372,7 @@ namespace UI
                 {
                     var req = _queue.Dequeue();
                     if (!_entryMap.TryGetValue(req.id, out var entry)) continue;
-                    
+
                     if (entry.allowOverlayStack)
                     {
                         ShowNowAsync(entry, req.setup, req.duration, req.playTransition).Forget();
@@ -366,6 +396,5 @@ namespace UI
                 _isProcessingQueue = false;
             }
         }
-
     }
 }
