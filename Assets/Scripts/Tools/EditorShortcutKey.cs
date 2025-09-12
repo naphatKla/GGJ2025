@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Characters.Controllers;
 using Characters.LevelSystems;
+using GameControl;
 using Sirenix.OdinInspector;
 using TMPro;
 using UnityEngine;
@@ -14,6 +15,7 @@ namespace Tools
     {
         LevelUp = 0,
         ForceDie = 1,
+        ReduceTime10Sec = 2,
     }
 
     public class EditorShortcutKey : SerializedMonoBehaviour
@@ -71,7 +73,11 @@ namespace Tools
                     PlayerController.Instance.HealthSystem.TakeDamage(PlayerController.Instance.HealthSystem.MaxHealth, out bool _);
                     break;
                 }
-                
+                case EditorAction.ReduceTime10Sec:
+                {
+                    GameTimer.Instance.SkipTime(10);
+                    break;
+                }
             }
         }
     }
