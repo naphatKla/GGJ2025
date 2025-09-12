@@ -13,16 +13,26 @@ namespace UI.Tutorial
         [SerializeField] private TMP_Text descriptionText;
         [SerializeField] private Image image;
 
+        [Header("Optional Override")]
+        [Tooltip("ตั้งค่าไว้ถ้าต้องการ override Sprite Asset ต่อหน้า (ถ้าไม่ตั้ง จะใช้จาก Config)")]
+        [SerializeField] private TMP_SpriteAsset spriteAssetOverride;
+
         private TutorialPageData data;
         private TMP_FontAsset titleFont, bodyFont;
+        private TMP_SpriteAsset spriteAsset;
         private CancellationTokenSource gifCts;
         private bool isShowing;
 
-        public void Bind(TutorialPageData pageData, TMP_FontAsset globalTitleFont, TMP_FontAsset globalBodyFont)
+        public void Bind(
+            TutorialPageData pageData,
+            TMP_FontAsset globalTitleFont,
+            TMP_FontAsset globalBodyFont,
+            TMP_SpriteAsset globalSpriteAsset = null)
         {
-            data = pageData;
-            titleFont = globalTitleFont;
-            bodyFont  = globalBodyFont;
+            data        = pageData;
+            titleFont   = globalTitleFont;
+            bodyFont    = globalBodyFont;
+            spriteAsset = spriteAssetOverride ? spriteAssetOverride : globalSpriteAsset;
 
             if (titleText)
             {
@@ -32,6 +42,9 @@ namespace UI.Tutorial
 
             if (descriptionText)
             {
+                // สำคัญ: ตั้ง Sprite Asset เพื่อให้ <sprite name="..."> แสดงผล
+                if (spriteAsset) descriptionText.spriteAsset = spriteAsset;
+
                 descriptionText.text = data.description;
                 if (bodyFont) descriptionText.font = bodyFont;
             }

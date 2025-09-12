@@ -31,13 +31,6 @@ namespace UI.Tutorial
 
         private void Start()
         {
-            // PlayerPrefs.DeleteAll(); // ใช้เฉพาะตอนทดสอบ
-            /*if (PlayerPrefs.GetInt("HasSeenTutorial", 0) == 1)
-            {
-                gameObject.SetActive(false);
-                return;
-            }*/
-
             GeneratePages();
             GenerateIndicators();
 
@@ -57,7 +50,13 @@ namespace UI.Tutorial
                 page.transform.localScale = Vector3.one;
 
                 var view = page.GetComponent<TutorialPageView>() ?? page.AddComponent<TutorialPageView>();
-                view.Bind(data, tutorialConfig.globalTitleFont, tutorialConfig.globalDescriptionFont);
+                // ส่ง Global Sprite Asset เข้าไปที่ View
+                view.Bind(
+                    data,
+                    tutorialConfig.globalTitleFont,
+                    tutorialConfig.globalDescriptionFont,
+                    tutorialConfig.globalSpriteAsset
+                );
 
                 if (!page.TryGetComponent(out CanvasGroup cg))
                     cg = page.AddComponent<CanvasGroup>();
