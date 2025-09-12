@@ -3,11 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
-using GameControl;
 using GameControl.Controller;
 using GameControl.GameState;
-using Manager.SoundManager;
-using MoreMountains.Feedbacks;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -27,20 +24,13 @@ namespace UI.Tutorial
         [Header("Indicator Colors")] public Color activeColor = Color.cyan, inactiveColor = Color.gray;
 
         private readonly List<GameObject> pages = new();
+        private readonly List<TutorialPageView> pageViews = new();
         private readonly List<Image> indicators = new();
         private int currentIndex;
         private bool isAnimating;
 
         private void Start()
         {
-            PlayerPrefs.DeleteAll();
-
-            if (PlayerPrefs.GetInt("HasSeenTutorial", 0) == 1)
-            {
-                gameObject.SetActive(false);
-                return;
-            }
-
             GeneratePages();
             GenerateIndicators();
 
@@ -56,36 +46,24 @@ namespace UI.Tutorial
             foreach (var data in tutorialConfig.pages)
             {
                 var page = Instantiate(pagePrefab, contentHolder);
+                page.SetActive(false);
                 page.transform.localScale = Vector3.one;
 
-                var titleText = page.transform.Find("TitleText")?.GetComponent<TMP_Text>();
-                var descText = page.transform.Find("DescriptionText")?.GetComponent<TMP_Text>();
-                var image = page.transform.Find("Image")?.GetComponent<Image>();
-
-                if (titleText)
-                {
-                    titleText.text = data.title;
-                    if (tutorialConfig.globalTitleFont) titleText.font = tutorialConfig.globalTitleFont;
-                }
-
-                if (descText)
-                {
-                    descText.text = data.description;
-                    if (tutorialConfig.globalDescriptionFont) descText.font = tutorialConfig.globalDescriptionFont;
-                }
-
-                if (image)
-                {
-                    image.sprite = data.image;
-                    image.gameObject.SetActive(data.image != null);
-                }
+                var view = page.GetComponent<TutorialPageView>() ?? page.AddComponent<TutorialPageView>();
+                // ส่ง Global Sprite Asset เข้าไปที่ View
+                view.Bind(
+                    data,
+                    tutorialConfig.globalTitleFont,
+                    tutorialConfig.globalDescriptionFont,
+                    tutorialConfig.globalSpriteAsset
+                );
 
                 if (!page.TryGetComponent(out CanvasGroup cg))
                     cg = page.AddComponent<CanvasGroup>();
                 cg.alpha = 0;
 
-                page.SetActive(false);
                 pages.Add(page);
+                pageViews.Add(view);
             }
         }
 
@@ -101,8 +79,7 @@ namespace UI.Tutorial
 
         private void ChangePage(int direction)
         {
-            if (isAnimating) return;
-
+            if (isAnimating || pages.Count == 0) return;
             var newIndex = (currentIndex + direction + pages.Count) % pages.Count;
             StartCoroutine(AnimatePageChange(currentIndex, newIndex));
             currentIndex = newIndex;
@@ -110,20 +87,24 @@ namespace UI.Tutorial
 
         private IEnumerator AnimatePageChange(int from, int to)
         {
+            if (from == to) yield break;
             isAnimating = true;
 
             var fromPage = pages[from];
             var toPage = pages[to];
+            var fromView = pageViews[from];
+            var toView = pageViews[to];
 
+            fromView.Hide();
             fromPage.GetComponent<CanvasGroup>()
-                .DOFade(0, 0.1f)
-                .SetUpdate(true)
+                .DOFade(0, 0.1f).SetUpdate(true)
                 .OnComplete(() => fromPage.SetActive(false));
 
             toPage.SetActive(true);
             var cg = toPage.GetComponent<CanvasGroup>();
             cg.alpha = 0;
             cg.DOFade(1, 0.1f).SetUpdate(true);
+            toView.Show();
 
             UpdateIndicators(to);
             yield return new WaitForSecondsRealtime(0.01f);
@@ -132,12 +113,15 @@ namespace UI.Tutorial
 
         private void ShowPage(int index, bool instant = false)
         {
-            for (var i = 0; i < pages.Count; i++)
+            for (int i = 0; i < pages.Count; i++)
             {
-                var isActive = i == index;
-                pages[i].SetActive(isActive);
+                bool active = i == index;
+                pages[i].SetActive(active);
                 if (pages[i].TryGetComponent(out CanvasGroup cg))
-                    cg.alpha = isActive ? 1 : 0;
+                    cg.alpha = active ? 1 : 0;
+
+                if (active) pageViews[i].Show();
+                else        pageViews[i].Hide();
             }
 
             UpdateIndicators(index);
@@ -145,7 +129,7 @@ namespace UI.Tutorial
 
         private void UpdateIndicators(int index)
         {
-            for (var i = 0; i < indicators.Count; i++)
+            for (int i = 0; i < indicators.Count; i++)
                 indicators[i].color = i == index ? activeColor : inactiveColor;
         }
 
@@ -155,7 +139,7 @@ namespace UI.Tutorial
             {
                 PlayerPrefs.SetInt("HasSeenTutorial", 1);
                 PlayerPrefs.Save();
-            
+
                 await UIManager.Instance.CloseSpecificPanel(UIPanelType.TutorialPanel);
                 GameStateController.Instance.SetState(new PrestartState());
             }

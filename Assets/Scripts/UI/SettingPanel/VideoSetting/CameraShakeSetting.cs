@@ -1,78 +1,155 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.Events;
-using UnityEngine.UIElements;
 
 public class CameraShakeSetting : MonoBehaviour
 {
-    public enum Preset { Low, Medium, High }
-
-    [Header("Buttons")]
-    public Button lowButton;
-    public Button mediumButton;
-    public Button highButton;
-
-    [Header("Preset Intensities")]
-    [Range(0f, 2f)] public float low = 0.2f;
-    [Range(0f, 2f)] public float medium = 0.45f;
-    [Range(0f, 2f)] public float high = 0.8f;
-
-    [Header("Start")]
-    public Preset start = Preset.Medium;
-
-    // จุดต่อให้ Dev: ยิงค่า intensity ออกไป
-    [System.Serializable] public class FloatEvent : UnityEvent<float>
+    public enum Level
     {
-        public void Invoke(float intensity)
+        Low = 0,
+        Medium = 1,
+        High = 2,
+    }
+    
+    [Serializable] public class Option
+    {
+        public Button button;
+        public Image background;
+        public TMP_Text text;
+    }
+    
+    [Header("Options (0=Low, 1=Medium, 2=High)")]
+    [SerializeField] private Option[] options = new Option[3];
+
+    [Header("Default")]
+    [SerializeField] private Level defaultLevel = Level.Medium;
+    [SerializeField] private bool applyOnEnable = true;
+    [SerializeField] private bool disableSelectedButton = true;
+    [SerializeField] private bool blockRepeatClick = true;
+
+    [Header("Colors")]
+    [SerializeField] private Color bgNormal = new Color(0.12f, 0.12f, 0.14f);
+    [SerializeField] private Color bgSelected = new Color(0.00f, 0.62f, 1.00f);
+    [SerializeField] private Color textNormal = Color.white;
+    [SerializeField] private Color textSelected = Color.black;
+    
+    [Header("Events")]
+    public UnityEvent<Level> onLevelChanged;
+
+    public Level Current { get; private set; }
+    private UnityAction[] _cached;
+    
+    private void Awake()
+    {
+        _cached = new UnityAction[options.Length];
+
+        for (int i = 0; i < options.Length; i++)
         {
-            throw new System.NotImplementedException();
+            var idx = i;
+            var opt = options[idx];
+            if (opt?.button == null) continue;
+
+            // bind onClick
+            _cached[idx] = () => Apply((Level)idx);
+            opt.button.onClick.AddListener(_cached[idx]);
+
+            // auto-fill background
+            if (opt.background == null)
+                opt.background = opt.button.targetGraphic as Image ?? opt.button.GetComponent<Image>();
+
+            // auto-fill TMP label
+            if (opt.text == null)
+                opt.text = opt.button.GetComponentInChildren<TMP_Text>(true);
         }
     }
-    public FloatEvent OnIntensityChanged;
-
-    public Preset Current { get; private set; }
-
-    void Start() => Apply(start, invoke:false);
-
-    // ========== ปุ่มกด ==========
-    public void OnLowClicked()    => Apply(Preset.Low);
-    public void OnMediumClicked() => Apply(Preset.Medium);
-    public void OnHighClicked()   => Apply(Preset.High);
-
-    // ========== แกนกลาง ==========
-    void Apply(Preset p, bool invoke = true)
+    
+    private void OnEnable()
     {
-        Current = p;
-
-        // อัปเดตหน้าตาง่าย ๆ: ปุ่มที่ถูกเลือกกดซ้ำไม่ได้ (ดูออกว่า active)
-        /*if (lowButton)    lowButton.interactable    = p != Preset.Low;
-        if (mediumButton) mediumButton.interactable = p != Preset.Medium;
-        if (highButton)   highButton.interactable   = p != Preset.High;*/
-
-        if (!invoke) return;
-
-        float intensity = GetIntensity(p);
-
-        // ----- จุดต่อให้ Dev เขียนต่อที่นี่ -----
-        OnIntensityChanged?.Invoke(intensity);         // (แนะนำ) ผูกไปที่ระบบกล้อง
-        // ตัวอย่าง:
-        // CameraShakeController.Instance.SetIntensity(intensity);
-        // CinemachineImpulseController.SetAmplitude(intensity);
-        // PlayerPrefs.SetFloat("video.cameraShake", intensity);
-        // ----------------------------------------
-
-        Debug.Log($"CameraShake: {p} ({intensity})");
+        if (applyOnEnable) Apply(defaultLevel, false); // เปลี่ยนสีอัตโนมัติ + ล็อกปุ่มเริ่มต้น
+        else UpdateVisuals(Current);
     }
 
-    float GetIntensity(Preset p)
+    private void OnDestroy()
     {
-        switch (p)
+        for (int i = 0; i < options.Length; i++)
         {
-            case Preset.Low:    return low;
-            case Preset.Medium: return medium;
-            case Preset.High:    return high;
-            default:             return medium;
+            if (options[i]?.button == null || _cached?[i] == null) continue;
+            options[i].button.onClick.RemoveListener(_cached[i]);
         }
     }
+    
+    public void OnClickLow() => Apply(Level.Low);
+    public void OnClickMedium() => Apply(Level.Medium);
+    public void OnClickHigh() => Apply(Level.High);
+
+    private void Apply(Level level, bool fromUser = true)
+    {
+        if (blockRepeatClick && fromUser && level == Current) return;
+        Current = level;
+        
+        switch (level)
+        {
+            case Level.Low: 
+                ApplyLow(); 
+                break;
+            case Level.Medium: 
+                ApplyMedium(); 
+                break;
+            case Level.High: 
+                ApplyHigh();   
+                break;
+        }
+        
+        if (disableSelectedButton)
+        {
+            for (int i = 0; i < options.Length; i++)
+                if (options[i]?.button) options[i].button.interactable = i != (int)level;
+        }
+
+        UpdateVisuals(level);
+        onLevelChanged?.Invoke(level);
+    }
+    
+    private void UpdateVisuals(Level level)
+    {
+        for (int i = 0; i < options.Length; i++)
+        {
+            bool selected = i == (int)level;
+            var opt = options[i];
+            if (opt == null) continue;
+
+            if (opt.background) 
+                opt.background.color = selected ? bgSelected : bgNormal;
+            if (opt.text) 
+                opt.text.color = selected ? textSelected : textNormal;
+        }
+    }
+
+    protected virtual void ApplyLow()
+    { 
+        /* CameraShaker.SetPreset(0.2f, 8f, 0.12f); */ 
+         Debug.Log("ApplyLow");
+    }
+
+    protected virtual void ApplyMedium()
+    { 
+        /* CameraShaker.SetPreset(0.35f, 10f, 0.15f); */ 
+        Debug.Log("ApplyMedium");
+    }
+
+    protected virtual void ApplyHigh()
+    {
+        /* CameraShaker.SetPreset(0.55f, 12f, 0.20f); */
+        Debug.Log("ApplyHigh");
+    }
+    
+#if UNITY_EDITOR
+    private void OnValidate()
+    {
+        if (options == null || options.Length != 3)
+            options = new Option[3];
+    }
+#endif
 }
