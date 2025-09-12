@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Characters.SO.SkillDataSo;
 using DG.Tweening;
+using Manager.SoundManager;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -51,6 +52,8 @@ namespace UI.IngameViewholder
                 seq.Append(t.DOScale(new Vector3(6.45f, 6.45f, 1f), 0.2f).SetEase(Ease.InOutSine))
                     .Append(t.DOShakePosition(0.2f, 10f, vibrato: 10, randomness: 40))
                     .SetUpdate(true);
+                
+                SoundManager.Instance.PlayUI(SoundName.UI.CardSelection);
             }
             else
             {

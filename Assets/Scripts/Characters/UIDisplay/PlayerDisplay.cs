@@ -12,6 +12,7 @@ using Characters.StatusEffectSystems;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using Manager;
+using Manager.SoundManager;
 using MoreMountains.Tools;
 using PixelUI;
 using Sirenix.OdinInspector;
@@ -59,6 +60,13 @@ namespace Characters.UIDisplay
 
         [FoldoutGroup("Combat Display"), SerializeField]
         private TextMeshProUGUI worldTextUIPrefab;
+        
+        // ========= UI Feedback =========
+        [FoldoutGroup("Feedback UI Display"), SerializeField]
+        private TextMeshProUGUI worldTextUISkillFeedbackPrefab;
+        
+        [FoldoutGroup("Feedback UI Display"), SerializeField]
+        private TextMeshProUGUI worldTextUIParryFeedbackPrefab;
 
         // ========= Level =========
         [FoldoutGroup("Level Display"), Title("Ref"), SerializeField]
@@ -163,6 +171,7 @@ namespace Characters.UIDisplay
             skillSystem.OnSkillPerform += SkillPerfrom;
             skillSystem.OnSlotCooldownSpeedChanged += OverloopFeedback;
             skillSystem.OnSkillPerformFail += NotifySkillPerformFail;
+            skillSystem.OnSecondarySuccess += UpdateParryFeedbackText;
 
             combatSystem.OnDealDamage += UpdateDamageText;
             scoreSystem.OnScoreChange += UpdateScoreUI;
@@ -171,7 +180,13 @@ namespace Characters.UIDisplay
 
             PoolingManager.Instance.Create<TextMeshProUGUI>(worldTextUIPrefab.name, PoolingGroupName.UI,
                 CreateDamageText);
+            
+            PoolingManager.Instance.Create<TextMeshProUGUI>(worldTextUISkillFeedbackPrefab.name, PoolingGroupName.UI,
+                CreateFeedbackText);
 
+            PoolingManager.Instance.Create<TextMeshProUGUI>(worldTextUIParryFeedbackPrefab.name, PoolingGroupName.UI,
+                CreateParryFeedbackText);
+            
             UpdateAllUI();
         }
 
@@ -314,7 +329,7 @@ namespace Characters.UIDisplay
         {
             return Instantiate(worldTextUIPrefab);
         }
-
+        
         private void UpdateDamageText(DamageData damageData)
         {
             var textInstance = PoolingManager.Instance.Get<TextMeshProUGUI>(worldTextUIPrefab.name);
@@ -513,7 +528,7 @@ namespace Characters.UIDisplay
             var seq = DOTween.Sequence();
             seq.Append(tf.DOLocalMove(new Vector3(0, 0, 0), 0.7f).SetEase(Ease.OutBack))
                 .Join(tf.DOShakeRotation(0.7f, 0f, vibrato: 10, randomness: 90).SetEase(Ease.OutBack))
-                .Join(tf.DOScale(1.325f, 0.2f).SetEase(Ease.InOutSine))
+                .Join(tf.DOScale(1.125f, 0.2f).SetEase(Ease.InOutSine))
                 .Append(tf.DOScale(1f, 0.15f))
                 .Append(tf.DOShakePosition(0.2f, 10f, vibrato: 10, randomness: 40))
                 .SetUpdate(true);
@@ -568,6 +583,62 @@ namespace Characters.UIDisplay
         }
 
         #endregion
+        
+        #region Parry Success
+        
+        private TextMeshProUGUI CreateParryFeedbackText()
+        {
+            return Instantiate(worldTextUIParryFeedbackPrefab);
+        }
+        
+        private void UpdateParryFeedbackText(BaseSkillDataSo skillDataSo)
+        {
+            var textInstance = PoolingManager.Instance.Get<TextMeshProUGUI>(worldTextUIParryFeedbackPrefab.name);
+
+            // Reset & Prepare
+            Transform tf = textInstance.transform;
+            tf.position = PlayerController.Instance.transform.position;
+            tf.localScale = Vector3.zero;
+            textInstance.text = "PARRY SUCCESS!";
+            textInstance.color = Color.white;
+
+            // CanvasGroup for fade
+            var canvasGroup = textInstance.GetComponent<CanvasGroup>();
+            if (canvasGroup == null)
+                canvasGroup = textInstance.gameObject.AddComponent<CanvasGroup>();
+            canvasGroup.alpha = 1;
+            tf.SetAsLastSibling();
+
+            textInstance.gameObject.SetActive(true);
+
+            // === Animation Settings ===
+            float floatDuration = 1f;
+            float fadeOutDuration = 0.25f;
+            float delayBeforeFade = floatDuration - fadeOutDuration;
+
+            float riseAmount = 1.4f;
+            float scaleIn =1.4f;
+            float settleScale = 1.0f;
+            float popDuration = 0.15f;
+            float settleDuration = 0.15f;
+
+            DOTween.Kill(tf);
+            DOTween.Kill(canvasGroup);
+
+            var seq = DOTween.Sequence();
+            seq.Append(tf.DOScale(scaleIn, popDuration).SetEase(Ease.OutBack))
+                .Append(tf.DOScale(settleScale, settleDuration).SetEase(Ease.InOutSine))
+                .Join(tf.DOMoveY(tf.position.y + riseAmount, floatDuration).SetEase(Ease.OutQuad))
+                .AppendInterval(delayBeforeFade)
+                .Append(canvasGroup.DOFade(0, fadeOutDuration))
+                .AppendCallback(() =>
+                {
+                    textInstance.gameObject.SetActive(false);
+                    PoolingManager.Current?.Release(worldTextUIParryFeedbackPrefab.name, textInstance);
+                });
+        }
+        
+        #endregion
 
         #region Skill Slot
 
@@ -580,12 +651,12 @@ namespace Characters.UIDisplay
             ResetSkillSlot(skillIndex);
         }
 
-        private void SkillPerfrom(int skillIndex)
+        private void SkillPerfrom(BaseSkillDataSo skilldata,int skillIndex)
         {
             if (skillIndex < 0 || skillIndex >= skillSlotModel.Count) return;
             if (skillSlotModel[skillIndex] == null) return;
 
-            SkillPlayFeedback(skillSlotModel[skillIndex].transform, skillSlotModel[skillIndex].skillframe);
+            SkillPlayFeedback(skilldata, skillIndex);
         }
 
         private void UpdateCooldownSlot(float maxCooldown, float progression, int skillIndex)
@@ -603,16 +674,75 @@ namespace Characters.UIDisplay
         {
             if (skillIndex < 0 || skillIndex >= skillSlotModel.Count) return;
             if (skillSlotModel[skillIndex] == null) return;
-
+            
             SkillResetFeedback(skillSlotModel[skillIndex].transform, skillSlotModel[skillIndex].skillframe);
             skillSlotModel[skillIndex].ResetSkillSlot();
+            
+            if (skillIndex != 0) skillSlotModel[skillIndex].PlayCooldownFinishFeedback();
         }
 
-        private void SkillPlayFeedback(Transform tf, Image skillframe)
+        private void SkillPlayFeedback(BaseSkillDataSo skillDataSo, int skillIndex )
         {
-            /*var seq = DOTween.Sequence();
-            seq.Append(tf.DOScale(new Vector3(tf.localScale.x + -0.05f, tf.localScale.y + -0.05f, 1), 0.15f)
-                .SetLoops(2, LoopType.Yoyo));*/
+            if (skillIndex > 1)
+            {
+                UpdateFeedbackText(skillDataSo);
+            }
+        }
+        
+        private TextMeshProUGUI CreateFeedbackText()
+        {
+            return Instantiate(worldTextUISkillFeedbackPrefab);
+        }
+        
+        private void UpdateFeedbackText(BaseSkillDataSo skillDataSo)
+        {
+            var textInstance = PoolingManager.Instance.Get<TextMeshProUGUI>(worldTextUISkillFeedbackPrefab.name);
+            PopupUIManager.Instance.ShowPopup("SkillTopPullup", 6f);
+            PopupUIManager.Instance.ShowPopup("SkillBottomPullup", 6f);
+
+            // Reset & Prepare
+            Transform tf = textInstance.transform;
+            tf.position = PlayerController.Instance.transform.position;
+            tf.localScale = Vector3.zero;
+            textInstance.text = skillDataSo.SkillName;
+            textInstance.color = Color.white;
+
+            // CanvasGroup for fade
+            var canvasGroup = textInstance.GetComponent<CanvasGroup>();
+            if (canvasGroup == null)
+                canvasGroup = textInstance.gameObject.AddComponent<CanvasGroup>();
+            canvasGroup.alpha = 1;
+            tf.SetAsLastSibling();
+
+            textInstance.gameObject.SetActive(true);
+
+            // === Animation Settings ===
+            float floatDuration = 1f;
+            float fadeOutDuration = 0.25f;
+            float delayBeforeFade = floatDuration - fadeOutDuration;
+
+            float riseAmount = 1.4f;
+            float scaleIn =1.4f;
+            float settleScale = 1.0f;
+            float popDuration = 0.15f;
+            float settleDuration = 0.15f;
+
+            DOTween.Kill(tf);
+            DOTween.Kill(canvasGroup);
+
+            var seq = DOTween.Sequence();
+            seq.Append(tf.DOScale(scaleIn, popDuration).SetEase(Ease.OutBack))
+                .Append(tf.DOScale(settleScale, settleDuration).SetEase(Ease.InOutSine))
+                .Join(tf.DOMoveY(tf.position.y + riseAmount, floatDuration).SetEase(Ease.OutQuad))
+                .AppendInterval(delayBeforeFade)
+                .Append(canvasGroup.DOFade(0, fadeOutDuration))
+                .AppendCallback(() =>
+                {
+                    textInstance.gameObject.SetActive(false);
+                    PoolingManager.Current?.Release(worldTextUISkillFeedbackPrefab.name, textInstance);
+                });
+
+            SoundManager.Instance.PlayUI(SoundName.UI.Gameplay_SkillNotify);
         }
 
         private Sequence _skillResetSequence;

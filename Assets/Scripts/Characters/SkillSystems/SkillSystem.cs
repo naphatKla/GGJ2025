@@ -36,7 +36,8 @@ namespace Characters.SkillSystems
         /// </summary>
         public event Action<int, float> OnSlotCooldownSpeedChanged;
 
-        public event Action<int> OnSkillPerform;
+        public event Action<BaseSkillDataSo, int> OnSkillPerform;
+        public event Action<BaseSkillDataSo> OnSecondarySuccess; 
 
         protected BaseSkillDataSo primarySkillData;
         protected BaseSkillDataSo secondarySkillData;
@@ -268,7 +269,10 @@ namespace Characters.SkillSystems
                     if (runtime is IAutoSkillTriggerSource secondarySkillTriggerSource)
                     {
                         secondarySkillTriggerSource.OnTriggerAutoSkill -= OnTriggerAutoSkill;
+                        secondarySkillTriggerSource.OnTriggerAutoSkill -= OnSecondarySuccessInvoker;
+                        
                         secondarySkillTriggerSource.OnTriggerAutoSkill += OnTriggerAutoSkill;
+                        secondarySkillTriggerSource.OnTriggerAutoSkill += OnSecondarySuccessInvoker;
                     }
                     else if (autoSkillSlot > 0)
                     {
@@ -298,7 +302,7 @@ namespace Characters.SkillSystems
                 else if (type == SkillType.AutoSkill)
                     TotalAutoSkillUsed++;
 
-                OnSkillPerform?.Invoke(index);
+                OnSkillPerform?.Invoke(newSkillData, index);
             };
 
             OnNewSkillAssign?.Invoke(newSkillData, index);
@@ -414,6 +418,11 @@ namespace Characters.SkillSystems
             }
         }
 
+        private void OnSecondarySuccessInvoker()
+        {
+            OnSecondarySuccess?.Invoke(secondarySkillData);    
+        }
+        
         private void OnTriggerAutoSkill()
         {
             PerformSkill(SkillType.AutoSkill);

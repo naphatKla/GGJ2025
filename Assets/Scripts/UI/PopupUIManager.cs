@@ -11,6 +11,12 @@ using UnityEngine.SceneManagement;
 
 namespace UI
 {
+    public enum TimeScaleType
+    {
+        Scaled = 0,
+        Unscaled = 1
+    }
+
     [Serializable]
     public class PopupEntry
     {
@@ -29,6 +35,13 @@ namespace UI
 
         [FoldoutGroup("$popupId")] [Tooltip("ถ้ากำลังแสดงอยู่ แล้วถูกเรียกซ้ำให้รีสตาร์ทเวลา")]
         public bool restartIfAlreadyVisible = true;
+
+        [FoldoutGroup("$popupId")] [Tooltip("ถ้าเปิดไว้ Popup นี้จะแสดงซ้อนกับตัวอื่นได้ทันที (ไม่เข้าคิว)")]
+        public bool allowOverlayStack;
+
+        [FoldoutGroup("$popupId")]
+        [Tooltip("ชนิดเวลาที่ใช้กับตัวนับ auto-hide: Scaled จะอิง Time.timeScale, Unscaled จะไม่อิง")]
+        public TimeScaleType timeScale = TimeScaleType.Scaled;
     }
 
     public class PopupUIManager : NonAutoCreateSingleton<PopupUIManager>
@@ -70,7 +83,7 @@ namespace UI
             _scopeCts = new CancellationTokenSource();
             BuildRegistry();
         }
-        
+
         private void OnEnable()
         {
             SceneManager.activeSceneChanged += OnSceneChanged;
@@ -81,7 +94,10 @@ namespace UI
             SceneManager.activeSceneChanged -= OnSceneChanged;
         }
 
-        private void OnApplicationQuit() => _isQuitting = true;
+        private void OnApplicationQuit()
+        {
+            _isQuitting = true;
+        }
 
         protected override void OnDestroy()
         {
@@ -92,7 +108,7 @@ namespace UI
 
             base.OnDestroy();
         }
-        
+
         private void OnSceneChanged(Scene oldScene, Scene newScene)
         {
             _scopeCts?.Cancel();
@@ -103,19 +119,26 @@ namespace UI
 
         private void ForceClearAllNow()
         {
-            foreach (var kv in _timers) { kv.Value.Cancel(); kv.Value.Dispose(); }
+            foreach (var kv in _timers)
+            {
+                kv.Value.Cancel();
+                kv.Value.Dispose();
+            }
+
             _timers.Clear();
 
             foreach (var kv in _instances)
             {
                 var go = kv.Value;
                 if (!go) continue;
-                DOTween.Kill(go, complete: false);
+                DOTween.Kill(go, false);
                 go.SetActive(false);
             }
-            
+
             var dead = new List<string>();
-            foreach (var kv in _instances) if (!kv.Value) dead.Add(kv.Key);
+            foreach (var kv in _instances)
+                if (!kv.Value)
+                    dead.Add(kv.Key);
             foreach (var k in dead) _instances.Remove(k);
 
             _queue.Clear();
@@ -180,7 +203,7 @@ namespace UI
         {
             if (string.IsNullOrWhiteSpace(popupId) || !_entryMap.TryGetValue(popupId, out var entry)) return;
 
-            if (bypassStack)
+            if (bypassStack || entry.allowOverlayStack)
             {
                 ShowNowAsync(entry, setup, durationSec, playTransition).Forget();
                 return;
@@ -241,6 +264,7 @@ namespace UI
             setup?.Invoke(go);
 
             var alreadyVisible = go.activeSelf;
+          
             if (alreadyVisible)
             {
                 if (entry.restartIfAlreadyVisible)
@@ -257,7 +281,6 @@ namespace UI
             go.transform.SetAsLastSibling();
 
             if (!go.activeSelf) go.SetActive(true);
-            DOTween.Kill(go);
 
             if (playTransition && entry.appearTransition != null)
             {
@@ -287,9 +310,13 @@ namespace UI
 
         private async UniTask AutoHideAsync(PopupEntry entry, float dur, CancellationToken token)
         {
+            var delayType = entry.timeScale == TimeScaleType.Unscaled
+                ? DelayType.UnscaledDeltaTime
+                : DelayType.DeltaTime;
+
             try
             {
-                await UniTask.Delay(TimeSpan.FromSeconds(dur), cancellationToken: token);
+                await UniTask.Delay(TimeSpan.FromSeconds(dur), delayType, cancellationToken: token);
                 if (!token.IsCancellationRequested) await HidePopupInternal(entry, true);
             }
             catch (OperationCanceledException)
@@ -311,8 +338,7 @@ namespace UI
 
             if (playTransition && entry.disappearTransition != null)
             {
-                using var linked = CancellationTokenSource.CreateLinkedTokenSource(
-                    destroyCancellationToken, go.GetCancellationTokenOnDestroy());
+                using var linked = CancellationTokenSource.CreateLinkedTokenSource(destroyCancellationToken, go.GetCancellationTokenOnDestroy());
                 try
                 {
                     await entry.disappearTransition.PlayAsync(go, false, linked.Token);
@@ -338,6 +364,12 @@ namespace UI
                     var req = _queue.Dequeue();
                     if (!_entryMap.TryGetValue(req.id, out var entry)) continue;
 
+                    if (entry.allowOverlayStack)
+                    {
+                        ShowNowAsync(entry, req.setup, req.duration, req.playTransition).Forget();
+                        continue;
+                    }
+
                     _exclusiveActiveId = req.id;
 
                     await ShowNowAsync(entry, req.setup, req.duration, req.playTransition);
@@ -355,6 +387,5 @@ namespace UI
                 _isProcessingQueue = false;
             }
         }
-
     }
 }

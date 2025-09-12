@@ -83,12 +83,14 @@ namespace Characters.SkillSystems.SkillRuntimes
 
             var dashTask = owner.MovementSystem
                 .TryMoveToPositionOverTime(dashPosition, calculatedDashDuration, skillData.DashEaseCurve,
-                    skillData.DashMoveCurve)
+                    skillData.DashMoveCurve)?
                 .WithCancellation(cancelToken);
+             
+            if (!dashTask.HasValue) return;
 
             var damageTask = UniTask.Delay(TimeSpan.FromSeconds(calculatedDamageDuration), cancellationToken: cancelToken);
 
-            await UniTask.WhenAll(dashTask, damageTask);
+            await UniTask.WhenAll(dashTask.Value, damageTask);
         }
 
         protected override void OnSkillExit()

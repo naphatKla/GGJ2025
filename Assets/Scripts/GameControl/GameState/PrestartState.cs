@@ -46,7 +46,7 @@ namespace GameControl.GameState
         
         private async UniTaskVoid CountdownStart()
         {
-            SoundManager.Instance.PlayUI(SoundName.UI.CountDown5Sec, timeScaleMode: SoundManager.TimeScaleMode.ScalePitch);
+            SoundManager.Instance.PlayUI(SoundName.UI.Gameplay_CountDown5Sec, timeScaleMode: SoundManager.TimeScaleMode.ScalePitch);
             await GameTimer.Instance.StartCountdownAsync(5f);
             GameStateController.Instance.SetState(new StartState());
         }

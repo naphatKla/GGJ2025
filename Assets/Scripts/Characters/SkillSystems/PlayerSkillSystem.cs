@@ -15,7 +15,7 @@ namespace Characters.SkillSystems
         private float bufferWindow = 0.25f;
 
         private readonly Dictionary<SkillType, Action> activeBufferCallbacks = new();
-
+        
         // string = context failed.
         public event Action<string> OnSkillPerformFail;
 
