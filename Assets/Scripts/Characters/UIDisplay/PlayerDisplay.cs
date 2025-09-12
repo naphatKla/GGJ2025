@@ -13,6 +13,7 @@ using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using Manager;
 using Manager.SoundManager;
+using MoreMountains.Feedbacks;
 using MoreMountains.Tools;
 using PixelUI;
 using Sirenix.OdinInspector;
@@ -67,6 +68,9 @@ namespace Characters.UIDisplay
         
         [FoldoutGroup("Feedback UI Display"), SerializeField]
         private TextMeshProUGUI worldTextUIParryFeedbackPrefab;
+
+        [FoldoutGroup("Feedback UI Display"), SerializeField]
+        private MMF_Player feedbackSkill;
 
         // ========= Level =========
         [FoldoutGroup("Level Display"), Title("Ref"), SerializeField]
@@ -697,8 +701,9 @@ namespace Characters.UIDisplay
         private void UpdateFeedbackText(BaseSkillDataSo skillDataSo)
         {
             var textInstance = PoolingManager.Instance.Get<TextMeshProUGUI>(worldTextUISkillFeedbackPrefab.name);
-            PopupUIManager.Instance.ShowPopup("SkillTopPullup", 6f);
-            PopupUIManager.Instance.ShowPopup("SkillBottomPullup", 6f);
+            PopupUIManager.Instance.ShowPopup("SkillTopPullup", 4f);
+            PopupUIManager.Instance.ShowPopup("SkillBottomPullup", 4f);
+            feedbackSkill?.PlayFeedbacks();
 
             // Reset & Prepare
             Transform tf = textInstance.transform;
