@@ -701,8 +701,8 @@ namespace Characters.UIDisplay
         private void UpdateFeedbackText(BaseSkillDataSo skillDataSo)
         {
             var textInstance = PoolingManager.Instance.Get<TextMeshProUGUI>(worldTextUISkillFeedbackPrefab.name);
-            PopupUIManager.Instance.ShowPopup("SkillTopPullup", 4f);
-            PopupUIManager.Instance.ShowPopup("SkillBottomPullup", 4f);
+            /*PopupUIManager.Instance.ShowPopup("SkillTopPullup", 4f);
+            PopupUIManager.Instance.ShowPopup("SkillBottomPullup", 4f);*/
             feedbackSkill?.PlayFeedbacks();
 
             // Reset & Prepare
