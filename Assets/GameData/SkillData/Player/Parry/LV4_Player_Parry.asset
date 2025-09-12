@@ -35,16 +35,16 @@ MonoBehaviour:
   skillDescription: "<color=#FFD700><b>[Parry]</b></color>\r\n<color=#adadad><i>[AOE],
     [Knockback], [Stun]</i></color>\r\n- Activate a barrier to <color=#FFE02E>Parry</color>
     incoming damage. \r\n- <color=#FFE02E>Successfully</color> parrying stuns and
-    knocks back enemies around the ship.\r\n\nSkills stats\r\nDamage: <color=#899499>51</color>
-    \u2192 <color=#FFE02E>63.75</color>\r\nBarrier duration: <color=#899499>0.5</color>
-    \u2192 <color=#FFE02E>0.5s</color>\r\nBurst radius: <color=#899499>13.2</color>
-    \u2192 <color=#FFE02E>14.8 units</color>\r\nKnockback: <color=#899499>8</color>
-    \u2192 <color=#FFE02E>8 units</color>\r\nStun: <color=#899499>0.5</color> \u2192
-    <color=#FFE02E>0.5s</color>\r\nCooldown: <color=#899499>4.5</color> \u2192 <color=#FFE02E>4s</color>"
+    knocks back enemies around the ship.\r\n\nSkills stats\r\nDamage: <color=#899499>66.3</color>
+    \u2192 <color=#FFE02E>81.6</color>\r\nBarrier duration: <color=#899499>0.57</color>
+    \u2192 <color=#FFE02E>0.65s</color>\r\nBurst radius: <color=#899499>8.8</color>
+    \u2192 <color=#FFE02E>9.6 units</color>\r\nKnockback: <color=#899499>8.8</color>
+    \u2192 <color=#FFE02E>9.2 units</color>\r\nStun: <color=#899499>0.5</color> \u2192
+    <color=#FFE02E>0.5s</color>\r\nCooldown: <color=#899499>4.5</color> \u2192 <color=#FFE02E>3.75s</color>"
   previousSkillData: {fileID: 11400000, guid: bb860ce7882e6824fa12c3cf2461b0d0, type: 2}
   nextSkillDataUpgrade: {fileID: 11400000, guid: 4f8bf3e8d28d4794d8605787d1cfa472, type: 2}
   level: 4
-  cooldown: 4
+  cooldown: 3.75
   startFeedback: ParryUse_Lv4
   exitFeedback: 
   clearBuffOnSkillExit: 0
@@ -53,10 +53,10 @@ MonoBehaviour:
     isOverrideDuration: 1
     overrideDuration: 0.55
   explosionBaseDamage: 0
-  explosionDamageMultiplier: 435
+  explosionDamageMultiplier: 480
   explosionRadius: 9.6
   stopWhileParry: 0
-  parryDuration: 0.5
+  parryDuration: 0.65
   knockBackDistance: 9.2
   knockBackDuration: 0.25
   parrySuccessFeedback: ParrySuccess_Lv4
