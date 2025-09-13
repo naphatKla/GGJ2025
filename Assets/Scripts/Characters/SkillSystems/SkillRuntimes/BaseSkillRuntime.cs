@@ -135,5 +135,10 @@ namespace Characters.SkillSystems.SkillRuntimes
         protected abstract void OnSkillStart();
         protected abstract UniTask OnSkillUpdate(CancellationToken cancelToken);
         protected abstract void OnSkillExit();
+
+        private void OnDestroy()
+        {
+            CancelSkill();
+        }
     }
 }
