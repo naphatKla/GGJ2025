@@ -391,6 +391,7 @@ GameObject:
   - component: {fileID: 3246590258457029877}
   - component: {fileID: 4104559623731638021}
   - component: {fileID: 5123104023582053221}
+  - component: {fileID: 2803815538749292900}
   - component: {fileID: 5768344601996326665}
   m_Layer: 5
   m_Name: RaycastSelectButton
@@ -500,6 +501,19 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &2803815538749292900
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 722697025667236820}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aefd298c9ead1c54ebdd628fed8c5ce7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minHoldDuration: 0.5
 --- !u!114 &5768344601996326665
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -972,6 +986,7 @@ MonoBehaviour:
   selectEffect: {fileID: 420646677696077005}
   newSkillText: {fileID: 3364683274237006740}
   raycast: {fileID: 5123104023582053221}
+  holdClickable: {fileID: 2803815538749292900}
 --- !u!114 &5340545038797978921
 MonoBehaviour:
   m_ObjectHideFlags: 0

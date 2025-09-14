@@ -522,7 +522,7 @@ namespace Characters.UIDisplay
 
             bool isNew = !skillSystem.ContainsSkillWithSameRoot(skill);
             vh.UpdateUIModal(skill, isNew);
-            vh.Bind(skill, isNew, HandleCardClicked);
+            vh.Bind(skill, isNew, HandleCardClicked, HandleCardHoldClicked);
             await SkillCardFeedback(skillcard.transform);
         }
 
@@ -559,13 +559,32 @@ namespace Characters.UIDisplay
             UpdateConfirmButtonState();
         }
         
+        private void HandleCardHoldClicked(SolfUpgradeViewholder vh)
+        {
+            if (vh == null) return;
+            if (_currentSelectVH == vh) return;
+            if (_currentSelectVH != null) _currentSelectVH.SetSelected(false);
+            
+            _currentSelectVH = vh;
+            _currentSelect = vh.Data;
+            _currentSelectVH.SetSelected(true);
+
+            OnChooseSkillAsync().Forget();
+        }
+        
         public void OnConfirmPressed()
         {
             if (_currentSelect == null) return;
-            OnChooseSkill(_currentSelect);
+            OnChooseSkill();
+        }
+        
+        private async UniTask OnChooseSkillAsync()
+        {
+            await UniTask.Delay(200, DelayType.UnscaledDeltaTime, PlayerLoopTiming.Update, destroyCancellationToken);
+            OnChooseSkill();
         }
 
-        private void OnChooseSkill(BaseSkillDataSo skill)
+        private void OnChooseSkill()
         {
             UIManager.Instance.CloseAllPanels();
             skillUpgradeController.SelectSkill(_currentSelect);

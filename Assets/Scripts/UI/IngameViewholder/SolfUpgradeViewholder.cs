@@ -18,6 +18,7 @@ namespace UI.IngameViewholder
         [SerializeField] private GameObject selectEffect;
         [SerializeField] private TMP_Text newSkillText;
         [SerializeField] private Button raycast;
+        [SerializeField] private HoldClickableButton holdClickable;
 
         private Vector3 _startSize;
         public BaseSkillDataSo Data { get; private set; }
@@ -25,14 +26,18 @@ namespace UI.IngameViewholder
 
         public event Action<SolfUpgradeViewholder> Clicked;
 
-        public void Bind(BaseSkillDataSo data, bool isNew, Action<SolfUpgradeViewholder> onClick)
+        public void Bind(BaseSkillDataSo data, bool isNew, Action<SolfUpgradeViewholder> onClick, Action<SolfUpgradeViewholder> onHoldClick)
         {
             Data = data;
             UpdateUIModal(data, isNew);
             raycast.onClick.RemoveAllListeners();
+            
             Clicked = null;
             Clicked += onClick;
+        
             raycast.onClick.AddListener(() => Clicked?.Invoke(this));
+            holdClickable.OnHoldSuccess += () => onHoldClick?.Invoke(this);
+            
             _startSize = transform.localScale;
             
             SetSelected(false, instant: true);
