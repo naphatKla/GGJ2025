@@ -14,6 +14,7 @@ namespace GameControl.GameState
         public void Enter(GameStateController controller)
         {
             UIManager.Instance.OpenTutorialPanel();
+            SpawnerStateController.Instance.ClearEnemy();
         }
 
         public void Update(GameStateController controller) { }

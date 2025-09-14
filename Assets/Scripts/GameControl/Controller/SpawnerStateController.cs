@@ -164,6 +164,14 @@ namespace GameControl.Controller
         {
             _enemySpawnerController?.ReleaseAllEnemies();
             _enemySpawnerController?.ClearAllEnemysCompletely();
+            
+            Transform parentTransform = enemyParent;
+            for (int i = parentTransform.childCount - 1; i >= 0; i--)
+            {
+                GameObject child = parentTransform.GetChild(i).gameObject;
+                Destroy(child); 
+                DestroyImmediate(child); 
+            }
         }
 
         public void ClearPatternAsync()
