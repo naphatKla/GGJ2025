@@ -55,6 +55,9 @@ namespace UI
         public bool pauseGameWhileOpen = false;
         [FoldoutGroup("$type")][Tooltip("Block all input behide this panel")]
         public bool blockInputBehind;
+        
+        [FoldoutGroup("$type")][Tooltip("ยิ่งสูงยิ่งอยู่บนสุด หากเปิดพร้อมกับตัวอื่น")]
+        public int priority = 0;
   
         [FoldoutGroup("$type")]
         public GameObject panel;
@@ -111,6 +114,9 @@ namespace UI
         public event Action OnAllPanelClosed; // call when all of the panel was closed.
 
         // === State ===
+        private readonly Dictionary<UIPanelType, int> _priorityMap = new(); 
+        private readonly Queue<UIPanelType> _pendingOpens = new();
+
         private readonly Dictionary<UIPanelType, bool> _pauseFlagMap = new();
         private readonly Dictionary<UIPanelType, bool> _blockFlagMap = new();
         private readonly Dictionary<UIPanelType, GameObject> _panelMap = new();
@@ -124,7 +130,6 @@ namespace UI
         private ConfirmPanelEntry _activeConfirm;
         private CancellationTokenSource _confirmCts;
         private bool _isPauseApplied;
-        private bool _isTransitioning;
         private bool _allLoad;
 
         // === Shortcuts ===
@@ -180,23 +185,6 @@ namespace UI
             MMTimeScaleEvent.Trigger(MMTimeScaleMethods.Reset, 1f, 0, false, 0, false);
             base.OnDestroy();
         }
-
-        /*private void OnSceneChange(Scene scene, LoadSceneMode mode)
-        {
-            _confirmCts?.Cancel();
-            _confirmCts?.Dispose();
-            _confirmCts = null;
-
-            _activeConfirm = null;
-            _confirmInstances.Clear();
-
-            _pauseOwners.Clear();
-            _isPauseApplied = false;
-            _allLoad = true;
-            Debug.Log("Scene Reset");
-            //MMTimeScaleEvent.Trigger(MMTimeScaleMethods.Reset, 1, 0, false, 0f, false);
-            SceneManager.sceneLoaded -= OnSceneChange;
-        }*/
         
         private UniTask WaitSceneReadyAsync()
         {
@@ -211,7 +199,7 @@ namespace UI
 
         public async UniTaskVoid OpenPanel(UIPanelType type)
         {
-            if (_isTransitioning) return;
+            //if (_isTransitioning) return;
             if (!TryGetPanel(type, out _)) return;
             
             if (TopType == type)
@@ -221,8 +209,6 @@ namespace UI
             }
             
             bool prePaused = TryPreApplyPause(type);
-            
-            _isTransitioning = true;
             try
             {
                 await WaitSceneReadyAsync();
@@ -248,7 +234,6 @@ namespace UI
             }
             finally
             {
-                _isTransitioning = false;
                 if (prePaused && !_stack.Contains(type) && !IsPanelOpen(type))
                 {
                     _pauseOwners.Remove(type);
@@ -259,8 +244,7 @@ namespace UI
 
         public async UniTask ClosePanelAsync()
         {
-            if (!HasOpenPanels || _isTransitioning) return;
-            _isTransitioning = true;
+            if (!HasOpenPanels) return;
             try
             {
                 var closing = _stack.Pop();
@@ -285,7 +269,6 @@ namespace UI
             }
             finally
             {
-                _isTransitioning = false;
                 ApplyPauseState();
             }
         }
@@ -294,13 +277,11 @@ namespace UI
         // close th specific panel in stack.
         public async UniTask CloseSpecificPanel(UIPanelType type)
         {
-            if (!HasOpenPanels || _isTransitioning) return;
-            _isTransitioning = true;
+            if (!HasOpenPanels) return;
             try
             {
                 if (TopType == type)
                 {
-                    _isTransitioning = false;
                     await ClosePanelAsync();
                     return;
                 }
@@ -318,7 +299,6 @@ namespace UI
             }
             finally
             {
-                _isTransitioning = false;
                 ApplyPauseState();
             }
         }
@@ -441,6 +421,7 @@ namespace UI
             _pauseFlagMap.Clear();
             _blockFlagMap.Clear();
             _pauseOwners.Clear();
+            _priorityMap.Clear();
 
             foreach (var e in panelEntries)
             {
@@ -450,6 +431,7 @@ namespace UI
                 _stackTypeMap[e.type] = e.stackType;
                 _pauseFlagMap[e.type] = e.pauseGameWhileOpen;
                 _blockFlagMap[e.type] = e.blockInputBehind;
+                _priorityMap[e.type] = e.priority;
                 e.panel.SetActive(false);
             }
             
@@ -545,9 +527,6 @@ namespace UI
         
         private async UniTask ClearStackAsync(bool invokeClosedEvent)
         {
-            if (_isTransitioning) return;
-
-            _isTransitioning = true;
             try
             {
                 while (HasOpenPanels)
@@ -568,7 +547,6 @@ namespace UI
             finally
             {
                 _pauseOwners.Clear();
-                _isTransitioning = false;
                 ApplyPauseState();
                 RefreshTopAsync().Forget();
                 MMTimeScaleEvent.Trigger(MMTimeScaleMethods.Reset, 1f, 0, false, 0f, false);
@@ -613,7 +591,10 @@ namespace UI
                 return;
             }
 
-            if (!_panelMap.TryGetValue(TopType, out var go) || go == null)
+            ReorderActivePanelsByPriority();
+
+            var top = TopType;
+            if (!_panelMap.TryGetValue(top, out var go) || go == null)
             {
                 if (_blocker) _blocker.SetActive(false);
                 return;
@@ -622,6 +603,7 @@ namespace UI
             ShowBlockerUnderPanel(go);
             go.transform.SetAsLastSibling();
         }
+
 
         private void ShowBlockerUnderPanel(GameObject go)
         {
@@ -907,6 +889,38 @@ namespace UI
             }
             catch (OperationCanceledException) { }
         }
+        
+        #endregion
+        
+        #region Priority
+        
+        private void ReorderActivePanelsByPriority()
+        {
+            if (_stack == null || _stack.Count <= 1) return;
+
+            var active = new List<UIPanelType>(_stack.Count);
+            var seen   = new HashSet<UIPanelType>();
+            foreach (var t in _stack)
+            {
+                if (!seen.Add(t)) continue;
+                if (_panelMap.TryGetValue(t, out var go) && go && go.activeInHierarchy)
+                    active.Add(t);
+            }
+            if (active.Count <= 1) return;
+            var indexMap = new Dictionary<UIPanelType, int>(active.Count);
+            for (int i = 0; i < active.Count; i++) indexMap[active[i]] = i;
+
+            int GetPr(UIPanelType x) => _priorityMap.TryGetValue(x, out var p) ? p : 0;
+            active.Sort((a, b) =>
+            {
+                int cmp = GetPr(a).CompareTo(GetPr(b));
+                if (cmp != 0) return cmp;
+                return indexMap[b].CompareTo(indexMap[a]);
+            });
+            _stack.Clear();
+            foreach (var t in active) _stack.Push(t);
+        }
+
         
         #endregion
     }
