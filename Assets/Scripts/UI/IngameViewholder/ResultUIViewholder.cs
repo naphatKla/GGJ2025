@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using Characters.Controllers;
+using Characters.Data;
+using DG.Tweening;
 using GameControl.Controller;
 using TMPro;
 using UnityEngine;
@@ -10,12 +12,22 @@ using UnityEngine.UI;
 
 namespace UI.IngameViewholder
 {
+    [Serializable]
+    public struct GradeCombo
+    {
+        public string gradeId;
+        public Sprite gradeImage;
+    }
+    
     public class ResultUIViewholder : MonoBehaviour
     {
         [SerializeField] private Button restartButton;
         [SerializeField] private Button backButton;
         [SerializeField] private TMP_Text middleText;
+        [SerializeField] private TMP_Text scoreText;
         [SerializeField] private TMP_Text summaryText;
+        [SerializeField] private Image gradeImage;
+        public List<GradeCombo> gradeComboResult;
 
         private void OnEnable()
         {
@@ -61,7 +73,11 @@ namespace UI.IngameViewholder
 
         private void UpdateUIText()
         {
-            summaryText.text = GroupStatus().ToString();
+            var dataStatus = PlayerController.Instance.GetSummaryStatsOnStateEnd();
+            scoreText.text = dataStatus.totalScore.ToString();
+            summaryText.text = GroupStatus(dataStatus).ToString();
+            UpdateGradeResult(dataStatus.highestRank);
+            
             switch (GameStateController.Instance.gameResult)
             {
                 case EndResult.Completed:
@@ -78,15 +94,38 @@ namespace UI.IngameViewholder
                     break;
             }
         }
-
-        private StringBuilder GroupStatus()
+        
+        public void UpdateGradeResult(string grade)
         {
-            var dataStatus = PlayerController.Instance.GetSummaryStatsOnStateEnd();
-            var sb = new System.Text.StringBuilder(256);
+            foreach (var g in gradeComboResult)
+                if (g.gradeId == grade)
+                {
+                    GradeFeedback(gradeImage, g.gradeImage);
+                    break;
+                }
+        }
+        
+        private void GradeFeedback(Image obj, Sprite newSprite)
+        {
+            var tf = obj.transform;
+            var cg = obj.GetComponent<CanvasGroup>();
+            if (cg == null) cg = obj.gameObject.AddComponent<CanvasGroup>();
+            
+            var sq = DOTween.Sequence().SetUpdate(true);
 
-            sb.AppendLine($"<color=#aeb0af>Total score :</color> <color=yellow>{dataStatus.totalScore}</color>");
+            sq.Append(cg.DOFade(0f, 0.15f).SetUpdate(true))
+                .AppendCallback(() => { obj.sprite = newSprite; })
+                .Append(cg.DOFade(1f, 0.25f).SetUpdate(true))
+                .Join(tf.DOScale(1.6f, 0.25f).SetEase(Ease.OutBack).SetUpdate(true))
+                .Append(tf.DOScale(1f, 0.15f).SetEase(Ease.InBack).SetUpdate(true));
+        }
+
+        private StringBuilder GroupStatus(PlayerSummaryStats dataStatus)
+        {
+            var sb = new System.Text.StringBuilder(256);
+            
             sb.AppendLine($"<color=#aeb0af>Current level :</color> <color=#00FF00>{dataStatus.currentLevel}</color>");
-            sb.AppendLine($"<color=#aeb0af>Highest Rank :</color> <color=#00FFFF>{(string.IsNullOrEmpty(dataStatus.highestRank) ? "-" : dataStatus.highestRank)}</color>");
+            //sb.AppendLine($"<color=#aeb0af>Highest Rank :</color> <color=#00FFFF>{(string.IsNullOrEmpty(dataStatus.highestRank) ? "-" : dataStatus.highestRank)}</color>");
             sb.AppendLine($"<color=#aeb0af>Highest Streak Count :</color> <color=#FFA500>{dataStatus.highestStreakCount}</color>");
             sb.AppendLine($"<color=#aeb0af>Average Exp Multiplier :</color> <color=#FF69B4>{dataStatus.averageExpMultiplier:0.###}</color>");
             sb.AppendLine($"<color=#aeb0af>Total Enemies Eliminated :</color> <color=#FF0000>{dataStatus.totalEnemiesEliminated}</color>");
