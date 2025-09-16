@@ -115,7 +115,7 @@ namespace UI.IngameViewholder
             var sq = DOTween.Sequence().SetUpdate(true);
 
             sq.Append(tf.DOScale(1.6f, 0.0f).SetUpdate(true))
-                .Append(tf.DOScale(1.0f, 0.5f).SetEase(Ease.InOutQuart).SetUpdate(true));
+                .Append(tf.DOScale(1.0f, 0.5f).SetEase(Ease.InExpo).SetUpdate(true));
         }
 
         private StringBuilder GroupStatus(PlayerSummaryStats dataStatus)
