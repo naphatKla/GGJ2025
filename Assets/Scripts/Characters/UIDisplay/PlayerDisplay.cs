@@ -20,6 +20,7 @@ using Sirenix.OdinInspector;
 using TMPro;
 using UI;
 using UI.IngameViewholder;
+using UI.Manager;
 using UnityEngine;
 using UnityEngine.UI;
 using Button = UnityEngine.UI.Button;
