@@ -98,14 +98,15 @@ namespace UI.IngameViewholder
         public void UpdateGradeResult(string grade)
         {
             foreach (var g in gradeComboResult)
-                if (g.gradeId == grade)
+                if (g.gradeId.ToLower() == grade.ToLower())
                 {
-                    GradeFeedback(gradeImage, g.gradeImage);
+                    gradeImage.sprite = g.gradeImage;
+                    GradeFeedback(gradeImage);
                     break;
                 }
         }
         
-        private void GradeFeedback(Image obj, Sprite newSprite)
+        private void GradeFeedback(Image obj)
         {
             var tf = obj.transform;
             var cg = obj.GetComponent<CanvasGroup>();
@@ -113,11 +114,8 @@ namespace UI.IngameViewholder
             
             var sq = DOTween.Sequence().SetUpdate(true);
 
-            sq.Append(cg.DOFade(0f, 0.15f).SetUpdate(true))
-                .AppendCallback(() => { obj.sprite = newSprite; })
-                .Append(cg.DOFade(1f, 0.25f).SetUpdate(true))
-                .Join(tf.DOScale(1.6f, 0.25f).SetEase(Ease.OutBack).SetUpdate(true))
-                .Append(tf.DOScale(1f, 0.15f).SetEase(Ease.InBack).SetUpdate(true));
+            sq.Append(tf.DOScale(1.6f, 0.0f).SetUpdate(true))
+                .Append(tf.DOScale(1.0f, 0.5f).SetEase(Ease.InOutQuart).SetUpdate(true));
         }
 
         private StringBuilder GroupStatus(PlayerSummaryStats dataStatus)
