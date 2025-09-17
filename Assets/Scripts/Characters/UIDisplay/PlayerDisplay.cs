@@ -357,6 +357,7 @@ namespace Characters.UIDisplay
             bool isCrit = damageData.IsCritical;
             if (isCrit)
             {
+                NotificationManager.Instance.PlayNotification("notify_skilluse", "Critical!", 4.0f);
                 textInstance.text += " Crit!";
                 textInstance.color = new Color(1f, 0.85f, 0.2f);
                 tf.SetAsLastSibling();
@@ -410,6 +411,7 @@ namespace Characters.UIDisplay
 
             if (healthChange >= 0)
             {
+                NotificationManager.Instance.PlayNotification("notify_skilluse", $"+{healthChange} Health", 4.0f);
                 textInstance.text = "+" + healthChange + " HP";
                 textInstance.color = Color.green;
                 tf.SetAsLastSibling();
@@ -618,6 +620,7 @@ namespace Characters.UIDisplay
         private void UpdateParryFeedbackText(BaseSkillDataSo skillDataSo)
         {
             var textInstance = PoolingManager.Instance.Get<TextMeshProUGUI>(worldTextUIParryFeedbackPrefab.name);
+            NotificationManager.Instance.PlayNotification("notify_skilluse", skillDataSo.SkillName, 4.0f);
 
             // Reset & Prepare
             Transform tf = textInstance.transform;
@@ -721,6 +724,7 @@ namespace Characters.UIDisplay
         private void UpdateFeedbackText(BaseSkillDataSo skillDataSo)
         {
             var textInstance = PoolingManager.Instance.Get<TextMeshProUGUI>(worldTextUISkillFeedbackPrefab.name);
+            NotificationManager.Instance.PlayNotification("notify_skilluse", skillDataSo.SkillName, 4.0f);
             PopupUIManager.Instance.ShowPopup("SkillTopPullup", 3f);
             PopupUIManager.Instance.ShowPopup("SkillBottomPullup", 3f);
             feedbackSkill?.PlayFeedbacks();
