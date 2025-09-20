@@ -48,7 +48,10 @@ namespace UI.Notification
 
         private void CountTextFeedback(TMP_Text text)
         {
-            numText.transform.DOPunchScale(Vector3.one * 0.4f, 0.25f, vibrato: 3, elasticity: 0.8f).SetUpdate(true).SetLink(gameObject);
+            var t = text.rectTransform;
+            t.DOKill();
+            t.localScale = Vector3.one;
+            t.DOPunchScale(Vector3.one * 0.4f, 0.25f, vibrato: 3, elasticity: 0.8f).SetUpdate(true).SetLink(gameObject).OnComplete(() => t.localScale = Vector3.one);
         }
 
     }
