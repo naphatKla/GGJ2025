@@ -15,9 +15,10 @@ namespace Characters.SO.CharacterDataSO
         
         [FoldoutGroup("Combat")]
         [SerializeField] private float baseExpLevelUp;
+
+        [FoldoutGroup("Combat")] [SerializeField] private int stepThreshold = 1;
         
-        [FoldoutGroup("Combat")]
-        [SerializeField] private float expMultiplierPerLevel;
+        [FoldoutGroup("Combat")] [SerializeField] private float stepValue = 500;
 
         [FoldoutGroup("Combat")] 
         [SerializeField] private ComboStreakDataSo comboStreakData;
@@ -32,7 +33,8 @@ namespace Characters.SO.CharacterDataSO
         private CameraShakeOption takeDamageCameraShakeOption;
         
         public float BaseExpLevelUp => baseExpLevelUp;
-        public float ExpMultiplierPerLevel => expMultiplierPerLevel;
+        public int StepThreshold => stepThreshold;
+        public float StepValue => stepValue;
 
         public ComboStreakDataSo ComboStreakData => comboStreakData;
 

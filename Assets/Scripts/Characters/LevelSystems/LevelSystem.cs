@@ -26,14 +26,16 @@ namespace Characters.LevelSystems
         }
 
         private float _baseExp;
-        private float _multiplier;
+        private float _stepThreshold;
+        private float _stepValue;
         private float _currentExpToLevelUp;
 
         // Assign base values
-        public void AssignData(BaseController owner, float baseExpLevelUp, float expMultiplierPerLevel)
+        public void AssignData(BaseController owner, float baseExpLevelUp, float stepThreshold, float stepValue)
         {
             _baseExp = baseExpLevelUp;
-            _multiplier = expMultiplierPerLevel;
+            _stepThreshold = stepThreshold;
+            _stepValue = stepValue;
             _owner = owner;
             UpdateExpToLevelUp();
         }
@@ -45,7 +47,6 @@ namespace Characters.LevelSystems
             
             Exp += amount;
             Exp = Mathf.CeilToInt(Exp);
-            OnLevelUpdate?.Invoke();
 
             while (Exp >= _currentExpToLevelUp)
             {
@@ -54,6 +55,7 @@ namespace Characters.LevelSystems
                 OnLevelUp?.Invoke(Level);
                 UpdateExpToLevelUp();
             }
+            OnLevelUpdate?.Invoke();
         }
 
         [Button("Reset Level")]
@@ -64,7 +66,6 @@ namespace Characters.LevelSystems
             _active = true;
             UpdateExpToLevelUp();
         }
-
         
         public void ForceLevelUp()
         {
@@ -73,7 +74,9 @@ namespace Characters.LevelSystems
 
         protected virtual void UpdateExpToLevelUp()
         {
-            _currentExpToLevelUp = Mathf.Ceil(_baseExp * Mathf.Pow(_multiplier, Level - 1));
+            float multiplier = Mathf.Floor(((Level - 1) / _stepThreshold));
+            _currentExpToLevelUp = _baseExp + (_stepValue * multiplier);
+            
             if (Level == 1) return;
             _owner.TryPlayFeedback(FeedbackName.Character.LevelUp);
         }
