@@ -23,7 +23,7 @@ namespace GameControl.GameState
             GameTimer.Instance.StopTimer();
             SpawnerStateController.Instance.ClearEnemy();
             SpawnerStateController.Instance.ClearItem();
-            SpawnerStateController.Instance.SetupMapAndEnemy().Forget();
+            SpawnerStateController.Instance.SetupMapAndEnemy(true).Forget();
             controller.gameResult = EndResult.None;
             
             if (!PlayerController.Instance.gameObject.activeInHierarchy) PlayerController.Instance.gameObject.SetActive(true);

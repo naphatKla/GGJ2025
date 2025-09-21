@@ -101,12 +101,12 @@ namespace GameControl.SO
             }
             public bool TryPassChance() => Random.Range(0, 100) < chance;
             
-            public MapDataSO.EnemyOption Clone()
+            public EnemyOption Clone()
             {
-                return new MapDataSO.EnemyOption
+                return new EnemyOption
                 {
-                    id = this.EnemyId,
-                    chance = this.chance,
+                    id = EnemyId,
+                    chance = chance,
                 };
             }
 
