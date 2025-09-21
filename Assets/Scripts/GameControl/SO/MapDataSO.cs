@@ -139,6 +139,8 @@ namespace GameControl.SO
             [Tooltip("the amount of point to use calcalate how many enemy should spawn base on point")]
             public float patternPoint;
             [FoldoutGroup("$pattern")]
+            public float enableMovementAfter = 1f;
+            [FoldoutGroup("$pattern")]
             [Tooltip("if enable you can set custom center of the pattern")]
             public bool enablePatternCenter;
             [FoldoutGroup("$pattern")] [ShowIf("$enablePatternCenter")]

@@ -209,7 +209,7 @@ namespace GameControl.Controller
                 {
                     if (spawnedCount >= maxEnemyAmount) return;
 
-                    SpawnEnemy(enemyType, pos);
+                    SpawnEnemy(enemyType,patternData, pos);
                     spawnedCount++;
 
                     if (patternData.DelayBetweenEnemy > 0)
@@ -221,15 +221,38 @@ namespace GameControl.Controller
             }
         }
 
-        private void SpawnEnemy(MapDataSO.EnemyOption enemyType, Vector2 pos)
+        private void SpawnEnemy(MapDataSO.EnemyOption enemyType,MapDataSO.PatternOption patternData, Vector2 pos)
         {
             if (!_storeEnemy.TryGetValue(enemyType.id, out var pool)) return;
 
             var enemyObj = pool.Get();
             enemyObj.transform.position = pos;
             enemyObj.transform.SetParent(_state.EnemyParent);
+            StopEnemyMovement(enemyObj,patternData.enableMovementAfter).Forget();
         }
-
+        
+        private async UniTaskVoid StopEnemyMovement(EnemyController enemy,float time)
+        {
+            try
+            {
+                enemy.InputSystem.Enable = false;
+                enemy.MovementSystem.StopAllMovementAndTween();
+                await UniTask.Delay((int)(time * 1000));
+                enemy.InputSystem.Enable = true;
+                enemy.MovementSystem.ResetMovementSystem();
+            }
+            catch (Exception a)
+            {
+                Console.WriteLine(a);
+                throw;
+            }
+            finally
+            {
+                enemy.MovementSystem.ResetMovementSystem();
+                enemy.InputSystem.Enable = true;
+            }
+        }
+        
         private async UniTaskVoid ProcessBatchQueue()
         {
             if (_isBatchProcessing) return;
