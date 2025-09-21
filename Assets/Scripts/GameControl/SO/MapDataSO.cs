@@ -225,6 +225,7 @@ namespace GameControl.SO
             public float Chance { get => eventMapChance; set => eventMapChance = value; }
         }
         
+        #region Map Setting
         [FoldoutGroup("Map Setting")]
         [Tooltip("Name of this map")]
         public string mapName;
@@ -240,7 +241,9 @@ namespace GameControl.SO
         [FoldoutGroup("Map Setting")]
         [Tooltip("Map Time")]
         public float mapGlobalTime;
-        
+        #endregion
+
+        #region Enemy Setting
         [FoldoutGroup("Enemy Setting")]
         [Tooltip("Data of each enemy")]
         public List<EnemyOption> EnemyOptions;
@@ -252,7 +255,9 @@ namespace GameControl.SO
         [FoldoutGroup("Enemy Setting")]
         [Tooltip("interval of enemy point ratio to upgrade (Default 30)")]
         public float intervalEnemyPointRatioUpgrade;
+        #endregion
         
+        #region Pattern Setting
         [FoldoutGroup("Pattern Setting")]
         [Tooltip("Data of each pattern")]
         public List<PatternOption> PatternOptions;
@@ -289,6 +294,25 @@ namespace GameControl.SO
         [ShowIf("$triggerTimeCanDecrease")]
         public float patternDecreaseMinimum;
         
+        [FoldoutGroup("Pattern Setting")]
+        [Title("Add Pattern Setting")]
+        [Tooltip("Add pattern every this variable default (30s)")]
+        public float addPatternInterval = 30f;
+        
+        [FoldoutGroup("Pattern Setting")]
+        [Tooltip("Amount to add (default 1)")]
+        public int amountToAdd = 1;
+        
+        [FoldoutGroup("Pattern Setting")]
+        [Tooltip("Max pattern that can be add")]
+        public float patternMax;
+        
+        [FoldoutGroup("Pattern Setting")]
+        [InfoBox("Pattern จะสามารถถูก Add เพิ่มเข้าไปซ้ำได้ถ้าใช้ Pattern หมดไปแล้ว")]
+        public bool canDuplicateAfterHaveAllPattern;
+        #endregion
+
+        #region Item Setting
         [FoldoutGroup("Item Setting")]
         [Tooltip("Data of each item")]
         public List<ItemOption> ItemOptions;
@@ -300,11 +324,17 @@ namespace GameControl.SO
         [FoldoutGroup("Item Setting")]
         [Tooltip("Item spawn interval (Default 1)")]
         public float defaultItemSpawnTimer;
+        #endregion
+        
+        #region Event Map Setting
         
         [FoldoutGroup("Event Map Setting")]
         [Tooltip("Data of each map event")]
         public List<EventMapOption> eventmapOptions;
         
+        #endregion
+
+        #region Data Setting
         [Space]
         [FoldoutGroup("Data Setting")]
         [Tooltip("Enemy spawn interval (Default 1)")]
@@ -325,5 +355,6 @@ namespace GameControl.SO
         [FoldoutGroup("Data Setting")] 
         [Tooltip("Max spawn point of every enemy to spawn (Default 500)")]
         public float maxEnemyPoint = 500;
+        #endregion
     }
 }

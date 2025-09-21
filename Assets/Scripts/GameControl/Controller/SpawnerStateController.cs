@@ -132,16 +132,12 @@ namespace GameControl.Controller
             //Every 3 minute trigger pattern
             GameTimer.Instance.ScheduleLoopingTrigger(
                 _currentMapData.playAllPatternIn,
-                GameTimer.Instance.StartTimerNumber,
-                () =>
-                {
-                    UniTask.Void(async () =>
-                    {
-                        _enemyPatternController.AddRandomPattern();
-                        await UniTask.Delay(100);
-                        _enemyPatternController.TriggerAllPatterns();
-                    });
-                }, false);
+                GameTimer.Instance.StartTimerNumber, () =>{_enemyPatternController.TriggerAllPatterns(); }, false);
+            
+            //Add pattern
+            GameTimer.Instance.ScheduleLoopingTrigger(
+                _currentMapData.addPatternInterval,
+                GameTimer.Instance.StartTimerNumber, () =>{_enemyPatternController.AddRandomPatterns(_currentMapData.amountToAdd); }, false);
             
             //Upgrade Max Spawn point every 1 minute
             GameTimer.Instance.ScheduleLoopingTrigger(_currentMapData.intervalIncreaseEnemyPoint, GameTimer.Instance.StartTimerNumber, 
@@ -222,9 +218,9 @@ namespace GameControl.Controller
         }
         
         [Button("Add Pattern" , ButtonSizes.Large), GUIColor(0, 1, 0)]
-        private void TriggerAddPattern()
+        private void TriggerAddPattern(int amount)
         {
-            _enemyPatternController.AddRandomPattern();
+            _enemyPatternController.AddRandomPatterns(amount);
         }
         
         [Button("Clear all Enemy" , ButtonSizes.Large), GUIColor(1, 0, 0)]
