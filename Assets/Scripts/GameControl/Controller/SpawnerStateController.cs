@@ -176,8 +176,6 @@ namespace GameControl.Controller
  
             _mapEventController.ScheduleAllTriggersUpfront(GameTimer.Instance.StartTimerNumber);
         }
-        
-        
 
         private void UpdateDefaultSpawnInterval()
         {

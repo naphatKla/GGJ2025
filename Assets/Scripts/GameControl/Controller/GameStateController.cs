@@ -37,7 +37,7 @@ namespace GameControl.Controller
         private string _currentStateName;
         
         [ShowInInspector, ReadOnly]
-        private SO.MapDataSO _currentMapData;
+        private MapDataSO _currentMapDataRuntime;
         
         [SerializeField] private MapSelectionDataContainer mapContainer;
         [Tooltip("The index of the current map in the mapData list.")]
@@ -47,14 +47,7 @@ namespace GameControl.Controller
                 ? mapContainer.mapSelectionList
                 : new List<MapDataSO>();
         
-        private MapDataSO _currentMapDataRuntime;
-        
         public MapDataSO CurrentMap => _currentMapDataRuntime;
-        
-        /*public MapDataSO CurrentMap => 
-            MapDataList.Count > 0 && currentMapIndex < MapDataList.Count
-                ? MapDataList[currentMapIndex]
-                : null;*/
         
         public EndResult gameResult;
         public IGameState CurrentState => _currentState;
@@ -92,7 +85,6 @@ namespace GameControl.Controller
         {
             if (_currentMapDataRuntime != null) Destroy(_currentMapDataRuntime);
             _currentMapDataRuntime = MakeRuntimeCopy(asset);
-            _currentMapData = _currentMapDataRuntime;
         }
         
         private void OnEnable()
