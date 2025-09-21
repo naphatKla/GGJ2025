@@ -337,10 +337,31 @@ namespace GameControl.SO
         #region Data Setting
         [Space]
         [FoldoutGroup("Data Setting")]
+        [Title("Default Enemy Timer Setting")]
         [Tooltip("Enemy spawn interval (Default 1)")]
         public float defaultEnemySpawnTimer;
-
+        
+        [FoldoutGroup("Data Setting")]
+        [Tooltip("if this enable")]
+        public bool canGrowth;
+        
+        [FoldoutGroup("Data Setting")]
+        [Tooltip("How much defaultEnemySpawnTimer will be decrease")]
+        [ShowIf("canGrowth")]
+        public float decreaseAmount;
+        
+        [FoldoutGroup("Data Setting")]
+        [Tooltip("Frequency defaultEnemySpawnTimer will be decrease")]
+        [ShowIf("canGrowth")]
+        public float decreaseInterval;
+        
+        [FoldoutGroup("Data Setting")]
+        [Tooltip("Minimum of defaultEnemySpawnTimer can be lowest")]
+        [ShowIf("canGrowth")]
+        public float decreaseMinimum;
+        
         [FoldoutGroup("Data Setting")] 
+        [Title("Enemy Point")]
         [Tooltip("interval of enemy point to increase (Default 60 seconds)")]
         public float intervalIncreaseEnemyPoint = 60;
         

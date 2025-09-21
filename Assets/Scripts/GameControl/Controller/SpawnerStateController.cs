@@ -6,6 +6,7 @@ using Sirenix.OdinInspector;
 using TMPro;
 using UI;
 using UnityEngine;
+using VHierarchy.Libs;
 
 namespace GameControl.Controller
 {
@@ -51,8 +52,10 @@ namespace GameControl.Controller
         public Transform EnemyParent => enemyParent;
         public Transform ItemParent => itemParent;
         public Vector2 RegionSize => regionSize;
-        public float EnemySpawnTimer { get => _currentMapData.defaultEnemySpawnTimer; set => _currentMapData.defaultEnemySpawnTimer = value; }
+        public float EnemySpawnTimer { get => defaultEnemySpawnTimer; set => defaultEnemySpawnTimer = value; }
         public float ItemSpawnTimer { get => _currentMapData.defaultItemSpawnTimer; set => _currentMapData.defaultItemSpawnTimer = value; }
+
+        public float defaultEnemySpawnTimer;
 
         public float CurrentEnemyPoint
         {
@@ -114,6 +117,7 @@ namespace GameControl.Controller
             _enemyPatternController = new EnemyPatternController(_currentMapData, this, regionSize, debugPattern);
             _itemSpawnerController = new ItemSpawnerController(_currentMapData, this, itemdropRegionSize);
             _mapEventController = new MapEventController(_currentMapData, this, debugMapEvent);
+            defaultEnemySpawnTimer = _currentMapData.defaultEnemySpawnTimer;
             
             await UniTask.WaitUntil(() => _enemySpawnerController != null && _enemyPatternController != null && _itemSpawnerController != null);
             
@@ -139,6 +143,12 @@ namespace GameControl.Controller
                 _currentMapData.addPatternInterval,
                 GameTimer.Instance.StartTimerNumber, () =>{_enemyPatternController.AddRandomPatterns(_currentMapData.amountToAdd); }, false);
             
+            //Spawn Interval
+            GameTimer.Instance.ScheduleLoopingTrigger(
+                _currentMapData.decreaseInterval,
+                GameTimer.Instance.StartTimerNumber, () => { UpdateDefaultSpawnInterval(); }, false);
+
+            
             //Upgrade Max Spawn point every 1 minute
             GameTimer.Instance.ScheduleLoopingTrigger(_currentMapData.intervalIncreaseEnemyPoint, GameTimer.Instance.StartTimerNumber, 
                 () => UpgradeMaxSpawnPoint(_increaseRateEnemyPoint));
@@ -154,6 +164,15 @@ namespace GameControl.Controller
             GameTimer.Instance.ScheduleOnceAtRemaining(60, () => PopupUIManager.Instance.ShowPopup("Warning", 2.0f, bypassStack: true));
  
             _mapEventController.ScheduleAllTriggersUpfront(GameTimer.Instance.StartTimerNumber);
+        }
+
+        private void UpdateDefaultSpawnInterval()
+        {
+            defaultEnemySpawnTimer = Mathf.Clamp(
+                defaultEnemySpawnTimer - _currentMapData.decreaseAmount,
+                _currentMapData.decreaseMinimum,
+                _currentMapData.defaultEnemySpawnTimer
+            );
         }
         
         public void ClearEnemy()
