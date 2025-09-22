@@ -61,7 +61,7 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 9c8223f7d20d92549b63562686ff8747, type: 2}
   - id: Enemy_Tank
     enemyController: {fileID: 1371981663885322251, guid: c825ab4cef105ab40aa986fd07615367, type: 3}
-    spawnPoint: 1.906
+    spawnPoint: 2.641
     enemyPointCanGrowth: 0
     enemyPointGrowthRate: 12.5
     chance: 0
@@ -75,7 +75,7 @@ MonoBehaviour:
     - {fileID: 11400000, guid: b2759ca457c3c3d49b2eab9d6d81c2f0, type: 2}
   - id: Enemy_Absolute
     enemyController: {fileID: 1371981663885322251, guid: eec6f0bc923ca8c4e8d1f911f0441879, type: 3}
-    spawnPoint: 2.884
+    spawnPoint: 3.987
     enemyPointCanGrowth: 0
     enemyPointGrowthRate: 12.5
     chance: 0
@@ -89,7 +89,7 @@ MonoBehaviour:
     - {fileID: 11400000, guid: b3dd7bb4ce73f58438ee3cb2e5f2c445, type: 2}
   - id: Enemy_Absorption
     enemyController: {fileID: 1371981663885322251, guid: fd4d927248ba7894fab69bd0611e5dd6, type: 3}
-    spawnPoint: 5.635
+    spawnPoint: 7.494
     enemyPointCanGrowth: 0
     enemyPointGrowthRate: 12.5
     chance: 0
@@ -145,7 +145,7 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 7fe54f688e6e96548afaea6e8475e71b, type: 2}
   - id: Enemy_Pressure
     enemyController: {fileID: 241806535288265801, guid: 79dec73735459964a8ca48d4f07d4f9a, type: 3}
-    spawnPoint: 1.725
+    spawnPoint: 2.752
     enemyPointCanGrowth: 0
     enemyPointGrowthRate: 12.5
     chance: 0
@@ -159,7 +159,7 @@ MonoBehaviour:
     - {fileID: 11400000, guid: fbb198d5f11874a4e99e237c96ccd39e, type: 2}
   - id: Enemy_Firecraker
     enemyController: {fileID: 241806535288265801, guid: 27b7309a2863d144f92c41ed68909b7a, type: 3}
-    spawnPoint: 3.041
+    spawnPoint: 4.504
     enemyPointCanGrowth: 0
     enemyPointGrowthRate: 12.5
     chance: 0
@@ -173,7 +173,7 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 826635642fc3dd242a25e5d0326d9a23, type: 2}
   - id: Enemy_Bomber
     enemyController: {fileID: 241806535288265801, guid: e35823daef8ec1d4190c0960c0e7bb8b, type: 3}
-    spawnPoint: 5.013
+    spawnPoint: 6.996
     enemyPointCanGrowth: 0
     enemyPointGrowthRate: 12.5
     chance: 0
@@ -379,10 +379,10 @@ MonoBehaviour:
     rateModify: -27
     intervalModify: 540
     minPlayInterval: 3
-  defaultEnemySpawnTimer: 0.5
+  defaultEnemySpawnTimer: 0.75
   canGrowth: 1
-  decreaseAmount: 0.03
-  decreaseInterval: 90
+  decreaseAmount: 0.022
+  decreaseInterval: 30
   decreaseMinimum: 0.35
   intervalIncreaseEnemyPoint: 30
   rateIncreaseEnemyPoint: 50
