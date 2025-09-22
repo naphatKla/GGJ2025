@@ -15,19 +15,22 @@ namespace GameControl
     public class TimerTrigger
     {
         public string id;
+        public string groupId;
         public float triggerTime;
         public bool triggered = false; 
         public bool triggerWhenSkip = true;
         public Action callback;
 
-        public TimerTrigger(float time, Action cb, string id = null, bool triggerWhenSkip = true)
+        public TimerTrigger(float time, Action cb, string id = null, string groupId = null, bool triggerWhenSkip = true)
         {
             triggerTime = time;
             callback = cb;
             this.id = id;
+            this.groupId = groupId;   // <-- NEW
             this.triggerWhenSkip = triggerWhenSkip;
         }
     }
+
 
     public class GameTimer : MMSingleton<GameTimer>
     {
@@ -346,18 +349,25 @@ namespace GameControl
         /// <param name="callback"></param>
         /// <param name="id"></param>
         /// <returns></returns>
-        public TimerTrigger ScheduleOnceAtRemaining(float remainingSeconds, Action callback, string id = null, bool triggerWhenSkip = true)
+        public TimerTrigger ScheduleOnceAtRemaining(
+            float remainingSeconds,
+            Action callback,
+            string id = null,
+            bool triggerWhenSkip = true,
+            string groupId = null)
         {
             remainingSeconds = Mathf.Max(remainingSeconds, 0f);
 
-            if (!string.IsNullOrEmpty(id) && _registeredIds.Contains(id)) return null;
-
-            var trig = new TimerTrigger(remainingSeconds, callback, id, triggerWhenSkip);
+            if (!string.IsNullOrEmpty(id) && _registeredIds.Contains(id))
+                return null;
+            
+            var trig = new TimerTrigger(remainingSeconds, callback, id, groupId, triggerWhenSkip);
             _timeTriggers.Add(trig);
 
             if (!string.IsNullOrEmpty(id)) _registeredIds.Add(id);
             return trig;
         }
+
         
         /// <summary>
         /// Trigger once when time pass X Second (elapsed)
@@ -386,20 +396,44 @@ namespace GameControl
             return ScheduleOnceAtRemaining(remaining, callback, id, triggerWhenSkip);
         }
         
-        public void ScheduleTrigger(float timeInSeconds, Action callback, bool triggerWhenSkip = true)
+        public void ScheduleTrigger(float timeInSeconds, Action callback, bool triggerWhenSkip = true, string groupId = null)
         {
-            _timeTriggers.Add(new TimerTrigger(timeInSeconds, callback, id: null, triggerWhenSkip: triggerWhenSkip));
+            _timeTriggers.Add(new TimerTrigger(timeInSeconds, callback, id: null, groupId: groupId, triggerWhenSkip: triggerWhenSkip));
         }
-        
-        public void ScheduleLoopingTrigger(float intervalSeconds, float totalDurationSeconds, Action callback, bool triggerWhenSkip = true)
+
+        public void ScheduleLoopingTrigger(float intervalSeconds, float totalDurationSeconds, Action callback, bool triggerWhenSkip = true, string groupId = null)
         {
             int count = Mathf.FloorToInt(totalDurationSeconds / intervalSeconds);
             for (int i = 1; i <= count; i++)
             {
                 float triggerTime = totalDurationSeconds - i * intervalSeconds;
-                ScheduleTrigger(triggerTime, callback, triggerWhenSkip);
+                ScheduleTrigger(triggerTime, callback, triggerWhenSkip, groupId);
             }
         }
+
+        
+        public void CancelGroup(string groupId)
+        {
+            if (string.IsNullOrEmpty(groupId)) return;
+            _timeTriggers.RemoveAll(t => !t.triggered && t.groupId == groupId);
+        }
+
+        public void ScheduleLoopingFromNow(string groupId, float newIntervalSeconds, Action callback, bool triggerWhenSkip = true)
+        {
+            CancelGroup(groupId);
+
+            newIntervalSeconds = Mathf.Max(0.01f, newIntervalSeconds);
+            var remaining = GlobalTimer;
+            if (remaining <= 0f) return;
+
+            int count = Mathf.FloorToInt(remaining / newIntervalSeconds);
+            for (int i = 1; i <= count; i++)
+            {
+                float trigTime = Mathf.Max(remaining - i * newIntervalSeconds, 0f);
+                _timeTriggers.Add(new TimerTrigger(trigTime, callback, id:null, groupId:groupId, triggerWhenSkip:triggerWhenSkip));
+            }
+        }
+
         #endregion
     }
 }

@@ -29,6 +29,8 @@ namespace GameControl.Controller
         private readonly bool _isDebug;
         private float _currentTriggertime;
         private CancellationTokenSource _cts;
+        private readonly int _patternMax;
+        private readonly bool _canDuplicateAfterHaveAllPattern;
 
         public EnemyPatternController(MapDataSO mapData, SpawnerStateController state, Vector2 spawnRegion, bool debug)
         {
@@ -38,6 +40,9 @@ namespace GameControl.Controller
             _patternEnemy = new List<MapDataSO.PatternOption>();
             _isDebug = debug;
             _currentTriggertime = mapData.triggerAllPatternIn;
+            
+            _patternMax = Mathf.Max(1, Mathf.RoundToInt(mapData.patternMax));
+            _canDuplicateAfterHaveAllPattern = mapData.canDuplicateAfterHaveAllPattern;
         }
 
         public void SetEnemySpawner(EnemySpawnerController spawner)
@@ -64,28 +69,65 @@ namespace GameControl.Controller
                 if (_isDebug) Debug.Log($"[EnemyPatternController] Trigger time decreased to {_currentTriggertime}");
             }
         }
+        
+        public void AddRandomPatterns(int count)
+        {
+            for (int i = 0; i < count; i++)
+            {
+                AddRandomPattern();
+            }
+        }
 
-        // Add a random pattern (keeps list of patterns to play)
         public void AddRandomPattern()
         {
             if (_mapdata.PatternOptions == null || _mapdata.PatternOptions.Count == 0) return;
-            var availablePatterns = _mapdata.PatternOptions
-                .Where(p => !_patternEnemy.Contains(p) && p.enableThisPattern)
+            EnsurePatternCapacity();
+
+            var enabledPatterns = GetEnabledPatterns();
+            var availablePatterns = enabledPatterns
+                .Where(p => !_patternEnemy.Contains(p))
                 .ToList();
 
-            if (availablePatterns.Count == 0)
+            MapDataSO.PatternOption selectedPattern = null;
+
+            if (availablePatterns.Count > 0)
             {
-                if (_isDebug) Debug.Log("[EnemyPatternController] No available new patterns to add.");
-                return;
+                var idx = Random.Range(0, availablePatterns.Count);
+                selectedPattern = availablePatterns[idx];
+            }
+            else
+            {
+                if (_canDuplicateAfterHaveAllPattern && enabledPatterns.Count > 0)
+                {
+                    var idx = Random.Range(0, enabledPatterns.Count);
+                    selectedPattern = enabledPatterns[idx];
+                }
+                else
+                {
+                    if (_isDebug) Debug.Log("[EnemyPatternController] No available patterns to add (duplicates disabled or none enabled).");
+                    return;
+                }
             }
 
-            var randomIndex = Random.Range(0, availablePatterns.Count);
-            var selectedPattern = availablePatterns[randomIndex];
             _patternEnemy.Add(selectedPattern);
-
-            if (_isDebug) Debug.Log($"[EnemyPatternController] Added random pattern: '{selectedPattern.pattern.name}'. Total patterns now: {_patternEnemy.Count}");
+            if (_isDebug) Debug.Log($"[EnemyPatternController] Added pattern: '{selectedPattern.pattern.name}'. Total={_patternEnemy.Count}/{_patternMax}");
         }
 
+        
+        private List<MapDataSO.PatternOption> GetEnabledPatterns()
+        {
+            return _mapdata.PatternOptions?
+                .Where(p => p != null && p.enableThisPattern)
+                .ToList() ?? new List<MapDataSO.PatternOption>();
+        }
+
+        private void EnsurePatternCapacity()
+        {
+            if (_patternEnemy.Count >= _patternMax)
+            {
+                _patternEnemy.RemoveAt(0);
+            }
+        }
 
         //Random Enemy Type
         public MapDataSO.EnemyOption RandomType(MapDataSO.PatternOption patternOption)

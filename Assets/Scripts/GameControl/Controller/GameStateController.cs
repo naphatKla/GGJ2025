@@ -37,17 +37,17 @@ namespace GameControl.Controller
         private string _currentStateName;
         
         [ShowInInspector, ReadOnly]
-        private SO.MapDataSO _currentMapData;
+        private MapDataSO _currentMapDataRuntime;
         
         [SerializeField] private MapSelectionDataContainer mapContainer;
         [Tooltip("The index of the current map in the mapData list.")]
         [SerializeField] private int currentMapIndex;
-        private List<MapDataSO> MapDataList => mapContainer != null ? mapContainer.mapSelectionList : new List<MapDataSO>();
+        private List<MapDataSO> MapDataList =>
+            mapContainer != null && mapContainer.mapSelectionList != null
+                ? mapContainer.mapSelectionList
+                : new List<MapDataSO>();
         
-        public SO.MapDataSO CurrentMap => 
-            MapDataList.Count > 0 && currentMapIndex < MapDataList.Count
-                ? MapDataList[currentMapIndex]
-                : null;
+        public MapDataSO CurrentMap => _currentMapDataRuntime;
         
         public EndResult gameResult;
         public IGameState CurrentState => _currentState;
@@ -60,9 +60,33 @@ namespace GameControl.Controller
             _startState = new StartState();
             _endState = new EndState();
             _summaryState = new SummaryState();
-            _currentMapData = CurrentMap;
+            
+            if (MapDataList.Count > 0)
+            {
+                currentMapIndex = Mathf.Clamp(currentMapIndex, 0, MapDataList.Count - 1);
+                AssignMapRuntime(MapDataList[currentMapIndex]);
+            }
+            else
+            {
+                _currentMapDataRuntime = null;
+            }
         }
 
+        private MapDataSO MakeRuntimeCopy(MapDataSO src)
+        {
+            if (src == null) return null;
+            var copy = Instantiate(src);
+            copy.name = src.name + " (Runtime)";
+            copy.hideFlags = HideFlags.DontSave;
+            return copy;
+        }
+
+        private void AssignMapRuntime(MapDataSO asset)
+        {
+            if (_currentMapDataRuntime != null) Destroy(_currentMapDataRuntime);
+            _currentMapDataRuntime = MakeRuntimeCopy(asset);
+        }
+        
         private void OnEnable()
         {
             _currentState?.OnEnable(this);
@@ -95,7 +119,9 @@ namespace GameControl.Controller
         {
             await UniTask.WaitUntil(() => MapSelectionSender.Instance != null);
             currentMapIndex = MapSelectionSender.Instance.currentMapSelectionIndex;
-            _currentMapData = CurrentMap;
+            if (MapDataList.Count == 0) { _currentMapDataRuntime = null; return; }
+            currentMapIndex = Mathf.Clamp(currentMapIndex, 0, MapDataList.Count - 1);
+            AssignMapRuntime(MapDataList[currentMapIndex]);
             SetState(_tutorialState);
         }
 
@@ -146,10 +172,13 @@ namespace GameControl.Controller
         [FoldoutGroup("Map Button"), Button(ButtonSizes.Large), GUIColor(0, 1, 1)]
         public void SetMap(int mapIndex)
         {
+            if (MapDataList.Count == 0) return;
             if (mapIndex < 0 || mapIndex >= MapDataList.Count) return;
+
             currentMapIndex = mapIndex;
-            _currentMapData = CurrentMap;
             MapSelectionSender.Instance.currentMapSelectionIndex = currentMapIndex;
+
+            AssignMapRuntime(MapDataList[currentMapIndex]);
             SetState(_prestartState);
         }
         
@@ -158,9 +187,14 @@ namespace GameControl.Controller
         {
             if (MapDataList.Count == 0 || currentMapIndex >= MapDataList.Count - 1) return;
             currentMapIndex++;
-            _currentMapData = CurrentMap;
             MapSelectionSender.Instance.currentMapSelectionIndex = currentMapIndex;
+            AssignMapRuntime(MapDataList[currentMapIndex]);
             SetState(_prestartState);
+        }
+        
+        private void OnDestroy()
+        {
+            if (_currentMapDataRuntime != null) Destroy(_currentMapDataRuntime);
         }
     }
 }

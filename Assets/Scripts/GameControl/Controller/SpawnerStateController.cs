@@ -1,11 +1,13 @@
 using Characters.Controllers;
 using Cysharp.Threading.Tasks;
 using GameControl.Interface;
+using GameControl.SO;
 using MoreMountains.Tools;
 using Sirenix.OdinInspector;
 using TMPro;
 using UI;
 using UnityEngine;
+using VHierarchy.Libs;
 
 namespace GameControl.Controller
 {
@@ -27,7 +29,8 @@ namespace GameControl.Controller
         private string _currentStateName;
         [BoxGroup("Debug")] 
         [ShowInInspector, ReadOnly]
-        private SO.MapDataSO _currentMapData;
+        private MapDataSO CurrentMap => GameStateController.Instance != null ? GameStateController.Instance.CurrentMap : null;
+
         
         [BoxGroup("Setting")] [SerializeField] private EnemySpawnerController _enemySpawnerController;
         [BoxGroup("Setting")] [SerializeField] private EnemyPatternController _enemyPatternController;
@@ -51,8 +54,15 @@ namespace GameControl.Controller
         public Transform EnemyParent => enemyParent;
         public Transform ItemParent => itemParent;
         public Vector2 RegionSize => regionSize;
-        public float EnemySpawnTimer { get => _currentMapData.defaultEnemySpawnTimer; set => _currentMapData.defaultEnemySpawnTimer = value; }
-        public float ItemSpawnTimer { get => _currentMapData.defaultItemSpawnTimer; set => _currentMapData.defaultItemSpawnTimer = value; }
+        public float EnemySpawnTimer { get => defaultEnemySpawnTimer; set => defaultEnemySpawnTimer = value; }
+        public float ItemSpawnTimer
+        {
+            get => CurrentMap != null ? CurrentMap.defaultItemSpawnTimer : 0f;
+            set { if (CurrentMap != null) CurrentMap.defaultItemSpawnTimer = value; }
+        }
+
+
+        public float defaultEnemySpawnTimer;
 
         public float CurrentEnemyPoint
         {
@@ -66,7 +76,6 @@ namespace GameControl.Controller
             _stopState = new SpawnerState.StopState();
             _spawningState = new SpawnerState.SpawningState();
             _pauseState = new SpawnerState.PauseState();
-            _currentMapData = GameStateController.Instance.CurrentMap;
         }
         
         private void Start()
@@ -108,56 +117,73 @@ namespace GameControl.Controller
             _currentStateName = _currentState?.GetType().Name;
         }
 
-        public async UniTaskVoid SetupMapAndEnemy()
+        public async UniTaskVoid SetupMapAndEnemy(bool setSchedule)
         {
-            _enemySpawnerController = new EnemySpawnerController(_currentMapData, this, regionSize, debugEnemy, mainCamera);
-            _enemyPatternController = new EnemyPatternController(_currentMapData, this, regionSize, debugPattern);
-            _itemSpawnerController = new ItemSpawnerController(_currentMapData, this, itemdropRegionSize);
-            _mapEventController = new MapEventController(_currentMapData, this, debugMapEvent);
+            _enemySpawnerController = new EnemySpawnerController(CurrentMap, this, regionSize, debugEnemy, mainCamera);
+            _enemyPatternController = new EnemyPatternController(CurrentMap, this, regionSize, debugPattern);
+            _itemSpawnerController = new ItemSpawnerController(CurrentMap, this, itemdropRegionSize);
+            _mapEventController = new MapEventController(CurrentMap, this, debugMapEvent);
+            defaultEnemySpawnTimer = CurrentMap.defaultEnemySpawnTimer;
             
             await UniTask.WaitUntil(() => _enemySpawnerController != null && _enemyPatternController != null && _itemSpawnerController != null);
             
-            _currentEnemyPoint = _currentMapData.startEnemyPoint;
-            _maxEnemyPoint = _currentMapData.maxEnemyPoint;
-            _increaseRateEnemyPoint = _currentMapData.rateIncreaseEnemyPoint;
+            _currentEnemyPoint = CurrentMap.startEnemyPoint;
+            _maxEnemyPoint = CurrentMap.maxEnemyPoint;
+            _increaseRateEnemyPoint = CurrentMap.rateIncreaseEnemyPoint;
             
             _itemSpawnerController.PrewarmItem();
             _enemyPatternController.SetEnemySpawner(_enemySpawnerController);
             _enemyPatternController.AddRandomPattern();
             
+            //Schedule
+            if (!setSchedule) return;
             //Trigger time will decrease if enable
-            GameTimer.Instance.ScheduleLoopingTrigger(_currentMapData.patternDecreaseInterval, GameTimer.Instance.StartTimerNumber, 
-                () => _enemyPatternController.UpdateTriggerTime());
+            GameTimer.Instance.ScheduleLoopingTrigger(CurrentMap.patternDecreaseInterval, GameTimer.Instance.StartTimerNumber, 
+                () => _enemyPatternController.UpdateTriggerTime(), true, "PATTERN");
             
             //Every 3 minute trigger pattern
             GameTimer.Instance.ScheduleLoopingTrigger(
-                _currentMapData.playAllPatternIn,
-                GameTimer.Instance.StartTimerNumber,
-                () =>
-                {
-                    UniTask.Void(async () =>
-                    {
-                        _enemyPatternController.AddRandomPattern();
-                        await UniTask.Delay(100);
-                        _enemyPatternController.TriggerAllPatterns();
-                    });
-                }, false);
+                CurrentMap.playAllPatternIn,
+                GameTimer.Instance.StartTimerNumber, () =>{_enemyPatternController.TriggerAllPatterns(); }, false,"PATTERN");
+            
+            //Add pattern
+            GameTimer.Instance.ScheduleLoopingTrigger(
+                CurrentMap.addPatternInterval,
+                GameTimer.Instance.StartTimerNumber, () =>{_enemyPatternController.AddRandomPatterns(CurrentMap.amountToAdd); }
+                , true, "PATTERN");
+            
+            //Spawn Interval
+            GameTimer.Instance.ScheduleLoopingTrigger(
+                CurrentMap.decreaseInterval,
+                GameTimer.Instance.StartTimerNumber, () => { UpdateDefaultSpawnInterval(); }
+                , false
+                ,"SPAWNER");
+
             
             //Upgrade Max Spawn point every 1 minute
-            GameTimer.Instance.ScheduleLoopingTrigger(_currentMapData.intervalIncreaseEnemyPoint, GameTimer.Instance.StartTimerNumber, 
-                () => UpgradeMaxSpawnPoint(_increaseRateEnemyPoint));
+            GameTimer.Instance.ScheduleLoopingTrigger(CurrentMap.intervalIncreaseEnemyPoint, GameTimer.Instance.StartTimerNumber, 
+                () => UpgradeMaxSpawnPoint(_increaseRateEnemyPoint), true, "SPAWNER");
             
             //Upgrade Chance rate every 30 seconds
-            GameTimer.Instance.ScheduleLoopingTrigger(_currentMapData.intervalEnemyChanceUpgrade, GameTimer.Instance.StartTimerNumber, 
-                () => _enemySpawnerController.UpgradeEnemyChance());
+            GameTimer.Instance.ScheduleLoopingTrigger(CurrentMap.intervalEnemyChanceUpgrade, GameTimer.Instance.StartTimerNumber, 
+                () => _enemySpawnerController.UpgradeEnemyChance(), true, "SPAWNER");
             
             //Upgrade Spawn Ratio every 30 seconds
-            GameTimer.Instance.ScheduleLoopingTrigger(_currentMapData.intervalEnemyPointRatioUpgrade, GameTimer.Instance.StartTimerNumber, 
-                () => _enemySpawnerController.UpgradePointRatio());
+            GameTimer.Instance.ScheduleLoopingTrigger(CurrentMap.intervalEnemyPointRatioUpgrade, GameTimer.Instance.StartTimerNumber, 
+                () => _enemySpawnerController.UpgradePointRatio(), true, "SPAWNER");
 
             GameTimer.Instance.ScheduleOnceAtRemaining(60, () => PopupUIManager.Instance.ShowPopup("Warning", 2.0f, bypassStack: true));
  
             _mapEventController.ScheduleAllTriggersUpfront(GameTimer.Instance.StartTimerNumber);
+        }
+
+        private void UpdateDefaultSpawnInterval()
+        {
+            defaultEnemySpawnTimer = Mathf.Clamp(
+                defaultEnemySpawnTimer - CurrentMap.decreaseAmount,
+                CurrentMap.decreaseMinimum,
+                CurrentMap.defaultEnemySpawnTimer
+            );
         }
         
         public void ClearEnemy()
@@ -222,9 +248,9 @@ namespace GameControl.Controller
         }
         
         [Button("Add Pattern" , ButtonSizes.Large), GUIColor(0, 1, 0)]
-        private void TriggerAddPattern()
+        private void TriggerAddPattern(int amount)
         {
-            _enemyPatternController.AddRandomPattern();
+            _enemyPatternController.AddRandomPatterns(amount);
         }
         
         [Button("Clear all Enemy" , ButtonSizes.Large), GUIColor(1, 0, 0)]
