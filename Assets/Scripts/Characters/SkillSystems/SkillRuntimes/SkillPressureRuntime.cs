@@ -12,7 +12,8 @@ namespace Characters.SkillSystems.SkillRuntimes
     {
         protected override void OnSkillStart()
         {
-            owner.MovementSystem.StopAllMovementAndTween();
+            if (skillData.StopOnCharge)
+                owner.MovementSystem.StopAllMovementAndTween();
         }
 
         protected override async UniTask OnSkillUpdate(CancellationToken cancelToken)
@@ -35,7 +36,8 @@ namespace Characters.SkillSystems.SkillRuntimes
         protected override void OnSkillExit()
         {
             if (!owner) return;
-            owner.MovementSystem.ResetMovementSystem();
+            if (skillData.StopOnCharge)
+                owner.MovementSystem.ResetMovementSystem();
             CombatManager.ApplyRawDamageTo(owner.gameObject, owner.gameObject, owner.HealthSystem.MaxHealth);
         }
     }
