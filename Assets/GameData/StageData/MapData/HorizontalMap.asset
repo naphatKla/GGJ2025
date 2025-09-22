@@ -103,7 +103,7 @@ MonoBehaviour:
     - {fileID: 11400000, guid: f4b764d3576967545ab0873bf66d3ab6, type: 2}
   - id: Enemy_Piercer
     enemyController: {fileID: 5352284219382747297, guid: c31b489d153b0634585086d777023f54, type: 3}
-    spawnPoint: 1.287
+    spawnPoint: 1.466
     enemyPointCanGrowth: 0
     enemyPointGrowthRate: 12.5
     chance: 0
@@ -117,7 +117,7 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 80ca52462799e884b8fd6616cee36084, type: 2}
   - id: Enemy_Javelin
     enemyController: {fileID: 5352284219382747297, guid: 9b50d372f60f2b44e8902b9700c8ff75, type: 3}
-    spawnPoint: 1.798
+    spawnPoint: 2.057
     enemyPointCanGrowth: 0
     enemyPointGrowthRate: 12.5
     chance: 0
@@ -131,7 +131,7 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 374f290d01a025e4abb6c9f95c9685ce, type: 2}
   - id: Enemy_Comet
     enemyController: {fileID: 5352284219382747297, guid: f393a17767905ac4ca15da0af7bc1668, type: 3}
-    spawnPoint: 3.094
+    spawnPoint: 3.423
     enemyPointCanGrowth: 0
     enemyPointGrowthRate: 12.5
     chance: 0
@@ -375,8 +375,8 @@ MonoBehaviour:
     rateModify: -27
     intervalModify: 540
     minPlayInterval: 3
-  defaultEnemySpawnTimer: 0.35
+  defaultEnemySpawnTimer: 0.5
   intervalIncreaseEnemyPoint: 30
-  rateIncreaseEnemyPoint: 32
+  rateIncreaseEnemyPoint: 50
   startEnemyPoint: 60
   maxEnemyPoint: 1000
