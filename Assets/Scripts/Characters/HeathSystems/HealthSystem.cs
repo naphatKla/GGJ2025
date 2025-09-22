@@ -184,11 +184,7 @@ namespace Characters.HeathSystems
             CancelAndDispose(ref _linkedDeadCts);
             CancelAndDispose(ref _deadCts);
 
-            if (Cinemachine2DCameraController.Instance != null &&
-                Cinemachine2DCameraController.Instance.IsTransformInView(transform))
-            {
-                owner?.TryPlayFeedback(FeedbackName.Character.Spawn);
-            }
+            owner?.TryPlayFeedback(FeedbackName.Character.Spawn);
         }
 
         /// <summary>Starts the hit cooldown period after the character takes damage.</summary>

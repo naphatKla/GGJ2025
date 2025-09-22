@@ -12,8 +12,10 @@ namespace Characters.SO.SkillDataSo
         
         [Unit(Units.Percent)] [FoldoutGroup("Damage Configs")]
         [SerializeField] private float damageMultiplier = 100;
+
+        [FoldoutGroup("Skill Configs")] 
+        [SerializeField] private bool stopOnCharge = true;
         
-        [FoldoutGroup("Skill Configs")]
         [SerializeField] private float chargeDuration;
         
         [FoldoutGroup("Skill Configs")]
@@ -25,6 +27,8 @@ namespace Characters.SO.SkillDataSo
 
         public float BaseDamage => baseDamage;
         public float DamageMultiplier => damageMultiplier;
+
+        public bool StopOnCharge => stopOnCharge;
         public float ChargeDuration => chargeDuration;
         public float ExplosionRadius => explosionRadius;
 
