@@ -16,6 +16,7 @@ namespace Characters.SO.SkillDataSo
         [FoldoutGroup("Skill Configs")] 
         [SerializeField] private bool stopOnCharge = true;
         
+        [FoldoutGroup("Skill Configs")] 
         [SerializeField] private float chargeDuration;
         
         [FoldoutGroup("Skill Configs")]
