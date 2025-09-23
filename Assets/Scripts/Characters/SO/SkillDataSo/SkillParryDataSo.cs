@@ -36,8 +36,11 @@ namespace Characters.SO.SkillDataSo
         [SerializeField] private string parrySuccessFeedback;
 
         [FoldoutGroup("Status Effects")] [SerializeField]
+        private List<StatusEffectDataPayload> selfEffectsOnParrySuccess;
+        
+        [FoldoutGroup("Status Effects")] [SerializeField]
         private List<StatusEffectDataPayload> explosionEffectsToTarget;
-
+        
         public bool StopWhileParry => stopWhileParry;
         public float ParryDuration => parryDuration;
         public float ExplosionBaseDamage => explosionBaseDamage;
@@ -45,6 +48,7 @@ namespace Characters.SO.SkillDataSo
         public float ExplosionRadius => explosionRadius;
         public string ParrySuccessFeedback => 
             string.IsNullOrEmpty(parrySuccessFeedback) ? null : FeedbackName.ResolveFullKey("Skill", parrySuccessFeedback);
+        public List<StatusEffectDataPayload> SelfEffectsOnParrySuccess => selfEffectsOnParrySuccess;
         public List<StatusEffectDataPayload> ExplosionEffectsToTarget => explosionEffectsToTarget;
         public float KnockBackDistance => knockBackDistance;
         public float KnockBackDuration => knockBackDuration;

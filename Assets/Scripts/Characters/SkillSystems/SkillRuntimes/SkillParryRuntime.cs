@@ -23,6 +23,8 @@ namespace Characters.SkillSystems.SkillRuntimes
             LayerMask damageLayer = CharacterGlobalSettings.Instance.EnemyLayerDictionary[owner.tag];
             var targetsInRange =
                 Physics2D.OverlapCircleAll(owner.transform.position, skillData.ExplosionRadius, damageLayer);
+            
+            StatusEffectManager.ApplyEffectTo(gameObject, skillData.SelfEffectsOnParrySuccess);
 
             foreach (var target in targetsInRange)
             {
