@@ -305,7 +305,7 @@ namespace GameControl.SO
         
         [FoldoutGroup("Pattern Setting")]
         [Tooltip("Max pattern that can be add")]
-        public float patternMax;
+        public float patternMax = 20;
         
         [FoldoutGroup("Pattern Setting")]
         [InfoBox("Pattern จะสามารถถูก Add เพิ่มเข้าไปซ้ำได้ถ้าใช้ Pattern หมดไปแล้ว")]
@@ -348,17 +348,17 @@ namespace GameControl.SO
         [FoldoutGroup("Data Setting")]
         [Tooltip("How much defaultEnemySpawnTimer will be decrease")]
         [ShowIf("canGrowth")]
-        public float decreaseAmount;
+        public float decreaseAmount = 0.022f;
         
         [FoldoutGroup("Data Setting")]
         [Tooltip("Frequency defaultEnemySpawnTimer will be decrease")]
         [ShowIf("canGrowth")]
-        public float decreaseInterval;
+        public float decreaseInterval = 30f;
         
         [FoldoutGroup("Data Setting")]
         [Tooltip("Minimum of defaultEnemySpawnTimer can be lowest")]
         [ShowIf("canGrowth")]
-        public float decreaseMinimum;
+        public float decreaseMinimum = 0.35f;
         
         [FoldoutGroup("Data Setting")] 
         [Title("Enemy Point")]
@@ -376,6 +376,17 @@ namespace GameControl.SO
         [FoldoutGroup("Data Setting")] 
         [Tooltip("Max spawn point of every enemy to spawn (Default 500)")]
         public float maxEnemyPoint = 500;
+        #endregion
+
+        #region Rush Setting
+
+        [FoldoutGroup("Rush Setting")]
+        public RushDataSO rushData;
+
+        [FoldoutGroup("Rush Setting")] 
+        [Tooltip("Time to enter rush (Default Last 60 seconds)")]
+        public float rushTime = 60f;
+
         #endregion
     }
 }

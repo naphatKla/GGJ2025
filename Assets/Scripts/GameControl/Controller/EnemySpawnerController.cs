@@ -69,6 +69,23 @@ namespace GameControl.Controller
                 );
             }
         }
+        
+        public void ReloadFromMap(MapDataSO newMap)
+        {
+            if (newMap == null) return;
+            ReleaseAllEnemies();
+            ClearAllEnemys();
+
+            _mapdata = newMap;
+            PrewarmEnemy();
+        }
+        
+        public void ReloadOptions(List<MapDataSO.EnemyOption> newOptions)
+        {
+            if (newOptions == null) return;
+            _mapdata.EnemyOptions = new List<MapDataSO.EnemyOption>(newOptions);
+            ReloadFromMap(_mapdata);
+        }
 
         private EnemyController CreateFunc(MapDataSO.EnemyOption option)
         {

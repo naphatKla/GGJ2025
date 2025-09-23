@@ -169,9 +169,60 @@ namespace GameControl.Controller
             GameTimer.Instance.ScheduleLoopingTrigger(CurrentMap.intervalEnemyPointRatioUpgrade, GameTimer.Instance.StartTimerNumber, 
                 () => _enemySpawnerController.UpgradePointRatio(), true, "SPAWNER");
 
-            GameTimer.Instance.ScheduleOnceAtRemaining(60, () => PopupUIManager.Instance.ShowPopup("Warning", 2.0f, bypassStack: true));
- 
-            _mapEventController.ScheduleAllTriggersUpfront(GameTimer.Instance.StartTimerNumber);
+            GameTimer.Instance.ScheduleOnceAtRemaining(62, () => PopupUIManager.Instance.ShowPopup("Warning", 2.0f, bypassStack: true));
+
+            GameStateController.Instance.ScheduleRush();
+            _mapEventController.ReloadAllEvents();
+        }
+        
+        public void OnMapModified()
+        {
+            var map = CurrentMap;
+            if (map == null) return;
+            
+            defaultEnemySpawnTimer = map.defaultEnemySpawnTimer;
+            _maxEnemyPoint         = map.maxEnemyPoint;
+            _increaseRateEnemyPoint= map.rateIncreaseEnemyPoint;
+            _currentEnemyPoint     = Mathf.Min(_currentEnemyPoint, _maxEnemyPoint);
+            
+            _enemySpawnerController?.ReloadOptions(map.EnemyOptions);
+            _enemyPatternController?.ReloadPatterns(map.PatternOptions);
+            RescheduleAllFromNow();
+        }
+        
+        private void RescheduleAllFromNow()
+        {
+            var timer = GameTimer.Instance;
+            var map   = CurrentMap;
+            if (timer == null || map == null) return;
+            
+            timer.CancelGroup("PATTERN");
+            timer.CancelGroup("SPAWNER");
+
+            // ---- PATTERN ----
+            if (map.triggerTimeCanDecrease && map.patternDecreaseInterval > 0f)
+                timer.ScheduleLoopingFromNow("PATTERN", map.patternDecreaseInterval, () => _enemyPatternController.UpdateTriggerTime());
+
+            if (map.playAllPatternIn > 0f)
+                timer.ScheduleLoopingFromNow("PATTERN", map.playAllPatternIn, () => _enemyPatternController.TriggerAllPatterns(), triggerWhenSkip:false);
+
+            if (map.addPatternInterval > 0f)
+                timer.ScheduleLoopingFromNow("PATTERN", map.addPatternInterval, () => _enemyPatternController.AddRandomPatterns(map.amountToAdd));
+
+            // ---- SPAWNER ----
+            if (map.decreaseInterval > 0f)
+                timer.ScheduleLoopingFromNow("SPAWNER", map.decreaseInterval, () => UpdateDefaultSpawnInterval(), triggerWhenSkip:false);
+
+            if (map.intervalIncreaseEnemyPoint > 0f)
+                timer.ScheduleLoopingFromNow("SPAWNER", map.intervalIncreaseEnemyPoint, () => UpgradeMaxSpawnPoint(_increaseRateEnemyPoint));
+
+            if (map.intervalEnemyChanceUpgrade > 0f)
+                timer.ScheduleLoopingFromNow("SPAWNER", map.intervalEnemyChanceUpgrade, () => _enemySpawnerController.UpgradeEnemyChance());
+
+            if (map.intervalEnemyPointRatioUpgrade > 0f)
+                timer.ScheduleLoopingFromNow("SPAWNER", map.intervalEnemyPointRatioUpgrade, () => _enemySpawnerController.UpgradePointRatio());
+            
+            _mapEventController?.ReloadAllEvents();
         }
 
         private void UpdateDefaultSpawnInterval()

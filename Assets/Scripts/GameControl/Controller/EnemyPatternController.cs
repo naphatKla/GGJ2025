@@ -29,8 +29,8 @@ namespace GameControl.Controller
         private readonly bool _isDebug;
         private float _currentTriggertime;
         private CancellationTokenSource _cts;
-        private readonly int _patternMax;
-        private readonly bool _canDuplicateAfterHaveAllPattern;
+        private int PatternMax => Mathf.Max(1, Mathf.RoundToInt(_mapdata.patternMax));
+        private bool CanDuplicateAfterHaveAllPattern => _mapdata.canDuplicateAfterHaveAllPattern;
 
         public EnemyPatternController(MapDataSO mapData, SpawnerStateController state, Vector2 spawnRegion, bool debug)
         {
@@ -40,9 +40,6 @@ namespace GameControl.Controller
             _patternEnemy = new List<MapDataSO.PatternOption>();
             _isDebug = debug;
             _currentTriggertime = mapData.triggerAllPatternIn;
-            
-            _patternMax = Mathf.Max(1, Mathf.RoundToInt(mapData.patternMax));
-            _canDuplicateAfterHaveAllPattern = mapData.canDuplicateAfterHaveAllPattern;
         }
 
         public void SetEnemySpawner(EnemySpawnerController spawner)
@@ -51,7 +48,56 @@ namespace GameControl.Controller
             _storeEnemy = spawner.GetEnemyList();
             _storeOption = spawner.GetEnemyOption();
         }
+
+        public void ReloadPatterns(List<MapDataSO.PatternOption> newPatterns)
+        {
+            StopProcessing();
+            if (newPatterns != null) _mapdata.PatternOptions = newPatterns;
+            _currentTriggertime = Mathf.Max(0.01f, _mapdata.triggerAllPatternIn);
+            _batchQueue.Clear();
+            _minPerPatternSlot = 0f;
+            
+            int targetCount = Mathf.Min(PatternMax, _patternEnemy.Count);
+
+            _patternEnemy.Clear();
+
+            if (_enemySpawner != null)
+            {
+                _storeEnemy = _enemySpawner.GetEnemyList();
+                _storeOption = _enemySpawner.GetEnemyOption();
+            }
+
+            AddRandomPatternsForce(targetCount);
+            RebindSpawner(_enemySpawner);
+            if (_isDebug) Debug.Log($"[EnemyPatternController] Reloaded patterns and restored count to {targetCount}/{PatternMax}");
+        }
         
+        private void AddRandomPatternsForce(int count)
+        {
+            for (int i = 0; i < count; i++)
+            {
+                var enabled = GetEnabledPatterns();
+                if (enabled == null || enabled.Count == 0) break;
+
+                EnsurePatternCapacity();
+                var notIn = enabled.Where(p => !_patternEnemy.Contains(p)).ToList();
+                MapDataSO.PatternOption pick = null;
+
+                if (notIn.Count > 0)
+                    pick = notIn[Random.Range(0, notIn.Count)];
+                else
+                    pick = enabled[Random.Range(0, enabled.Count)];
+                _patternEnemy.Add(pick);
+            }
+        }
+        
+        public void RebindSpawner(EnemySpawnerController spawner)
+        {
+            SetEnemySpawner(spawner);
+            _storeEnemy = spawner.GetEnemyList();
+            _storeOption = spawner.GetEnemyOption();
+        }
+
         public void TriggerAllPatterns()
         {
             if (_patternEnemy.Count == 0) return;
@@ -97,7 +143,7 @@ namespace GameControl.Controller
             }
             else
             {
-                if (_canDuplicateAfterHaveAllPattern && enabledPatterns.Count > 0)
+                if (CanDuplicateAfterHaveAllPattern && enabledPatterns.Count > 0)
                 {
                     var idx = Random.Range(0, enabledPatterns.Count);
                     selectedPattern = enabledPatterns[idx];
@@ -110,7 +156,7 @@ namespace GameControl.Controller
             }
 
             _patternEnemy.Add(selectedPattern);
-            if (_isDebug) Debug.Log($"[EnemyPatternController] Added pattern: '{selectedPattern.pattern.name}'. Total={_patternEnemy.Count}/{_patternMax}");
+            if (_isDebug) Debug.Log($"[EnemyPatternController] Added pattern: '{selectedPattern.pattern.name}'. Total={_patternEnemy.Count}/{PatternMax}");
         }
 
         
@@ -123,10 +169,8 @@ namespace GameControl.Controller
 
         private void EnsurePatternCapacity()
         {
-            if (_patternEnemy.Count >= _patternMax)
-            {
+            if (_patternEnemy.Count >= PatternMax)
                 _patternEnemy.RemoveAt(0);
-            }
         }
 
         //Random Enemy Type

@@ -212,5 +212,34 @@ namespace GameControl.SO
         }
 
         #endregion
+        
+        
+        public void ApplyInto(MapDataSO target)
+        {
+            if (!target) return;
+
+            // Enemy scalars
+            target.intervalEnemyChanceUpgrade     = intervalEnemyChanceUpgrade;
+            target.intervalEnemyPointRatioUpgrade = intervalEnemyPointRatioUpgrade;
+            // Enemy list
+            target.EnemyOptions = enemyOptions != null ? new List<MapDataSO.EnemyOption>(enemyOptions) : null;
+
+            // Pattern scalars
+            target.playAllPatternIn         = playAllPatternIn;
+            target.triggerAllPatternIn      = triggerAllPatternIn;
+            target.triggerTimeCanDecrease   = triggerTimeCanDecrease;
+            target.patternDecreaseInterval  = patternDecreaseInterval;
+            target.patternDecreaseRate      = patternDecreaseRate;
+            target.patternDecreaseMinimum   = patternDecreaseMinimum;
+            target.addPatternInterval       = addPatternInterval;
+            target.amountToAdd              = amountToAdd;
+            target.patternMax               = patternMax;
+            target.canDuplicateAfterHaveAllPattern = canDuplicateAfterHaveAllPattern;
+            // Pattern list
+            target.PatternOptions = patternOptions != null ? new List<MapDataSO.PatternOption>(patternOptions) : null;
+
+            // Event map list
+            target.eventmapOptions = eventmapOptions != null ? new List<MapDataSO.EventMapOption>(eventmapOptions) : null;
+        }
     }
 }

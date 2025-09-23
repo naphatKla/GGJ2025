@@ -87,6 +87,22 @@ namespace GameControl.Controller
             _currentMapDataRuntime = MakeRuntimeCopy(asset);
         }
         
+        private void EnterRush()
+        {
+            var m = CurrentMap;
+            if (m?.rushData == null) return;
+
+            m.rushData.ApplyInto(m); 
+            SpawnerStateController.Instance?.OnMapModified();
+        }
+        
+        public void ScheduleRush()
+        {
+            var m = CurrentMap;
+            if (m?.rushData == null) return;
+            GameTimer.Instance.ScheduleOnceAtRemaining(m.rushTime, EnterRush);
+        }
+        
         private void OnEnable()
         {
             _currentState?.OnEnable(this);

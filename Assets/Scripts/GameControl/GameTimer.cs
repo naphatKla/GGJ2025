@@ -26,7 +26,7 @@ namespace GameControl
             triggerTime = time;
             callback = cb;
             this.id = id;
-            this.groupId = groupId;   // <-- NEW
+            this.groupId = groupId;
             this.triggerWhenSkip = triggerWhenSkip;
         }
     }
