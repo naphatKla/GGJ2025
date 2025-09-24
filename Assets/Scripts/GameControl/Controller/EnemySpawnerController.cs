@@ -33,60 +33,7 @@ namespace GameControl.Controller
             PrewarmEnemy();
         }
 
-        public void PrewarmEnemy()
-        {
-            _activeEnemy = new List<EnemyController>();
-            _enemyOptionsList = new List<MapDataSO.EnemyOption>();
-            _enemyPools = new Dictionary<string, ObjectPool<EnemyController>>();
-            
-            foreach (var data in _mapdata.EnemyOptions)
-            {
-                var cloned = new MapDataSO.EnemyOption
-                {
-                    id = data.id,
-                    enemyController = data.enemyController,
-                    EnemyPoint = data.EnemyPoint,
-                    enemyPointGrowthRate = data.enemyPointGrowthRate,
-                    enemyPointCanGrowth = data.enemyPointCanGrowth,
-                    enemyChanceGrowthRate = data.enemyChanceGrowthRate,
-                    enemyChanceCanGrowth = data.enemyChanceCanGrowth,
-                    useCustomInterval = data.useCustomInterval,
-                    customInterval = data.customInterval,
-                    EnemyObject = data.EnemyObject,
-                    Chance = data.Chance,
-                    useSpawnConditions = data.useSpawnConditions,
-                    conditionLogic = data.conditionLogic,
-                    spawnConditions = data.spawnConditions != null ? new List<SpawnConditionSO>(data.spawnConditions) : null
-                };
-                _enemyOptionsList.Add(cloned);
-
-                _enemyPools[cloned.id] = new ObjectPool<EnemyController>(
-                    () => CreateFunc(cloned),
-                    obj => ActionOnGet(obj, cloned),
-                    obj => ActionOnRelease(obj, cloned),
-                    obj => ActionOnDestroy(obj, cloned),
-                    false
-                );
-            }
-        }
-        
-        public void ReloadFromMap(MapDataSO newMap)
-        {
-            if (newMap == null) return;
-            ReleaseAllEnemies();
-            ClearAllEnemys();
-
-            _mapdata = newMap;
-            PrewarmEnemy();
-        }
-        
-        public void ReloadOptions(List<MapDataSO.EnemyOption> newOptions)
-        {
-            if (newOptions == null) return;
-            _mapdata.EnemyOptions = new List<MapDataSO.EnemyOption>(newOptions);
-            ReloadFromMap(_mapdata);
-        }
-
+        #region Pooling
         private EnemyController CreateFunc(MapDataSO.EnemyOption option)
         {
             var obj = Object.Instantiate(option.EnemyObject);
@@ -131,7 +78,6 @@ namespace GameControl.Controller
             _activeEnemy.Add(obj);
         }
         
-
         public Dictionary<string, ObjectPool<EnemyController>> GetEnemyList()
         {
             return _enemyPools;
@@ -142,42 +88,6 @@ namespace GameControl.Controller
             return _enemyOptionsList;
         }
         
-        public void UpgradePointRatio()
-        {
-            foreach (var data in _enemyOptionsList)
-            {
-                if (data.enemyPointCanGrowth)
-                    data.EnemyPoint *= (1 + data.enemyPointGrowthRate / 100f);
-            }
-        }
- 
-        public void UpgradeEnemyChance()
-        {
-            float totalChanceBefore = 0;
-            foreach (var data in _enemyOptionsList)
-                totalChanceBefore += data.Chance;
-
-            foreach (var data in _enemyOptionsList)
-            {
-                if (data.enemyChanceCanGrowth)
-                    data.Chance += data.enemyChanceGrowthRate;
-            }
-
-            float totalChanceAfter = 0;
-            foreach (var data in _enemyOptionsList)
-                totalChanceAfter += data.Chance;
-
-            foreach (var data in _enemyOptionsList)
-                data.Chance = (data.Chance / totalChanceAfter) * 100f;
-
-            if (!_debug) return;
-             Debug.Log("---- Enemy Spawn Chance After Normalize ----");
-            foreach (var data in _enemyOptionsList)
-            {
-                Debug.Log($"ID: {data.id} | Chance: {data.Chance:F2}%");
-            }
-        }
-
         public List<MapDataSO.EnemyOption> ConditionEnemy(bool bypass)
         {
             List<MapDataSO.EnemyOption> candidates;
@@ -203,13 +113,99 @@ namespace GameControl.Controller
             SpawnerStateController.Instance.CurrentEnemyPoint -= randomEnemy.EnemyPoint;
             return randomEnemy;
         }
+        
+        #endregion
+        
+        #region Public Method
+        public void PrewarmEnemy()
+        {
+            _activeEnemy = new List<EnemyController>();
+            _enemyOptionsList = new List<MapDataSO.EnemyOption>();
+            _enemyPools = new Dictionary<string, ObjectPool<EnemyController>>();
+            
+            foreach (var data in _mapdata.EnemyOptions)
+            {
+                var cloned = new MapDataSO.EnemyOption
+                {
+                    id = data.id,
+                    enemyController = data.enemyController,
+                    EnemyPoint = data.EnemyPoint,
+                    enemyPointGrowthRate = data.enemyPointGrowthRate,
+                    enemyPointCanGrowth = data.enemyPointCanGrowth,
+                    enemyChanceGrowthRate = data.enemyChanceGrowthRate,
+                    enemyChanceCanGrowth = data.enemyChanceCanGrowth,
+                    useCustomInterval = data.useCustomInterval,
+                    customInterval = data.customInterval,
+                    EnemyObject = data.EnemyObject,
+                    Chance = data.Chance,
+                    useSpawnConditions = data.useSpawnConditions,
+                    conditionLogic = data.conditionLogic,
+                    spawnConditions = data.spawnConditions != null ? new List<SpawnConditionSO>(data.spawnConditions) : null
+                };
+                _enemyOptionsList.Add(cloned);
 
+                _enemyPools[cloned.id] = new ObjectPool<EnemyController>(
+                    () => CreateFunc(cloned),
+                    obj => ActionOnGet(obj, cloned),
+                    obj => ActionOnRelease(obj, cloned),
+                    obj => ActionOnDestroy(obj, cloned),
+                    false
+                );
+            }
+        }
+        public void ReloadOptions(List<MapDataSO.EnemyOption> newOptions)
+        {
+            if (newOptions == null) return;
+            _mapdata.EnemyOptions = new List<MapDataSO.EnemyOption>(newOptions);
+            ReloadFromMap(_mapdata);
+        }
+        public void ReloadFromMap(MapDataSO newMap)
+        {
+            if (newMap == null) return;
+            ReleaseAllEnemies();
+            ClearAllEnemys();
+
+            _mapdata = newMap;
+            PrewarmEnemy();
+        }
+        public void UpgradePointRatio()
+        {
+            foreach (var data in _enemyOptionsList)
+            {
+                if (data.enemyPointCanGrowth)
+                    data.EnemyPoint *= (1 + data.enemyPointGrowthRate / 100f);
+            }
+        }
+        public void UpgradeEnemyChance()
+        {
+            float totalChanceBefore = 0;
+            foreach (var data in _enemyOptionsList)
+                totalChanceBefore += data.Chance;
+
+            foreach (var data in _enemyOptionsList)
+            {
+                if (data.enemyChanceCanGrowth)
+                    data.Chance += data.enemyChanceGrowthRate;
+            }
+
+            float totalChanceAfter = 0;
+            foreach (var data in _enemyOptionsList)
+                totalChanceAfter += data.Chance;
+
+            foreach (var data in _enemyOptionsList)
+                data.Chance = (data.Chance / totalChanceAfter) * 100f;
+
+            if (!_debug) return; Debug.Log("---- Enemy Spawn Chance After Normalize ----");
+            foreach (var data in _enemyOptionsList)
+            {
+                Debug.Log($"ID: {data.id} | Chance: {data.Chance:F2}%");
+            }
+        }
         public void ClearAllEnemysCompletely()
         {
             ReleaseAllEnemies();
             ClearAllEnemys();
         }
-        
         public void ClearAllEnemys()
         {
             foreach (var pool in _enemyPools.Values)
@@ -218,7 +214,6 @@ namespace GameControl.Controller
             }
             _activeEnemy.Clear();
         }
-
         public void ReleaseAllEnemies()
         {
             foreach (var enemy in _activeEnemy.ToArray())
@@ -226,5 +221,7 @@ namespace GameControl.Controller
                 enemy.HealthSystem.TakeDamage(enemy.HealthSystem.MaxHealth, out _);
             }
         }
+        
+        #endregion
     }
 }

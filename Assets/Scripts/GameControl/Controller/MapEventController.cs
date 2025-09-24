@@ -14,20 +14,30 @@ namespace GameControl.Controller
         private readonly SpawnerStateController _state;
         private readonly bool _debug;
         private readonly HashSet<string> _activeEventGroups = new();
-
-
+        
         public MapEventController(MapDataSO mapData, SpawnerStateController state, bool debug)
         {
             _mapdata = mapData;
             _state = state;
             _debug = debug;
         }
-
-        public void ReloadMapData(MapDataSO newMap)
+        
+        #region Public Method
+        public void ReloadAllEvents()
         {
+            if (_mapdata?.eventmapOptions == null || _mapdata.eventmapOptions.Count == 0) return;
             CancelAllEventGroups();
-            _mapdata = newMap;
-            ReloadAllEvents();
+            var startTotal = GameTimer.Instance.StartTimerNumber;
+            var remainingNow = GameTimer.Instance.GlobalTimer;
+            var elapsedNow = Mathf.Max(0f, startTotal - remainingNow);
+            
+            foreach (var opt in _mapdata.eventmapOptions)
+            {
+                if (opt == null || !opt.enableThisMapEvent) continue;
+                ScheduleCategoryForwardFromNow(opt, elapsedNow, remainingNow);
+            }
+
+            if (_debug) Debug.Log("[MapEventController] ReloadAllEvents -> rebuilt schedules from 'now'.");
         }
 
         public float CalculateMapEventInterval(MapDataSO.EventMapOption eventOption, float elapsedTime)
@@ -64,46 +74,9 @@ namespace GameControl.Controller
             if (_debug) Debug.Log($"[PlaySpecificCategoryName] Playing event category '{categoryName}'.");
             PlayMapEventCatagory(eventOption);
         }
+        #endregion
 
-        public void ScheduleAllTriggersUpfront(float maxTime)
-        {
-            Debug.Log($"{maxTime} Reload Schedule");
-            foreach (var eventOption in _mapdata.eventmapOptions)
-            {
-                if (!eventOption.enableThisMapEvent) continue;
-
-                var elapsedTime = 0f;
-                var nextTriggerTime = 0f;
-                var startTimer = GameTimer.Instance.StartTimerNumber;
-
-                if (_debug) Debug.Log($"[ScheduleAllTriggersUpfront] Start scheduling for event category '{eventOption.catagolyMapEvent}' with maxTime {maxTime}");
-
-                while (nextTriggerTime < maxTime)
-                {
-                    var interval = CalculateMapEventInterval(eventOption, elapsedTime);
-                    nextTriggerTime += interval;
-
-                    var triggerTime = startTimer - nextTriggerTime;
-
-                    if (triggerTime < 0) break;
-
-                    if (_debug)
-                        Debug.Log(
-                            $"[ScheduleAllTriggersUpfront] Scheduling '{eventOption.catagolyMapEvent}' trigger at timer = {triggerTime:F2}s (interval = {interval:F2}s, elapsed = {elapsedTime:F2}s)");
-
-                    GameTimer.Instance.ScheduleTrigger(triggerTime, () =>
-                    {
-                        if (_debug)
-                            Debug.Log(
-                                $"[PlayMapEventCatagory] Triggered event category '{eventOption.catagolyMapEvent}' at timer = {GameTimer.Instance.GlobalTimer:F2}s");
-                        PlayMapEventCatagory(eventOption);
-                    }, false);
-
-                    elapsedTime = nextTriggerTime;
-                }
-            }
-        }
-
+        #region Private Method
         private void PlayMapEventCatagory(MapDataSO.EventMapOption eventOption)
         {
             if (!IsEventChanceSuccessful(eventOption.eventMapChance)) return;
@@ -163,8 +136,7 @@ namespace GameControl.Controller
 
             return null;
         }
-
-
+        
         private void TriggerMapEvent(string eventID)
         {
             if (_debug) Debug.Log($"[TriggerMapEvent] Triggering map event ID: {eventID} at timer = {GameTimer.Instance.GlobalTimer:F2}s");
@@ -181,23 +153,6 @@ namespace GameControl.Controller
             foreach (var g in _activeEventGroups)
                 GameTimer.Instance.CancelGroup(g);
             _activeEventGroups.Clear();
-        }
-        
-        public void ReloadAllEvents()
-        {
-            if (_mapdata?.eventmapOptions == null || _mapdata.eventmapOptions.Count == 0) return;
-            CancelAllEventGroups();
-            var startTotal = GameTimer.Instance.StartTimerNumber;
-            var remainingNow = GameTimer.Instance.GlobalTimer;
-            var elapsedNow = Mathf.Max(0f, startTotal - remainingNow);
-            
-            foreach (var opt in _mapdata.eventmapOptions)
-            {
-                if (opt == null || !opt.enableThisMapEvent) continue;
-                ScheduleCategoryForwardFromNow(opt, elapsedNow, remainingNow);
-            }
-
-            if (_debug) Debug.Log("[MapEventController] ReloadAllEvents -> rebuilt schedules from 'now'.");
         }
         
         private void ScheduleCategoryForwardFromNow(MapDataSO.EventMapOption opt, float elapsedStart,
@@ -234,5 +189,6 @@ namespace GameControl.Controller
                 remaining = nextRemain;
             }
         }
+        #endregion
     }
 }

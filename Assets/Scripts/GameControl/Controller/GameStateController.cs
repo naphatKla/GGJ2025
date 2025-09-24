@@ -71,7 +71,7 @@ namespace GameControl.Controller
                 _currentMapDataRuntime = null;
             }
         }
-
+        
         private MapDataSO MakeRuntimeCopy(MapDataSO src)
         {
             if (src == null) return null;

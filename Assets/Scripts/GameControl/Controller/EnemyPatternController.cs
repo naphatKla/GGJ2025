@@ -41,6 +41,8 @@ namespace GameControl.Controller
             _isDebug = debug;
             _currentTriggertime = mapData.triggerAllPatternIn;
         }
+        
+        #region Public Method
 
         public void SetEnemySpawner(EnemySpawnerController spawner)
         {
@@ -72,6 +74,13 @@ namespace GameControl.Controller
             if (_isDebug) Debug.Log($"[EnemyPatternController] Reloaded patterns and restored count to {targetCount}/{PatternMax}");
         }
         
+        public void RebindSpawner(EnemySpawnerController spawner)
+        {
+            SetEnemySpawner(spawner);
+            _storeEnemy = spawner.GetEnemyList();
+            _storeOption = spawner.GetEnemyOption();
+        }
+        
         private void AddRandomPatternsForce(int count)
         {
             for (int i = 0; i < count; i++)
@@ -89,21 +98,6 @@ namespace GameControl.Controller
                     pick = enabled[Random.Range(0, enabled.Count)];
                 _patternEnemy.Add(pick);
             }
-        }
-        
-        public void RebindSpawner(EnemySpawnerController spawner)
-        {
-            SetEnemySpawner(spawner);
-            _storeEnemy = spawner.GetEnemyList();
-            _storeOption = spawner.GetEnemyOption();
-        }
-
-        public void TriggerAllPatterns()
-        {
-            if (_patternEnemy.Count == 0) return;
-            _batchQueue.Enqueue(new List<MapDataSO.PatternOption>(_patternEnemy));
-
-            if (!_isBatchProcessing) ProcessBatchQueue().Forget();
         }
 
         // Update trigger time externally when appropriate
@@ -159,20 +153,6 @@ namespace GameControl.Controller
             if (_isDebug) Debug.Log($"[EnemyPatternController] Added pattern: '{selectedPattern.pattern.name}'. Total={_patternEnemy.Count}/{PatternMax}");
         }
 
-        
-        private List<MapDataSO.PatternOption> GetEnabledPatterns()
-        {
-            return _mapdata.PatternOptions?
-                .Where(p => p != null && p.enableThisPattern)
-                .ToList() ?? new List<MapDataSO.PatternOption>();
-        }
-
-        private void EnsurePatternCapacity()
-        {
-            if (_patternEnemy.Count >= PatternMax)
-                _patternEnemy.RemoveAt(0);
-        }
-
         //Random Enemy Type
         public MapDataSO.EnemyOption RandomType(MapDataSO.PatternOption patternOption)
         {
@@ -203,9 +183,31 @@ namespace GameControl.Controller
             return RandomUtility.GetWeightedRandomById(candidates, dict,
                 o => (o.EnemyId ?? string.Empty).Trim().ToLowerInvariant());
         }
+        #endregion
 
         #region Private Method
 
+        public void TriggerAllPatterns()
+        {
+            if (_patternEnemy.Count == 0) return;
+            _batchQueue.Enqueue(new List<MapDataSO.PatternOption>(_patternEnemy));
+
+            if (!_isBatchProcessing) ProcessBatchQueue().Forget();
+        }
+        
+        private List<MapDataSO.PatternOption> GetEnabledPatterns()
+        {
+            return _mapdata.PatternOptions?
+                .Where(p => p != null && p.enableThisPattern)
+                .ToList() ?? new List<MapDataSO.PatternOption>();
+        }
+
+        private void EnsurePatternCapacity()
+        {
+            if (_patternEnemy.Count >= PatternMax)
+                _patternEnemy.RemoveAt(0);
+        }
+        
         private (MapDataSO.EnemyOption enemy, int amount, float usedPoints) ChooseEnemyAndCalculate(MapDataSO.PatternOption pattern)
         {
             var enemy = RandomType(pattern);
