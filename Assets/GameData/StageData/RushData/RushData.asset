@@ -33,7 +33,7 @@ MonoBehaviour:
     spawnPoint: 1.187
     enemyPointCanGrowth: 0
     enemyPointGrowthRate: 12.5
-    chance: 0
+    chance: 20
     enemyChanceCanGrowth: 0
     enemyChanceGrowthRate: 1.5
     useCustomInterval: 0
@@ -47,7 +47,7 @@ MonoBehaviour:
     spawnPoint: 1.794
     enemyPointCanGrowth: 0
     enemyPointGrowthRate: 12.5
-    chance: 0
+    chance: 20
     enemyChanceCanGrowth: 0
     enemyChanceGrowthRate: 1
     useCustomInterval: 0
@@ -61,7 +61,7 @@ MonoBehaviour:
     spawnPoint: 2.486
     enemyPointCanGrowth: 0
     enemyPointGrowthRate: 12.5
-    chance: 25
+    chance: 10
     enemyChanceCanGrowth: 0
     enemyChanceGrowthRate: 1
     useCustomInterval: 0
@@ -75,7 +75,7 @@ MonoBehaviour:
     spawnPoint: 3.796
     enemyPointCanGrowth: 0
     enemyPointGrowthRate: 12.5
-    chance: 10
+    chance: 7
     enemyChanceCanGrowth: 0
     enemyChanceGrowthRate: 1
     useCustomInterval: 0
@@ -117,7 +117,7 @@ MonoBehaviour:
     spawnPoint: 2.027
     enemyPointCanGrowth: 0
     enemyPointGrowthRate: 12.5
-    chance: 15
+    chance: 0
     enemyChanceCanGrowth: 0
     enemyChanceGrowthRate: 1
     useCustomInterval: 0
@@ -131,7 +131,7 @@ MonoBehaviour:
     spawnPoint: 3.139
     enemyPointCanGrowth: 0
     enemyPointGrowthRate: 12.5
-    chance: 7
+    chance: 15
     enemyChanceCanGrowth: 0
     enemyChanceGrowthRate: 0.5
     useCustomInterval: 0
@@ -145,7 +145,7 @@ MonoBehaviour:
     spawnPoint: 2.592
     enemyPointCanGrowth: 0
     enemyPointGrowthRate: 12.5
-    chance: 20
+    chance: 0
     enemyChanceCanGrowth: 0
     enemyChanceGrowthRate: 1
     useCustomInterval: 0
@@ -159,7 +159,7 @@ MonoBehaviour:
     spawnPoint: 3.439
     enemyPointCanGrowth: 0
     enemyPointGrowthRate: 12.5
-    chance: 15
+    chance: 20
     enemyChanceCanGrowth: 0
     enemyChanceGrowthRate: 1.5
     useCustomInterval: 0
@@ -184,6 +184,7 @@ MonoBehaviour:
     - {fileID: 11400000, guid: a36d2c81a79161946beeda253129118b, type: 2}
   intervalEnemyChanceUpgrade: 30
   intervalEnemyPointRatioUpgrade: 30
+  defaultEnemySpawnTimer: 0.1
   patternOptions:
   - enableThisPattern: 1
     bypassSpawnCondition: 0
@@ -294,7 +295,7 @@ MonoBehaviour:
   patternDecreaseInterval: 25
   patternDecreaseRate: 1
   patternDecreaseMinimum: 18
-  addPatternInterval: 36
+  addPatternInterval: 30
   amountToAdd: 1
   patternMax: 20
   canDuplicateAfterHaveAllPattern: 1
@@ -333,7 +334,7 @@ MonoBehaviour:
       chance: 10
       useWeightRandom: 1
     eventMapChance: 100
-    playInterval: 5
+    playInterval: 3
     intervalCanModify: 0
     rateModify: -27
     intervalModify: 540
