@@ -33,6 +33,10 @@ namespace GameControl.SO
         [FoldoutGroup("Enemy Setting")] public List<MapDataSO.EnemyOption> enemyOptions;
         [FoldoutGroup("Enemy Setting")] public float intervalEnemyChanceUpgrade;
         [FoldoutGroup("Enemy Setting")] public float intervalEnemyPointRatioUpgrade;
+        
+        [FoldoutGroup("Enemy Setting")] [Title("Default Enemy Timer Setting")]
+        [Tooltip("Enemy spawn interval (Default 1)")]
+        public float defaultEnemySpawnTimer;
 
         public void ImportEnemySetting(MapDataSO src)
         {
@@ -40,6 +44,7 @@ namespace GameControl.SO
 
             intervalEnemyChanceUpgrade = src.intervalEnemyChanceUpgrade;
             intervalEnemyPointRatioUpgrade = src.intervalEnemyPointRatioUpgrade;
+            defaultEnemySpawnTimer = src.defaultEnemySpawnTimer;
 
             enemyOptions = src.EnemyOptions?.ConvertAll(e => e == null
                 ? null
@@ -221,6 +226,7 @@ namespace GameControl.SO
             // Enemy scalars
             target.intervalEnemyChanceUpgrade     = intervalEnemyChanceUpgrade;
             target.intervalEnemyPointRatioUpgrade = intervalEnemyPointRatioUpgrade;
+            target.defaultEnemySpawnTimer = defaultEnemySpawnTimer;
             // Enemy list
             target.EnemyOptions = enemyOptions != null ? new List<MapDataSO.EnemyOption>(enemyOptions) : null;
 
