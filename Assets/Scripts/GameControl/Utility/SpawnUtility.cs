@@ -91,7 +91,6 @@ public static class SpawnUtility
         return new Vector2(x, y);
     }
     
-    
      /// <summary>
     /// สุ่มตำแหน่ง "แถว ๆ เมาส์" ในวงแหวนรัศมี [minRadius, maxRadius] บนระนาบ worldZ
     /// ใช้ได้ทั้ง Ortho/Perspective (คำนวณด้วย ScreenToWorldPoint)
@@ -175,6 +174,21 @@ public static class SpawnUtility
         {
             float x = Mathf.Clamp(mw.x + Random.Range(-alongJitter, alongJitter), minX, maxX);
             return new Vector2(x, minY - margin);
+        }
+    }
+
+    public static Vector2 RandomBetweenMouseAndCamera(Camera cam)
+    {
+        var random = Random.Range(0f, 1f);
+        if (random < 0.5f)
+        {
+            Vector2 mousePos = RandomAtScreenEdgeNearMouse(cam, worldZ: 0f, alongJitter: 0f, margin: 3f);
+            return mousePos;
+        }
+        else
+        {
+            Vector2 cameraPos = RandomSpawnAroundPlayerCamera(cam, 10f);
+            return  cameraPos;
         }
     }
 }

@@ -69,7 +69,7 @@ namespace GameControl.Controller
         
         private void ActionOnGet(EnemyController obj, MapDataSO.EnemyOption option)
         {
-            obj.transform.position = SpawnUtility.RandomSpawnAroundPlayerCamera(_mainCamera, 10f);
+            obj.transform.position = SpawnUtility.RandomBetweenMouseAndCamera(_mainCamera);
             obj.transform.SetParent(_state.EnemyParent);
             obj.FeedbackSystem.ShowTrail(true);
             obj.ResetAllDependentBehavior();
