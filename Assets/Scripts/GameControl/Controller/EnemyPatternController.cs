@@ -319,25 +319,38 @@ namespace GameControl.Controller
             StopEnemyMovement(enemyObj,patternData.enableMovementAfter).Forget();
         }
         
-        private async UniTaskVoid StopEnemyMovement(EnemyController enemy,float time)
+        private async UniTask StopEnemyMovement(EnemyController enemy, float time,
+            CancellationToken token = default)
         {
+            if (enemy == null) return;
+
+            var input = enemy.InputSystem;
+            var move  = enemy.MovementSystem;
+            time = Mathf.Max(0f, time);
+            bool prevEnable = input != null && input.Enable;
+
             try
             {
-                enemy.InputSystem.Enable = false;
-                enemy.MovementSystem.StopAllMovementAndTween();
-                await UniTask.Delay((int)(time * 1000));
-                enemy.InputSystem.Enable = true;
-                enemy.MovementSystem.ResetMovementSystem();
+                if (input != null) input.Enable = false;
+                move?.StopAllMovementAndTween();
+
+                await UniTask.Delay(TimeSpan.FromSeconds(time),
+                    DelayType.UnscaledDeltaTime,
+                    PlayerLoopTiming.Update,
+                    token);
             }
-            catch (Exception a)
+            catch (OperationCanceledException) { }
+            catch (Exception e)
             {
-                Console.WriteLine(a);
-                throw;
+                Debug.LogException(e);
             }
             finally
             {
-                enemy.MovementSystem.ResetMovementSystem();
-                enemy.InputSystem.Enable = true;
+                if (enemy != null)
+                {
+                    if (input != null) input.Enable = prevEnable;
+                    move?.ResetMovementSystem();
+                }
             }
         }
         

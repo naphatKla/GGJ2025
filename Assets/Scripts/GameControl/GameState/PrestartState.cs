@@ -19,7 +19,7 @@ namespace GameControl.GameState
         public void Enter(GameStateController controller)
         {
             SpawnerStateController.Instance.SetState(new SpawnerState.StopState());
-            GameTimer.Instance.SetTimer(controller.CurrentMap.mapGlobalTime);
+            CheckMode(controller);
             GameTimer.Instance.StopTimer();
             SpawnerStateController.Instance.ClearEnemy();
             SpawnerStateController.Instance.ClearItem();
@@ -49,6 +49,20 @@ namespace GameControl.GameState
             SoundManager.Instance.PlayUI(SoundName.UI.Gameplay_CountDown5Sec, timeScaleMode: SoundManager.TimeScaleMode.ScalePitch);
             await GameTimer.Instance.StartCountdownAsync(5f);
             GameStateController.Instance.SetState(new StartState());
+        }
+
+        private void CheckMode(GameStateController controller)
+        {
+            if (!controller.CurrentMap.endlessMode)
+            {
+                GameTimer.Instance.Countmode = GameTimer.TimerMode.Countdown;
+                GameTimer.Instance.SetTimer(controller.CurrentMap.mapGlobalTime);
+            }
+            else
+            {
+                GameTimer.Instance.Countmode = GameTimer.TimerMode.Countup;
+                GameTimer.Instance.SetTimer(0);
+            }
         }
     }
 }
