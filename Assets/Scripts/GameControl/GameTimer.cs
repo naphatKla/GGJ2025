@@ -630,13 +630,13 @@ namespace GameControl
             CancelGroup(groupId);
             intervalSeconds = Mathf.Max(0.01f, intervalSeconds);
 
-            float startRemaining = GlobalTimer;
+            double startRemaining = GlobalTimer + 1f;
             if (startRemaining <= 0f) return;
 
-            int count = Mathf.FloorToInt(startRemaining / intervalSeconds);
+            int count = Mathf.FloorToInt((float)startRemaining / intervalSeconds);
             for (int i = 1; i <= count; i++)
             {
-                float atRemaining = Mathf.Max(startRemaining - i * intervalSeconds, 0f);
+                float atRemaining = Mathf.Max((float)startRemaining - i * intervalSeconds, 0f);
                 _timeTriggers.Add(new TimerTrigger(atRemaining, callback, null, groupId, triggerWhenSkip, TriggerSpace.Remaining));
             }
         } 

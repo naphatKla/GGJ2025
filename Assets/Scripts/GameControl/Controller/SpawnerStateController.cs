@@ -112,7 +112,7 @@ namespace GameControl.Controller
             _currentStateName = _currentState?.GetType().Name;
         }
 
-        public async UniTaskVoid SetupMapAndEnemy(bool setSchedule)
+        public async UniTaskVoid SetupMapAndEnemy()
         {
             _enemySpawnerController = new EnemySpawnerController(CurrentMap, this, regionSize, debugEnemy, mainCamera);
             _enemyPatternController = new EnemyPatternController(CurrentMap, this, regionSize, debugPattern);
@@ -130,51 +130,9 @@ namespace GameControl.Controller
             _enemyPatternController.SetEnemySpawner(_enemySpawnerController);
             _enemyPatternController.AddRandomPattern();
             
-            //Schedule
-            if (!setSchedule) return;
-            
-            //Trigger time will decrease if enable
-            GameTimer.Instance.ScheduleLoopingTrigger(CurrentMap.endlessMode ,CurrentMap.patternDecreaseInterval, GameTimer.Instance.StartTimerNumber, 
-                () => _enemyPatternController.UpdateTriggerTime(), true, "PATTERN::DECREASE");
-            
-            //Every 3 minute trigger pattern
-            GameTimer.Instance.ScheduleLoopingTrigger(CurrentMap.endlessMode ,
-                CurrentMap.playAllPatternIn,
-                GameTimer.Instance.StartTimerNumber, () =>{_enemyPatternController.TriggerAllPatterns(); }, false,"PATTERN::TRIGGER");
-            
-            //Add pattern
-            GameTimer.Instance.ScheduleLoopingTrigger(CurrentMap.endlessMode ,
-                CurrentMap.addPatternInterval,
-                GameTimer.Instance.StartTimerNumber, () =>{_enemyPatternController.AddRandomPatterns(CurrentMap.amountToAdd); }
-                , true, "PATTERN::ADD");
-            
-            //Spawn Interval
-            GameTimer.Instance.ScheduleLoopingTrigger(CurrentMap.endlessMode ,
-                CurrentMap.decreaseInterval,
-                GameTimer.Instance.StartTimerNumber, () => { UpdateDefaultSpawnInterval(); }
-                , false
-                ,"SPAWNER::INTERVAL");
-
-            
-            //Upgrade Max Spawn point every 1 minute
-            GameTimer.Instance.ScheduleLoopingTrigger(CurrentMap.endlessMode ,
-                CurrentMap.intervalIncreaseEnemyPoint, GameTimer.Instance.StartTimerNumber, 
-                () => UpgradeMaxSpawnPoint(_increaseRateEnemyPoint), true, "SPAWNER::POINT");
-            
-            //Upgrade Chance rate every 30 seconds
-            GameTimer.Instance.ScheduleLoopingTrigger(CurrentMap.endlessMode ,
-                CurrentMap.intervalEnemyChanceUpgrade, GameTimer.Instance.StartTimerNumber, 
-                () => { _enemySpawnerController.UpgradeEnemyChance(); }, true, "SPAWNER::CHANCE");
-            
-            //Upgrade Spawn Ratio every 30 seconds
-            GameTimer.Instance.ScheduleLoopingTrigger(CurrentMap.endlessMode ,
-                CurrentMap.intervalEnemyPointRatioUpgrade, GameTimer.Instance.StartTimerNumber, 
-                () => _enemySpawnerController.UpgradePointRatio(), true, "SPAWNER::RATIO");
-
+            RescheduleAllFromNow(CurrentMap);
             GameTimer.Instance.ScheduleOnceAtRemaining(62, () => PopupUIManager.Instance.ShowPopup("Warning", 2.0f, bypassStack: true));
-
             GameStateController.Instance.ScheduleRush();
-            _mapEventController.ReloadAllEvents();
         }
         
         public void OnMapModified()
@@ -189,13 +147,12 @@ namespace GameControl.Controller
             
             _enemySpawnerController?.ReloadOptions(map.EnemyOptions);
             _enemyPatternController?.ReloadPatterns(map.PatternOptions);
-            RescheduleAllFromNow();
+            RescheduleAllFromNow(map);
         }
         
-        private void RescheduleAllFromNow()
+        private void RescheduleAllFromNow(MapDataSO map)
         {
             var timer = GameTimer.Instance;
-            var map   = CurrentMap;
             if (timer == null || map == null) return;
             
             timer.CancelGroup("PATTERN::DECREASE");
