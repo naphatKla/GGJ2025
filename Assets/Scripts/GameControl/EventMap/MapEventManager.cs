@@ -150,11 +150,23 @@ namespace GameControl.EventMap
                 },
                 obj =>
                 {
+                    if (obj == null) return;
+                    obj.ClearVFX();
                     obj.SetPool(pool);
                     obj.gameObject.SetActive(true);
                 },
-                obj => obj.gameObject.SetActive(false),
-                obj => Destroy(obj.gameObject),
+                obj =>
+                {
+                    if (obj == null || obj.gameObject == null) return;
+                    obj.ClearVFX();
+                    obj.gameObject.SetActive(false);
+                },
+                obj =>
+                {
+                    if (obj == null) return;
+                    obj.ClearVFX();
+                    Destroy(obj.gameObject);
+                },
                 false, 10, 100
             );
 

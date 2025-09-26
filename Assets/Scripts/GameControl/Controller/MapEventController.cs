@@ -15,6 +15,7 @@ namespace GameControl.Controller
         private readonly SpawnerStateController _state;
         private readonly bool _debug;
         private readonly HashSet<string> _activeEventGroups = new();
+        private readonly Dictionary<string, int> _lastFireFrame = new();
         
         public MapEventController(MapDataSO mapData, SpawnerStateController state, bool debug)
         {
@@ -82,12 +83,20 @@ namespace GameControl.Controller
         {
             if (!IsEventChanceSuccessful(eventOption.eventMapChance)) return;
 
-            var weightedEvents = GetWeightedEvents(eventOption);
-            var nonWeightedEvents = GetNonWeightedEvents(eventOption);
+            var fired = new HashSet<string>();
 
-            TriggerWeightedEvent(weightedEvents);
-            TriggerNonWeightedEvents(nonWeightedEvents);
+            var weighted = GetWeightedEvents(eventOption);
+            var nonWeighted = GetNonWeightedEvents(eventOption);
+
+            var selected = SelectEventByChance(weighted);
+            if (!string.IsNullOrEmpty(selected) && fired.Add(selected))
+                TriggerMapEvent(selected);
+
+            foreach (var ev in nonWeighted)
+                if (ev.chance >= 100f && fired.Add(ev.mapEventID))
+                    TriggerMapEvent(ev.mapEventID);
         }
+
 
         private bool IsEventChanceSuccessful(float eventChance)
         {
@@ -140,7 +149,11 @@ namespace GameControl.Controller
         
         private void TriggerMapEvent(string eventID)
         {
-            if (_debug) Debug.Log($"[TriggerMapEvent] Triggering map event ID: {eventID} at timer = {GameTimer.Instance.GlobalTimer:F2}s");
+            int frame = Time.frameCount;
+            if (_lastFireFrame.TryGetValue(eventID, out var last) && last == frame) return;
+            _lastFireFrame[eventID] = frame;
+
+            if (_debug) Debug.Log($"[TriggerMapEvent] {eventID} at remain={GameTimer.Instance.GlobalTimer:F2}s");
             MapEventManager.Instance.RunEvent(eventID);
         }
 
@@ -162,6 +175,7 @@ namespace GameControl.Controller
             if (opt == null || remainingStart <= 0f) return;
 
             var group = BuildGroupId(opt);
+            GameTimer.Instance.CancelGroup(group);
             _activeEventGroups.Add(group);
             
             var elapsed = Mathf.Max(0f, elapsedStart);

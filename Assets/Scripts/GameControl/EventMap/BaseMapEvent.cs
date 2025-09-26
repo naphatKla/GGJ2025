@@ -144,5 +144,38 @@ namespace GameControl.EventMap
                     break;
             }
         }
+
+        public void ClearVFX(bool includeChildren = true)
+        {
+            try
+            {
+                _cts?.Cancel();
+                if (notifyFeedback != null)
+                {
+                    notifyFeedback.StopFeedbacks();
+                    notifyFeedback.RestoreInitialValues();
+                }
+
+                if (playFeedback != null)
+                {
+                    playFeedback.StopFeedbacks();
+                    playFeedback.RestoreInitialValues();
+                }
+                
+                if (previewEffect != null)
+                {
+                    var main = previewEffect.main;
+                    main.simulationSpeed = 1f;
+                    previewEffect.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+                    previewEffect.Clear(true);
+                    var em = previewEffect.emission;
+                    em.enabled = false;
+                }
+            }
+            catch (MissingReferenceException)
+            {
+            }
+        }
+
     }
 }
