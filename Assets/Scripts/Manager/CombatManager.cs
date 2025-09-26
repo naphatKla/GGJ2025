@@ -73,9 +73,14 @@ namespace Manager
 
             if (targetController.FeedbackSystem is PlayerFeedbackSystem playerFeedback)
                 playerFeedback.OpenFocusBlackDropOnHit(0.4f, attacker);
-            
+
             if (dieThisFrame)
+            {
                 attackerController.CombatSystem.OnKillHandler();
+                if (targetController is PlayerController)
+                    Debug.LogWarning(attackerController.name + "Kill Player!!!");
+            }
+                
             
             if (damageData.LifeSteal <= 0) return;
             attackerController.HealthSystem.Heal(damageData.LifeSteal);
