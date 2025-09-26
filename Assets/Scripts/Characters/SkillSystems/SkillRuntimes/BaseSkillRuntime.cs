@@ -92,7 +92,6 @@ namespace Characters.SkillSystems.SkillRuntimes
             if (IsCooldown || IsPerforming) return;
 
             SetCurrentCooldown(skillData.Cooldown);
-            cts = new CancellationTokenSource();
 
             HandleSkillStart();
             try
@@ -110,6 +109,7 @@ namespace Characters.SkillSystems.SkillRuntimes
             await UniTask.Delay(milliSecondDelay);
             if (!IsPerforming) return;
             cts?.Cancel();
+            cts = new CancellationTokenSource();
         }
 
         protected virtual void HandleSkillStart()
