@@ -71,8 +71,12 @@ namespace Characters.SkillSystems.SkillRuntimes
                 owner.DamageOnTouch.DisableDamage(this);
                 owner.DamageOnTouch.EnableDamage(owner.gameObject, this, 7f, skillData.BaseDamagePerHit,
                     skillData.DamageMultiplier, 0, 0, skillData.LifeStealPercentChance, skillData.LifeStealEffective);
-                
-                if (targetPosition == null) break;
+
+                if (targetPosition == null)
+                {
+                    Debug.LogError("Light Step Cancel, The Target Pos == null");
+                    break;
+                }
 
                 owner.MovementSystem.StopTween();
 
@@ -108,6 +112,7 @@ namespace Characters.SkillSystems.SkillRuntimes
                 
                 if (cancelToken.IsCancellationRequested)
                 {
+                    Debug.LogError("Light Step Cancel From Skill Cancel");
                     break;
                 }
             }
