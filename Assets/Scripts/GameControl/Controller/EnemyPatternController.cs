@@ -28,7 +28,9 @@ namespace GameControl.Controller
         private float _minPerPatternSlot = 0f;
         private readonly bool _isDebug;
         private float _currentTriggertime;
-        private CancellationTokenSource _cts;
+        private CancellationToken _ct = CancellationToken.None;
+        public void BindCancellationToken(CancellationToken ct) { _ct = ct; }
+
         private int PatternMax => Mathf.Max(1, Mathf.RoundToInt(_mapdata.patternMax));
         private bool CanDuplicateAfterHaveAllPattern => _mapdata.canDuplicateAfterHaveAllPattern;
 
@@ -252,9 +254,9 @@ namespace GameControl.Controller
 
         private async UniTask WaitUntilEnoughEnemyPoint(MapDataSO.PatternOption pattern, CancellationToken ct = default)
         {
-            if (_isDebug)
-                Debug.Log($"[EnemyPatternController] Waiting until enough points for '{pattern.pattern.name}'...");
+            if (_isDebug) Debug.Log($"[EnemyPatternController] Waiting until enough points for '{pattern.pattern.name}'...");
 
+            if (ct == default) ct = _ct;
             if (SpawnerStateController.Instance.CurrentEnemyPoint >= pattern.patternPoint)
                 return;
 
@@ -293,19 +295,23 @@ namespace GameControl.Controller
 
             foreach (var row in rows)
             {
+                _ct.ThrowIfCancellationRequested();
                 foreach (var pos in row)
                 {
+                    _ct.ThrowIfCancellationRequested();
                     if (spawnedCount >= maxEnemyAmount) return;
 
                     SpawnEnemy(enemyType,patternData, pos);
                     spawnedCount++;
 
                     if (patternData.DelayBetweenEnemy > 0)
-                        await UniTask.Delay((int)(patternData.DelayBetweenEnemy * 1000));
+                        await UniTask.Delay((int)(patternData.DelayBetweenEnemy * 1000),
+                            DelayType.DeltaTime, PlayerLoopTiming.Update, _ct);
                 }
 
                 if (patternData.DelayBetweenRows > 0)
-                    await UniTask.Delay((int)(patternData.DelayBetweenRows * 1000));
+                    await UniTask.Delay((int)(patternData.DelayBetweenRows * 1000),
+                        DelayType.DeltaTime, PlayerLoopTiming.Update, _ct);
             }
         }
 
@@ -316,7 +322,7 @@ namespace GameControl.Controller
             var enemyObj = pool.Get();
             enemyObj.transform.position = pos;
             enemyObj.transform.SetParent(_state.EnemyParent);
-            StopEnemyMovement(enemyObj,patternData.enableMovementAfter).Forget();
+            StopEnemyMovement(enemyObj,patternData.enableMovementAfter, _ct).Forget();
         }
         
         private async UniTask StopEnemyMovement(EnemyController enemy, float time,
@@ -359,14 +365,12 @@ namespace GameControl.Controller
             if (_isBatchProcessing) return;
             _isBatchProcessing = true;
 
-            _cts?.Cancel();
-            _cts?.Dispose();
-            _cts = new CancellationTokenSource();
-
             try
             {
                 while (_batchQueue.Count > 0)
                 {
+                    _ct.ThrowIfCancellationRequested();
+                    
                     var batch = _batchQueue.Dequeue();
                     if (batch == null || batch.Count == 0) continue;
 
@@ -376,14 +380,15 @@ namespace GameControl.Controller
 
                     for (int i = 0; i < batch.Count; i++)
                     {
+                        _ct.ThrowIfCancellationRequested();
                         var pattern = batch[i];
 
-                        await WaitUntilEnoughEnemyPoint(pattern, _cts.Token);
+                        await WaitUntilEnoughEnemyPoint(pattern, _ct);
                         await TriggerSinglePattern(pattern);
                         if (i < batch.Count - 1)
                         {
                             if (_isDebug) Debug.Log($"[EnemyPatternController] Waiting {perPatternTime:0.00}s before next pattern...");
-                            await UniTask.Delay((int)(perPatternTime * 1000), cancellationToken: _cts.Token);
+                            await UniTask.Delay((int)(perPatternTime * 1000), cancellationToken: _ct);
                         }
                     }
 
@@ -398,15 +403,16 @@ namespace GameControl.Controller
             finally
             {
                 _isBatchProcessing = false;
-                _cts?.Dispose();
-                _cts = null;
             }
         }
 
         public void StopProcessing()
         {
-            _cts?.Cancel();
+            _patternQueue.Clear();
+            _batchQueue.Clear();
+            _isBatchProcessing = false;
         }
+
 
         #endregion
     }

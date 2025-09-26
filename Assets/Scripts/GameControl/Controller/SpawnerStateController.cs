@@ -112,16 +112,27 @@ namespace GameControl.Controller
             _currentStateName = _currentState?.GetType().Name;
         }
 
+        private void BindCancelToken()
+        {
+            var gsc = GameStateController.Instance;
+            if (gsc?.sceneCts != null)
+            {
+                _enemyPatternController.BindCancellationToken(gsc.sceneCts.Token);
+            }
+        }
+
         public async UniTaskVoid SetupMapAndEnemy()
         {
+            var gsc = GameStateController.Instance;
             _enemySpawnerController = new EnemySpawnerController(CurrentMap, this, regionSize, debugEnemy, mainCamera);
             _enemyPatternController = new EnemyPatternController(CurrentMap, this, regionSize, debugPattern);
             _itemSpawnerController = new ItemSpawnerController(CurrentMap, this, itemdropRegionSize);
             _mapEventController = new MapEventController(CurrentMap, this, debugMapEvent);
             _defaultEnemySpawnTimer = CurrentMap.defaultEnemySpawnTimer;
             
-            await UniTask.WaitUntil(() => _enemySpawnerController != null && _enemyPatternController != null && _itemSpawnerController != null);
+            await UniTask.WaitUntil(() => _enemySpawnerController != null && _enemyPatternController != null && _itemSpawnerController != null, cancellationToken: gsc.sceneCts.Token);
             
+            BindCancelToken();
             _currentEnemyPoint = CurrentMap.startEnemyPoint;
             _maxEnemyPoint = CurrentMap.maxEnemyPoint;
             _increaseRateEnemyPoint = CurrentMap.rateIncreaseEnemyPoint;
