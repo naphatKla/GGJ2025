@@ -165,9 +165,6 @@ namespace GameControl.Controller
         public void ReloadFromMap(MapDataSO newMap)
         {
             if (newMap == null) return;
-            ReleaseAllEnemies();
-            ClearAllEnemys();
-
             _mapdata = newMap;
             PrewarmEnemy();
         }
