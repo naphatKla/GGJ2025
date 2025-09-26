@@ -151,14 +151,14 @@ namespace GameControl.EventMap
                 obj =>
                 {
                     if (obj == null) return;
-                    obj.ClearVFX();
+                    //obj.ClearVFX();
                     obj.SetPool(pool);
                     obj.gameObject.SetActive(true);
                 },
                 obj =>
                 {
                     if (obj == null || obj.gameObject == null) return;
-                    obj.ClearVFX();
+                    //obj.ClearVFX();
                     obj.gameObject.SetActive(false);
                 },
                 obj =>

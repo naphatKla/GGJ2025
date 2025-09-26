@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Threading;
 using Cameras;
 using Characters.Controllers;
-using Characters.FeedbackSystems;
-using Characters.InputSystems;
 using Characters.SO.SkillDataSo;
 using Characters.StatusEffectSystems;
 using Cysharp.Threading.Tasks;
@@ -28,7 +26,7 @@ namespace Characters.SkillSystems.SkillRuntimes
         private bool _isWaitForCounterAttack;
         private bool _isWaitForMovementEnd;
         private bool _inGodSpeedPhase;
-        
+
 
         private readonly HashSet<Transform> _dashedTargets = new();
 
@@ -36,7 +34,7 @@ namespace Characters.SkillSystems.SkillRuntimes
         {
             if (IsWaitForCondition) return;
             if (IsCooldown || IsPerforming) return;
-            
+
             _isWaitForCounterAttack = true;
             _isWaitForMovementEnd = true;
             _dashedTargets.Clear();
@@ -67,14 +65,13 @@ namespace Characters.SkillSystems.SkillRuntimes
             for (int i = 0; i < skillData.TargetAmount; i++)
             {
                 var targetPosition = GetBestTargetPositionInView();
-                
+
                 owner.DamageOnTouch.DisableDamage(this);
                 owner.DamageOnTouch.EnableDamage(owner.gameObject, this, 7f, skillData.BaseDamagePerHit,
                     skillData.DamageMultiplier, 0, 0, skillData.LifeStealPercentChance, skillData.LifeStealEffective);
 
                 if (targetPosition == null)
                 {
-                    Debug.LogError("Light Step Cancel, The Target Pos == null");
                     break;
                 }
 
@@ -109,10 +106,9 @@ namespace Characters.SkillSystems.SkillRuntimes
                         moveCurve: curve)
                     .SetEase(Ease.InSine)
                     .WithCancellation(cancelToken);
-                
+
                 if (cancelToken.IsCancellationRequested)
                 {
-                    Debug.LogError("Light Step Cancel From Skill Cancel");
                     break;
                 }
             }
@@ -121,7 +117,7 @@ namespace Characters.SkillSystems.SkillRuntimes
         protected override void OnSkillExit()
         {
             ResetOnEnd().Forget();
-            
+
             if (!owner || !owner.gameObject.activeSelf) return;
             Vector2 endPos = (Vector2)owner.transform.position +
                              (owner.InputSystem.SightDirection.direction * 15f);
@@ -158,18 +154,17 @@ namespace Characters.SkillSystems.SkillRuntimes
                 Cinemachine2DCameraController.Instance.CancelByOwner(this);
                 Cinemachine2DCameraController.Instance.SetFollowTarget(player.transform);
             }
-            
+
             try
             {
                 await UniTask.Delay(TimeSpan.FromSeconds(0.5f), cancellationToken: destroyCancellationToken);
             }
             catch (OperationCanceledException)
             {
-                
             }
             finally
             {
-                if (owner) 
+                if (owner)
                     StatusEffectManager.RemoveEffectAt(owner.gameObject, StatusEffectName.Iframe);
             }
         }
@@ -185,7 +180,11 @@ namespace Characters.SkillSystems.SkillRuntimes
         private Vector2? GetBestTargetPositionInView()
         {
             var cam = targetCamera ? targetCamera : Camera.main;
-            if (!cam) return null;
+            if (!cam)
+            {
+                return null;
+            }
+
 
             if (!cam.orthographic)
             {
@@ -204,7 +203,11 @@ namespace Characters.SkillSystems.SkillRuntimes
 
             LayerMask damageLayer = CharacterGlobalSettings.Instance.EnemyLayerDictionary[owner.tag];
             Collider2D[] candidates = Physics2D.OverlapAreaAll(min, max, damageLayer);
-            if (candidates == null || candidates.Length == 0) return null;
+            if (candidates == null || candidates.Length == 0)
+            {
+                return null;
+            }
+
 
             Vector2 origin = owner.transform.position;
             float minStepSqr = skillData.MinStepDistance * skillData.MinStepDistance;
@@ -229,7 +232,10 @@ namespace Characters.SkillSystems.SkillRuntimes
                 }
             }
 
-            if (!nearest) return null;
+            if (!nearest)
+            {
+                return null;
+            }
 
             _dashedTargets.Add(nearest);
 
@@ -241,7 +247,6 @@ namespace Characters.SkillSystems.SkillRuntimes
 
             // too close: dash MinStepDistance toward enemy
             Vector2 dir = ((Vector2)nearest.position - origin);
-            if (dir.sqrMagnitude < 1e-6f) return null;
 
             dir.Normalize();
             Vector2 fallback = origin + dir * skillData.MinStepDistance;
