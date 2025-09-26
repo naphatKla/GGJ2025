@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Characters.Controllers;
 using Characters.SO.CharacterDataSO;
+using DG.Tweening;
 using GameControl.SO;
 using UnityEngine;
 using UnityEngine.Pool;
@@ -11,7 +12,7 @@ namespace GameControl.Controller
 {
     public class EnemySpawnerController
     {
-        private SO.MapDataSO _mapdata;
+        private MapDataSO _mapdata;
         private SpawnerStateController _state;
         private readonly Vector2 _regionSize;
         
@@ -49,6 +50,7 @@ namespace GameControl.Controller
 
         public void ActionOnRelease(EnemyController obj, MapDataSO.EnemyOption option)
         {
+            DOTween.Kill(obj.transform, complete: true);
             if (obj.CharacterData is EnemyDataSo enemyData)
             {
                 int totalExp = Mathf.CeilToInt(enemyData.ExpDrop * _anergyDropMultiplier);
@@ -69,6 +71,7 @@ namespace GameControl.Controller
         
         private void ActionOnGet(EnemyController obj, MapDataSO.EnemyOption option)
         {
+            DOTween.Kill(obj.transform, complete: true);
             obj.transform.position = SpawnUtility.RandomBetweenMouseAndCamera(_mainCamera);
             obj.transform.SetParent(_state.EnemyParent);
             obj.FeedbackSystem.ShowTrail(true);

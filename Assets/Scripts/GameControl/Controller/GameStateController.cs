@@ -1,12 +1,10 @@
-using System;
 using System.Collections.Generic;
-using Characters.Controllers;
+using System.Threading;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using GameControl.GameState;
 using GameControl.Interface;
 using GameControl.SO;
-using MoreMountains.Feedbacks;
 using MoreMountains.Tools;
 using UnityEngine;
 using Sirenix.OdinInspector;
@@ -32,6 +30,7 @@ namespace GameControl.Controller
         private StartState _startState;
         private EndState _endState;
         private SummaryState _summaryState;
+        public CancellationTokenSource sceneCts;
 
         [ShowInInspector, ReadOnly]
         private string _currentStateName;
@@ -55,6 +54,8 @@ namespace GameControl.Controller
         protected override void Awake()
         {
             base.Awake();
+            sceneCts = new CancellationTokenSource();
+            
             _tutorialState = new TutorialState();
             _prestartState = new PrestartState();
             _startState = new StartState();
@@ -111,6 +112,16 @@ namespace GameControl.Controller
         private void OnDisable()
         {
             _currentState?.OnDisable(this);
+            try { sceneCts?.Cancel(); } catch { }
+        }
+        
+        private void OnDestroy()
+        {
+            try { sceneCts?.Cancel(); } catch { }
+            sceneCts?.Dispose();
+            sceneCts = null;
+            
+            if (_currentMapDataRuntime != null) Destroy(_currentMapDataRuntime);
         }
 
         private void Start()
@@ -143,6 +154,7 @@ namespace GameControl.Controller
 
         public void RestartMap()
         {
+            try { sceneCts?.Cancel(); } catch { }
             SpawnerStateController.Instance.ClearPatternAsync();
             DOTween.KillAll();
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
@@ -206,11 +218,6 @@ namespace GameControl.Controller
             MapSelectionSender.Instance.currentMapSelectionIndex = currentMapIndex;
             AssignMapRuntime(MapDataList[currentMapIndex]);
             SetState(_prestartState);
-        }
-        
-        private void OnDestroy()
-        {
-            if (_currentMapDataRuntime != null) Destroy(_currentMapDataRuntime);
         }
     }
 }

@@ -146,10 +146,13 @@ namespace GameControl.EventMap
                 () =>
                 {
                     var obj = Instantiate(prefab, eventMapParent);
-                    obj.SetPool(pool);
                     return obj;
                 },
-                obj => obj.gameObject.SetActive(true),
+                obj =>
+                {
+                    obj.SetPool(pool);
+                    obj.gameObject.SetActive(true);
+                },
                 obj => obj.gameObject.SetActive(false),
                 obj => Destroy(obj.gameObject),
                 false, 10, 100
