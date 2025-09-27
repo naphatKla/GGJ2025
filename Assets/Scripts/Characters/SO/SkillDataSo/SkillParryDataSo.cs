@@ -31,6 +31,9 @@ namespace Characters.SO.SkillDataSo
         [FoldoutGroup("Parry Configs")] [SerializeField]
         private float knockBackDuration;
 
+        [FoldoutGroup("Parry Configs")] [SerializeField]
+        private float healOnSuccess;
+
         [FoldoutGroup("Feedback")] 
         [ValueDropdown("@FeedbackName.Odin.ShortGroupWithNone(\"Skill\")")] 
         [SerializeField] private string parrySuccessFeedback;
@@ -52,5 +55,6 @@ namespace Characters.SO.SkillDataSo
         public List<StatusEffectDataPayload> ExplosionEffectsToTarget => explosionEffectsToTarget;
         public float KnockBackDistance => knockBackDistance;
         public float KnockBackDuration => knockBackDuration;
+        public float HealOnSuccess => healOnSuccess;
     }
 }
