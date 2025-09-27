@@ -39,6 +39,8 @@ namespace UI.Notification
         public override async UniTask PlayBumpAsync(float dur = .08f, float amount = .05f)
         {
             CountTextFeedback(numText);
+            DOTween.Kill(rt, true);
+            
             var tw = rt.DOPunchScale(Vector3.one * amount, dur, vibrato: 1, elasticity: 0.5f)
                 .SetUpdate(true)
                 .SetLink(gameObject);

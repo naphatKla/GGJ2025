@@ -179,7 +179,6 @@ namespace Characters.UIDisplay
             skillSystem.OnSecondarySuccess += UpdateParryFeedbackText;
 
             combatSystem.OnDealDamage += UpdateDamageText;
-            combatSystem.OnCounterAttack += CounterDashFeedback;
             scoreSystem.OnScoreChange += UpdateScoreUI;
 
             statusEffectSystem.OnStatusUIUpdate += UpdateStatusUI;
@@ -230,7 +229,6 @@ namespace Characters.UIDisplay
             skillSystem.OnSkillPerformFail -= NotifySkillPerformFail;
 
             combatSystem.OnDealDamage -= UpdateDamageText;
-            combatSystem.OnCounterAttack -= CounterDashFeedback;
             scoreSystem.OnScoreChange -= UpdateScoreUI;
 
             statusEffectSystem.OnStatusUIUpdate -= UpdateStatusUI;
@@ -357,9 +355,9 @@ namespace Characters.UIDisplay
             canvasGroup.alpha = 1;
 
             bool isCrit = damageData.IsCritical;
+            
             if (isCrit)
             {
-                NotificationManager.Instance.PlayNotification("notify_skilluse", "Critical!", 4.0f);
                 textInstance.text += " Crit!";
                 textInstance.color = new Color(1f, 0.85f, 0.2f);
                 tf.SetAsLastSibling();
@@ -413,7 +411,6 @@ namespace Characters.UIDisplay
 
             if (healthChange >= 0)
             {
-                NotificationManager.Instance.PlayNotification("notify_skilluse", $"+{healthChange} Health", 4.0f);
                 textInstance.text = "+" + healthChange + " HP";
                 textInstance.color = Color.green;
                 tf.SetAsLastSibling();
@@ -868,14 +865,6 @@ namespace Characters.UIDisplay
             }
         }
 
-        #endregion
-        
-        #region Counter Dash
-
-        private void CounterDashFeedback()
-        {
-            NotificationManager.Instance.PlayNotification("notify_skilluse", "Counter Dash!", 4.0f);
-        }
         #endregion
     }
 }

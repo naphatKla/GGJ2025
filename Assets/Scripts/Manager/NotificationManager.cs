@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using Manager.SoundManager;
 using ProjectExtensions;
 using Sirenix.OdinInspector;
 using UI.Notification;
@@ -60,6 +61,7 @@ namespace UI.Manager
         {
             if (string.IsNullOrEmpty(notifyID)) notifyID = "_default";
             
+            SoundManager.Instance.PlayUI(SoundName.UI.Gameplay_ActionTextNotification);
             var key = MakeKey(notifyID, text);
 
             if (_activeById.TryGetValue(key, out var entry))
@@ -112,7 +114,7 @@ namespace UI.Manager
 
             view.Bind(text, 1);
             view.PlayInAsync().Forget();
-
+            
             _activeById.Add(key, newEntry);
             _activeList.Add(newEntry);
 
