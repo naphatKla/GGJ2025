@@ -25,6 +25,7 @@ namespace Characters.SkillSystems.SkillRuntimes
                 Physics2D.OverlapCircleAll(owner.transform.position, skillData.ExplosionRadius, damageLayer);
             
             StatusEffectManager.ApplyEffectTo(gameObject, skillData.SelfEffectsOnParrySuccess);
+            owner.HealthSystem.Heal(skillData.HealOnSuccess);
 
             foreach (var target in targetsInRange)
             {
