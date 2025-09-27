@@ -279,7 +279,7 @@ namespace GameControl
                 {
                     countdownText.text = displayNum.ToString();
                     countdownText.transform.localScale = Vector3.one * 2.5f;
-                    countdownText.transform.DOScale(1.25f, 0.5f).SetEase(Ease.OutBack);
+                    countdownText.transform.DOScale(1.75f, 0.5f).SetEase(Ease.OutBack);
                 }
 
                 await UniTask.Delay(1000, cancellationToken: cts.Token);
