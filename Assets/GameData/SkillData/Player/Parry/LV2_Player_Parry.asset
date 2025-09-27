@@ -34,7 +34,7 @@ MonoBehaviour:
   skillName: Parry
   skillDescription: "<color=#FFD700><b>[Parry]</b></color>\r\n<color=#adadad><i>[AOE],
     [Knockback], [Stun]</i></color>\r\n<color=#5CE5FF><b>[UPGRADE]</b></color> \r\n<color=#FFE02E><b>[+]</b></color>
-    Damage\r\n\nCooldown: <b>5s</b>\n\n- Upon \u201C<color=#FFE02E>successfully</color>\u201D
+    Explosion radius\r\n\r\nCooldown: <b>5s</b>\r\n\n- Upon \u201C<color=#FFE02E>successfully</color>\u201D
     parrying, burst energy around the ship.\n"
   previousSkillData: {fileID: 11400000, guid: 036dd44949542964bab041b05f72cac6, type: 2}
   nextSkillDataUpgrade: {fileID: 11400000, guid: bb860ce7882e6824fa12c3cf2461b0d0, type: 2}
@@ -63,4 +63,4 @@ MonoBehaviour:
   explosionEffectsToTarget:
   - effectData: {fileID: 11400000, guid: e5ae6010e3c4a7b43bc80da0bf5a9ef5, type: 2}
     isOverrideDuration: 1
-    overrideDuration: 0.5
+    overrideDuration: 1
