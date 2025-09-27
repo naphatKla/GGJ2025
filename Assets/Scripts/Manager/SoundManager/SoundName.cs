@@ -60,6 +60,7 @@ namespace Manager.SoundManager
             public const string Gameplay_CountDown5Sec        = Group + "/" + nameof(Gameplay_CountDown5Sec);
             public const string Gameplay_WarningAlert = Group + "/" + nameof(Gameplay_WarningAlert);
             public const string Gameplay_SkillNotify = Group + "/" + nameof(Gameplay_SkillNotify);
+            public const string Gameplay_ActionTextNotification = Group + "/" + nameof(Gameplay_ActionTextNotification);
         }
 
         public static class BGM
