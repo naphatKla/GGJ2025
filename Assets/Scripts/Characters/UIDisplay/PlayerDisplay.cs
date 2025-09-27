@@ -179,6 +179,7 @@ namespace Characters.UIDisplay
             skillSystem.OnSecondarySuccess += UpdateParryFeedbackText;
 
             combatSystem.OnDealDamage += UpdateDamageText;
+            combatSystem.OnCounterAttack += CounterDashFeedback;
             scoreSystem.OnScoreChange += UpdateScoreUI;
 
             statusEffectSystem.OnStatusUIUpdate += UpdateStatusUI;
@@ -229,6 +230,7 @@ namespace Characters.UIDisplay
             skillSystem.OnSkillPerformFail -= NotifySkillPerformFail;
 
             combatSystem.OnDealDamage -= UpdateDamageText;
+            combatSystem.OnCounterAttack -= CounterDashFeedback;
             scoreSystem.OnScoreChange -= UpdateScoreUI;
 
             statusEffectSystem.OnStatusUIUpdate -= UpdateStatusUI;
@@ -620,7 +622,7 @@ namespace Characters.UIDisplay
         private void UpdateParryFeedbackText(BaseSkillDataSo skillDataSo)
         {
             var textInstance = PoolingManager.Instance.Get<TextMeshProUGUI>(worldTextUIParryFeedbackPrefab.name);
-            NotificationManager.Instance.PlayNotification("notify_skilluse", skillDataSo.SkillName, 4.0f);
+            NotificationManager.Instance.PlayNotification("notify_skilluse", "Parry Success!", 4.0f);
 
             // Reset & Prepare
             Transform tf = textInstance.transform;
@@ -866,6 +868,14 @@ namespace Characters.UIDisplay
             }
         }
 
+        #endregion
+        
+        #region Counter Dash
+
+        private void CounterDashFeedback()
+        {
+            NotificationManager.Instance.PlayNotification("notify_skilluse", "Counter Dash!", 4.0f);
+        }
         #endregion
     }
 }
