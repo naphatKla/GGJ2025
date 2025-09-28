@@ -143,7 +143,7 @@ namespace Characters.SkillSystems.SkillRuntimes
             LayerMask damageLayer = CharacterGlobalSettings.Instance.EnemyLayerDictionary[owner.tag];
             Collider2D[] candidates = Physics2D.OverlapAreaAll(min, max, damageLayer);
             
-            if (candidates == null || candidates.Length < 5)
+            if (candidates == null || candidates.Length <= 2)
             {
                 return false;
             }
