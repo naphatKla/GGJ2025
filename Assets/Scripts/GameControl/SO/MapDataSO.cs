@@ -23,6 +23,8 @@ namespace GameControl.SO
             [FoldoutGroup("$id")][Title("Setting")]
             public string id;
             [FoldoutGroup("$id")]
+            public string displayName;
+            [FoldoutGroup("$id")]
             public EnemyController enemyController;
             
             [FoldoutGroup("$id")] [Title("Spawn Point")]

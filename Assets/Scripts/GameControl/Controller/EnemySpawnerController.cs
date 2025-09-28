@@ -74,6 +74,12 @@ namespace GameControl.Controller
             _anergyDropMultiplier = Mathf.Max(0, value);
         }
         
+        private void OnFirstEnemySpawn(EnemyController obj, MapDataSO.EnemyOption option)
+        {
+            NotificationManager.Instance.PlayNotification("notify_enemy", $"NEW ENEMY DETECT - {option.displayName}", 4f);
+            OnFirstSpawned?.Invoke(obj, option);
+        }
+        
         private void ActionOnGet(EnemyController obj, MapDataSO.EnemyOption option)
         {
             DOTween.Kill(obj.transform, complete: true);
@@ -81,8 +87,7 @@ namespace GameControl.Controller
             bool firstOfType = _firstSpawnedTypeIds.Add(option.id);
             if (firstOfType)
             {
-                NotificationManager.Instance.PlayNotification("notify_enemy", $"NEW ENEMY TYPE: {option.EnemyId}", 4f);
-                OnFirstSpawned?.Invoke(obj, option);
+                OnFirstEnemySpawn(obj, option);
             }
             
             obj.transform.position = SpawnUtility.RandomBetweenMouseAndCamera(_mainCamera);
@@ -145,6 +150,7 @@ namespace GameControl.Controller
                 var cloned = new MapDataSO.EnemyOption
                 {
                     id = data.id,
+                    displayName = data.displayName,
                     enemyController = data.enemyController,
                     EnemyPoint = data.EnemyPoint,
                     enemyPointGrowthRate = data.enemyPointGrowthRate,
