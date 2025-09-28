@@ -50,6 +50,7 @@ namespace UI.Notification
 
         private void CountTextFeedback(TMP_Text text)
         {
+            if (!text) return;
             var t = text.rectTransform;
             t.DOKill();
             t.localScale = Vector3.one;
