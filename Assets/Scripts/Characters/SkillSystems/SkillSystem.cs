@@ -37,7 +37,7 @@ namespace Characters.SkillSystems
         public event Action<int, float> OnSlotCooldownSpeedChanged;
 
         public event Action<BaseSkillDataSo, int> OnSkillPerform;
-        public event Action<BaseSkillDataSo> OnSecondarySuccess; 
+        public event Action<BaseSkillDataSo> OnSecondarySuccess;
 
         protected BaseSkillDataSo primarySkillData;
         protected BaseSkillDataSo secondarySkillData;
@@ -270,7 +270,7 @@ namespace Characters.SkillSystems
                     {
                         secondarySkillTriggerSource.OnTriggerAutoSkill -= OnTriggerAutoSkill;
                         secondarySkillTriggerSource.OnTriggerAutoSkill -= OnSecondarySuccessInvoker;
-                        
+
                         secondarySkillTriggerSource.OnTriggerAutoSkill += OnTriggerAutoSkill;
                         secondarySkillTriggerSource.OnTriggerAutoSkill += OnSecondarySuccessInvoker;
                     }
@@ -321,16 +321,6 @@ namespace Characters.SkillSystems
             if (!_skillRuntimeDictionary.TryGetValue(oldSkill, out var runtime)) return;
             if (runtime.IsPerforming)
             {
-                if (runtime is ISpecialConditionSkill { IsWaitForCondition: true })
-                {
-                    runtime.CancelSkill();
-                    Destroy(runtime);
-                    if (runtime is IAutoSkillTriggerSource autoSkillTriggerSource)
-                        autoSkillTriggerSource.OnTriggerAutoSkill -= OnTriggerAutoSkill;
-
-                    _skillRuntimeDictionary.Remove(oldSkill);
-                }
-
                 if (!_pendingRuntimeRemoval.Contains(oldSkill))
                     _pendingRuntimeRemoval.Add(oldSkill);
             }
@@ -420,9 +410,9 @@ namespace Characters.SkillSystems
 
         private void OnSecondarySuccessInvoker()
         {
-            OnSecondarySuccess?.Invoke(secondarySkillData);    
+            OnSecondarySuccess?.Invoke(secondarySkillData);
         }
-        
+
         private void OnTriggerAutoSkill()
         {
             PerformSkill(SkillType.AutoSkill);
@@ -496,7 +486,7 @@ namespace Characters.SkillSystems
             SetCanUseSkills(true);
             // หมายเหตุ: ไม่รีเซ็ตตัวคูณสล็อต เพื่อให้ค่าที่ผู้เล่น/ระบบตั้งไว้คงอยู่
         }
-        
+
         private void OnEnable()
         {
             FixedUpdateManager.Instance.Register(this);

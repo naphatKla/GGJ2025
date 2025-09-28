@@ -18,12 +18,6 @@ namespace Characters.SkillSystems.SkillRuntimes
     {
         event Action OnTriggerAutoSkill;
     }
-
-    // for skill which have special condition, etc light step, เป็นสกิลที่ใช้แล้ว จะรอ condition พิเศษ
-    public interface ISpecialConditionSkill
-    {
-        public bool IsWaitForCondition { get;}
-    }
     
     public abstract class BaseSkillRuntime : MonoBehaviour
     {
