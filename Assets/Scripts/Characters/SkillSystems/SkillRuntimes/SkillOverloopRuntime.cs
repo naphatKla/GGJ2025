@@ -7,17 +7,15 @@ using Random = UnityEngine.Random;
 
 namespace Characters.SkillSystems.SkillRuntimes
 {
-    public class SkillOverloopRuntime : BaseSkillRuntime<SkillOverloopDataSo>, ISpecialConditionSkill
+    public class SkillOverloopRuntime : BaseSkillRuntime<SkillOverloopDataSo>
     {
-        public bool IsWaitForCondition => owner.SkillSystem.CurrentAutoSkillActiveSlots <= 1;
         private readonly List<int> _buffedSlots = new();
         private float _factor = 1f;
 
         public override void PerformSkill()
         {
-            if (IsWaitForCondition) return;
             if (IsCooldown || IsPerforming) return;
-            
+            if (owner.SkillSystem.CurrentAutoSkillActiveSlots <= 1) return;
             base.PerformSkill();
         }
 

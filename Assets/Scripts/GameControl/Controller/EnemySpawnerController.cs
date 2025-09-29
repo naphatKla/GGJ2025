@@ -1,9 +1,11 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Characters.Controllers;
 using Characters.SO.CharacterDataSO;
 using DG.Tweening;
 using GameControl.SO;
+using UI.Manager;
 using UnityEngine;
 using UnityEngine.Pool;
 using Object = UnityEngine.Object;
@@ -22,6 +24,9 @@ namespace GameControl.Controller
         private bool _debug;
         private Camera _mainCamera;
         private float _anergyDropMultiplier = 1;
+        
+        public event Action<EnemyController, MapDataSO.EnemyOption> OnFirstSpawned;
+        private readonly HashSet<string> _firstSpawnedTypeIds = new();
         
         public EnemySpawnerController(MapDataSO mapData, SpawnerStateController state, Vector2 spawnRegion, bool debug, Camera mainCamera)
         {
@@ -69,9 +74,22 @@ namespace GameControl.Controller
             _anergyDropMultiplier = Mathf.Max(0, value);
         }
         
+        private void OnFirstEnemySpawn(EnemyController obj, MapDataSO.EnemyOption option)
+        {
+            NotificationManager.Instance.PlayNotification("notify_enemy", $"NEW ENEMY DETECT - {option.displayName}", 4f);
+            OnFirstSpawned?.Invoke(obj, option);
+        }
+        
         private void ActionOnGet(EnemyController obj, MapDataSO.EnemyOption option)
         {
             DOTween.Kill(obj.transform, complete: true);
+            
+            bool firstOfType = _firstSpawnedTypeIds.Add(option.id);
+            if (firstOfType)
+            {
+                OnFirstEnemySpawn(obj, option);
+            }
+            
             obj.transform.position = SpawnUtility.RandomBetweenMouseAndCamera(_mainCamera);
             obj.transform.SetParent(_state.EnemyParent);
             obj.FeedbackSystem.ShowTrail(true);
@@ -122,6 +140,7 @@ namespace GameControl.Controller
         #region Public Method
         public void PrewarmEnemy()
         {
+            _firstSpawnedTypeIds.Clear();
             _activeEnemy = new List<EnemyController>();
             _enemyOptionsList = new List<MapDataSO.EnemyOption>();
             _enemyPools = new Dictionary<string, ObjectPool<EnemyController>>();
@@ -131,6 +150,7 @@ namespace GameControl.Controller
                 var cloned = new MapDataSO.EnemyOption
                 {
                     id = data.id,
+                    displayName = data.displayName,
                     enemyController = data.enemyController,
                     EnemyPoint = data.EnemyPoint,
                     enemyPointGrowthRate = data.enemyPointGrowthRate,
