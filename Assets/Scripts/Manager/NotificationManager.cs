@@ -181,8 +181,10 @@ namespace UI.Manager
             }
 
             NotificationViewholderBase view = null;
-            if (stack.Count > 0) view = stack.Pop();
-            else view = Instantiate(prefab);
+            if (stack.Count > 0) 
+                view = stack.Pop();
+            else 
+                view = Instantiate(prefab);
 
             view.gameObject.SetActive(true);
             return view;
