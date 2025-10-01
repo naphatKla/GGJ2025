@@ -1,4 +1,5 @@
 using Characters.Controllers;
+using Characters.FeedbackSystems;
 using Characters.SO.StatusEffectSO;
 
 namespace Characters.StatusEffectSystems.StatusEffects
@@ -18,6 +19,7 @@ namespace Characters.StatusEffectSystems.StatusEffects
             _isStunSuccess = true;
             owner.MovementSystem.StopFromStun(true);
             owner.SkillSystem.SetCanUseSkills(false);
+            owner.TryPlayFeedback(FeedbackName.Character.Stun);
         }
 
         public override void OnUpdate(BaseController owner, float deltaTime)
@@ -31,6 +33,7 @@ namespace Characters.StatusEffectSystems.StatusEffects
   
             owner.MovementSystem.StopFromStun(false);
             owner.SkillSystem.SetCanUseSkills(true);
+            owner.TryStopFeedback(FeedbackName.Character.Stun);
         }
     }
 }
