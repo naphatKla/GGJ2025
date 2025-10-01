@@ -1,21 +1,44 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace UI.Notification
 {
-    public class BasicNotificationViewholder : NotificationViewholderBase
+    public class NewEnemyNotificationViewholder : NotificationViewholderBase
     {
         [Header("Anim (Slide In)")]
         [SerializeField] private float slideOffset = 240f;
         [SerializeField] private Ease  slideEase   = Ease.OutCubic;
+        [SerializeField] private Image image;
         
+        [Serializable]
+        public struct EnemyInfo
+        {
+            public string enemyId;
+            public Sprite enemyImage;
+        }
+        
+        public List<EnemyInfo> enemyList;
+
+        private void UpdateImage(string variable)
+        {
+            if (variable == null) return;
+            foreach (var e in enemyList)
+                if (e.enemyId == variable)
+                {
+                    image.sprite = e.enemyImage;
+                    break;
+                }
+        }
         /// <summary>default play in (slide from left)</summary>
         public override async UniTask PlayInAsync(float dur = .15f, float scalePunch = .05f, string variable = null)
         {
+            UpdateImage(variable);
             await EnsureLayoutReadyAsync();
             DOTween.Kill(cg, true);
             cg.alpha = 0f;
@@ -31,7 +54,6 @@ namespace UI.Notification
                 .Join(rt.DOScale(1f, dur))
                 .SetUpdate(true)
                 .SetLink(gameObject);
-            
             await seq.AsyncWaitForCompletion();
         }
         
@@ -56,6 +78,6 @@ namespace UI.Notification
             t.localScale = Vector3.one;
             t.DOPunchScale(Vector3.one * 0.4f, 0.25f, vibrato: 3, elasticity: 0.8f).SetUpdate(true).SetLink(gameObject).OnComplete(() => t.localScale = Vector3.one);
         }
-
     }
+
 }

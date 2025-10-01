@@ -221,21 +221,6 @@ namespace UI
                 ProcessQueueAsync().Forget();
         }
 
-        public void ShowPopup<TView>(string popupId, Action<TView> setup, float durationSec = -1f,
-            bool bypassStack = false, bool playTransition = true)
-            where TView : Component
-        {
-            Action<GameObject> wrapper = null;
-            if (setup != null)
-                wrapper = go =>
-                {
-                    var view = go ? go.GetComponentInChildren<TView>(true) : null;
-                    if (view) setup(view);
-                };
-
-            ShowPopupWithSetup(popupId, wrapper, durationSec, bypassStack, playTransition);
-        }
-
         public async UniTask HidePopup(string popupId, bool playTransition = true)
         {
             if (string.IsNullOrWhiteSpace(popupId) || !_entryMap.TryGetValue(popupId, out var entry)) return;
@@ -284,8 +269,7 @@ namespace UI
 
             if (playTransition && entry.appearTransition != null)
             {
-                using var linked = CancellationTokenSource.CreateLinkedTokenSource(
-                    destroyCancellationToken, go.GetCancellationTokenOnDestroy());
+                using var linked = CancellationTokenSource.CreateLinkedTokenSource(destroyCancellationToken, go.GetCancellationTokenOnDestroy());
                 try
                 {
                     await entry.appearTransition.PlayAsync(go, true, linked.Token);
