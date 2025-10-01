@@ -76,7 +76,8 @@ namespace GameControl.Controller
         
         private void OnFirstEnemySpawn(EnemyController obj, MapDataSO.EnemyOption option)
         {
-            NotificationManager.Instance.PlayNotification("notify_enemy", $"NEW ENEMY DETECT - {option.displayName}", 4f);
+            if (GameStateController.Instance.MapState == MapState.Rush) return;
+            NotificationManager.Instance.PlayNotification("notify_enemy", $"NEW ENEMY DETECT - {option.displayName}", 4f, option.displayName);
             OnFirstSpawned?.Invoke(obj, option);
         }
         

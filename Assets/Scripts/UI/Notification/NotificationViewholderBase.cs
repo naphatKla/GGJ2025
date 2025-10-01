@@ -41,7 +41,7 @@ namespace UI.Notification
         }
 
         /// <summary>default play in</summary>
-        public virtual async UniTask PlayInAsync(float dur = .15f, float scalePunch = .05f)
+        public virtual async UniTask PlayInAsync(float dur = .15f, float scalePunch = .05f, string variable = null)
         {
             await EnsureLayoutReadyAsync();
             DOTween.Kill(cg, true);
