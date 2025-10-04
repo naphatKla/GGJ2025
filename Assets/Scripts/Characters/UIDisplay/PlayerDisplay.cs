@@ -531,6 +531,7 @@ namespace Characters.UIDisplay
         private void PanelCardFeedback(Transform tf)
         {
             tf.localPosition = new Vector2(1920, 0);
+            tf.DOKill();
             var seq = DOTween.Sequence();
             seq.Append(tf.DOLocalMove(new Vector3(0, 0, 0), 0.7f).SetEase(Ease.OutBack))
                 .Join(tf.DOShakeRotation(0.7f, 0f, vibrato: 10, randomness: 90).SetEase(Ease.OutBack))
@@ -542,6 +543,7 @@ namespace Characters.UIDisplay
 
         private async UniTask SkillCardFeedback(Transform tf)
         {
+            tf.DOKill();
             await tf.DOLocalRotate(new Vector3(0, 720f, 0), 0.7f, RotateMode.FastBeyond360)
                 .SetEase(Ease.OutCubic)
                 .SetUpdate(true)
