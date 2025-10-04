@@ -52,6 +52,8 @@ namespace Manager
             float baseSkillDamage, float multiplier, float additionalCriRate, float additionCriDamge,
             float lifeStealPercent, float lifeStealEffective)
         {
+            bool counterAttackThisFrame = false;
+            
             if (!_characterCaches.ContainsKey(target))
                 _characterCaches.Add(target, target.GetComponent<BaseController>());
 
@@ -63,26 +65,29 @@ namespace Manager
 
             // Counter attack: both attacker and target have DamageOnTouch enabled
             if (targetController.DamageOnTouch.IsEnableDamage && attackerController.DamageOnTouch.IsEnableDamage)
+            {
+                counterAttackThisFrame = true;
                 attackerController.CombatSystem.OnCounterAttackHandler();
-
+            }
+            
             var damageData = attackerController.CombatSystem.CalculateSkillDamageDeal(target, hitPosition,
                 baseSkillDamage, multiplier, additionalCriRate, additionCriDamge, lifeStealPercent, lifeStealEffective);
             
+            // Apply Damage To Target ==========================================
+            if (targetController is PlayerController && counterAttackThisFrame) return; // counter attack player won't take damage.
             if (!targetController.HealthSystem.TakeDamage(damageData.Damage, out bool dieThisFrame)) return;
             attackerController.CombatSystem.OnDealDamageHandler(damageData);
 
+            if (damageData.LifeSteal > 0)
+                attackerController.HealthSystem.Heal(damageData.LifeSteal);
+            
             if (targetController.FeedbackSystem is PlayerFeedbackSystem playerFeedback)
                 playerFeedback.OpenFocusBlackDropOnHit(0.4f, attacker);
 
-            if (dieThisFrame)
-            {
-                attackerController.CombatSystem.OnKillHandler();
-                if (targetController is PlayerController)
-                    Debug.LogWarning(attackerController.name + "Kill Player!!!");
-            }
-            
-            if (damageData.LifeSteal <= 0) return;
-            attackerController.HealthSystem.Heal(damageData.LifeSteal);
+            if (!dieThisFrame) return;
+            attackerController.CombatSystem.OnKillHandler();
+            if (targetController is PlayerController)
+                Debug.LogWarning(attackerController.name + "Kill Player!!!");
         }
 
         public static void ApplyRawDamageTo(GameObject target, GameObject attacker, float damage)
