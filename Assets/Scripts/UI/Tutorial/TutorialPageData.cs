@@ -22,8 +22,7 @@ public class TutorialPageData : ScriptableObject
     [System.Serializable]
     public class SpriteSheetClip
     {
-        [Tooltip("Sprite ที่ slice เป็น Multiple (Unity จะเก็บ sub-sprites ไว้ข้างใน)")]
-        public Sprite spriteSheet;
+        public Sprite[] spriteSheets;
 
         [Min(0.1f)] public float fps = 12f;
         public bool loop = true;

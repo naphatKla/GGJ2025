@@ -93,9 +93,10 @@ namespace UI.Tutorial
 
         private void PrepareSpriteSheet()
         {
-            if (data.spriteSheetClip.spriteSheet == null) return;
+            if (data.spriteSheetClip.spriteSheets == null) return;
 
-#if UNITY_EDITOR
+            sheetFrames = data.spriteSheetClip.spriteSheets;
+/*#if UNITY_EDITOR
             // โหลด sub-sprites ทั้งหมดจาก sprite sheet
             string path = AssetDatabase.GetAssetPath(data.spriteSheetClip.spriteSheet);
             var objs = AssetDatabase.LoadAllAssetsAtPath(path);
@@ -103,7 +104,7 @@ namespace UI.Tutorial
 #else
             // runtime: Unity โหลด sub-sprites จาก Resources.LoadAll
             sheetFrames = Resources.LoadAll<Sprite>(data.spriteSheetClip.spriteSheet.name);
-#endif
+#endif*/
         }
 
         private void StartSpriteSheet()
@@ -149,17 +150,17 @@ namespace UI.Tutorial
             if (!descriptionText) descriptionText = transform.Find("DescriptionText")?.GetComponent<TMP_Text>();
             if (!image) image = transform.Find("Image")?.GetComponent<Image>();
         }
-#endif
-    }
-
-    /// <summary>
-    /// ใช้สำหรับ sort sprite ที่ slice ออกมาให้เป็นลำดับตัวเลขถูกต้อง เช่น frame_1, frame_2...
-    /// </summary>
-    internal class NaturalComparer : System.Collections.Generic.IComparer<string>
-    {
-        public int Compare(string a, string b)
+        
+        /// <summary>
+        /// ใช้สำหรับ sort sprite ที่ slice ออกมาให้เป็นลำดับตัวเลขถูกต้อง เช่น frame_1, frame_2...
+        /// </summary>
+        internal class NaturalComparer : System.Collections.Generic.IComparer<string>
         {
-            return EditorUtility.NaturalCompare(a, b);
+            public int Compare(string a, string b)
+            {
+                return EditorUtility.NaturalCompare(a, b);
+            }
         }
+#endif
     }
 }
