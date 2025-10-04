@@ -1,8 +1,13 @@
+using System.Linq;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace UI.Tutorial
 {
@@ -23,15 +28,17 @@ namespace UI.Tutorial
         private CancellationTokenSource gifCts;
         private bool isShowing;
 
+        private Sprite[] sheetFrames;
+
         public void Bind(
             TutorialPageData pageData,
             TMP_FontAsset globalTitleFont,
             TMP_FontAsset globalBodyFont,
             TMP_SpriteAsset globalSpriteAsset = null)
         {
-            data        = pageData;
-            titleFont   = globalTitleFont;
-            bodyFont    = globalBodyFont;
+            data = pageData;
+            titleFont = globalTitleFont;
+            bodyFont = globalBodyFont;
             spriteAsset = spriteAssetOverride ? spriteAssetOverride : globalSpriteAsset;
 
             if (titleText)
@@ -42,7 +49,6 @@ namespace UI.Tutorial
 
             if (descriptionText)
             {
-                // สำคัญ: ตั้ง Sprite Asset เพื่อให้ <sprite name="..."> แสดงผล
                 if (spriteAsset) descriptionText.spriteAsset = spriteAsset;
 
                 descriptionText.text = data.description;
@@ -58,7 +64,8 @@ namespace UI.Tutorial
             }
             else
             {
-                var first = (data.gif.frames != null && data.gif.frames.Length > 0) ? data.gif.frames[0] : null;
+                PrepareSpriteSheet();
+                var first = (sheetFrames != null && sheetFrames.Length > 0) ? sheetFrames[0] : null;
                 image.sprite = first;
                 image.enabled = first != null;
             }
@@ -67,8 +74,8 @@ namespace UI.Tutorial
         public void Show()
         {
             isShowing = true;
-            if (data != null && data.mediaType == TutorialPageData.MediaType.Gif)
-                StartGif();
+            if (data != null && data.mediaType == TutorialPageData.MediaType.SpriteSheet)
+                StartSpriteSheet();
         }
 
         public void Hide()
@@ -76,35 +83,52 @@ namespace UI.Tutorial
             isShowing = false;
             StopGif();
 
-            if (data != null && data.mediaType == TutorialPageData.MediaType.Gif && image && data.gif.holdFirstFrameOnStop)
+            if (data != null && data.mediaType == TutorialPageData.MediaType.SpriteSheet
+                && image && data.spriteSheetClip.holdFirstFrameOnStop)
             {
-                var frames = data.gif.frames;
-                if (frames != null && frames.Length > 0) image.sprite = frames[0];
+                if (sheetFrames != null && sheetFrames.Length > 0)
+                    image.sprite = sheetFrames[0];
             }
         }
 
-        private void StartGif()
+        private void PrepareSpriteSheet()
+        {
+            if (data.spriteSheetClip.spriteSheet == null) return;
+
+#if UNITY_EDITOR
+            // โหลด sub-sprites ทั้งหมดจาก sprite sheet
+            string path = AssetDatabase.GetAssetPath(data.spriteSheetClip.spriteSheet);
+            var objs = AssetDatabase.LoadAllAssetsAtPath(path);
+            sheetFrames = objs.OfType<Sprite>().OrderBy(s => s.name, new NaturalComparer()).ToArray();
+#else
+            // runtime: Unity โหลด sub-sprites จาก Resources.LoadAll
+            sheetFrames = Resources.LoadAll<Sprite>(data.spriteSheetClip.spriteSheet.name);
+#endif
+        }
+
+        private void StartSpriteSheet()
         {
             StopGif();
 
-            var frames = data.gif.frames;
-            if (image == null || frames == null || frames.Length == 0) return;
+            if (image == null || sheetFrames == null || sheetFrames.Length == 0) return;
 
             gifCts = new CancellationTokenSource();
             var token = gifCts.Token;
-            float fps = Mathf.Max(0.1f, data.gif.fps);
+            float fps = Mathf.Max(0.1f, data.spriteSheetClip.fps);
 
             UniTask.Void(async () =>
             {
                 do
                 {
-                    for (int i = 0; i < frames.Length; i++)
+                    for (int i = 0; i < sheetFrames.Length; i++)
                     {
                         if (token.IsCancellationRequested || !isShowing) return;
-                        image.sprite = frames[i];
-                        await UniTask.Delay(System.TimeSpan.FromSeconds(1f / fps), ignoreTimeScale: true, cancellationToken: token);
+                        image.sprite = sheetFrames[i];
+                        await UniTask.Delay(System.TimeSpan.FromSeconds(1f / fps),
+                            ignoreTimeScale: true,
+                            cancellationToken: token);
                     }
-                } while (data.gif.loop && !token.IsCancellationRequested && isShowing);
+                } while (data.spriteSheetClip.loop && !token.IsCancellationRequested && isShowing);
             });
         }
 
@@ -126,5 +150,16 @@ namespace UI.Tutorial
             if (!image) image = transform.Find("Image")?.GetComponent<Image>();
         }
 #endif
+    }
+
+    /// <summary>
+    /// ใช้สำหรับ sort sprite ที่ slice ออกมาให้เป็นลำดับตัวเลขถูกต้อง เช่น frame_1, frame_2...
+    /// </summary>
+    internal class NaturalComparer : System.Collections.Generic.IComparer<string>
+    {
+        public int Compare(string a, string b)
+        {
+            return EditorUtility.NaturalCompare(a, b);
+        }
     }
 }
