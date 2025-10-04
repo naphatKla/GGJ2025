@@ -239,7 +239,7 @@ namespace GameControl.Controller
         {
             foreach (var enemy in _activeEnemy.ToArray())
             {
-                enemy.HealthSystem.TakeDamage(enemy.HealthSystem.MaxHealth, out _);
+                enemy.HealthSystem.ForceDead();
             }
         }
         

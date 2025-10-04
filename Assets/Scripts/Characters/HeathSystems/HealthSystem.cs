@@ -135,6 +135,19 @@ namespace Characters.HeathSystems
             return true;
         }
 
+        public void ForceDead()
+        {
+            Dead();
+            ModifyHealth(-_maxHealth);
+            if (blockTakeDamageFeedbackOnFinalHit) return;
+            
+            if (Cinemachine2DCameraController.Instance != null &&
+                Cinemachine2DCameraController.Instance.IsTransformInView(transform))
+            {
+                owner?.TryPlayFeedback(FeedbackName.Character.TakeDamage);
+            }
+        }
+
         /// <summary>Increases the character's health by the given amount, up to the maximum health.</summary>
         public void Heal(float healAmount)
         {

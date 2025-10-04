@@ -80,7 +80,6 @@ namespace Manager
                 if (targetController is PlayerController)
                     Debug.LogWarning(attackerController.name + "Kill Player!!!");
             }
-                
             
             if (damageData.LifeSteal <= 0) return;
             attackerController.HealthSystem.Heal(damageData.LifeSteal);

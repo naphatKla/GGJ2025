@@ -23,6 +23,9 @@ namespace Characters.SO.SkillDataSo
         private bool stopWhileParry;
 
         [FoldoutGroup("Parry Configs")] [SerializeField]
+        private float parryColliderSizeMultiplier = 1;
+        
+        [FoldoutGroup("Parry Configs")] [SerializeField]
         private float parryDuration;
         
         [FoldoutGroup("Parry Configs")] [SerializeField]
@@ -45,6 +48,7 @@ namespace Characters.SO.SkillDataSo
         private List<StatusEffectDataPayload> explosionEffectsToTarget;
         
         public bool StopWhileParry => stopWhileParry;
+        public float ParryColliderSizeMultiplier => parryColliderSizeMultiplier;
         public float ParryDuration => parryDuration;
         public float ExplosionBaseDamage => explosionBaseDamage;
         public float ExplosionDamageMultiplier => explosionDamageMultiplier;
