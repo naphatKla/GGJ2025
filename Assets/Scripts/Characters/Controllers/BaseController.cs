@@ -75,6 +75,9 @@ namespace Characters.Controllers
         [PropertyOrder(9999)] [Title("Data")] [SerializeField]
         private BaseCharacterDataSo characterData;
 
+        [PropertyOrder(9999)] [Title("Data")] [SerializeField]
+         private bool autoAssignDataOnEnable;
+
         /// <summary>
         /// Character input handler implementing <see cref="ICharacterInput"/>.
         /// Serialized using Odin to allow assignment of interface in the Inspector.
@@ -128,7 +131,9 @@ namespace Characters.Controllers
         protected virtual void OnEnable()
         {
             SubscribeDependency();
-            AssignCharacterData(characterData);
+            
+            if (autoAssignDataOnEnable)
+                AssignCharacterData(characterData);
         }
 
         protected virtual void OnDisable()
