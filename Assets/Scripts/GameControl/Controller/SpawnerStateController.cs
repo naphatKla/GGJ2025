@@ -294,6 +294,12 @@ namespace GameControl.Controller
             UpgradeMaxSpawnPoint(20f);
         }
         
+        [Button("Random Map Event" , ButtonSizes.Large), GUIColor(0, 1, 0)]
+        private void TriggerMapEvent()
+        {
+            _mapEventController.PlayRandomCategory();
+        }
+        
         private void OnDrawGizmos()
         {
             Gizmos.color = Color.red;
