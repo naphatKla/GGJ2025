@@ -201,8 +201,8 @@ namespace Characters.HeathSystems
             // ยกเลิกงานรอ-dead ค้างทั้งหมด
             CancelAndDispose(ref _linkedDeadCts);
             CancelAndDispose(ref _deadCts);
-
-            owner?.TryPlayFeedback(FeedbackName.Character.Spawn);
+            
+            PlaySpawnFeedbackSync().Forget();
         }
 
         /// <summary>Starts the hit cooldown period after the character takes damage.</summary>
@@ -283,6 +283,12 @@ namespace Characters.HeathSystems
             if (this && gameObject) gameObject.SetActive(false);
         }
 
+        private async UniTaskVoid PlaySpawnFeedbackSync()
+        {
+            await UniTask.WaitUntil(() => gameObject.activeSelf).TimeoutWithoutException(TimeSpan.FromSeconds(3f));
+            owner?.TryPlayFeedback(FeedbackName.Character.Spawn);
+            
+        }
         // -------- CTS utilities & cleanup --------
         private static void CancelAndDispose(ref CancellationTokenSource cts)
         {
