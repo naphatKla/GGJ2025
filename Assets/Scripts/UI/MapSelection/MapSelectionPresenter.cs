@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
@@ -23,6 +24,11 @@ namespace UI.MapSelection
             
             mapSelectionScrollView.UpdateData(items);
             mapSelectionScrollView.SelectCell(0);
+        }
+
+        private void OnEnable()
+        {
+            MapSelectionSender.Instance.currentmapSelectionDataContainer = mapSelectionDataContainer;
         }
     }
 }
