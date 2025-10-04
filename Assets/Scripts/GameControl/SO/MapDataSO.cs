@@ -206,9 +206,9 @@ namespace GameControl.SO
                 public bool useWeightRandom;
                 
                 public bool overrideData;
-                
+                [Space]
                 //Override Zone
-                [ShowIf("overrideData")]
+                [BoxGroup("Modify Data")][ShowIf("overrideData")]
                 public float damageMap;
             }
            
