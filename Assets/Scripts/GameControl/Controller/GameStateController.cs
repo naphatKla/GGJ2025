@@ -74,15 +74,7 @@ namespace GameControl.Controller
             _endState = new EndState();
             _summaryState = new SummaryState();
             
-            if (MapDataList.Count > 0)
-            {
-                currentMapIndex = Mathf.Clamp(currentMapIndex, 0, MapDataList.Count - 1);
-                AssignMapRuntime(MapDataList[currentMapIndex]);
-            }
-            else
-            {
-                _currentMapDataRuntime = null;
-            }
+            _currentMapDataRuntime = null;
         }
         
         private void OnEnable()
