@@ -25,9 +25,11 @@ namespace Characters.SkillSystems.SkillRuntimes
             }
             catch (Exception e)
             {       
-                if (cancelToken.IsCancellationRequested) return;
-                if (owner.HealthSystem.IsDead) return;
+               
             }
+            
+            if (cancelToken.IsCancellationRequested) return;
+            if (owner.HealthSystem.IsDead) return;
             
             var layerMask = CharacterGlobalSettings.Instance.EnemyLayerDictionary[transform.tag];
             var targets = Physics2D.OverlapCircleAll(transform.position, skillData.ExplosionRadius, layerMask);
@@ -48,6 +50,11 @@ namespace Characters.SkillSystems.SkillRuntimes
                 owner.MovementSystem.ResetMovementSystem();
             
             owner.HealthSystem.ForceDead();
+        }
+
+        private void OnDisable()
+        {
+            CancelSkill();
         }
     }
 }
