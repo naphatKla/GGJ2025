@@ -380,39 +380,59 @@ MonoBehaviour:
   - enableThisMapEvent: 1
     catagolyMapEvent: Main
     allMapEventID:
-    - mapEventID: 2Giant-Learning
+    - mapEventID: 2Giant
       chance: 10
       useWeightRandom: 1
-    - mapEventID: Horizontal-Learning
+      overrideData: 1
+      damageMap: 2
+    - mapEventID: Horizontal
       chance: 10
       useWeightRandom: 1
-    - mapEventID: Vertical-Learning
+      overrideData: 1
+      damageMap: 2
+    - mapEventID: Vertical
       chance: 10
       useWeightRandom: 1
-    - mapEventID: Basket-Learning
+      overrideData: 1
+      damageMap: 2
+    - mapEventID: Basket
       chance: 10
       useWeightRandom: 1
-    - mapEventID: Firework_TopL_BottomR-Learning
+      overrideData: 1
+      damageMap: 2
+    - mapEventID: Firework_TopL_BottomR
       chance: 10
       useWeightRandom: 1
-    - mapEventID: Firework_TopR_BottomL-Learning
+      overrideData: 1
+      damageMap: 2
+    - mapEventID: Firework_TopR_BottomL
       chance: 10
       useWeightRandom: 1
-    - mapEventID: RightHole-Learning
+      overrideData: 1
+      damageMap: 2
+    - mapEventID: RightHole
       chance: 10
       useWeightRandom: 1
-    - mapEventID: LeftHole-Learning
+      overrideData: 1
+      damageMap: 5
+    - mapEventID: LeftHole
       chance: 10
       useWeightRandom: 1
-    - mapEventID: Random_Line-Learning
+      overrideData: 1
+      damageMap: 5
+    - mapEventID: Random_Line
       chance: 10
       useWeightRandom: 1
-    - mapEventID: Wave-Learning
+      overrideData: 1
+      damageMap: 2
+    - mapEventID: Wave
       chance: 10
       useWeightRandom: 1
+      overrideData: 1
+      damageMap: 2
     eventMapChance: 100
     playInterval: 30
-    intervalCanModify: 1
+    intervalCanModify: 0
     rateModify: -27
     intervalModify: 540
     minPlayInterval: 3
@@ -425,5 +445,5 @@ MonoBehaviour:
   rateIncreaseEnemyPoint: 50
   startEnemyPoint: 60
   maxEnemyPoint: 500
-  rushData: {fileID: 11400000, guid: e2b1d3052964e77449e76a9e319858b4, type: 2}
+  rushData: {fileID: 11400000, guid: 535281c2f3de9e145877406ff9aaaf97, type: 2}
   rushTime: 60

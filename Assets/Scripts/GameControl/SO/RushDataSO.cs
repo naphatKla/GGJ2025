@@ -202,7 +202,9 @@ namespace GameControl.SO
                             {
                                 mapEventID = k.mapEventID,
                                 chance = k.chance,
-                                useWeightRandom = k.useWeightRandom
+                                useWeightRandom = k.useWeightRandom,
+                                overrideData = k.overrideData,
+                                damageMap = k.damageMap
                             })
                             : null
                     };
