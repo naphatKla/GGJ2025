@@ -204,6 +204,12 @@ namespace GameControl.SO
                 
                 [GUIColor("@this.useWeightRandom ? Color.green : Color.red")]
                 public bool useWeightRandom;
+                
+                public bool overrideData;
+                [Space]
+                //Override Zone
+                [BoxGroup("Modify Data")][ShowIf("overrideData")]
+                public float damageMap;
             }
            
             [FoldoutGroup("$catagolyMapEvent")]
