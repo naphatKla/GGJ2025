@@ -20,6 +20,7 @@ namespace Characters.HeathSystems
         #region Inspectors & Variables
 
         [SerializeField] private bool blockTakeDamageFeedbackOnFinalHit;
+        [SerializeField] private bool changeColorOnIframe;
         
         private BaseController owner;
 
@@ -170,14 +171,18 @@ namespace Characters.HeathSystems
             // ป้องกัน NRE หาก owner หรือ Body ไม่มี
             if (owner?.Body == null) return;
 
-            startColor ??= owner.Body.color;
+            if (changeColorOnIframe)
+            {
+                startColor ??= owner.Body.color;
 
-            colorTween?.Kill();
-            var target = value ? Color.cyan : startColor.Value;
+                colorTween?.Kill();
+                var target = value ? Color.cyan : startColor.Value;
 
-            colorTween = owner.Body
-                .DOColor(target, 0.05f)
-                .SetLink(owner.Body.gameObject, LinkBehaviour.KillOnDestroy); // ผูก lifecycle
+                colorTween = owner.Body
+                    .DOColor(target, 0.05f)
+                    .SetLink(owner.Body.gameObject, LinkBehaviour.KillOnDestroy); // ผูก lifecycle
+            }
+            
             if (value) owner?.TryPlayFeedback(FeedbackName.Character.Iframe);
             else owner?.TryStopFeedback(FeedbackName.Character.Iframe);
         }
