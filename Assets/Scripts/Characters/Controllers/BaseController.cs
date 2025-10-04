@@ -75,7 +75,7 @@ namespace Characters.Controllers
         [PropertyOrder(9999)] [Title("Data")] [SerializeField]
         private BaseCharacterDataSo characterData;
 
-        [PropertyOrder(9999)] [Title("Data")] [SerializeField]
+        [PropertyOrder(9999)] [SerializeField]
          private bool autoAssignDataOnEnable;
 
         /// <summary>
