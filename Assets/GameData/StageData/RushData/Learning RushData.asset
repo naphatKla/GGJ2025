@@ -9,15 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 844e63b3876cd4d479ac769e5560becf, type: 3}
-  m_Name: LearningMap
+  m_Script: {fileID: 11500000, guid: eff9f285ee518294783346c757dcd5ce, type: 3}
+  m_Name: Learning RushData
   m_EditorClassIdentifier: 
-  mapName: Learning
-  background: {fileID: 0}
-  image: {fileID: 21300000, guid: 39f16dd283b55934e888251a8a714ab6, type: 3}
-  mapGlobalTime: 600
-  endlessMode: 0
-  EnemyOptions:
+  mapData: {fileID: 11400000, guid: 174b41de14ed86a47b86b510ddc5ac2c, type: 2}
+  enemyOptions:
   - id: Enemy_Normal
     displayName: NORMAL
     enemyController: {fileID: 8145196360709479149, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
@@ -224,7 +220,8 @@ MonoBehaviour:
     - {fileID: 11400000, guid: a36d2c81a79161946beeda253129118b, type: 2}
   intervalEnemyChanceUpgrade: 30
   intervalEnemyPointRatioUpgrade: 30
-  PatternOptions:
+  defaultEnemySpawnTimer: 0.75
+  patternOptions:
   - enableThisPattern: 1
     bypassSpawnCondition: 0
     enableSpecificEnemy: 0
@@ -338,44 +335,6 @@ MonoBehaviour:
   amountToAdd: 1
   patternMax: 15
   canDuplicateAfterHaveAllPattern: 1
-  ItemOptions:
-  - id: Red_Anergy
-    itemObj: {fileID: 8589778046636973207, guid: eb2f8352aac61d446a4ef94d6303afbf, type: 3}
-    chance: 100
-    useCustomInterval: 0
-    customInterval: 0
-    useLifetimeInterval: 1
-    lifetimeInterval: 20
-  - id: Yellow_Anergy
-    itemObj: {fileID: 8589778046636973207, guid: bcd6f0236a2272d4fb026da93e3cf62f, type: 3}
-    chance: 0
-    useCustomInterval: 0
-    customInterval: 0
-    useLifetimeInterval: 1
-    lifetimeInterval: 20
-  - id: Green_Anergy
-    itemObj: {fileID: 8589778046636973207, guid: 12751c5192bb6d94889f43fd00e7ac25, type: 3}
-    chance: 0
-    useCustomInterval: 0
-    customInterval: 0
-    useLifetimeInterval: 1
-    lifetimeInterval: 20
-  - id: Blue_Anergy
-    itemObj: {fileID: 8589778046636973207, guid: d368e253dae383e4a91232ea32194723, type: 3}
-    chance: 0
-    useCustomInterval: 0
-    customInterval: 0
-    useLifetimeInterval: 1
-    lifetimeInterval: 20
-  - id: Purple_Anergy
-    itemObj: {fileID: 8589778046636973207, guid: a4b740de62c54a6498402145effe5f7d, type: 3}
-    chance: 0
-    useCustomInterval: 0
-    customInterval: 0
-    useLifetimeInterval: 1
-    lifetimeInterval: 20
-  maxItemSpawning: 30
-  defaultItemSpawnTimer: 1
   eventmapOptions:
   - enableThisMapEvent: 1
     catagolyMapEvent: Main
@@ -412,18 +371,7 @@ MonoBehaviour:
       useWeightRandom: 1
     eventMapChance: 100
     playInterval: 30
-    intervalCanModify: 1
+    intervalCanModify: 0
     rateModify: -27
     intervalModify: 540
     minPlayInterval: 3
-  defaultEnemySpawnTimer: 0.75
-  canGrowth: 1
-  decreaseAmount: 0.04
-  decreaseInterval: 30
-  decreaseMinimum: 0.35
-  intervalIncreaseEnemyPoint: 30
-  rateIncreaseEnemyPoint: 50
-  startEnemyPoint: 60
-  maxEnemyPoint: 500
-  rushData: {fileID: 11400000, guid: e2b1d3052964e77449e76a9e319858b4, type: 2}
-  rushTime: 60
