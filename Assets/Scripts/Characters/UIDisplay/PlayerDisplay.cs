@@ -703,8 +703,11 @@ namespace Characters.UIDisplay
             
             SkillResetFeedback(skillSlotModel[skillIndex].transform, skillSlotModel[skillIndex].skillframe);
             skillSlotModel[skillIndex].ResetSkillSlot();
-            
-            if (skillIndex != 0) skillSlotModel[skillIndex].PlayCooldownFinishFeedback();
+
+            if (skillIndex == 0) return; // ignore primary
+            skillSlotModel[skillIndex].PlayCooldownFinishFeedback();
+            if (skillIndex == 1)
+                SoundManager.Instance.PlayUI(SoundName.UI.Gameplay_MainSkillCooldownReady);
         }
 
         private void SkillPlayFeedback(BaseSkillDataSo skillDataSo, int skillIndex )

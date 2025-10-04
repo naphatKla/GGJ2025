@@ -24,6 +24,7 @@ namespace Characters.FeedbackSystems
             public const string CollectAnergy = "Character/CollectAnergy";
             public const string LevelUp = "Character/LevelUp";
             public const string NotifySkill = "Character/NotifySkill";
+            public const string Stun = "Character/Stun";
         }
 
         public static class Skill

@@ -20,6 +20,14 @@ namespace GameControl.Controller
         Failed,
     }
     
+    public enum MapState
+    {
+        None,
+        Normal,
+        Rush,
+        Endless
+    }
+    
     [RequireComponent(typeof(SpawnerStateController), typeof(GameTimer))]
     public class GameStateController : MMSingleton<GameStateController>
     {
@@ -30,6 +38,7 @@ namespace GameControl.Controller
         private StartState _startState;
         private EndState _endState;
         private SummaryState _summaryState;
+        private MapState _mapstate;
         public CancellationTokenSource sceneCts;
 
         [ShowInInspector, ReadOnly]
@@ -50,6 +59,7 @@ namespace GameControl.Controller
         
         public EndResult gameResult;
         public IGameState CurrentState => _currentState;
+        public MapState MapState { get => _mapstate; set => _mapstate = value; }
         
         protected override void Awake()
         {
@@ -86,13 +96,21 @@ namespace GameControl.Controller
         {
             if (_currentMapDataRuntime != null) Destroy(_currentMapDataRuntime);
             _currentMapDataRuntime = MakeRuntimeCopy(asset);
+            if (_currentMapDataRuntime.endlessMode)
+            {
+                MapState = MapState.Endless;
+            }
+            else
+            {
+                MapState = MapState.Normal;
+            }
         }
         
         private void EnterRush()
         {
             var m = CurrentMap;
             if (m?.rushData == null) return;
-
+            MapState = MapState.Rush;
             m.rushData.ApplyInto(m); 
             SpawnerStateController.Instance?.OnMapModified();
         }
@@ -218,6 +236,12 @@ namespace GameControl.Controller
             MapSelectionSender.Instance.currentMapSelectionIndex = currentMapIndex;
             AssignMapRuntime(MapDataList[currentMapIndex]);
             SetState(_prestartState);
+        }
+        
+        [FoldoutGroup("Map Button"), Button(ButtonSizes.Large), GUIColor(0, 1, 1)]
+        public void EnterRushState()
+        {
+            EnterRush();
         }
     }
 }

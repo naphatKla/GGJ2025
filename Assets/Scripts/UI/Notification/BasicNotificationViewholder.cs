@@ -14,7 +14,7 @@ namespace UI.Notification
         [SerializeField] private Ease  slideEase   = Ease.OutCubic;
         
         /// <summary>default play in (slide from left)</summary>
-        public override async UniTask PlayInAsync(float dur = .15f, float scalePunch = .05f)
+        public override async UniTask PlayInAsync(float dur = .15f, float scalePunch = .05f, string variable = null)
         {
             await EnsureLayoutReadyAsync();
             DOTween.Kill(cg, true);

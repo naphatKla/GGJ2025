@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Characters.SO.SkillDataSo;
+using Manager.SoundManager;
 using PixelUI;
 using Sirenix.OdinInspector;
 using TMPro;
