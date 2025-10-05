@@ -219,7 +219,6 @@ namespace GameControl.Controller
             {
                 GameObject child = parentTransform.GetChild(i).gameObject;
                 Destroy(child); 
-                DestroyImmediate(child); 
             }
         }
 
