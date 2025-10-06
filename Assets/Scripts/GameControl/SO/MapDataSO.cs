@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Characters.CollectItemSystems.CollectableItems;
 using Characters.Controllers;
+using Characters.SO.CharacterDataSO;
 using GameControl.Controller;
 using GameControl.Interface;
 using GameControl.Pattern;
@@ -49,6 +50,11 @@ namespace GameControl.SO
             public bool useCustomInterval;
             [FoldoutGroup("$id")] [ShowIf("$useCustomInterval")]
             public float customInterval;
+            
+            [FoldoutGroup("$id")][Title("Enemy Status")]
+            public bool modifyNewData;
+            [FoldoutGroup("$id")] [ShowIf("$modifyNewData")]
+            public EnemyDataSo enemyData;
             
             [FoldoutGroup("$id")][Title("Spawn Conditions")]
             public bool useSpawnConditions = false;
@@ -198,6 +204,12 @@ namespace GameControl.SO
                 
                 [GUIColor("@this.useWeightRandom ? Color.green : Color.red")]
                 public bool useWeightRandom;
+                
+                public bool overrideData;
+                [Space]
+                //Override Zone
+                [BoxGroup("Modify Data")][ShowIf("overrideData")]
+                public float damageMap;
             }
            
             [FoldoutGroup("$catagolyMapEvent")]

@@ -42,6 +42,15 @@ namespace GameControl.Controller
             if (_debug) Debug.Log("[MapEventController] ReloadAllEvents -> rebuilt schedules from 'now'.");
         }
 
+        public void PlayRandomCategory()
+        {
+            foreach (var opt in _mapdata.eventmapOptions)
+            {
+                if (opt == null || !opt.enableThisMapEvent) continue;
+                PlayMapEventCatagory(opt);
+            }
+        }
+
         public float CalculateMapEventInterval(MapDataSO.EventMapOption eventOption, float elapsedTime)
         {
             if (!eventOption.intervalCanModify)
@@ -90,11 +99,11 @@ namespace GameControl.Controller
 
             var selected = SelectEventByChance(weighted);
             if (!string.IsNullOrEmpty(selected) && fired.Add(selected))
-                TriggerMapEvent(selected);
+                TriggerMapEvent(selected, eventOption.allMapEventID.FirstOrDefault(e => e.mapEventID == selected));
 
             foreach (var ev in nonWeighted)
                 if (ev.chance >= 100f && fired.Add(ev.mapEventID))
-                    TriggerMapEvent(ev.mapEventID);
+                    TriggerMapEvent(ev.mapEventID, eventOption.allMapEventID.FirstOrDefault(e => e.mapEventID == ev.mapEventID));
         }
 
 
@@ -114,7 +123,7 @@ namespace GameControl.Controller
             return eventOption.allMapEventID.Where(ev => !ev.useWeightRandom).ToList();
         }
 
-        private void TriggerWeightedEvent(List<MapDataSO.EventMapOption.MapEventKv> weightedEvents)
+        /*private void TriggerWeightedEvent(List<MapDataSO.EventMapOption.MapEventKv> weightedEvents)
         {
             if (weightedEvents.Count == 0) return;
 
@@ -127,7 +136,7 @@ namespace GameControl.Controller
             foreach (var ev in nonWeightedEvents)
                 if (ev.chance >= 100f)
                     TriggerMapEvent(ev.mapEventID);
-        }
+        }*/
 
         private string SelectEventByChance(List<MapDataSO.EventMapOption.MapEventKv> events)
         {
@@ -147,14 +156,23 @@ namespace GameControl.Controller
             return null;
         }
         
-        private void TriggerMapEvent(string eventID)
+        private void TriggerMapEvent(string eventID,MapDataSO.EventMapOption.MapEventKv kv)
         {
             int frame = Time.frameCount;
             if (_lastFireFrame.TryGetValue(eventID, out var last) && last == frame) return;
             _lastFireFrame[eventID] = frame;
-
             if (_debug) Debug.Log($"[TriggerMapEvent] {eventID} at remain={GameTimer.Instance.GlobalTimer:F2}s");
-            MapEventManager.Instance.RunEvent(eventID);
+
+            if (kv.overrideData)
+            {
+                MapEventManager.Instance.RunEvent(eventID, o => o
+                    .Set("damage", kv.damageMap)
+                    );
+            }
+            else
+            {
+                MapEventManager.Instance.RunEvent(eventID);
+            }
         }
 
         private static string BuildGroupId(MapDataSO.EventMapOption opt)

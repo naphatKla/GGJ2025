@@ -32,9 +32,9 @@ MonoBehaviour:
       Data: 
   skillIcon: {fileID: 21300000, guid: 4e172c3d6cf32704e9db569f5138820d, type: 3}
   skillName: Parry
-  skillDescription: "<color=#FFD700><b>[Parry]</b></color>\r\n<color=#adadad>[AOE],
-    [Heal], [Knockback], [Stun]</color>\n<color=#5CE5FF><b>[UPGRADE]</b></color>
-    \r\n<color=#FFE02E><b>[+]</b></color> Parry duration\r\n<color=#FFE02E><b>[+]</b></color>
+  skillDescription: "<color=#FFD700><b>[Parry]</b></color>\r\n<size=3.5><color=#adadad><i>[AOE],
+    [Heal], [Knockback], [Stun]</i></color></size>\n<color=#5CE5FF><b>[UPGRADE]</b></color>
+    \r\n<color=#FFE02E><b>[+]</b></color> Damage\n<color=#FFE02E><b>[+]</b></color>
     Reduce cooldown\r\n\nCooldown: <b>3.75s</b>\r\n\n- Upon \u201C<color=#FFE02E>successfully</color>\u201D
     parrying, burst energy around the ship.\r\n"
   previousSkillData: {fileID: 11400000, guid: bb860ce7882e6824fa12c3cf2461b0d0, type: 2}
@@ -47,12 +47,13 @@ MonoBehaviour:
   statusEffectOnSkillStart:
   - effectData: {fileID: 11400000, guid: aa4dff95f38494c4e876f8f95511ecf0, type: 2}
     isOverrideDuration: 1
-    overrideDuration: 0.63
+    overrideDuration: 0.77
   explosionBaseDamage: 0
-  explosionDamageMultiplier: 300
+  explosionDamageMultiplier: 250
   explosionRadius: 12
   stopWhileParry: 0
-  parryDuration: 0.625
+  parryColliderSizeMultiplier: 2
+  parryDuration: 0.75
   knockBackDistance: 8
   knockBackDuration: 0.25
   healOnSuccess: 4

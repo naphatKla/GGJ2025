@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
@@ -60,6 +61,7 @@ namespace GameControl.Controller
         public EndResult gameResult;
         public IGameState CurrentState => _currentState;
         public MapState MapState { get => _mapstate; set => _mapstate = value; }
+        private MapSelectionSender Sender => MapSelectionSender.Instance;
         
         protected override void Awake()
         {
@@ -72,15 +74,37 @@ namespace GameControl.Controller
             _endState = new EndState();
             _summaryState = new SummaryState();
             
-            if (MapDataList.Count > 0)
-            {
-                currentMapIndex = Mathf.Clamp(currentMapIndex, 0, MapDataList.Count - 1);
-                AssignMapRuntime(MapDataList[currentMapIndex]);
-            }
-            else
-            {
-                _currentMapDataRuntime = null;
-            }
+            _currentMapDataRuntime = null;
+        }
+        
+        private void OnEnable()
+        {
+            _currentState?.OnEnable(this);
+        }
+        
+        private void OnDisable()
+        {
+            _currentState?.OnDisable(this);
+            try { sceneCts?.Cancel(); } catch { }
+        }
+        
+        private void OnDestroy()
+        {
+            try { sceneCts?.Cancel(); } catch { }
+            sceneCts?.Dispose();
+            sceneCts = null;
+            
+            if (_currentMapDataRuntime != null) Destroy(_currentMapDataRuntime);
+        }
+
+        private void Start()
+        {
+            SetupGameSelection().Forget();
+        }
+
+        private void Update()
+        {
+            _currentState?.Update(this);
         }
         
         private MapDataSO MakeRuntimeCopy(MapDataSO src)
@@ -121,36 +145,6 @@ namespace GameControl.Controller
             if (m?.rushData == null) return;
             GameTimer.Instance.ScheduleOnceAtRemaining(m.rushTime, EnterRush);
         }
-        
-        private void OnEnable()
-        {
-            _currentState?.OnEnable(this);
-        }
-        
-        private void OnDisable()
-        {
-            _currentState?.OnDisable(this);
-            try { sceneCts?.Cancel(); } catch { }
-        }
-        
-        private void OnDestroy()
-        {
-            try { sceneCts?.Cancel(); } catch { }
-            sceneCts?.Dispose();
-            sceneCts = null;
-            
-            if (_currentMapDataRuntime != null) Destroy(_currentMapDataRuntime);
-        }
-
-        private void Start()
-        {
-            SetupGameSelection().Forget();
-        }
-
-        private void Update()
-        {
-            _currentState?.Update(this);
-        }
 
         public void SetState(IGameState newState)
         {
@@ -162,13 +156,28 @@ namespace GameControl.Controller
 
         private async UniTask SetupGameSelection()
         {
-            await UniTask.WaitUntil(() => MapSelectionSender.Instance != null);
-            currentMapIndex = MapSelectionSender.Instance.currentMapSelectionIndex;
-            if (MapDataList.Count == 0) { _currentMapDataRuntime = null; return; }
-            currentMapIndex = Mathf.Clamp(currentMapIndex, 0, MapDataList.Count - 1);
-            AssignMapRuntime(MapDataList[currentMapIndex]);
-            SetState(_tutorialState);
+            await UniTask.Yield(PlayerLoopTiming.Initialization);
+            EnsureSenderContainerSync();
+            var list = GetActiveList();
+            if (list == null || list.Count == 0)
+            {
+                _currentMapDataRuntime = null;
+                return;
+            }
+
+            var initIdx = Sender != null ? Sender.currentMapSelectionIndex : currentMapIndex;
+            initIdx = NormalizeIndex(initIdx, list.Count, true, false);
+
+            if (_currentMapDataRuntime != null && initIdx == currentMapIndex)
+            {
+                SetState(_tutorialState);
+                return;
+            }
+
+            currentMapIndex = initIdx;
+            ApplyInSceneIndex(currentMapIndex);
         }
+
 
         public void RestartMap()
         {
@@ -214,28 +223,24 @@ namespace GameControl.Controller
         {
             SetState(_summaryState);
         }
-        
-        [FoldoutGroup("Map Button"), Button(ButtonSizes.Large), GUIColor(0, 1, 1)]
-        public void SetMap(int mapIndex)
+
+        [FoldoutGroup("Map Button")] [Button(ButtonSizes.Large)] [GUIColor(0, 1, 1)]
+        public void SetMap(int mapIndex, bool clamp = true)
         {
-            if (MapDataList.Count == 0) return;
-            if (mapIndex < 0 || mapIndex >= MapDataList.Count) return;
-
-            currentMapIndex = mapIndex;
-            MapSelectionSender.Instance.currentMapSelectionIndex = currentMapIndex;
-
-            AssignMapRuntime(MapDataList[currentMapIndex]);
-            SetState(_prestartState);
+            SetIndexAbsolute(mapIndex, clamp);
         }
         
-        [FoldoutGroup("Map Button"), Button(ButtonSizes.Large), GUIColor(0, 1, 1)]
-        public void NextMap()
+        [FoldoutGroup("Map Button"), Button(ButtonSizes.Large), GUIColor(0,1,1)]
+        public void NextMap(bool wrap = false)
         {
-            if (MapDataList.Count == 0 || currentMapIndex >= MapDataList.Count - 1) return;
-            currentMapIndex++;
-            MapSelectionSender.Instance.currentMapSelectionIndex = currentMapIndex;
-            AssignMapRuntime(MapDataList[currentMapIndex]);
-            SetState(_prestartState);
+            ChangeIndexRelative(+1, wrap);
+        }
+        
+        
+        [FoldoutGroup("Map Button"), Button(ButtonSizes.Large), GUIColor(0,1,1)]
+        public void PrevMap(bool wrap = false)
+        {
+            ChangeIndexRelative(-1, wrap);
         }
         
         [FoldoutGroup("Map Button"), Button(ButtonSizes.Large), GUIColor(0, 1, 1)]
@@ -243,5 +248,104 @@ namespace GameControl.Controller
         {
             EnterRush();
         }
+        
+        #region Internal
+
+        private List<MapDataSO> GetActiveList()
+        {
+            var s = Sender;
+            var c = s != null ? s.currentmapSelectionDataContainer : mapContainer;
+            var list = c != null ? c.mapSelectionList : null;
+            return list != null ? list : MapDataList;
+        }
+
+        private void EnsureSenderContainerSync()
+        {
+            var s = Sender;
+            if (s == null) return;
+
+            if (s.currentmapSelectionDataContainer == null)
+                s.currentmapSelectionDataContainer = mapContainer;
+            else
+                mapContainer = s.currentmapSelectionDataContainer;
+        }
+
+        private int NormalizeIndex(int idx, int count, bool clamp, bool wrap)
+        {
+            if (count <= 0) return -1;
+            if (wrap)
+            {
+                idx = (idx % count + count) % count;
+                return idx;
+            }
+
+            if (clamp) return Mathf.Clamp(idx, 0, count - 1);
+            return idx < 0 || idx >= count ? -1 : idx;
+        }
+
+        private void ApplyInSceneIndex(int idx)
+        {
+            var list = GetActiveList();
+            if (list == null || list.Count == 0) return;
+            if (idx < 0 || idx >= list.Count) return;
+
+            currentMapIndex = idx;
+            AssignMapRuntime(list[idx]);
+            SetState(_tutorialState);
+        }
+
+        private void ApplyWithSenderRestart(int idx)
+        {
+            var s = Sender;
+            if (s == null)
+            {
+                ApplyInSceneIndex(idx);
+                return;
+            }
+
+            EnsureSenderContainerSync();
+
+            var list = s.currentmapSelectionDataContainer?.mapSelectionList;
+            if (list == null || list.Count == 0) return;
+            idx = NormalizeIndex(idx, list.Count, true, false);
+            s.currentMapSelectionIndex = idx;
+            RestartMap();
+        }
+
+        private void SetIndexAbsolute(int targetIndex, bool clamp)
+        {
+            var list = GetActiveList();
+            if (list == null || list.Count == 0) return;
+
+            var idx = NormalizeIndex(targetIndex, list.Count, clamp, false);
+            if (idx < 0) return;
+
+            var s = Sender;
+            if (s == null)
+                ApplyInSceneIndex(idx);
+            else
+                ApplyWithSenderRestart(idx);
+        }
+
+        private void ChangeIndexRelative(int delta, bool wrap)
+        {
+            var list = GetActiveList();
+            if (list == null || list.Count == 0) return;
+
+            var s = Sender;
+            if (s == null)
+            {
+                var idx = NormalizeIndex(currentMapIndex + delta, list.Count, !wrap, wrap);
+                if (idx < 0) return;
+                ApplyInSceneIndex(idx);
+                return;
+            }
+
+            EnsureSenderContainerSync();
+            var idxFromCurrent = NormalizeIndex(currentMapIndex + delta, list.Count, !wrap, wrap);
+            if (idxFromCurrent < 0) return;
+            ApplyWithSenderRestart(idxFromCurrent);
+        }
+        #endregion
     }
 }

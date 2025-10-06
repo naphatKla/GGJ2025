@@ -219,7 +219,6 @@ namespace GameControl.Controller
             {
                 GameObject child = parentTransform.GetChild(i).gameObject;
                 Destroy(child); 
-                DestroyImmediate(child); 
             }
         }
 
@@ -292,6 +291,12 @@ namespace GameControl.Controller
         private void TriggerAddPoint()
         {
             UpgradeMaxSpawnPoint(20f);
+        }
+        
+        [Button("Random Map Event" , ButtonSizes.Large), GUIColor(0, 1, 0)]
+        private void TriggerMapEvent()
+        {
+            _mapEventController.PlayRandomCategory();
         }
         
         private void OnDrawGizmos()

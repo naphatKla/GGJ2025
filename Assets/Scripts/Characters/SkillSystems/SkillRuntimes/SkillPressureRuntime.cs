@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using Characters.FeedbackSystems;
 using Characters.SO.SkillDataSo;
@@ -18,9 +19,18 @@ namespace Characters.SkillSystems.SkillRuntimes
 
         protected override async UniTask OnSkillUpdate(CancellationToken cancelToken)
         {
-            await UniTask.WaitForSeconds(skillData.ChargeDuration, cancellationToken: cancelToken);
+            try
+            {
+                await UniTask.WaitForSeconds(skillData.ChargeDuration, cancellationToken: cancelToken);
+            }
+            catch (Exception e)
+            {       
+               
+            }
+            
             if (cancelToken.IsCancellationRequested) return;
-
+            if (owner.HealthSystem.IsDead) return;
+            
             var layerMask = CharacterGlobalSettings.Instance.EnemyLayerDictionary[transform.tag];
             var targets = Physics2D.OverlapCircleAll(transform.position, skillData.ExplosionRadius, layerMask);
 
@@ -38,7 +48,13 @@ namespace Characters.SkillSystems.SkillRuntimes
             if (!owner) return;
             if (skillData.StopOnCharge)
                 owner.MovementSystem.ResetMovementSystem();
-            CombatManager.ApplyRawDamageTo(owner.gameObject, owner.gameObject, owner.HealthSystem.MaxHealth);
+            
+            owner.HealthSystem.ForceDead();
+        }
+
+        private void OnDisable()
+        {
+            CancelSkill();
         }
     }
 }

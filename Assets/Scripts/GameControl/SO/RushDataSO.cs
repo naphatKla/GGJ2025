@@ -51,6 +51,7 @@ namespace GameControl.SO
                 : new MapDataSO.EnemyOption
                 {
                     id = e.id,
+                    displayName = e.displayName,
                     enemyController = e.enemyController,
                     spawnPoint = e.spawnPoint,
                     enemyPointCanGrowth = e.enemyPointCanGrowth,
@@ -60,6 +61,8 @@ namespace GameControl.SO
                     enemyChanceGrowthRate = e.enemyChanceGrowthRate,
                     useCustomInterval = e.useCustomInterval,
                     customInterval = e.customInterval,
+                    modifyNewData = e.modifyNewData,
+                    enemyData = e.enemyData,
                     useSpawnConditions = e.useSpawnConditions,
                     conditionLogic = e.conditionLogic,
                     spawnConditions = e.spawnConditions != null ? new List<SpawnConditionSO>(e.spawnConditions) : null
@@ -199,7 +202,9 @@ namespace GameControl.SO
                             {
                                 mapEventID = k.mapEventID,
                                 chance = k.chance,
-                                useWeightRandom = k.useWeightRandom
+                                useWeightRandom = k.useWeightRandom,
+                                overrideData = k.overrideData,
+                                damageMap = k.damageMap
                             })
                             : null
                     };

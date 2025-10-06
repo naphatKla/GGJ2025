@@ -524,13 +524,14 @@ namespace Characters.UIDisplay
 
             bool isNew = !skillSystem.ContainsSkillWithSameRoot(skill);
             vh.UpdateUIModal(skill, isNew);
-            vh.Bind(skill, isNew, HandleCardClicked, HandleCardHoldClicked);
             await SkillCardFeedback(skillcard.transform);
+            vh.Bind(skill, isNew, HandleCardClicked, HandleCardHoldClicked);
         }
 
         private void PanelCardFeedback(Transform tf)
         {
             tf.localPosition = new Vector2(1920, 0);
+            tf.DOKill(true);
             var seq = DOTween.Sequence();
             seq.Append(tf.DOLocalMove(new Vector3(0, 0, 0), 0.7f).SetEase(Ease.OutBack))
                 .Join(tf.DOShakeRotation(0.7f, 0f, vibrato: 10, randomness: 90).SetEase(Ease.OutBack))
@@ -542,6 +543,7 @@ namespace Characters.UIDisplay
 
         private async UniTask SkillCardFeedback(Transform tf)
         {
+            tf.DOKill(true);
             await tf.DOLocalRotate(new Vector3(0, 720f, 0), 0.7f, RotateMode.FastBeyond360)
                 .SetEase(Ease.OutCubic)
                 .SetUpdate(true)
@@ -552,11 +554,11 @@ namespace Characters.UIDisplay
         {
             if (vh == null) return;
             if (_currentSelectVH == vh) return;
-            if (_currentSelectVH != null) _currentSelectVH.SetSelected(false);
+            if (_currentSelectVH != null) _currentSelectVH.SetSelected(false, true);
             
             _currentSelectVH = vh;
             _currentSelect = vh.Data;
-            _currentSelectVH.SetSelected(true);
+            _currentSelectVH.SetSelected(true, true);
             
             UpdateConfirmButtonState();
         }
@@ -564,13 +566,11 @@ namespace Characters.UIDisplay
         private void HandleCardHoldClicked(SolfUpgradeViewholder vh)
         {
             if (vh == null) return;
-            if (_currentSelectVH == vh) return;
-            if (_currentSelectVH != null) _currentSelectVH.SetSelected(false);
+            if (_currentSelectVH != null) _currentSelectVH.SetSelected(false, true);
             
             _currentSelectVH = vh;
             _currentSelect = vh.Data;
-            _currentSelectVH.SetSelected(true);
-
+            _currentSelectVH.SetSelected(true, false);
             OnChooseSkillAsync().Forget();
         }
         

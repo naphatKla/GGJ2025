@@ -45,6 +45,10 @@ namespace GameControl.Controller
             var obj = Object.Instantiate(option.EnemyObject);
             var controller = obj.GetComponent<EnemyController>();
             controller.HealthSystem.OnDead = () => _enemyPools[option.id].Release(controller);
+            if (option.modifyNewData) 
+                controller.AssignCharacterData(option.enemyData);
+            else 
+                controller.AssignCharacterData(controller.CharacterData);
             return controller;
         }
         
@@ -90,7 +94,6 @@ namespace GameControl.Controller
             {
                 OnFirstEnemySpawn(obj, option);
             }
-            
             obj.transform.position = SpawnUtility.RandomBetweenMouseAndCamera(_mainCamera);
             obj.transform.SetParent(_state.EnemyParent);
             obj.FeedbackSystem.ShowTrail(true);
@@ -162,6 +165,8 @@ namespace GameControl.Controller
                     customInterval = data.customInterval,
                     EnemyObject = data.EnemyObject,
                     Chance = data.Chance,
+                    modifyNewData = data.modifyNewData,
+                    enemyData = data.enemyData,
                     useSpawnConditions = data.useSpawnConditions,
                     conditionLogic = data.conditionLogic,
                     spawnConditions = data.spawnConditions != null ? new List<SpawnConditionSO>(data.spawnConditions) : null
@@ -239,7 +244,7 @@ namespace GameControl.Controller
         {
             foreach (var enemy in _activeEnemy.ToArray())
             {
-                enemy.HealthSystem.TakeDamage(enemy.HealthSystem.MaxHealth, out _);
+                enemy.HealthSystem.ForceDead();
             }
         }
         
