@@ -8,9 +8,7 @@ using GameControl.Controller;
 using GameControl.Interface;
 using GameControl.Pattern;
 using Sirenix.OdinInspector;
-using Sirenix.Serialization;
 using UnityEngine;
-using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
 namespace GameControl.SO

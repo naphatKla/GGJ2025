@@ -166,12 +166,14 @@ namespace GameControl.Controller
             if (kv.overrideData)
             {
                 MapEventManager.Instance.RunEvent(eventID, o => o
-                    .Set("damage", kv.damageMap)
-                    );
+                    .ForEntry(e =>
+                    {
+                        e.damage = kv.damageMap;
+                    }));
             }
             else
             {
-                MapEventManager.Instance.RunEvent(eventID);
+                MapEventManager.Instance.RunEvent(eventID, null);
             }
         }
 
