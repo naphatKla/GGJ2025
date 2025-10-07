@@ -5,7 +5,7 @@ using UnityEngine;
 namespace GameControl.SO
 {
     [CreateAssetMenu(menuName = "SpawnConditions/Time Window")]
-    public class TimeWindowSpawnCondition : SpawnConditionSO
+    public class TimeWindowEnemySpawnCondition : EnemySpawnConditionSO
     {
         [Tooltip("เวลาตั้งแต่เริ่มเกม (วินาที)")]
         [InfoBox("เช่นอยากให้เกิดหลังจากเกมเริ่ม 30 วิก็ใส่ไป 30 วิ")]
