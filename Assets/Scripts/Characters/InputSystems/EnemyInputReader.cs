@@ -1,10 +1,11 @@
 using System;
+using System.Collections.Generic;
 using Characters.Controllers;
+using Characters.Controllers.EnemyStates;
 using Characters.InputSystems.Interface;
-using Characters.MovementSystems;
 using Characters.SkillSystems;
 using Characters.SO.CharacterDataSO;
-using Manager;
+using Characters.SO.CharacterDataSO.EnemyStateDataSO;
 using UnityEngine;
 
 namespace Characters.InputSystems
@@ -13,84 +14,104 @@ namespace Characters.InputSystems
     {
         private EnemyController _ownerEnemy;
         private EnemyDataSo _enemyData;
-        
-        private EnemyDataSo _enemy;
-        private BaseMovementSystem _move;
-
         private DirectionContainer _sight;
-        DirectionContainer ICharacterInput.SightDirection { get => _sight; set => _sight = value; }
+        private BaseEnemyStateDataSo _defaultStateData;
+        private BaseEnemyStateDataSo _currentStateData;
+        private Queue<EnemyStateDataPayload> _stateQueue = new();
+        private BaseEnemyState _currentState;
+        private bool _enable = true;
 
-        public bool Enable { get; set; } = true;
+        DirectionContainer ICharacterInput.SightDirection
+        {
+            get => _sight;
+            set => _sight = value;
+        }
+
+        public bool Enable
+        {
+            get => _enable;
+            set
+            {
+                if (_enable == value) return;
+                _enable = value;
+
+                if (value) _currentState?.HandleOnStart();
+                else _currentState?.CancelState();
+            }
+        }
+
         public Action<Vector2> OnMove { get; set; }
         public Action<SkillType> OnSkillPerform { get; set; }
-
-        private float _stopSqr;
-        private float _performSqr;
-
-        private void OnEnable()
-        {
-            _move = GetComponent<BaseMovementSystem>();
-            var ctrl = GetComponent<Characters.Controllers.EnemyController>();
-            _enemy = ctrl && ctrl.CharacterData is EnemyDataSo e ? e : null;
-
-            if (_enemy == null) { enabled = false; return; }
-
-            _stopSqr = _enemy.StopDistance * _enemy.StopDistance;
-            _performSqr = _enemy.PerformSkillDistance * _enemy.PerformSkillDistance;
-
-            FixedUpdateManager.Instance.OnTick += HandleTick;   // subscribe tick 0.2s
-        }
-
-        private void OnDisable()
-        {
-            if (!FixedUpdateManager.IsAlive) return;
-            FixedUpdateManager.Current.OnTick -= HandleTick;
-        }
 
         public virtual void AssignData(EnemyController owner)
         {
             _ownerEnemy = owner;
 
-            if (_ownerEnemy.CharacterData is not EnemyDataSo data)
+            if (owner.CharacterData is not EnemyDataSo enemyDataSo)
             {
                 Debug.LogWarning("Enemy Data Was Wrong Type!");
                 return;
             }
 
-            _enemyData = data;
+            _enemyData = enemyDataSo;
+            _defaultStateData = _enemyData.DefaultState;
+
+            ResetInputSystem();
         }
-        
-        private void HandleTick()
+
+        public void UpdateStateOnHealthChanged(float changedValue)
         {
-            if (!Enable) return;
-            var player = Characters.Controllers.PlayerController.Instance;
-            if (!player) return;
+            if (_stateQueue.Count <= 0) return;
+            if (_ownerEnemy.HealthSystem.HealthPercentage01 * 100 > _stateQueue.Peek().HpPercentageToEnter) return;
+            ChangeState(_stateQueue.Dequeue().StateData);
+        }
 
-            Vector2 pos = transform.position;
-            Vector2 toP = (Vector2)player.transform.position - pos;
-            float d2 = toP.sqrMagnitude;
+        protected virtual void ChangeState(BaseEnemyStateDataSo stateData)
+        {
+            if (_currentStateData && _currentStateData == stateData) return;
+            if (!_enable) return;
 
-            if (d2 > 1e-6f)
+            var type = stateData.SkillRuntime;
+            var newState = (BaseEnemyState)Activator.CreateInstance(type);
+
+            if (newState == null)
             {
-                float inv = 1.0f / Mathf.Sqrt(d2);
-                _sight.direction = toP * inv;
-                _sight.length = 1.0f / inv;
-            }
-            else
-            {
-                _sight.direction = Vector2.zero;
-                _sight.length = 0f;
+                Debug.LogWarning("State instance was null");
+                return;
             }
 
-            bool stop = d2 < _stopSqr;
-            _move?.StopFromInput(stop);
+            _currentState?.CancelState();
+            newState.AssignData(_ownerEnemy, stateData);
+            newState.HandleOnStart();
+            _currentState = newState;
+            _currentStateData = stateData;
+        }
+
+        public void ResetInputSystem()
+        {
+            _stateQueue = new Queue<EnemyStateDataPayload>(_enemyData.StateList);
+            ResetStateToDefault();
+        }
+
+        public void ResetStateToDefault()
+        {
+            ChangeState(_defaultStateData);
+        }
+
+        public void SetSightDirection(DirectionContainer directionContainer)
+        {
+            _sight = directionContainer;
+        }
+
+        public void MoveInput()
+        {
             OnMove?.Invoke(_sight.direction);
+        }
 
-            if (d2 < _performSqr)
-            {
-                OnSkillPerform?.Invoke(SkillType.PrimarySkill);
-                OnSkillPerform?.Invoke(SkillType.SecondarySkill);
-            }
+        public void PerformSkill(SkillType type)
+        {
+            OnSkillPerform?.Invoke(SkillType.PrimarySkill);
+            OnSkillPerform?.Invoke(SkillType.SecondarySkill);
         }
     }
 }
