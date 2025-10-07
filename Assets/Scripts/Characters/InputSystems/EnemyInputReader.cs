@@ -6,6 +6,7 @@ using Characters.InputSystems.Interface;
 using Characters.SkillSystems;
 using Characters.SO.CharacterDataSO;
 using Characters.SO.CharacterDataSO.EnemyStateDataSO;
+using Manager;
 using UnityEngine;
 
 namespace Characters.InputSystems
@@ -19,29 +20,27 @@ namespace Characters.InputSystems
         private BaseEnemyStateDataSo _currentStateData;
         private Queue<EnemyStateDataPayload> _stateQueue = new();
         private BaseEnemyState _currentState;
-        private bool _enable = true;
 
         DirectionContainer ICharacterInput.SightDirection
         {
             get => _sight;
             set => _sight = value;
         }
-
-        public bool Enable
-        {
-            get => _enable;
-            set
-            {
-                if (_enable == value) return;
-                _enable = value;
-
-                if (value) _currentState?.HandleOnStart();
-                else _currentState?.CancelState();
-            }
-        }
-
+        
+        public bool Enable { get; set; } = true;
         public Action<Vector2> OnMove { get; set; }
         public Action<SkillType> OnSkillPerform { get; set; }
+
+        private void OnEnable()
+        {
+            FixedUpdateManager.Instance.OnTick += OnTick;
+        }
+
+        private void OnDisable()
+        {
+            if (!FixedUpdateManager.Current) return;
+            FixedUpdateManager.Current.OnTick -= OnTick;
+        }
 
         public virtual void AssignData(EnemyController owner)
         {
@@ -58,9 +57,16 @@ namespace Characters.InputSystems
 
             ResetInputSystem();
         }
-
+        
+        private void OnTick()
+        {
+            if (!Enable) return;
+            _currentState?.HandleOnUpdate();
+        }
+        
         public void UpdateStateOnHealthChanged(float changedValue)
         {
+            if (!Enable) return;
             if (_stateQueue.Count <= 0) return;
             if (_ownerEnemy.HealthSystem.HealthPercentage01 * 100 > _stateQueue.Peek().HpPercentageToEnter) return;
             ChangeState(_stateQueue.Dequeue().StateData);
@@ -68,9 +74,9 @@ namespace Characters.InputSystems
 
         protected virtual void ChangeState(BaseEnemyStateDataSo stateData)
         {
+            if (!Enable) return;
             if (_currentStateData && _currentStateData == stateData) return;
-            if (!_enable) return;
-
+            
             var type = stateData.SkillRuntime;
             var newState = (BaseEnemyState)Activator.CreateInstance(type);
 
@@ -80,24 +86,13 @@ namespace Characters.InputSystems
                 return;
             }
 
-            _currentState?.CancelState();
+            _currentState?.HandleOnExit();
             newState.AssignData(_ownerEnemy, stateData);
             newState.HandleOnStart();
             _currentState = newState;
             _currentStateData = stateData;
         }
-
-        public void ResetInputSystem()
-        {
-            _stateQueue = new Queue<EnemyStateDataPayload>(_enemyData.StateList);
-            ResetStateToDefault();
-        }
-
-        public void ResetStateToDefault()
-        {
-            ChangeState(_defaultStateData);
-        }
-
+        
         public void SetSightDirection(DirectionContainer directionContainer)
         {
             _sight = directionContainer;
@@ -112,6 +107,13 @@ namespace Characters.InputSystems
         {
             OnSkillPerform?.Invoke(SkillType.PrimarySkill);
             OnSkillPerform?.Invoke(SkillType.SecondarySkill);
+        }
+        
+        public void ResetInputSystem()
+        {
+            _currentState?.HandleOnExit();
+            _stateQueue = new Queue<EnemyStateDataPayload>(_enemyData.StateList);
+            ChangeState(_defaultStateData);
         }
     }
 }
