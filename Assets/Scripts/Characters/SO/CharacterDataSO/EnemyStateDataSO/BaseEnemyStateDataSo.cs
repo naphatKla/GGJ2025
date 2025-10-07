@@ -6,6 +6,15 @@ using UnityEngine;
 
 namespace Characters.SO.CharacterDataSO.EnemyStateDataSO
 {
+    [Serializable]
+    public struct EnemyStateDataPayload
+    {
+        [SerializeField] private BaseEnemyStateDataSo stateData;
+        [SerializeField] private float hpPercentageToEnter;
+        public BaseEnemyStateDataSo StateData => stateData;
+        public float HpPercentageToEnter => hpPercentageToEnter;
+    }
+    
     public class BaseEnemyStateDataSo : ScriptableObject
     {
         [Space] [Title("Runtime Binding")]

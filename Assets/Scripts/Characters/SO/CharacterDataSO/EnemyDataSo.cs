@@ -1,6 +1,7 @@
+using System.Collections.Generic;
+using Characters.SO.CharacterDataSO.EnemyStateDataSO;
 using Sirenix.OdinInspector;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Characters.SO.CharacterDataSO
 {
@@ -23,9 +24,17 @@ namespace Characters.SO.CharacterDataSO
         [SerializeField, PropertyTooltip("Delay before performing skill after being eligible.")]
         private float delayBeforePerformSkill = 0.5f;
 
+        [FoldoutGroup("State Machine Controller")] [SerializeField]
+        private BaseEnemyStateDataSo defaultState;
+        
+        [FoldoutGroup("State Machine Controller")] [SerializeField]
+        private List<EnemyStateDataPayload> stateList;
+        
         public int ExpDrop => expDrop;
         public float StopDistance => stopDistance;
         public float PerformSkillDistance => performSkillDistance;
         public float DelayBeforePerformSkill => delayBeforePerformSkill;
+        public BaseEnemyStateDataSo DefaultState => defaultState;
+        public List<EnemyStateDataPayload> StateList => stateList;
     }
 }
