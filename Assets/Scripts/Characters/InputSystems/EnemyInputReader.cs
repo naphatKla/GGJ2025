@@ -1,4 +1,5 @@
 using System;
+using Characters.Controllers;
 using Characters.InputSystems.Interface;
 using Characters.MovementSystems;
 using Characters.SkillSystems;
@@ -10,6 +11,9 @@ namespace Characters.InputSystems
 {
     public class EnemyInputReader : MonoBehaviour, ICharacterInput
     {
+        private EnemyController _ownerEnemy;
+        private EnemyDataSo _enemyData;
+        
         private EnemyDataSo _enemy;
         private BaseMovementSystem _move;
 
@@ -43,6 +47,19 @@ namespace Characters.InputSystems
             FixedUpdateManager.Current.OnTick -= HandleTick;
         }
 
+        public virtual void AssignData(EnemyController owner)
+        {
+            _ownerEnemy = owner;
+
+            if (_ownerEnemy.CharacterData is not EnemyDataSo data)
+            {
+                Debug.LogWarning("Enemy Data Was Wrong Type!");
+                return;
+            }
+
+            _enemyData = data;
+        }
+        
         private void HandleTick()
         {
             if (!Enable) return;
