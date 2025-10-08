@@ -83,7 +83,7 @@ namespace Characters.CombatSystems
             object caller,
             float hitPerSec,
             OverlapShape shape,
-            LayerMask layerMask,
+            LayerMask? layerMask = null,
             Vector2? box = null,
             float? circle = null,
             float baseSkillDamage = 0f,
@@ -94,7 +94,7 @@ namespace Characters.CombatSystems
             float lifeStealEffective = 0f)
         {
             this.shape = shape;
-            this.targetLayer = layerMask;
+            if (layerMask.HasValue)  this.targetLayer = layerMask.Value;
             if (box.HasValue) boxSize = box.Value;
             if (circle.HasValue) circleRadius = circle.Value;
 

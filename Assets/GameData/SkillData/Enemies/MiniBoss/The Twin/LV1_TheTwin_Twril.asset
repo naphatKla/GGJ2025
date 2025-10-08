@@ -39,11 +39,25 @@ MonoBehaviour:
   cooldown: 10
   startFeedback: 
   exitFeedback: 
-  clearBuffOnSkillExit: 0
-  statusEffectOnSkillStart: []
-  baseDamagePerHit: 35
+  clearBuffOnSkillExit: 1
+  statusEffectOnSkillStart:
+  - effectData: {fileID: 11400000, guid: 2bb1df345b8c3ff4bbff4f8af06b3616, type: 2}
+    isOverrideDuration: 1
+    overrideDuration: 999
+  baseDamagePerHit: 10
   damageMultiplier: 100
+  damageRadius: 10.15
+  expandRadius: 8
+  startExpandDuration: 0.5
   twirlDuration: 4
+  spinRound: 10
+  delayEnableDamageAfterStartSpin: 0.5
+  damageDuration: 2.5
+  mergeBackDuration: 0.15
+  effectSelfOnSuccess:
+  - effectData: {fileID: 11400000, guid: e5ae6010e3c4a7b43bc80da0bf5a9ef5, type: 2}
+    isOverrideDuration: 1
+    overrideDuration: 3
   twirlSpeedCurve:
     serializedVersion: 2
     m_Curve:

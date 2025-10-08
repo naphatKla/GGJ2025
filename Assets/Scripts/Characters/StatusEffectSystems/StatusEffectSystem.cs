@@ -50,6 +50,7 @@ namespace Characters.StatusEffectSystems
         Iframe = 0,
         Stun = 2,
         FlowStage = 3,
+        IronBody = 4,
     }
 
     public class StatusEffectSystem : MonoBehaviour, IFixedUpdateable

@@ -1,6 +1,7 @@
 using Characters.Controllers;
 using Characters.FeedbackSystems;
 using Characters.SO.StatusEffectSO;
+using Manager;
 
 namespace Characters.StatusEffectSystems.StatusEffects
 {
@@ -16,6 +17,11 @@ namespace Characters.StatusEffectSystems.StatusEffects
                 return;
             }
 
+            if (StatusEffectManager.TryGetEffect(owner.gameObject, StatusEffectName.IronBody, out BaseStatusEffect eff))
+            {
+                return;
+            }
+            
             _isStunSuccess = true;
             owner.MovementSystem.StopFromStun(true);
             owner.SkillSystem.SetCanUseSkills(false);
