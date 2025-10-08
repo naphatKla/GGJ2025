@@ -25,6 +25,7 @@ namespace Characters.Controllers
         /// <summary>
         /// Sprite body of this character.
         /// </summary>
+        [BoxGroup("Body Part")]
         [SerializeField] private SpriteRenderer body;
 
         /// <summary>
