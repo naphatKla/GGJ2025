@@ -65,7 +65,7 @@ namespace GameControl.SO
                     enemyData = e.enemyData,
                     useSpawnConditions = e.useSpawnConditions,
                     conditionLogic = e.conditionLogic,
-                    spawnConditions = e.spawnConditions != null ? new List<SpawnConditionSO>(e.spawnConditions) : null
+                    spawnConditions = e.spawnConditions != null ? new List<EnemySpawnConditionSO>(e.spawnConditions) : null
                 });
 
 #if UNITY_EDITOR

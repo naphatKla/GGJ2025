@@ -8350,53 +8350,32 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd6a21e1f5b197e4ea664d9a5cc7588e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  storageEntries:
-  - id: 2Giant
-    storage: {fileID: 11400000, guid: cec40ce47284fc841961849a3b147843, type: 2}
-  - id: Horizontal
-    storage: {fileID: 11400000, guid: bbf5b1e848ebfb94080f1eaaefb00003, type: 2}
-  - id: Vertical
-    storage: {fileID: 11400000, guid: 91345532846f4fd4b998fb5dbfba68f7, type: 2}
-  - id: Basket
-    storage: {fileID: 11400000, guid: 261d50e330b83e44cb6aaf6b80ab43df, type: 2}
-  - id: Firework_TopL_BottomR
-    storage: {fileID: 11400000, guid: 6db1f68b72c82ab44a3ddd859d361763, type: 2}
-  - id: Firework_TopR_BottomL
-    storage: {fileID: 11400000, guid: 346b5db2cf7a46d438dcd0b316e8a25a, type: 2}
-  - id: RightHole
-    storage: {fileID: 11400000, guid: 5c98b41d9af43b24a92e0c489bd94218, type: 2}
-  - id: LeftHole
-    storage: {fileID: 11400000, guid: 047e699d2a8b6a64d8ea2a9cbd2083d6, type: 2}
-  - id: Random_Line
-    storage: {fileID: 11400000, guid: baf43e8ab3d50ac4ba4a7b420a4fd7ba, type: 2}
-  - id: Bar_Line
-    storage: {fileID: 11400000, guid: 8b6eb70b5b402a842bcdcc2732e9c219, type: 2}
-  - id: Wave
-    storage: {fileID: 11400000, guid: afbab88a260d7064dae358b159a89d92, type: 2}
-  - id: 2Giant-Learning
-    storage: {fileID: 11400000, guid: 7536a7dfd9c51264e96cadaa7d237998, type: 2}
-  - id: Horizontal-Learning
-    storage: {fileID: 11400000, guid: c8b98dfa5909382499eebe7550795ebb, type: 2}
-  - id: Vertical-Learning
-    storage: {fileID: 11400000, guid: 34fcdd33a600d9c48b99612a3746798a, type: 2}
-  - id: Basket-Learning
-    storage: {fileID: 11400000, guid: 9730242283ebe124e8bc71bc5ffdb687, type: 2}
-  - id: Firework_TopL_BottomR-Learning
-    storage: {fileID: 11400000, guid: c27fbfad0082da648b133f1a3604e42d, type: 2}
-  - id: Firework_TopR_BottomL-Learning
-    storage: {fileID: 11400000, guid: 2cd4fd33743f626498ce635c1d50eb98, type: 2}
-  - id: RightHole-Learning
-    storage: {fileID: 11400000, guid: 001477a49514c784fb10932ab88d8ab4, type: 2}
-  - id: LeftHole-Learning
-    storage: {fileID: 11400000, guid: 19ccb6de3acf7654fa58e5e5eb4865f9, type: 2}
-  - id: Random_Line-Learning
-    storage: {fileID: 11400000, guid: aadc538de17b6804aa423385abb78d99, type: 2}
-  - id: Bar_Line-Learning
-    storage: {fileID: 11400000, guid: 5588362234753dd478f25c22a68be3bd, type: 2}
-  - id: Wave-Learning
-    storage: {fileID: 11400000, guid: 2d1869f76fda95743a1ec9955da437b9, type: 2}
+  catagorieEntries:
+  - catagoryName: MapEvent_Normal
+    storageEntries:
+    - id: 2Giant
+      storage: {fileID: 11400000, guid: cec40ce47284fc841961849a3b147843, type: 2}
+    - id: Horizontal
+      storage: {fileID: 11400000, guid: bbf5b1e848ebfb94080f1eaaefb00003, type: 2}
+    - id: Vertical
+      storage: {fileID: 11400000, guid: 91345532846f4fd4b998fb5dbfba68f7, type: 2}
+    - id: Basket
+      storage: {fileID: 11400000, guid: 261d50e330b83e44cb6aaf6b80ab43df, type: 2}
+    - id: Firework_TopL_BottomR
+      storage: {fileID: 11400000, guid: 6db1f68b72c82ab44a3ddd859d361763, type: 2}
+    - id: Firework_TopR_BottomL
+      storage: {fileID: 11400000, guid: 346b5db2cf7a46d438dcd0b316e8a25a, type: 2}
+    - id: RightHole
+      storage: {fileID: 11400000, guid: 5c98b41d9af43b24a92e0c489bd94218, type: 2}
+    - id: LeftHole
+      storage: {fileID: 11400000, guid: 047e699d2a8b6a64d8ea2a9cbd2083d6, type: 2}
+    - id: Random_Line
+      storage: {fileID: 11400000, guid: baf43e8ab3d50ac4ba4a7b420a4fd7ba, type: 2}
+    - id: Wave
+      storage: {fileID: 11400000, guid: afbab88a260d7064dae358b159a89d92, type: 2}
   eventMapParent: {fileID: 476519538}
   _testId: Wave
+  _testdmg: 999
 --- !u!1 &965496757
 GameObject:
   m_ObjectHideFlags: 0
@@ -9800,7 +9779,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1234941214
 MonoBehaviour:
   m_ObjectHideFlags: 0

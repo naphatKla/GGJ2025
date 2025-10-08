@@ -169,7 +169,7 @@ namespace GameControl.Controller
                     enemyData = data.enemyData,
                     useSpawnConditions = data.useSpawnConditions,
                     conditionLogic = data.conditionLogic,
-                    spawnConditions = data.spawnConditions != null ? new List<SpawnConditionSO>(data.spawnConditions) : null
+                    spawnConditions = data.spawnConditions != null ? new List<EnemySpawnConditionSO>(data.spawnConditions) : null
                 };
                 _enemyOptionsList.Add(cloned);
 

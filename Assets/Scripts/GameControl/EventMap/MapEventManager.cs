@@ -11,37 +11,13 @@ using UnityEngine.Pool;
 
 namespace GameControl.EventMap
 {
-    public interface IEventOverrideReceiver
+    [Serializable]
+    public class MapCatagory
     {
-        void ApplyOverrides(IReadOnlyDictionary<string, object> overrides);
-    }
-
-    public sealed class EventOverrides
-    {
-        internal readonly Dictionary<string, object> Entry = new();
-        internal readonly Dictionary<string, object> Instance = new();
-
-        /// <summary>ตั้งค่าสำหรับทั้ง Entry และ Instance พร้อมกัน</summary>
-        public EventOverrides Set(string key, object value)
-        {
-            Entry[key] = value;
-            Instance[key] = value;
-            return this;
-        }
-
-        /// <summary>ตั้งค่าเฉพาะ Entry (MapEventStorageEntry)</summary>
-        public EventOverrides SetForEntry(string key, object value)
-        {
-            Entry[key] = value;
-            return this;
-        }
-
-        /// <summary>ตั้งค่าเฉพาะ Instance (BaseMapEvent)</summary>
-        public EventOverrides SetForInstance(string key, object value)
-        {
-            Instance[key] = value;
-            return this;
-        }
+        [FoldoutGroup("$catagoryName")]
+        public string catagoryName;
+        [FoldoutGroup("$catagoryName")]
+        public List<StorageEntry> storageEntries;
     }
     
     [Serializable]
@@ -53,7 +29,7 @@ namespace GameControl.EventMap
     
     public class MapEventManager : MMSingleton<MapEventManager>
     {
-        [SerializeField] private List<StorageEntry> storageEntries;
+        [SerializeField] private List<MapCatagory> catagorieEntries;
 
         [SerializeField] private Transform eventMapParent;
 
@@ -68,7 +44,8 @@ namespace GameControl.EventMap
             base.Awake();
             _cts = new CancellationTokenSource();
             _mapStorageDict = new Dictionary<string, MapEventContainerSO>();
-            foreach (var entry in storageEntries)
+            foreach (var catagory in catagorieEntries) 
+            foreach (var entry in catagory.storageEntries)
                 _mapStorageDict[entry.id] = entry.storage;
         }
         
@@ -83,25 +60,22 @@ namespace GameControl.EventMap
         {
             if (!_mapStorageDict.TryGetValue(id, out var storage)) return;
 
-            var playerPost = PlayerController.Instance.transform.position;
-            var eventsToRun = GetFilteredEvents(storage);
+            var playerPost   = PlayerController.Instance.transform.position;
+            var eventsToRun  = GetFilteredEvents(storage);
 
             foreach (var entry in eventsToRun)
             {
                 token.ThrowIfCancellationRequested();
-                var workingEntry = CloneEntry(entry);
+                var workingEntry = entry.Clone();
+                PlayEntry(workingEntry, playerPost, overrides);
 
-                // Apply overrides
-                if (overrides != null && overrides.Entry.Count > 0)
-                    ApplyOverridesToObject(workingEntry, overrides.Entry);
-
-                PlayEntry(workingEntry, playerPost, overrides?.Instance);
                 await UniTask.Delay(
                     TimeSpan.FromSeconds(GetDelayForEntry(workingEntry, storage)),
                     cancellationToken: token
                 );
             }
         }
+
 
         private List<MapEventStorageEntry> GetFilteredEvents(MapEventContainerSO storage)
         {
@@ -143,7 +117,7 @@ namespace GameControl.EventMap
             return (rand <= storage.playBySortChance) ? EventMode.PlaybySort : EventMode.RandomAndPlay;
         }
 
-        private void PlayEntry(MapEventStorageEntry entry, Vector3 playerPost, IReadOnlyDictionary<string, object> instanceOverrides)
+        private void PlayEntry(MapEventStorageEntry entry, Vector3 playerPost, EventOverrides overrides)
         {
             var pool = GetOrCreatePool(entry.eventPrefab);
             var instance = pool.Get();
@@ -153,17 +127,7 @@ namespace GameControl.EventMap
             instance.transform.rotation = Quaternion.Euler(entry.spawnEulerAngles);
 
             // override
-            if (instanceOverrides != null && instanceOverrides.Count > 0)
-            {
-                if (instance is IEventOverrideReceiver recv)
-                {
-                    recv.ApplyOverrides(instanceOverrides);
-                }
-                else
-                {
-                    ApplyOverridesToObject(instance, instanceOverrides);
-                }
-            }
+            overrides?.ApplyTo(entry, instance);
 
             instance.ApplyEffect(entry);
             instance.ApplyHitbox(entry);
@@ -225,24 +189,6 @@ namespace GameControl.EventMap
             return pool;
         }
         
-        public void RunEvent(string id)
-        {
-            RunEventMapByID(id, _cts.Token, null).Forget();
-        }
-        
-        public void RunEvent(string id, IReadOnlyDictionary<string, object> overrides)
-        {
-            var bag = new EventOverrides();
-            if (overrides != null)
-            {
-                foreach (var kv in overrides)
-                {
-                    bag.Set(kv.Key, kv.Value);
-                }
-            }
-            RunEventMapByID(id, _cts.Token, bag).Forget();
-        }
-        
         public void RunEvent(string id, Action<EventOverrides> configure)
         {
             EventOverrides bag = null;
@@ -254,101 +200,52 @@ namespace GameControl.EventMap
             RunEventMapByID(id, _cts.Token, bag).Forget();
         }
         
-        [Title("▶️ Test Run (Odin Button)")]
+        [Title("▶️ Test Run (Odin Button)")][FoldoutGroup("Test Map Event")]
         [InfoBox("ใส่ ID ที่ต้องการทดสอบ แล้วกดปุ่ม Run Test")]
         [SerializeField, LabelText("Event ID")] 
         private string _testId;
+     
+        [SerializeField, LabelText("Override Damage")][FoldoutGroup("Test Map Event")]
+        private float _testdmg;
         
         [Button("Run Test"), GUIColor(0.3f, 0.8f, 0.3f)]
         private void RunTestById()
         {
-            RunEvent(_testId);
+            RunEvent(_testId, o => o.ForEntry(e =>
+            {
+                e.damage = _testdmg;
+            }));
         }
         
-        #region Internal
-        private static MapEventStorageEntry CloneEntry(MapEventStorageEntry original)
+        #region Event Override
+        public sealed class EventOverrides
         {
-            var t = original.GetType();
-            if (!t.IsValueType)
-            {
-                var mi = t.GetMethod("MemberwiseClone", BindingFlags.Instance | BindingFlags.NonPublic);
-                return (MapEventStorageEntry)mi.Invoke(original, null);
-            }
-            return original;
-        }
+            private readonly List<Action<MapEventStorageEntry>> _entrySetters = new();
+            private readonly List<Action<BaseMapEvent>> _instanceSetters = new();
 
-        private static void ApplyOverridesToObject(object target, IReadOnlyDictionary<string, object> data)
-        {
-            if (target == null || data == null || data.Count == 0) return;
-
-            var type = target.GetType();
-            if (!_memberCache.TryGetValue(type, out var members))
+            public EventOverrides ForEntry(Action<MapEventStorageEntry> set)
             {
-                members = new Dictionary<string, MemberInfo>(StringComparer.OrdinalIgnoreCase);
-                foreach (var f in type.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance))
-                    members[f.Name] = f;
-                foreach (var p in type.GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance))
-                    if (p.CanWrite) members[p.Name] = p;
-                _memberCache[type] = members;
+                if (set != null) _entrySetters.Add(set);
+                return this;
             }
 
-            foreach (var kv in data)
+            public EventOverrides ForInstance<TEvent>(Action<TEvent> set)
+                where TEvent : BaseMapEvent
             {
-                if (!members.TryGetValue(kv.Key, out var m)) continue;
-
-                try
+                if (set != null)
                 {
-                    var val = ConvertIfNeeded(kv.Value, GetMemberType(m));
-                    SetMemberValue(target, m, val);
+                    _instanceSetters.Add(be =>
+                    {
+                        if (be is TEvent t) set(t);
+                    });
                 }
-                catch
-                {
-                }
+                return this;
             }
-        }
 
-        private static Type GetMemberType(MemberInfo m)
-        {
-            return m switch
+            internal void ApplyTo(MapEventStorageEntry entry, BaseMapEvent instance)
             {
-                FieldInfo fi => fi.FieldType,
-                PropertyInfo pi => pi.PropertyType,
-                _ => typeof(object)
-            };
-        }
-
-        private static void SetMemberValue(object target, MemberInfo m, object value)
-        {
-            switch (m)
-            {
-                case FieldInfo fi:
-                    fi.SetValue(target, value);
-                    break;
-                case PropertyInfo pi:
-                    pi.SetValue(target, value);
-                    break;
-            }
-        }
-
-        private static object ConvertIfNeeded(object value, Type targetType)
-        {
-            if (value == null) return null;
-
-            var vType = value.GetType();
-            if (targetType.IsAssignableFrom(vType)) return value;
-            
-            if (targetType.IsEnum && (value is string sEnum))
-                return Enum.Parse(targetType, sEnum, ignoreCase: true);
-
-            if (targetType == typeof(string)) return value.ToString();
-
-            try
-            {
-                return Convert.ChangeType(value, targetType);
-            }
-            catch
-            {
-                return value;
+                for (int i = 0; i < _entrySetters.Count; i++) _entrySetters[i]?.Invoke(entry);
+                for (int i = 0; i < _instanceSetters.Count; i++) _instanceSetters[i]?.Invoke(instance);
             }
         }
         #endregion
