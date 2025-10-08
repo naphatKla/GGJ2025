@@ -43,6 +43,8 @@ namespace GameControl.Controller
         [BoxGroup("Debug Zone")] [SerializeField] private bool debugEnemy;
         [BoxGroup("Debug Zone")] [SerializeField] private bool debugMapEvent;
         
+        [BoxGroup("Enable")] [SerializeField] private bool notSpawnEnemyOnStart = false;
+        
         [ShowInInspector, ReadOnly]
         public float EnemyPoint => _currentEnemyPoint;
         public MapEventController MapEventController => _mapEventController;
@@ -50,6 +52,7 @@ namespace GameControl.Controller
         public EnemyPatternController EnemyPatternController => _enemyPatternController;
         public ItemSpawnerController ItemSpawnerController => _itemSpawnerController;
         public Transform EnemyParent => enemyParent;
+        public bool DisableEnemySpawn => notSpawnEnemyOnStart;
         public Transform ItemParent => itemParent;
         public Vector2 RegionSize => regionSize;
         public float EnemySpawnTimer { get => _defaultEnemySpawnTimer; set => _defaultEnemySpawnTimer = value; }

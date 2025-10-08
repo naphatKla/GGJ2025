@@ -18,7 +18,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &5921946188132507465
 Transform:
   m_ObjectHideFlags: 0
@@ -242,7 +242,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1389098917297098840}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f010f6edecaea2a40adea01bf2111bb8, type: 3}
   m_Name: 
@@ -348,11 +348,48 @@ MonoBehaviour:
   notifyFeedback: {fileID: 137818649791452312}
   playFeedback: {fileID: 99597935775533807}
   firePoint: {fileID: 2671910010313609379}
-  sphereRadius: 5
-  sphereOffset: {x: 0, y: 0, z: 0}
+  sphereRadius: 20
+  sphereOffset: {x: 0, y: 0}
   hitLayer:
     serializedVersion: 2
     m_Bits: 128
+  dmgCenterRadius: 5
+  basePull: 4
+  stopDistance: 0.1
+  pullCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 1.0000001
+      outSlope: 1.0000001
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.5219826
+      value: 0.52198267
+      inSlope: 1
+      outSlope: 1
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0.9999999
+      outSlope: 0.9999999
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  useExponential: 1
 --- !u!1 &5049000695252636594
 GameObject:
   m_ObjectHideFlags: 0
@@ -370,7 +407,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &5463354790103231963
 Transform:
   m_ObjectHideFlags: 0

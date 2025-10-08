@@ -6788,7 +6788,8 @@ MonoBehaviour:
   itemdropRegionSize: {x: 180, y: 120}
   debugPattern: 0
   debugEnemy: 0
-  debugMapEvent: 1
+  debugMapEvent: 0
+  notSpawnEnemyOnStart: 0
 --- !u!114 &681150452
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8373,9 +8374,13 @@ MonoBehaviour:
       storage: {fileID: 11400000, guid: baf43e8ab3d50ac4ba4a7b420a4fd7ba, type: 2}
     - id: Wave
       storage: {fileID: 11400000, guid: afbab88a260d7064dae358b159a89d92, type: 2}
+  - catagoryName: Testing_MapEvent
+    storageEntries:
+    - id: TestPulling
+      storage: {fileID: 11400000, guid: b38d5d517c5fb42449b39f6ab8425c59, type: 2}
   eventMapParent: {fileID: 476519538}
-  _testId: Wave
-  _testdmg: 999
+  _testId: TestPulling
+  _testdmg: 1
 --- !u!1 &965496757
 GameObject:
   m_ObjectHideFlags: 0
