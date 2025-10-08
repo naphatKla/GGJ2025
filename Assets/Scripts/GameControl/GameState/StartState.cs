@@ -17,7 +17,8 @@ namespace GameControl.GameState
         public void Enter(GameStateController controller)
         {
             GameTimer.Instance.OnTimerEnded += HandleTimerEnded;
-            SpawnerStateController.Instance.SetState(new SpawnerState.SpawningState());
+            if (!SpawnerStateController.Instance.DisableEnemySpawn) 
+                SpawnerStateController.Instance.SetState(new SpawnerState.SpawningState());
             GameTimer.Instance.StartTimer();
         }
 
