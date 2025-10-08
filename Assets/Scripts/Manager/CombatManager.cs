@@ -38,6 +38,8 @@ namespace Manager
     {
         // ----- Component Caches -----
         private static readonly Dictionary<GameObject, BaseController> _characterCaches = new();
+        private static float _lastTimePlayerCounterDash;
+        private static float _counterDashCooldown = 0.5f;
 
         /// <summary>
         /// Applies damage from an attacker GameObject to a target GameObject.
@@ -74,7 +76,15 @@ namespace Manager
                 baseSkillDamage, multiplier, additionalCriRate, additionCriDamge, lifeStealPercent, lifeStealEffective);
             
             // Apply Damage To Target ==========================================
-            if (targetController is PlayerController && counterAttackThisFrame) return; // counter attack player won't take damage.
+            if (targetController is PlayerController && counterAttackThisFrame)
+            {
+                if (_lastTimePlayerCounterDash + _counterDashCooldown >= Time.time)
+                {
+                    _lastTimePlayerCounterDash = Time.time;
+                    return; // counter attack player won't take damage.
+                }
+            }
+               
             if (!targetController.HealthSystem.TakeDamage(damageData.Damage, out bool dieThisFrame)) return;
             attackerController.CombatSystem.OnDealDamageHandler(damageData);
 
