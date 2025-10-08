@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading;
+using Cameras;
 using Characters.CombatSystems;
 using Characters.Controllers;
 using Characters.SO.SkillDataSo;
@@ -33,6 +34,7 @@ namespace Characters.SkillSystems.SkillRuntimes.TwinOnly
         {
             owner.SkillSystem.SetCanUseSkills(false);
             owner.MovementSystem.AddCurrentSpeedMultiplier(-100f);
+            owner.MovementSystem.AddCurrentSpeedMultiplier(skillData.SpeedUpMultiplier);
             tws.Clear();
         }
 
@@ -100,12 +102,14 @@ namespace Characters.SkillSystems.SkillRuntimes.TwinOnly
             
             StatusEffectManager.RemoveEffectAt(owner.gameObject, StatusEffectName.IronBody);
             StatusEffectManager.ApplyEffectTo(owner.gameObject, skillData.EffectSelfOnSuccess);
+            Cinemachine2DCameraController.Current?.ShakeCamera(20);
         }
 
         protected override void OnSkillExit()
         {
             owner.SkillSystem.SetCanUseSkills(true);
             owner.MovementSystem.AddCurrentSpeedMultiplier(100f);
+            owner.MovementSystem.AddCurrentSpeedMultiplier(-skillData.SpeedUpMultiplier);
 
             foreach (var tween in tws)
             {

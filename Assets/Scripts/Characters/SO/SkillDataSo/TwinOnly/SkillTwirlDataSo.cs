@@ -32,6 +32,9 @@ namespace Characters.SO.SkillDataSo.TwinOnly
         [FoldoutGroup("Twirl Config/Spin Phase"), SerializeField]
         private int spinRound = 10;
 
+        [Unit(Units.Percent)] [FoldoutGroup("Twirl Config/Spin Phase"), SerializeField]
+        private float speedUpMultiplier = 100f;
+        
         [Unit(Units.Second)] [FoldoutGroup("Twirl Config/Spin Phase"), SerializeField]
         private float delayEnableDamageAfterStartSpin = 1f;
 
@@ -51,6 +54,7 @@ namespace Characters.SO.SkillDataSo.TwinOnly
         public float BaseDamagePerHit => baseDamagePerHit;
         public float DamageMultiplier => damageMultiplier;
         public float DamageRadius => damageRadius;
+        public float SpeedUpMultiplier => speedUpMultiplier;
         public float DelayEnableDamageAfterStartSpin => delayEnableDamageAfterStartSpin;
         public float DamageDuration => damageDuration;
         public float ExpandRadius => expandRadius;
