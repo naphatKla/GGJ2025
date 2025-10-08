@@ -67,12 +67,15 @@ namespace Characters.SkillSystems.SkillRuntimes.TwinOnly
 
             Cinemachine2DCameraController.Current.ShakeCamera(50f);
 
+            
+            StatusEffectManager.RemoveEffectAt(owner.gameObject, StatusEffectName.Iframe);
+            StatusEffectManager.ApplyEffectTo(owner.gameObject, skillData.EffectSelfOnSuccess);
+
+            await UniTask.WaitForSeconds(3f, cancellationToken: cancelToken);
             await _twirlController.Body.transform
                 .DORotate(new Vector3(0f, 0f, -90), 0.5f,
                     RotateMode.FastBeyond360)
                 .SetRelative();
-
-            StatusEffectManager.RemoveEffectAt(owner.gameObject, StatusEffectName.Iframe);
         }
 
         protected override void OnSkillExit()
