@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using Cameras;
+using Characters.CombatSystems;
 using Characters.Controllers;
 using Characters.SO.SkillDataSo;
 using Characters.SO.SkillDataSo.TwinOnly;
@@ -16,6 +18,7 @@ namespace Characters.SkillSystems.SkillRuntimes.TwinOnly
     {
         private TwinController _twirlController;
         private List<Tween> tws = new List<Tween>();
+        private float stunTime = 0f;
 
         public override void AssignSkillData(BaseSkillDataSo skillData, BaseController owner)
         {
@@ -28,29 +31,63 @@ namespace Characters.SkillSystems.SkillRuntimes.TwinOnly
             _twirlController = (TwinController)owner;
             base.AssignSkillData(skillData, owner);
         }
-
+        public override void PerformSkill()
+        {
+            if (IsCooldown || IsPerforming) return;
+            if (owner.HealthSystem.HealthPercentage01 * 100 > skillData.AvailableOnHpLessOrEqualThan) return;
+            base.PerformSkill();
+        }
+        
         protected override void OnSkillStart()
         {
             _twirlController.InputSystem.Enable = false;
             _twirlController.SkillSystem.SetCanUseSkills(false);
+            
+            stunTime = skillData.EffectSelfOnSuccess.Count > 0
+                ? skillData.EffectSelfOnSuccess[0].OverrideDuration + 0.15f
+                : 0;
         }
 
         protected override async UniTask OnSkillUpdate(CancellationToken cancelToken)
         {
-            await _twirlController.Body.transform
-                .DORotate(new Vector3(0f, 0f, 90), 0.5f,
+            float rotateAngle = 270;
+            float rotateDuration = 0.5f;
+            float delayChargeAfterRotate = 0.5f;
+            float chargeDistance = 20;
+            float moveToChargeDistanceDuration = 0.5f;
+            float delayBeforeZoomOut = 0.15f;
+            float orthoSize = 24f;
+            float zoomOutDuration = skillData.ChargeTime - 0.5f;
+            float blendOverride = 0.25f;
+            float chaseDuration = skillData.ChargeTime;
+            float speed = 45f;
+            float attackDuration = 0.07f;
+            float attackCamShake = 50f;
+            float hitPerSec = 1;
+            float damageRadias = 8f;
+
+            tws.Add(_twirlController.Body.transform
+                .DORotate(new Vector3(0f, 0f, rotateAngle), rotateDuration,
                     RotateMode.FastBeyond360)
-                .SetRelative();
+                .SetRelative());
 
-            _twirlController.RedBody.DOLocalMoveX(20, 0.5f);
-            _twirlController.BlueBody.DOLocalMoveX(-20, 0.5f);
-            Cinemachine2DCameraController.Current.PushOrtho(22f, 3, this, 1f);
+            await UniTask.WaitForSeconds(delayChargeAfterRotate, cancellationToken: cancelToken);
 
-            float chaseDuration = 3f;
-            float speed = 40f;
+            if (cancelToken.IsCancellationRequested) return;
+
+            tws.Add(_twirlController.RedBody.DOLocalMoveX(chargeDistance, moveToChargeDistanceDuration));
+            tws.Add(_twirlController.BlueBody.DOLocalMoveX(-chargeDistance, moveToChargeDistanceDuration));
+
+            await UniTask.WaitForSeconds(delayBeforeZoomOut, cancellationToken: cancelToken);
+
+            if (cancelToken.IsCancellationRequested) return;
+
+            Cinemachine2DCameraController.Current.PushOrtho(orthoSize, zoomOutDuration, this, blendOverride);
+
+
             float timeCount = 0f;
 
-            while (timeCount <= chaseDuration)
+            while (timeCount <= chaseDuration && !cancelToken.IsCancellationRequested)
             {
                 Vector2 cur = _twirlController.transform.position;
                 Vector2 target = PlayerController.Instance.transform.position;
@@ -59,23 +96,51 @@ namespace Characters.SkillSystems.SkillRuntimes.TwinOnly
                 _twirlController.MovementSystem.TryMoveRawPosition(next);
 
                 timeCount += Time.deltaTime;
-                await UniTask.Yield(PlayerLoopTiming.FixedUpdate);
+                await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken: cancelToken);
             }
 
-            _twirlController.RedBody.transform.DOLocalMove(_twirlController.RedBodyLocalPosOnStart, 0.5f);
-            await _twirlController.BlueBody.transform.DOLocalMove(_twirlController.BlueBodyLocalPosOnStart, 0.125f);
+            if (cancelToken.IsCancellationRequested) return;
 
-            Cinemachine2DCameraController.Current.ShakeCamera(50f);
+            tws.Add(_twirlController.RedBody.transform.DOLocalMove(_twirlController.RedBodyLocalPosOnStart,
+                attackDuration));
+            tws.Add(_twirlController.BlueBody.transform.DOLocalMove(_twirlController.BlueBodyLocalPosOnStart,
+                attackDuration));
 
-            
+            await UniTask.WaitForSeconds(attackDuration, cancellationToken: cancelToken);
+
+            if (cancelToken.IsCancellationRequested) return;
+
+            Cinemachine2DCameraController.Current.ShakeCamera(attackCamShake);
             StatusEffectManager.RemoveEffectAt(owner.gameObject, StatusEffectName.Iframe);
             StatusEffectManager.ApplyEffectTo(owner.gameObject, skillData.EffectSelfOnSuccess);
 
-            await UniTask.WaitForSeconds(3f, cancellationToken: cancelToken);
-            await _twirlController.Body.transform
-                .DORotate(new Vector3(0f, 0f, -90), 0.5f,
+            owner.DamageOnTouch.EnableDamage(gameObject, this, hitPerSec, DamageOnTouch.OverlapShape.Circle,
+                circle: damageRadias,
+                baseSkillDamage: skillData.BaseDamagePerHit, damageMultiplier: skillData.DamageMultiplier);
+
+            try
+            {
+                await UniTask.Yield(cancelToken);
+            }
+            catch (Exception e)
+            {
+            }
+            finally
+            {
+                owner.DamageOnTouch.DisableDamage(this);
+            }
+
+
+            await UniTask.WaitForSeconds(stunTime, cancellationToken: cancelToken);
+
+            if (cancelToken.IsCancellationRequested) return;
+
+            tws.Add(_twirlController.Body.transform
+                .DORotate(new Vector3(0f, 0f, -rotateAngle), rotateDuration,
                     RotateMode.FastBeyond360)
-                .SetRelative();
+                .SetRelative());
+
+            await UniTask.WaitForSeconds(rotateDuration, cancellationToken: cancelToken);
         }
 
         protected override void OnSkillExit()
