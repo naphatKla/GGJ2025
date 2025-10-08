@@ -42,6 +42,7 @@ namespace Characters.SkillSystems.SkillRuntimes.TwinOnly
         {
             _twirlController.InputSystem.Enable = false;
             _twirlController.SkillSystem.SetCanUseSkills(false);
+            tws.Clear();
             
             stunTime = skillData.EffectSelfOnSuccess.Count > 0
                 ? skillData.EffectSelfOnSuccess[0].OverrideDuration + 0.15f
@@ -146,8 +147,13 @@ namespace Characters.SkillSystems.SkillRuntimes.TwinOnly
         protected override void OnSkillExit()
         {
             _twirlController.InputSystem.Enable = true;
-            _twirlController.SkillSystem.SetCanUseSkills(true);
             Cinemachine2DCameraController.Current.CancelByOwner(this);
+            
+            foreach (var tween in tws)
+            {
+                if (!tween.IsActive()) continue;
+                tween.Kill(true);
+            }
         }
     }
 }

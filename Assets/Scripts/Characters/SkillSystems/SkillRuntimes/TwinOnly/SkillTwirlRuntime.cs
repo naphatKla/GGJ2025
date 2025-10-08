@@ -107,7 +107,6 @@ namespace Characters.SkillSystems.SkillRuntimes.TwinOnly
 
         protected override void OnSkillExit()
         {
-            owner.SkillSystem.SetCanUseSkills(true);
             owner.MovementSystem.AddCurrentSpeedMultiplier(100f);
             owner.MovementSystem.AddCurrentSpeedMultiplier(-skillData.SpeedUpMultiplier);
 
