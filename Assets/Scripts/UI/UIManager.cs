@@ -25,10 +25,14 @@ namespace UI
         Setting = 5,
         SaveGame = 6,
         GameMode = 7,
-        MapSelect = 8,
         QuitPanel = 9,
         TutorialPanel = 10,
-        MainMenu = 11
+        MainMenu = 11,
+        
+        //MODE
+        LearningMode = 12,
+        NormalMode = 13,
+        EndlessMode = 14
     }
     
     public enum StackType
@@ -403,12 +407,27 @@ namespace UI
         #region Preset open helpers
 
         public void OpenSaveGamePanel() => OpenPanel(UIPanelType.SaveGame).Forget();
-        public void OpenMapSelectPanel() => OpenPanel(UIPanelType.MapSelect).Forget();
         public void OpenGameModePanel() => OpenPanel(UIPanelType.GameMode).Forget();
         public void OpenQuitPanel() => OpenPanel(UIPanelType.QuitPanel).Forget();
         public void OpenTutorialPanel() => OpenPanel(UIPanelType.TutorialPanel).Forget();
         public void OpenResultMenu() => OpenPanel(UIPanelType.MapResult).Forget();
-        public void OpenSettingsPanel() => OpenPanel(UIPanelType.Setting);
+        public void OpenSettingsPanel() => OpenPanel(UIPanelType.Setting).Forget();
+
+        public void OpenModePanel(string mode)
+        {
+            switch (mode)
+            {
+                case "LearningMode":
+                    OpenPanel(UIPanelType.LearningMode).Forget();
+                    break;
+                case "NormalMode":
+                    OpenPanel(UIPanelType.NormalMode).Forget();
+                    break;
+                case "EndlessMode":
+                    OpenPanel(UIPanelType.EndlessMode).Forget();
+                    break;
+            }
+        }
         
         #endregion
 

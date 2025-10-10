@@ -28,9 +28,11 @@ namespace GameControl.Controller
         private float _minPerPatternSlot = 0f;
         private readonly bool _isDebug;
         private float _currentTriggertime;
-        private CancellationTokenSource _cts;
-        private readonly int _patternMax;
-        private readonly bool _canDuplicateAfterHaveAllPattern;
+        private CancellationToken _ct = CancellationToken.None;
+        public void BindCancellationToken(CancellationToken ct) { _ct = ct; }
+
+        private int PatternMax => Mathf.Max(1, Mathf.RoundToInt(_mapdata.patternMax));
+        private bool CanDuplicateAfterHaveAllPattern => _mapdata.canDuplicateAfterHaveAllPattern;
 
         public EnemyPatternController(MapDataSO mapData, SpawnerStateController state, Vector2 spawnRegion, bool debug)
         {
@@ -40,10 +42,9 @@ namespace GameControl.Controller
             _patternEnemy = new List<MapDataSO.PatternOption>();
             _isDebug = debug;
             _currentTriggertime = mapData.triggerAllPatternIn;
-            
-            _patternMax = Mathf.Max(1, Mathf.RoundToInt(mapData.patternMax));
-            _canDuplicateAfterHaveAllPattern = mapData.canDuplicateAfterHaveAllPattern;
         }
+        
+        #region Public Method
 
         public void SetEnemySpawner(EnemySpawnerController spawner)
         {
@@ -51,13 +52,54 @@ namespace GameControl.Controller
             _storeEnemy = spawner.GetEnemyList();
             _storeOption = spawner.GetEnemyOption();
         }
-        
-        public void TriggerAllPatterns()
-        {
-            if (_patternEnemy.Count == 0) return;
-            _batchQueue.Enqueue(new List<MapDataSO.PatternOption>(_patternEnemy));
 
-            if (!_isBatchProcessing) ProcessBatchQueue().Forget();
+        public void ReloadPatterns(List<MapDataSO.PatternOption> newPatterns)
+        {
+            StopProcessing();
+            if (newPatterns != null) _mapdata.PatternOptions = newPatterns;
+            _currentTriggertime = Mathf.Max(0.01f, _mapdata.triggerAllPatternIn);
+            _batchQueue.Clear();
+            _minPerPatternSlot = 0f;
+            
+            int targetCount = Mathf.Min(PatternMax, _patternEnemy.Count);
+
+            _patternEnemy.Clear();
+
+            if (_enemySpawner != null)
+            {
+                _storeEnemy = _enemySpawner.GetEnemyList();
+                _storeOption = _enemySpawner.GetEnemyOption();
+            }
+
+            AddRandomPatternsForce(targetCount);
+            RebindSpawner(_enemySpawner);
+            if (_isDebug) Debug.Log($"[EnemyPatternController] Reloaded patterns and restored count to {targetCount}/{PatternMax}");
+        }
+        
+        public void RebindSpawner(EnemySpawnerController spawner)
+        {
+            SetEnemySpawner(spawner);
+            _storeEnemy = spawner.GetEnemyList();
+            _storeOption = spawner.GetEnemyOption();
+        }
+        
+        private void AddRandomPatternsForce(int count)
+        {
+            for (int i = 0; i < count; i++)
+            {
+                var enabled = GetEnabledPatterns();
+                if (enabled == null || enabled.Count == 0) break;
+
+                EnsurePatternCapacity();
+                var notIn = enabled.Where(p => !_patternEnemy.Contains(p)).ToList();
+                MapDataSO.PatternOption pick = null;
+
+                if (notIn.Count > 0)
+                    pick = notIn[Random.Range(0, notIn.Count)];
+                else
+                    pick = enabled[Random.Range(0, enabled.Count)];
+                _patternEnemy.Add(pick);
+            }
         }
 
         // Update trigger time externally when appropriate
@@ -97,7 +139,7 @@ namespace GameControl.Controller
             }
             else
             {
-                if (_canDuplicateAfterHaveAllPattern && enabledPatterns.Count > 0)
+                if (CanDuplicateAfterHaveAllPattern && enabledPatterns.Count > 0)
                 {
                     var idx = Random.Range(0, enabledPatterns.Count);
                     selectedPattern = enabledPatterns[idx];
@@ -110,23 +152,7 @@ namespace GameControl.Controller
             }
 
             _patternEnemy.Add(selectedPattern);
-            if (_isDebug) Debug.Log($"[EnemyPatternController] Added pattern: '{selectedPattern.pattern.name}'. Total={_patternEnemy.Count}/{_patternMax}");
-        }
-
-        
-        private List<MapDataSO.PatternOption> GetEnabledPatterns()
-        {
-            return _mapdata.PatternOptions?
-                .Where(p => p != null && p.enableThisPattern)
-                .ToList() ?? new List<MapDataSO.PatternOption>();
-        }
-
-        private void EnsurePatternCapacity()
-        {
-            if (_patternEnemy.Count >= _patternMax)
-            {
-                _patternEnemy.RemoveAt(0);
-            }
+            if (_isDebug) Debug.Log($"[EnemyPatternController] Added pattern: '{selectedPattern.pattern.name}'. Total={_patternEnemy.Count}/{PatternMax}");
         }
 
         //Random Enemy Type
@@ -159,9 +185,31 @@ namespace GameControl.Controller
             return RandomUtility.GetWeightedRandomById(candidates, dict,
                 o => (o.EnemyId ?? string.Empty).Trim().ToLowerInvariant());
         }
+        #endregion
 
         #region Private Method
 
+        public void TriggerAllPatterns()
+        {
+            if (_patternEnemy.Count == 0) return;
+            _batchQueue.Enqueue(new List<MapDataSO.PatternOption>(_patternEnemy));
+
+            if (!_isBatchProcessing) ProcessBatchQueue().Forget();
+        }
+        
+        private List<MapDataSO.PatternOption> GetEnabledPatterns()
+        {
+            return _mapdata.PatternOptions?
+                .Where(p => p != null && p.enableThisPattern)
+                .ToList() ?? new List<MapDataSO.PatternOption>();
+        }
+
+        private void EnsurePatternCapacity()
+        {
+            if (_patternEnemy.Count >= PatternMax)
+                _patternEnemy.RemoveAt(0);
+        }
+        
         private (MapDataSO.EnemyOption enemy, int amount, float usedPoints) ChooseEnemyAndCalculate(MapDataSO.PatternOption pattern)
         {
             var enemy = RandomType(pattern);
@@ -206,9 +254,9 @@ namespace GameControl.Controller
 
         private async UniTask WaitUntilEnoughEnemyPoint(MapDataSO.PatternOption pattern, CancellationToken ct = default)
         {
-            if (_isDebug)
-                Debug.Log($"[EnemyPatternController] Waiting until enough points for '{pattern.pattern.name}'...");
+            if (_isDebug) Debug.Log($"[EnemyPatternController] Waiting until enough points for '{pattern.pattern.name}'...");
 
+            if (ct == default) ct = _ct;
             if (SpawnerStateController.Instance.CurrentEnemyPoint >= pattern.patternPoint)
                 return;
 
@@ -247,19 +295,23 @@ namespace GameControl.Controller
 
             foreach (var row in rows)
             {
+                _ct.ThrowIfCancellationRequested();
                 foreach (var pos in row)
                 {
+                    _ct.ThrowIfCancellationRequested();
                     if (spawnedCount >= maxEnemyAmount) return;
 
                     SpawnEnemy(enemyType,patternData, pos);
                     spawnedCount++;
 
                     if (patternData.DelayBetweenEnemy > 0)
-                        await UniTask.Delay((int)(patternData.DelayBetweenEnemy * 1000));
+                        await UniTask.Delay((int)(patternData.DelayBetweenEnemy * 1000),
+                            DelayType.DeltaTime, PlayerLoopTiming.Update, _ct);
                 }
 
                 if (patternData.DelayBetweenRows > 0)
-                    await UniTask.Delay((int)(patternData.DelayBetweenRows * 1000));
+                    await UniTask.Delay((int)(patternData.DelayBetweenRows * 1000),
+                        DelayType.DeltaTime, PlayerLoopTiming.Update, _ct);
             }
         }
 
@@ -270,28 +322,41 @@ namespace GameControl.Controller
             var enemyObj = pool.Get();
             enemyObj.transform.position = pos;
             enemyObj.transform.SetParent(_state.EnemyParent);
-            StopEnemyMovement(enemyObj,patternData.enableMovementAfter).Forget();
+            StopEnemyMovement(enemyObj,patternData.enableMovementAfter, _ct).Forget();
         }
         
-        private async UniTaskVoid StopEnemyMovement(EnemyController enemy,float time)
+        private async UniTask StopEnemyMovement(EnemyController enemy, float time,
+            CancellationToken token = default)
         {
+            if (enemy == null) return;
+
+            var input = enemy.InputSystem;
+            var move  = enemy.MovementSystem;
+            time = Mathf.Max(0f, time);
+            bool prevEnable = input != null && input.Enable;
+
             try
             {
-                enemy.InputSystem.Enable = false;
-                enemy.MovementSystem.StopAllMovementAndTween();
-                await UniTask.Delay((int)(time * 1000));
-                enemy.InputSystem.Enable = true;
-                enemy.MovementSystem.ResetMovementSystem();
+                if (input != null) input.Enable = false;
+                move?.StopAllMovementAndTween();
+
+                await UniTask.Delay(TimeSpan.FromSeconds(time),
+                    DelayType.UnscaledDeltaTime,
+                    PlayerLoopTiming.Update,
+                    token);
             }
-            catch (Exception a)
+            catch (OperationCanceledException) { }
+            catch (Exception e)
             {
-                Console.WriteLine(a);
-                throw;
+                Debug.LogException(e);
             }
             finally
             {
-                enemy.MovementSystem.ResetMovementSystem();
-                enemy.InputSystem.Enable = true;
+                if (enemy != null)
+                {
+                    if (input != null) input.Enable = prevEnable;
+                    move?.ResetMovementSystem();
+                }
             }
         }
         
@@ -300,14 +365,12 @@ namespace GameControl.Controller
             if (_isBatchProcessing) return;
             _isBatchProcessing = true;
 
-            _cts?.Cancel();
-            _cts?.Dispose();
-            _cts = new CancellationTokenSource();
-
             try
             {
                 while (_batchQueue.Count > 0)
                 {
+                    _ct.ThrowIfCancellationRequested();
+                    
                     var batch = _batchQueue.Dequeue();
                     if (batch == null || batch.Count == 0) continue;
 
@@ -317,14 +380,15 @@ namespace GameControl.Controller
 
                     for (int i = 0; i < batch.Count; i++)
                     {
+                        _ct.ThrowIfCancellationRequested();
                         var pattern = batch[i];
 
-                        await WaitUntilEnoughEnemyPoint(pattern, _cts.Token);
+                        await WaitUntilEnoughEnemyPoint(pattern, _ct);
                         await TriggerSinglePattern(pattern);
                         if (i < batch.Count - 1)
                         {
                             if (_isDebug) Debug.Log($"[EnemyPatternController] Waiting {perPatternTime:0.00}s before next pattern...");
-                            await UniTask.Delay((int)(perPatternTime * 1000), cancellationToken: _cts.Token);
+                            await UniTask.Delay((int)(perPatternTime * 1000), cancellationToken: _ct);
                         }
                     }
 
@@ -339,15 +403,16 @@ namespace GameControl.Controller
             finally
             {
                 _isBatchProcessing = false;
-                _cts?.Dispose();
-                _cts = null;
             }
         }
 
         public void StopProcessing()
         {
-            _cts?.Cancel();
+            _patternQueue.Clear();
+            _batchQueue.Clear();
+            _isBatchProcessing = false;
         }
+
 
         #endregion
     }

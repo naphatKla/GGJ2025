@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using Manager.SoundManager;
 using ProjectExtensions;
 using Sirenix.OdinInspector;
 using UI.Notification;
@@ -56,10 +57,11 @@ namespace UI.Manager
         /// <summary>
         /// Call Notification
         /// </summary>
-        public void PlayNotification(string notifyID, string text, float lifeTimeSeconds)
+        public void PlayNotification(string notifyID, string text, float lifeTimeSeconds, string variable = null)
         {
             if (string.IsNullOrEmpty(notifyID)) notifyID = "_default";
             
+            SoundManager.Instance.PlayUI(SoundName.UI.Gameplay_ActionTextNotification);
             var key = MakeKey(notifyID, text);
 
             if (_activeById.TryGetValue(key, out var entry))
@@ -111,8 +113,8 @@ namespace UI.Manager
             };
 
             view.Bind(text, 1);
-            view.PlayInAsync().Forget();
-
+            view.PlayInAsync(variable:variable).Forget();
+            
             _activeById.Add(key, newEntry);
             _activeList.Add(newEntry);
 
@@ -179,8 +181,10 @@ namespace UI.Manager
             }
 
             NotificationViewholderBase view = null;
-            if (stack.Count > 0) view = stack.Pop();
-            else view = Instantiate(prefab);
+            if (stack.Count > 0) 
+                view = stack.Pop();
+            else 
+                view = Instantiate(prefab);
 
             view.gameObject.SetActive(true);
             return view;

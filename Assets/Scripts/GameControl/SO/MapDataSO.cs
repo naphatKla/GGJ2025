@@ -3,13 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using Characters.CollectItemSystems.CollectableItems;
 using Characters.Controllers;
+using Characters.SO.CharacterDataSO;
 using GameControl.Controller;
 using GameControl.Interface;
 using GameControl.Pattern;
 using Sirenix.OdinInspector;
-using Sirenix.Serialization;
 using UnityEngine;
-using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
 namespace GameControl.SO
@@ -22,6 +21,8 @@ namespace GameControl.SO
         {
             [FoldoutGroup("$id")][Title("Setting")]
             public string id;
+            [FoldoutGroup("$id")]
+            public string displayName;
             [FoldoutGroup("$id")]
             public EnemyController enemyController;
             
@@ -48,6 +49,11 @@ namespace GameControl.SO
             [FoldoutGroup("$id")] [ShowIf("$useCustomInterval")]
             public float customInterval;
             
+            [FoldoutGroup("$id")][Title("Enemy Status")]
+            public bool modifyNewData;
+            [FoldoutGroup("$id")] [ShowIf("$modifyNewData")]
+            public EnemyDataSo enemyData;
+            
             [FoldoutGroup("$id")][Title("Spawn Conditions")]
             public bool useSpawnConditions = false;
             [FoldoutGroup("$id")]
@@ -55,7 +61,7 @@ namespace GameControl.SO
             public ConditionLogic conditionLogic = ConditionLogic.All; // All = AND, Any = OR
             [FoldoutGroup("$id")]
             [ShowIf("$useSpawnConditions")]
-            public List<SpawnConditionSO> spawnConditions;
+            public List<EnemySpawnConditionSO> spawnConditions;
 
             public enum ConditionLogic { All, Any }
 
@@ -100,16 +106,6 @@ namespace GameControl.SO
                 set => enemyController = value?.GetComponent<EnemyController>();
             }
             public bool TryPassChance() => Random.Range(0, 100) < chance;
-            
-            public EnemyOption Clone()
-            {
-                return new EnemyOption
-                {
-                    id = EnemyId,
-                    chance = chance,
-                };
-            }
-
         }
         
         [Serializable]
@@ -166,12 +162,79 @@ namespace GameControl.SO
             [FoldoutGroup("$id")] [ShowIf("$useCustomInterval")]
             public float customInterval;
             
+            [FoldoutGroup("$id")][Title("Per-Item Max")]
+            [Tooltip("Enable to limit maximum concurrent active items of this type.")]
+            public bool useMaxperItem;
+            [FoldoutGroup("$id")][ShowIf("$useMaxperItem")]
+            [Tooltip("Maximum ACTIVE instances for this item type (<=0 = unlimited).")]
+            public float maximumPerItem = 0f;
+            
             [FoldoutGroup("$id")][Title("Life time")]
             [Tooltip("if this enable item can despawn after lifetime")]
             public bool useLifetimeInterval;
             [FoldoutGroup("$id")] [ShowIf("$useLifetimeInterval")]
             [Tooltip("Interval of item lifetime (default 20 seconds)")]
             public float lifetimeInterval = 20f;
+            
+            [FoldoutGroup("$id")][Title("Spawn Conditions")]
+            public bool useSpawnConditions = false;
+            [FoldoutGroup("$id")]
+            [ShowIf("$useSpawnConditions")]
+            public ConditionLogic conditionLogic = ConditionLogic.All; // All = AND, Any = OR
+            [FoldoutGroup("$id")]
+            [ShowIf("$useSpawnConditions")]
+            public List<ItemSpawnConditionSO> spawnConditions;
+
+            public enum ConditionLogic { All, Any }
+            [NonSerialized] public int activeCount;
+            
+            public void InitRuntime()
+            {
+                activeCount = 0;
+
+                if (useMaxperItem)
+                {
+                    int max = Mathf.RoundToInt(maximumPerItem); // <=0 = unlimited
+                    maximumPerItem = max;
+                }
+            }
+
+            public bool IsBelowPerItemMax()
+            {
+                if (!useMaxperItem) return true;
+                int max = Mathf.RoundToInt(maximumPerItem);
+                return (max <= 0) || (activeCount < max);
+            }
+
+            public bool IsSpawnable(SpawnerStateController state, MapDataSO mapData)
+            {
+                if (!useSpawnConditions || spawnConditions == null || spawnConditions.Count == 0) return true;
+
+                if (conditionLogic == ConditionLogic.All)
+                {
+                    foreach (var c in spawnConditions)
+                    {
+                        if (c == null) continue;
+                        if (!c.IsSatisfied(state, mapData, this))
+                        {
+                            //Debug.Log($"[Spawn] {id} blocked by condition {c.name} (All)");
+                            return false;
+                        }
+                    }
+                    return true;
+                }
+
+                // Any
+                foreach (var c in spawnConditions)
+                {
+                    if (c == null) continue;
+                    if (c.IsSatisfied(state, mapData, this))
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            }
             
             public float Chance { get => chance; set => chance = value; }
             public string ItemId => id;
@@ -196,6 +259,12 @@ namespace GameControl.SO
                 
                 [GUIColor("@this.useWeightRandom ? Color.green : Color.red")]
                 public bool useWeightRandom;
+                
+                public bool overrideData;
+                [Space]
+                //Override Zone
+                [BoxGroup("Modify Data")][ShowIf("overrideData")]
+                public float damageMap;
             }
            
             [FoldoutGroup("$catagolyMapEvent")]
@@ -239,8 +308,12 @@ namespace GameControl.SO
         public Sprite image;
         
         [FoldoutGroup("Map Setting")]
-        [Tooltip("Map Time")]
+        [Tooltip("Map Time")] [HideIf("endlessMode")]
         public float mapGlobalTime;
+        
+        [FoldoutGroup("Map Setting")]
+        [Tooltip("Change to Endless Mode the time will not affect this mode the time will increase instend of decrease (Time will start from 0)")]
+        public bool endlessMode = false;
         #endregion
 
         #region Enemy Setting
@@ -305,7 +378,7 @@ namespace GameControl.SO
         
         [FoldoutGroup("Pattern Setting")]
         [Tooltip("Max pattern that can be add")]
-        public float patternMax;
+        public float patternMax = 20;
         
         [FoldoutGroup("Pattern Setting")]
         [InfoBox("Pattern จะสามารถถูก Add เพิ่มเข้าไปซ้ำได้ถ้าใช้ Pattern หมดไปแล้ว")]
@@ -348,17 +421,17 @@ namespace GameControl.SO
         [FoldoutGroup("Data Setting")]
         [Tooltip("How much defaultEnemySpawnTimer will be decrease")]
         [ShowIf("canGrowth")]
-        public float decreaseAmount;
+        public float decreaseAmount = 0.022f;
         
         [FoldoutGroup("Data Setting")]
         [Tooltip("Frequency defaultEnemySpawnTimer will be decrease")]
         [ShowIf("canGrowth")]
-        public float decreaseInterval;
+        public float decreaseInterval = 30f;
         
         [FoldoutGroup("Data Setting")]
         [Tooltip("Minimum of defaultEnemySpawnTimer can be lowest")]
         [ShowIf("canGrowth")]
-        public float decreaseMinimum;
+        public float decreaseMinimum = 0.35f;
         
         [FoldoutGroup("Data Setting")] 
         [Title("Enemy Point")]
@@ -376,6 +449,17 @@ namespace GameControl.SO
         [FoldoutGroup("Data Setting")] 
         [Tooltip("Max spawn point of every enemy to spawn (Default 500)")]
         public float maxEnemyPoint = 500;
+        #endregion
+
+        #region Rush Setting
+
+        [FoldoutGroup("Rush Setting")]
+        public RushDataSO rushData;
+
+        [FoldoutGroup("Rush Setting")] 
+        [Tooltip("Time to enter rush (Default Last 60 seconds)")]
+        public float rushTime = 60f;
+
         #endregion
     }
 }

@@ -25,6 +25,7 @@ namespace Characters.Controllers
         /// <summary>
         /// Sprite body of this character.
         /// </summary>
+        [BoxGroup("Body Part")]
         [SerializeField] private SpriteRenderer body;
 
         /// <summary>
@@ -74,6 +75,9 @@ namespace Characters.Controllers
         /// </summary>
         [PropertyOrder(9999)] [Title("Data")] [SerializeField]
         private BaseCharacterDataSo characterData;
+
+        [PropertyOrder(9999)] [SerializeField]
+         private bool autoAssignDataOnEnable;
 
         /// <summary>
         /// Character input handler implementing <see cref="ICharacterInput"/>.
@@ -128,7 +132,9 @@ namespace Characters.Controllers
         protected virtual void OnEnable()
         {
             SubscribeDependency();
-            AssignCharacterData(characterData);
+            
+            if (autoAssignDataOnEnable)
+                AssignCharacterData(characterData);
         }
 
         protected virtual void OnDisable()

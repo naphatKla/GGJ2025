@@ -40,17 +40,17 @@ namespace UI.IngameViewholder
             
             _startSize = transform.localScale;
             
-            SetSelected(false, instant: true);
+            SetSelected(false, false,instant: true);
         }
         
-        public void SetSelected(bool selected, bool instant = false)
+        public void SetSelected(bool selected, bool playAnim, bool instant = false)
         {
             IsSelected = selected;
             selectEffect.SetActive(selected);
             var t = transform;
             t.localScale = _startSize;
 
-            if (selected && !instant)
+            if (selected && !instant && playAnim)
             {
                 t.DOKill();
                 var seq = DOTween.Sequence();
@@ -60,7 +60,7 @@ namespace UI.IngameViewholder
                 
                 SoundManager.Instance.PlayUI(SoundName.UI.CardSelection);
             }
-            else
+            else if (!selected && !instant && playAnim)
             {
                 t.DOKill();
                 var seq = DOTween.Sequence();
@@ -68,6 +68,7 @@ namespace UI.IngameViewholder
                     .Append(t.DOScale(new Vector3(6f, 6f, 1f), 0.2f).SetEase(Ease.InOutSine))
                     .SetUpdate(true);
             }
+            
         }
 
         public void UpdateUIModal(BaseSkillDataSo data, bool isNew)

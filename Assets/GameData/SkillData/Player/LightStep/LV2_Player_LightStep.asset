@@ -32,15 +32,14 @@ MonoBehaviour:
       Data: 
   skillIcon: {fileID: 21300000, guid: 81467c7e891730b4e95bef5ba842407f, type: 3}
   skillName: Light Step
-  skillDescription: "<color=#FFD700><b>[Counter Dash]</b></color>\r\n<color=#adadad><i>[Heal],
+  skillDescription: "<color=#FF3131><b>[Attack]</b></color>\r\n<color=#adadad><i>[Heal],
     [Multi-Target]</i></color>\r\n<color=#5CE5FF><b>[UPGRADE]</b></color> \r\n<color=#FFE02E><b>[+]</b></color>
-    Target enemies\r\n\r\nCooldown: <b>20s</b>\r\n\n- Successfully <color=#FFE02E>counter
-    dash</color> active \u201CLight step\u201D which has a chance to trigger <color=#39f01d>Life
-    Steal</color>\r\n\n"
+    Target cap\n\r\nCooldown: <b>30s</b>\r\n\n- Rush at the enemy which has a chance
+    to trigger <color=#39f01d>Life Steal</color>\r\n\n"
   previousSkillData: {fileID: 11400000, guid: 02f494aec9efadf499b6ab476216f076, type: 2}
   nextSkillDataUpgrade: {fileID: 11400000, guid: a5f6cc9154e80c0489be5e7beea9676b, type: 2}
   level: 2
-  cooldown: 20
+  cooldown: 30
   startFeedback: LightStepUse_Lv2
   exitFeedback: LightStepEnd_Lv2
   clearBuffOnSkillExit: 0
@@ -48,8 +47,8 @@ MonoBehaviour:
   baseDamagePerHit: 20
   damageMultiplier: 30
   lifeStealPercentChance: 10
-  lifeStealEffective: 10
-  lightStepSpeed: 36
+  lifeStealEffective: 1
+  lightStepSpeed: 32
   minStepDistance: 8
   targetAmount: 14
   randomCurve:

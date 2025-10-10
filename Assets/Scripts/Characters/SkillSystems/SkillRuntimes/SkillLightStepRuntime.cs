@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Threading;
 using Cameras;
 using Characters.Controllers;
-using Characters.FeedbackSystems;
-using Characters.InputSystems;
 using Characters.SO.SkillDataSo;
 using Characters.StatusEffectSystems;
 using Cysharp.Threading.Tasks;
@@ -16,42 +14,27 @@ using Random = UnityEngine.Random;
 
 namespace Characters.SkillSystems.SkillRuntimes
 {
-    public class SkillLightStepRuntime : BaseSkillRuntime<SkillLightStepDataSo>, ISpecialConditionSkill
+    public class SkillLightStepRuntime : BaseSkillRuntime<SkillLightStepDataSo>
     {
-        public bool IsWaitForCondition => _isWaitForCounterAttack || _isWaitForMovementEnd;
-
         [Header("Camera (optional)")]
         [Tooltip("If null, will use Camera.main. Must be Orthographic for 2D OverlapArea bounds.")]
         [SerializeField]
         private Camera targetCamera;
 
-        private bool _isWaitForCounterAttack;
-        private bool _isWaitForMovementEnd;
         private bool _inGodSpeedPhase;
-        
-
         private readonly HashSet<Transform> _dashedTargets = new();
 
-        public override async void PerformSkill()
+
+        public override void PerformSkill()
         {
-            if (IsWaitForCondition) return;
             if (IsCooldown || IsPerforming) return;
-            
-            _isWaitForCounterAttack = true;
-            _isWaitForMovementEnd = true;
-            _dashedTargets.Clear();
-            owner.CombatSystem.OnCounterAttack += TriggerCondition;
-
-            await UniTask.WaitUntil(() => !_isWaitForCounterAttack, cancellationToken: cts.Token);
-            await UniTask.WaitUntil(() => !owner.MovementSystem.IsMoveTweenActive, cancellationToken: cts.Token);
-
-            ResetWaitingCondition();
-            if (cts.IsCancellationRequested) return;
+            if (!StartConditionCheck()) return;
             base.PerformSkill();
         }
 
         protected override void OnSkillStart()
         {
+            _dashedTargets.Clear();
             owner.SkillSystem.SetCanUsePrimary(false);
             owner.SkillSystem.SetCanUseSecondary(false);
             owner.MovementSystem.CanInterruptTween = false;
@@ -60,23 +43,25 @@ namespace Characters.SkillSystems.SkillRuntimes
         protected override async UniTask OnSkillUpdate(CancellationToken cancelToken)
         {
             var camHandle = Cinemachine2DCameraController.Instance.PushOrtho(15.5f, 10, this, 0.25f);
-            float speedMultiplier = 1f;
 
             StatusEffectManager.ApplyEffectTo(owner.gameObject, skillData.EffectWhileLightStep);
 
             for (int i = 0; i < skillData.TargetAmount; i++)
             {
                 var targetPosition = GetBestTargetPositionInView();
-                
+
                 owner.DamageOnTouch.DisableDamage(this);
                 owner.DamageOnTouch.EnableDamage(owner.gameObject, this, 7f, skillData.BaseDamagePerHit,
                     skillData.DamageMultiplier, 0, 0, skillData.LifeStealPercentChance, skillData.LifeStealEffective);
-                
-                if (targetPosition == null) break;
+
+                if (targetPosition == null)
+                {
+                    break;
+                }
 
                 owner.MovementSystem.StopTween();
 
-                speedMultiplier = Mathf.Clamp(
+                var speedMultiplier = Mathf.Clamp(
                     1f + i * (skillData.NormalPhaseSpeedStepUp / 100f),
                     1f, skillData.NormalPhaseMaxSpeedMultiplier / 100f
                 );
@@ -105,7 +90,7 @@ namespace Characters.SkillSystems.SkillRuntimes
                         moveCurve: curve)
                     .SetEase(Ease.InSine)
                     .WithCancellation(cancelToken);
-                
+
                 if (cancelToken.IsCancellationRequested)
                 {
                     break;
@@ -116,7 +101,7 @@ namespace Characters.SkillSystems.SkillRuntimes
         protected override void OnSkillExit()
         {
             ResetOnEnd().Forget();
-            
+
             if (!owner || !owner.gameObject.activeSelf) return;
             Vector2 endPos = (Vector2)owner.transform.position +
                              (owner.InputSystem.SightDirection.direction * 15f);
@@ -131,17 +116,43 @@ namespace Characters.SkillSystems.SkillRuntimes
             ResetOnEnd().Forget();
         }
 
-        private void ResetWaitingCondition()
+        private bool StartConditionCheck()
         {
-            _isWaitForCounterAttack = false;
-            _isWaitForMovementEnd = false;
-            owner.CombatSystem.OnCounterAttack -= TriggerCondition;
-        }
+            var cam = targetCamera ? targetCamera : Camera.main;
+            
+            if (!cam)
+            {
+                return false;
+            }
+            
+            if (!cam.orthographic)
+            {
+                // Game seems to be 2D with orthographic camera; if not, early out or adapt here.
+                // You can replace this with a perspective-safe bounds calc if needed.
+                return false;
+            }
 
+            // Build world AABB of the current camera view on XY
+            Vector3 cpos = cam.transform.position;
+            float halfH = cam.orthographicSize;
+            float halfW = halfH * cam.aspect;
+
+            Vector2 min = new Vector2(cpos.x - halfW, cpos.y - halfH);
+            Vector2 max = new Vector2(cpos.x + halfW, cpos.y + halfH);
+
+            LayerMask damageLayer = CharacterGlobalSettings.Instance.EnemyLayerDictionary[owner.tag];
+            Collider2D[] candidates = Physics2D.OverlapAreaAll(min, max, damageLayer);
+            
+            if (candidates == null || candidates.Length <= 2)
+            {
+                return false;
+            }
+
+            return true;
+        }
+        
         private async UniTaskVoid ResetOnEnd()
         {
-            ResetWaitingCondition();
-
             _inGodSpeedPhase = false;
             owner.SkillSystem.SetCanUsePrimary(true);
             owner.SkillSystem.SetCanUseSecondary(true);
@@ -153,23 +164,20 @@ namespace Characters.SkillSystems.SkillRuntimes
                 Cinemachine2DCameraController.Instance.CancelByOwner(this);
                 Cinemachine2DCameraController.Instance.SetFollowTarget(player.transform);
             }
-            
+
             try
             {
                 await UniTask.Delay(TimeSpan.FromSeconds(0.5f), cancellationToken: destroyCancellationToken);
             }
             catch (OperationCanceledException)
             {
-                
             }
             finally
             {
-                if (owner) 
+                if (owner)
                     StatusEffectManager.RemoveEffectAt(owner.gameObject, StatusEffectName.Iframe);
             }
         }
-
-        private void TriggerCondition() => _isWaitForCounterAttack = false;
 
         /// <summary>
         /// Pick the closest enemy to owner within current camera view (orthographic).
@@ -180,7 +188,11 @@ namespace Characters.SkillSystems.SkillRuntimes
         private Vector2? GetBestTargetPositionInView()
         {
             var cam = targetCamera ? targetCamera : Camera.main;
-            if (!cam) return null;
+            if (!cam)
+            {
+                return null;
+            }
+
 
             if (!cam.orthographic)
             {
@@ -199,7 +211,11 @@ namespace Characters.SkillSystems.SkillRuntimes
 
             LayerMask damageLayer = CharacterGlobalSettings.Instance.EnemyLayerDictionary[owner.tag];
             Collider2D[] candidates = Physics2D.OverlapAreaAll(min, max, damageLayer);
-            if (candidates == null || candidates.Length == 0) return null;
+            if (candidates == null || candidates.Length == 0)
+            {
+                return null;
+            }
+
 
             Vector2 origin = owner.transform.position;
             float minStepSqr = skillData.MinStepDistance * skillData.MinStepDistance;
@@ -224,7 +240,10 @@ namespace Characters.SkillSystems.SkillRuntimes
                 }
             }
 
-            if (!nearest) return null;
+            if (!nearest)
+            {
+                return null;
+            }
 
             _dashedTargets.Add(nearest);
 
@@ -236,7 +255,6 @@ namespace Characters.SkillSystems.SkillRuntimes
 
             // too close: dash MinStepDistance toward enemy
             Vector2 dir = ((Vector2)nearest.position - origin);
-            if (dir.sqrMagnitude < 1e-6f) return null;
 
             dir.Normalize();
             Vector2 fallback = origin + dir * skillData.MinStepDistance;

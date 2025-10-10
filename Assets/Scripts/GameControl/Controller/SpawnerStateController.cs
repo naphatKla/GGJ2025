@@ -20,6 +20,7 @@ namespace GameControl.Controller
         private float _currentEnemyPoint;
         private float _maxEnemyPoint;
         private float _increaseRateEnemyPoint;
+        private float _defaultEnemySpawnTimer;
         
         [BoxGroup("Debug")] 
         [ShowInInspector, ReadOnly]
@@ -42,6 +43,8 @@ namespace GameControl.Controller
         [BoxGroup("Debug Zone")] [SerializeField] private bool debugEnemy;
         [BoxGroup("Debug Zone")] [SerializeField] private bool debugMapEvent;
         
+        [BoxGroup("Enable")] [SerializeField] private bool notSpawnEnemyOnStart = false;
+        
         [ShowInInspector, ReadOnly]
         public float EnemyPoint => _currentEnemyPoint;
         public MapEventController MapEventController => _mapEventController;
@@ -49,17 +52,15 @@ namespace GameControl.Controller
         public EnemyPatternController EnemyPatternController => _enemyPatternController;
         public ItemSpawnerController ItemSpawnerController => _itemSpawnerController;
         public Transform EnemyParent => enemyParent;
+        public bool DisableEnemySpawn => notSpawnEnemyOnStart;
         public Transform ItemParent => itemParent;
         public Vector2 RegionSize => regionSize;
-        public float EnemySpawnTimer { get => defaultEnemySpawnTimer; set => defaultEnemySpawnTimer = value; }
+        public float EnemySpawnTimer { get => _defaultEnemySpawnTimer; set => _defaultEnemySpawnTimer = value; }
         public float ItemSpawnTimer
         {
             get => CurrentMap != null ? CurrentMap.defaultItemSpawnTimer : 0f;
             set { if (CurrentMap != null) CurrentMap.defaultItemSpawnTimer = value; }
         }
-
-
-        public float defaultEnemySpawnTimer;
 
         public float CurrentEnemyPoint
         {
@@ -84,11 +85,11 @@ namespace GameControl.Controller
         {
             _currentState?.Update(this);
         }
- 
+        
         private void OnGUI()
         {
             if (!debugEnemy || _enemySpawnerController == null) return;
-
+            
             var options = _enemySpawnerController.GetEnemyOption();
             if (options == null || options.Count == 0) return;
 
@@ -114,16 +115,27 @@ namespace GameControl.Controller
             _currentStateName = _currentState?.GetType().Name;
         }
 
-        public async UniTaskVoid SetupMapAndEnemy(bool setSchedule)
+        private void BindCancelToken()
         {
+            var gsc = GameStateController.Instance;
+            if (gsc?.sceneCts != null)
+            {
+                _enemyPatternController.BindCancellationToken(gsc.sceneCts.Token);
+            }
+        }
+
+        public async UniTaskVoid SetupMapAndEnemy()
+        {
+            var gsc = GameStateController.Instance;
             _enemySpawnerController = new EnemySpawnerController(CurrentMap, this, regionSize, debugEnemy, mainCamera);
             _enemyPatternController = new EnemyPatternController(CurrentMap, this, regionSize, debugPattern);
             _itemSpawnerController = new ItemSpawnerController(CurrentMap, this, itemdropRegionSize);
             _mapEventController = new MapEventController(CurrentMap, this, debugMapEvent);
-            defaultEnemySpawnTimer = CurrentMap.defaultEnemySpawnTimer;
+            _defaultEnemySpawnTimer = CurrentMap.defaultEnemySpawnTimer;
             
-            await UniTask.WaitUntil(() => _enemySpawnerController != null && _enemyPatternController != null && _itemSpawnerController != null);
+            await UniTask.WaitUntil(() => _enemySpawnerController != null && _enemyPatternController != null && _itemSpawnerController != null, cancellationToken: gsc.sceneCts.Token);
             
+            BindCancelToken();
             _currentEnemyPoint = CurrentMap.startEnemyPoint;
             _maxEnemyPoint = CurrentMap.maxEnemyPoint;
             _increaseRateEnemyPoint = CurrentMap.rateIncreaseEnemyPoint;
@@ -132,52 +144,69 @@ namespace GameControl.Controller
             _enemyPatternController.SetEnemySpawner(_enemySpawnerController);
             _enemyPatternController.AddRandomPattern();
             
-            //Schedule
-            if (!setSchedule) return;
-            //Trigger time will decrease if enable
-            GameTimer.Instance.ScheduleLoopingTrigger(CurrentMap.patternDecreaseInterval, GameTimer.Instance.StartTimerNumber, 
-                () => _enemyPatternController.UpdateTriggerTime(), true, "PATTERN");
+            RescheduleAllFromNow(CurrentMap);
+            GameTimer.Instance.ScheduleOnceAtRemaining(62, () => PopupUIManager.Instance.ShowPopup("Warning", 2.0f, bypassStack: true));
+            GameStateController.Instance.ScheduleRush();
+        }
+        
+        public void OnMapModified()
+        {
+            var map = CurrentMap;
+            if (map == null) return;
             
-            //Every 3 minute trigger pattern
-            GameTimer.Instance.ScheduleLoopingTrigger(
-                CurrentMap.playAllPatternIn,
-                GameTimer.Instance.StartTimerNumber, () =>{_enemyPatternController.TriggerAllPatterns(); }, false,"PATTERN");
+            _defaultEnemySpawnTimer = map.defaultEnemySpawnTimer;
+            _maxEnemyPoint         = map.maxEnemyPoint;
+            _increaseRateEnemyPoint= map.rateIncreaseEnemyPoint;
+            _currentEnemyPoint     = Mathf.Min(_currentEnemyPoint, _maxEnemyPoint);
             
-            //Add pattern
-            GameTimer.Instance.ScheduleLoopingTrigger(
-                CurrentMap.addPatternInterval,
-                GameTimer.Instance.StartTimerNumber, () =>{_enemyPatternController.AddRandomPatterns(CurrentMap.amountToAdd); }
-                , true, "PATTERN");
+            _enemySpawnerController?.ReloadOptions(map.EnemyOptions);
+            _enemyPatternController?.ReloadPatterns(map.PatternOptions);
+            RescheduleAllFromNow(map);
+        }
+        
+        private void RescheduleAllFromNow(MapDataSO map)
+        {
+            var timer = GameTimer.Instance;
+            if (timer == null || map == null) return;
             
-            //Spawn Interval
-            GameTimer.Instance.ScheduleLoopingTrigger(
-                CurrentMap.decreaseInterval,
-                GameTimer.Instance.StartTimerNumber, () => { UpdateDefaultSpawnInterval(); }
-                , false
-                ,"SPAWNER");
+            timer.CancelGroup("PATTERN::DECREASE");
+            timer.CancelGroup("PATTERN::TRIGGER");
+            timer.CancelGroup("PATTERN::ADD");
+            timer.CancelGroup("SPAWNER::INTERVAL");
+            timer.CancelGroup("SPAWNER::POINT");
+            timer.CancelGroup("SPAWNER::CHANCE");
+            timer.CancelGroup("SPAWNER::RATIO");
 
-            
-            //Upgrade Max Spawn point every 1 minute
-            GameTimer.Instance.ScheduleLoopingTrigger(CurrentMap.intervalIncreaseEnemyPoint, GameTimer.Instance.StartTimerNumber, 
-                () => UpgradeMaxSpawnPoint(_increaseRateEnemyPoint), true, "SPAWNER");
-            
-            //Upgrade Chance rate every 30 seconds
-            GameTimer.Instance.ScheduleLoopingTrigger(CurrentMap.intervalEnemyChanceUpgrade, GameTimer.Instance.StartTimerNumber, 
-                () => _enemySpawnerController.UpgradeEnemyChance(), true, "SPAWNER");
-            
-            //Upgrade Spawn Ratio every 30 seconds
-            GameTimer.Instance.ScheduleLoopingTrigger(CurrentMap.intervalEnemyPointRatioUpgrade, GameTimer.Instance.StartTimerNumber, 
-                () => _enemySpawnerController.UpgradePointRatio(), true, "SPAWNER");
+            // ---- PATTERN ----
+            if (map.triggerTimeCanDecrease && map.patternDecreaseInterval > 0f)
+                timer.ScheduleLoopingFromNow("PATTERN::DECREASE", CurrentMap.endlessMode , map.patternDecreaseInterval, () => _enemyPatternController.UpdateTriggerTime());
 
-            GameTimer.Instance.ScheduleOnceAtRemaining(60, () => PopupUIManager.Instance.ShowPopup("Warning", 2.0f, bypassStack: true));
- 
-            _mapEventController.ScheduleAllTriggersUpfront(GameTimer.Instance.StartTimerNumber);
+            if (map.playAllPatternIn > 0f)
+                timer.ScheduleLoopingFromNow("PATTERN::TRIGGER", CurrentMap.endlessMode, map.playAllPatternIn, () => _enemyPatternController.TriggerAllPatterns(), triggerWhenSkip:false);
+
+            if (map.addPatternInterval > 0f)
+                timer.ScheduleLoopingFromNow("PATTERN::ADD", CurrentMap.endlessMode, map.addPatternInterval, () => _enemyPatternController.AddRandomPatterns(map.amountToAdd));
+
+            // ---- SPAWNER ----
+            if (map.decreaseInterval > 0f)
+                timer.ScheduleLoopingFromNow("SPAWNER::INTERVAL", CurrentMap.endlessMode, map.decreaseInterval, () => UpdateDefaultSpawnInterval(), triggerWhenSkip:false);
+
+            if (map.intervalIncreaseEnemyPoint > 0f)
+                timer.ScheduleLoopingFromNow("SPAWNER::POINT", CurrentMap.endlessMode, map.intervalIncreaseEnemyPoint, () => UpgradeMaxSpawnPoint(_increaseRateEnemyPoint));
+
+            if (map.intervalEnemyChanceUpgrade > 0f)
+                timer.ScheduleLoopingFromNow("SPAWNER::CHANCE", CurrentMap.endlessMode, map.intervalEnemyChanceUpgrade, () => _enemySpawnerController.UpgradeEnemyChance());
+
+            if (map.intervalEnemyPointRatioUpgrade > 0f)
+                timer.ScheduleLoopingFromNow("SPAWNER::RATIO", CurrentMap.endlessMode, map.intervalEnemyPointRatioUpgrade, () => _enemySpawnerController.UpgradePointRatio());
+            
+            _mapEventController?.ReloadAllEvents();
         }
 
         private void UpdateDefaultSpawnInterval()
         {
-            defaultEnemySpawnTimer = Mathf.Clamp(
-                defaultEnemySpawnTimer - CurrentMap.decreaseAmount,
+            _defaultEnemySpawnTimer = Mathf.Clamp(
+                _defaultEnemySpawnTimer - CurrentMap.decreaseAmount,
                 CurrentMap.decreaseMinimum,
                 CurrentMap.defaultEnemySpawnTimer
             );
@@ -193,7 +222,6 @@ namespace GameControl.Controller
             {
                 GameObject child = parentTransform.GetChild(i).gameObject;
                 Destroy(child); 
-                DestroyImmediate(child); 
             }
         }
 
@@ -266,6 +294,12 @@ namespace GameControl.Controller
         private void TriggerAddPoint()
         {
             UpgradeMaxSpawnPoint(20f);
+        }
+        
+        [Button("Random Map Event" , ButtonSizes.Large), GUIColor(0, 1, 0)]
+        private void TriggerMapEvent()
+        {
+            _mapEventController.PlayRandomCategory();
         }
         
         private void OnDrawGizmos()

@@ -355,9 +355,9 @@ namespace Characters.UIDisplay
             canvasGroup.alpha = 1;
 
             bool isCrit = damageData.IsCritical;
+            
             if (isCrit)
             {
-                NotificationManager.Instance.PlayNotification("notify_skilluse", "Critical!", 4.0f);
                 textInstance.text += " Crit!";
                 textInstance.color = new Color(1f, 0.85f, 0.2f);
                 tf.SetAsLastSibling();
@@ -411,7 +411,6 @@ namespace Characters.UIDisplay
 
             if (healthChange >= 0)
             {
-                NotificationManager.Instance.PlayNotification("notify_skilluse", $"+{healthChange} Health", 4.0f);
                 textInstance.text = "+" + healthChange + " HP";
                 textInstance.color = Color.green;
                 tf.SetAsLastSibling();
@@ -525,13 +524,14 @@ namespace Characters.UIDisplay
 
             bool isNew = !skillSystem.ContainsSkillWithSameRoot(skill);
             vh.UpdateUIModal(skill, isNew);
-            vh.Bind(skill, isNew, HandleCardClicked, HandleCardHoldClicked);
             await SkillCardFeedback(skillcard.transform);
+            vh.Bind(skill, isNew, HandleCardClicked, HandleCardHoldClicked);
         }
 
         private void PanelCardFeedback(Transform tf)
         {
             tf.localPosition = new Vector2(1920, 0);
+            tf.DOKill(true);
             var seq = DOTween.Sequence();
             seq.Append(tf.DOLocalMove(new Vector3(0, 0, 0), 0.7f).SetEase(Ease.OutBack))
                 .Join(tf.DOShakeRotation(0.7f, 0f, vibrato: 10, randomness: 90).SetEase(Ease.OutBack))
@@ -543,6 +543,7 @@ namespace Characters.UIDisplay
 
         private async UniTask SkillCardFeedback(Transform tf)
         {
+            tf.DOKill(true);
             await tf.DOLocalRotate(new Vector3(0, 720f, 0), 0.7f, RotateMode.FastBeyond360)
                 .SetEase(Ease.OutCubic)
                 .SetUpdate(true)
@@ -553,11 +554,11 @@ namespace Characters.UIDisplay
         {
             if (vh == null) return;
             if (_currentSelectVH == vh) return;
-            if (_currentSelectVH != null) _currentSelectVH.SetSelected(false);
+            if (_currentSelectVH != null) _currentSelectVH.SetSelected(false, true);
             
             _currentSelectVH = vh;
             _currentSelect = vh.Data;
-            _currentSelectVH.SetSelected(true);
+            _currentSelectVH.SetSelected(true, true);
             
             UpdateConfirmButtonState();
         }
@@ -565,13 +566,11 @@ namespace Characters.UIDisplay
         private void HandleCardHoldClicked(SolfUpgradeViewholder vh)
         {
             if (vh == null) return;
-            if (_currentSelectVH == vh) return;
-            if (_currentSelectVH != null) _currentSelectVH.SetSelected(false);
+            if (_currentSelectVH != null) _currentSelectVH.SetSelected(false, true);
             
             _currentSelectVH = vh;
             _currentSelect = vh.Data;
-            _currentSelectVH.SetSelected(true);
-
+            _currentSelectVH.SetSelected(true, false);
             OnChooseSkillAsync().Forget();
         }
         
@@ -620,7 +619,7 @@ namespace Characters.UIDisplay
         private void UpdateParryFeedbackText(BaseSkillDataSo skillDataSo)
         {
             var textInstance = PoolingManager.Instance.Get<TextMeshProUGUI>(worldTextUIParryFeedbackPrefab.name);
-            NotificationManager.Instance.PlayNotification("notify_skilluse", skillDataSo.SkillName, 4.0f);
+            NotificationManager.Instance.PlayNotification("notify_skilluse", "Parry Success!", 4.0f);
 
             // Reset & Prepare
             Transform tf = textInstance.transform;
@@ -704,8 +703,11 @@ namespace Characters.UIDisplay
             
             SkillResetFeedback(skillSlotModel[skillIndex].transform, skillSlotModel[skillIndex].skillframe);
             skillSlotModel[skillIndex].ResetSkillSlot();
-            
-            if (skillIndex != 0) skillSlotModel[skillIndex].PlayCooldownFinishFeedback();
+
+            if (skillIndex == 0) return; // ignore primary
+            skillSlotModel[skillIndex].PlayCooldownFinishFeedback();
+            if (skillIndex == 1)
+                SoundManager.Instance.PlayUI(SoundName.UI.Gameplay_MainSkillCooldownReady);
         }
 
         private void SkillPlayFeedback(BaseSkillDataSo skillDataSo, int skillIndex )

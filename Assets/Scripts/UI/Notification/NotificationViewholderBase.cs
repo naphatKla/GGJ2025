@@ -41,7 +41,7 @@ namespace UI.Notification
         }
 
         /// <summary>default play in</summary>
-        public virtual async UniTask PlayInAsync(float dur = .15f, float scalePunch = .05f)
+        public virtual async UniTask PlayInAsync(float dur = .15f, float scalePunch = .05f, string variable = null)
         {
             await EnsureLayoutReadyAsync();
             DOTween.Kill(cg, true);
@@ -70,6 +70,8 @@ namespace UI.Notification
         /// <summary>default play bump on same id</summary>
         public virtual async UniTask PlayBumpAsync(float dur = .08f, float amount = .05f)
         {
+            DOTween.Kill(rt, true);
+            
             var tw = rt.DOPunchScale(Vector3.one * amount, dur, vibrato: 1, elasticity: 0.5f)
                 .SetUpdate(true)
                 .SetLink(gameObject);

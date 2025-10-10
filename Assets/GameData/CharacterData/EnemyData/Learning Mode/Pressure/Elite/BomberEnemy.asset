@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a9ef52318f4d36147bac0bf0637b499b, type: 3}
+  m_Name: BomberEnemy
+  m_EditorClassIdentifier: 
+  maxHealth: 550
+  invincibleTimePerHit: 0
+  baseSpeed: 12
+  moveAccelerationRate: 8
+  turnAccelerationRate: 4
+  baseDamage: 20
+  baseCriRate: 1
+  baseCriDamage: 50
+  baseLifeStealPercent: 0
+  baseLifeStealEffective: 0
+  primarySkillData: {fileID: 11400000, guid: d9f7b6fc82af5e94aa9865383328ea20, type: 2}
+  secondarySkillData: {fileID: 0}
+  autoSkillSlot: 0
+  autoSkillDataList: []
+  expDrop: 200
+  stopDistance: 5
+  performSkillDistance: 5
+  delayBeforePerformSkill: 0.1
+  defaultState: {fileID: 11400000, guid: 5516dcb8929f6da48be65eba2a7c3eea, type: 2}
+  stateList: []

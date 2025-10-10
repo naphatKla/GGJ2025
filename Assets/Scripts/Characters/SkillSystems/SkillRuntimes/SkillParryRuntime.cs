@@ -1,6 +1,6 @@
 using System;
 using System.Threading;
-using Characters.FeedbackSystems;
+using Characters.Controllers;
 using Characters.MovementSystems;
 using Characters.SO.SkillDataSo;
 using Cysharp.Threading.Tasks;
@@ -14,6 +14,13 @@ namespace Characters.SkillSystems.SkillRuntimes
     {
         public event Action OnTriggerAutoSkill;
         private bool _isParryTrigger;
+        private Collider2D ownerCollider2D;
+
+        public override void AssignSkillData(BaseSkillDataSo skillData, BaseController owner)
+        {
+            base.AssignSkillData(skillData, owner);
+            ownerCollider2D = owner.HealthSystem.GetComponent<Collider2D>();
+        }
 
         private void OnParrySuccess()
         {
@@ -25,6 +32,7 @@ namespace Characters.SkillSystems.SkillRuntimes
                 Physics2D.OverlapCircleAll(owner.transform.position, skillData.ExplosionRadius, damageLayer);
             
             StatusEffectManager.ApplyEffectTo(gameObject, skillData.SelfEffectsOnParrySuccess);
+            owner.HealthSystem.Heal(skillData.HealOnSuccess);
 
             foreach (var target in targetsInRange)
             {
@@ -46,6 +54,13 @@ namespace Characters.SkillSystems.SkillRuntimes
             _isParryTrigger = false;
             owner.HealthSystem.OnTakeDamage += TriggerParry;
             owner.MovementSystem.StopFromParry(skillData.StopWhileParry);
+            
+            if (Math.Abs(skillData.ParryColliderSizeMultiplier - 1) < 0.01f)return;
+            if (!ownerCollider2D) return;
+            if (ownerCollider2D is BoxCollider2D box) 
+                box.size *= skillData.ParryColliderSizeMultiplier;
+            else if (ownerCollider2D is CircleCollider2D circle)
+                circle.radius *= skillData.ParryColliderSizeMultiplier;
         }
 
         protected override async UniTask OnSkillUpdate(CancellationToken cancelToken)
@@ -62,6 +77,13 @@ namespace Characters.SkillSystems.SkillRuntimes
             _isParryTrigger = false;
             owner.MovementSystem.StopFromParry(false);
             owner.HealthSystem.OnTakeDamage -= TriggerParry;
+            
+            if (Math.Abs(skillData.ParryColliderSizeMultiplier - 1) < 0.01f)return;
+            if (!ownerCollider2D) return;
+            if (ownerCollider2D is BoxCollider2D box) 
+                box.size /= skillData.ParryColliderSizeMultiplier;
+            else if (ownerCollider2D is CircleCollider2D circle)
+                circle.radius /= skillData.ParryColliderSizeMultiplier;
         }
 
         private void TriggerParry(bool hitWithDamage)

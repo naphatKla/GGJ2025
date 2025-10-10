@@ -90,5 +90,105 @@ public static class SpawnUtility
         float y = Random.Range(-regionSize.y / 2f, regionSize.y / 2f);
         return new Vector2(x, y);
     }
+    
+     /// <summary>
+    /// สุ่มตำแหน่ง "แถว ๆ เมาส์" ในวงแหวนรัศมี [minRadius, maxRadius] บนระนาบ worldZ
+    /// ใช้ได้ทั้ง Ortho/Perspective (คำนวณด้วย ScreenToWorldPoint)
+    /// </summary>
+    public static Vector2 RandomNearMouse(Camera cam, float minRadius, float maxRadius, float worldZ = 0f)
+    {
+        if (maxRadius < minRadius) (minRadius, maxRadius) = (maxRadius, minRadius);
+        minRadius = Mathf.Max(0f, minRadius);
 
+        // ตำแหน่งเมาส์ในโลก
+        Vector3 sp = Input.mousePosition;
+        sp.z = cam.orthographic ? 0f : Mathf.Abs(worldZ - cam.transform.position.z);
+        Vector3 mw = cam.ScreenToWorldPoint(sp);
+        mw.z = worldZ;
+
+        // สุ่มมุม + รัศมี (แบบ sqrt ให้กระจายสม่ำเสมอ)
+        float ang = Random.Range(0f, Mathf.PI * 2f);
+        float r   = Mathf.Sqrt(Random.Range(minRadius * minRadius, maxRadius * maxRadius));
+
+        return (Vector2)mw + new Vector2(Mathf.Cos(ang), Mathf.Sin(ang)) * r;
+    }
+
+    /// <summary>
+    /// สุ่ม "เกิดที่ขอบจอ" อิงตำแหน่งเมาส์:
+    /// - เลือกขอบที่ใกล้เมาส์ที่สุด
+    /// - สุ่มเลื่อนไปตามแนวขอบเล็กน้อย (alongJitter)
+    /// - ดันออกไปนอกจอด้วย margin
+    /// </summary>
+    public static Vector2 RandomAtScreenEdgeNearMouse(Camera cam, float worldZ = 0f, float alongJitter = 1f, float margin = 0.5f)
+    {
+        // หา rect ของมุมมองที่ระนาบ worldZ
+        float minX, maxX, minY, maxY;
+
+        if (cam.orthographic)
+        {
+            float halfH = cam.orthographicSize;
+            float halfW = halfH * cam.aspect;
+            Vector3 c = cam.transform.position;
+            minX = c.x - halfW; maxX = c.x + halfW;
+            minY = c.y - halfH; maxY = c.y + halfH;
+        }
+        else
+        {
+            float d = Mathf.Abs(worldZ - cam.transform.position.z);
+            Vector3 bl = cam.ViewportToWorldPoint(new Vector3(0f, 0f, d));
+            Vector3 tr = cam.ViewportToWorldPoint(new Vector3(1f, 1f, d));
+            minX = bl.x; maxX = tr.x;
+            minY = bl.y; maxY = tr.y;
+        }
+
+        // เมาส์โลก
+        Vector3 sp = Input.mousePosition;
+        sp.z = cam.orthographic ? 0f : Mathf.Abs(worldZ - cam.transform.position.z);
+        Vector3 mw3 = cam.ScreenToWorldPoint(sp); mw3.z = worldZ;
+        Vector2 mw  = mw3;
+
+        // เลือกขอบที่ใกล้เมาส์ที่สุด
+        float dL = Mathf.Abs(mw.x - minX);
+        float dR = Mathf.Abs(maxX - mw.x);
+        float dB = Mathf.Abs(mw.y - minY);
+        float dT = Mathf.Abs(maxY - mw.y);
+
+        float dMin = Mathf.Min(Mathf.Min(dL, dR), Mathf.Min(dB, dT));
+
+        if (dMin == dL)
+        {
+            float y = Mathf.Clamp(mw.y + Random.Range(-alongJitter, alongJitter), minY, maxY);
+            return new Vector2(minX - margin, y);
+        }
+        if (dMin == dR)
+        {
+            float y = Mathf.Clamp(mw.y + Random.Range(-alongJitter, alongJitter), minY, maxY);
+            return new Vector2(maxX + margin, y);
+        }
+        if (dMin == dT)
+        {
+            float x = Mathf.Clamp(mw.x + Random.Range(-alongJitter, alongJitter), minX, maxX);
+            return new Vector2(x, maxY + margin);
+        }
+        else
+        {
+            float x = Mathf.Clamp(mw.x + Random.Range(-alongJitter, alongJitter), minX, maxX);
+            return new Vector2(x, minY - margin);
+        }
+    }
+
+    public static Vector2 RandomBetweenMouseAndCamera(Camera cam)
+    {
+        var random = Random.Range(0f, 1f);
+        if (random < 0.5f)
+        {
+            Vector2 mousePos = RandomAtScreenEdgeNearMouse(cam, worldZ: 0f, alongJitter: 0f, margin: 3f);
+            return mousePos;
+        }
+        else
+        {
+            Vector2 cameraPos = RandomSpawnAroundPlayerCamera(cam, 10f);
+            return  cameraPos;
+        }
+    }
 }

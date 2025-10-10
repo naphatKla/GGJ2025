@@ -20,6 +20,7 @@ namespace Characters.HeathSystems
         #region Inspectors & Variables
 
         [SerializeField] private bool blockTakeDamageFeedbackOnFinalHit;
+        [SerializeField] private bool changeColorOnIframe;
         
         private BaseController owner;
 
@@ -135,6 +136,19 @@ namespace Characters.HeathSystems
             return true;
         }
 
+        public void ForceDead()
+        {
+            Dead();
+            ModifyHealth(-_maxHealth);
+            if (blockTakeDamageFeedbackOnFinalHit) return;
+            
+            if (Cinemachine2DCameraController.Instance != null &&
+                Cinemachine2DCameraController.Instance.IsTransformInView(transform))
+            {
+                owner?.TryPlayFeedback(FeedbackName.Character.TakeDamage);
+            }
+        }
+
         /// <summary>Increases the character's health by the given amount, up to the maximum health.</summary>
         public void Heal(float healAmount)
         {
@@ -157,14 +171,18 @@ namespace Characters.HeathSystems
             // ป้องกัน NRE หาก owner หรือ Body ไม่มี
             if (owner?.Body == null) return;
 
-            startColor ??= owner.Body.color;
+            if (changeColorOnIframe)
+            {
+                startColor ??= owner.Body.color;
 
-            colorTween?.Kill();
-            var target = value ? Color.cyan : startColor.Value;
+                colorTween?.Kill();
+                var target = value ? Color.cyan : startColor.Value;
 
-            colorTween = owner.Body
-                .DOColor(target, 0.05f)
-                .SetLink(owner.Body.gameObject, LinkBehaviour.KillOnDestroy); // ผูก lifecycle
+                colorTween = owner.Body
+                    .DOColor(target, 0.05f)
+                    .SetLink(owner.Body.gameObject, LinkBehaviour.KillOnDestroy); // ผูก lifecycle
+            }
+            
             if (value) owner?.TryPlayFeedback(FeedbackName.Character.Iframe);
             else owner?.TryStopFeedback(FeedbackName.Character.Iframe);
         }
@@ -183,8 +201,8 @@ namespace Characters.HeathSystems
             // ยกเลิกงานรอ-dead ค้างทั้งหมด
             CancelAndDispose(ref _linkedDeadCts);
             CancelAndDispose(ref _deadCts);
-
-            owner?.TryPlayFeedback(FeedbackName.Character.Spawn);
+            
+            PlaySpawnFeedbackSync().Forget();
         }
 
         /// <summary>Starts the hit cooldown period after the character takes damage.</summary>
@@ -265,6 +283,12 @@ namespace Characters.HeathSystems
             if (this && gameObject) gameObject.SetActive(false);
         }
 
+        private async UniTaskVoid PlaySpawnFeedbackSync()
+        {
+            await UniTask.WaitUntil(() => gameObject.activeSelf).TimeoutWithoutException(TimeSpan.FromSeconds(3f));
+            owner?.TryPlayFeedback(FeedbackName.Character.Spawn);
+            
+        }
         // -------- CTS utilities & cleanup --------
         private static void CancelAndDispose(ref CancellationTokenSource cts)
         {

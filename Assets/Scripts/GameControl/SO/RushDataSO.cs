@@ -33,6 +33,10 @@ namespace GameControl.SO
         [FoldoutGroup("Enemy Setting")] public List<MapDataSO.EnemyOption> enemyOptions;
         [FoldoutGroup("Enemy Setting")] public float intervalEnemyChanceUpgrade;
         [FoldoutGroup("Enemy Setting")] public float intervalEnemyPointRatioUpgrade;
+        
+        [FoldoutGroup("Enemy Setting")] [Title("Default Enemy Timer Setting")]
+        [Tooltip("Enemy spawn interval (Default 1)")]
+        public float defaultEnemySpawnTimer;
 
         public void ImportEnemySetting(MapDataSO src)
         {
@@ -40,12 +44,14 @@ namespace GameControl.SO
 
             intervalEnemyChanceUpgrade = src.intervalEnemyChanceUpgrade;
             intervalEnemyPointRatioUpgrade = src.intervalEnemyPointRatioUpgrade;
+            defaultEnemySpawnTimer = src.defaultEnemySpawnTimer;
 
             enemyOptions = src.EnemyOptions?.ConvertAll(e => e == null
                 ? null
                 : new MapDataSO.EnemyOption
                 {
                     id = e.id,
+                    displayName = e.displayName,
                     enemyController = e.enemyController,
                     spawnPoint = e.spawnPoint,
                     enemyPointCanGrowth = e.enemyPointCanGrowth,
@@ -55,9 +61,11 @@ namespace GameControl.SO
                     enemyChanceGrowthRate = e.enemyChanceGrowthRate,
                     useCustomInterval = e.useCustomInterval,
                     customInterval = e.customInterval,
+                    modifyNewData = e.modifyNewData,
+                    enemyData = e.enemyData,
                     useSpawnConditions = e.useSpawnConditions,
                     conditionLogic = e.conditionLogic,
-                    spawnConditions = e.spawnConditions != null ? new List<SpawnConditionSO>(e.spawnConditions) : null
+                    spawnConditions = e.spawnConditions != null ? new List<EnemySpawnConditionSO>(e.spawnConditions) : null
                 });
 
 #if UNITY_EDITOR
@@ -194,7 +202,9 @@ namespace GameControl.SO
                             {
                                 mapEventID = k.mapEventID,
                                 chance = k.chance,
-                                useWeightRandom = k.useWeightRandom
+                                useWeightRandom = k.useWeightRandom,
+                                overrideData = k.overrideData,
+                                damageMap = k.damageMap
                             })
                             : null
                     };
@@ -212,5 +222,35 @@ namespace GameControl.SO
         }
 
         #endregion
+        
+        
+        public void ApplyInto(MapDataSO target)
+        {
+            if (!target) return;
+
+            // Enemy scalars
+            target.intervalEnemyChanceUpgrade     = intervalEnemyChanceUpgrade;
+            target.intervalEnemyPointRatioUpgrade = intervalEnemyPointRatioUpgrade;
+            target.defaultEnemySpawnTimer = defaultEnemySpawnTimer;
+            // Enemy list
+            target.EnemyOptions = enemyOptions != null ? new List<MapDataSO.EnemyOption>(enemyOptions) : null;
+
+            // Pattern scalars
+            target.playAllPatternIn         = playAllPatternIn;
+            target.triggerAllPatternIn      = triggerAllPatternIn;
+            target.triggerTimeCanDecrease   = triggerTimeCanDecrease;
+            target.patternDecreaseInterval  = patternDecreaseInterval;
+            target.patternDecreaseRate      = patternDecreaseRate;
+            target.patternDecreaseMinimum   = patternDecreaseMinimum;
+            target.addPatternInterval       = addPatternInterval;
+            target.amountToAdd              = amountToAdd;
+            target.patternMax               = patternMax;
+            target.canDuplicateAfterHaveAllPattern = canDuplicateAfterHaveAllPattern;
+            // Pattern list
+            target.PatternOptions = patternOptions != null ? new List<MapDataSO.PatternOption>(patternOptions) : null;
+
+            // Event map list
+            target.eventmapOptions = eventmapOptions != null ? new List<MapDataSO.EventMapOption>(eventmapOptions) : null;
+        }
     }
 }

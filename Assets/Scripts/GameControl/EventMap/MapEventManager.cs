@@ -1,6 +1,6 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Threading;
 using Characters.Controllers;
 using Cysharp.Threading.Tasks;
@@ -12,6 +12,15 @@ using UnityEngine.Pool;
 namespace GameControl.EventMap
 {
     [Serializable]
+    public class MapCatagory
+    {
+        [FoldoutGroup("$catagoryName")]
+        public string catagoryName;
+        [FoldoutGroup("$catagoryName")]
+        public List<StorageEntry> storageEntries;
+    }
+    
+    [Serializable]
     public struct StorageEntry
     {
         public string id;
@@ -20,7 +29,7 @@ namespace GameControl.EventMap
     
     public class MapEventManager : MMSingleton<MapEventManager>
     {
-        [SerializeField] private List<StorageEntry> storageEntries;
+        [SerializeField] private List<MapCatagory> catagorieEntries;
 
         [SerializeField] private Transform eventMapParent;
 
@@ -28,13 +37,15 @@ namespace GameControl.EventMap
         private Dictionary<BaseMapEvent, ObjectPool<BaseMapEvent>> _poolDict = new();
         
         private CancellationTokenSource _cts;
+        private static readonly Dictionary<Type, Dictionary<string, MemberInfo>> _memberCache = new();
 
         protected override void Awake()
         {
             base.Awake();
             _cts = new CancellationTokenSource();
             _mapStorageDict = new Dictionary<string, MapEventContainerSO>();
-            foreach (var entry in storageEntries)
+            foreach (var catagory in catagorieEntries) 
+            foreach (var entry in catagory.storageEntries)
                 _mapStorageDict[entry.id] = entry.storage;
         }
         
@@ -45,22 +56,26 @@ namespace GameControl.EventMap
             _cts = new CancellationTokenSource();
         }
 
-        public async UniTask RunEventMapByID(string id, CancellationToken token)
+        public async UniTask RunEventMapByID(string id, CancellationToken token, EventOverrides overrides)
         {
             if (!_mapStorageDict.TryGetValue(id, out var storage)) return;
 
-            var playerPost = PlayerController.Instance.transform.position;
-            var eventsToRun = GetFilteredEvents(storage);
+            var playerPost   = PlayerController.Instance.transform.position;
+            var eventsToRun  = GetFilteredEvents(storage);
+
             foreach (var entry in eventsToRun)
             {
                 token.ThrowIfCancellationRequested();
-                PlayEntry(entry, playerPost);
+                var workingEntry = entry.Clone();
+                PlayEntry(workingEntry, playerPost, overrides);
+
                 await UniTask.Delay(
-                    TimeSpan.FromSeconds(GetDelayForEntry(entry, storage)), 
+                    TimeSpan.FromSeconds(GetDelayForEntry(workingEntry, storage)),
                     cancellationToken: token
                 );
             }
         }
+
 
         private List<MapEventStorageEntry> GetFilteredEvents(MapEventContainerSO storage)
         {
@@ -69,12 +84,11 @@ namespace GameControl.EventMap
             // 1) เลือก EventMode ตามโอกาส
             EventMode chosenMode = storage.enableRandomMode ? GetRandomEventMode(storage) : storage.eventMode;
             
-            // 2) Filter ตาม Chance ของแต่ละ Event
+            // 2) Filter ตาม Chance ของแต่ละ Event + Modify
             foreach (var entry in storage.entries)
             {
                 bool shouldRun = !entry.enableChance || UnityEngine.Random.value <= entry.chance;
-                if (shouldRun)
-                    events.Add(entry);
+                if (shouldRun) events.Add(entry);
             }
 
             // 3) Random
@@ -90,6 +104,7 @@ namespace GameControl.EventMap
                 if (events.Count > playCount)
                     events = events.GetRange(0, playCount);
             }
+            
             return events;
         }
 
@@ -99,20 +114,20 @@ namespace GameControl.EventMap
             if (total <= 0f) return EventMode.PlaybySort;
 
             float rand = UnityEngine.Random.value * total;
-            if (rand <= storage.playBySortChance)
-                return EventMode.PlaybySort;
-            else
-                return EventMode.RandomAndPlay;
+            return (rand <= storage.playBySortChance) ? EventMode.PlaybySort : EventMode.RandomAndPlay;
         }
 
-        private void PlayEntry(MapEventStorageEntry entry, Vector3 playerPost)
+        private void PlayEntry(MapEventStorageEntry entry, Vector3 playerPost, EventOverrides overrides)
         {
             var pool = GetOrCreatePool(entry.eventPrefab);
             var instance = pool.Get();
-            
+
             instance.SetPool(pool);
             instance.transform.position = playerPost + entry.spawnPosition;
             instance.transform.rotation = Quaternion.Euler(entry.spawnEulerAngles);
+
+            // override
+            overrides?.ApplyTo(entry, instance);
 
             instance.ApplyEffect(entry);
             instance.ApplyHitbox(entry);
@@ -146,12 +161,27 @@ namespace GameControl.EventMap
                 () =>
                 {
                     var obj = Instantiate(prefab, eventMapParent);
-                    obj.SetPool(pool);
                     return obj;
                 },
-                obj => obj.gameObject.SetActive(true),
-                obj => obj.gameObject.SetActive(false),
-                obj => Destroy(obj.gameObject),
+                obj =>
+                {
+                    if (obj == null) return;
+                    //obj.ClearVFX();
+                    obj.SetPool(pool);
+                    obj.gameObject.SetActive(true);
+                },
+                obj =>
+                {
+                    if (obj == null || obj.gameObject == null) return;
+                    //obj.ClearVFX();
+                    obj.gameObject.SetActive(false);
+                },
+                obj =>
+                {
+                    if (obj == null) return;
+                    obj.ClearVFX();
+                    Destroy(obj.gameObject);
+                },
                 false, 10, 100
             );
 
@@ -159,20 +189,65 @@ namespace GameControl.EventMap
             return pool;
         }
         
-        public void RunEvent(string id)
+        public void RunEvent(string id, Action<EventOverrides> configure)
         {
-            RunEventMapByID(id, _cts.Token).Forget();
+            EventOverrides bag = null;
+            if (configure != null)
+            {
+                bag = new EventOverrides();
+                configure(bag);
+            }
+            RunEventMapByID(id, _cts.Token, bag).Forget();
         }
         
-        [Title("▶️ Test Run (Odin Button)")]
+        [Title("▶️ Test Run (Odin Button)")][FoldoutGroup("Test Map Event")]
         [InfoBox("ใส่ ID ที่ต้องการทดสอบ แล้วกดปุ่ม Run Test")]
         [SerializeField, LabelText("Event ID")] 
         private string _testId;
+     
+        [SerializeField, LabelText("Override Damage")][FoldoutGroup("Test Map Event")]
+        private float _testdmg;
         
         [Button("Run Test"), GUIColor(0.3f, 0.8f, 0.3f)]
         private void RunTestById()
         {
-            RunEvent(_testId);
+            RunEvent(_testId, o => o.ForEntry(e =>
+            {
+                e.damage = _testdmg;
+            }));
         }
+        
+        #region Event Override
+        public sealed class EventOverrides
+        {
+            private readonly List<Action<MapEventStorageEntry>> _entrySetters = new();
+            private readonly List<Action<BaseMapEvent>> _instanceSetters = new();
+
+            public EventOverrides ForEntry(Action<MapEventStorageEntry> set)
+            {
+                if (set != null) _entrySetters.Add(set);
+                return this;
+            }
+
+            public EventOverrides ForInstance<TEvent>(Action<TEvent> set)
+                where TEvent : BaseMapEvent
+            {
+                if (set != null)
+                {
+                    _instanceSetters.Add(be =>
+                    {
+                        if (be is TEvent t) set(t);
+                    });
+                }
+                return this;
+            }
+
+            internal void ApplyTo(MapEventStorageEntry entry, BaseMapEvent instance)
+            {
+                for (int i = 0; i < _entrySetters.Count; i++) _entrySetters[i]?.Invoke(entry);
+                for (int i = 0; i < _instanceSetters.Count; i++) _instanceSetters[i]?.Invoke(instance);
+            }
+        }
+        #endregion
     }
 }

@@ -140,8 +140,8 @@ namespace UI.Tutorial
                 PlayerPrefs.SetInt("HasSeenTutorial", 1);
                 PlayerPrefs.Save();
 
-                await UIManager.Instance.CloseSpecificPanel(UIPanelType.TutorialPanel);
                 GameStateController.Instance.SetState(new PrestartState());
+                await UIManager.Instance.CloseSpecificPanel(UIPanelType.TutorialPanel);
             }
             catch (OperationCanceledException)
             {

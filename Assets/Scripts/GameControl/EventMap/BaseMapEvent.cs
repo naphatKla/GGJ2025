@@ -37,25 +37,31 @@ namespace GameControl.EventMap
         
         public void ApplyEffect(MapEventStorageEntry entry)
         {
-            if (previewEffect == null) return;
-            var main = previewEffect.main;
-            float originalDuration = main.duration;
-            main.simulationSpeed = originalDuration / entry.delayPerform;
-            deletetime = entry.deleteTime;
-            damage = entry.damage;
-
+            deletetime       = entry.deleteTime;
+            damage           = entry.damage;
+            previewDuration  = entry.delayPerform;
             
-            switch (entry.hitboxType)
-            { 
-                case HitboxType.Box:
-                    main.startSizeX = entry.boxSize.x;
-                    main.startSizeY = entry.boxSize.y;
-                    main.startSizeZ = 0;
-                    break;
-                case HitboxType.None:
-                    break;
+            if (previewEffect != null)
+            {
+                var main = previewEffect.main;
+                float originalDuration = main.duration;
+                main.simulationSpeed = originalDuration / Mathf.Max(entry.delayPerform, 0.0001f);
+
+                switch (entry.hitboxType)
+                {
+                    case HitboxType.Box:
+                        main.startSizeX = entry.boxSize.x;
+                        main.startSizeY = entry.boxSize.y;
+                        main.startSizeZ = 0;
+                        break;
+                    case HitboxType.Sphere:
+                    case HitboxType.Capsule:
+                    case HitboxType.None:
+                        break;
+                }
             }
         }
+
 
         public async UniTask Play(CancellationToken externalToken = default)
         {
@@ -144,5 +150,38 @@ namespace GameControl.EventMap
                     break;
             }
         }
+
+        public void ClearVFX(bool includeChildren = true)
+        {
+            try
+            {
+                _cts?.Cancel();
+                if (notifyFeedback != null)
+                {
+                    notifyFeedback.StopFeedbacks();
+                    notifyFeedback.RestoreInitialValues();
+                }
+
+                if (playFeedback != null)
+                {
+                    playFeedback.StopFeedbacks();
+                    playFeedback.RestoreInitialValues();
+                }
+                
+                if (previewEffect != null)
+                {
+                    var main = previewEffect.main;
+                    main.simulationSpeed = 1f;
+                    previewEffect.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+                    previewEffect.Clear(true);
+                    var em = previewEffect.emission;
+                    em.enabled = false;
+                }
+            }
+            catch (MissingReferenceException)
+            {
+            }
+        }
+
     }
 }

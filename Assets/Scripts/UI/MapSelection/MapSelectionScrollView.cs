@@ -36,7 +36,7 @@ namespace UI.MapSelection
             }
 
             Context.SelectedIndex = index;
-            MapSelectionSender.Instance.currentMapSelectionIndex = index;
+            MapSelectionSender.Instance.currentMapSelectionIndex = index; ;
             Refresh();
         }
 

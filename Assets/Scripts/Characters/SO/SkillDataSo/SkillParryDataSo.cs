@@ -23,6 +23,9 @@ namespace Characters.SO.SkillDataSo
         private bool stopWhileParry;
 
         [FoldoutGroup("Parry Configs")] [SerializeField]
+        private float parryColliderSizeMultiplier = 1;
+        
+        [FoldoutGroup("Parry Configs")] [SerializeField]
         private float parryDuration;
         
         [FoldoutGroup("Parry Configs")] [SerializeField]
@@ -30,6 +33,9 @@ namespace Characters.SO.SkillDataSo
 
         [FoldoutGroup("Parry Configs")] [SerializeField]
         private float knockBackDuration;
+
+        [FoldoutGroup("Parry Configs")] [SerializeField]
+        private float healOnSuccess;
 
         [FoldoutGroup("Feedback")] 
         [ValueDropdown("@FeedbackName.Odin.ShortGroupWithNone(\"Skill\")")] 
@@ -42,6 +48,7 @@ namespace Characters.SO.SkillDataSo
         private List<StatusEffectDataPayload> explosionEffectsToTarget;
         
         public bool StopWhileParry => stopWhileParry;
+        public float ParryColliderSizeMultiplier => parryColliderSizeMultiplier;
         public float ParryDuration => parryDuration;
         public float ExplosionBaseDamage => explosionBaseDamage;
         public float ExplosionDamageMultiplier => explosionDamageMultiplier;
@@ -52,5 +59,6 @@ namespace Characters.SO.SkillDataSo
         public List<StatusEffectDataPayload> ExplosionEffectsToTarget => explosionEffectsToTarget;
         public float KnockBackDistance => knockBackDistance;
         public float KnockBackDuration => knockBackDuration;
+        public float HealOnSuccess => healOnSuccess;
     }
 }

@@ -45,11 +45,18 @@ namespace Characters.CombatSystems
         private bool _isEnableDamage;
 
         private GameObject _owner;
+
+        // --- Core data ---
         private readonly List<DamageInstance> _damageInstances = new();
         private readonly Dictionary<(GameObject target, object caller), float> _cooldownMap = new();
         private readonly List<(GameObject, object)> _cooldownRemoveBuffer = new();
 
+        // --- Physics buffer ---
         private readonly Collider2D[] _overlapResults = new Collider2D[32];
+
+        // --- NEW: Snapshot buffer to avoid "modified during iteration" ---
+        private readonly List<DamageInstance> _iterBuffer = new(8);
+
         public event Action OnHit;
 
         public GameObject Owner => _owner;
@@ -76,7 +83,7 @@ namespace Characters.CombatSystems
             object caller,
             float hitPerSec,
             OverlapShape shape,
-            LayerMask layerMask,
+            LayerMask? layerMask = null,
             Vector2? box = null,
             float? circle = null,
             float baseSkillDamage = 0f,
@@ -87,8 +94,7 @@ namespace Characters.CombatSystems
             float lifeStealEffective = 0f)
         {
             this.shape = shape;
-            this.targetLayer = layerMask;
-
+            if (layerMask.HasValue)  this.targetLayer = layerMask.Value;
             if (box.HasValue) boxSize = box.Value;
             if (circle.HasValue) circleRadius = circle.Value;
 
@@ -144,18 +150,20 @@ namespace Characters.CombatSystems
 
         public void DisableDamage(object caller)
         {
+            // Remove all instances of this caller
             _damageInstances.RemoveAll(instance => instance.Caller == caller);
 
+            // Clean cooldown entries for this caller
             _cooldownRemoveBuffer.Clear();
             foreach (var kvp in _cooldownMap)
             {
                 if (kvp.Key.caller == caller)
                     _cooldownRemoveBuffer.Add(kvp.Key);
             }
-
             foreach (var key in _cooldownRemoveBuffer)
                 _cooldownMap.Remove(key);
 
+            // Turn off if empty
             if (_damageInstances.Count == 0)
             {
                 _isEnableDamage = false;
@@ -169,6 +177,7 @@ namespace Characters.CombatSystems
             _damageInstances.Clear();
             _cooldownMap.Clear();
             _cooldownRemoveBuffer.Clear();
+            _iterBuffer.Clear();
 
             if (_isEnableDamage)
                 FixedUpdateManager.Current?.Unregister(this);
@@ -186,6 +195,15 @@ namespace Characters.CombatSystems
             if (!_isEnableDamage || _owner == null)
                 return;
 
+            // --- Snapshot instances to avoid "modified during iteration" ---
+            _iterBuffer.Clear();
+            _iterBuffer.AddRange(_damageInstances);
+
+            // If nothing to apply, early out before physics
+            if (_iterBuffer.Count == 0)
+                return;
+
+            // Physics query
             int count = 0;
             Vector2 position = transform.position;
             float angle = transform.eulerAngles.z;
@@ -203,18 +221,26 @@ namespace Characters.CombatSystems
 
             for (int i = 0; i < count; i++)
             {
-                TryApplyDamageTo(_overlapResults[i]);
+                var col = _overlapResults[i];
+                if (!col) continue;
+
+                // Use the snapshot for this whole pass
+                TryApplyDamageTo(col, _iterBuffer);
             }
         }
 
-        private void TryApplyDamageTo(Collider2D collider)
+        // Use instances snapshot instead of iterating the live list
+        private void TryApplyDamageTo(Collider2D collider, List<DamageInstance> instancesSnapshot)
         {
             GameObject target = collider.gameObject;
             float now = Time.time;
             Vector2 hitPosition = collider.ClosestPoint(transform.position);
 
-            foreach (var instance in _damageInstances)
+            for (int i = 0; i < instancesSnapshot.Count; i++)
             {
+                var instance = instancesSnapshot[i];
+                if (instance == null) continue;
+
                 var key = (target, instance.Caller);
 
                 if (_cooldownMap.TryGetValue(key, out float nextTime) && now < nextTime)
@@ -247,6 +273,7 @@ namespace Characters.CombatSystems
 #if UNITY_EDITOR
         private void OnShapeChanged() => UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
 #endif
+
         #endregion
 
         #region Safety

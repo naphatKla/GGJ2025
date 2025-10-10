@@ -18,12 +18,6 @@ namespace Characters.SkillSystems.SkillRuntimes
     {
         event Action OnTriggerAutoSkill;
     }
-
-    // for skill which have special condition, etc light step, เป็นสกิลที่ใช้แล้ว จะรอ condition พิเศษ
-    public interface ISpecialConditionSkill
-    {
-        public bool IsWaitForCondition { get;}
-    }
     
     public abstract class BaseSkillRuntime : MonoBehaviour
     {
@@ -92,7 +86,6 @@ namespace Characters.SkillSystems.SkillRuntimes
             if (IsCooldown || IsPerforming) return;
 
             SetCurrentCooldown(skillData.Cooldown);
-            cts = new CancellationTokenSource();
 
             HandleSkillStart();
             try
@@ -110,6 +103,7 @@ namespace Characters.SkillSystems.SkillRuntimes
             await UniTask.Delay(milliSecondDelay);
             if (!IsPerforming) return;
             cts?.Cancel();
+            cts = new CancellationTokenSource();
         }
 
         protected virtual void HandleSkillStart()
@@ -126,6 +120,7 @@ namespace Characters.SkillSystems.SkillRuntimes
             IsPerforming = false;
             owner.TryPlayFeedback(skillData.ExitFeedback);
             OnSkillExit();
+            
             if (!skillData.ClearBuffOnSkillExit) return;
             
             foreach (var statusEffectName in skillData.StatusEffectOnSkillStart.Select(effect => effect.EffectData.EffectName))

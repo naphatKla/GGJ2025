@@ -46,9 +46,19 @@ namespace GameControl.Controller
                     useCustomInterval = data.useCustomInterval,
                     customInterval = data.customInterval,
                     useLifetimeInterval = data.useLifetimeInterval,
-                    lifetimeInterval = data.lifetimeInterval
-                };
+                    lifetimeInterval = data.lifetimeInterval,
+                    
+                    // min-max
+                    useMaxperItem = data.useMaxperItem,
+                    maximumPerItem = data.maximumPerItem,
 
+                    // conditions
+                    useSpawnConditions = data.useSpawnConditions,
+                    conditionLogic = data.conditionLogic,
+                    spawnConditions = data.spawnConditions
+                };
+                
+                cloned.InitRuntime();
                 _storeItem.Add(cloned);
               
                 _itemPools[cloned.id] = new ObjectPool<BaseCollectableItem>(
@@ -78,6 +88,7 @@ namespace GameControl.Controller
         {
             obj.gameObject.SetActive(false);
             _activeItem.Remove(obj);
+            option.activeCount = Mathf.Max(0, option.activeCount - 1);
         }
         
         private void ActionOnGet(BaseCollectableItem obj, MapDataSO.ItemOption option)
@@ -85,7 +96,6 @@ namespace GameControl.Controller
             _activeItem.Add(obj);
             obj.transform.SetParent(_state.ItemParent);
             obj.gameObject.SetActive(true);
-
             if (option.useLifetimeInterval)
             {
                 StartLifetimeCountdown(obj, option).Forget();
@@ -110,14 +120,40 @@ namespace GameControl.Controller
             }
         }
         
+        public List<MapDataSO.ItemOption> ConditionItem(bool bypass)
+        {
+            List<MapDataSO.ItemOption> candidates;
+
+            if (bypass)
+                candidates = _storeItem.ToList();
+            else
+                candidates = _storeItem.Where(e => e.IsSpawnable(_state, _mapdata)).ToList();
+
+            if (candidates.Count == 0) return null;
+
+            candidates = candidates.Where(c => c.IsBelowPerItemMax()).ToList();
+            return candidates.Count == 0 ? null : candidates;
+        }
+        
         public MapDataSO.ItemOption SpawnItem()
         {
-            //Random
-            var randomItem = RandomUtility.GetWeightedRandom(_storeItem);
-            if (!_itemPools.TryGetValue(randomItem.id, out var pool)) return null;
-            var obj = pool.Get();
-            obj.transform.position = SpawnUtility.RandomInsideRegion(_itemRegionSize);
+            var candidates = ConditionItem(false);
+            if (candidates == null || candidates.Count == 0) return null;
             
+            var deficit = candidates
+                .Where(o => o.useMaxperItem && (o.maximumPerItem <= 0 || o.activeCount < o.maximumPerItem))
+                .ToList();
+            var pickFrom = deficit.Count > 0 ? deficit : candidates;
+            
+            //Random
+            var randomItem = RandomUtility.GetWeightedRandom(pickFrom);
+            if (randomItem == null) return null;
+            
+            if (!_itemPools.TryGetValue(randomItem.id, out var pool)) return null;
+            
+            var obj = pool.Get();
+            randomItem.activeCount++;
+            obj.transform.position = SpawnUtility.RandomInsideRegion(_itemRegionSize);
             return randomItem;
         }
 
@@ -177,17 +213,13 @@ namespace GameControl.Controller
             ReleaseAllItem();
             ClearAllItems();
         }
-
         
         public void ClearAllItems()
         {
-            foreach (var pool in _itemPools.Values)
-            {
-                pool.Clear();
-            }
+            foreach (var pool in _itemPools.Values) pool.Clear();
             _activeItem.Clear();
+            if (_storeItem != null) foreach (var opt in _storeItem) opt.activeCount = 0;
         }
-
         
         public void ReleaseAllItem()
         {

@@ -103,6 +103,7 @@ namespace GameControl.EventMap
         public float chance = 0.5f;
 
         public string GroupName => eventPrefab != null ? eventPrefab.name : "Ungrouped";
+        public MapEventStorageEntry Clone() => (MapEventStorageEntry)MemberwiseClone();
     }
 
     [CreateAssetMenu(menuName = "EventMap/Container")]
