@@ -65,7 +65,9 @@ namespace GameControl.SO
                     enemyData = e.enemyData,
                     useSpawnConditions = e.useSpawnConditions,
                     conditionLogic = e.conditionLogic,
-                    spawnConditions = e.spawnConditions != null ? new List<EnemySpawnConditionSO>(e.spawnConditions) : null
+                    spawnConditions = e.spawnConditions != null ? new List<EnemySpawnConditionSO>(e.spawnConditions) : null,
+                    useMaxperEnemy = e.useMaxperEnemy,
+                    maximumPerEnemy = e.maximumPerEnemy,
                 });
 
 #if UNITY_EDITOR

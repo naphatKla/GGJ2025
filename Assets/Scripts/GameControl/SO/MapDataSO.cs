@@ -49,6 +49,13 @@ namespace GameControl.SO
             [FoldoutGroup("$id")] [ShowIf("$useCustomInterval")]
             public float customInterval;
             
+            [FoldoutGroup("$id")][Title("Per-Enemy Max")]
+            [Tooltip("Enable to limit maximum concurrent active enemy")]
+            public bool useMaxperEnemy;
+            [FoldoutGroup("$id")][ShowIf("$useMaxperEnemy")]
+            [Tooltip("Maximum ACTIVE instances for this enemy type (<=0 = unlimited).")]
+            public float maximumPerEnemy = 0f;
+            
             [FoldoutGroup("$id")][Title("Enemy Status")]
             public bool modifyNewData;
             [FoldoutGroup("$id")] [ShowIf("$modifyNewData")]
@@ -64,6 +71,24 @@ namespace GameControl.SO
             public List<EnemySpawnConditionSO> spawnConditions;
 
             public enum ConditionLogic { All, Any }
+            [NonSerialized] public int activeCount;
+            
+            public void InitRuntime()
+            {
+                activeCount = 0;
+                if (useMaxperEnemy)
+                {
+                    int max = Mathf.RoundToInt(maximumPerEnemy); // <=0 = unlimited
+                    maximumPerEnemy = max;
+                }
+            }
+
+            public bool IsBelowPerEnemyMax()
+            {
+                if (!useMaxperEnemy) return true;
+                int max = Mathf.RoundToInt(maximumPerEnemy);
+                return (max <= 0) || (activeCount < max);
+            }
 
             public bool IsSpawnable(SpawnerStateController state, MapDataSO mapData)
             {

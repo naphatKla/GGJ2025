@@ -65,6 +65,11 @@ namespace GameControl.Controller
                 int totalExp = Mathf.CeilToInt(enemyData.ExpDrop * _anergyDropMultiplier);
                 _state.ItemSpawnerController.SpawnExpItem(totalExp, obj.transform.position);
             }
+
+            if (obj.CountedByMax)
+            {
+                option.activeCount = Mathf.Max(0, option.activeCount - 1);
+            }
             
             obj.gameObject.SetActive(false);
             obj.FeedbackSystem.ShowTrail(false);
@@ -113,7 +118,7 @@ namespace GameControl.Controller
             return _enemyOptionsList;
         }
         
-        public List<MapDataSO.EnemyOption> ConditionEnemy(bool bypass)
+        public List<MapDataSO.EnemyOption> PickEnemy(bool bypass)
         {
             List<MapDataSO.EnemyOption> candidates;
 
@@ -127,14 +132,23 @@ namespace GameControl.Controller
             return candidates.Count == 0 ? null : candidates;
         }
         
+        public bool ConditionCheck(MapDataSO.EnemyOption opt)
+        {
+            if (!opt.IsBelowPerEnemyMax()) return false;
+            return true;
+        }
+        
         public MapDataSO.EnemyOption SpawnEnemy()
         {
-            var randomEnemy = RandomUtility.GetWeightedRandom(ConditionEnemy(false));
+            var randomEnemy = RandomUtility.GetWeightedRandom(PickEnemy(false));
             if (randomEnemy == null) return null;
-
+            if (!ConditionCheck(randomEnemy)) return null;
+            
             if (!_enemyPools.TryGetValue(randomEnemy.id, out var pool)) return null;
-            pool.Get();
-
+            var inst = pool.Get();
+            inst.CountedByMax = true;
+            
+            randomEnemy.activeCount++;
             SpawnerStateController.Instance.CurrentEnemyPoint -= randomEnemy.EnemyPoint;
             return randomEnemy;
         }
@@ -169,8 +183,11 @@ namespace GameControl.Controller
                     enemyData = data.enemyData,
                     useSpawnConditions = data.useSpawnConditions,
                     conditionLogic = data.conditionLogic,
+                    useMaxperEnemy = data.useMaxperEnemy,
+                    maximumPerEnemy = data.maximumPerEnemy,
                     spawnConditions = data.spawnConditions != null ? new List<EnemySpawnConditionSO>(data.spawnConditions) : null
                 };
+                cloned.InitRuntime();
                 _enemyOptionsList.Add(cloned);
 
                 _enemyPools[cloned.id] = new ObjectPool<EnemyController>(

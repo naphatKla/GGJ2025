@@ -164,7 +164,7 @@ namespace GameControl.Controller
                 return null;
             }
             
-            var candidates = _enemySpawner.ConditionEnemy(patternOption != null && patternOption.bypassSpawnCondition);
+            var candidates = _enemySpawner.PickEnemy(patternOption != null && patternOption.bypassSpawnCondition);
             if (candidates == null || candidates.Count == 0)
             {
                 if (_isDebug) Debug.Log("[EnemyPatternController] No candidates after ConditionEnemy()");
@@ -321,6 +321,7 @@ namespace GameControl.Controller
 
             var enemyObj = pool.Get();
             enemyObj.transform.position = pos;
+            enemyObj.CountedByMax = false;
             enemyObj.transform.SetParent(_state.EnemyParent);
             StopEnemyMovement(enemyObj,patternData.enableMovementAfter, _ct).Forget();
         }
