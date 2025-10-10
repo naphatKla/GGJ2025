@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1001 &53745258578372810
+--- !u!1001 &6982704194721587101
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -32,21 +32,17 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 490089048449381457, guid: 855f7c1b8cfa9b14d8be3e582f41e50f, type: 3}
-      propertyPath: m_fontColor32.rgba
-      value: 4278190080
-      objectReference: {fileID: 0}
     - target: {fileID: 1644969543324374916, guid: 855f7c1b8cfa9b14d8be3e582f41e50f, type: 3}
       propertyPath: m_text
-      value: Quit Game?
+      value: Are you sure about the new game?
       objectReference: {fileID: 0}
-    - target: {fileID: 4187533473497916046, guid: 855f7c1b8cfa9b14d8be3e582f41e50f, type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 1130
+    - target: {fileID: 1644969543324374916, guid: 855f7c1b8cfa9b14d8be3e582f41e50f, type: 3}
+      propertyPath: m_fontSize
+      value: 52
       objectReference: {fileID: 0}
-    - target: {fileID: 4187533473497916046, guid: 855f7c1b8cfa9b14d8be3e582f41e50f, type: 3}
-      propertyPath: m_SizeDelta.y
-      value: 1000
+    - target: {fileID: 1644969543324374916, guid: 855f7c1b8cfa9b14d8be3e582f41e50f, type: 3}
+      propertyPath: m_fontSizeBase
+      value: 52
       objectReference: {fileID: 0}
     - target: {fileID: 5620665027870565207, guid: 855f7c1b8cfa9b14d8be3e582f41e50f, type: 3}
       propertyPath: m_Pivot.x
@@ -128,9 +124,13 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7422491706460746680, guid: 855f7c1b8cfa9b14d8be3e582f41e50f, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 65
+      objectReference: {fileID: 0}
     - target: {fileID: 7908635726105137824, guid: 855f7c1b8cfa9b14d8be3e582f41e50f, type: 3}
       propertyPath: m_Name
-      value: QuitConfirmPanel
+      value: NewGameConfirmPanel
       objectReference: {fileID: 0}
     - target: {fileID: 7908635726105137824, guid: 855f7c1b8cfa9b14d8be3e582f41e50f, type: 3}
       propertyPath: m_IsActive
@@ -159,6 +159,10 @@ PrefabInstance:
     - target: {fileID: 8445881881561749385, guid: 855f7c1b8cfa9b14d8be3e582f41e50f, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8779529033492742137, guid: 855f7c1b8cfa9b14d8be3e582f41e50f, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -60
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

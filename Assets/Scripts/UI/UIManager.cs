@@ -4,8 +4,10 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using MoreMountains.Feedbacks;
+using Player;
 using ProjectExtensions;
 using Sirenix.OdinInspector;
+using TMPro;
 using UI.ConfirmButton;
 using UI.Transition;
 using UnityEngine;
@@ -25,6 +27,7 @@ namespace UI
         Setting = 5,
         SaveGame = 6,
         GameMode = 7,
+        NewGame = 8,
         QuitPanel = 9,
         TutorialPanel = 10,
         MainMenu = 11,
@@ -398,7 +401,7 @@ namespace UI
 
         public void QuitGame()
         {
-            Application.Quit();
+            ShowConfirmButton("QuitConfirm", () => Application.Quit(), null).Forget();
             Debug.Log("Quit Game");
         }
 
@@ -406,12 +409,47 @@ namespace UI
 
         #region Preset open helpers
 
-        public void OpenSaveGamePanel() => OpenPanel(UIPanelType.SaveGame).Forget();
+        public void OpenConfirmNewGame()
+        {
+            ShowConfirmButton("ConfirmNewGame", () => OpenDisplayPanel(), null).Forget();
+        }
+        public void OpenDisplayPanel() => OpenPanel(UIPanelType.NewGame).Forget();
         public void OpenGameModePanel() => OpenPanel(UIPanelType.GameMode).Forget();
         public void OpenQuitPanel() => OpenPanel(UIPanelType.QuitPanel).Forget();
         public void OpenTutorialPanel() => OpenPanel(UIPanelType.TutorialPanel).Forget();
         public void OpenResultMenu() => OpenPanel(UIPanelType.MapResult).Forget();
         public void OpenSettingsPanel() => OpenPanel(UIPanelType.Setting).Forget();
+        
+        /// <summary>
+        /// New Game
+        /// </summary>
+        /// <param name="playerNameInput"></param>
+        public void OnClickNew(TMP_InputField playerNameInput)
+        {
+            var id   = PlayerProfileManager.CreateNew(playerNameInput.text.Trim());
+            var data = PlayerSaveSystem.Read(id);
+
+            ActiveProfileService.Instance?.SetActive(id);
+            OpenGameModePanel();
+        }
+        
+        /// <summary>
+        /// Continue
+        /// </summary>
+        public void OnClickContinue()
+        {
+            var data = PlayerProfileManager.ContinueOrNull();
+            ActiveProfileService.Instance?.SetActive(data.ProfileId);
+            if (data == null)
+            {
+                Debug.Log("No active profile, show create screen.");
+                OpenDisplayPanel();
+            }
+            else
+            {
+                OpenGameModePanel();
+            }
+        }
 
         public void OpenModePanel(string mode)
         {
@@ -939,7 +977,6 @@ namespace UI
             _stack.Clear();
             foreach (var t in active) _stack.Push(t);
         }
-
         
         #endregion
     }
