@@ -6,6 +6,8 @@ namespace Characters.Controllers
 {
     public class EnemyController : BaseController
     {
+        public bool CountedByMax { get; set; }
+
         public override void AssignCharacterData(BaseCharacterDataSo data)
         {
             base.AssignCharacterData(data);
