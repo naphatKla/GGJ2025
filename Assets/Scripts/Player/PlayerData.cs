@@ -12,7 +12,8 @@ namespace Player
         
         //Game Achivment
         public int HighestScore;
-        
+        public int LastScore;
+
         //Game Progression
     }
 

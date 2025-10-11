@@ -15,8 +15,12 @@ namespace Player
         [Header("Debug Overlay")]
         public bool showOverlay = true;
         public KeyCode toggleKey = KeyCode.BackQuote;
+        
+        [Header("Defaults (for Reset)")]
+        public DefaultPlayerDataSO defaultPlayerData;
 
         public PlayerData Current { get; private set; }
+        bool _confirmReset;
 
         void Awake()
         {
@@ -87,14 +91,52 @@ namespace Player
             var root = Path.Combine(Application.persistentDataPath, "profiles");
             return Path.Combine(root, profileId);
         }
+        
+        public void ResetCurrentProfile(bool keepSameId = true, string displayNameOverride = null)
+        {
+            if (defaultPlayerData == null)
+            {
+                Debug.LogError("[ActiveProfileService] Please assign DefaultPlayerDataSO to use Reset.");
+                return;
+            }
+
+            string targetId;
+            if (Current == null || string.IsNullOrEmpty(Current.ProfileId))
+            {
+                targetId =Guid.NewGuid().ToString("N");
+                Current  = defaultPlayerData.Build(targetId, displayNameOverride);
+            }
+            else
+            {
+                targetId = keepSameId ? Current.ProfileId : System.Guid.NewGuid().ToString("N");
+
+                // ลบโฟลเดอร์เก่าถ้าไม่ reuse id (หรืออยากล้างไฟล์ทั้งหมดแม้ reuse ก็ลบ/สร้างใหม่ได้)
+                var folder = GetProfileFolder(Current.ProfileId);
+                try
+                {
+                    if (Directory.Exists(folder))
+                        Directory.Delete(folder, recursive: true);
+                }
+                catch (Exception e)
+                {
+                    Debug.LogWarning($"[ActiveProfileService] Reset delete failed: {e.Message}");
+                }
+
+                Current = defaultPlayerData.Build(targetId, displayNameOverride ?? Current.DisplayName);
+            }
+
+            PlayerProfileManager.SetActiveProfile(targetId);
+            PlayerSaveSystem.WriteAtomic(Current);
+            Debug.Log($"[ActiveProfileService] Profile reset. Using id={targetId}");
+        }
 
         void OnGUI()
         {
             if (!showOverlay) return;
 
             const int pad = 8;
-            var w = 460;
-            var h = 230;
+            var w = 560;
+            var h = 300;
             var rect = new Rect(pad, pad, w, h);
             GUILayout.BeginArea(rect, GUI.skin.box);
 
@@ -113,6 +155,7 @@ namespace Player
             GUILayout.Label($"Name: {Current.DisplayName}");
             GUILayout.Label($"ProfileId: {shortId}");
             GUILayout.Label($"HighestScore: {Current.HighestScore}");
+            GUILayout.Label($"LastScore: {Current.LastScore}");
             if (Current.LastPlayedUnix > 0)
             {
                 var dt = DateTimeOffset.FromUnixTimeSeconds(Current.LastPlayedUnix)
@@ -129,7 +172,29 @@ namespace Player
             if (GUILayout.Button("Reload")) ReloadFromDisk();
             if (GUILayout.Button("Close Overlay")) showOverlay = false;
             GUILayout.EndHorizontal();
-
+            
+            GUILayout.Space(8);
+            GUILayout.BeginHorizontal();
+            GUI.enabled = defaultPlayerData != null;
+            if (_confirmReset)
+            {
+                GUI.backgroundColor = Color.red;
+                if (GUILayout.Button("Confirm Reset (wipe & defaults)"))
+                {
+                    ResetCurrentProfile(keepSameId: true);
+                    _confirmReset = false;
+                    GUI.backgroundColor = Color.white;
+                }
+                GUI.backgroundColor = Color.white;
+                if (GUILayout.Button("Cancel")) _confirmReset = false;
+            }
+            else
+            {
+                if (GUILayout.Button("Reset Profile to Defaults")) _confirmReset = true;
+            }
+            GUI.enabled = true;
+            GUILayout.EndHorizontal();
+            
             GUILayout.EndArea();
         }
     }

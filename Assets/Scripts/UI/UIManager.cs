@@ -144,7 +144,7 @@ namespace UI
         private bool HasOpenPanels => _stack.Count > 0;
         private UIPanelType TopType => _stack.Count > 0 ? _stack.Peek() : UIPanelType.None;
 
-            #region Unity lifecycle
+        #region Unity lifecycle
 
         protected override void Awake()
         {

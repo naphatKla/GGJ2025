@@ -4,8 +4,10 @@ using System.Collections.Generic;
 using System.Text;
 using Characters.Controllers;
 using Characters.Data;
+using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using GameControl.Controller;
+using Player;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -26,13 +28,27 @@ namespace UI.IngameViewholder
         [SerializeField] private TMP_Text middleText;
         [SerializeField] private TMP_Text scoreText;
         [SerializeField] private TMP_Text summaryText;
+        [SerializeField] private TMP_Text newRecordText;
         [SerializeField] private Image gradeImage;
         public List<GradeCombo> gradeComboResult;
+        Tween _countTween;
 
         private void OnEnable()
         {
             UpdateUIText();
         }
+        
+        private void OnDisable()
+        {
+            if (scoreText) DOTween.Kill(scoreText, complete: false);
+            if (gradeImage) DOTween.Kill(gradeImage, complete: false);
+            
+            scoreText?.transform.DOKill();
+            gradeImage?.transform.DOKill();
+            newRecordText?.transform.DOKill();
+            transform.DOKill();
+        }
+
 
         private void Start()
         {
@@ -74,9 +90,9 @@ namespace UI.IngameViewholder
         private void UpdateUIText()
         {
             var dataStatus = PlayerController.Instance.GetSummaryStatsOnStateEnd();
-            scoreText.text = dataStatus.totalScore.ToString();
             summaryText.text = GroupStatus(dataStatus).ToString();
-            UpdateGradeResult(dataStatus.highestRank);
+            newRecordText.gameObject.SetActive(false);
+            ShowResultFeedback(dataStatus).Forget();
             
             switch (GameStateController.Instance.gameResult)
             {
@@ -94,36 +110,81 @@ namespace UI.IngameViewholder
                     break;
             }
         }
+
+        private async UniTask ShowResultFeedback(PlayerSummaryStats dataStatus)
+        {
+            try
+            {
+                await UpdateGradeResult(dataStatus.highestRank);
+                await PlayCountUpAsync(dataStatus.totalScore, 2);
+                CheckHighestScore(dataStatus);
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+            }
+        }
         
-        public void UpdateGradeResult(string grade)
+        
+        public async UniTask UpdateGradeResult(string grade)
         {
             foreach (var g in gradeComboResult)
                 if (g.gradeId.ToLower() == grade.ToLower())
                 {
                     gradeImage.sprite = g.gradeImage;
-                    GradeFeedback(gradeImage);
+                    await GradeFeedback(gradeImage);
                     break;
                 }
         }
-        
-        private void GradeFeedback(Image obj)
+
+        private void CheckHighestScore(PlayerSummaryStats dataStatus)
         {
-            var tf = obj.transform;
-            var cg = obj.GetComponent<CanvasGroup>();
-            if (cg == null) cg = obj.gameObject.AddComponent<CanvasGroup>();
-            
-            var sq = DOTween.Sequence().SetUpdate(true);
-
-            sq.Append(tf.DOScale(1.6f, 0.0f).SetUpdate(true))
-                .Append(tf.DOScale(1.0f, 0.5f).SetEase(Ease.InExpo).SetUpdate(true));
+            var svc = ActiveProfileService.Instance;
+            if (svc?.Current == null) return;
+            int newScore = Mathf.Max(0, dataStatus.totalScore);
+            if (newScore == svc?.Current.HighestScore) NewRecordFeedback(newRecordText.transform).Forget();
         }
+        
+        private async UniTask NewRecordFeedback(Transform tf)
+        {
+            if (!tf) return;
+            tf.DOKill();
+            tf.gameObject.SetActive(true);
+            var seq = DOTween.Sequence()
+                .SetUpdate(true)
+                .SetLink(tf.gameObject, LinkBehaviour.KillOnDestroy)
+                .SetTarget(tf);
 
+            await seq
+                .Append(tf.DOScale(8.0f, 0.0f).SetUpdate(true).SetLink(tf.gameObject, LinkBehaviour.KillOnDestroy))
+                .Append(tf.DOScale(5.5f, 0.5f).SetEase(Ease.InExpo).SetUpdate(true)
+                    .SetLink(tf.gameObject, LinkBehaviour.KillOnDestroy))
+                .AsyncWaitForCompletion();
+        }
+        
+        private async UniTask GradeFeedback(Image obj)
+        {
+            if (!obj) return;
+            var tf = obj.transform;
+            var seq = DOTween.Sequence()
+                .SetUpdate(true)
+                .SetLink(obj.gameObject, LinkBehaviour.KillOnDestroy)
+                .SetTarget(obj);
+
+            if (tf) tf.localScale = Vector3.one;
+
+            await seq
+                .Append(tf.DOScale(1.6f, 0.0f).SetUpdate(true).SetLink(obj.gameObject, LinkBehaviour.KillOnDestroy))
+                .Append(tf.DOScale(1.0f, 0.5f).SetEase(Ease.InExpo).SetUpdate(true)
+                    .SetLink(obj.gameObject, LinkBehaviour.KillOnDestroy))
+                .AsyncWaitForCompletion();
+        }
+        
         private StringBuilder GroupStatus(PlayerSummaryStats dataStatus)
         {
-            var sb = new System.Text.StringBuilder(256);
+            var sb = new StringBuilder(256);
             
             sb.AppendLine($"<color=#aeb0af>Current level :</color> <color=#00FF00>{dataStatus.currentLevel}</color>");
-            //sb.AppendLine($"<color=#aeb0af>Highest Rank :</color> <color=#00FFFF>{(string.IsNullOrEmpty(dataStatus.highestRank) ? "-" : dataStatus.highestRank)}</color>");
             sb.AppendLine($"<color=#aeb0af>Highest Streak Count :</color> <color=#FFA500>{dataStatus.highestStreakCount}</color>");
             sb.AppendLine($"<color=#aeb0af>Average Exp Multiplier :</color> <color=#FF69B4>{dataStatus.averageExpMultiplier:0.###}</color>");
             sb.AppendLine($"<color=#aeb0af>Total Enemies Eliminated :</color> <color=#FF0000>{dataStatus.totalEnemiesEliminated}</color>");
@@ -137,6 +198,37 @@ namespace UI.IngameViewholder
             sb.AppendLine($"<color=#aeb0af>Total Heal :</color> <color=#32CD32>{dataStatus.totalHeal}</color>");
 
             return sb;
+        }
+
+        public async UniTask PlayCountUpAsync(int targetScore, float duration = 3f, bool ignoreTimeScale = true)
+        {
+            if (!scoreText) return;
+
+            _countTween?.Kill();
+
+            int current = 0;
+            _countTween = DOTween
+                .To(() => current, x =>
+                {
+                    current = x;
+                    if (scoreText) scoreText.text = current.ToString("#,0");
+                }, targetScore, duration)
+                .SetEase(Ease.OutCubic)
+                .SetUpdate(ignoreTimeScale)
+                .SetLink(scoreText.gameObject, LinkBehaviour.KillOnDestroy)
+                .SetTarget(scoreText);
+
+            var ct = this.GetCancellationTokenOnDestroy();
+
+            try
+            {
+                await UniTask.WhenAny(
+                        _countTween.AsyncWaitForCompletion().AsUniTask(),
+                        _countTween.AsyncWaitForKill().AsUniTask()
+                    ).AttachExternalCancellation(ct)
+                    .SuppressCancellationThrow();
+            }
+            catch (OperationCanceledException) { }
         }
 
     }
