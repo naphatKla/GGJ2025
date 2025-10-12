@@ -1,4 +1,6 @@
+using System.Text.RegularExpressions;
 using Characters.Controllers;
+using Dan.Main;
 using GameControl.Controller;
 using GameControl.Interface;
 using MoreMountains.Feedbacks;
@@ -10,6 +12,8 @@ namespace GameControl.GameState
 {
     public class SummaryState : IGameState
     {
+        private bool _uploadedThisRun = false;
+        
         public void OnEnable(GameStateController controller) { }
 
         public void OnDisable(GameStateController controller) { }
@@ -18,25 +22,47 @@ namespace GameControl.GameState
         {
             UIManager.Instance.CloseAllPanels();
             UIManager.Instance.OpenResultMenu();
-            SavePlayerData();
+            SavePlayerDataAndUpload();
         }
 
         public void Update(GameStateController controller) { }
 
         public void Exit(GameStateController controller) { }
-
-        private void SavePlayerData()
+        
+        private void SavePlayerDataAndUpload()
         {
             var svc = ActiveProfileService.Instance;
-            if (svc?.Current == null) return;
+            var profile = svc?.Current;
+            if (profile == null) return;
+
             var dataStatus = PlayerController.Instance.GetSummaryStatsOnStateEnd();
             int newScore = Mathf.Max(0, dataStatus.totalScore);
-            svc.Current.LastScore = newScore;
+            profile.LastScore = newScore;
 
-            if (newScore > svc.Current.HighestScore)
+            bool isNewHigh = newScore > profile.HighestScore;
+            if (isNewHigh)
             {
-                svc.Current.HighestScore = newScore;
-                svc.SaveNow();
+                profile.HighestScore = newScore;
+            }
+            
+            svc.SaveNow();
+            
+            // Leaderboard
+            if (isNewHigh)
+            {
+                LeaderboardCreator.SetUserGuid(profile.ProfileId);  
+                string name = $"{profile.DisplayName}";
+                Leaderboards.ThailandGameShow.UploadNewEntry(
+                    name, newScore,
+                    e =>
+                    {
+                        Debug.Log($"[Leaderboard] Upload success: {name} -> {newScore}");
+                    },
+                    error =>
+                    {
+                        Debug.LogError($"[Leaderboard] Upload failed: {error}");
+                    }
+                );
             }
         }
     }

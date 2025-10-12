@@ -11,7 +11,7 @@ namespace UI.Leaderboard
         
         public void SetData(LeaderboardItemModel data, int index)
         {
-            if (titleText)  titleText.text = $"{index}. {data.title}";
+            if (titleText)  titleText.text = $"{index+1}. {data.title}";
             if (scoreText)  scoreText.text = NumberAbbrev.FormatAbbrev(data.score); 
             name = $"Cell_{index}";
         }
