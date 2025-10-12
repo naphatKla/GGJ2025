@@ -7,9 +7,11 @@ namespace UI.Leaderboard
     public class LeaderboardItemModel
     {
         public string title;
-        public LeaderboardItemModel(string t)
+        public float score;
+        public LeaderboardItemModel(string t,float s)
         {
             title = t;
+            score = s;
         }
     }
 

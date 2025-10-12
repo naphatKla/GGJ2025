@@ -20,7 +20,7 @@ namespace UI.Leaderboard
             _ls = GetComponent<LoopScrollRect>();
             for (int i = 0; i < 200; i++)
             {
-                _items.Add(new LeaderboardItemModel($"Item #{i}"));
+                _items.Add(new LeaderboardItemModel($"NAME", 99999));
             }
             
             _ls.prefabSource = this;
