@@ -1,11 +1,10 @@
-using System.Text.RegularExpressions;
 using Characters.Controllers;
 using Dan.Main;
 using GameControl.Controller;
 using GameControl.Interface;
-using MoreMountains.Feedbacks;
 using Player;
 using UI;
+using UI.Leaderboard;
 using UnityEngine;
 
 namespace GameControl.GameState
@@ -57,12 +56,15 @@ namespace GameControl.GameState
                     e =>
                     {
                         Debug.Log($"[Leaderboard] Upload success: {name} -> {newScore}");
+                        LeaderboardItemPresenter.RefreshAll();
                     },
                     error =>
                     {
                         Debug.LogError($"[Leaderboard] Upload failed: {error}");
+                        LeaderboardItemPresenter.RefreshAll();
                     }
                 );
+                
             }
         }
     }
