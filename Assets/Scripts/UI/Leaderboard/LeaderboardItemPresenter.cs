@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.UI;
 using Dan.Main;
+using Player;
 using TMPro;
 
 namespace UI.Leaderboard
@@ -35,6 +36,7 @@ namespace UI.Leaderboard
         [Header("UI")]
         public GameObject itemPrefab;
         public TMP_Text statusText;
+        public TMP_Text currentRankText;
 
         [Header("Options")]
         public int maxEntries = 100;
@@ -80,6 +82,12 @@ namespace UI.Leaderboard
             if (_isFetching) return;
             StartCoroutine(FetchEntriesRoutine());
         }
+        
+        private static string BuildSubmitName()
+        {
+            var profile = ActiveProfileService.Instance?.Current;
+            return profile?.DisplayName;
+        }
 
         private IEnumerator FetchEntriesRoutine()
         {
@@ -101,12 +109,25 @@ namespace UI.Leaderboard
                     int length = Mathf.Min(maxEntries, entries.Length);
                     var list = new List<LeaderboardItemModel>(length);
                     for (int i = 0; i < length; i++)
-                    {
-                        var raw = entries[i].Username;
-                        list.Add(new LeaderboardItemModel(raw, entries[i].Score));
-                    }
+                        list.Add(new LeaderboardItemModel(entries[i].Username, entries[i].Score));
 
                     ResetItems(list, refill: true);
+
+                    int myRank = -1;
+                    var mySubmitName = BuildSubmitName();
+                    if (!string.IsNullOrEmpty(mySubmitName))
+                    {
+                        for (int i = 0; i < entries.Length; i++)
+                        {
+                            if (entries[i].Username == mySubmitName)
+                            {
+                                myRank = i + 1;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (currentRankText) currentRankText.text = (myRank > 0) ? $"YOUR RANK #{myRank}" : $"NOT IN TOP {maxEntries}";
                     success = true;
                 }
                 catch (Exception ex)
