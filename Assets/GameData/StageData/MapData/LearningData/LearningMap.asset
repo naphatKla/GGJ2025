@@ -29,6 +29,8 @@ MonoBehaviour:
     enemyChanceGrowthRate: 1.5
     useCustomInterval: 0
     customInterval: 0.5
+    useMaxperEnemy: 0
+    maximumPerEnemy: 0
     modifyNewData: 1
     enemyData: {fileID: 11400000, guid: c1d07ea341b30b24fb5d44940eefa14e, type: 2}
     useSpawnConditions: 1
@@ -46,6 +48,8 @@ MonoBehaviour:
     enemyChanceGrowthRate: 1.5
     useCustomInterval: 0
     customInterval: 0
+    useMaxperEnemy: 0
+    maximumPerEnemy: 0
     modifyNewData: 1
     enemyData: {fileID: 11400000, guid: 68b26222eb4fcc540be47e7cd172f61a, type: 2}
     useSpawnConditions: 1
@@ -63,6 +67,8 @@ MonoBehaviour:
     enemyChanceGrowthRate: 1
     useCustomInterval: 0
     customInterval: 0
+    useMaxperEnemy: 0
+    maximumPerEnemy: 0
     modifyNewData: 1
     enemyData: {fileID: 11400000, guid: 914dd2488e1943248b3ffb5fa77a105f, type: 2}
     useSpawnConditions: 1
@@ -80,6 +86,8 @@ MonoBehaviour:
     enemyChanceGrowthRate: 1.5
     useCustomInterval: 0
     customInterval: 2
+    useMaxperEnemy: 0
+    maximumPerEnemy: 0
     modifyNewData: 1
     enemyData: {fileID: 11400000, guid: a3e10d2b7a7c85c4b8f06b4b6bb83034, type: 2}
     useSpawnConditions: 1
@@ -97,6 +105,8 @@ MonoBehaviour:
     enemyChanceGrowthRate: 1
     useCustomInterval: 0
     customInterval: 0
+    useMaxperEnemy: 0
+    maximumPerEnemy: 0
     modifyNewData: 1
     enemyData: {fileID: 11400000, guid: e94bfca72c6e955408d51791b96bb293, type: 2}
     useSpawnConditions: 1
@@ -114,6 +124,8 @@ MonoBehaviour:
     enemyChanceGrowthRate: 0.2
     useCustomInterval: 0
     customInterval: 0
+    useMaxperEnemy: 0
+    maximumPerEnemy: 0
     modifyNewData: 1
     enemyData: {fileID: 11400000, guid: d286e5d1147804144aaf6498c1c67b92, type: 2}
     useSpawnConditions: 1
@@ -131,6 +143,8 @@ MonoBehaviour:
     enemyChanceGrowthRate: 1
     useCustomInterval: 0
     customInterval: 0
+    useMaxperEnemy: 0
+    maximumPerEnemy: 0
     modifyNewData: 1
     enemyData: {fileID: 11400000, guid: bbe81a3b2abe7dc4e81fc0c06689b46d, type: 2}
     useSpawnConditions: 1
@@ -148,6 +162,8 @@ MonoBehaviour:
     enemyChanceGrowthRate: 1
     useCustomInterval: 0
     customInterval: 0
+    useMaxperEnemy: 0
+    maximumPerEnemy: 0
     modifyNewData: 1
     enemyData: {fileID: 11400000, guid: aab002f918a4d144f9232f56dffb086d, type: 2}
     useSpawnConditions: 1
@@ -165,6 +181,8 @@ MonoBehaviour:
     enemyChanceGrowthRate: 1
     useCustomInterval: 0
     customInterval: 0
+    useMaxperEnemy: 0
+    maximumPerEnemy: 0
     modifyNewData: 1
     enemyData: {fileID: 11400000, guid: 8c9314839d5f33c4288d1cbe1715a60d, type: 2}
     useSpawnConditions: 1
@@ -182,6 +200,8 @@ MonoBehaviour:
     enemyChanceGrowthRate: 1
     useCustomInterval: 0
     customInterval: 0
+    useMaxperEnemy: 0
+    maximumPerEnemy: 0
     modifyNewData: 1
     enemyData: {fileID: 11400000, guid: 80187701aacaade4888ecee5f30e8394, type: 2}
     useSpawnConditions: 1
@@ -199,6 +219,8 @@ MonoBehaviour:
     enemyChanceGrowthRate: 1
     useCustomInterval: 0
     customInterval: 1.995
+    useMaxperEnemy: 0
+    maximumPerEnemy: 0
     modifyNewData: 1
     enemyData: {fileID: 11400000, guid: f37d343094e49fd4692231bb86858243, type: 2}
     useSpawnConditions: 1
@@ -216,6 +238,8 @@ MonoBehaviour:
     enemyChanceGrowthRate: 0.3
     useCustomInterval: 0
     customInterval: 0
+    useMaxperEnemy: 0
+    maximumPerEnemy: 0
     modifyNewData: 1
     enemyData: {fileID: 11400000, guid: 54014b93298f7e942acca31b7eae8b9e, type: 2}
     useSpawnConditions: 1
@@ -340,40 +364,65 @@ MonoBehaviour:
   canDuplicateAfterHaveAllPattern: 1
   ItemOptions:
   - id: Red_Anergy
-    itemObj: {fileID: 8589778046636973207, guid: eb2f8352aac61d446a4ef94d6303afbf, type: 3}
+    itemObj: {fileID: 8589778046636973207, guid: f8028a03b02b470428f002da05f92892, type: 3}
     chance: 100
     useCustomInterval: 0
     customInterval: 0
+    useMaxperItem: 0
+    maximumPerItem: 0
     useLifetimeInterval: 1
     lifetimeInterval: 20
+    useSpawnConditions: 0
+    conditionLogic: 0
+    spawnConditions: []
   - id: Yellow_Anergy
-    itemObj: {fileID: 8589778046636973207, guid: bcd6f0236a2272d4fb026da93e3cf62f, type: 3}
+    itemObj: {fileID: 8589778046636973207, guid: 1ff82190b089b6f4499a1f79c1f92c64, type: 3}
     chance: 0
     useCustomInterval: 0
     customInterval: 0
+    useMaxperItem: 0
+    maximumPerItem: 0
     useLifetimeInterval: 1
     lifetimeInterval: 20
+    useSpawnConditions: 0
+    conditionLogic: 0
+    spawnConditions: []
   - id: Green_Anergy
-    itemObj: {fileID: 8589778046636973207, guid: 12751c5192bb6d94889f43fd00e7ac25, type: 3}
+    itemObj: {fileID: 8589778046636973207, guid: 1cb169894ab30cd4686da9d15d63925f, type: 3}
     chance: 0
     useCustomInterval: 0
     customInterval: 0
+    useMaxperItem: 0
+    maximumPerItem: 0
     useLifetimeInterval: 1
     lifetimeInterval: 20
+    useSpawnConditions: 0
+    conditionLogic: 0
+    spawnConditions: []
   - id: Blue_Anergy
-    itemObj: {fileID: 8589778046636973207, guid: d368e253dae383e4a91232ea32194723, type: 3}
+    itemObj: {fileID: 8589778046636973207, guid: e0c7ab463b9af71488c04be245c171dd, type: 3}
     chance: 0
     useCustomInterval: 0
     customInterval: 0
+    useMaxperItem: 0
+    maximumPerItem: 0
     useLifetimeInterval: 1
     lifetimeInterval: 20
+    useSpawnConditions: 0
+    conditionLogic: 0
+    spawnConditions: []
   - id: Purple_Anergy
-    itemObj: {fileID: 8589778046636973207, guid: a4b740de62c54a6498402145effe5f7d, type: 3}
+    itemObj: {fileID: 8589778046636973207, guid: 38fe61895327e2346b114c467f3bbda3, type: 3}
     chance: 0
     useCustomInterval: 0
     customInterval: 0
+    useMaxperItem: 0
+    maximumPerItem: 0
     useLifetimeInterval: 1
     lifetimeInterval: 20
+    useSpawnConditions: 0
+    conditionLogic: 0
+    spawnConditions: []
   maxItemSpawning: 30
   defaultItemSpawnTimer: 1
   eventmapOptions:
