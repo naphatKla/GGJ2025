@@ -36,7 +36,7 @@ MonoBehaviour:
   previousSkillData: {fileID: 0}
   nextSkillDataUpgrade: {fileID: 0}
   level: 1
-  cooldown: 10
+  cooldown: 5
   startFeedback: 
   exitFeedback: 
   clearBuffOnSkillExit: 1
@@ -44,17 +44,17 @@ MonoBehaviour:
   - effectData: {fileID: 11400000, guid: 2bb1df345b8c3ff4bbff4f8af06b3616, type: 2}
     isOverrideDuration: 1
     overrideDuration: 999
-  baseDamagePerHit: 10
+  baseDamagePerHit: 0
   damageMultiplier: 100
   damageRadius: 10.15
   expandRadius: 8
-  startExpandDuration: 0.5
+  startExpandDuration: 0.35
   twirlDuration: 4
-  spinRound: 10
+  spinRound: 12
   speedUpMultiplier: 100
-  delayEnableDamageAfterStartSpin: 0.5
+  delayEnableDamageAfterStartSpin: 0.6
   damageDuration: 2.5
-  mergeBackDuration: 0.15
+  mergeBackDuration: 0.05
   effectSelfOnSuccess:
   - effectData: {fileID: 11400000, guid: e5ae6010e3c4a7b43bc80da0bf5a9ef5, type: 2}
     isOverrideDuration: 1
@@ -72,13 +72,40 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
+      time: 0.2450303
+      value: 0.14371361
+      inSlope: 0.93677336
+      outSlope: 0.93677336
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.94175977
+      outWeight: 0.19277203
+    - serializedVersion: 3
+      time: 0.60265106
+      value: 0.6659094
+      inSlope: 1.6007632
+      outSlope: 1.6007632
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.19627453
+    - serializedVersion: 3
+      time: 0.74039596
+      value: 0.89756876
+      inSlope: 1.4880484
+      outSlope: 1.4880484
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.5492581
+      outWeight: 0.2582651
+    - serializedVersion: 3
       time: 1
       value: 1
       inSlope: 0
       outSlope: 0
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0
+      inWeight: 0.5270221
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
