@@ -1,12 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using UnityEngine;
+using TMPro;
 using UnityEngine.UI;
 using Dan.Main;
 using Player;
-using TMPro;
 
 namespace UI.Leaderboard
 {
@@ -15,14 +14,12 @@ namespace UI.Leaderboard
     {
         private static readonly List<LeaderboardItemPresenter> s_instances = new();
 
-        /// <summary>รีเฟรชทุก LeaderboardItemPresenter ที่กำลัง active ในซีน</summary>
         public static void RefreshAll()
         {
             foreach (var p in s_instances)
                 if (p != null && p.isActiveAndEnabled) p.RefreshNow();
         }
 
-        /// <summary>รีเฟรชตัวแรกที่เจอ (สะดวกเรียกจากที่อื่นแบบ one-liner)</summary>
         public static void RefreshFirst()
         {
             if (s_instances.Count > 0)
@@ -33,8 +30,13 @@ namespace UI.Leaderboard
         }
 
         // ---------- Inspector ----------
+        [Header("UI Top")]
+        public GameObject top1ItemPrefab;
+        public GameObject top2ItemPrefab;
+        public GameObject top3ItemPrefab;
+        public GameObject defaultItemPrefab;
+
         [Header("UI")]
-        public GameObject itemPrefab;
         public TMP_Text statusText;
         public TMP_Text currentRankText;
 
@@ -47,18 +49,22 @@ namespace UI.Leaderboard
 
         // ---------- Internal ----------
         private readonly List<LeaderboardItemModel> _items = new();
-        private readonly Stack<Transform> _pool = new();
-        private LoopScrollRect _ls;
 
+        //Top1/Top2/Top3/Default
+        private readonly Stack<Transform> _poolTop1    = new();
+        private readonly Stack<Transform> _poolTop2    = new();
+        private readonly Stack<Transform> _poolTop3    = new();
+        private readonly Stack<Transform> _poolDefault = new();
+
+        private LoopScrollRect _ls;
         private bool _isFetching;
-        
 
         void Awake()
         {
             _ls = GetComponent<LoopScrollRect>();
             _ls.prefabSource = this;
             _ls.dataSource   = this;
-            _ls.totalCount = 0;
+            _ls.totalCount   = 0;
             _ls.RefillCells();
         }
 
@@ -76,13 +82,13 @@ namespace UI.Leaderboard
         {
             RefreshNow();
         }
-        
+
         public void RefreshNow()
         {
             if (_isFetching) return;
             StartCoroutine(FetchEntriesRoutine());
         }
-        
+
         private static string BuildSubmitName()
         {
             var profile = ActiveProfileService.Instance?.Current;
@@ -166,22 +172,67 @@ namespace UI.Leaderboard
         {
             if (statusText) statusText.text = msg;
         }
-        
+
+        // ---------- PrefabSource ----------
         public GameObject GetObject(int index)
         {
-            if (_pool.Count == 0) return Instantiate(itemPrefab);
-            var tr = _pool.Pop();
-            tr.gameObject.SetActive(true);
-            return tr.gameObject;
+            var kind = GetKindForIndex(index);
+            Transform tr = null;
+            switch (kind)
+            {
+                case ItemPrefabKind.Top1:
+                    if (_poolTop1.Count > 0) tr = _poolTop1.Pop();
+                    break;
+                case ItemPrefabKind.Top2:
+                    if (_poolTop2.Count > 0) tr = _poolTop2.Pop();
+                    break;
+                case ItemPrefabKind.Top3:
+                    if (_poolTop3.Count > 0) tr = _poolTop3.Pop();
+                    break;
+                default:
+                    if (_poolDefault.Count > 0) tr = _poolDefault.Pop();
+                    break;
+            }
+
+            if (tr != null)
+            {
+                tr.gameObject.SetActive(true);
+                return tr.gameObject;
+            }
+            
+            var prefab = GetPrefabByKind(kind);
+            if (prefab == null) prefab = defaultItemPrefab;
+
+            var go = Instantiate(prefab);
+            
+            var tag = go.GetComponent<LeaderboardCellTag>();
+            if (tag == null)
+            {
+                tag = go.AddComponent<LeaderboardCellTag>();
+                tag.kind = kind;
+            }
+
+            return go;
         }
 
         public void ReturnObject(Transform trans)
         {
             var view = trans.GetComponent<LeaderboardItemViewholder>();
             if (view != null) view.OnCellReturn();
+
+            var tag = trans.GetComponent<LeaderboardCellTag>();
+            var kind = tag != null ? tag.kind : ItemPrefabKind.Default;
+
             trans.gameObject.SetActive(false);
             trans.SetParent(transform, false);
-            _pool.Push(trans);
+
+            switch (kind)
+            {
+                case ItemPrefabKind.Top1: _poolTop1.Push(trans); break;
+                case ItemPrefabKind.Top2: _poolTop2.Push(trans); break;
+                case ItemPrefabKind.Top3: _poolTop3.Push(trans); break;
+                default: _poolDefault.Push(trans); break;
+            }
         }
 
         // ---------- LoopScroll: Data Source ----------
@@ -214,6 +265,26 @@ namespace UI.Leaderboard
             _items.AddRange(newList);
             _ls.totalCount = _items.Count;
             if (refill) _ls.RefillCells(); else _ls.RefreshCells();
+        }
+
+        // ---------- Helpers ----------
+        private ItemPrefabKind GetKindForIndex(int index)
+        {
+            if (index == 0 && top1ItemPrefab) return ItemPrefabKind.Top1;
+            if (index == 1 && top2ItemPrefab) return ItemPrefabKind.Top2;
+            if (index == 2 && top3ItemPrefab) return ItemPrefabKind.Top3;
+            return ItemPrefabKind.Default;
+        }
+
+        private GameObject GetPrefabByKind(ItemPrefabKind kind)
+        {
+            switch (kind)
+            {
+                case ItemPrefabKind.Top1:   return top1ItemPrefab;
+                case ItemPrefabKind.Top2:   return top2ItemPrefab;
+                case ItemPrefabKind.Top3:   return top3ItemPrefab;
+                default:                    return defaultItemPrefab;
+            }
         }
     }
 }
