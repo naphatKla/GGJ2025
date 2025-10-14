@@ -184,18 +184,17 @@ namespace UI.IngameViewholder
         {
             var sb = new StringBuilder(256);
             
-            sb.AppendLine($"<color=#aeb0af>Current level :</color> <color=#00FF00>{dataStatus.currentLevel}</color>");
-            sb.AppendLine($"<color=#aeb0af>Highest Streak Count :</color> <color=#FFA500>{dataStatus.highestStreakCount}</color>");
-            sb.AppendLine($"<color=#aeb0af>Average Exp Multiplier :</color> <color=#FF69B4>{dataStatus.averageExpMultiplier:0.###}</color>");
-            sb.AppendLine($"<color=#aeb0af>Total Enemies Eliminated :</color> <color=#FF0000>{dataStatus.totalEnemiesEliminated}</color>");
-            sb.AppendLine($"<color=#aeb0af>Total Damage Deal :</color> <color=#FF4500>{dataStatus.totalDamageDeal}</color>");
+            sb.AppendLine($"<color=#aeb0af>Level :</color> <color=#00FF00>{dataStatus.currentLevel}</color>");
+            sb.AppendLine($"<color=#aeb0af>Highest Streak :</color> <color=#FFA500>{dataStatus.highestStreakCount}</color>");
+            sb.AppendLine($"<color=#aeb0af>Enemies Eliminated :</color> <color=#FF0000>{dataStatus.totalEnemiesEliminated}</color>");
+            sb.AppendLine($"<color=#aeb0af>Damage Deal :</color> <color=#FF4500>{dataStatus.totalDamageDeal}</color>");
             sb.AppendLine($"<color=#aeb0af>Critical Count :</color> <color=#FFD700>{dataStatus.criticalCount}</color>");
-            sb.AppendLine($"<color=#aeb0af>Total Counter Dash Count :</color> <color=#ADFF2F>{dataStatus.totalCounterDashCount}</color>");
-            sb.AppendLine($"<color=#aeb0af>Total Primary Skill Used :</color> <color=#00CED1>{dataStatus.totalPrimarySkillUsed}</color>");
-            sb.AppendLine($"<color=#aeb0af>Total Secondary Skill Used :</color> <color=#1E90FF>{dataStatus.totalSecondarySkillUsed}</color>");
-            sb.AppendLine($"<color=#aeb0af>Total Auto Skill Used :</color> <color=#BA55D3>{dataStatus.totalAutoSkillUsed}</color>");
-            sb.AppendLine($"<color=#aeb0af>Total Damage Taken :</color> <color=#DC143C>{dataStatus.totalDamageTaken}</color>");
-            sb.AppendLine($"<color=#aeb0af>Total Heal :</color> <color=#32CD32>{dataStatus.totalHeal}</color>");
+            sb.AppendLine($"<color=#aeb0af>Counter Dash Count :</color> <color=#ADFF2F>{dataStatus.totalCounterDashCount}</color>");
+            sb.AppendLine($"<color=#aeb0af>Primary Skill Used :</color> <color=#00CED1>{dataStatus.totalPrimarySkillUsed}</color>");
+            sb.AppendLine($"<color=#aeb0af>Secondary Skill Used :</color> <color=#1E90FF>{dataStatus.totalSecondarySkillUsed}</color>");
+            sb.AppendLine($"<color=#aeb0af>Auto Skill Used :</color> <color=#BA55D3>{dataStatus.totalAutoSkillUsed}</color>");
+            sb.AppendLine($"<color=#aeb0af>Damage Taken :</color> <color=#DC143C>{dataStatus.totalDamageTaken}</color>");
+            sb.AppendLine($"<color=#aeb0af>Heal :</color> <color=#32CD32>{dataStatus.totalHeal}</color>");
 
             return sb;
         }
