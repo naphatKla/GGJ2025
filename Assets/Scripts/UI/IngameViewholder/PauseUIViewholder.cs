@@ -62,7 +62,7 @@ namespace UI.IngameViewholder
         {
             UIManager.Instance.ShowConfirmButton(
                 "Quit",
-                onYes: () => UIManager.Instance.QuitGame(),
+                onYes: () => Application.Quit(),
                 onNo: null,
                 durationSec: 8f
             ).Forget();
