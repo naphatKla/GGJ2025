@@ -9,6 +9,7 @@ using ProjectExtensions;
 using Sirenix.OdinInspector;
 using TMPro;
 using UI.ConfirmButton;
+using UI.Leaderboard;
 using UI.Transition;
 using UnityEngine;
 using UnityEngine.Events;
@@ -431,6 +432,7 @@ namespace UI
 
             ActiveProfileService.Instance?.SetActive(id);
             OpenGameModePanel();
+            LeaderboardItemPresenter.RefreshAll();
         }
         
         /// <summary>
@@ -440,6 +442,7 @@ namespace UI
         {
             var data = PlayerProfileManager.ContinueOrNull();
             ActiveProfileService.Instance?.SetActive(data.ProfileId);
+            LeaderboardItemPresenter.RefreshAll();
             if (data == null)
             {
                 Debug.Log("No active profile, show create screen.");

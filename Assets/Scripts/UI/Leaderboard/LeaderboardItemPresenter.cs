@@ -20,15 +20,6 @@ namespace UI.Leaderboard
                 if (p != null && p.isActiveAndEnabled) p.RefreshNow();
         }
 
-        public static void RefreshFirst()
-        {
-            if (s_instances.Count > 0)
-            {
-                var p = s_instances[0];
-                if (p != null && p.isActiveAndEnabled) p.RefreshNow();
-            }
-        }
-
         // ---------- Inspector ----------
         [Header("UI Top")]
         public GameObject top1ItemPrefab;
@@ -120,20 +111,22 @@ namespace UI.Leaderboard
                     ResetItems(list, refill: true);
 
                     int myRank = -1;
-                    var mySubmitName = BuildSubmitName();
-                    if (!string.IsNullOrEmpty(mySubmitName))
+                    var myName = BuildSubmitName();
+
+                    if (!string.IsNullOrEmpty(myName))
                     {
                         for (int i = 0; i < entries.Length; i++)
                         {
-                            if (entries[i].Username == mySubmitName)
+                            if (string.Equals(entries[i].Username, myName, StringComparison.Ordinal))
                             {
-                                myRank = i + 1;
+                                myRank = entries[i].Rank;
                                 break;
                             }
                         }
                     }
-
-                    if (currentRankText) currentRankText.text = (myRank > 0) ? $"YOUR RANK #{myRank}" : $"NOT IN TOP {maxEntries}";
+                    
+                    if (currentRankText)
+                        currentRankText.text = (myRank > 0) ? $"YOUR RANK #{myRank}" : $"NOT IN TOP {maxEntries}";
                     success = true;
                 }
                 catch (Exception ex)
@@ -263,9 +256,24 @@ namespace UI.Leaderboard
         {
             _items.Clear();
             _items.AddRange(newList);
+
+            _ls.StopMovement();
+            _ls.ClearCells(); 
             _ls.totalCount = _items.Count;
-            if (refill) _ls.RefillCells(); else _ls.RefreshCells();
+
+            if (refill)
+            {
+                _ls.RefillCells(); 
+                _ls.verticalNormalizedPosition = 1f;
+                Canvas.ForceUpdateCanvases();
+                LayoutRebuilder.ForceRebuildLayoutImmediate(_ls.content);
+            }
+            else
+            {
+                _ls.RefreshCells();
+            }
         }
+
 
         // ---------- Helpers ----------
         private ItemPrefabKind GetKindForIndex(int index)
