@@ -31,6 +31,7 @@ namespace UI.Leaderboard
         [Header("UI")]
         public TMP_Text statusText;
         public TMP_Text currentRankText;
+        public Button refreshButton;
 
         [Header("Options")]
         public int maxEntries = 100;
@@ -50,6 +51,7 @@ namespace UI.Leaderboard
 
         private LoopScrollRect _ls;
         private bool _isFetching;
+        private Coroutine refresh;
 
         void Awake()
         {
@@ -63,6 +65,11 @@ namespace UI.Leaderboard
         void OnEnable()
         {
             if (!s_instances.Contains(this)) s_instances.Add(this);
+            if (refreshButton)
+            {
+                refreshButton.onClick.RemoveAllListeners();
+                refreshButton.onClick.AddListener(RefreshNow);
+            }
         }
 
         void OnDisable()
@@ -78,7 +85,9 @@ namespace UI.Leaderboard
         public void RefreshNow()
         {
             if (_isFetching) return;
-            StartCoroutine(FetchEntriesRoutine());
+            Debug.Log("Refreshing");
+            if (refresh != null) StopCoroutine(refresh);
+            refresh = StartCoroutine(FetchEntriesRoutine());
         }
 
         private static string BuildSubmitName()
@@ -152,6 +161,9 @@ namespace UI.Leaderboard
                 Debug.LogError($"[Leaderboard] fetch failed: {error}");
                 SetStatus("Failed to load leaderboard");
                 ResetItems(new List<LeaderboardItemModel>(), refill: true);
+                StopCoroutine(refresh);
+                _isFetching = false;
+                yield break;
             }
 
             _isFetching = false;
