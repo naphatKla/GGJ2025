@@ -161,7 +161,9 @@ namespace GameControl.Controller
             
             _enemySpawnerController?.ReloadOptions(map.EnemyOptions);
             _enemyPatternController?.ReloadPatterns(map.PatternOptions);
+            _enemyPatternController?.SetEnemySpawner(_enemySpawnerController);
             RescheduleAllFromNow(map);
+            _enemyPatternController?.AddRandomPatterns((int)map.patternMax);
         }
         
         private void RescheduleAllFromNow(MapDataSO map)

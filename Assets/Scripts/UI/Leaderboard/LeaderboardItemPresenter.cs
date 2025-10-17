@@ -5,6 +5,7 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using Dan.Main;
+using Dan.Models;
 using Player;
 
 namespace UI.Leaderboard
@@ -111,17 +112,12 @@ namespace UI.Leaderboard
                     ResetItems(list, refill: true);
 
                     int myRank = -1;
-                    var myName = BuildSubmitName();
-
-                    if (!string.IsNullOrEmpty(myName))
+                    
+                    foreach (Entry entry in entries)
                     {
-                        for (int i = 0; i < entries.Length; i++)
+                        if (entry.IsMine())
                         {
-                            if (string.Equals(entries[i].Username, myName, StringComparison.Ordinal))
-                            {
-                                myRank = entries[i].Rank;
-                                break;
-                            }
+                            myRank = entry.Rank;
                         }
                     }
                     
