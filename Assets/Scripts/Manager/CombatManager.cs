@@ -39,7 +39,7 @@ namespace Manager
         // ----- Component Caches -----
         private static readonly Dictionary<GameObject, BaseController> _characterCaches = new();
         private static float _lastTimePlayerCounterDash;
-        private static float _counterDashCooldown = 0.5f;
+        private static float _counterDashCooldown = 0.15f;
 
         /// <summary>
         /// Applies damage from an attacker GameObject to a target GameObject.

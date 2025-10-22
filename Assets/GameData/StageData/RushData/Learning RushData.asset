@@ -25,6 +25,8 @@ MonoBehaviour:
     enemyChanceGrowthRate: 1.5
     useCustomInterval: 0
     customInterval: 0.5
+    useMaxperEnemy: 0
+    maximumPerEnemy: 0
     modifyNewData: 1
     enemyData: {fileID: 11400000, guid: c1d07ea341b30b24fb5d44940eefa14e, type: 2}
     useSpawnConditions: 1
@@ -42,6 +44,8 @@ MonoBehaviour:
     enemyChanceGrowthRate: 1.5
     useCustomInterval: 0
     customInterval: 0
+    useMaxperEnemy: 0
+    maximumPerEnemy: 0
     modifyNewData: 1
     enemyData: {fileID: 11400000, guid: 68b26222eb4fcc540be47e7cd172f61a, type: 2}
     useSpawnConditions: 1
@@ -59,6 +63,8 @@ MonoBehaviour:
     enemyChanceGrowthRate: 1
     useCustomInterval: 0
     customInterval: 0
+    useMaxperEnemy: 0
+    maximumPerEnemy: 0
     modifyNewData: 1
     enemyData: {fileID: 11400000, guid: 914dd2488e1943248b3ffb5fa77a105f, type: 2}
     useSpawnConditions: 1
@@ -76,6 +82,8 @@ MonoBehaviour:
     enemyChanceGrowthRate: 1.5
     useCustomInterval: 0
     customInterval: 2
+    useMaxperEnemy: 0
+    maximumPerEnemy: 0
     modifyNewData: 1
     enemyData: {fileID: 11400000, guid: a3e10d2b7a7c85c4b8f06b4b6bb83034, type: 2}
     useSpawnConditions: 1
@@ -93,6 +101,8 @@ MonoBehaviour:
     enemyChanceGrowthRate: 1
     useCustomInterval: 0
     customInterval: 0
+    useMaxperEnemy: 0
+    maximumPerEnemy: 0
     modifyNewData: 1
     enemyData: {fileID: 11400000, guid: e94bfca72c6e955408d51791b96bb293, type: 2}
     useSpawnConditions: 1
@@ -110,6 +120,8 @@ MonoBehaviour:
     enemyChanceGrowthRate: 0.2
     useCustomInterval: 0
     customInterval: 0
+    useMaxperEnemy: 0
+    maximumPerEnemy: 0
     modifyNewData: 1
     enemyData: {fileID: 11400000, guid: d286e5d1147804144aaf6498c1c67b92, type: 2}
     useSpawnConditions: 1
@@ -127,6 +139,8 @@ MonoBehaviour:
     enemyChanceGrowthRate: 1
     useCustomInterval: 0
     customInterval: 0
+    useMaxperEnemy: 0
+    maximumPerEnemy: 0
     modifyNewData: 1
     enemyData: {fileID: 11400000, guid: bbe81a3b2abe7dc4e81fc0c06689b46d, type: 2}
     useSpawnConditions: 1
@@ -144,6 +158,8 @@ MonoBehaviour:
     enemyChanceGrowthRate: 1
     useCustomInterval: 0
     customInterval: 0
+    useMaxperEnemy: 0
+    maximumPerEnemy: 0
     modifyNewData: 1
     enemyData: {fileID: 11400000, guid: aab002f918a4d144f9232f56dffb086d, type: 2}
     useSpawnConditions: 1
@@ -161,6 +177,8 @@ MonoBehaviour:
     enemyChanceGrowthRate: 1
     useCustomInterval: 0
     customInterval: 0
+    useMaxperEnemy: 0
+    maximumPerEnemy: 0
     modifyNewData: 1
     enemyData: {fileID: 11400000, guid: 8c9314839d5f33c4288d1cbe1715a60d, type: 2}
     useSpawnConditions: 1
@@ -178,6 +196,8 @@ MonoBehaviour:
     enemyChanceGrowthRate: 1
     useCustomInterval: 0
     customInterval: 0
+    useMaxperEnemy: 0
+    maximumPerEnemy: 0
     modifyNewData: 1
     enemyData: {fileID: 11400000, guid: 80187701aacaade4888ecee5f30e8394, type: 2}
     useSpawnConditions: 1
@@ -195,6 +215,8 @@ MonoBehaviour:
     enemyChanceGrowthRate: 1
     useCustomInterval: 0
     customInterval: 1.995
+    useMaxperEnemy: 0
+    maximumPerEnemy: 0
     modifyNewData: 1
     enemyData: {fileID: 11400000, guid: f37d343094e49fd4692231bb86858243, type: 2}
     useSpawnConditions: 1
@@ -212,6 +234,8 @@ MonoBehaviour:
     enemyChanceGrowthRate: 0.3
     useCustomInterval: 0
     customInterval: 0
+    useMaxperEnemy: 0
+    maximumPerEnemy: 0
     modifyNewData: 1
     enemyData: {fileID: 11400000, guid: 54014b93298f7e942acca31b7eae8b9e, type: 2}
     useSpawnConditions: 1
@@ -220,7 +244,7 @@ MonoBehaviour:
     - {fileID: 11400000, guid: a36d2c81a79161946beeda253129118b, type: 2}
   intervalEnemyChanceUpgrade: 30
   intervalEnemyPointRatioUpgrade: 30
-  defaultEnemySpawnTimer: 0.75
+  defaultEnemySpawnTimer: 0.25
   patternOptions:
   - enableThisPattern: 1
     bypassSpawnCondition: 0
@@ -333,7 +357,7 @@ MonoBehaviour:
   patternDecreaseMinimum: 18
   addPatternInterval: 30
   amountToAdd: 1
-  patternMax: 15
+  patternMax: 20
   canDuplicateAfterHaveAllPattern: 1
   eventmapOptions:
   - enableThisMapEvent: 1

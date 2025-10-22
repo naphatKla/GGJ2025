@@ -164,7 +164,7 @@ namespace GameControl.Controller
                 return null;
             }
             
-            var candidates = _enemySpawner.ConditionEnemy(patternOption != null && patternOption.bypassSpawnCondition);
+            var candidates = _enemySpawner.PickEnemy(patternOption != null && patternOption.bypassSpawnCondition);
             if (candidates == null || candidates.Count == 0)
             {
                 if (_isDebug) Debug.Log("[EnemyPatternController] No candidates after ConditionEnemy()");
@@ -321,6 +321,7 @@ namespace GameControl.Controller
 
             var enemyObj = pool.Get();
             enemyObj.transform.position = pos;
+            enemyObj.CountedByMax = false;
             enemyObj.transform.SetParent(_state.EnemyParent);
             StopEnemyMovement(enemyObj,patternData.enableMovementAfter, _ct).Forget();
         }
@@ -370,10 +371,9 @@ namespace GameControl.Controller
                 while (_batchQueue.Count > 0)
                 {
                     _ct.ThrowIfCancellationRequested();
-                    
+
                     var batch = _batchQueue.Dequeue();
                     if (batch == null || batch.Count == 0) continue;
-
                     if (_isDebug) Debug.Log($"[EnemyPatternController] === Starting batch with {batch.Count} pattern(s) ===");
 
                     var perPatternTime = _currentTriggertime / batch.Count;
@@ -383,12 +383,18 @@ namespace GameControl.Controller
                         _ct.ThrowIfCancellationRequested();
                         var pattern = batch[i];
 
+                        var start = Time.unscaledTime;
+
                         await WaitUntilEnoughEnemyPoint(pattern, _ct);
                         await TriggerSinglePattern(pattern);
+
                         if (i < batch.Count - 1)
                         {
-                            if (_isDebug) Debug.Log($"[EnemyPatternController] Waiting {perPatternTime:0.00}s before next pattern...");
-                            await UniTask.Delay((int)(perPatternTime * 1000), cancellationToken: _ct);
+                            var elapsed = Time.unscaledTime - start;
+                            var wait = Mathf.Max(0f, perPatternTime - elapsed);
+                            if (_isDebug) Debug.Log($"[EnemyPatternController] Waiting {wait:0.00}s (elapsed {elapsed:0.00})");
+                            if (wait > 0f)
+                                await UniTask.Delay((int)(wait * 1000), cancellationToken: _ct);
                         }
                     }
 
