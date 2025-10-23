@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Characters.Controllers;
 using Characters.LevelSystems;
+using Characters.SkillSystems;
 using GameControl;
 using Sirenix.OdinInspector;
 using TMPro;
@@ -16,6 +17,7 @@ namespace Tools
         LevelUp = 0,
         ForceDie = 1,
         ReduceTime10Sec = 2,
+        UpgradeMax = 3,
     }
 
     public class EditorShortcutKey : SerializedMonoBehaviour
@@ -76,6 +78,11 @@ namespace Tools
                 case EditorAction.ReduceTime10Sec:
                 {
                     GameTimer.Instance.SkipTime(10);
+                    break;
+                }
+                case EditorAction.UpgradeMax:
+                {
+                    PlayerController.Instance.GetComponent<SkillUpgradeController>().Dev_UpgradeAllToMaxNow();
                     break;
                 }
             }
