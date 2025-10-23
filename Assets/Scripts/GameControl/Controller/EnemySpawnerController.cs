@@ -143,7 +143,6 @@ namespace GameControl.Controller
         {
             foreach (var effect in option.spawnEffect)
             {
-                Debug.Log(effect.effectType + " " + effect.effectString);
                 switch (effect.effectType)
                 {
                     case MapDataSO.EnemyOption.SpawnEffectType.ShowPopup:
