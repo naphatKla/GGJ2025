@@ -25,6 +25,8 @@ MonoBehaviour:
     enemyChanceGrowthRate: 1.5
     useCustomInterval: 0
     customInterval: 0.5
+    useMaxperEnemy: 0
+    maximumPerEnemy: 0
     modifyNewData: 0
     enemyData: {fileID: 11400000, guid: 73b7dc3ed97e13e4289216a2bec1910a, type: 2}
     useSpawnConditions: 1
@@ -42,6 +44,8 @@ MonoBehaviour:
     enemyChanceGrowthRate: 1.5
     useCustomInterval: 0
     customInterval: 0
+    useMaxperEnemy: 0
+    maximumPerEnemy: 0
     modifyNewData: 0
     enemyData: {fileID: 0}
     useSpawnConditions: 1
@@ -59,6 +63,8 @@ MonoBehaviour:
     enemyChanceGrowthRate: 1
     useCustomInterval: 0
     customInterval: 0
+    useMaxperEnemy: 0
+    maximumPerEnemy: 0
     modifyNewData: 0
     enemyData: {fileID: 0}
     useSpawnConditions: 1
@@ -76,6 +82,8 @@ MonoBehaviour:
     enemyChanceGrowthRate: 1.5
     useCustomInterval: 0
     customInterval: 2
+    useMaxperEnemy: 0
+    maximumPerEnemy: 0
     modifyNewData: 0
     enemyData: {fileID: 0}
     useSpawnConditions: 1
@@ -93,6 +101,8 @@ MonoBehaviour:
     enemyChanceGrowthRate: 1
     useCustomInterval: 0
     customInterval: 0
+    useMaxperEnemy: 0
+    maximumPerEnemy: 0
     modifyNewData: 0
     enemyData: {fileID: 0}
     useSpawnConditions: 1
@@ -110,6 +120,8 @@ MonoBehaviour:
     enemyChanceGrowthRate: 0.2
     useCustomInterval: 0
     customInterval: 0
+    useMaxperEnemy: 0
+    maximumPerEnemy: 0
     modifyNewData: 0
     enemyData: {fileID: 0}
     useSpawnConditions: 1
@@ -127,6 +139,8 @@ MonoBehaviour:
     enemyChanceGrowthRate: 1
     useCustomInterval: 0
     customInterval: 0
+    useMaxperEnemy: 0
+    maximumPerEnemy: 0
     modifyNewData: 0
     enemyData: {fileID: 0}
     useSpawnConditions: 1
@@ -144,6 +158,8 @@ MonoBehaviour:
     enemyChanceGrowthRate: 1
     useCustomInterval: 0
     customInterval: 0
+    useMaxperEnemy: 0
+    maximumPerEnemy: 0
     modifyNewData: 0
     enemyData: {fileID: 0}
     useSpawnConditions: 1
@@ -161,6 +177,8 @@ MonoBehaviour:
     enemyChanceGrowthRate: 1
     useCustomInterval: 0
     customInterval: 0
+    useMaxperEnemy: 0
+    maximumPerEnemy: 0
     modifyNewData: 0
     enemyData: {fileID: 0}
     useSpawnConditions: 1
@@ -178,6 +196,8 @@ MonoBehaviour:
     enemyChanceGrowthRate: 1
     useCustomInterval: 0
     customInterval: 0
+    useMaxperEnemy: 0
+    maximumPerEnemy: 0
     modifyNewData: 0
     enemyData: {fileID: 0}
     useSpawnConditions: 1
@@ -195,6 +215,8 @@ MonoBehaviour:
     enemyChanceGrowthRate: 1
     useCustomInterval: 0
     customInterval: 1.995
+    useMaxperEnemy: 0
+    maximumPerEnemy: 0
     modifyNewData: 0
     enemyData: {fileID: 0}
     useSpawnConditions: 1
@@ -212,6 +234,8 @@ MonoBehaviour:
     enemyChanceGrowthRate: 0.3
     useCustomInterval: 0
     customInterval: 0
+    useMaxperEnemy: 0
+    maximumPerEnemy: 0
     modifyNewData: 0
     enemyData: {fileID: 0}
     useSpawnConditions: 1
@@ -342,36 +366,56 @@ MonoBehaviour:
     - mapEventID: 2Giant
       chance: 10
       useWeightRandom: 1
+      overrideData: 0
+      damageMap: 0
     - mapEventID: Horizontal
       chance: 10
       useWeightRandom: 1
+      overrideData: 0
+      damageMap: 0
     - mapEventID: Vertical
       chance: 10
       useWeightRandom: 1
+      overrideData: 0
+      damageMap: 0
     - mapEventID: Basket
       chance: 10
       useWeightRandom: 1
+      overrideData: 0
+      damageMap: 0
     - mapEventID: Firework_TopL_BottomR
       chance: 10
       useWeightRandom: 1
+      overrideData: 0
+      damageMap: 0
     - mapEventID: Firework_TopR_BottomL
       chance: 10
       useWeightRandom: 1
+      overrideData: 0
+      damageMap: 0
     - mapEventID: RightHole
       chance: 10
       useWeightRandom: 1
+      overrideData: 0
+      damageMap: 0
     - mapEventID: LeftHole
       chance: 10
       useWeightRandom: 1
+      overrideData: 0
+      damageMap: 0
     - mapEventID: Random_Line
       chance: 10
       useWeightRandom: 1
+      overrideData: 0
+      damageMap: 0
     - mapEventID: Wave
       chance: 10
       useWeightRandom: 1
+      overrideData: 0
+      damageMap: 0
     eventMapChance: 100
-    playInterval: 30
-    intervalCanModify: 1
+    playInterval: 3
+    intervalCanModify: 0
     rateModify: -27
     intervalModify: 540
     minPlayInterval: 3

@@ -16,6 +16,7 @@ namespace GameControl.SO
     [CreateAssetMenu(fileName = "MapData", menuName = "GameControl/SO/Map Data", order = 0)]
     public class MapDataSO : ScriptableObject
     {
+        
         [Serializable]
         public class EnemyOption : IRandomable
         {
@@ -69,6 +70,24 @@ namespace GameControl.SO
             [FoldoutGroup("$id")]
             [ShowIf("$useSpawnConditions")]
             public List<EnemySpawnConditionSO> spawnConditions;
+            
+            [FoldoutGroup("$id")][Title("Spawn Effect")]
+            public bool useSpawnEffect = false;
+            [FoldoutGroup("$id")]
+            [ShowIf("$useSpawnEffect")]
+            public List<SpawnEffectStruct> spawnEffect;
+
+            public enum SpawnEffectType
+            {
+                ShowPopup
+            }
+            
+            [Serializable]
+            public class SpawnEffectStruct
+            {
+                public SpawnEffectType effectType;
+                public string effectString;
+            }
 
             public enum ConditionLogic { All, Any }
             [NonSerialized] public int activeCount;
@@ -119,7 +138,6 @@ namespace GameControl.SO
                 }
                 return false;
             }
-
             
             public float Chance { get => chance; set => chance = value; }
             public float EnemyPoint { get => spawnPoint; set => spawnPoint = value; }

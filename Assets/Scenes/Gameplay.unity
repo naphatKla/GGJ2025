@@ -6787,8 +6787,8 @@ MonoBehaviour:
   itemParent: {fileID: 425359468}
   regionSize: {x: 200, y: 140}
   itemdropRegionSize: {x: 180, y: 120}
-  debugPattern: 0
-  debugEnemy: 0
+  debugPattern: 1
+  debugEnemy: 1
   debugMapEvent: 0
   notSpawnEnemyOnStart: 0
 --- !u!114 &681150452
@@ -8392,7 +8392,7 @@ MonoBehaviour:
     - id: TestPulling
       storage: {fileID: 11400000, guid: b38d5d517c5fb42449b39f6ab8425c59, type: 2}
   eventMapParent: {fileID: 476519538}
-  _testId: TestPulling
+  _testId: LeftHole
   _testdmg: 1
 --- !u!1 &965496757
 GameObject:
@@ -9209,6 +9209,14 @@ MonoBehaviour:
     appearTransition: {fileID: 11400000, guid: 9cd14279ccb8b0f4993b6217091efc81, type: 2}
     disappearTransition: {fileID: 11400000, guid: e6fefa3f308cef44f948b5dfad1786be, type: 2}
     restartIfAlreadyVisible: 0
+    allowOverlayStack: 1
+    timeScale: 0
+  - popupId: BossWarning
+    prefab: {fileID: 2730323947833459123, guid: 28e34af15c2e33f4c8f3f873fce0389b, type: 3}
+    defaultDuration: 2
+    appearTransition: {fileID: 11400000, guid: 2cc4c473f4dfa9242b28372ebe121788, type: 2}
+    disappearTransition: {fileID: 11400000, guid: 2cc4c473f4dfa9242b28372ebe121788, type: 2}
+    restartIfAlreadyVisible: 1
     allowOverlayStack: 1
     timeScale: 0
   popupContainer: {fileID: 1821467392}
