@@ -13,6 +13,8 @@ namespace GameControl.Controller
 {
     public class EnemyPatternController
     {
+        public enum TriggerOutcomeKind { SpawnedSome, NoPoints, Skipped }
+        
         private readonly MapDataSO _mapdata;
         private readonly SpawnerStateController _state;
         private readonly Vector2 _regionSize;
@@ -29,6 +31,7 @@ namespace GameControl.Controller
         private readonly bool _isDebug;
         private float _currentTriggertime;
         private CancellationToken _ct = CancellationToken.None;
+        private CancellationTokenSource _procCts;
         public void BindCancellationToken(CancellationToken ct) { _ct = ct; }
 
         private int PatternMax => Mathf.Max(1, Mathf.RoundToInt(_mapdata.patternMax));
@@ -55,6 +58,11 @@ namespace GameControl.Controller
 
         public void ReloadPatterns(List<MapDataSO.PatternOption> newPatterns)
         {
+            _procCts?.Cancel();
+            _procCts?.Dispose();
+            _procCts = new CancellationTokenSource();
+            _ct = _procCts.Token;
+
             StopProcessing();
             if (newPatterns != null) _mapdata.PatternOptions = newPatterns;
             _currentTriggertime = Mathf.Max(0.01f, _mapdata.triggerAllPatternIn);
@@ -240,39 +248,50 @@ namespace GameControl.Controller
             return (enemy, amount, used);
         }
 
-        private async UniTask TriggerSinglePattern(MapDataSO.PatternOption patternData)
+        private TriggerOutcomeKind TriggerSinglePattern(MapDataSO.PatternOption patternData)
         {
-            if (!CanTriggerPattern(patternData)) return;
+            if (!CanTriggerPattern(patternData)) return TriggerOutcomeKind.Skipped;
 
-            var (enemyType, enemyAmount, usedPoints) = ChooseEnemyAndCalculate(patternData);
-            if (enemyType == null || enemyAmount <= 0) return;
-            SpawnerStateController.Instance.CurrentEnemyPoint -= usedPoints;
-
-            var rows = CalculatePatternRows(patternData, enemyAmount);
-            await SpawnEnemyRows(rows, enemyType, patternData, enemyAmount);
-        }
-
-        private async UniTask WaitUntilEnoughEnemyPoint(MapDataSO.PatternOption pattern, CancellationToken ct = default)
-        {
-            if (_isDebug) Debug.Log($"[EnemyPatternController] Waiting until enough points for '{pattern.pattern.name}'...");
-
-            if (ct == default) ct = _ct;
-            if (SpawnerStateController.Instance.CurrentEnemyPoint >= pattern.patternPoint)
-                return;
-
-            while (SpawnerStateController.Instance.CurrentEnemyPoint < pattern.patternPoint)
+            var (enemyType, enemyAmountPlan, usedPointsPlan) = ChooseEnemyAndCalculate(patternData);
+            if (enemyType == null || enemyAmountPlan <= 0)
             {
-                ct.ThrowIfCancellationRequested();
-                await UniTask.Yield(PlayerLoopTiming.Update, ct);
+                if (_isDebug) Debug.Log($"[Pattern] '{patternData.pattern.name}' skip: no enemy or planAmount=0");
+                return TriggerOutcomeKind.Skipped;
             }
+            
+            var costPer = enemyType.EnemyPoint;
+            var points  = SpawnerStateController.Instance.EnemyPoint;
+            
+            if (points < costPer)
+            {
+                if (_isDebug) Debug.Log($"[Pattern] '{patternData.pattern.name}' no min points. need≥{costPer:0.##}, have={points:0.##}");
+                return TriggerOutcomeKind.NoPoints;
+            }
+            
+            var maxByPoints = Mathf.FloorToInt(points / costPer);
+            var finalAmount = Mathf.Min(enemyAmountPlan, maxByPoints);
+            if (finalAmount <= 0) return TriggerOutcomeKind.NoPoints;
+            
+            var used = finalAmount * costPer;
+            SpawnerStateController.Instance.CurrentEnemyPoint = points - used;
 
             if (_isDebug)
-                Debug.Log($"[EnemyPatternController] Got enough points for '{pattern.pattern.name}'");
+            {
+                var partial = finalAmount < enemyAmountPlan ? "PARTIAL" : "FULL";
+                Debug.Log($"[Pattern] '{patternData.pattern.name}' {partial} spawn " +
+                          $"{finalAmount}/{enemyAmountPlan}  costPer={costPer:0.##}  used={used:0.##}  left={(points - used):0.##}");
+            }
+
+            var rows = CalculatePatternRows(patternData, finalAmount);
+            _ = SpawnEnemyRows(rows, enemyType, patternData, finalAmount)
+                .AttachExternalCancellation(_ct);
+            return TriggerOutcomeKind.SpawnedSome;
         }
+
         
         private bool CanTriggerPattern(MapDataSO.PatternOption patternData)
         {
-            return patternData.pattern != null && SpawnerStateController.Instance.CurrentEnemyPoint >= patternData.patternPoint;
+            return patternData.pattern != null;
         }
         
         private List<List<Vector2>> CalculatePatternRows(MapDataSO.PatternOption patternData, int enemyAmount)
@@ -360,7 +379,14 @@ namespace GameControl.Controller
                 }
             }
         }
-        
+
+        private MapDataSO.PatternOption PickRandomEnabledPattern()
+        {
+            var enabled = GetEnabledPatterns();
+            if (enabled == null || enabled.Count == 0) return null;
+            return enabled[Random.Range(0, enabled.Count)];
+        }
+
         private async UniTaskVoid ProcessBatchQueue()
         {
             if (_isBatchProcessing) return;
@@ -376,30 +402,40 @@ namespace GameControl.Controller
                     if (batch == null || batch.Count == 0) continue;
                     if (_isDebug) Debug.Log($"[EnemyPatternController] === Starting batch with {batch.Count} pattern(s) ===");
 
-                    var perPatternTime = _currentTriggertime / batch.Count;
+                    var targetSuccess = batch.Count;
+                    var successCount = 0;
+                    var work = new List<MapDataSO.PatternOption>(batch);
 
-                    for (int i = 0; i < batch.Count; i++)
+                    var perPatternTime = _currentTriggertime / Mathf.Max(1, targetSuccess);
+                    var nextAt = Time.unscaledTime;
+                    
+                    int maxAttempts = targetSuccess + 8;
+                    for (var i = 0; successCount < targetSuccess && i < work.Count && i < maxAttempts; i++)
                     {
                         _ct.ThrowIfCancellationRequested();
-                        var pattern = batch[i];
 
-                        var start = Time.unscaledTime;
+                        var pattern = work[i];
+                        var outcome = TriggerSinglePattern(pattern);
 
-                        await WaitUntilEnoughEnemyPoint(pattern, _ct);
-                        await TriggerSinglePattern(pattern);
-
-                        if (i < batch.Count - 1)
+                        if (outcome == TriggerOutcomeKind.SpawnedSome)
                         {
-                            var elapsed = Time.unscaledTime - start;
-                            var wait = Mathf.Max(0f, perPatternTime - elapsed);
-                            if (_isDebug) Debug.Log($"[EnemyPatternController] Waiting {wait:0.00}s (elapsed {elapsed:0.00})");
-                            if (wait > 0f)
-                                await UniTask.Delay((int)(wait * 1000), cancellationToken: _ct);
+                            successCount++;
                         }
+                        else if (outcome == TriggerOutcomeKind.NoPoints)
+                        {
+                            var replacement = PickRandomEnabledPattern();
+                            if (replacement != null) work.Add(replacement);
+                        }
+
+                        nextAt += perPatternTime;
+                        var wait = Mathf.Max(0f, nextAt - Time.unscaledTime);
+                        if (_isDebug) Debug.Log($"[EnemyPatternController] Waiting {wait:0.00}s");
+                        if (wait > 0f)
+                            await UniTask.Delay((int)(wait * 1000),
+                                DelayType.UnscaledDeltaTime, PlayerLoopTiming.Update, _ct);
                     }
 
-                    if (_isDebug)
-                        Debug.Log("[EnemyPatternController] === Finished all patterns in this batch ===");
+                    if (_isDebug) Debug.Log($"[EnemyPatternController] === Finished batch success={successCount}/{targetSuccess} tried={work.Count} ===");
                 }
             }
             catch (OperationCanceledException)
@@ -411,6 +447,7 @@ namespace GameControl.Controller
                 _isBatchProcessing = false;
             }
         }
+
 
         public void StopProcessing()
         {
