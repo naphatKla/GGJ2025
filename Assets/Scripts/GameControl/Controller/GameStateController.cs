@@ -42,23 +42,26 @@ namespace GameControl.Controller
         private MapState _mapstate;
         public CancellationTokenSource sceneCts;
 
+        [BoxGroup("Debug")]
         [ShowInInspector, ReadOnly]
         private string _currentStateName;
         
+        [BoxGroup("Debug")]
         [ShowInInspector, ReadOnly]
         private MapDataSO _currentMapDataRuntime;
         
+        [BoxGroup("Debug")]
         [SerializeField] private MapSelectionDataContainer mapContainer;
+        [BoxGroup("Debug")]
         [Tooltip("The index of the current map in the mapData list.")]
         [SerializeField] private int currentMapIndex;
+        [BoxGroup("Debug")] public EndResult gameResult;
         private List<MapDataSO> MapDataList =>
             mapContainer != null && mapContainer.mapSelectionList != null
                 ? mapContainer.mapSelectionList
                 : new List<MapDataSO>();
         
         public MapDataSO CurrentMap => _currentMapDataRuntime;
-        
-        public EndResult gameResult;
         public IGameState CurrentState => _currentState;
         public MapState MapState { get => _mapstate; set => _mapstate = value; }
         private MapSelectionSender Sender => MapSelectionSender.Instance;
