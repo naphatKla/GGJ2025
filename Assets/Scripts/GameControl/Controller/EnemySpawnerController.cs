@@ -5,6 +5,7 @@ using Characters.Controllers;
 using Characters.SO.CharacterDataSO;
 using DG.Tweening;
 using GameControl.SO;
+using UI;
 using UI.Manager;
 using UnityEngine;
 using UnityEngine.Pool;
@@ -137,12 +138,26 @@ namespace GameControl.Controller
             if (!opt.IsBelowPerEnemyMax()) return false;
             return true;
         }
+
+        public void SpawnEffect(MapDataSO.EnemyOption option)
+        {
+            foreach (var effect in option.spawnEffect)
+            {
+                switch (effect.effectType)
+                {
+                    case MapDataSO.EnemyOption.SpawnEffectType.ShowPopup:
+                        PopupUIManager.Instance.ShowPopup(effect.effectString, 2.0f, bypassStack: true);
+                        break;
+                }
+            }
+        }
         
         public MapDataSO.EnemyOption SpawnEnemy()
         {
             var randomEnemy = RandomUtility.GetWeightedRandom(PickEnemy(false));
             if (randomEnemy == null) return null;
             if (!ConditionCheck(randomEnemy)) return null;
+            if (randomEnemy.useSpawnEffect) SpawnEffect(randomEnemy);
             
             if (!_enemyPools.TryGetValue(randomEnemy.id, out var pool)) return null;
             var inst = pool.Get();
@@ -185,7 +200,9 @@ namespace GameControl.Controller
                     conditionLogic = data.conditionLogic,
                     useMaxperEnemy = data.useMaxperEnemy,
                     maximumPerEnemy = data.maximumPerEnemy,
-                    spawnConditions = data.spawnConditions != null ? new List<EnemySpawnConditionSO>(data.spawnConditions) : null
+                    spawnConditions = data.spawnConditions != null ? new List<EnemySpawnConditionSO>(data.spawnConditions) : null,
+                    useSpawnEffect = data.useSpawnEffect,
+                    spawnEffect = data.spawnEffect != null ? new List<MapDataSO.EnemyOption.SpawnEffectStruct>(data.spawnEffect) : null,
                 };
                 cloned.InitRuntime();
                 _enemyOptionsList.Add(cloned);

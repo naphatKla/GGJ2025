@@ -74,6 +74,7 @@ namespace GameControl
 
         #endregion
 
+        [BoxGroup("Debug")]
         [ShowInInspector] [ReadOnly] public float GlobalTimer { get; private set; }
         public float GlobalTimerDown => startTimer - GlobalTimer;
         public float StartTimerNumber => startTimer;
@@ -93,6 +94,7 @@ namespace GameControl
                     ? Mathf.Max(StartTimerNumber - GlobalTimer, 0f)
                     : float.PositiveInfinity;
 
+        [FoldoutGroup("Button")]
         [Button(ButtonSizes.Large)]
         [GUIColor(1, 1, 0)]
         public void PauseTimer()
@@ -102,6 +104,7 @@ namespace GameControl
             OnTimeChanged?.Invoke();
         }
 
+        [FoldoutGroup("Button")]
         [Button(ButtonSizes.Large)]
         [GUIColor(0, 1, 0)]
         public void StartTimer()
@@ -113,6 +116,7 @@ namespace GameControl
             OnTimeChanged?.Invoke();
         }
 
+        [FoldoutGroup("Button")]
         [Button(ButtonSizes.Large)]
         [GUIColor(0, 1, 0)]
         public void ResumeTimer()
@@ -122,6 +126,7 @@ namespace GameControl
             OnTimeChanged?.Invoke();
         }
 
+        [FoldoutGroup("Button")]
         [Button(ButtonSizes.Large)]
         [GUIColor(1, 0, 0)]
         public void ResetTimer()
@@ -133,6 +138,7 @@ namespace GameControl
             OnTimeChanged?.Invoke();
         }
 
+        [FoldoutGroup("Button")]
         [Button(ButtonSizes.Large)]
         [GUIColor(1, 0, 0)]
         public void StopTimer()
@@ -140,6 +146,7 @@ namespace GameControl
             StopCountdown();
         }
 
+        [FoldoutGroup("Button")]
         [Button(ButtonSizes.Large)]
         [GUIColor(0, 1, 0)]
         public void SkipTime(float time)
@@ -147,6 +154,7 @@ namespace GameControl
             SkipByDeltaSeconds(time);
         }
 
+        [FoldoutGroup("Button")]
         [Button]
         [GUIColor(0, 1, 0)]
         public void StartCountdown()
@@ -155,6 +163,7 @@ namespace GameControl
             if (_countdownCoroutine == null) _countdownCoroutine = StartCoroutine(StartTimerLoop());
         }
 
+        [FoldoutGroup("Button")]
         [Button]
         [GUIColor(0, 1, 0)]
         public void StartCountup()
