@@ -354,7 +354,7 @@ namespace GameControl.Controller
                 move?.StopAllMovementAndTween();
 
                 await UniTask.Delay(TimeSpan.FromSeconds(time),
-                    DelayType.UnscaledDeltaTime,
+                    DelayType.DeltaTime,
                     PlayerLoopTiming.Update,
                     token);
             }
@@ -403,7 +403,7 @@ namespace GameControl.Controller
                     var work = new List<MapDataSO.PatternOption>(batch);
 
                     var perPatternTime = _currentTriggertime / Mathf.Max(1, targetSuccess);
-                    var nextAt = Time.unscaledTime;
+                    var nextAt = Time.deltaTime;
 
                     var maxAttempts = targetSuccess + 8;
                     for (var i = 0; successCount < targetSuccess && i < work.Count && i < maxAttempts; i++)
@@ -424,11 +424,11 @@ namespace GameControl.Controller
                         }
 
                         nextAt += perPatternTime;
-                        var wait = Mathf.Max(0f, nextAt - Time.unscaledTime);
+                        var wait = Mathf.Max(0f, nextAt - Time.deltaTime);
                         if (_isDebug) Debug.Log($"[EnemyPatternController] Waiting {wait:0.00}s");
                         if (wait > 0f)
                             await UniTask.Delay((int)(wait * 1000),
-                                DelayType.UnscaledDeltaTime, PlayerLoopTiming.Update, _ct);
+                                DelayType.DeltaTime, PlayerLoopTiming.Update, _ct);
                     }
 
                     if (_isDebug)
