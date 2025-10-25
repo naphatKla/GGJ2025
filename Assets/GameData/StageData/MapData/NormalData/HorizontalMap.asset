@@ -37,6 +37,8 @@ MonoBehaviour:
     conditionLogic: 1
     spawnConditions:
     - {fileID: 11400000, guid: 47b1e03e087896642a18a0606df787a3, type: 2}
+    useSpawnEffect: 0
+    spawnEffect: []
   - id: Enemy_Worker
     displayName: WORKER
     enemyController: {fileID: 6978469296619682545, guid: 82d6560287672fa4a8c895bc3a10c950, type: 3}
@@ -56,6 +58,8 @@ MonoBehaviour:
     conditionLogic: 0
     spawnConditions:
     - {fileID: 11400000, guid: 3f56b5d1fb4b3a542a9ed243f11b9b62, type: 2}
+    useSpawnEffect: 0
+    spawnEffect: []
   - id: Enemy_Soldier
     displayName: SOLDIER
     enemyController: {fileID: 6978469296619682545, guid: a0503233dadc52f46bbd80a4952cd4e1, type: 3}
@@ -75,6 +79,8 @@ MonoBehaviour:
     conditionLogic: 0
     spawnConditions:
     - {fileID: 11400000, guid: 9c8223f7d20d92549b63562686ff8747, type: 2}
+    useSpawnEffect: 0
+    spawnEffect: []
   - id: Enemy_Tank
     displayName: TANK
     enemyController: {fileID: 1371981663885322251, guid: c825ab4cef105ab40aa986fd07615367, type: 3}
@@ -94,6 +100,8 @@ MonoBehaviour:
     conditionLogic: 0
     spawnConditions:
     - {fileID: 11400000, guid: b2759ca457c3c3d49b2eab9d6d81c2f0, type: 2}
+    useSpawnEffect: 0
+    spawnEffect: []
   - id: Enemy_Absolute
     displayName: ABSOLUTE
     enemyController: {fileID: 1371981663885322251, guid: eec6f0bc923ca8c4e8d1f911f0441879, type: 3}
@@ -113,6 +121,8 @@ MonoBehaviour:
     conditionLogic: 0
     spawnConditions:
     - {fileID: 11400000, guid: b3dd7bb4ce73f58438ee3cb2e5f2c445, type: 2}
+    useSpawnEffect: 0
+    spawnEffect: []
   - id: Enemy_Absorption
     displayName: ABSORPTION
     enemyController: {fileID: 1371981663885322251, guid: fd4d927248ba7894fab69bd0611e5dd6, type: 3}
@@ -132,6 +142,8 @@ MonoBehaviour:
     conditionLogic: 0
     spawnConditions:
     - {fileID: 11400000, guid: f4b764d3576967545ab0873bf66d3ab6, type: 2}
+    useSpawnEffect: 0
+    spawnEffect: []
   - id: Enemy_Piercer
     displayName: PIERCER
     enemyController: {fileID: 5352284219382747297, guid: c31b489d153b0634585086d777023f54, type: 3}
@@ -151,6 +163,8 @@ MonoBehaviour:
     conditionLogic: 0
     spawnConditions:
     - {fileID: 11400000, guid: 80ca52462799e884b8fd6616cee36084, type: 2}
+    useSpawnEffect: 0
+    spawnEffect: []
   - id: Enemy_Javelin
     displayName: JAVELIN
     enemyController: {fileID: 5352284219382747297, guid: 9b50d372f60f2b44e8902b9700c8ff75, type: 3}
@@ -170,6 +184,8 @@ MonoBehaviour:
     conditionLogic: 0
     spawnConditions:
     - {fileID: 11400000, guid: 374f290d01a025e4abb6c9f95c9685ce, type: 2}
+    useSpawnEffect: 0
+    spawnEffect: []
   - id: Enemy_Comet
     displayName: COMET
     enemyController: {fileID: 5352284219382747297, guid: f393a17767905ac4ca15da0af7bc1668, type: 3}
@@ -189,6 +205,8 @@ MonoBehaviour:
     conditionLogic: 0
     spawnConditions:
     - {fileID: 11400000, guid: 7fe54f688e6e96548afaea6e8475e71b, type: 2}
+    useSpawnEffect: 0
+    spawnEffect: []
   - id: Enemy_Pressure
     displayName: PRESSURE
     enemyController: {fileID: 241806535288265801, guid: 79dec73735459964a8ca48d4f07d4f9a, type: 3}
@@ -208,6 +226,8 @@ MonoBehaviour:
     conditionLogic: 0
     spawnConditions:
     - {fileID: 11400000, guid: fbb198d5f11874a4e99e237c96ccd39e, type: 2}
+    useSpawnEffect: 0
+    spawnEffect: []
   - id: Enemy_Firecraker
     displayName: FIRECRACKER
     enemyController: {fileID: 241806535288265801, guid: 27b7309a2863d144f92c41ed68909b7a, type: 3}
@@ -227,6 +247,8 @@ MonoBehaviour:
     conditionLogic: 0
     spawnConditions:
     - {fileID: 11400000, guid: 826635642fc3dd242a25e5d0326d9a23, type: 2}
+    useSpawnEffect: 0
+    spawnEffect: []
   - id: Enemy_Bomber
     displayName: BOMBER
     enemyController: {fileID: 241806535288265801, guid: e35823daef8ec1d4190c0960c0e7bb8b, type: 3}
@@ -246,6 +268,31 @@ MonoBehaviour:
     conditionLogic: 0
     spawnConditions:
     - {fileID: 11400000, guid: a36d2c81a79161946beeda253129118b, type: 2}
+    useSpawnEffect: 0
+    spawnEffect: []
+  - id: Boss_Twin
+    displayName: The Twin
+    enemyController: {fileID: 3283012694853145645, guid: 269d66a18656a9b4b81ea0fe0cb26bae, type: 3}
+    spawnPoint: 0
+    enemyPointCanGrowth: 0
+    enemyPointGrowthRate: 12.5
+    chance: 100
+    enemyChanceCanGrowth: 0
+    enemyChanceGrowthRate: 0
+    useCustomInterval: 0
+    customInterval: 0
+    useMaxperEnemy: 1
+    maximumPerEnemy: 1
+    modifyNewData: 0
+    enemyData: {fileID: 0}
+    useSpawnConditions: 1
+    conditionLogic: 0
+    spawnConditions:
+    - {fileID: 11400000, guid: da1d3b0ff5fb92f4680487d0938ff0fd, type: 2}
+    useSpawnEffect: 1
+    spawnEffect:
+    - effectType: 0
+      effectString: BossWarning
   intervalEnemyChanceUpgrade: 30
   intervalEnemyPointRatioUpgrade: 30
   PatternOptions:
