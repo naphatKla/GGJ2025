@@ -122,22 +122,7 @@ namespace GameControl.Controller
         {
             return eventOption.allMapEventID.Where(ev => !ev.useWeightRandom).ToList();
         }
-
-        /*private void TriggerWeightedEvent(List<MapDataSO.EventMapOption.MapEventKv> weightedEvents)
-        {
-            if (weightedEvents.Count == 0) return;
-
-            var selectedEventID = SelectEventByChance(weightedEvents);
-            if (!string.IsNullOrEmpty(selectedEventID)) TriggerMapEvent(selectedEventID);
-        }
-
-        private void TriggerNonWeightedEvents(List<MapDataSO.EventMapOption.MapEventKv> nonWeightedEvents)
-        {
-            foreach (var ev in nonWeightedEvents)
-                if (ev.chance >= 100f)
-                    TriggerMapEvent(ev.mapEventID);
-        }*/
-
+        
         private string SelectEventByChance(List<MapDataSO.EventMapOption.MapEventKv> events)
         {
             var totalChance = 0f;
