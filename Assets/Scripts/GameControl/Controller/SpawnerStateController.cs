@@ -267,7 +267,7 @@ namespace GameControl.Controller
 
         [FoldoutGroup("Spawner Control")]
         [Button("Stop Spawnig" , ButtonSizes.Large), GUIColor(1, 0, 0)]
-        private void DebugStop()
+        public void StopSpawning()
         {
             SetState(_stopState);
         }

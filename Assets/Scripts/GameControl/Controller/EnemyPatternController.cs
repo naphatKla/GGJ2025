@@ -57,7 +57,7 @@ namespace GameControl.Controller
         public void SetEnemySpawner(EnemySpawnerController spawner)
         {
             _enemySpawner = spawner;
-            _storeEnemy = spawner.GetEnemyList();
+            _storeEnemy = spawner.GetEnemyListFiltered(_mapdata);
         }
 
         public void ReloadPatterns(List<MapDataSO.PatternOption> newPatterns)
@@ -71,17 +71,10 @@ namespace GameControl.Controller
 
             _patternEnemy.Clear();
 
-            if (_enemySpawner != null) _storeEnemy = _enemySpawner.GetEnemyList();
+            if (_enemySpawner != null) SetEnemySpawner(_enemySpawner);
 
             AddRandomPatternsForce(targetCount);
-            RebindSpawner(_enemySpawner);
             if (_isDebug) Debug.Log($"[EnemyPatternController] Reloaded patterns and restored count to {targetCount}/{PatternMax}");
-        }
-
-        public void RebindSpawner(EnemySpawnerController spawner)
-        {
-            SetEnemySpawner(spawner);
-            _storeEnemy = spawner.GetEnemyList();
         }
 
         private void AddRandomPatternsForce(int count)
