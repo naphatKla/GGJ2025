@@ -24,12 +24,6 @@ namespace GameControl.GameState
             _cts = new CancellationTokenSource();
             
             SpawnerStateController.Instance.SetState(new SpawnerState.StopState());
-            SpawnerStateController.Instance.ClearEnemy();
-            SpawnerStateController.Instance.ClearItem();
-            SpawnerStateController.Instance.ClearPatternAsync();
-            GameTimer.Instance.StopTimer();
-            GameTimer.Instance.ClearAllTriggers();
-            
             WaitBeforeSummary(_cts.Token).Forget();
         }
 
@@ -42,6 +36,11 @@ namespace GameControl.GameState
         {
             try
             {
+                SpawnerStateController.Instance.ClearEnemy();
+                SpawnerStateController.Instance.ClearItem();
+                SpawnerStateController.Instance.ClearPatternAsync();
+                GameTimer.Instance.StopTimer();
+                GameTimer.Instance.ClearAllTriggers();
                 await UniTask.Delay(TimeSpan.FromSeconds(0.5), DelayType.UnscaledDeltaTime, PlayerLoopTiming.Update, token);
                 if (GameStateController.Instance.CurrentState is EndState)
                 {

@@ -42812,7 +42812,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: NORMAL MODE
+  m_text: HARD MODE
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 2dc7aeb059816db4192dac5f7d09c010, type: 2}
   m_sharedMaterial: {fileID: 3646004497337031475, guid: 2dc7aeb059816db4192dac5f7d09c010, type: 2}
@@ -79502,7 +79502,7 @@ PrefabInstance:
       objectReference: {fileID: 1559866657}
     - target: {fileID: 2877668338773927676, guid: ad4e87ace52b4c24498c50b08edbac62, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: ClosePanel
+      value: OpenGameModePanel
       objectReference: {fileID: 0}
     - target: {fileID: 2877668338773927676, guid: ad4e87ace52b4c24498c50b08edbac62, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
@@ -129597,7 +129597,7 @@ GameObject:
   - component: {fileID: 964951256}
   - component: {fileID: 964951255}
   m_Layer: 5
-  m_Name: Learning Mode
+  m_Name: Normal Mode
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -129905,7 +129905,7 @@ MonoBehaviour:
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: LearningMode
+          m_StringArgument: NormalMode
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &964951258
@@ -141883,7 +141883,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1105629197}
   m_Layer: 5
-  m_Name: Normal
+  m_Name: Hard
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -148834,7 +148834,7 @@ PrefabInstance:
       objectReference: {fileID: 1559866657}
     - target: {fileID: 2877668338773927676, guid: ad4e87ace52b4c24498c50b08edbac62, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: ClosePanel
+      value: OpenGameModePanel
       objectReference: {fileID: 0}
     - target: {fileID: 2877668338773927676, guid: ad4e87ace52b4c24498c50b08edbac62, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
@@ -192381,7 +192381,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1218510580299447271, guid: c8ec44f110b3338418166963eb775c7d, type: 3}
       propertyPath: m_Name
-      value: LearningModePanel
+      value: NormalModePanel
       objectReference: {fileID: 0}
     - target: {fileID: 1218510580299447271, guid: c8ec44f110b3338418166963eb775c7d, type: 3}
       propertyPath: m_IsActive
@@ -198650,7 +198650,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1525687564}
   m_Layer: 5
-  m_Name: Learn
+  m_Name: Normal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -227304,7 +227304,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1218510580299447271, guid: c8ec44f110b3338418166963eb775c7d, type: 3}
       propertyPath: m_Name
-      value: NormalModePanel
+      value: HardModePanel
       objectReference: {fileID: 0}
     - target: {fileID: 1218510580299447271, guid: c8ec44f110b3338418166963eb775c7d, type: 3}
       propertyPath: m_IsActive
@@ -242923,7 +242923,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: LEARNING MODE
+  m_text: NORMAL MODE
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 2dc7aeb059816db4192dac5f7d09c010, type: 2}
   m_sharedMaterial: {fileID: 3646004497337031475, guid: 2dc7aeb059816db4192dac5f7d09c010, type: 2}
@@ -243015,7 +243015,7 @@ GameObject:
   - component: {fileID: 1779477851}
   - component: {fileID: 1779477850}
   m_Layer: 5
-  m_Name: Normal Mode
+  m_Name: Hard Mode
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -243096,7 +243096,7 @@ MonoBehaviour:
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: NormalMode
+          m_StringArgument: HardMode
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &1779477848

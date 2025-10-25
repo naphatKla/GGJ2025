@@ -34,8 +34,8 @@ namespace UI
         MainMenu = 11,
         
         //MODE
-        LearningMode = 12,
-        NormalMode = 13,
+        NormalMode = 12,
+        HardMode = 13,
         EndlessMode = 14
     }
     
@@ -458,11 +458,11 @@ namespace UI
         {
             switch (mode)
             {
-                case "LearningMode":
-                    OpenPanel(UIPanelType.LearningMode).Forget();
-                    break;
                 case "NormalMode":
                     OpenPanel(UIPanelType.NormalMode).Forget();
+                    break;
+                case "HardMode":
+                    OpenPanel(UIPanelType.HardMode).Forget();
                     break;
                 case "EndlessMode":
                     OpenPanel(UIPanelType.EndlessMode).Forget();
