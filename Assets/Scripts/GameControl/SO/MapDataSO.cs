@@ -320,6 +320,27 @@ namespace GameControl.SO
                 //Override Zone
                 [BoxGroup("Modify Data")][ShowIf("overrideData")]
                 public float damageMap;
+                
+                public bool useCondition;
+                [Space]
+                //Condition
+                [BoxGroup("Condition")][ShowIf("useCondition")]
+                public List<MapEventConditionStruct> mapEventCondition;
+                
+                public enum MapEventConditionType
+                {
+                    TimeCondition
+                }
+            
+                [Serializable]
+                public class MapEventConditionStruct
+                {
+                    public MapEventConditionType conditionType;
+                    [ShowIf("@conditionType == MapEventConditionType.TimeCondition")]
+                    public int timeIn;
+                    [ShowIf("@conditionType == MapEventConditionType.TimeCondition")]
+                    public int timeOut;
+                }
             }
            
             [FoldoutGroup("$catagolyMapEvent")]
