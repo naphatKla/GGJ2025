@@ -306,6 +306,36 @@ MonoBehaviour:
     - {fileID: 11400000, guid: a36d2c81a79161946beeda253129118b, type: 2}
     useSpawnEffect: 0
     spawnEffect: []
+  - id: Boss_Twin
+    displayName: The Twin
+    enemyController: {fileID: 3283012694853145645, guid: 269d66a18656a9b4b81ea0fe0cb26bae, type: 3}
+    spawnPoint: 0
+    enemyPointCanGrowth: 0
+    enemyPointGrowthRate: 12.5
+    chance: 100
+    enemyChanceCanGrowth: 0
+    enemyChanceGrowthRate: 0
+    disableNormalize: 1
+    useCustomInterval: 0
+    customInterval: 0
+    useMaxperEnemy: 1
+    maximumPerEnemy: 1
+    modifyNewData: 1
+    enemyData: {fileID: 11400000, guid: 82960b802afd0dc4ead20f9c464e25d3, type: 2}
+    disableInPattern: 1
+    disableEnemyDetect: 1
+    useSpawnConditions: 1
+    conditionLogic: 0
+    spawnConditions:
+    - {fileID: 11400000, guid: da1d3b0ff5fb92f4680487d0938ff0fd, type: 2}
+    useSpawnEffect: 1
+    spawnEffect:
+    - effectType: 0
+      effectString: BossWarning
+      effectint: 0
+    - effectType: 3
+      effectString: 
+      effectint: 5
   intervalEnemyChanceUpgrade: 30
   intervalEnemyPointRatioUpgrade: 30
   PatternOptions:
