@@ -29,6 +29,7 @@ namespace GameControl.Controller
         
         public event Action<EnemyController, MapDataSO.EnemyOption> OnFirstSpawned;
         private readonly HashSet<string> _firstSpawnedTypeIds = new();
+        public int EnemyAmount => _activeEnemy.Count;
         
         public EnemySpawnerController(MapDataSO mapData, SpawnerStateController state, Vector2 spawnRegion, bool debug, Camera mainCamera)
         {
@@ -107,7 +108,6 @@ namespace GameControl.Controller
             obj.FeedbackSystem.ShowTrail(true);
             obj.ResetAllDependentBehavior();
             obj.gameObject.SetActive(true);
-
             _activeEnemy.Add(obj);
         }
         
@@ -318,10 +318,7 @@ namespace GameControl.Controller
         }
         public void ClearAllEnemys()
         {
-            foreach (var pool in _enemyPools.Values)
-            {
-                pool.Clear();
-            }
+            foreach (var pool in _enemyPools.Values) pool.Clear();
             _activeEnemy.Clear();
         }
         public void ReleaseAllEnemies()

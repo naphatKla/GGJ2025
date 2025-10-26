@@ -23,12 +23,23 @@ namespace GameControl.GameState
             _cts?.Dispose();
             _cts = new CancellationTokenSource();
             
+            //Stop spawning
+            GameTimer.Instance.StopTimer();
+            GameTimer.Instance.ClearAllTriggers();
+            GameTimer.Instance.ChangeToText("KILL ALL ENEMIES");
+            SpawnerStateController.Instance.ClearPatternAsync();
             SpawnerStateController.Instance.SetState(new SpawnerState.StopState());
-            WaitBeforeSummary(_cts.Token).Forget();
         }
 
         public void Update(GameStateController controller)
-        { }
+        {
+            //Check all enemy dead
+            if (SpawnerStateController.Instance.EnemyAmount <= 0 && controller.gameResult == EndResult.None)
+            {
+                GameStateController.Instance.gameResult = EndResult.Completed;
+                WaitBeforeSummary(_cts.Token).Forget();
+            }
+        }
 
         public void Exit(GameStateController controller) { }
         
@@ -36,11 +47,6 @@ namespace GameControl.GameState
         {
             try
             {
-                SpawnerStateController.Instance.ClearEnemy();
-                SpawnerStateController.Instance.ClearItem();
-                SpawnerStateController.Instance.ClearPatternAsync();
-                GameTimer.Instance.StopTimer();
-                GameTimer.Instance.ClearAllTriggers();
                 await UniTask.Delay(TimeSpan.FromSeconds(0.5), DelayType.UnscaledDeltaTime, PlayerLoopTiming.Update, token);
                 if (GameStateController.Instance.CurrentState is EndState)
                 {

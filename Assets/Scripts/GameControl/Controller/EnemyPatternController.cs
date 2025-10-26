@@ -34,10 +34,22 @@ namespace GameControl.Controller
         private readonly bool _isDebug;
         private float _currentTriggertime;
         
+        private CancellationToken _externalCt = CancellationToken.None;
+        private CancellationTokenSource _internalStopCts = new CancellationTokenSource();
+        private CancellationTokenSource _linkedCts;
         private CancellationToken _ct = CancellationToken.None;
+
         public void BindCancellationToken(CancellationToken ct)
         {
-            _ct = ct;
+            _externalCt = ct;
+            RebuildLinkedToken();
+        }
+        
+        private void RebuildLinkedToken()
+        {
+            _linkedCts?.Dispose();
+            _linkedCts = CancellationTokenSource.CreateLinkedTokenSource(_externalCt, _internalStopCts.Token);
+            _ct = _linkedCts.Token;
         }
 
         private int PatternMax => Mathf.Max(1, Mathf.RoundToInt(_mapdata.patternMax));
@@ -442,10 +454,16 @@ namespace GameControl.Controller
 
         public void StopProcessing()
         {
+            if (!_internalStopCts.IsCancellationRequested)
+                _internalStopCts.Cancel();
             _patternQueue.Clear();
             _batchQueue.Clear();
             _isBatchProcessing = false;
+            _internalStopCts.Dispose();
+            _internalStopCts = new CancellationTokenSource();
+            RebuildLinkedToken();
         }
+
 
         #endregion
     }

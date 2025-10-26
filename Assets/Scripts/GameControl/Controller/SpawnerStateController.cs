@@ -21,6 +21,7 @@ namespace GameControl.Controller
         private float _maxEnemyPoint;
         private float _increaseRateEnemyPoint;
         private float _defaultEnemySpawnTimer;
+        private float _enemyAmount;
         
         [BoxGroup("Debug")] 
         [ShowInInspector, ReadOnly]
@@ -30,13 +31,24 @@ namespace GameControl.Controller
         public float EnemyPoint => _currentEnemyPoint;
         [BoxGroup("Debug")] 
         [ShowInInspector, ReadOnly]
+        public float EnemyAmount
+        {
+            get
+            {
+                if (_enemySpawnerController != null) return _enemySpawnerController.EnemyAmount;
+                return 0;
+            }
+        }
+
+        [BoxGroup("Debug")] 
+        [ShowInInspector, ReadOnly]
         private MapDataSO CurrentMap => GameStateController.Instance != null ? GameStateController.Instance.CurrentMap : null;
 
         
-        [BoxGroup("Setting")] [SerializeField] private EnemySpawnerController _enemySpawnerController;
-        [BoxGroup("Setting")] [SerializeField] private EnemyPatternController _enemyPatternController;
-        [BoxGroup("Setting")] [SerializeField] private ItemSpawnerController _itemSpawnerController;
-        [BoxGroup("Setting")] [SerializeField] private MapEventController _mapEventController;
+        [BoxGroup("Setting")] private EnemySpawnerController _enemySpawnerController;
+        [BoxGroup("Setting")] private EnemyPatternController _enemyPatternController;
+        [BoxGroup("Setting")] private ItemSpawnerController _itemSpawnerController;
+        [BoxGroup("Setting")] private MapEventController _mapEventController;
         [BoxGroup("Setting")] [Required] [SerializeField] private Transform enemyParent;
         [BoxGroup("Setting")] [Required] [SerializeField] private Transform itemParent;
         [BoxGroup("Setting")] [SerializeField] private Vector2 regionSize = Vector2.zero;

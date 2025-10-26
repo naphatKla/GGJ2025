@@ -19,6 +19,9 @@ namespace GameControl.GameState
 
         public void Enter(GameStateController controller)
         {
+            SpawnerStateController.Instance.ClearEnemy();
+            SpawnerStateController.Instance.ClearItem();
+            GameTimer.Instance.UpdateUIText();
             UIManager.Instance.CloseAllPanels();
             UIManager.Instance.OpenResultMenu();
             SavePlayerDataAndUpload();
