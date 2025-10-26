@@ -10,6 +10,7 @@ using Sirenix.OdinInspector;
 using TMPro;
 using UI.ConfirmButton;
 using UI.Leaderboard;
+using UI.Manager;
 using UI.Transition;
 using UnityEngine;
 using UnityEngine.Events;
@@ -427,9 +428,17 @@ namespace UI
         /// <param name="playerNameInput"></param>
         public void OnClickNew(TMP_InputField playerNameInput)
         {
-            var id   = PlayerProfileManager.CreateNew(playerNameInput.text.Trim());
-            var data = PlayerSaveSystem.Read(id);
+            if (playerNameInput == null) return;
+            if (string.IsNullOrWhiteSpace(playerNameInput.text))
+            {
+                NotificationManager.Instance.PlayNotification("notify_warn", "Please enter your name to continue.", 2f);
+                return;
+            }
 
+            var trimmedName = playerNameInput.text.Trim();
+
+            var id   = PlayerProfileManager.CreateNew(trimmedName);
+            var data = PlayerSaveSystem.Read(id);
             ActiveProfileService.Instance?.SetActive(id);
             OpenGameModePanel();
             LeaderboardItemPresenter.RefreshAll();
