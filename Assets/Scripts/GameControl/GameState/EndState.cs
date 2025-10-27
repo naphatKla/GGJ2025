@@ -23,18 +23,23 @@ namespace GameControl.GameState
             _cts?.Dispose();
             _cts = new CancellationTokenSource();
             
-            SpawnerStateController.Instance.SetState(new SpawnerState.StopState());
-            SpawnerStateController.Instance.ClearEnemy();
-            SpawnerStateController.Instance.ClearItem();
-            SpawnerStateController.Instance.ClearPatternAsync();
+            //Stop spawning
             GameTimer.Instance.StopTimer();
             GameTimer.Instance.ClearAllTriggers();
-            
-            WaitBeforeSummary(_cts.Token).Forget();
+            GameTimer.Instance.ChangeToText("KILL ALL ENEMIES");
+            SpawnerStateController.Instance.ClearPatternAsync();
+            SpawnerStateController.Instance.SetState(new SpawnerState.StopState());
         }
 
         public void Update(GameStateController controller)
-        { }
+        {
+            //Check all enemy dead
+            if (SpawnerStateController.Instance.EnemyAmount <= 0 && controller.gameResult == EndResult.None)
+            {
+                GameStateController.Instance.gameResult = EndResult.Completed;
+                WaitBeforeSummary(_cts.Token).Forget();
+            }
+        }
 
         public void Exit(GameStateController controller) { }
         

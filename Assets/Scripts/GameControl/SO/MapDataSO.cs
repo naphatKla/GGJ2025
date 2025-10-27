@@ -44,6 +44,8 @@ namespace GameControl.SO
             [FoldoutGroup("$id")] [ShowIf("$enemyChanceCanGrowth")]
             [Tooltip("Growth rate of chance")]
             public float enemyChanceGrowthRate = 0f;
+            [FoldoutGroup("$id")]
+            public bool disableNormalize;
             
             [FoldoutGroup("$id")][Title("Enemy Interval")]
             public bool useCustomInterval;
@@ -61,6 +63,10 @@ namespace GameControl.SO
             public bool modifyNewData;
             [FoldoutGroup("$id")] [ShowIf("$modifyNewData")]
             public EnemyDataSo enemyData;
+            [FoldoutGroup("$id")]
+            public bool disableInPattern;
+            [FoldoutGroup("$id")]
+            public bool disableEnemyDetect;
             
             [FoldoutGroup("$id")][Title("Spawn Conditions")]
             public bool useSpawnConditions = false;
@@ -79,14 +85,20 @@ namespace GameControl.SO
 
             public enum SpawnEffectType
             {
-                ShowPopup
+                ShowPopup,
+                KillAllEnemy,
+                StopEnemySpawn,
+                DelaySpawn
             }
             
             [Serializable]
             public class SpawnEffectStruct
             {
                 public SpawnEffectType effectType;
+                [ShowIf("@effectType == SpawnEffectType.ShowPopup")]
                 public string effectString;
+                [ShowIf("@effectType == SpawnEffectType.DelaySpawn")]
+                public int effectint;
             }
 
             public enum ConditionLogic { All, Any }
@@ -308,6 +320,27 @@ namespace GameControl.SO
                 //Override Zone
                 [BoxGroup("Modify Data")][ShowIf("overrideData")]
                 public float damageMap;
+                
+                public bool useCondition;
+                [Space]
+                //Condition
+                [BoxGroup("Condition")][ShowIf("useCondition")]
+                public List<MapEventConditionStruct> mapEventCondition;
+                
+                public enum MapEventConditionType
+                {
+                    TimeCondition
+                }
+            
+                [Serializable]
+                public class MapEventConditionStruct
+                {
+                    public MapEventConditionType conditionType;
+                    [ShowIf("@conditionType == MapEventConditionType.TimeCondition")]
+                    public int timeIn;
+                    [ShowIf("@conditionType == MapEventConditionType.TimeCondition")]
+                    public int timeOut;
+                }
             }
            
             [FoldoutGroup("$catagolyMapEvent")]

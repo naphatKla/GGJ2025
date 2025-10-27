@@ -309,7 +309,7 @@ namespace GameControl
         }
 
 
-        private void UpdateUIText()
+        public void UpdateUIText()
         {
             if (timerText == null) return;
 
@@ -329,6 +329,12 @@ namespace GameControl
                 int s = total % 60;
                 timerText.text = $"{m:00}:{s:00}";
             }
+        }
+        
+        public void ChangeToText(string text)
+        {
+            if (timerText == null) return;
+            timerText.text = text;
         }
 
         public void StopCountdown()

@@ -6787,8 +6787,8 @@ MonoBehaviour:
   itemParent: {fileID: 425359468}
   regionSize: {x: 200, y: 140}
   itemdropRegionSize: {x: 180, y: 120}
-  debugPattern: 1
-  debugEnemy: 1
+  debugPattern: 0
+  debugEnemy: 0
   debugMapEvent: 0
   notSpawnEnemyOnStart: 0
 --- !u!114 &681150452
@@ -6936,8 +6936,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 447}
-  m_SizeDelta: {x: 450, y: 130}
+  m_AnchoredPosition: {x: -0.00062561, y: 448}
+  m_SizeDelta: {x: 567.29, y: 130}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &695175196
 MonoBehaviour:
@@ -8392,7 +8392,7 @@ MonoBehaviour:
     - id: TestPulling
       storage: {fileID: 11400000, guid: b38d5d517c5fb42449b39f6ab8425c59, type: 2}
   eventMapParent: {fileID: 476519538}
-  _testId: TestPulling
+  _testId: LeftHole
   _testdmg: 1
 --- !u!1 &965496757
 GameObject:
@@ -18936,7 +18936,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 354bcec238d9d6c43990ee8d1b474e8d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spawnPattern: {fileID: 11400000, guid: 40fb65c3276e22343affa5a5a2d61545, type: 2}
+  spawnPattern: {fileID: 0}
   currentPoint: 100
   enemyPoint: 1
   offset: {x: 0, y: 0}
