@@ -19,6 +19,8 @@ namespace GameControl.GameState
 
         public void Enter(GameStateController controller)
         {
+            SpawnerStateController.Instance.ClearPatternAsync();
+            SpawnerStateController.Instance.SetState(new SpawnerState.StopState());
             SpawnerStateController.Instance.ClearEnemy();
             SpawnerStateController.Instance.ClearItem();
             GameTimer.Instance.UpdateUIText();
