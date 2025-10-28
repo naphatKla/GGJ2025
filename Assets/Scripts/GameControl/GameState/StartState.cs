@@ -31,7 +31,6 @@ namespace GameControl.GameState
         
         private void HandleTimerEnded()
         {
-            GameStateController.Instance.gameResult = EndResult.Completed;
             GameStateController.Instance.SetState(new EndState());
         }
     }

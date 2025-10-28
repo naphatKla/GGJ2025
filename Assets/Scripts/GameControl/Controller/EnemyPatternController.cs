@@ -34,10 +34,22 @@ namespace GameControl.Controller
         private readonly bool _isDebug;
         private float _currentTriggertime;
         
+        private CancellationToken _externalCt = CancellationToken.None;
+        private CancellationTokenSource _internalStopCts = new CancellationTokenSource();
+        private CancellationTokenSource _linkedCts;
         private CancellationToken _ct = CancellationToken.None;
+
         public void BindCancellationToken(CancellationToken ct)
         {
-            _ct = ct;
+            _externalCt = ct;
+            RebuildLinkedToken();
+        }
+        
+        private void RebuildLinkedToken()
+        {
+            _linkedCts?.Dispose();
+            _linkedCts = CancellationTokenSource.CreateLinkedTokenSource(_externalCt, _internalStopCts.Token);
+            _ct = _linkedCts.Token;
         }
 
         private int PatternMax => Mathf.Max(1, Mathf.RoundToInt(_mapdata.patternMax));
@@ -57,7 +69,7 @@ namespace GameControl.Controller
         public void SetEnemySpawner(EnemySpawnerController spawner)
         {
             _enemySpawner = spawner;
-            _storeEnemy = spawner.GetEnemyList();
+            _storeEnemy = spawner.GetEnemyListFiltered(_mapdata);
         }
 
         public void ReloadPatterns(List<MapDataSO.PatternOption> newPatterns)
@@ -71,17 +83,10 @@ namespace GameControl.Controller
 
             _patternEnemy.Clear();
 
-            if (_enemySpawner != null) _storeEnemy = _enemySpawner.GetEnemyList();
+            if (_enemySpawner != null) SetEnemySpawner(_enemySpawner);
 
             AddRandomPatternsForce(targetCount);
-            RebindSpawner(_enemySpawner);
             if (_isDebug) Debug.Log($"[EnemyPatternController] Reloaded patterns and restored count to {targetCount}/{PatternMax}");
-        }
-
-        public void RebindSpawner(EnemySpawnerController spawner)
-        {
-            SetEnemySpawner(spawner);
-            _storeEnemy = spawner.GetEnemyList();
         }
 
         private void AddRandomPatternsForce(int count)
@@ -354,7 +359,7 @@ namespace GameControl.Controller
                 move?.StopAllMovementAndTween();
 
                 await UniTask.Delay(TimeSpan.FromSeconds(time),
-                    DelayType.UnscaledDeltaTime,
+                    DelayType.DeltaTime,
                     PlayerLoopTiming.Update,
                     token);
             }
@@ -403,7 +408,7 @@ namespace GameControl.Controller
                     var work = new List<MapDataSO.PatternOption>(batch);
 
                     var perPatternTime = _currentTriggertime / Mathf.Max(1, targetSuccess);
-                    var nextAt = Time.unscaledTime;
+                    var nextAt = Time.deltaTime;
 
                     var maxAttempts = targetSuccess + 8;
                     for (var i = 0; successCount < targetSuccess && i < work.Count && i < maxAttempts; i++)
@@ -424,11 +429,11 @@ namespace GameControl.Controller
                         }
 
                         nextAt += perPatternTime;
-                        var wait = Mathf.Max(0f, nextAt - Time.unscaledTime);
+                        var wait = Mathf.Max(0f, nextAt - Time.deltaTime);
                         if (_isDebug) Debug.Log($"[EnemyPatternController] Waiting {wait:0.00}s");
                         if (wait > 0f)
                             await UniTask.Delay((int)(wait * 1000),
-                                DelayType.UnscaledDeltaTime, PlayerLoopTiming.Update, _ct);
+                                DelayType.DeltaTime, PlayerLoopTiming.Update, _ct);
                     }
 
                     if (_isDebug)
@@ -449,10 +454,16 @@ namespace GameControl.Controller
 
         public void StopProcessing()
         {
+            if (!_internalStopCts.IsCancellationRequested)
+                _internalStopCts.Cancel();
             _patternQueue.Clear();
             _batchQueue.Clear();
             _isBatchProcessing = false;
+            _internalStopCts.Dispose();
+            _internalStopCts = new CancellationTokenSource();
+            RebuildLinkedToken();
         }
+
 
         #endregion
     }

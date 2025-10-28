@@ -10,6 +10,7 @@ using Sirenix.OdinInspector;
 using TMPro;
 using UI.ConfirmButton;
 using UI.Leaderboard;
+using UI.Manager;
 using UI.Transition;
 using UnityEngine;
 using UnityEngine.Events;
@@ -34,8 +35,8 @@ namespace UI
         MainMenu = 11,
         
         //MODE
-        LearningMode = 12,
-        NormalMode = 13,
+        NormalMode = 12,
+        HardMode = 13,
         EndlessMode = 14
     }
     
@@ -427,9 +428,17 @@ namespace UI
         /// <param name="playerNameInput"></param>
         public void OnClickNew(TMP_InputField playerNameInput)
         {
-            var id   = PlayerProfileManager.CreateNew(playerNameInput.text.Trim());
-            var data = PlayerSaveSystem.Read(id);
+            if (playerNameInput == null) return;
+            if (string.IsNullOrWhiteSpace(playerNameInput.text))
+            {
+                NotificationManager.Instance.PlayNotification("notify_warn", "Please enter your name to continue.", 2f);
+                return;
+            }
 
+            var trimmedName = playerNameInput.text.Trim();
+
+            var id   = PlayerProfileManager.CreateNew(trimmedName);
+            var data = PlayerSaveSystem.Read(id);
             ActiveProfileService.Instance?.SetActive(id);
             OpenGameModePanel();
             LeaderboardItemPresenter.RefreshAll();
@@ -458,11 +467,11 @@ namespace UI
         {
             switch (mode)
             {
-                case "LearningMode":
-                    OpenPanel(UIPanelType.LearningMode).Forget();
-                    break;
                 case "NormalMode":
                     OpenPanel(UIPanelType.NormalMode).Forget();
+                    break;
+                case "HardMode":
+                    OpenPanel(UIPanelType.HardMode).Forget();
                     break;
                 case "EndlessMode":
                     OpenPanel(UIPanelType.EndlessMode).Forget();

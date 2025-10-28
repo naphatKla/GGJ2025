@@ -57,12 +57,15 @@ namespace GameControl.SO
                     enemyPointCanGrowth = e.enemyPointCanGrowth,
                     enemyPointGrowthRate = e.enemyPointGrowthRate,
                     chance = e.chance,
+                    disableNormalize = e.disableNormalize,
                     enemyChanceCanGrowth = e.enemyChanceCanGrowth,
                     enemyChanceGrowthRate = e.enemyChanceGrowthRate,
                     useCustomInterval = e.useCustomInterval,
                     customInterval = e.customInterval,
                     modifyNewData = e.modifyNewData,
                     enemyData = e.enemyData,
+                    disableInPattern = e.disableInPattern,
+                    disableEnemyDetect = e.disableEnemyDetect,
                     useSpawnConditions = e.useSpawnConditions,
                     conditionLogic = e.conditionLogic,
                     spawnConditions = e.spawnConditions != null ? new List<EnemySpawnConditionSO>(e.spawnConditions) : null,
@@ -208,7 +211,9 @@ namespace GameControl.SO
                                 chance = k.chance,
                                 useWeightRandom = k.useWeightRandom,
                                 overrideData = k.overrideData,
-                                damageMap = k.damageMap
+                                damageMap = k.damageMap,
+                                useCondition = k.useCondition,
+                                mapEventCondition = k.mapEventCondition
                             })
                             : null
                     };

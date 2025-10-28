@@ -526,6 +526,60 @@ MonoBehaviour:
     rolloffMode: 0
     mixerOverride: {fileID: 0}
     cooldown: 0
+  - Key: SFX/TwinTwirlUse
+    keyShort: TwinTwirlUse
+    variants:
+    - clip: {fileID: 0}
+      volume: 1
+      loop: 0
+      usePitchRandom: 1
+      pitchRange: {x: 0.85, y: 1.15}
+      weight: 1
+    pickMode: 0
+    avoidImmediateRepeat: 0
+    spatial: 0
+    spatialBlend: 0
+    minDistance: 0
+    maxDistance: 0
+    rolloffMode: 0
+    mixerOverride: {fileID: 0}
+    cooldown: 0
+  - Key: SFX/TwinDrawBackUse
+    keyShort: TwinDrawBackUse
+    variants:
+    - clip: {fileID: 0}
+      volume: 1
+      loop: 0
+      usePitchRandom: 1
+      pitchRange: {x: 0.85, y: 1.15}
+      weight: 1
+    pickMode: 0
+    avoidImmediateRepeat: 0
+    spatial: 0
+    spatialBlend: 0
+    minDistance: 0
+    maxDistance: 0
+    rolloffMode: 0
+    mixerOverride: {fileID: 0}
+    cooldown: 0
+  - Key: SFX/TwinDrawBackSuccess
+    keyShort: TwinDrawBackSuccess
+    variants:
+    - clip: {fileID: 8300000, guid: 7eff200615e9b1446bc342e20c581a6b, type: 3}
+      volume: 1
+      loop: 0
+      usePitchRandom: 1
+      pitchRange: {x: 0.85, y: 1.15}
+      weight: 1
+    pickMode: 0
+    avoidImmediateRepeat: 0
+    spatial: 0
+    spatialBlend: 0
+    minDistance: 0
+    maxDistance: 0
+    rolloffMode: 0
+    mixerOverride: {fileID: 0}
+    cooldown: 0
   ui:
   - Key: UI/Click
     keyShort: Click
@@ -764,12 +818,12 @@ MonoBehaviour:
   bgm:
   - Key: BGM/GamePlayPhase1
     keyShort: GamePlayPhase1
-    clip: {fileID: 8300000, guid: 34055473755e4444e824dae364c44363, type: 3}
+    clip: {fileID: 8300000, guid: 043e4c9a99f0f3048a0528684fa41f63, type: 3}
     volume: 1
     mixerOverride: {fileID: 0}
   - Key: BGM/GamePlayPhase2
     keyShort: GamePlayPhase2
-    clip: {fileID: 8300000, guid: 633bf5b65df449448ae24754d3868925, type: 3}
+    clip: {fileID: 8300000, guid: 0dd4f2722a324d040b8e1419e4e9837b, type: 3}
     volume: 1
     mixerOverride: {fileID: 0}
   - Key: BGM/Boss
