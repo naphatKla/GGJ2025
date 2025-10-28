@@ -39,6 +39,8 @@ namespace Manager.SoundManager
             public const string BomberSkillExplosion = Group + "/" + nameof(BomberSkillExplosion);
             public const string AbsorptionSkillParryUse = Group + "/" + nameof(AbsorptionSkillParryUse);
             public const string AbsorptionSkillParrySuccess = Group + "/" + nameof(AbsorptionSkillParrySuccess);
+            public const string TwinTwirlUse = Group + "/" + nameof(TwinTwirlUse);
+            public const string TwinDrawBackUse = Group + "/" + nameof(TwinDrawBackUse);
             public const string TwinDrawBackSuccess = Group + "/" + nameof(TwinDrawBackSuccess);
         }
 
