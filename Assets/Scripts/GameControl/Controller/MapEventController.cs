@@ -88,39 +88,42 @@ namespace GameControl.Controller
         #endregion
 
         #region Private Method
+
         private void PlayMapEventCatagory(MapDataSO.EventMapOption eventOption)
         {
             if (!IsEventChanceSuccessful(eventOption.eventMapChance)) return;
 
+            var (elapsedNow, remainingNow) = GetTimeNow();
             var fired = new HashSet<string>();
+            var candidates = eventOption.allMapEventID
+                .Where(kv => IsKvEligible(kv, elapsedNow, remainingNow))
+                .ToList();
 
-            var weighted = GetWeightedEvents(eventOption);
-            var nonWeighted = GetNonWeightedEvents(eventOption);
+            var weighted = candidates.Where(ev => ev.useWeightRandom).ToList();
+            var nonWeighted = candidates.Where(ev => !ev.useWeightRandom).ToList();
 
+            //Weighted
             var selected = SelectEventByChance(weighted);
             if (!string.IsNullOrEmpty(selected) && fired.Add(selected))
-                TriggerMapEvent(selected, eventOption.allMapEventID.FirstOrDefault(e => e.mapEventID == selected));
+            {
+                var idx = weighted.FindIndex(e => e.mapEventID == selected);
+                if (idx >= 0)
+                {
+                    var kv = weighted[idx];
+                    TriggerMapEvent(selected, kv);
+                }
+            }
 
+            //Non-weighted
             foreach (var ev in nonWeighted)
                 if (ev.chance >= 100f && fired.Add(ev.mapEventID))
-                    TriggerMapEvent(ev.mapEventID, eventOption.allMapEventID.FirstOrDefault(e => e.mapEventID == ev.mapEventID));
+                    TriggerMapEvent(ev.mapEventID, ev);
         }
-
 
         private bool IsEventChanceSuccessful(float eventChance)
         {
             var chanceRoll = Random.Range(0f, 100f);
             return chanceRoll <= eventChance;
-        }
-
-        private List<MapDataSO.EventMapOption.MapEventKv> GetWeightedEvents(MapDataSO.EventMapOption eventOption)
-        {
-            return eventOption.allMapEventID.Where(ev => ev.useWeightRandom).ToList();
-        }
-
-        private List<MapDataSO.EventMapOption.MapEventKv> GetNonWeightedEvents(MapDataSO.EventMapOption eventOption)
-        {
-            return eventOption.allMapEventID.Where(ev => !ev.useWeightRandom).ToList();
         }
         
         private string SelectEventByChance(List<MapDataSO.EventMapOption.MapEventKv> events)
@@ -209,6 +212,44 @@ namespace GameControl.Controller
                 remaining = nextRemain;
             }
         }
+        #endregion
+        
+        #region Condition Helper
+        
+        private bool IsKvEligible(MapDataSO.EventMapOption.MapEventKv kv, float elapsed, float remaining)
+        {
+            if (!kv.useCondition || kv.mapEventCondition == null || kv.mapEventCondition.Count == 0) return true;
+            foreach (var cond in kv.mapEventCondition)
+                if (!IsConditionPass(cond, elapsed, remaining)) return false;
+            return true;
+        }
+        
+        private (float elapsed, float remaining) GetTimeNow()
+        {
+            var timer = GameTimer.Instance;
+            float remaining = Mathf.Max(timer.GlobalTimer, 0f);
+            float elapsed = (_mapdata != null && _mapdata.endlessMode)
+                ? remaining  // endless
+                : Mathf.Max(timer.StartTimerNumber - remaining, 0f); // not endless
+
+            return (elapsed, remaining);
+        }
+        
+        private bool IsConditionPass(MapDataSO.EventMapOption.MapEventKv.MapEventConditionStruct cond, float elapsed, float remaining)
+        {
+            switch (cond.conditionType)
+            {
+                case MapDataSO.EventMapOption.MapEventKv.MapEventConditionType.TimeCondition:
+                    if (elapsed < cond.startAfter) return false;
+                    if (cond.endAt >= 0f && elapsed > cond.endAt) return false;
+                    return true;
+
+                default:
+                    return true;
+            }
+        }
+
+
         #endregion
     }
 }

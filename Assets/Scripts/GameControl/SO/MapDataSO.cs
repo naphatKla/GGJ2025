@@ -336,10 +336,15 @@ namespace GameControl.SO
                 public class MapEventConditionStruct
                 {
                     public MapEventConditionType conditionType;
+                    
+                    // ----- TimeCondition -----
                     [ShowIf("@conditionType == MapEventConditionType.TimeCondition")]
-                    public int timeIn;
+                    [Tooltip("เวลาตั้งแต่เริ่มเกม (วินาที)")]
+                    public float startAfter = 0f;
+
                     [ShowIf("@conditionType == MapEventConditionType.TimeCondition")]
-                    public int timeOut;
+                    [Tooltip("เวลาที่สิ้นสุด (วินาที) (ถ้า < 0 = ไม่มีขีดจำกัด)")]
+                    public float endAt = -1f;
                 }
             }
            
