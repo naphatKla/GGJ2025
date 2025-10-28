@@ -176,7 +176,11 @@ namespace GameControl.SO
             public bool enableSpecificEnemy;
 
             [Serializable]
-            public struct EnemyKv { public string enemyID; public float chance; }
+            public struct EnemyKv
+            {
+                public string enemyID; 
+                public float chance;
+            }
             [FoldoutGroup("$pattern")] [Title("Enemy Specific")] [ShowIf("enableSpecificEnemy")] 
             public List<EnemyKv> specificEnemyList;
             
@@ -196,6 +200,32 @@ namespace GameControl.SO
             public bool enablePatternCenter;
             [FoldoutGroup("$pattern")] [ShowIf("$enablePatternCenter")]
             public Vector2 patternCenter;
+            
+            [FoldoutGroup("$pattern")]
+            public bool useCondition;
+            //Condition
+            [FoldoutGroup("$pattern")][BoxGroup("$pattern/Condition")][ShowIf("useCondition")]
+            public List<PatternConditionStruct> patternCondition;
+                
+            public enum PatternConditionType
+            {
+                TimeCondition
+            }
+            
+            [Serializable]
+            public class PatternConditionStruct
+            {
+                public PatternConditionType conditionType;
+                    
+                // ----- TimeCondition -----
+                [ShowIf("@conditionType == PatternConditionType.TimeCondition")]
+                [Tooltip("เวลาตั้งแต่เริ่มเกม (วินาที)")]
+                public float startAfter = 0f;
+
+                [ShowIf("@conditionType == PatternConditionType.TimeCondition")]
+                [Tooltip("เวลาที่สิ้นสุด (วินาที) (ถ้า < 0 = ไม่มีขีดจำกัด)")]
+                public float endAt = -1f;
+            }
             
             public float DelayBetweenRows => delayBetweenRows;
             public float DelayBetweenEnemy => delayBetweenEnemy;
