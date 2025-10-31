@@ -134,6 +134,7 @@ namespace GameControl.Controller
             if (gsc?.sceneCts != null)
             {
                 _enemyPatternController.BindCancellationToken(gsc.sceneCts.Token);
+                _enemySpawnerController.BindCancellationToken(gsc.sceneCts.Token);
             }
         }
 
