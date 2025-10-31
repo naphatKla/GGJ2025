@@ -204,8 +204,9 @@ namespace GameControl.Controller
         private List<MapDataSO.PatternOption> GetEnabledPatterns()
         {
             return _mapdata.PatternOptions?
-                .Where(p => p != null && p.enableThisPattern)
-                .ToList() ?? new List<MapDataSO.PatternOption>();
+                       .Where(p => IsPatternEligible(p))
+                       .ToList()
+                   ?? new List<MapDataSO.PatternOption>();
         }
 
         private void EnsurePatternCapacity()
@@ -288,7 +289,9 @@ namespace GameControl.Controller
 
         private bool CanTriggerPattern(MapDataSO.PatternOption patternData)
         {
-            return patternData.pattern != null;
+            if (patternData?.pattern == null) return false;
+            if (!IsPatternEligible(patternData)) return false;
+            return true;
         }
 
         private List<List<Vector2>> CalculatePatternRows(MapDataSO.PatternOption patternData, int enemyAmount)
@@ -465,6 +468,45 @@ namespace GameControl.Controller
         }
 
 
+        #endregion
+        
+        #region Condition Helper
+        private (float elapsed, float remaining) GetTimeNow()
+        {
+            var timer = GameTimer.Instance;
+            float remaining = Mathf.Max(timer.GlobalTimer, 0f);
+            float elapsed = (_mapdata != null && _mapdata.endlessMode)
+                ? remaining //Endless
+                : Mathf.Max(timer.StartTimerNumber - remaining, 0f); //Not Endless
+
+            return (elapsed, remaining);
+        }
+
+        private bool IsPatternConditionPass(MapDataSO.PatternOption.PatternConditionStruct cond, float elapsed, float remaining)
+        {
+            switch (cond.conditionType)
+            {
+                case MapDataSO.PatternOption.PatternConditionType.TimeCondition:
+                    if (elapsed < cond.startAfter) return false;
+                    if (cond.endAt >= 0f && elapsed > cond.endAt) return false;
+                    return true;
+                default:
+                    return true;
+            }
+        }
+
+        private bool IsPatternEligible(MapDataSO.PatternOption p)
+        {
+            if (p == null || !p.enableThisPattern) return false;
+            if (!p.useCondition || p.patternCondition == null || p.patternCondition.Count == 0) return true;
+
+            var (elapsed, remaining) = GetTimeNow();
+            foreach (var cond in p.patternCondition)
+                if (!IsPatternConditionPass(cond, elapsed, remaining))
+                    return false;
+
+            return true;
+        }
         #endregion
     }
 }

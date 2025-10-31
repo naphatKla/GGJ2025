@@ -31,6 +31,7 @@ namespace GameControl.SO
             [Tooltip("Start of spawn point")]
             public float spawnPoint;
             [FoldoutGroup("$id")]
+            [GUIColor("@this.enemyPointCanGrowth ? Color.green : Color.red")]
             [Tooltip("if this enable this enemy point will increase every 30 seconds")]
             public bool enemyPointCanGrowth;
             [FoldoutGroup("$id")] [ShowIf("$enemyPointCanGrowth")]
@@ -39,36 +40,37 @@ namespace GameControl.SO
             
             [FoldoutGroup("$id")][Title("Chance Setting")]
             public float chance = 100;
+            [GUIColor("@this.enemyChanceCanGrowth ? Color.green : Color.red")]
             [FoldoutGroup("$id")][Tooltip("if this enable this enemy chance will increase and auto weight every 30 seconds")]
             public bool enemyChanceCanGrowth;
             [FoldoutGroup("$id")] [ShowIf("$enemyChanceCanGrowth")]
             [Tooltip("Growth rate of chance")]
             public float enemyChanceGrowthRate = 0f;
-            [FoldoutGroup("$id")]
+            [FoldoutGroup("$id")] [GUIColor("@this.disableNormalize ? Color.green : Color.red")]
             public bool disableNormalize;
             
-            [FoldoutGroup("$id")][Title("Enemy Interval")]
+            [FoldoutGroup("$id")][Title("Enemy Interval")][GUIColor("@this.useCustomInterval ? Color.green : Color.red")]
             public bool useCustomInterval;
             [FoldoutGroup("$id")] [ShowIf("$useCustomInterval")]
             public float customInterval;
             
-            [FoldoutGroup("$id")][Title("Per-Enemy Max")]
+            [FoldoutGroup("$id")][Title("Per-Enemy Max")] [GUIColor("@this.useMaxperEnemy ? Color.green : Color.red")]
             [Tooltip("Enable to limit maximum concurrent active enemy")]
             public bool useMaxperEnemy;
             [FoldoutGroup("$id")][ShowIf("$useMaxperEnemy")]
             [Tooltip("Maximum ACTIVE instances for this enemy type (<=0 = unlimited).")]
             public float maximumPerEnemy = 0f;
             
-            [FoldoutGroup("$id")][Title("Enemy Status")]
+            [FoldoutGroup("$id")][Title("Enemy Status")] [GUIColor("@this.modifyNewData ? Color.green : Color.red")]
             public bool modifyNewData;
             [FoldoutGroup("$id")] [ShowIf("$modifyNewData")]
             public EnemyDataSo enemyData;
-            [FoldoutGroup("$id")]
+            [FoldoutGroup("$id")] [GUIColor("@this.disableInPattern ? Color.green : Color.red")]
             public bool disableInPattern;
-            [FoldoutGroup("$id")]
+            [FoldoutGroup("$id")] [GUIColor("@this.disableEnemyDetect ? Color.green : Color.red")]
             public bool disableEnemyDetect;
             
-            [FoldoutGroup("$id")][Title("Spawn Conditions")]
+            [FoldoutGroup("$id")][Title("Spawn Conditions")] [GUIColor("@this.useSpawnConditions ? Color.green : Color.red")]
             public bool useSpawnConditions = false;
             [FoldoutGroup("$id")]
             [ShowIf("$useSpawnConditions")]
@@ -77,7 +79,7 @@ namespace GameControl.SO
             [ShowIf("$useSpawnConditions")]
             public List<EnemySpawnConditionSO> spawnConditions;
             
-            [FoldoutGroup("$id")][Title("Spawn Effect")]
+            [FoldoutGroup("$id")][Title("Spawn Effect")] [GUIColor("@this.useSpawnEffect ? Color.green : Color.red")]
             public bool useSpawnEffect = false;
             [FoldoutGroup("$id")]
             [ShowIf("$useSpawnEffect")]
@@ -166,17 +168,21 @@ namespace GameControl.SO
         [Serializable]
         public class PatternOption
         {
-            [FoldoutGroup("$pattern")]
+            [FoldoutGroup("$pattern")] [GUIColor("@this.enableThisPattern ? Color.green : Color.red")]
             public bool enableThisPattern;
             
-            [FoldoutGroup("$pattern")]
+            [FoldoutGroup("$pattern")] [GUIColor("@this.bypassSpawnCondition ? Color.green : Color.red")]
             public bool bypassSpawnCondition;
             
-            [FoldoutGroup("$pattern")]
+            [FoldoutGroup("$pattern")] [GUIColor("@this.enableSpecificEnemy ? Color.green : Color.red")]
             public bool enableSpecificEnemy;
 
             [Serializable]
-            public struct EnemyKv { public string enemyID; public float chance; }
+            public struct EnemyKv
+            {
+                public string enemyID; 
+                public float chance;
+            }
             [FoldoutGroup("$pattern")] [Title("Enemy Specific")] [ShowIf("enableSpecificEnemy")] 
             public List<EnemyKv> specificEnemyList;
             
@@ -191,11 +197,37 @@ namespace GameControl.SO
             public float patternPoint;
             [FoldoutGroup("$pattern")]
             public float enableMovementAfter = 1f;
-            [FoldoutGroup("$pattern")]
+            [FoldoutGroup("$pattern")] [GUIColor("@this.enablePatternCenter ? Color.green : Color.red")]
             [Tooltip("if enable you can set custom center of the pattern")]
             public bool enablePatternCenter;
             [FoldoutGroup("$pattern")] [ShowIf("$enablePatternCenter")]
             public Vector2 patternCenter;
+            
+            [FoldoutGroup("$pattern")] [GUIColor("@this.useCondition ? Color.green : Color.red")]
+            public bool useCondition;
+            //Condition
+            [FoldoutGroup("$pattern")][BoxGroup("$pattern/Condition")][ShowIf("useCondition")]
+            public List<PatternConditionStruct> patternCondition;
+                
+            public enum PatternConditionType
+            {
+                TimeCondition
+            }
+            
+            [Serializable]
+            public class PatternConditionStruct
+            {
+                public PatternConditionType conditionType;
+                    
+                // ----- TimeCondition -----
+                [ShowIf("@conditionType == PatternConditionType.TimeCondition")]
+                [Tooltip("เวลาตั้งแต่เริ่มเกม (วินาที)")]
+                public float startAfter = 0f;
+
+                [ShowIf("@conditionType == PatternConditionType.TimeCondition")]
+                [Tooltip("เวลาที่สิ้นสุด (วินาที) (ถ้า < 0 = ไม่มีขีดจำกัด)")]
+                public float endAt = -1f;
+            }
             
             public float DelayBetweenRows => delayBetweenRows;
             public float DelayBetweenEnemy => delayBetweenEnemy;
@@ -212,26 +244,26 @@ namespace GameControl.SO
             [FoldoutGroup("$id")][Title("Chance Setting")]
             [Range(0, 100)] public float chance = 100;
             
-            [FoldoutGroup("$id")][Title("Item Generate Interval")]
+            [FoldoutGroup("$id")][Title("Item Generate Interval")] [GUIColor("@this.useCustomInterval ? Color.green : Color.red")]
             public bool useCustomInterval;
             [FoldoutGroup("$id")] [ShowIf("$useCustomInterval")]
             public float customInterval;
             
-            [FoldoutGroup("$id")][Title("Per-Item Max")]
+            [FoldoutGroup("$id")][Title("Per-Item Max")] [GUIColor("@this.useMaxperItem ? Color.green : Color.red")]
             [Tooltip("Enable to limit maximum concurrent active items of this type.")]
             public bool useMaxperItem;
             [FoldoutGroup("$id")][ShowIf("$useMaxperItem")]
             [Tooltip("Maximum ACTIVE instances for this item type (<=0 = unlimited).")]
             public float maximumPerItem = 0f;
             
-            [FoldoutGroup("$id")][Title("Life time")]
+            [FoldoutGroup("$id")][Title("Life time")] [GUIColor("@this.useLifetimeInterval ? Color.green : Color.red")]
             [Tooltip("if this enable item can despawn after lifetime")]
             public bool useLifetimeInterval;
             [FoldoutGroup("$id")] [ShowIf("$useLifetimeInterval")]
             [Tooltip("Interval of item lifetime (default 20 seconds)")]
             public float lifetimeInterval = 20f;
             
-            [FoldoutGroup("$id")][Title("Spawn Conditions")]
+            [FoldoutGroup("$id")][Title("Spawn Conditions")] [GUIColor("@this.useSpawnConditions ? Color.green : Color.red")]
             public bool useSpawnConditions = false;
             [FoldoutGroup("$id")]
             [ShowIf("$useSpawnConditions")]
@@ -300,7 +332,7 @@ namespace GameControl.SO
         [Serializable]
         public class EventMapOption
         {
-            [FoldoutGroup("$catagolyMapEvent")] [Title("Propertie")]
+            [FoldoutGroup("$catagolyMapEvent")] [Title("Propertie")] [GUIColor("@this.enableThisMapEvent ? Color.green : Color.red")]
             public bool enableThisMapEvent;
             
             [FoldoutGroup("$catagolyMapEvent")]
@@ -315,12 +347,14 @@ namespace GameControl.SO
                 [GUIColor("@this.useWeightRandom ? Color.green : Color.red")]
                 public bool useWeightRandom;
                 
+                [GUIColor("@this.overrideData ? Color.green : Color.red")]
                 public bool overrideData;
                 [Space]
                 //Override Zone
                 [BoxGroup("Modify Data")][ShowIf("overrideData")]
                 public float damageMap;
                 
+                [GUIColor("@this.useCondition ? Color.green : Color.red")]
                 public bool useCondition;
                 [Space]
                 //Condition
@@ -336,10 +370,15 @@ namespace GameControl.SO
                 public class MapEventConditionStruct
                 {
                     public MapEventConditionType conditionType;
+                    
+                    // ----- TimeCondition -----
                     [ShowIf("@conditionType == MapEventConditionType.TimeCondition")]
-                    public int timeIn;
+                    [Tooltip("เวลาตั้งแต่เริ่มเกม (วินาที)")]
+                    public float startAfter = 0f;
+
                     [ShowIf("@conditionType == MapEventConditionType.TimeCondition")]
-                    public int timeOut;
+                    [Tooltip("เวลาที่สิ้นสุด (วินาที) (ถ้า < 0 = ไม่มีขีดจำกัด)")]
+                    public float endAt = -1f;
                 }
             }
            
@@ -352,7 +391,7 @@ namespace GameControl.SO
             [FoldoutGroup("$catagolyMapEvent")] [Title("Interval")]
             public float playInterval;
 
-            [FoldoutGroup("$catagolyMapEvent")]
+            [FoldoutGroup("$catagolyMapEvent")] [GUIColor("@this.intervalCanModify ? Color.green : Color.red")]
             public bool intervalCanModify;
             
             [FoldoutGroup("$catagolyMapEvent")] [Title("Interval Increase Setting")] [ShowIf("intervalCanModify")]

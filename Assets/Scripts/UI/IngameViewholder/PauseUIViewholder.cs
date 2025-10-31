@@ -23,6 +23,9 @@ namespace UI.IngameViewholder
             continueButton?.onClick.RemoveAllListeners();
             continueButton?.onClick.AddListener(ContinueClick);
             
+            settingButton?.onClick.RemoveAllListeners();
+            settingButton?.onClick.AddListener(SettingClick);
+            
             backButton?.onClick.RemoveAllListeners();
             backButton?.onClick.AddListener(BackClick);
             
@@ -56,6 +59,11 @@ namespace UI.IngameViewholder
         private void ContinueClick()
         {
             UIManager.Instance.TogglePausePanelByEsc();
+        }
+        
+        private void SettingClick()
+        {
+            UIManager.Instance.OpenPanel(UIPanelType.Setting);
         }
         
         private void QuitClick()
