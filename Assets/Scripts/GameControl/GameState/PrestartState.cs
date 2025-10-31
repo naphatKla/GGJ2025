@@ -41,7 +41,7 @@ namespace GameControl.GameState
         {
             GameStateController.Instance.gameResult = EndResult.Failed;
             PlayerController.Instance.HealthSystem.OnDead -= PlayerDeathResult;
-            GameStateController.Instance.SetState(new EndState());
+            GameStateController.Instance.SetState(new SummaryState());
         }
         
         private async UniTaskVoid CountdownStart()
