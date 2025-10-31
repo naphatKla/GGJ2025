@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Characters.Controllers;
 using Characters.SO.CharacterDataSO;
 using Cysharp.Threading.Tasks;
@@ -30,6 +31,12 @@ namespace GameControl.Controller
         public event Action<EnemyController, MapDataSO.EnemyOption> OnFirstSpawned;
         private readonly HashSet<string> _firstSpawnedTypeIds = new();
         public int EnemyAmount => _activeEnemy.Count;
+        private CancellationToken _externalCt = CancellationToken.None;
+        
+        public void BindCancellationToken(CancellationToken ct)
+        {
+            _externalCt = ct;
+        }
         
         public EnemySpawnerController(MapDataSO mapData, SpawnerStateController state, Vector2 spawnRegion, bool debug, Camera mainCamera)
         {
@@ -163,7 +170,7 @@ namespace GameControl.Controller
                         SpawnerStateController.Instance.StopSpawning();
                         break;
                     case MapDataSO.EnemyOption.SpawnEffectType.DelaySpawn:
-                        await UniTask.Delay(TimeSpan.FromSeconds(effect.effectint), DelayType.DeltaTime);
+                        await UniTask.Delay(TimeSpan.FromSeconds(effect.effectint), DelayType.DeltaTime, cancellationToken: _externalCt);
                         break;
                 }
             }
