@@ -4,6 +4,7 @@ using Demo;
 using GameControl.SO;
 using Player;
 using Sirenix.OdinInspector;
+using TMPro;
 using UI.MapSelection;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -24,6 +25,10 @@ namespace UI.MapSelectionRework
 
         [Space, Title("Display Status")] 
         public Button startButton;
+        public Image imageDisplay;
+        public TMP_Text mapNameText;
+        public TMP_Text runText;
+        public TMP_Text highestScoreText;
         
         [Space,Title("Debug")]
         [ShowInInspector] public int m_SelectedIndex = -1;
@@ -59,15 +64,6 @@ namespace UI.MapSelectionRework
             MapSelectionSender.Instance.currentmapSelectionDataContainer = mapSelectionDataContainer;
         }
         
-        private (int times, int hi) GetStatsForMap(MapDataSO map)
-        {
-            if (map == null || Current == null) return (0, 0);
-            return (
-                Current.GetMapTimesPlayed(map.mapId),
-                Current.GetMapHighestScore(map.mapId)
-            );
-        }
-        
         public GameObject GetObject(int index)
         {
             var go = pool.Count == 0 ? Instantiate(item) : pool.Pop().gameObject;
@@ -86,6 +82,7 @@ namespace UI.MapSelectionRework
                     m_SelectedObject = map;
                     OnSelected?.Invoke(m_SelectedIndex, m_SelectedObject);
                     GetComponent<LoopScrollRect>().RefreshCells();
+                    UpdateDisplayStats(_items[index], Current);
                     MapSelectionSender.Instance.currentMapSelectionIndex = index;
                 });
             }
@@ -104,14 +101,12 @@ namespace UI.MapSelectionRework
             if (vh != null)
             {
                 var content = _items[idx];
-                var (times, hi) = GetStatsForMap(content);
-                
                 vh.SetPrefabName("Map");   
                 vh.IsLocked = IsLockedByPlayer(content);
                 vh.ScrollCellIndex(idx, content);
                 vh.SetClickedColor(idx == m_SelectedIndex);
                 vh.UpdateViewholder(_items[idx]);
-                UpdateDisplayStats(timesPlayed: times, highestScore: hi);
+                if (idx == m_SelectedIndex) UpdateDisplayStats(_items[idx], Current);
             }
             else
             {
@@ -138,6 +133,7 @@ namespace UI.MapSelectionRework
             m_SelectedIndex = index;
             m_SelectedObject = _items[index];
             OnSelected?.Invoke(m_SelectedIndex, m_SelectedObject);
+            UpdateDisplayStats(_items[index], Current);
             GetComponent<LoopScrollRect>().RefreshCells();
             MapSelectionSender.Instance.currentMapSelectionIndex = index;
         }
@@ -163,10 +159,27 @@ namespace UI.MapSelectionRework
             return mapSelectionDataContainer.mapSelectionList;
         }
         
-        public void UpdateDisplayStats(int timesPlayed, int highestScore)
+        public void UpdateDisplayStats(MapDataSO mapData, PlayerData playerData)
         {
-            //timesPlayedText.text = $"Played: {timesPlayed}";
-            //highestScoreText.text = $"Best: {highestScore:n0}";
+            if (mapData == null || playerData == null) return;
+
+            if (imageDisplay != null) imageDisplay.sprite = mapData.image;
+            if (mapNameText != null) mapNameText.text = mapData.mapName.ToUpper();
+            if (runText != null)
+            {
+                if (playerData.GetMapTimesPlayed(mapData.mapId) == 0) 
+                    runText.text = "NOT RECORD";
+                else
+                    runText.text = playerData.GetMapTimesPlayed(mapData.mapId).ToString();
+            }
+
+            if (highestScoreText != null)
+            {
+                if (playerData.GetMapHighestScore(mapData.mapId) == 0) 
+                    highestScoreText.text = "NOT RECORD";
+                else 
+                    highestScoreText.text = playerData.GetMapHighestScore(mapData.mapId).ToString();
+            }
         }
 
         [Button]
