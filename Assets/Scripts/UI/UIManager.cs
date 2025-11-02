@@ -447,21 +447,40 @@ namespace UI
         /// <summary>
         /// Continue
         /// </summary>
+        /// <summary>
+        /// Continue
+        /// </summary>
         public void OnClickContinue()
         {
             var data = PlayerProfileManager.ContinueOrNull();
-            ActiveProfileService.Instance?.SetActive(data.ProfileId);
-            LeaderboardItemPresenter.RefreshAll();
             if (data == null)
             {
-                Debug.Log("No active profile, show create screen.");
+                NotificationManager.Instance.PlayNotification("notify_warn", "Please create your new game first to continue.", 2f);
                 OpenDisplayPanel();
+                return;
+            }
+            
+            if (ActiveProfileService.Instance != null)
+            {
+                if (string.IsNullOrEmpty(data.ProfileId))
+                {
+                    Debug.LogWarning("ProfileId is null or empty. Cannot set active profile.");
+                    OpenDisplayPanel();
+                    return;
+                }
+
+                ActiveProfileService.Instance.SetActive(data.ProfileId);
             }
             else
             {
-                OpenGameModePanel();
+                Debug.LogWarning("ActiveProfileService.Instance is null.");
+                OpenDisplayPanel();
+                return;
             }
+            LeaderboardItemPresenter.RefreshAll();
+            OpenGameModePanel();
         }
+
 
         public void OpenModePanel(string mode)
         {

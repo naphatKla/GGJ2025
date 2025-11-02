@@ -411,12 +411,22 @@ namespace GameControl.SO
         
         #region Map Setting
         [FoldoutGroup("Map Setting")]
+        [Tooltip("id")]
+        public string mapId;
+        
+        [FoldoutGroup("Map Setting")]
         [Tooltip("Name of this map")]
         public string mapName;
         
         [FoldoutGroup("Map Setting")]
-        [Tooltip("Background image to use for this map")]
-        public Sprite background;
+        [Tooltip("Description")]
+        [TextArea(1, 5)]
+        public string description;
+        
+        [FoldoutGroup("Map Setting")]
+        [Tooltip("Description show if it still lock")]
+        [TextArea(1, 5)]
+        public string lockdescription;
     
         [FoldoutGroup("Map Setting")]
         [Tooltip("Map Image")]
