@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
+using Manager;
 using MoreMountains.Feedbacks;
 using Player;
 using ProjectExtensions;
@@ -164,6 +165,9 @@ namespace UI
         {
             await UniTask.Yield(PlayerLoopTiming.LastPostLateUpdate);
             if (!_allLoad) _allLoad = true;
+            
+            ActiveProfileService.Instance.AutoCreate();
+            PlayerSaveSystem.Instance.AutoCreate();
         }
         
 
@@ -431,49 +435,35 @@ namespace UI
             if (playerNameInput == null) return;
             if (string.IsNullOrWhiteSpace(playerNameInput.text))
             {
-                NotificationManager.Instance.PlayNotification("notify_warn", "Please enter your name to continue.", 2f);
+                NotificationManager.Instance?.PlayNotification("notify_warn", "Please enter your name to continue.", 2f);
                 return;
             }
 
             var trimmedName = playerNameInput.text.Trim();
-
-            var id   = PlayerProfileManager.CreateNew(trimmedName);
-            var data = PlayerSaveSystem.Read(id);
-            ActiveProfileService.Instance?.SetActive(id);
-            OpenGameModePanel();
+            var newData = PlayerSaveSystem.Instance.CreateNew(trimmedName);
+            ActiveProfileService.Instance.SetCurrent(newData);
+            
+            //First Unlock
+            ProgressionManager.Instance.UnlockMaps(new[]
+            {
+                "hard_mapvoidmetro",
+                "normal_mapvoidmetro"
+            });
+            
             LeaderboardItemPresenter.RefreshAll();
+            OpenGameModePanel();
         }
         
         /// <summary>
         /// Continue
         /// </summary>
-        /// <summary>
-        /// Continue
-        /// </summary>
         public void OnClickContinue()
         {
-            var data = PlayerProfileManager.ContinueOrNull();
+            var svc = ActiveProfileService.Instance;
+            var data = svc.LoadCurrent();
             if (data == null)
             {
                 NotificationManager.Instance.PlayNotification("notify_warn", "Please create your new game first to continue.", 2f);
-                OpenDisplayPanel();
-                return;
-            }
-            
-            if (ActiveProfileService.Instance != null)
-            {
-                if (string.IsNullOrEmpty(data.ProfileId))
-                {
-                    Debug.LogWarning("ProfileId is null or empty. Cannot set active profile.");
-                    OpenDisplayPanel();
-                    return;
-                }
-
-                ActiveProfileService.Instance.SetActive(data.ProfileId);
-            }
-            else
-            {
-                Debug.LogWarning("ActiveProfileService.Instance is null.");
                 OpenDisplayPanel();
                 return;
             }

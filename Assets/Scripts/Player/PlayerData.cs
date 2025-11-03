@@ -6,20 +6,35 @@ namespace Player
     [Serializable]
     public class PlayerData
     {
+        public int SchemaVersion;
+        
         public string ProfileId;
-        public int SaveVersion = 2; // ⬅️ bump version
         public string DisplayName;
         public long LastPlayedUnix;
 
-        // Global (ยังคงไว้ได้ ถ้ายังอยากแสดงสรุปรวม)
+        // Global
         public int HighestScore;
         public int LastScore;
 
         // Progression
-        public HashSet<string> LockedMaps = new HashSet<string>();
+        public HashSet<string> UnlockedMaps = new HashSet<string>();
 
-        // สถิติรายแผนที่ (key = mapId)
+        // perMap data (key = mapId)
         public Dictionary<string, MapStat> MapStats = new Dictionary<string, MapStat>();
+        
+        public void PostLoadInitializeAndMigrate()
+        {
+            UnlockedMaps ??= new HashSet<string>();
+            MapStats ??= new Dictionary<string, MapStat>();
+
+            const int CURRENT = 2;
+            if (SchemaVersion < 1)
+            {
+                // v1 → v2: เติมค่า default fields ใหม่ ฯลฯ
+            }
+
+            SchemaVersion = CURRENT;
+        }
     }
 
     [Serializable]
@@ -29,7 +44,7 @@ namespace Player
         public int HighestScore;
         public int LastScore;
     }
-
+    
     public static class PlayerDataExtensions
     {
         public static MapStat GetOrCreateMapStat(this PlayerData p, string mapId)

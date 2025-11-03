@@ -5,6 +5,7 @@ using GameControl.SO;
 using Player;
 using Sirenix.OdinInspector;
 using TMPro;
+using UI.Manager;
 using UI.MapSelection;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -55,13 +56,23 @@ namespace UI.MapSelectionRework
             ls.RefreshCells();
             
             startButton.onClick.RemoveAllListeners();
-            startButton.onClick.AddListener(() => SceneManager.LoadScene("Gameplay"));
+            startButton.onClick.AddListener(() => AssignStartButton());
         }
         
         private void OnEnable()
         {
             SelectIndexImmediate(0);
             MapSelectionSender.Instance.currentmapSelectionDataContainer = mapSelectionDataContainer;
+        }
+        
+        private void AssignStartButton()
+        {
+            if (m_SelectedObject == null || Current == null)
+            {
+                NotificationManager.Instance?.PlayNotification("notify_warn", "Lock, Please unlock to continue.", 2f);
+                return;
+            }
+            SceneManager.LoadScene("Gameplay");
         }
         
         public GameObject GetObject(int index)
@@ -92,7 +103,7 @@ namespace UI.MapSelectionRework
         private bool IsLockedByPlayer(MapDataSO map)
         {
             if (Current == null || map == null) return false;
-            return Current.LockedMaps.Contains(map.mapId);
+            return !Current.UnlockedMaps.Contains(map.mapId);
         }
         
         public void ProvideData(Transform transform, int idx)
@@ -117,11 +128,8 @@ namespace UI.MapSelectionRework
         public void SelectIndexImmediate(int index)
         {
             if (_items == null || _items.Count == 0) return;
-
+            if (IsLockedByPlayer(_items[index])) return;
             index = Mathf.Clamp(index, 0, _items.Count - 1);
-            if (IsLockedByPlayer(_items[index]))
-                index = FindFirstUnlockedIndex();
-
             if (index < 0)
             {
                 m_SelectedIndex = -1;
@@ -136,13 +144,6 @@ namespace UI.MapSelectionRework
             UpdateDisplayStats(_items[index], Current);
             GetComponent<LoopScrollRect>().RefreshCells();
             MapSelectionSender.Instance.currentMapSelectionIndex = index;
-        }
-        
-        private int FindFirstUnlockedIndex()
-        {
-            for (int i = 0; i < _items.Count; i++)
-                if (!IsLockedByPlayer(_items[i])) return i;
-            return -1;
         }
 
         public void ReturnObject(Transform trans)
@@ -187,7 +188,7 @@ namespace UI.MapSelectionRework
         {
             if (index < 0 || index >= _items.Count || Current == null) return;
             var id = _items[index].mapId;
-            if (Current.LockedMaps.Remove(id))
+            if (Current.UnlockedMaps.Add(id))
             {
                 if (m_SelectedIndex == -1) SelectIndexImmediate(index);
                 SaveAndRefresh();
@@ -199,18 +200,15 @@ namespace UI.MapSelectionRework
         {
             if (index < 0 || index >= _items.Count || Current == null) return;
             var id = _items[index].mapId;
-            if (Current.LockedMaps.Add(id))
+            if (Current.UnlockedMaps.Remove(id))
             {
-                if (m_SelectedIndex == index)
-                    SelectIndexImmediate(FindFirstUnlockedIndex());
-                else
-                    SaveAndRefresh();
+                SaveAndRefresh();
             }
         }
 
         private void SaveAndRefresh()
         {
-            ActiveProfileService.Instance?.SaveNow();
+            ActiveProfileService.Instance.SaveNow();
             GetComponent<LoopScrollRect>().RefreshCells();
         }
     }

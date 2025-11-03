@@ -1,201 +1,234 @@
 using System;
-using System.IO;
+using ProjectExtensions;
 using UnityEngine;
-using UnityEngine.SceneManagement;
+using System.IO;
+using UnityEditor;
+using Debug = UnityEngine.Debug;
+using Input = UnityEngine.Input;
 
 namespace Player
 {
-    /// <summary>
-    /// ตัวจัดการโปรไฟล์ที่อยู่ข้ามซีน + มี Debug Overlay
-    /// </summary>
-    public class ActiveProfileService : MonoBehaviour
+    public class ActiveProfileService : AutoCreateSingleton<ActiveProfileService>
     {
-        public static ActiveProfileService Instance { get; private set; }
-
-        [Header("Debug Overlay")]
-        public bool showOverlay = true;
-        public KeyCode toggleKey = KeyCode.BackQuote;
-        
-        [Header("Defaults (for Reset)")]
-        public DefaultPlayerDataSO defaultPlayerData;
-
         public PlayerData Current { get; private set; }
-        bool _confirmReset;
+        public bool HasCurrent => Current != null;
+        private const string PREFS_KEY = "current_profile_id";
+        
+        [Header("Debug Overlay")]
+        [SerializeField] private KeyCode toggleKey = KeyCode.F1;
+        [SerializeField] private bool _debugVisible = false;
 
-        void Awake()
+        private Vector2 _scroll;
+        private Rect _windowRect = new Rect(20, 20, 440, 400);
+        private GUIStyle _hdrStyle;
+        private GUIStyle _kvStyle;
+
+        protected override void Awake()
         {
-            if (Instance != null && Instance != this)
-            {
-                Destroy(gameObject);
-                return;
-            }
-            Instance = this;
+            base.Awake();
             DontDestroyOnLoad(gameObject);
-            InitializeFromPrefs();
         }
 
-        void Update()
+        public void AutoCreate()
         {
-            if (Input.GetKeyDown(toggleKey)) showOverlay = !showOverlay;
+            Debug.Log("ActiveProfileService created.");
+            LoadCurrent();
         }
 
-        public void InitializeFromPrefs()
+        public void SetCurrent(PlayerData data)
         {
-            var id = PlayerProfileManager.GetActiveProfileId();
+            Current = data;
+            if (data != null && !string.IsNullOrEmpty(data.ProfileId))
+            {
+                PlayerPrefs.SetString(PREFS_KEY, data.ProfileId);
+                PlayerPrefs.Save();
+            }
+        }
+
+        public PlayerData LoadCurrent()
+        {
+            if (Current != null) return Current;
+
+            //from PlayerPrefs
+            var id = PlayerPrefs.GetString(PREFS_KEY, string.Empty);
             if (!string.IsNullOrEmpty(id))
-                Current = PlayerSaveSystem.Read(id);
-            else
-                Current = null;
-        }
-
-        public void SetActive(string profileId)
-        {
-            if (string.IsNullOrEmpty(profileId))
             {
-                Debug.LogWarning("[ActiveProfileService] profileId is empty");
-                return;
+                var d = PlayerSaveSystem.Instance.Read(id);
+                if (d != null)
+                {
+                    SetCurrent(d);
+                    return d;
+                }
             }
-
-            var loaded = PlayerSaveSystem.Read(profileId);
-            if (loaded == null)
-            {
-                Debug.LogWarning($"[ActiveProfileService] no save found for id={profileId}");
-                return;
-            }
-
-            Current = loaded;
-            PlayerProfileManager.SetActiveProfile(profileId);
-            Debug.Log($"[ActiveProfileService] Active profile set to {profileId} ({Current.DisplayName})");
+            return null;
         }
         
         public void SaveNow()
         {
-            if (Current == null || string.IsNullOrEmpty(Current.ProfileId))
-            {
-                Debug.LogWarning("[ActiveProfileService] No current profile to save.");
-                return;
-            }
-            PlayerSaveSystem.WriteAtomic(Current);
-            Debug.Log("[ActiveProfileService] Saved.");
-        }
-
-        public void ReloadFromDisk()
-        {
-            if (Current == null) { InitializeFromPrefs(); return; }
-            var re = PlayerSaveSystem.Read(Current.ProfileId);
-            if (re != null) Current = re;
-        }
-
-        public static string GetProfileFolder(string profileId)
-        {
-            var root = Path.Combine(Application.persistentDataPath, "profiles");
-            return Path.Combine(root, profileId);
-        }
-        
-        public void ResetCurrentProfile(bool keepSameId = true, string displayNameOverride = null)
-        {
-            if (defaultPlayerData == null)
-            {
-                Debug.LogError("[ActiveProfileService] Please assign DefaultPlayerDataSO to use Reset.");
-                return;
-            }
-
-            string targetId;
-            if (Current == null || string.IsNullOrEmpty(Current.ProfileId))
-            {
-                targetId =Guid.NewGuid().ToString("N");
-                Current  = defaultPlayerData.Build(targetId, displayNameOverride);
-            }
-            else
-            {
-                targetId = keepSameId ? Current.ProfileId : System.Guid.NewGuid().ToString("N");
-
-                // ลบโฟลเดอร์เก่าถ้าไม่ reuse id (หรืออยากล้างไฟล์ทั้งหมดแม้ reuse ก็ลบ/สร้างใหม่ได้)
-                var folder = GetProfileFolder(Current.ProfileId);
-                try
-                {
-                    if (Directory.Exists(folder))
-                        Directory.Delete(folder, recursive: true);
-                }
-                catch (Exception e)
-                {
-                    Debug.LogWarning($"[ActiveProfileService] Reset delete failed: {e.Message}");
-                }
-
-                Current = defaultPlayerData.Build(targetId, displayNameOverride ?? Current.DisplayName);
-            }
-
-            PlayerProfileManager.SetActiveProfile(targetId);
-            PlayerSaveSystem.WriteAtomic(Current);
-            Debug.Log($"[ActiveProfileService] Profile reset. Using id={targetId}");
-        }
-
-        void OnGUI()
-        {
-            if (!showOverlay) return;
-
-            const int pad = 8;
-            var w = 560;
-            var h = 300;
-            var rect = new Rect(pad, pad, w, h);
-            GUILayout.BeginArea(rect, GUI.skin.box);
-
-            GUILayout.Label("<b>Active Profile (Debug)</b>");
             if (Current == null)
             {
-                GUILayout.Label("No active profile");
-                if (GUILayout.Button("Reload From Prefs")) InitializeFromPrefs();
-                GUILayout.EndArea();
+                Debug.LogWarning("[ActiveProfileService] SaveNow() skipped: Current is null.");
+                return;
+            }
+            PlayerSaveSystem.Instance.Save(Current);
+        }
+        
+        
+        // GUI DEBUG
+        private void Update()
+        {
+            if (Input.GetKeyDown(toggleKey))
+                _debugVisible = !_debugVisible;
+        }
+
+        private void InitStylesIfNeeded()
+        {
+            if (_hdrStyle == null)
+                _hdrStyle = new GUIStyle(GUI.skin.label)
+                {
+                    fontStyle = FontStyle.Bold,
+                    fontSize = 14
+                };
+            if (_kvStyle == null)
+                _kvStyle = new GUIStyle(GUI.skin.label)
+                {
+                    fontSize = 12,
+                    wordWrap = true
+                };
+        }
+
+        private void OnGUI()
+        {
+            if (!_debugVisible) return;
+            InitStylesIfNeeded();
+
+            _windowRect = GUI.Window(0xA11CE5, _windowRect, DrawWindow, "ActiveProfile (F1 to toggle)");
+        }
+
+        private void DrawWindow(int id)
+        {
+            var current = Current;
+
+            GUILayout.BeginVertical();
+            _scroll = GUILayout.BeginScrollView(_scroll);
+
+            if (current == null)
+            {
+                GUILayout.Label("Current: <null>", _hdrStyle);
+                GUILayout.Space(6);
+
+                if (GUILayout.Button("LoadCurrent()"))
+                {
+                    var d = LoadCurrent();
+                    Debug.Log(d != null
+                        ? $"[ActiveProfileService] Loaded {d.ProfileId}"
+                        : "[ActiveProfileService] LoadCurrent() => null");
+                }
+
+                GUILayout.EndScrollView();
+                GUILayout.EndVertical();
+                GUI.DragWindow(new Rect(0, 0, 10000, 22));
                 return;
             }
 
-            string shortId = string.IsNullOrEmpty(Current.ProfileId) ? "-" :
-                (Current.ProfileId.Length > 8 ? Current.ProfileId.Substring(0, 8) : Current.ProfileId);
+            // Header
+            GUILayout.Label("Current Profile", _hdrStyle);
+            DrawKV("ProfileId", current.ProfileId);
+            DrawKV("DisplayName", current.DisplayName);
+            DrawKV("HighestScore", current.HighestScore.ToString());
+            DrawKV("LastScore", current.LastScore.ToString());
+            DrawKV("LastPlayed (unix)", current.LastPlayedUnix.ToString());
+            DrawKV("LastPlayed (local)", UnixToLocalString(current.LastPlayedUnix));
 
-            GUILayout.Label($"Name: {Current.DisplayName}");
-            GUILayout.Label($"ProfileId: {shortId}");
-            GUILayout.Label($"HighestScore: {Current.HighestScore}");
-            GUILayout.Label($"LastScore: {Current.LastScore}");
-            if (Current.LastPlayedUnix > 0)
-            {
-                var dt = DateTimeOffset.FromUnixTimeSeconds(Current.LastPlayedUnix)
-                                        .ToLocalTime().DateTime;
-                GUILayout.Label($"LastPlayed: {dt}");
-            }
-
-            var folder = GetProfileFolder(Current.ProfileId);
-            GUILayout.Label($"Path: {folder}");
-
-            GUILayout.BeginHorizontal();
-            if (GUILayout.Button("Open Folder")) Application.OpenURL("file://" + folder);
-            if (GUILayout.Button("Save Now")) SaveNow();
-            if (GUILayout.Button("Reload")) ReloadFromDisk();
-            if (GUILayout.Button("Close Overlay")) showOverlay = false;
-            GUILayout.EndHorizontal();
-            
             GUILayout.Space(8);
-            GUILayout.BeginHorizontal();
-            GUI.enabled = defaultPlayerData != null;
-            if (_confirmReset)
-            {
-                GUI.backgroundColor = Color.red;
-                if (GUILayout.Button("Confirm Reset (wipe & defaults)"))
-                {
-                    ResetCurrentProfile(keepSameId: true);
-                    _confirmReset = false;
-                    GUI.backgroundColor = Color.white;
-                }
-                GUI.backgroundColor = Color.white;
-                if (GUILayout.Button("Cancel")) _confirmReset = false;
-            }
+            GUILayout.Label("UnlockedMaps", _hdrStyle);
+            if (current.UnlockedMaps is { Count: > 0 })
+                foreach (var m in current.UnlockedMaps)
+                    GUILayout.Label($"• {m}", _kvStyle);
             else
+                GUILayout.Label("(empty)", _kvStyle);
+
+            GUILayout.Space(8);
+            GUILayout.Label("MapStats", _hdrStyle);
+            if (current.MapStats is { Count: > 0 })
+                foreach (var kv in current.MapStats)
+                {
+                    var s = kv.Value;
+                    GUILayout.Label($"• {kv.Key}  |  Times: {s.TimesPlayed}  HS: {s.HighestScore}  Last: {s.LastScore}",
+                        _kvStyle);
+                }
+            else
+                GUILayout.Label("(empty)", _kvStyle);
+
+            GUILayout.Space(10);
+            GUILayout.Label("Actions", _hdrStyle);
+
+            GUILayout.BeginHorizontal();
+            if (GUILayout.Button("SaveNow"))
             {
-                if (GUILayout.Button("Reset Profile to Defaults")) _confirmReset = true;
+                SaveNow();
+                Debug.Log("[ActiveProfileService] SaveNow() called.");
             }
-            GUI.enabled = true;
-            GUILayout.EndHorizontal();
+
+            if (GUILayout.Button("Reload"))
+                if (!string.IsNullOrEmpty(current.ProfileId))
+                {
+                    var re = PlayerSaveSystem.Instance.Read(current.ProfileId);
+                    if (re != null) SetCurrent(re);
+                }
+
+            if (GUILayout.Button("Clear Current"))
+            {
+                SetCurrent(null);
+                Debug.Log("[ActiveProfileService] Current cleared.");
+            }
             
-            GUILayout.EndArea();
+            GUILayout.Space(1);
+            if (GUILayout.Button("Open Save Folder"))
+            {
+                var root = PlayerSaveSystem.Instance.GetRootPath();
+                OpenFolderWindows(root);
+            }
+            GUILayout.EndHorizontal();
+
+            GUILayout.EndScrollView();
+            GUILayout.EndVertical();
+            GUI.DragWindow(new Rect(0, 0, 10000, 18));
+        }
+        
+        private static void OpenFolderWindows(string path)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(path)) return;
+                if (!Directory.Exists(path)) Directory.CreateDirectory(path);
+                EditorUtility.RevealInFinder(path);
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"[ActiveProfileService] OpenFolderWindows failed: {e}");
+            }
+        }
+
+        private static string UnixToLocalString(long unix)
+        {
+            try
+            {
+                var dt = DateTimeOffset.FromUnixTimeSeconds(unix).ToLocalTime();
+                return dt.ToString("yyyy-MM-dd HH:mm:ss");
+            }
+            catch
+            {
+                return "-";
+            }
+        }
+
+        private void DrawKV(string k, string v)
+        {
+            GUILayout.BeginHorizontal();
+            GUILayout.Label(k + ":", GUILayout.Width(140));
+            GUILayout.Label(v ?? "<null>", _kvStyle);
+            GUILayout.EndHorizontal();
         }
     }
 }
