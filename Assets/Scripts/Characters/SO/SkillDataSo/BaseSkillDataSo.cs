@@ -6,6 +6,7 @@ using Characters.StatusEffectSystems;
 using Sirenix.OdinInspector;
 using Sirenix.Serialization;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Characters.SO.SkillDataSo
 {
@@ -45,8 +46,12 @@ namespace Characters.SO.SkillDataSo
         [Unit(Units.Second)]
         [SerializeField,
          PropertyTooltip("Cooldown duration (in seconds) before the skill can be used again after activation.")]
-        [PropertySpace(SpaceAfter = 10, SpaceBefore = 0)]
         private float cooldown = 1f;
+
+        [FormerlySerializedAs("skillStack")]
+        [SerializeField, PropertyTooltip("Skill stack amount of use.")]
+        [PropertySpace(SpaceAfter = 10, SpaceBefore = 0)]
+        private int maxStack = 1;
 
         [FoldoutGroup("Feedback", Order = 99)]
         [ValueDropdown("@FeedbackName.Odin.ShortGroupWithNone(\"Skill\")")]
@@ -96,6 +101,7 @@ namespace Characters.SO.SkillDataSo
         public string SkillName => skillName;
         public string SkillDescription => skillDescription;
         public float Cooldown => cooldown;
+        public int MaxStack => maxStack;
         public bool ClearBuffOnSkillExit => clearBuffOnSkillExit;
         public List<StatusEffectDataPayload> StatusEffectOnSkillStart => statusEffectOnSkillStart;
         public Type SkillRuntime => _skillRuntime;
