@@ -8,23 +8,25 @@ namespace Characters.SkillSystems.SkillObjects
     {
         [SerializeField] private TextMeshPro countDownText;
         [SerializeField] private float countDownDuration = 5f;
-        private bool isTimer;
+        private bool _isTimer = false;
         
         public async UniTask WaitPlaceBombAsync()
         {
-            if (isTimer) return;
-
-            isTimer = true;
+            Debug.Log("call?");
+            if (_isTimer) return;
+            
+            _isTimer = true;
             float countDownTimer = countDownDuration;
             
-            while (countDownTimer <= 0)
+            while (countDownTimer > 0)
             {
                 countDownTimer -= Time.deltaTime;
                 countDownText.text = countDownTimer.ToString("F1");
+                Debug.Log(countDownTimer);
                 await UniTask.Yield(PlayerLoopTiming.Update);
             }
 
-            isTimer = false;    
+            _isTimer = false;    
         }
     }
 }
