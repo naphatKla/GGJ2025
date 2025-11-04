@@ -17,5 +17,10 @@ namespace Characters.SO.SkillDataSo
         
         [FoldoutGroup("Skill Configs")]
         [SerializeField] private float explosionRadius;
+
+        public float BaseDamage => baseDamage;
+        public float DamageMultiplier => damageMultiplier;
+        public float ChargeDuration => chargeDuration;
+        public float ExplosionRadius => explosionRadius;
     }
 }
