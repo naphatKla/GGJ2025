@@ -20,7 +20,8 @@ namespace GameControl.EventMap
         [SerializeField] float basePull = 8f; 
         [SerializeField] float stopDistance = 0.1f;
         [SerializeField] AnimationCurve pullCurve = AnimationCurve.EaseInOut(0f, 0f, 1f, 1f);
-        [SerializeField] bool useExponential = true;  
+        [SerializeField] bool useExponential = true;
+        private bool IsPerforming;
 
         private static readonly Collider2D[] _hits = new Collider2D[64];
 
@@ -29,7 +30,11 @@ namespace GameControl.EventMap
         public Vector3 Offset { get => sphereOffset; set => sphereOffset = value; }
         
         private void OnEnable() => FixedUpdateManager.Instance.Register(this);
-        private void OnDisable() => FixedUpdateManager.Current?.Unregister(this);
+        private void OnDisable()
+        {
+            FixedUpdateManager.Current?.Unregister(this);
+            IsPerforming = false;
+        }
 
         public override async UniTask PlayPreview()
         {
@@ -42,7 +47,10 @@ namespace GameControl.EventMap
             );
         }
 
-        protected override void Perform() { }
+        protected override void Perform()
+        {
+            IsPerforming = true;
+        }
 
         private void OnDrawGizmos()
         {
@@ -57,6 +65,7 @@ namespace GameControl.EventMap
 
         public void OnFixedUpdate()
         {
+            if (!IsPerforming) return;
             //Pull
             PullPlayer();
             //Dmg on touch Center

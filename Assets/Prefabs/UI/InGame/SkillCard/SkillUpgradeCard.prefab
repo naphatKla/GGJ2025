@@ -65,7 +65,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -140406553640221912, guid: f34984f0b8db5c842bb68070763d989f, type: 3}
+  m_Sprite: {fileID: -6683071407405286951, guid: c46981085790c9e45a518d33ffdf7eb7, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -601,7 +601,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: bfbd5cc29e3aaf3459badb7043df840c, type: 3}
+  m_Sprite: {fileID: 21300000, guid: c69ff94da1939624c86a7da2d3e659ca, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -630,7 +630,7 @@ MonoBehaviour:
   m_Elasticity: 0.1
   m_Inertia: 1
   m_DecelerationRate: 0.135
-  m_ScrollSensitivity: 0.4
+  m_ScrollSensitivity: 0.01
   m_Viewport: {fileID: 1318271231341441388}
   m_HorizontalScrollbar: {fileID: 0}
   m_VerticalScrollbar: {fileID: 7664553080986157955}
@@ -884,7 +884,7 @@ GameObject:
   - component: {fileID: 5340545038797978921}
   - component: {fileID: 5262519522544158734}
   m_Layer: 5
-  m_Name: SolfUpgradePanelCard
+  m_Name: SkillUpgradeCard
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1072,7 +1072,7 @@ MonoBehaviour:
   m_ShadowMirrorScale: 0.5
   m_ShadowBlurIntensity: 1
   m_ShadowColorFilter: 4
-  m_ShadowColor: {r: 0, g: 0.1972177, b: 0.5, a: 1}
+  m_ShadowColor: {r: 1, g: 0.42267352, b: 0, a: 1}
   m_ShadowColorGlow: 1
   m_GradationMode: 2
   m_GradationIntensity: 1
@@ -1083,8 +1083,8 @@ MonoBehaviour:
   m_GradationColor4: {r: 1, g: 1, b: 1, a: 1}
   m_GradationGradient:
     serializedVersion: 2
-    key0: {r: 0.514151, g: 0.93723017, b: 1, a: 1}
-    key1: {r: 0, g: 0.5638199, b: 1, a: 1}
+    key0: {r: 1, g: 0.83413935, b: 0, a: 1}
+    key1: {r: 1, g: 0.26311338, b: 0, a: 1}
     key2: {r: 0, g: 0, b: 0, a: 0}
     key3: {r: 0, g: 0, b: 0, a: 0}
     key4: {r: 0, g: 0, b: 0, a: 0}
@@ -1280,8 +1280,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 404ef2654e3037e4eaed94645889028a, type: 3}
-  m_Type: 1
+  m_Sprite: {fileID: 509187390760909560, guid: e5decc8ce065e3744a007a7a7c1be98a, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -1642,8 +1642,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -2444357558576157911, guid: af7b9bf58efd3764d88b390cf54f132c, type: 3}
-  m_Type: 1
+  m_Sprite: {fileID: -2444357558576157911, guid: 7e0d9101d6010514fb4a64ec2c8fab77, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -1733,10 +1733,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1536068703615366902}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 9.985, y: -3.315}
-  m_SizeDelta: {x: 17.97, y: 4.63}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &9191027289951133871
 CanvasRenderer:
@@ -2887,7 +2887,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6714671713128968534, guid: d1bd0d16c7519824b8198ddfa43a33b5, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 16.349197
+      value: 16.67
       objectReference: {fileID: 0}
     - target: {fileID: 6714671713128968534, guid: d1bd0d16c7519824b8198ddfa43a33b5, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -2903,12 +2903,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6726287294043876300, guid: d1bd0d16c7519824b8198ddfa43a33b5, type: 3}
       propertyPath: m_Type
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6726287294043876300, guid: d1bd0d16c7519824b8198ddfa43a33b5, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: 88bedc29dac11ac44b15af2ffaf0ad2e, type: 3}
+      objectReference: {fileID: 3151399901194862100, guid: 88710a7a7cb278e4ba46cd2bcf7f935d, type: 3}
     - target: {fileID: 9102982543541426600, guid: d1bd0d16c7519824b8198ddfa43a33b5, type: 3}
       propertyPath: m_Name
       value: DividerC (2)
@@ -3025,12 +3025,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6726287294043876300, guid: d1bd0d16c7519824b8198ddfa43a33b5, type: 3}
       propertyPath: m_Type
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6726287294043876300, guid: d1bd0d16c7519824b8198ddfa43a33b5, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: 014f0a847a726b14cbd83ed55fe49fe9, type: 3}
+      objectReference: {fileID: 8200618734859841177, guid: ccdea4e346452ff44aeb0fa8869bdcdd, type: 3}
     - target: {fileID: 9102982543541426600, guid: d1bd0d16c7519824b8198ddfa43a33b5, type: 3}
       propertyPath: m_Name
       value: DividerC (1)
