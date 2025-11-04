@@ -340,10 +340,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ecd8e14b8eaea9c41aaa109e09ac609f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  deletetime: 2.5
+  deletetime: 7
   previewDuration: 1
   delayBeforePerformAfterPreview: 0.25
-  damage: 5
+  damage: 10
   previewEffect: {fileID: 5204890896891619266}
   debug: 0
   notifyFeedback: {fileID: 137818649791452312}
@@ -355,7 +355,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 128
   dmgCenterRadius: 5
-  basePull: 4
+  basePull: 12
   stopDistance: 0.1
   pullCurve:
     serializedVersion: 2
@@ -363,27 +363,36 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 0
       value: 0
-      inSlope: 1.0000001
-      outSlope: 1.0000001
-      tangentMode: 34
+      inSlope: 0.21594705
+      outSlope: 0.21594705
+      tangentMode: 0
       weightedMode: 0
       inWeight: 0
-      outWeight: 0.33333334
+      outWeight: 1
     - serializedVersion: 3
-      time: 0.5219826
-      value: 0.52198267
-      inSlope: 1
-      outSlope: 1
-      tangentMode: 34
+      time: 0.55
+      value: 0.45
+      inSlope: 2.109233
+      outSlope: 2.109233
+      tangentMode: 0
       weightedMode: 0
       inWeight: 0.33333334
-      outWeight: 0.33333334
+      outWeight: 0.2351315
+    - serializedVersion: 3
+      time: 0.7995851
+      value: 0.95
+      inSlope: 0.5611339
+      outSlope: 0.5611339
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.35915175
     - serializedVersion: 3
       time: 1
       value: 1
-      inSlope: 0.9999999
-      outSlope: 0.9999999
-      tangentMode: 34
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
       weightedMode: 0
       inWeight: 0.33333334
       outWeight: 0
