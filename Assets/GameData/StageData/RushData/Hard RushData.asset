@@ -317,6 +317,8 @@ MonoBehaviour:
     enableMovementAfter: 1
     enablePatternCenter: 0
     patternCenter: {x: 0, y: 0}
+    useCondition: 0
+    patternCondition: []
   - enableThisPattern: 1
     bypassSpawnCondition: 0
     enableSpecificEnemy: 0
@@ -328,6 +330,8 @@ MonoBehaviour:
     enableMovementAfter: 1
     enablePatternCenter: 0
     patternCenter: {x: 0, y: 0}
+    useCondition: 0
+    patternCondition: []
   - enableThisPattern: 1
     bypassSpawnCondition: 0
     enableSpecificEnemy: 0
@@ -339,6 +343,8 @@ MonoBehaviour:
     enableMovementAfter: 1
     enablePatternCenter: 0
     patternCenter: {x: 0, y: 0}
+    useCondition: 0
+    patternCondition: []
   - enableThisPattern: 1
     bypassSpawnCondition: 0
     enableSpecificEnemy: 0
@@ -354,6 +360,8 @@ MonoBehaviour:
     enableMovementAfter: 1
     enablePatternCenter: 0
     patternCenter: {x: 0, y: 0}
+    useCondition: 0
+    patternCondition: []
   - enableThisPattern: 1
     bypassSpawnCondition: 0
     enableSpecificEnemy: 0
@@ -365,6 +373,8 @@ MonoBehaviour:
     enableMovementAfter: 1
     enablePatternCenter: 0
     patternCenter: {x: 0, y: 0}
+    useCondition: 0
+    patternCondition: []
   - enableThisPattern: 1
     bypassSpawnCondition: 0
     enableSpecificEnemy: 0
@@ -376,6 +386,8 @@ MonoBehaviour:
     enableMovementAfter: 1
     enablePatternCenter: 0
     patternCenter: {x: 0, y: 0}
+    useCondition: 0
+    patternCondition: []
   - enableThisPattern: 1
     bypassSpawnCondition: 0
     enableSpecificEnemy: 0
@@ -387,6 +399,8 @@ MonoBehaviour:
     enableMovementAfter: 1
     enablePatternCenter: 0
     patternCenter: {x: 0, y: 0}
+    useCondition: 0
+    patternCondition: []
   - enableThisPattern: 1
     bypassSpawnCondition: 0
     enableSpecificEnemy: 0
@@ -398,6 +412,8 @@ MonoBehaviour:
     enableMovementAfter: 1
     enablePatternCenter: 0
     patternCenter: {x: 0, y: 0}
+    useCondition: 0
+    patternCondition: []
   - enableThisPattern: 1
     bypassSpawnCondition: 0
     enableSpecificEnemy: 0
@@ -409,6 +425,8 @@ MonoBehaviour:
     enableMovementAfter: 1
     enablePatternCenter: 0
     patternCenter: {x: 0, y: 0}
+    useCondition: 0
+    patternCondition: []
   playAllPatternIn: 0
   triggerAllPatternIn: 45
   triggerTimeCanDecrease: 0
@@ -424,77 +442,137 @@ MonoBehaviour:
     catagolyMapEvent: Main
     allMapEventID:
     - mapEventID: 2Giant
-      chance: 10
+      chance: 7.6
       useWeightRandom: 1
       overrideData: 0
-      damageMap: 0
-      useCondition: 0
-      mapEventCondition: []
+      damageMap: 2
+      useCondition: 1
+      mapEventCondition:
+      - conditionType: 0
+        startAfter: 0
+        endAt: 240
     - mapEventID: Horizontal
-      chance: 10
+      chance: 7.6
       useWeightRandom: 1
       overrideData: 0
-      damageMap: 0
-      useCondition: 0
-      mapEventCondition: []
+      damageMap: 2
+      useCondition: 1
+      mapEventCondition:
+      - conditionType: 0
+        startAfter: 0
+        endAt: 180
     - mapEventID: Vertical
-      chance: 10
+      chance: 7.6
       useWeightRandom: 1
       overrideData: 0
-      damageMap: 0
-      useCondition: 0
-      mapEventCondition: []
+      damageMap: 2
+      useCondition: 1
+      mapEventCondition:
+      - conditionType: 0
+        startAfter: 0
+        endAt: 180
     - mapEventID: Basket
-      chance: 10
+      chance: 7.6
       useWeightRandom: 1
       overrideData: 0
-      damageMap: 0
-      useCondition: 0
-      mapEventCondition: []
+      damageMap: 2
+      useCondition: 1
+      mapEventCondition:
+      - conditionType: 0
+        startAfter: 120
+        endAt: -1
     - mapEventID: Firework_TopL_BottomR
-      chance: 10
+      chance: 7.6
       useWeightRandom: 1
       overrideData: 0
-      damageMap: 0
-      useCondition: 0
-      mapEventCondition: []
+      damageMap: 2
+      useCondition: 1
+      mapEventCondition:
+      - conditionType: 0
+        startAfter: 60
+        endAt: 300
     - mapEventID: Firework_TopR_BottomL
-      chance: 10
+      chance: 7.6
       useWeightRandom: 1
       overrideData: 0
-      damageMap: 0
-      useCondition: 0
-      mapEventCondition: []
+      damageMap: 2
+      useCondition: 1
+      mapEventCondition:
+      - conditionType: 0
+        startAfter: 60
+        endAt: 300
     - mapEventID: RightHole
-      chance: 10
+      chance: 7.6
       useWeightRandom: 1
       overrideData: 0
-      damageMap: 0
-      useCondition: 0
-      mapEventCondition: []
+      damageMap: 5
+      useCondition: 1
+      mapEventCondition:
+      - conditionType: 0
+        startAfter: 180
+        endAt: -1
     - mapEventID: LeftHole
-      chance: 10
+      chance: 7.6
       useWeightRandom: 1
       overrideData: 0
-      damageMap: 0
-      useCondition: 0
-      mapEventCondition: []
+      damageMap: 5
+      useCondition: 1
+      mapEventCondition:
+      - conditionType: 0
+        startAfter: 180
+        endAt: -1
     - mapEventID: Random_Line
-      chance: 10
+      chance: 7.6
       useWeightRandom: 1
       overrideData: 0
-      damageMap: 0
-      useCondition: 0
-      mapEventCondition: []
+      damageMap: 2
+      useCondition: 1
+      mapEventCondition:
+      - conditionType: 0
+        startAfter: 180
+        endAt: -1
     - mapEventID: Wave
-      chance: 10
+      chance: 7.6
       useWeightRandom: 1
       overrideData: 0
-      damageMap: 0
-      useCondition: 0
-      mapEventCondition: []
+      damageMap: 2
+      useCondition: 1
+      mapEventCondition:
+      - conditionType: 0
+        startAfter: 120
+        endAt: -1
+    - mapEventID: SBlackHole
+      chance: 7.7
+      useWeightRandom: 1
+      overrideData: 0
+      damageMap: 2
+      useCondition: 1
+      mapEventCondition:
+      - conditionType: 0
+        startAfter: 300
+        endAt: -1
+    - mapEventID: MBlackHole
+      chance: 7.7
+      useWeightRandom: 1
+      overrideData: 0
+      damageMap: 5
+      useCondition: 1
+      mapEventCondition:
+      - conditionType: 0
+        startAfter: 240
+        endAt: -1
+    - mapEventID: BBlackHole
+      chance: 7.7
+      useWeightRandom: 1
+      overrideData: 0
+      damageMap: 7
+      useCondition: 1
+      mapEventCondition:
+      - conditionType: 0
+        startAfter: 300
+        endAt: -1
     eventMapChance: 100
-    playInterval: 3
+    playInterval: 5
     intervalCanModify: 0
     rateModify: -27
     intervalModify: 540
