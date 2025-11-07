@@ -23,6 +23,7 @@ namespace Characters.SkillSystems.SkillRuntimes
     {
         protected float cooldown;
         protected float currentCooldown;
+        protected float globalCooldownCounter;
         protected int maxStack;
         protected int currentStack;
         public float Cooldown => cooldown;
@@ -52,8 +53,11 @@ namespace Characters.SkillSystems.SkillRuntimes
 
         public virtual void UpdateCoolDown(float deltaTime)
         {
-            if (currentCooldown <= 0) return;
-            SetCurrentCooldown(currentCooldown - deltaTime);
+            if (globalCooldownCounter > 0)
+                globalCooldownCounter -= deltaTime;
+            
+            if (currentCooldown > 0)
+                SetCurrentCooldown(currentCooldown - deltaTime);
         }
 
         public void RegisterCooldownReadyCallback(Action callback)
@@ -91,7 +95,9 @@ namespace Characters.SkillSystems.SkillRuntimes
         public override async void PerformSkill()
         {
             if (IsCooldown || IsPerforming) return;
+            if (globalCooldownCounter > 0) return;
 
+            globalCooldownCounter = skillData.GlobalCooldown;
             currentStack = Mathf.Clamp(currentStack - 1, 0, maxStack);
             
             if (currentStack <= 0)
