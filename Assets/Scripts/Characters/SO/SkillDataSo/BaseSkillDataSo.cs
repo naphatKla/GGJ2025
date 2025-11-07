@@ -48,6 +48,11 @@ namespace Characters.SO.SkillDataSo
          PropertyTooltip("Cooldown duration (in seconds) before the skill can be used again after activation.")]
         private float cooldown = 1f;
 
+        [Unit(Units.Second)]
+        [SerializeField,
+         PropertyTooltip("The minimum cooldown required for prevent performing skill immediately")]
+        private float globalCooldown = 0.25f;
+
         [FormerlySerializedAs("skillStack")]
         [SerializeField, PropertyTooltip("Skill stack amount of use.")]
         [PropertySpace(SpaceAfter = 10, SpaceBefore = 0)]
@@ -101,6 +106,7 @@ namespace Characters.SO.SkillDataSo
         public string SkillName => skillName;
         public string SkillDescription => skillDescription;
         public float Cooldown => cooldown;
+        public float GlobalCooldown => globalCooldown;
         public int MaxStack => maxStack;
         public bool ClearBuffOnSkillExit => clearBuffOnSkillExit;
         public List<StatusEffectDataPayload> StatusEffectOnSkillStart => statusEffectOnSkillStart;

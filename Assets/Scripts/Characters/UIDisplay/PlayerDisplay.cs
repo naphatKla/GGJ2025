@@ -6,6 +6,7 @@ using Characters.HeathSystems;
 using Characters.LevelSystems;
 using Characters.ScoreSystems;
 using Characters.SkillSystems;
+using Characters.SkillSystems.SkillRuntimes;
 using Characters.SO.ComboStreakDataSO.StageDataSO;
 using Characters.SO.SkillDataSo;
 using Characters.StatusEffectSystems;
@@ -99,10 +100,13 @@ namespace Characters.UIDisplay
 
         [FoldoutGroup("SolfUpgrade Display"), Title("UI"), FoldoutGroup("SolfUpgrade Display")]
         [FoldoutGroup("SolfUpgrade Display")]public GameObject solfUpgradePanel;
-
-        [FoldoutGroup("SolfUpgrade Display")] public SolfUpgradeViewholder solfUpgradeViewholder;
         [FoldoutGroup("SolfUpgrade Display")] public Button solfUpgradeSelectButton;
         [FoldoutGroup("SolfUpgrade Display")] public ParticleSystem buttonFeedBack;
+        
+        [FoldoutGroup("SolfUpgrade Display"),Title("Card Skill Prefab")] 
+        public SolfUpgradeViewholder skillViewholder;
+        [FoldoutGroup("SolfUpgrade Display")] 
+        public SolfUpgradeViewholder mainskillViewholder;
 
         private readonly Queue<BaseSkillDataSo> skillQueue = new();
         private readonly List<SolfUpgradeViewholder> _cards = new();
@@ -478,6 +482,7 @@ namespace Characters.UIDisplay
             foreach (var skill in skillList)
                 skillQueue.Enqueue(skill);
 
+            Debug.Log(skillList);
             if (!isChoosingSkill)
                 ShowNextSkillPopup();
         }
@@ -518,14 +523,21 @@ namespace Characters.UIDisplay
         
         private async UniTask CreateSkillCard(BaseSkillDataSo skill)
         {
-            var skillcard = Instantiate(solfUpgradeViewholder.gameObject, solfUpgradePanel.transform);
+            bool isAuto = typeof(IAutoSkillTriggerSource).IsAssignableFrom(skill.SkillRuntime);
+
+            GameObject skillcard;
+            if (isAuto)
+                skillcard = Instantiate(skillViewholder.gameObject, solfUpgradePanel.transform);
+            else
+                skillcard = Instantiate(mainskillViewholder.gameObject, solfUpgradePanel.transform);
+            
             var vh = skillcard.GetComponent<SolfUpgradeViewholder>();
             _cards.Add(vh);
-
+            
             bool isNew = !skillSystem.ContainsSkillWithSameRoot(skill);
             vh.UpdateUIModal(skill, isNew);
-            await SkillCardFeedback(skillcard.transform);
             vh.Bind(skill, isNew, HandleCardClicked, HandleCardHoldClicked);
+            await SkillCardFeedback(skillcard.transform);
         }
 
         private void PanelCardFeedback(Transform tf)

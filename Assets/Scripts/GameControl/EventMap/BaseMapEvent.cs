@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using MoreMountains.Feedbacks;
+using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.Pool;
 using UnityEngine.Serialization;
@@ -10,6 +11,7 @@ namespace GameControl.EventMap
 {
     public abstract class BaseMapEvent : MonoBehaviour
     {
+        [ReadOnly][ShowInInspector] private float _overAllTime;
         public float deletetime;
         public float previewDuration;
         public float delayBeforePerformAfterPreview;
@@ -23,6 +25,11 @@ namespace GameControl.EventMap
 
         private IObjectPool<BaseMapEvent> _pool;
         private CancellationTokenSource _cts;
+
+        private void OnValidate()
+        {
+            _overAllTime = deletetime + previewDuration + delayBeforePerformAfterPreview;
+        }
 
         public void SetPool(IObjectPool<BaseMapEvent> pool)
         {
