@@ -50,6 +50,10 @@ namespace UI
 
         [Header("Container (optional)")] [SerializeField]
         private Transform popupContainer;
+        
+        [Header("Preload")]
+        [SerializeField] private bool preloadOnAwake = true;
+        [SerializeField] private bool deactivateAfterPreload = true;
 
         // Events
         public event Action<string> OnPopupShown;
@@ -77,11 +81,40 @@ namespace UI
         public int PendingCount => _queue.Count;
         public bool HasActiveExclusive => !string.IsNullOrEmpty(_exclusiveActiveId);
 
+        public void PreloadAllSync()
+        {
+            BuildRegistry();
+            var parent = GetContainer();
+
+            foreach (var kv in _entryMap)
+            {
+                var e = kv.Value;
+                if (e == null || e.prefab == null) continue;
+                if (!_instances.TryGetValue(e.popupId, out var inst) || !inst)
+                {
+                    var go = Instantiate(e.prefab, parent);
+                    if (deactivateAfterPreload) go.SetActive(false);
+                    _instances[e.popupId] = go;
+                }
+                else if (deactivateAfterPreload && inst.activeSelf)
+                {
+                    inst.SetActive(false);
+                }
+            }
+        }
+        
+        public GameObject GetPreloadedInstance(string popupId)
+        {
+            return _instances.TryGetValue(popupId, out var go) ? go : null;
+        }
+
         protected override void Awake()
         {
             base.Awake();
             _scopeCts = new CancellationTokenSource();
             BuildRegistry();
+
+            if (preloadOnAwake) PreloadAllSync();
         }
 
         private void OnEnable()
@@ -115,6 +148,7 @@ namespace UI
             _scopeCts?.Dispose();
             _scopeCts = new CancellationTokenSource();
             ForceClearAllNow();
+            if (preloadOnAwake) PreloadAllSync();
         }
 
         private void ForceClearAllNow()

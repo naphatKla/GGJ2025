@@ -14,9 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mapId: hard_mapvoidmetro
   mapName: Void Metro
-  description: A depot-world whose cities were built around a tangle of ancient warp
-    spurs. The lines still flicker to life at odd hours, spitting out cargo, messages,
-    or sometimes people from centuries past.
+  description: The Main Astral Gate that bridges worlds across the galaxy.
   lockdescription: 'Unlock by XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
     XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
@@ -544,75 +542,135 @@ MonoBehaviour:
     catagolyMapEvent: Main
     allMapEventID:
     - mapEventID: 2Giant
-      chance: 10
+      chance: 7.6
       useWeightRandom: 1
       overrideData: 0
-      damageMap: 0
-      useCondition: 0
-      mapEventCondition: []
+      damageMap: 2
+      useCondition: 1
+      mapEventCondition:
+      - conditionType: 0
+        startAfter: 0
+        endAt: 240
     - mapEventID: Horizontal
-      chance: 10
+      chance: 7.6
       useWeightRandom: 1
       overrideData: 0
-      damageMap: 0
-      useCondition: 0
-      mapEventCondition: []
+      damageMap: 2
+      useCondition: 1
+      mapEventCondition:
+      - conditionType: 0
+        startAfter: 0
+        endAt: 180
     - mapEventID: Vertical
-      chance: 10
+      chance: 7.6
       useWeightRandom: 1
       overrideData: 0
-      damageMap: 0
-      useCondition: 0
-      mapEventCondition: []
+      damageMap: 2
+      useCondition: 1
+      mapEventCondition:
+      - conditionType: 0
+        startAfter: 0
+        endAt: 180
     - mapEventID: Basket
-      chance: 10
+      chance: 7.6
       useWeightRandom: 1
       overrideData: 0
-      damageMap: 0
-      useCondition: 0
-      mapEventCondition: []
+      damageMap: 2
+      useCondition: 1
+      mapEventCondition:
+      - conditionType: 0
+        startAfter: 120
+        endAt: -1
     - mapEventID: Firework_TopL_BottomR
-      chance: 10
+      chance: 7.6
       useWeightRandom: 1
       overrideData: 0
-      damageMap: 0
-      useCondition: 0
-      mapEventCondition: []
+      damageMap: 2
+      useCondition: 1
+      mapEventCondition:
+      - conditionType: 0
+        startAfter: 60
+        endAt: 300
     - mapEventID: Firework_TopR_BottomL
-      chance: 10
+      chance: 7.6
       useWeightRandom: 1
       overrideData: 0
-      damageMap: 0
-      useCondition: 0
-      mapEventCondition: []
+      damageMap: 2
+      useCondition: 1
+      mapEventCondition:
+      - conditionType: 0
+        startAfter: 60
+        endAt: 300
     - mapEventID: RightHole
-      chance: 10
+      chance: 7.6
       useWeightRandom: 1
       overrideData: 0
-      damageMap: 0
-      useCondition: 0
-      mapEventCondition: []
+      damageMap: 5
+      useCondition: 1
+      mapEventCondition:
+      - conditionType: 0
+        startAfter: 180
+        endAt: -1
     - mapEventID: LeftHole
-      chance: 10
+      chance: 7.6
       useWeightRandom: 1
       overrideData: 0
-      damageMap: 0
-      useCondition: 0
-      mapEventCondition: []
+      damageMap: 5
+      useCondition: 1
+      mapEventCondition:
+      - conditionType: 0
+        startAfter: 180
+        endAt: -1
     - mapEventID: Random_Line
-      chance: 10
+      chance: 7.6
       useWeightRandom: 1
       overrideData: 0
-      damageMap: 0
-      useCondition: 0
-      mapEventCondition: []
+      damageMap: 2
+      useCondition: 1
+      mapEventCondition:
+      - conditionType: 0
+        startAfter: 180
+        endAt: -1
     - mapEventID: Wave
-      chance: 10
+      chance: 7.6
       useWeightRandom: 1
       overrideData: 0
-      damageMap: 0
-      useCondition: 0
-      mapEventCondition: []
+      damageMap: 2
+      useCondition: 1
+      mapEventCondition:
+      - conditionType: 0
+        startAfter: 120
+        endAt: -1
+    - mapEventID: SBlackHole
+      chance: 7.7
+      useWeightRandom: 1
+      overrideData: 0
+      damageMap: 2
+      useCondition: 1
+      mapEventCondition:
+      - conditionType: 0
+        startAfter: 300
+        endAt: -1
+    - mapEventID: MBlackHole
+      chance: 7.7
+      useWeightRandom: 1
+      overrideData: 0
+      damageMap: 5
+      useCondition: 1
+      mapEventCondition:
+      - conditionType: 0
+        startAfter: 240
+        endAt: -1
+    - mapEventID: BBlackHole
+      chance: 7.7
+      useWeightRandom: 1
+      overrideData: 0
+      damageMap: 7
+      useCondition: 1
+      mapEventCondition:
+      - conditionType: 0
+        startAfter: 300
+        endAt: -1
     eventMapChance: 100
     playInterval: 30
     intervalCanModify: 0
