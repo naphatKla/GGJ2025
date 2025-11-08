@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using ProjectExtensions;
 using UnityEngine;
 using System.IO;
@@ -202,7 +203,8 @@ namespace Player
             {
                 if (string.IsNullOrEmpty(path)) return;
                 if (!Directory.Exists(path)) Directory.CreateDirectory(path);
-                EditorUtility.RevealInFinder(path);
+                //EditorUtility.RevealInFinder(path);
+                Process.Start(path);
             }
             catch (Exception e)
             {
