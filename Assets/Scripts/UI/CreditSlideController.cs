@@ -10,18 +10,24 @@ public class CreditSlideController : MonoBehaviour
     [SerializeField] private TMP_Text hintText;
 
     [Header("Slide Settings")]
-    [SerializeField] private float startY = -600f;    // จุดเริ่ม Y (ต่ำกว่าหน้าจอ)
-    [SerializeField] private float endY =  800f;      // จุดจบ Y (สูงกว่าหน้าจอ)
-    [SerializeField] private float duration = 20f;    // ระยะเวลาสไลด์ทั้งช่วง (วินาที)
+    [SerializeField] private float startY = -600f;
+    [SerializeField] private float endY = 800f;
+    [SerializeField] private float duration = 20f;
     [SerializeField] private AnimationCurve ease = AnimationCurve.Linear(0, 0, 1, 1);
 
-    [Header("Return / Skip")]
+    [Header("Hold-to-Speed-Up")]
+    [SerializeField] private float holdSpeedMultiplier = 3f;   
+    [SerializeField] private float holdEnableDelay = 1.0f;     
+    [SerializeField] private bool  holdAnyKeyAlsoWorks = true;
+
+    [Header("Return")]
     [SerializeField] private string mainSceneName = "Main";
-    [SerializeField] private float skipEnableDelay = 1.0f;  // หน่วงก่อนกดข้ามได้ กันเผลอคลิก
-    [SerializeField] private string hintMessage = "Click or tap to skip...";
+
+    [Header("UI")]
+    [SerializeField] private string hintMessage = "Hold to speed up...";
 
     private bool _returning;
-    private bool _skipReady;
+    private bool _holdReady;
 
     private void OnEnable()
     {
@@ -31,27 +37,15 @@ public class CreditSlideController : MonoBehaviour
             StartCoroutine(BlinkHint());
         }
 
-        StartCoroutine(EnableSkipAfterDelay());
+        StartCoroutine(EnableHoldAfterDelay());
         StartCoroutine(PlayCredits());
-    }
-
-    private void Update()
-    {
-        if (_returning || !_skipReady) return;
-
-        // คลิกเมาส์ / แตะจอ / กดปุ่มใดๆ เพื่อข้าม
-        if (Input.GetMouseButtonDown(0) || Input.touchCount > 0 || Input.anyKeyDown)
-        {
-            ReturnToMain();
-        }
     }
 
     private IEnumerator PlayCredits()
     {
         if (content == null)
             yield break;
-
-        // ตั้งค่าเริ่ม
+        
         var startPos = content.anchoredPosition;
         startPos.y = startY;
         content.anchoredPosition = startPos;
@@ -59,7 +53,9 @@ public class CreditSlideController : MonoBehaviour
         float t = 0f;
         while (t < duration && !_returning)
         {
-            t += Time.deltaTime;
+            float speedMul = IsHoldActive() ? holdSpeedMultiplier : 1f;
+            t += Time.deltaTime * Mathf.Max(0.01f, speedMul);
+
             float p = Mathf.Clamp01(t / duration);
             float eased = ease.Evaluate(p);
 
@@ -69,34 +65,52 @@ public class CreditSlideController : MonoBehaviour
             );
 
             yield return null;
-
-            // เผื่อกดข้ามระหว่างทาง
-            if (_returning) yield break;
         }
-
+        
         ReturnToMain();
+    }
+
+    private bool IsHoldActive()
+    {
+        if (!_holdReady) return false;
+        
+        bool mouseHolding = Input.GetMouseButton(0);
+        bool touchHolding = false;
+        if (Input.touchCount > 0)
+        {
+            for (int i = 0; i < Input.touchCount; i++)
+            {
+                var phase = Input.GetTouch(i).phase;
+                if (phase != TouchPhase.Canceled && phase != TouchPhase.Ended)
+                {
+                    touchHolding = true;
+                    break;
+                }
+            }
+        }
+        
+        bool keyboardHolding = holdAnyKeyAlsoWorks && Input.anyKey && !Input.GetMouseButton(0);
+
+        return mouseHolding || touchHolding || keyboardHolding;
     }
 
     private IEnumerator BlinkHint()
     {
-        // กระพริบด้วยการปรับ alpha 0–1 แบบ sine
-        var c = hintText.color;
+        var baseColor = hintText.color;
         while (!_returning)
         {
-            float a = 0.5f + 0.5f * Mathf.Sin(Time.unscaledTime * 4f); // 2Hz
-            hintText.color = new Color(c.r, c.g, c.b, a);
+            float a = 0.5f + 0.5f * Mathf.Sin(Time.unscaledTime * 4f); // ~2Hz
+            hintText.color = new Color(baseColor.r, baseColor.g, baseColor.b, a);
             yield return null;
         }
     }
 
-    private IEnumerator EnableSkipAfterDelay()
+    private IEnumerator EnableHoldAfterDelay()
     {
-        _skipReady = false;
-        yield return new WaitForSeconds(skipEnableDelay);
-        _skipReady = true;
+        _holdReady = false;
+        yield return new WaitForSeconds(holdEnableDelay);
+        _holdReady = true;
     }
-
-    public void Skip() => ReturnToMain();
 
     private void ReturnToMain()
     {
