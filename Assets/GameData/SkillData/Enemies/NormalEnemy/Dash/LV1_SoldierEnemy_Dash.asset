@@ -37,14 +37,17 @@ MonoBehaviour:
   nextSkillDataUpgrade: {fileID: 0}
   level: 1
   cooldown: 1
+  globalCooldown: 0.25
+  maxStack: 1
   startFeedback: Dash_Lv1
   exitFeedback: 
+  clearBuffOnSkillExit: 0
   statusEffectOnSkillStart: []
   dashBaseDamage: 0
   damageMultiplier: 100
   damageEnableDuration: 0.25
   dashDuration: 0.3
-  dashDistance: 10
+  dashDistance: 15
   dashEaseCurve:
     serializedVersion: 2
     m_Curve:
