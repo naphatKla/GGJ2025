@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using Challenge;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using GameControl.GameState;
@@ -123,6 +124,7 @@ namespace GameControl.Controller
         {
             if (_currentMapDataRuntime != null) Destroy(_currentMapDataRuntime);
             _currentMapDataRuntime = MakeRuntimeCopy(asset);
+            ModifyAllDataFromChallenge(_currentMapDataRuntime);
             if (_currentMapDataRuntime.endlessMode)
             {
                 MapState = MapState.Endless;
@@ -132,6 +134,27 @@ namespace GameControl.Controller
                 MapState = MapState.Normal;
             }
         }
+
+        private void ModifyAllDataFromChallenge(MapDataSO mapData)
+        {
+            if (mapData == null || mapData.EnemyOptions == null || Sender == null) return;
+            var snap = Sender.challengeData;
+            
+            foreach (var opt in mapData.EnemyOptions)
+            {
+                if (opt == null || opt.enemyData == null) continue;
+                var id = string.IsNullOrWhiteSpace(opt.id) ? string.Empty : opt.id;
+                var eSnap = snap.GetEnemy(id);
+
+                float hpState   = eSnap.Get(EnemyStat.MaxHP);
+                float dmgState  = eSnap.Get(EnemyStat.Damage);
+                float spdState  = eSnap.Get(EnemyStat.MoveSpeed);
+                float dashState = eSnap.Get(EnemyStat.DashDistance);
+                
+                opt.modifyNewData = true;
+            }
+        }
+
         
         private void EnterRush()
         {
