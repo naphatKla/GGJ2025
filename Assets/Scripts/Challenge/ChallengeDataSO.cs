@@ -37,14 +37,11 @@ namespace Challenge
         public float damage;
         [Tooltip("+1% MSPD = +1%")]
         public float moveSpeed;
-        [Tooltip("+1% Dash = +1%")]
-        public float dashDistance;
 
         public bool IsZero =>
             Mathf.Approximately(maxHP, 0) &&
             Mathf.Approximately(damage, 0) &&
-            Mathf.Approximately(moveSpeed, 0) &&
-            Mathf.Approximately(dashDistance, 0);
+            Mathf.Approximately(moveSpeed, 0);
     }
     
     [Serializable]

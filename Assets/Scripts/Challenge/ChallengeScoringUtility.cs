@@ -66,7 +66,6 @@ namespace Challenge
                 sum += Mathf.Max(0f, g.stats.maxHP)       * 0.5f; // +1% HP = +0.5%
                 sum += Mathf.Max(0f, g.stats.damage)      * 0.5f; // +1% DMG = +0.5%
                 sum += Mathf.Max(0f, g.stats.moveSpeed)   * 1.0f; // +1% MSPD = +1%
-                sum += Mathf.Max(0f, g.stats.dashDistance)* 1.0f; // +1% Dash = +1%
             }
             return sum;
         }

@@ -11,6 +11,8 @@ namespace Characters.LevelSystems
         [Title("Read-only Data")]
         [ShowInInspector, ReadOnly] public int Level { get; private set; } = 1;
         [ShowInInspector, ReadOnly] public float Exp { get; private set; } = 0;
+        
+        [ShowInInspector, ReadOnly] public float ExpMultiplyer { get; private set; } = 1;
         [ShowInInspector, ReadOnly] public float ExpToLevelUp => _currentExpToLevelUp;
         [ShowInInspector, ReadOnly] public float ExpProgress01 => Mathf.Clamp01(Exp / _currentExpToLevelUp);
         private BaseController _owner;
@@ -45,7 +47,7 @@ namespace Characters.LevelSystems
         {
             if (!_active) return;
             
-            Exp += amount;
+            Exp += amount * ExpMultiplyer;
             Exp = Mathf.CeilToInt(Exp);
 
             while (Exp >= _currentExpToLevelUp)
@@ -57,6 +59,12 @@ namespace Characters.LevelSystems
             }
             OnLevelUpdate?.Invoke();
         }
+        
+        public void AddExpMultiplyer(float multiplyer)
+        {
+            ExpMultiplyer += multiplyer;
+        }
+
 
         [Button("Reset Level")]
         public void ResetLevel()

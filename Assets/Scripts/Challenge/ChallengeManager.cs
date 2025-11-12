@@ -160,7 +160,6 @@ namespace Challenge
                     add(EnemyStat.MaxHP, grp.stats.maxHP);
                     add(EnemyStat.Damage, grp.stats.damage);
                     add(EnemyStat.MoveSpeed, grp.stats.moveSpeed);
-                    add(EnemyStat.DashDistance, grp.stats.dashDistance);
 
                     if (grp.enemyIds == null || grp.enemyIds.Count == 0)
                         AccumulateEnemyDict(GLOBAL_ID, dict);

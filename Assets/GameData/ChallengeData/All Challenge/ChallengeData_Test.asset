@@ -17,14 +17,13 @@ MonoBehaviour:
   description: Heheboi
   flatScoreBonusPercent: 0
   playerMods:
-  - stat: 0
-    percentDelta: -50
+  - stat: 1
+    percentDelta: -100
   enemyGroups:
-  - groupName: Enemy
+  - groupName: 1
     enemyIds:
     - Enemy_Normal
     stats:
-      maxHP: 100
-      damage: 10
-      moveSpeed: 20
-      dashDistance: 5
+      maxHP: 0
+      damage: 0
+      moveSpeed: 0

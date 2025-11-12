@@ -32,9 +32,11 @@ namespace Characters.SO.CharacterDataSO
         public EnemyDataSo CopyInstance(float newMaxHealth, float newBaseDamage, float newBaseSpeed)
         {
             EnemyDataSo newObj = Instantiate(this);
-            maxHealth = newMaxHealth;
-            baseDamage = newBaseDamage;
-            baseSpeed = newBaseSpeed;
+            newObj.hideFlags = HideFlags.DontSave;
+
+            newObj.maxHealth *= 1f + newMaxHealth/100;
+            newObj.baseDamage *= 1f + newBaseDamage/100;
+            newObj.baseSpeed *= 1f + newBaseSpeed/100;
             return newObj;
         }
         

@@ -142,11 +142,19 @@ namespace GameControl.Controller
             if (mapData == null || mapData.EnemyOptions == null || Sender == null) return;
             var snap = Sender.challengeData;
             
+            //Player Modify
+            float expMultiplyer = snap.Player.Get(PlayerStat.ExpGain)/100;
+            PlayerController.Instance.LevelSystem.AddExpMultiplyer(expMultiplyer);
+            
+            //Score Modify
+            var scoreMultiplyer = snap.OverallScoreMultiplier;
+            PlayerController.Instance.ScoreSystem.AddScoreMultiplyer(scoreMultiplyer);
+            
             //Enemy Modify
             foreach (var opt in mapData.EnemyOptions)
             {
                 if (opt == null || opt.enemyData == null) continue;
-                
+                if (!snap.Enemies.ContainsKey(opt.id)) continue;
                 var id = string.IsNullOrWhiteSpace(opt.id) ? string.Empty : opt.id;
                 var eSnap = snap.GetEnemy(id);
 
@@ -154,7 +162,8 @@ namespace GameControl.Controller
                 float baseDmgStats  = eSnap.Get(EnemyStat.Damage);
                 float baseSpdStats  = eSnap.Get(EnemyStat.MoveSpeed);
 
-                opt.enemyData = opt.enemyData.CopyInstance(hpStats, baseDmgStats, baseSpdStats);
+                var modifyEnemyStats = opt.enemyData.CopyInstance(hpStats, baseDmgStats, baseSpdStats);
+                opt.enemyData = modifyEnemyStats;
                 opt.modifyNewData = true;
             }
         }
