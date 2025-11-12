@@ -142,10 +142,8 @@ namespace Challenge
 
                 // Player
                 foreach (var pm in ch.playerMods)
-                {
                     if (_aggPlayerMods.ContainsKey(pm.stat)) _aggPlayerMods[pm.stat] += pm.percentDelta;
                     else _aggPlayerMods[pm.stat] = pm.percentDelta;
-                }
 
                 // Enemy (grouped)
                 foreach (var grp in ch.enemyGroups)
@@ -153,36 +151,36 @@ namespace Challenge
                     if (grp == null || grp.stats.IsZero) continue;
 
                     var dict = new Dictionary<EnemyStat, float>();
-                    void add(EnemyStat s, float val)
-                    { if (!Mathf.Approximately(val, 0)) dict[s] = dict.TryGetValue(s, out var x) ? x + val : val; }
 
-                    add(EnemyStat.MaxHP,        grp.stats.maxHP);
-                    add(EnemyStat.Damage,       grp.stats.damage);
-                    add(EnemyStat.MoveSpeed,    grp.stats.moveSpeed);
+                    void add(EnemyStat s, float val)
+                    {
+                        if (!Mathf.Approximately(val, 0)) dict[s] = dict.TryGetValue(s, out var x) ? x + val : val;
+                    }
+
+                    add(EnemyStat.MaxHP, grp.stats.maxHP);
+                    add(EnemyStat.Damage, grp.stats.damage);
+                    add(EnemyStat.MoveSpeed, grp.stats.moveSpeed);
                     add(EnemyStat.DashDistance, grp.stats.dashDistance);
 
                     if (grp.enemyIds == null || grp.enemyIds.Count == 0)
-                    {
                         AccumulateEnemyDict(GLOBAL_ID, dict);
-                    }
                     else
-                    {
                         foreach (var id in grp.enemyIds)
                         {
+                            //Global + Per ID
                             var key = string.IsNullOrWhiteSpace(id) ? GLOBAL_ID : id.Trim();
                             AccumulateEnemyDict(key, dict);
                         }
-                    }
                 }
 
                 // Score breakdown (Player นับเฉพาะค่าติดลบ)
                 var perSO = ChallengeScoringUtility.Compute(ch);
-                _playerPercent  += perSO.playerPercent;
+                _playerPercent += perSO.playerPercent;
                 _enemiesPercent += perSO.enemiesPercentSum;
             }
 
             var totalPercent = _flatBonus + _playerPercent + _enemiesPercent;
-            _overallScoreMultiplier = 1f + (totalPercent / 100f);
+            _overallScoreMultiplier = 1f + totalPercent / 100f;
         }
 
         public ChallengeSnapshot CreateSnapshot()

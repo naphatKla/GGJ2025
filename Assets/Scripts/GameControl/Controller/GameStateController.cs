@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using Challenge;
+using Characters.Controllers;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using GameControl.GameState;
@@ -123,8 +124,9 @@ namespace GameControl.Controller
         private void AssignMapRuntime(MapDataSO asset)
         {
             if (_currentMapDataRuntime != null) Destroy(_currentMapDataRuntime);
-            _currentMapDataRuntime = MakeRuntimeCopy(asset);
-            ModifyAllDataFromChallenge(_currentMapDataRuntime);
+            var copyData = MakeRuntimeCopy(asset);
+            ModifyAllDataFromChallenge(copyData);
+            _currentMapDataRuntime = copyData;
             if (_currentMapDataRuntime.endlessMode)
             {
                 MapState = MapState.Endless;
@@ -140,9 +142,11 @@ namespace GameControl.Controller
             if (mapData == null || mapData.EnemyOptions == null || Sender == null) return;
             var snap = Sender.challengeData;
             
+            //Enemy Modify
             foreach (var opt in mapData.EnemyOptions)
             {
                 if (opt == null || opt.enemyData == null) continue;
+                
                 var id = string.IsNullOrWhiteSpace(opt.id) ? string.Empty : opt.id;
                 var eSnap = snap.GetEnemy(id);
 
@@ -151,6 +155,7 @@ namespace GameControl.Controller
                 float spdState  = eSnap.Get(EnemyStat.MoveSpeed);
                 float dashState = eSnap.Get(EnemyStat.DashDistance);
                 
+                //opt.enemyData = copyOpt;
                 opt.modifyNewData = true;
             }
         }
