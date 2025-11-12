@@ -41,7 +41,7 @@ MonoBehaviour:
   previousSkillData: {fileID: 11400000, guid: 4f8bf3e8d28d4794d8605787d1cfa472, type: 2}
   nextSkillDataUpgrade: {fileID: 0}
   level: 6
-  cooldown: 11.25
+  cooldown: 13
   globalCooldown: 0.25
   maxStack: 2
   startFeedback: ParryUse_Lv6
@@ -52,14 +52,14 @@ MonoBehaviour:
     isOverrideDuration: 1
     overrideDuration: 0.77
   explosionBaseDamage: 0
-  explosionDamageMultiplier: 350
+  explosionDamageMultiplier: 400
   explosionRadius: 20
   stopWhileParry: 0
   parryColliderSizeMultiplier: 2
   parryDuration: 0.75
-  knockBackDistance: 8
+  knockBackDistance: 10
   knockBackDuration: 0.25
-  healOnSuccess: 15
+  healOnSuccess: 5
   parrySuccessFeedback: ParrySuccess_Lv6
   selfEffectsOnParrySuccess:
   - effectData: {fileID: 11400000, guid: aa4dff95f38494c4e876f8f95511ecf0, type: 2}
@@ -68,4 +68,4 @@ MonoBehaviour:
   explosionEffectsToTarget:
   - effectData: {fileID: 11400000, guid: e5ae6010e3c4a7b43bc80da0bf5a9ef5, type: 2}
     isOverrideDuration: 1
-    overrideDuration: 1
+    overrideDuration: 2

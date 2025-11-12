@@ -41,14 +41,16 @@ MonoBehaviour:
   nextSkillDataUpgrade: {fileID: 0}
   level: 6
   cooldown: 23
+  globalCooldown: 0.25
+  maxStack: 1
   startFeedback: LightStepUse_Lv6
   exitFeedback: LightStepEnd_Lv6
   clearBuffOnSkillExit: 0
   statusEffectOnSkillStart: []
   baseDamagePerHit: 60
   damageMultiplier: 30
-  lifeStealPercentChance: 10
-  lifeStealEffective: 0.5
+  lifeStealPercentChance: 0
+  lifeStealEffective: 0
   lightStepSpeed: 36
   minStepDistance: 8
   targetAmount: 36

@@ -40,14 +40,16 @@ MonoBehaviour:
   nextSkillDataUpgrade: {fileID: 11400000, guid: a5f6cc9154e80c0489be5e7beea9676b, type: 2}
   level: 2
   cooldown: 30
+  globalCooldown: 0.25
+  maxStack: 1
   startFeedback: LightStepUse_Lv2
   exitFeedback: LightStepEnd_Lv2
   clearBuffOnSkillExit: 0
   statusEffectOnSkillStart: []
   baseDamagePerHit: 10
   damageMultiplier: 30
-  lifeStealPercentChance: 10
-  lifeStealEffective: 0.5
+  lifeStealPercentChance: 0
+  lifeStealEffective: 0
   lightStepSpeed: 32
   minStepDistance: 8
   targetAmount: 14
