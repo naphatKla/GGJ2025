@@ -9,26 +9,35 @@ namespace Characters.SO.CharacterDataSO
     public class EnemyDataSo : BaseCharacterDataSo
     {
         [FoldoutGroup("Combat")] [SerializeField, PropertyTooltip("Exp drop after dead")]
-        private int expDrop;
+        protected int expDrop;
         
         [FoldoutGroup("Skills")]
         [SerializeField, PropertyTooltip("Delay before performing skill after being eligible.")]
-        private float delayBeforePerformSkill = 0.5f;
+        protected float delayBeforePerformSkill = 0.5f;
 
         [FoldoutGroup("State Machine Controller")] [SerializeField] [Required]
-        private BaseEnemyStateDataSo defaultState;
+        protected BaseEnemyStateDataSo defaultState;
 
         [FoldoutGroup("State Machine Controller")]
         [ValidateInput(nameof(ValidateStateList),
             "hpPercentageToEnter ต้องอยู่ที่ 0–100 และต้องเรียงแบบมากไปน้อย (ห้ามเท่ากัน)")]
         [SerializeField] [PropertySpace(10)]
-        private List<EnemyStateDataPayload> stateList;
+        protected List<EnemyStateDataPayload> stateList;
 
         public int ExpDrop => expDrop;
         public float DelayBeforePerformSkill => delayBeforePerformSkill;
         public BaseEnemyStateDataSo DefaultState => defaultState;
         public List<EnemyStateDataPayload> StateList => stateList;
 
+        public EnemyDataSo CopyInstance(float newMaxHealth, float newBaseDamage, float newBaseSpeed)
+        {
+            EnemyDataSo newObj = Instantiate(this);
+            maxHealth = newMaxHealth;
+            baseDamage = newBaseDamage;
+            baseSpeed = newBaseSpeed;
+            return newObj;
+        }
+        
         // ===== Odin Validator สำหรับทั้งลิสต์ =====
         private bool ValidateStateList(List<EnemyStateDataPayload> list)
         {

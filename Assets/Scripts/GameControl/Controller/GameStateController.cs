@@ -150,12 +150,11 @@ namespace GameControl.Controller
                 var id = string.IsNullOrWhiteSpace(opt.id) ? string.Empty : opt.id;
                 var eSnap = snap.GetEnemy(id);
 
-                float hpState   = eSnap.Get(EnemyStat.MaxHP);
-                float dmgState  = eSnap.Get(EnemyStat.Damage);
-                float spdState  = eSnap.Get(EnemyStat.MoveSpeed);
-                float dashState = eSnap.Get(EnemyStat.DashDistance);
-                
-                //opt.enemyData = copyOpt;
+                float hpStats   = eSnap.Get(EnemyStat.MaxHP);
+                float baseDmgStats  = eSnap.Get(EnemyStat.Damage);
+                float baseSpdStats  = eSnap.Get(EnemyStat.MoveSpeed);
+
+                opt.enemyData = opt.enemyData.CopyInstance(hpStats, baseDmgStats, baseSpdStats);
                 opt.modifyNewData = true;
             }
         }

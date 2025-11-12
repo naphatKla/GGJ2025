@@ -19,7 +19,6 @@ namespace Challenge
         MaxHP,
         Damage,
         MoveSpeed,
-        DashDistance
     }
 
     [Serializable]
