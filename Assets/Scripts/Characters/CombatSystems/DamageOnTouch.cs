@@ -57,7 +57,7 @@ namespace Characters.CombatSystems
         // --- NEW: Snapshot buffer to avoid "modified during iteration" ---
         private readonly List<DamageInstance> _iterBuffer = new(8);
 
-        public event Action OnHit;
+        public event Action<GameObject> OnHit;
 
         public GameObject Owner => _owner;
         public bool IsEnableDamage => _isEnableDamage;
@@ -259,7 +259,7 @@ namespace Characters.CombatSystems
 
                 float cooldown = 1f / instance.HitPerSec;
                 _cooldownMap[key] = now + cooldown;
-                OnHit?.Invoke();
+                OnHit?.Invoke(target);
             }
         }
 
