@@ -237,11 +237,11 @@ namespace Characters.UIDisplay
         {
             if (rankPointBar != null)
                 rankPointBar.CurrentValue = 0f;
-
-            if (rankUI) rankUI.SetActive(false);
+            
             if (killStrikeText) killStrikeText.text = "0 STRIKE!";
-            if (scoreMultiplyText) scoreMultiplyText.text = "x0";
+            if (scoreMultiplyText) scoreMultiplyText.text = "x1 SCORE!";
 
+            combatRankViewHolder.UpdateGradeCombo("F");
             foreach (var statusSlotModel in statusSlots)
                 statusSlotModel.gameObject.SetActive(false);
 
@@ -267,9 +267,7 @@ namespace Characters.UIDisplay
         private void UpdateKillStrikeText(int streak)
         {
             if (!rankUI) return;
-
-            rankUI.SetActive(streak > 0);
-
+            
             if (killStrikeText != null)
                 killStrikeText.text = $"{streak} STRIKE!";
 
