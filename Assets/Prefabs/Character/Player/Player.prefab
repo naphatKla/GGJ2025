@@ -54282,7 +54282,6 @@ GameObject:
   - component: {fileID: 5678313002177273158}
   - component: {fileID: 5147604314936671000}
   - component: {fileID: 4851925125693906224}
-  - component: {fileID: 2247090465659933957}
   - component: {fileID: 2317232942345144483}
   - component: {fileID: 6543663255383939677}
   - component: {fileID: 5144948324511787352}
@@ -54336,7 +54335,7 @@ MonoBehaviour:
   characterData: {fileID: 11400000, guid: 39ed973e8de08f84faa43653bfdd68e7, type: 2}
   autoAssignDataOnEnable: 1
   collectItemSystem: {fileID: 4851925125693906224}
-  comboStreakSystem: {fileID: 2247090465659933957}
+  comboStreakSystem: {fileID: 0}
   levelSystem: {fileID: 1454970709746529031}
   skillUpgradeController: {fileID: 7127418468070666774}
   scoreSystem: {fileID: 5144948324511787352}
@@ -54352,7 +54351,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4725e48355ee0534d85ac63c3c44d90d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  comboStreakSystem: {fileID: 2247090465659933957}
+  comboStreakSystem: {fileID: 0}
   comboUI: {fileID: 0}
   killComboText: {fileID: 0}
   scoreMultiply: {fileID: 0}
@@ -54378,8 +54377,8 @@ MonoBehaviour:
   solfUpgradePanel: {fileID: 0}
   solfUpgradeSelectButton: {fileID: 0}
   buttonFeedBack: {fileID: 0}
-  skillViewholder: {fileID: 0}
-  mainskillViewholder: {fileID: 0}
+  skillViewholder: {fileID: 962830566913950826, guid: 6d67c1d518eecff44ac461fb8b047f1c, type: 3}
+  mainskillViewholder: {fileID: 962830566913950826, guid: 4b26ae50e9667e3438c550d327091951, type: 3}
   skillSystem: {fileID: 1367073074030531616}
   cooldownIsNotReadyText: {fileID: 0}
   skillSlotModel:
@@ -54747,20 +54746,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1d29482e9b1ae7b48ba51f7683eddfad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &2247090465659933957
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2726293917207744010}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a262df3aedbdbe74fb0b326524c23682, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  FlowStageI: 0
-  FlowStageII: 0
 --- !u!114 &2317232942345144483
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -54853,7 +54838,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 2, y: 2.5}
+  m_Size: {x: 1, y: 1.25}
   m_EdgeRadius: 0
 --- !u!1 &2869158608663820740
 GameObject:
@@ -153829,7 +153814,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &97217847107351696
 Transform:
   m_ObjectHideFlags: 0
@@ -166871,7 +166856,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &6102039377494812532
 Transform:
   m_ObjectHideFlags: 0
