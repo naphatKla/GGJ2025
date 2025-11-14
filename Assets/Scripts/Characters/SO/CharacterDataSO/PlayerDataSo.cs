@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using Cameras;
+using Challenge;
+using Challenge.Challenge;
 using Characters.SO.ComboStreakDataSO;
 using Characters.SO.SkillDataSo;
 using Sirenix.OdinInspector;
@@ -62,14 +64,20 @@ namespace Characters.SO.CharacterDataSO
         public CameraShakeOption CounterAttackHitCameraShakeOption => counterAttackHitCameraShakeOption;
         public CameraShakeOption TakeDamageCameraShakeOption => takeDamageCameraShakeOption;
         
-        public PlayerDataSo CopyInstance(float newMaxHealth, float newBaseDamage, float newBaseSpeed)
+        public PlayerDataSo CopyInstance(PlayerSnapshot snap)
         {
             PlayerDataSo newDat = Instantiate(this);
             newDat.hideFlags = HideFlags.DontSave;
+            // 1) SET
+            if (snap.TryGetSet(PlayerSetStat.MaxHP, out var setHp))        newDat.maxHealth = setHp;
+            if (snap.TryGetSet(PlayerSetStat.BaseDamage, out var setDmg))  newDat.baseDamage = setDmg;
+            if (snap.TryGetSet(PlayerSetStat.MoveSpeed, out var setMspd))  newDat.baseSpeed = setMspd;
 
-            newDat.maxHealth *= 1f + newMaxHealth/100;
-            newDat.baseDamage *= 1f + newBaseDamage/100;
-            newDat.baseSpeed *= 1f + newBaseSpeed/100;
+            // 2) Additive(%)
+            newDat.maxHealth  *= 1f + snap.GetAdd(PlayerAdditiveStat.MaxHP) / 100f;
+            newDat.baseDamage *= 1f + snap.GetAdd(PlayerAdditiveStat.BaseDamage) / 100f;
+            newDat.baseSpeed  *= 1f + snap.GetAdd(PlayerAdditiveStat.MoveSpeed) / 100f;
+
             return newDat;
         }
     }
