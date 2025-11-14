@@ -37,10 +37,15 @@ MonoBehaviour:
   nextSkillDataUpgrade: {fileID: 0}
   level: 1
   cooldown: 1
+  globalCooldown: 0.25
+  maxStack: 1
   startFeedback: ChargeBomb_Lv1
   exitFeedback: 
-  clearBuffOnSkillExit: 0
-  statusEffectOnSkillStart: []
+  clearBuffOnSkillExit: 1
+  statusEffectOnSkillStart:
+  - effectData: {fileID: 11400000, guid: 2bb1df345b8c3ff4bbff4f8af06b3616, type: 2}
+    isOverrideDuration: 1
+    overrideDuration: 999
   baseDamage: 0
   damageMultiplier: 100
   stopOnCharge: 1

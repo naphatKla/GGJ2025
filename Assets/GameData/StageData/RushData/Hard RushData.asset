@@ -317,8 +317,11 @@ MonoBehaviour:
     enableMovementAfter: 1
     enablePatternCenter: 0
     patternCenter: {x: 0, y: 0}
-    useCondition: 0
-    patternCondition: []
+    useCondition: 1
+    patternCondition:
+    - conditionType: 0
+      startAfter: 0
+      endAt: 300
   - enableThisPattern: 1
     bypassSpawnCondition: 0
     enableSpecificEnemy: 0
@@ -330,8 +333,11 @@ MonoBehaviour:
     enableMovementAfter: 1
     enablePatternCenter: 0
     patternCenter: {x: 0, y: 0}
-    useCondition: 0
-    patternCondition: []
+    useCondition: 1
+    patternCondition:
+    - conditionType: 0
+      startAfter: 0
+      endAt: 300
   - enableThisPattern: 1
     bypassSpawnCondition: 0
     enableSpecificEnemy: 0
@@ -435,7 +441,7 @@ MonoBehaviour:
   patternDecreaseMinimum: 18
   addPatternInterval: 30
   amountToAdd: 1
-  patternMax: 15
+  patternMax: 20
   canDuplicateAfterHaveAllPattern: 1
   eventmapOptions:
   - enableThisMapEvent: 1

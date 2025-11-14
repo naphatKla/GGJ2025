@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using Characters.StatusEffectSystems;
 using Sirenix.OdinInspector;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -63,6 +65,11 @@ namespace Characters.SO.SkillDataSo
         [PropertyOrder(9998)]
         [SerializeField] private bool isFlexibleStatusEffectDuration;
         
+        [FoldoutGroup("Status Effects", Order = 100)] 
+        [SerializeField,
+         PropertyTooltip("Status effects that will be applied to the target when this skill starts.")]
+        private List<StatusEffectDataPayload> effectsToTarget;
+        
         /// <summary>
         /// Duration of the dash movement in seconds.
         /// Determines how long the dash takes from start to finish.
@@ -112,7 +119,9 @@ namespace Characters.SO.SkillDataSo
         /// Allows curved, arcing, or wave-like motion paths instead of a straight line.
         /// </summary>
         public AnimationCurve DashMoveCurve => dashMoveCurve;
-        
+
+        public List<StatusEffectDataPayload> EffectsToTarget => effectsToTarget;
+
         private bool IsMinMaxValid(Vector2 value)
         {
             return value.x >= 0f && value.x <= 1f && value.y >= 0f && value.y <= 1f;
