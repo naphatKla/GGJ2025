@@ -32,6 +32,7 @@ namespace Challenge
         MaxHP,
         Damage,
         MoveSpeed,
+        SpawnChance
     }
 
     [Serializable]
@@ -57,10 +58,13 @@ namespace Challenge
         public float damage;
         [Tooltip("+1% MSPD = +1%")]
         public float moveSpeed;
+        [Tooltip("+1% SPAWN CHANCE = +0.5%")]
+        public float spawnChance;
         public bool IsZero =>
             Mathf.Approximately(maxHP, 0) &&
             Mathf.Approximately(damage, 0) &&
-            Mathf.Approximately(moveSpeed, 0);
+            Mathf.Approximately(moveSpeed, 0) &&
+            Mathf.Approximately(spawnChance, 0);
     }
     
     [Serializable]

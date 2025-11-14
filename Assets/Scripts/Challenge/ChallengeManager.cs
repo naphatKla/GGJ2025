@@ -144,6 +144,7 @@ namespace Challenge
                 // Flat
                 _flatBonus += ch.flatScoreBonusPercent;
 
+                var perSO = ChallengeScoringUtility.Compute(ch);
                 // Player
                 if (ch.statMode == StatMode.Set)
                 {
@@ -156,9 +157,7 @@ namespace Challenge
                 {
                     foreach (var pm in ch.playerMods)
                         _aggPlayerMods[pm.stat] = _aggPlayerMods.TryGetValue(pm.stat, out var cur) ? cur + pm.percentDelta : pm.percentDelta;
-                    var perSO = ChallengeScoringUtility.Compute(ch);
                     _playerPercent  += perSO.playerPercent;
-                    _enemiesPercent += perSO.enemiesPercentSum;
                 }
 
                 // Enemy (grouped)
@@ -176,6 +175,7 @@ namespace Challenge
                     add(EnemyStat.MaxHP, grp.stats.maxHP);
                     add(EnemyStat.Damage, grp.stats.damage);
                     add(EnemyStat.MoveSpeed, grp.stats.moveSpeed);
+                    add(EnemyStat.SpawnChance, grp.stats.spawnChance);
 
                     if (grp.enemyIds == null || grp.enemyIds.Count == 0)
                         AccumulateEnemyDict(GLOBAL_ID, dict);
@@ -187,6 +187,7 @@ namespace Challenge
                             AccumulateEnemyDict(key, dict);
                         }
                 }
+                _enemiesPercent += perSO.enemiesPercentSum;
             }
 
             var totalPercent = _flatBonus + _playerPercent + _enemiesPercent;
@@ -205,6 +206,8 @@ namespace Challenge
             
             //Global
             var global = _aggEnemyMods.TryGetValue(GLOBAL_ID, out var g) ? g : null;
+            if (global != null)
+                result[GLOBAL_ID] = new EnemySnapshot(GLOBAL_ID, new Dictionary<EnemyStat, float>(global));
             
             //Enemy Key
             foreach (var kv in _aggEnemyMods)
@@ -217,8 +220,7 @@ namespace Challenge
                 //Add Global
                 if (global != null)
                     foreach (var (stat, val) in global)
-                        if (!Mathf.Approximately(val, 0))
-                            merged[stat] = val;
+                        if (!Mathf.Approximately(val, 0)) merged[stat] = val;
 
                 //Add Specific
                 foreach (var (stat, val) in kv.Value)

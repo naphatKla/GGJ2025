@@ -77,11 +77,22 @@ namespace Challenge
             
             public EnemySnapshot GetEnemy(string enemyId)
             {
-                if (string.IsNullOrWhiteSpace(enemyId) || Enemies == null ||
-                    !Enemies.TryGetValue(enemyId, out var snap))
-                    return new EnemySnapshot(enemyId ?? string.Empty, new Dictionary<EnemyStat, float>());
-                return snap;
+                var id = string.IsNullOrWhiteSpace(enemyId) ? string.Empty : enemyId;
+                if (Enemies == null)
+                    return new EnemySnapshot(id, new Dictionary<EnemyStat, float>());
+
+                // ถ้ามี enemyId อยู่แล้ว (ซึ่งใน result ผสาน global ไว้แล้ว) ก็คืนเลย
+                if (Enemies.TryGetValue(id, out var self))
+                    return self;
+
+                // enemyId → คืน global ตรง ๆ
+                if (Enemies.TryGetValue("*", out var global))
+                    return global;
+
+                // ไม่มีก็คืนว่าง
+                return new EnemySnapshot(id, new Dictionary<EnemyStat, float>());
             }
+
         }
     }
 }

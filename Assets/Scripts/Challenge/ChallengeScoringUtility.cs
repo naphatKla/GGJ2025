@@ -21,7 +21,7 @@ namespace Challenge
             if (def == null) { b.multiplier = 1f; return b; }
 
             b.flatBonus = def.flatScoreBonusPercent;
-            b.playerPercent = PosScoreFromPlayerDebuffs(AggregatePlayer(def.playerMods));
+            if (def.statMode == StatMode.Additive) b.playerPercent = PosScoreFromPlayerDebuffs(AggregatePlayer(def.playerMods));
             b.enemiesPercentSum = SumEnemyGroups(def.enemyGroups);
             b.totalPercent = b.flatBonus + b.playerPercent + b.enemiesPercentSum;
             b.multiplier = 1f + (b.totalPercent / 100f);
@@ -63,9 +63,11 @@ namespace Challenge
             foreach (var g in groups)
             {
                 if (g == null || g.stats.IsZero) continue;
+                if (g.enemyIds.Contains("*")) continue;
                 sum += Mathf.Max(0f, g.stats.maxHP)       * 0.5f; // +1% HP = +0.5%
                 sum += Mathf.Max(0f, g.stats.damage)      * 0.5f; // +1% DMG = +0.5%
                 sum += Mathf.Max(0f, g.stats.moveSpeed)   * 1.0f; // +1% MSPD = +1%
+                sum += Mathf.Max(0f, g.stats.spawnChance) * 0.5f; // +1% SPAWN CHANCE = +0.5%
             }
             return sum;
         }
