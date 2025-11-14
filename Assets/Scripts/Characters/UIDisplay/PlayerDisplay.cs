@@ -41,11 +41,11 @@ namespace Characters.UIDisplay
         private CombatRankSystem combatRankSystem;
 
         [Title("UI"), FoldoutGroup("Rank Display")]
-        public GameObject comboUI;
+        public GameObject rankUI;
 
-        [FormerlySerializedAs("killComboText")] [FoldoutGroup("Rank Display")] public TMP_Text killStrikeText;
-        [FormerlySerializedAs("scoreMultiply")] [FoldoutGroup("Rank Display")] public TMP_Text scoreMultiplyText; // แสดงตัวคูณ Boost (xN)
-        [FoldoutGroup("Rank Display")] public GameObject lightningCombo;
+        [FoldoutGroup("Rank Display")] public TMP_Text killStrikeText;
+        [FoldoutGroup("Rank Display")] public TMP_Text scoreMultiplyText; // แสดงตัวคูณ Boost (xN)
+        [FoldoutGroup("Rank Display")] public GameObject lightningEffect;
         [FormerlySerializedAs("comboStreakBar")] [FoldoutGroup("Rank Display")] public ValueBar rankPointBar;
         [FoldoutGroup("Rank Display")] public float tweenDuration = 0.1f;
         [FoldoutGroup("Rank Display")] public float scaleAmount = 1.2f;
@@ -232,7 +232,7 @@ namespace Characters.UIDisplay
             if (rankPointBar != null)
                 rankPointBar.CurrentValue = 0f;
 
-            if (comboUI) comboUI.SetActive(false);
+            if (rankUI) rankUI.SetActive(false);
             if (killStrikeText) killStrikeText.text = "0 STRIKE!";
             if (scoreMultiplyText) scoreMultiplyText.text = "x0";
 
@@ -249,9 +249,9 @@ namespace Characters.UIDisplay
 
         private void UpdateComboStreakBar(int currentStageMinStreak, int currentStreak, int nextStageMinStreak)
         {
-            if (!rankPointBar || !comboUI) return;
+            if (!rankPointBar || !rankUI) return;
 
-            comboUI.SetActive(currentStreak > 0);
+            rankUI.SetActive(currentStreak > 0);
             rankPointBar.MinValue = currentStageMinStreak == nextStageMinStreak
                 ? currentStageMinStreak - 1
                 : currentStageMinStreak;
@@ -262,18 +262,18 @@ namespace Characters.UIDisplay
 
         private void UpdateKillComboText(int streak)
         {
-            if (!comboUI) return;
+            if (!rankUI) return;
 
-            comboUI.SetActive(streak > 0);
+            rankUI.SetActive(streak > 0);
 
             if (killStrikeText != null)
                 killStrikeText.text = $"{streak} STRIKE!";
 
             // pop tween
-            comboUI.transform
+            rankUI.transform
                 .DOScale(new Vector3(scaleAmount, scaleAmount, 1), tweenDuration)
                 .SetEase(Ease.OutBack)
-                .OnComplete(() => comboUI.transform.DOScale(Vector3.one, tweenDuration));
+                .OnComplete(() => rankUI.transform.DOScale(Vector3.one, tweenDuration));
         }
 
         private void UpdateBoostMultiplierText(float multiplierX)

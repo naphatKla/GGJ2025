@@ -3409,7 +3409,7 @@ GameObject:
   - component: {fileID: 351446528}
   - component: {fileID: 351446529}
   m_Layer: 5
-  m_Name: ComboText
+  m_Name: KillStrikeText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5168,9 +5168,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 519609468}
-  - component: {fileID: 519609469}
+  - component: {fileID: 519609470}
   m_Layer: 5
-  m_Name: ComboUI
+  m_Name: RankUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5202,7 +5202,7 @@ RectTransform:
   m_AnchoredPosition: {x: -175, y: 137}
   m_SizeDelta: {x: 350, y: 165}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &519609469
+--- !u!114 &519609470
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -5211,34 +5211,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 519609467}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a48b06ce5ac11c04aa6d0484686e40a3, type: 3}
+  m_Script: {fileID: 11500000, guid: da16ad3cc61b91f4781946377360f4e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gradeImage: {fileID: 1908912598}
-  gradeFlame: {fileID: 301226517}
+  gradeImage: {fileID: 301226517}
+  gradeFlame: {fileID: 1908912598}
   gradeText: {fileID: 145958852}
   gradeComboList:
-  - gradeId: F
-    supText: FIGHT!
-    gradeImage: {fileID: 21300000, guid: 904d85cdbfa3f5140bed7ca847a172e5, type: 3}
-  - gradeId: D
-    supText: DANGER!
-    gradeImage: {fileID: 21300000, guid: 808025271bc5a214e8080c9f815f2d90, type: 3}
-  - gradeId: C
-    supText: CARNAGE
-    gradeImage: {fileID: 21300000, guid: 5af82db5ce764eb4b98e2d6f5063e272, type: 3}
-  - gradeId: B
-    supText: BRUTAL
-    gradeImage: {fileID: 21300000, guid: 36470d51f455f7940a9655a01fcbeada, type: 3}
-  - gradeId: A
-    supText: AGONY
-    gradeImage: {fileID: 21300000, guid: 281d45a4e051aeb4fa3019db3b0ebae5, type: 3}
-  - gradeId: S
-    supText: SAVAGE
-    gradeImage: {fileID: 21300000, guid: 548151c49e329d24bacf44146415d764, type: 3}
-  - gradeId: SS
-    supText: SLAUGHTER
-    gradeImage: {fileID: 21300000, guid: 0cd221c86846258418344ec2ce0ad281, type: 3}
+  - gradeId: 
+    supText: 
+    gradeImage: {fileID: 0}
 --- !u!1 &526582437
 GameObject:
   m_ObjectHideFlags: 0
@@ -11947,7 +11929,7 @@ GameObject:
   - component: {fileID: 1410884233}
   - component: {fileID: 1410884231}
   m_Layer: 5
-  m_Name: ComboBoostedText
+  m_Name: ScoreMultiplyText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -20032,7 +20014,7 @@ GameObject:
   - component: {fileID: 3958719696229400106}
   - component: {fileID: 5676825271868335486}
   m_Layer: 5
-  m_Name: ComboStreakBar
+  m_Name: RankPointBar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -20853,6 +20835,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 2021511996}
     - target: {fileID: 1766625338755230343, guid: ef87c6aedde00684a81e6139e502fb41, type: 3}
+      propertyPath: rankUI
+      value: 
+      objectReference: {fileID: 519609467}
+    - target: {fileID: 1766625338755230343, guid: ef87c6aedde00684a81e6139e502fb41, type: 3}
       propertyPath: comboUI
       value: 
       objectReference: {fileID: 519609467}
@@ -20868,6 +20854,10 @@ PrefabInstance:
       propertyPath: scoreText
       value: 
       objectReference: {fileID: 1587800936}
+    - target: {fileID: 1766625338755230343, guid: ef87c6aedde00684a81e6139e502fb41, type: 3}
+      propertyPath: rankPointBar
+      value: 
+      objectReference: {fileID: 5676825271868335486}
     - target: {fileID: 1766625338755230343, guid: ef87c6aedde00684a81e6139e502fb41, type: 3}
       propertyPath: hpProgressBar
       value: 
@@ -20889,7 +20879,15 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 5676825271868335486}
     - target: {fileID: 1766625338755230343, guid: ef87c6aedde00684a81e6139e502fb41, type: 3}
+      propertyPath: killStrikeText
+      value: 
+      objectReference: {fileID: 351446527}
+    - target: {fileID: 1766625338755230343, guid: ef87c6aedde00684a81e6139e502fb41, type: 3}
       propertyPath: lightningCombo
+      value: 
+      objectReference: {fileID: 1301823793}
+    - target: {fileID: 1766625338755230343, guid: ef87c6aedde00684a81e6139e502fb41, type: 3}
+      propertyPath: lightningEffect
       value: 
       objectReference: {fileID: 1301823793}
     - target: {fileID: 1766625338755230343, guid: ef87c6aedde00684a81e6139e502fb41, type: 3}
@@ -20901,13 +20899,21 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1939544330}
     - target: {fileID: 1766625338755230343, guid: ef87c6aedde00684a81e6139e502fb41, type: 3}
+      propertyPath: scoreMultiplyText
+      value: 
+      objectReference: {fileID: 1410884233}
+    - target: {fileID: 1766625338755230343, guid: ef87c6aedde00684a81e6139e502fb41, type: 3}
       propertyPath: mainskillViewholder
       value: 
       objectReference: {fileID: 962830566913950826, guid: 4b26ae50e9667e3438c550d327091951, type: 3}
     - target: {fileID: 1766625338755230343, guid: ef87c6aedde00684a81e6139e502fb41, type: 3}
+      propertyPath: combatRankViewHolder
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 1766625338755230343, guid: ef87c6aedde00684a81e6139e502fb41, type: 3}
       propertyPath: gradeComboViewholder
       value: 
-      objectReference: {fileID: 519609469}
+      objectReference: {fileID: 0}
     - target: {fileID: 1766625338755230343, guid: ef87c6aedde00684a81e6139e502fb41, type: 3}
       propertyPath: cooldownIsNotReadyText
       value: 
