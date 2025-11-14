@@ -72,8 +72,7 @@ namespace Characters.SO.CharacterDataSO
 
             var first = list[0];
 
-            return Mathf.Approximately(first.rankPointThreshold, 0f)
-                   && Mathf.Approximately(first.scoreMultiplier, 1f);
+            return first.rankPointThreshold == 0 && Mathf.Approximately(first.scoreMultiplier, 1f);
         }
     }
 
@@ -81,7 +80,7 @@ namespace Characters.SO.CharacterDataSO
     public struct CombatRankData
     {
         public string rankId;
-        public float rankPointThreshold;
+        public int rankPointThreshold;
 
         [ValidateInput("@scoreMultiplier >= 1f", "Score Multiplier must to be >= 1")]
         public float scoreMultiplier;

@@ -9,7 +9,6 @@ using Characters.SkillSystems;
 using Characters.SO.CharacterDataSO;
 using UI;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Characters.Controllers
 {

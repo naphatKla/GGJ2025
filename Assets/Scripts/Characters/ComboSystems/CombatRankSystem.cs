@@ -12,10 +12,12 @@ namespace Characters.ComboSystems
         // ===== Events =====
         public event Action<int> OnRankPointAdded;      // Added Amount (delta)
         public event Action<int> OnRankPointChanged;    // Current Rank Point
-        public event Action<string, string> OnRankChanged; // (oldRankId, newRankId)
+        public event Action<string> OnRankChanged; // Current Rank Changed ID
         public event Action<string, string> OnRankUp;      // (oldRankId, newRankId)
         public event Action<string, string> OnRankDown;    // (oldRankId, newRankId)
+        public event Action<int, int, int> OnUpdateRankPointProgression; // (CurrentThreshold, CurrentPoint, NextThreshold)
         public event Action<int> OnKillStrikeChanged;   // Current KillStrike
+        
 
         // ===== Data =====
         private List<CombatRankData> _rankDatas = new();
@@ -64,8 +66,15 @@ namespace Characters.ComboSystems
 
             OnRankPointAdded?.Invoke(delta);
             OnRankPointChanged?.Invoke(_currentRankPoint);
-
+            
             CalculateRank();
+
+            int currentRankIndex = GetRankIndex(_currentRankId);
+            int lastIndexPossible = _rankDatas.Count - 1;
+            int nextRankIndex = currentRankIndex >= lastIndexPossible ? currentRankIndex : currentRankIndex + 1;
+
+            OnUpdateRankPointProgression?.Invoke(_rankDatas[currentRankIndex].rankPointThreshold, _currentRankPoint,
+                _rankDatas[nextRankIndex].rankPointThreshold);
         }
 
         [Button]
@@ -101,7 +110,7 @@ namespace Characters.ComboSystems
                 return;
 
             _currentRankId = newRankId;
-            OnRankChanged?.Invoke(oldRankId, newRankId);
+            OnRankChanged?.Invoke(newRankId);
 
             int oldIndex     = GetRankIndex(oldRankId);
             int newIndex     = GetRankIndex(newRankId);

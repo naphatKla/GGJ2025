@@ -153,6 +153,10 @@ namespace Characters.UIDisplay
 
             if (combatRankSystem != null)
             {
+                combatRankSystem.OnRankChanged += combatRankViewHolder.UpdateGradeCombo;
+                combatRankSystem.OnUpdateRankPointProgression += UpdateRankPointBar;
+                combatRankSystem.OnKillStrikeChanged += UpdateKillStrikeText;
+
                 //combatRankSystem.OnRankChanged   update combatRankViewHolder.UpdateGradeCombo;
                 //combatRankSystem.OnRankPointChanged  update ComboValueBarUpdate
                 // strike changed
@@ -201,7 +205,9 @@ namespace Characters.UIDisplay
 
             if (combatRankSystem != null)
             {
-        
+                combatRankSystem.OnRankChanged -= combatRankViewHolder.UpdateGradeCombo;
+                combatRankSystem.OnUpdateRankPointProgression -= UpdateRankPointBar;
+                combatRankSystem.OnKillStrikeChanged -= UpdateKillStrikeText;
             }
 
             levelSystem.OnLevelUpdate -= UpdateLevelUI;
@@ -247,20 +253,18 @@ namespace Characters.UIDisplay
 
         #region Combo UI (ใหม่)
 
-        private void UpdateComboStreakBar(int currentStageMinStreak, int currentStreak, int nextStageMinStreak)
+        private void UpdateRankPointBar(int currentRankPointThreshold, int currentRankPoint, int nextRankPointThreshold)
         {
             if (!rankPointBar || !rankUI) return;
 
-            rankUI.SetActive(currentStreak > 0);
-            rankPointBar.MinValue = currentStageMinStreak == nextStageMinStreak
-                ? currentStageMinStreak - 1
-                : currentStageMinStreak;
-            rankPointBar.MaxValue = nextStageMinStreak;
-            var clampValue = Mathf.Clamp(currentStreak, currentStageMinStreak, rankPointBar.MaxValue);
+            rankUI.SetActive(currentRankPoint > 0);
+            rankPointBar.MinValue = currentRankPointThreshold;
+            rankPointBar.MaxValue = nextRankPointThreshold;
+            var clampValue = Mathf.Clamp(currentRankPoint, currentRankPointThreshold, rankPointBar.MaxValue);
             rankPointBar.CurrentValue = clampValue;
         }
 
-        private void UpdateKillComboText(int streak)
+        private void UpdateKillStrikeText(int streak)
         {
             if (!rankUI) return;
 
@@ -276,10 +280,10 @@ namespace Characters.UIDisplay
                 .OnComplete(() => rankUI.transform.DOScale(Vector3.one, tweenDuration));
         }
 
-        private void UpdateBoostMultiplierText(float multiplierX)
+        private void UpdateScoreMultiplierText(float multiplierX)
         {
             if (scoreMultiplyText == null) return;
-            scoreMultiplyText.text = $"x{multiplierX:0.##} ENERGY!";
+            scoreMultiplyText.text = $"x{multiplierX:0.##} SCORE!";
         }
         
         #endregion
