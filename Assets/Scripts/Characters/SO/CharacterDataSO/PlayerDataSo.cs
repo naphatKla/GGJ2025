@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Cameras;
 using Characters.SO.SkillDataSo;
 using Sirenix.OdinInspector;
-using Sirenix.Serialization;
 using UnityEngine;
 
 namespace Characters.SO.CharacterDataSO

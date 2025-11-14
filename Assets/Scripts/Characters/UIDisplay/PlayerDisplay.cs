@@ -1,13 +1,12 @@
 using System.Collections.Generic;
 using Characters.CombatSystems;
-using Characters.ComboSystem;
+using Characters.ComboSystems;
 using Characters.Controllers;
 using Characters.HeathSystems;
 using Characters.LevelSystems;
 using Characters.ScoreSystems;
 using Characters.SkillSystems;
 using Characters.SkillSystems.SkillRuntimes;
-using Characters.SO.ComboStreakDataSO.StageDataSO;
 using Characters.SO.SkillDataSo;
 using Characters.StatusEffectSystems;
 using Cysharp.Threading.Tasks;
@@ -37,21 +36,21 @@ namespace Characters.UIDisplay
 {
     public class PlayerDisplay : MonoBehaviour
     {
-        [FoldoutGroup("Combo Display"), Title("Ref"), SerializeField]
-        private ComboStreakSystem comboStreakSystem;
+        [FoldoutGroup("Rank Display"), Title("Ref"), SerializeField]
+        private CombatRankSystem combatRankSystem;
 
-        [Title("UI"), FoldoutGroup("Combo Display")]
+        [Title("UI"), FoldoutGroup("Rank Display")]
         public GameObject comboUI;
 
-        [FoldoutGroup("Combo Display")] public TMP_Text killComboText;
-        [FoldoutGroup("Combo Display")] public TMP_Text scoreMultiply; // แสดงตัวคูณ Boost (xN)
-        [FoldoutGroup("Combo Display")] public GameObject lightningCombo;
-        [FoldoutGroup("Combo Display")] public ValueBar comboStreakBar;
-        [FoldoutGroup("Combo Display")] public float tweenDuration = 0.1f;
-        [FoldoutGroup("Combo Display")] public float scaleAmount = 1.2f;
+        [FoldoutGroup("Rank Display")] public TMP_Text killComboText;
+        [FoldoutGroup("Rank Display")] public TMP_Text scoreMultiply; // แสดงตัวคูณ Boost (xN)
+        [FoldoutGroup("Rank Display")] public GameObject lightningCombo;
+        [FoldoutGroup("Rank Display")] public ValueBar comboStreakBar;
+        [FoldoutGroup("Rank Display")] public float tweenDuration = 0.1f;
+        [FoldoutGroup("Rank Display")] public float scaleAmount = 1.2f;
 
 
-        [Title("Grade Combo")] [FoldoutGroup("Combo Display")]
+        [Title("Grade Rank")] [FoldoutGroup("Rank Display")]
         public GradeComboViewholder gradeComboViewholder;
         
         [Title("FlowStage Combo")] [FoldoutGroup("Combo Display")]
