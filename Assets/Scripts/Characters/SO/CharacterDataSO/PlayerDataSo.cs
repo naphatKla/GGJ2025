@@ -66,23 +66,23 @@ namespace Characters.SO.CharacterDataSO
     [Serializable]
     public struct CombatRankData
     {
-        [SerializeField] private float rankPointThreshold;
-
+        public float rankPointThreshold;
         [ValidateInput("@scoreMultiplier >= 1f", "Score Multiplier must to be >= 1")] 
-        [SerializeField] private float scoreMultiplier;
+        public float scoreMultiplier;
     }
 
     [Serializable]
     public enum CombatRankID
     {
-        X = 0,
-        SSS = 1,
-        SS = 2,
-        S = 3,
-        A = 4,
-        B = 5,
-        C = 6,
-        D = 7,
-        F = 8,
+        None = 0,
+        F = 1,
+        D = 2,
+        C = 3,
+        B = 4,
+        A = 5,
+        S = 6,
+        SS = 7,
+        SSS = 8,
+        X = 9,
     }
 }

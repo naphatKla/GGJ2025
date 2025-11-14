@@ -1,6 +1,7 @@
 using System;
 using Cameras;
 using Characters.CollectItemSystems;
+using Characters.ComboSystems;
 using Characters.Data;
 using Characters.LevelSystems;
 using Characters.ScoreSystems;
@@ -21,7 +22,7 @@ namespace Characters.Controllers
         #region Inspector & Variables
 
         [SerializeField] private CollectItemSystem collectItemSystem;
-        [FormerlySerializedAs("comboSystem")] [SerializeField] public ComboSystem.ComboStreakSystem comboStreakSystem;
+        [SerializeField] protected CombatRankSystem combatRankSystem;
         [SerializeField] protected LevelSystem levelSystem;
         [SerializeField] protected SkillUpgradeController skillUpgradeController;
         [SerializeField] protected ScoreSystem scoreSystem;
@@ -59,7 +60,7 @@ namespace Characters.Controllers
                 skillUpgradeController.AssignData(skillSystem, playerData);
                 levelSystem.AssignData(this, playerData.BaseExpLevelUp, playerData.StepThreshold, playerData.StepValue);
                 scoreSystem.AssignData(this);
-                comboStreakSystem.AssignData(this, playerData.ComboStreakData);
+                combatRankSystem.AssignRankData(playerData.CombatRankDatas);
             }
             else
             {

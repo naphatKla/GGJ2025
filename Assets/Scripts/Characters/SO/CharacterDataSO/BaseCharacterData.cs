@@ -6,7 +6,7 @@ using UnityEngine.Serialization;
 
 namespace Characters.SO.CharacterDataSO
 {
-    public abstract class BaseCharacterDataSo : ScriptableObject
+    public abstract class BaseCharacterDataSo : SerializedScriptableObject
     {
         [FoldoutGroup("Health"), MinValue(1), PropertyTooltip("Maximum health value.")]
         [SerializeField] private float maxHealth = 100;
