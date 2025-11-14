@@ -144,7 +144,8 @@ namespace GameControl.Controller
             
             //Player Modify
             float expMultiplyer = snap.Player.Get(PlayerStat.ExpGain)/100;
-            PlayerController.Instance.LevelSystem.AddExpMultiplyer(expMultiplyer);
+            var player = PlayerController.Instance;
+            player.LevelSystem.AddExpMultiplyer(expMultiplyer);
             
             //Score Modify
             var scoreMultiplyer = snap.OverallScoreMultiplier;
