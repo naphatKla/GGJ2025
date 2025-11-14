@@ -30,7 +30,34 @@ MonoBehaviour:
   baseExpLevelUp: 1000
   stepThreshold: 1
   stepValue: 100
-  comboStreakData: {fileID: 11400000, guid: 8af15b87ccb71984cab04b4cbff7a709, type: 2}
+  combatRankDatas:
+  - rankId: F
+    rankPointThreshold: 75
+    scoreMultiplier: 1.25
+  - rankId: D
+    rankPointThreshold: 150
+    scoreMultiplier: 1.5
+  - rankId: C
+    rankPointThreshold: 300
+    scoreMultiplier: 1.75
+  - rankId: B
+    rankPointThreshold: 450
+    scoreMultiplier: 2
+  - rankId: A
+    rankPointThreshold: 600
+    scoreMultiplier: 3
+  - rankId: S
+    rankPointThreshold: 900
+    scoreMultiplier: 4
+  - rankId: SS
+    rankPointThreshold: 1200
+    scoreMultiplier: 5
+  - rankId: SSS
+    rankPointThreshold: 1500
+    scoreMultiplier: 7
+  - rankId: X
+    rankPointThreshold: 2100
+    scoreMultiplier: 10
   attackHitCameraShakeOption:
     force: 11
     frequency: 0.1
