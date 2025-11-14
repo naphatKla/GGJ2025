@@ -37,6 +37,8 @@ MonoBehaviour:
   nextSkillDataUpgrade: {fileID: 0}
   level: 1
   cooldown: 2
+  globalCooldown: 0.25
+  maxStack: 1
   startFeedback: PiercerDashCharge_Lv1
   exitFeedback: 
   clearBuffOnSkillExit: 0
@@ -44,9 +46,9 @@ MonoBehaviour:
   dashBaseDamage: 0
   damageMultiplier: 100
   damageEnableDuration: 0.2
-  dashChargeTime: 1
+  dashChargeTime: 1.5
   dashPrepareDuration: 0.4
-  dashDuration: 0.2
+  dashDuration: 0.3
   dashDistance: 45
   dashEaseCurve:
     serializedVersion: 2

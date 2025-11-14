@@ -6,6 +6,7 @@ using Characters.Controllers;
 using Characters.SO.SkillDataSo;
 using Characters.StatusEffectSystems;
 using Cysharp.Threading.Tasks;
+using Manager;
 using UnityEngine;
 
 namespace Characters.SkillSystems.SkillRuntimes
@@ -22,9 +23,10 @@ namespace Characters.SkillSystems.SkillRuntimes
         
         #region Methods
         
-        private void OnDashHit()
+        private void OnDashHit(GameObject target)
         {
            OnTriggerAutoSkill?.Invoke();
+           StatusEffectManager.ApplyEffectTo(target, skillData.EffectsToTarget);
         }
 
         public override void AssignSkillData(BaseSkillDataSo skillData, BaseController owner)
