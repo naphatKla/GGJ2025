@@ -6,10 +6,23 @@ using UnityEngine;
 
 namespace Challenge
 {
-    public enum PlayerStat
+    public enum StatMode
+    {
+        Additive,
+        Set
+    }
+    
+    public enum PlayerAdditiveStat
     {
         MaxHP,
         ExpGain,
+        BaseDamage,
+        MoveSpeed,
+    }
+    
+    public enum PlayerSetStat
+    {
+        MaxHP,
         BaseDamage,
         MoveSpeed
     }
@@ -24,8 +37,15 @@ namespace Challenge
     [Serializable]
     public struct PlayerStatMod
     {
-        public PlayerStat stat;
+        public PlayerAdditiveStat stat;
         [Tooltip("ใส่ -10 = ลด 10%")] public float percentDelta;
+    }
+    
+    [Serializable]
+    public struct PlayerSetStatMod
+    {
+        public PlayerSetStat stat;
+        [Tooltip("เช่น ใส่ HP 1 ก็จะ = HP 1 ในเกม")] public float setDelta;
     }
     
     [Serializable]
@@ -37,7 +57,6 @@ namespace Challenge
         public float damage;
         [Tooltip("+1% MSPD = +1%")]
         public float moveSpeed;
-
         public bool IsZero =>
             Mathf.Approximately(maxHP, 0) &&
             Mathf.Approximately(damage, 0) &&
@@ -69,8 +88,13 @@ namespace Challenge
 
         [Header("Score Bonus (Flat)")] [Tooltip("เช่น ให้ +100% ก็ใส่ 100")]
         public float flatScoreBonusPercent;
+        
+        public StatMode statMode;
+        
+        [ShowIf("@statMode == StatMode.Set")] [Header("Player Set Stats")]
+        public List<PlayerSetStatMod> playerSetMods = new();
 
-        [Header("Player Debuffs (negative is harder)")]
+        [ShowIf("@statMode == StatMode.Additive")] [Header("Player Additive Debuffs (negative is harder)")]
         public List<PlayerStatMod> playerMods = new();
 
         [Header("Enemy Groups (edit per group once)")]

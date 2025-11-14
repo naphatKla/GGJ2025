@@ -16,8 +16,11 @@ namespace Challenge
         [Header("Current Selected")]
         public List<ChallengeDataSO> selected = new();
 
-        private readonly Dictionary<PlayerStat, float> _aggPlayerMods = new();
+        private readonly Dictionary<PlayerAdditiveStat, float> _aggPlayerMods = new(); //Additive
+        private readonly Dictionary<PlayerSetStat, float> _aggPlayerSets = new(); //Set
+        
         private readonly Dictionary<string, Dictionary<EnemyStat, float>> _aggEnemyMods = new();
+        
         private float _overallScoreMultiplier = 1f;
         private float _flatBonus = 0f;
         private float _playerPercent = 0f;
@@ -109,8 +112,8 @@ namespace Challenge
 
         public float GetOverallScoreMultiplier() => _overallScoreMultiplier;
 
-        public float GetPlayerStatPercent(PlayerStat stat)
-            => _aggPlayerMods.TryGetValue(stat, out var v) ? v : 0f;
+        public float GetPlayerStatPercent(PlayerAdditiveStat additiveStat)
+            => _aggPlayerMods.TryGetValue(additiveStat, out var v) ? v : 0f;
 
         /// <summary>รวมค่าจาก GLOBAL("*") + enemyId เฉพาะ</summary>
         public float GetEnemyStatPercent(string enemyId, EnemyStat stat)
@@ -128,6 +131,7 @@ namespace Challenge
         {
             _aggPlayerMods.Clear();
             _aggEnemyMods.Clear();
+            _aggPlayerSets.Clear();
 
             _flatBonus = 0f;
             _playerPercent = 0f;
@@ -141,9 +145,21 @@ namespace Challenge
                 _flatBonus += ch.flatScoreBonusPercent;
 
                 // Player
-                foreach (var pm in ch.playerMods)
-                    if (_aggPlayerMods.ContainsKey(pm.stat)) _aggPlayerMods[pm.stat] += pm.percentDelta;
-                    else _aggPlayerMods[pm.stat] = pm.percentDelta;
+                if (ch.statMode == StatMode.Set)
+                {
+                    foreach (var sm in ch.playerSetMods)
+                    {
+                        _aggPlayerSets[sm.stat] = _aggPlayerSets.TryGetValue(sm.stat, out var cur) ? Mathf.Min(cur, sm.setDelta) : sm.setDelta;
+                    }
+                }
+                else // StatMode.Additive
+                {
+                    foreach (var pm in ch.playerMods)
+                        _aggPlayerMods[pm.stat] = _aggPlayerMods.TryGetValue(pm.stat, out var cur) ? cur + pm.percentDelta : pm.percentDelta;
+                    var perSO = ChallengeScoringUtility.Compute(ch);
+                    _playerPercent  += perSO.playerPercent;
+                    _enemiesPercent += perSO.enemiesPercentSum;
+                }
 
                 // Enemy (grouped)
                 foreach (var grp in ch.enemyGroups)
@@ -171,22 +187,18 @@ namespace Challenge
                             AccumulateEnemyDict(key, dict);
                         }
                 }
-
-                // Score breakdown (Player นับเฉพาะค่าติดลบ)
-                var perSO = ChallengeScoringUtility.Compute(ch);
-                _playerPercent += perSO.playerPercent;
-                _enemiesPercent += perSO.enemiesPercentSum;
             }
 
             var totalPercent = _flatBonus + _playerPercent + _enemiesPercent;
-            _overallScoreMultiplier = 1f + totalPercent / 100f;
+            _overallScoreMultiplier = 1f + (totalPercent / 100f);
         }
 
         public ChallengeSnapshot CreateSnapshot()
         {
             // ----- Player -----
-            var playerDict = new Dictionary<PlayerStat, float>(_aggPlayerMods);
-            var playerSnap = new PlayerSnapshot(playerDict);
+            var addDict = new Dictionary<PlayerAdditiveStat, float>(_aggPlayerMods);
+            var setDict = new Dictionary<PlayerSetStat, float>(_aggPlayerSets);
+            var playerSnap = new PlayerSnapshot(addDict, setDict);
 
             // ----- Enemy (รวม Global + แต่ละ ID) -----
             var result = new Dictionary<string, EnemySnapshot>();
@@ -218,11 +230,13 @@ namespace Challenge
                 result[enemyId] = new EnemySnapshot(enemyId, merged);
             }
 
-            return new ChallengeSnapshot(playerSnap, result,
+            return new ChallengeSnapshot(
+                playerSnap, result,
                 _overallScoreMultiplier,
                 _flatBonus,
                 _playerPercent,
-                _enemiesPercent);
+                _enemiesPercent
+            );
         }
 
         #endregion

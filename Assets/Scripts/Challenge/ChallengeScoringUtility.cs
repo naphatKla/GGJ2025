@@ -29,9 +29,9 @@ namespace Challenge
         }
 
         // ----- internal helpers -----
-        private static Dictionary<PlayerStat, float> AggregatePlayer(List<PlayerStatMod> mods)
+        private static Dictionary<PlayerAdditiveStat, float> AggregatePlayer(List<PlayerStatMod> mods)
         {
-            var agg = new Dictionary<PlayerStat, float>();
+            var agg = new Dictionary<PlayerAdditiveStat, float>();
             if (mods == null) return agg;
             foreach (var m in mods)
             {
@@ -41,12 +41,12 @@ namespace Challenge
             return agg;
         }
 
-        private static float PosScoreFromPlayerDebuffs(Dictionary<PlayerStat, float> mods)
+        private static float PosScoreFromPlayerDebuffs(Dictionary<PlayerAdditiveStat, float> mods)
         {
-            mods.TryGetValue(PlayerStat.MaxHP,     out var hp);
-            mods.TryGetValue(PlayerStat.ExpGain,   out var exp);
-            mods.TryGetValue(PlayerStat.BaseDamage,out var dmg);
-            mods.TryGetValue(PlayerStat.MoveSpeed, out var mspd);
+            mods.TryGetValue(PlayerAdditiveStat.MaxHP,     out var hp);
+            mods.TryGetValue(PlayerAdditiveStat.ExpGain,   out var exp);
+            mods.TryGetValue(PlayerAdditiveStat.BaseDamage,out var dmg);
+            mods.TryGetValue(PlayerAdditiveStat.MoveSpeed, out var mspd);
 
             float p = 0f;
             p += Mathf.Max(0f, -hp)   * 1f; // -1% Max HP = +1%

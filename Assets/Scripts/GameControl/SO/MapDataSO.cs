@@ -17,12 +17,6 @@ namespace GameControl.SO
     public class MapDataSO : ScriptableObject
     {
         [Serializable]
-        public class PlayerOption
-        {
-            [FoldoutGroup("$id")][Title("Class")]
-            public PlayerDataSo PlayerData;
-        }
-        [Serializable]
         public class EnemyOption : IRandomable
         {
             [FoldoutGroup("$id")][Title("Setting")]
@@ -449,7 +443,7 @@ namespace GameControl.SO
         #region Player Class
         [FoldoutGroup("Player Setting")]
         [Tooltip("Data of each player class")]
-        public List<PlayerOption> playerOptions;
+        public PlayerDataSo playerData;
 
         #endregion
 

@@ -7,16 +7,26 @@ namespace Challenge
     {
         public readonly struct PlayerSnapshot
         {
-            public readonly IReadOnlyDictionary<PlayerStat, float> PercentByStat;
+            // (Additive)
+            public readonly IReadOnlyDictionary<PlayerAdditiveStat, float> AdditivePercent;
+            // (Set)
+            public readonly IReadOnlyDictionary<PlayerSetStat, float> SetOverrides;
 
-            public PlayerSnapshot(IReadOnlyDictionary<PlayerStat, float> dict)
+            public PlayerSnapshot(
+                IReadOnlyDictionary<PlayerAdditiveStat, float> additivePercent,
+                IReadOnlyDictionary<PlayerSetStat, float> setOverrides)
             {
-                PercentByStat = dict;
+                AdditivePercent = additivePercent;
+                SetOverrides = setOverrides;
             }
-            
-            public float Get(PlayerStat stat)
+
+            public float GetAdd(PlayerAdditiveStat stat) =>
+                AdditivePercent != null && AdditivePercent.TryGetValue(stat, out var v) ? v : 0f;
+
+            public bool TryGetSet(PlayerSetStat stat, out float value)
             {
-                return PercentByStat != null && PercentByStat.TryGetValue(stat, out var v) ? v : 0f;
+                value = 0f;
+                return SetOverrides != null && SetOverrides.TryGetValue(stat, out value);
             }
         }
         
