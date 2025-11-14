@@ -10,28 +10,33 @@ namespace Characters.SO.CharacterDataSO
     [CreateAssetMenu(fileName = "PlayerData", menuName = "GameData/CharacterData/PlayerData")]
     public class PlayerDataSo : BaseCharacterDataSo
     {
-        [FoldoutGroup("Collect Item System")] 
-        [SerializeField] private float pullItemRadius = 8f;
-        
-        [FoldoutGroup("Combat")]
-        [SerializeField] private float baseExpLevelUp;
-
-        [FoldoutGroup("Combat")] [SerializeField] private int stepThreshold = 1;
-        
-        [FoldoutGroup("Combat")] [SerializeField] private float stepValue = 500;
+        [FoldoutGroup("Collect Item System")] [SerializeField]
+        private float pullItemRadius = 8f;
 
         [FoldoutGroup("Combat")] [SerializeField]
+        private float baseExpLevelUp;
+
+        [FoldoutGroup("Combat")] [SerializeField]
+        private int stepThreshold = 1;
+
+        [FoldoutGroup("Combat")] [SerializeField]
+        private float stepValue = 500;
+
+        [FoldoutGroup("Combat")]
+        [ValidateInput(nameof(ValidateCombatRankDatas),
+            "First rank must have rankPointThreshold = 0 and scoreMultiplier = 1")]
+        [SerializeField]
         private List<CombatRankData> combatRankDatas = new();
 
         [FoldoutGroup("Camera Settings")] [SerializeField]
         private CameraShakeOption attackHitCameraShakeOption;
-        
+
         [FoldoutGroup("Camera Settings")] [SerializeField]
         private CameraShakeOption counterAttackHitCameraShakeOption;
-        
+
         [FoldoutGroup("Camera Settings")] [SerializeField]
         private CameraShakeOption takeDamageCameraShakeOption;
-        
+
         public float BaseExpLevelUp => baseExpLevelUp;
         public int StepThreshold => stepThreshold;
         public float StepValue => stepValue;
@@ -52,14 +57,24 @@ namespace Characters.SO.CharacterDataSO
         public float PullItemRadius => pullItemRadius;
         public List<BaseSkillDataSo> SkillUpgradePool => skillUpgradePool;
         public int UpgradeChoicesCount => upgradeChoicesCount;
+        public CameraShakeOption AttackHitCameraShakeOption => attackHitCameraShakeOption;
+        public CameraShakeOption CounterAttackHitCameraShakeOption => counterAttackHitCameraShakeOption;
+        public CameraShakeOption TakeDamageCameraShakeOption => takeDamageCameraShakeOption;
 
         // Proxy for Odin (required non-inherited methods)
         public bool IsSkillUpgradePoolUniqueProxy(List<BaseSkillDataSo> pool) => IsSkillPoolUnique(pool);
         public bool IsAllSkillLv1Proxy(List<BaseSkillDataSo> pool) => IsAllLv1(pool);
 
-        public CameraShakeOption AttackHitCameraShakeOption => attackHitCameraShakeOption;
-        public CameraShakeOption CounterAttackHitCameraShakeOption => counterAttackHitCameraShakeOption;
-        public CameraShakeOption TakeDamageCameraShakeOption => takeDamageCameraShakeOption;
+        private bool ValidateCombatRankDatas(List<CombatRankData> list)
+        {
+            if (list == null || list.Count == 0)
+                return true;
+
+            var first = list[0];
+
+            return Mathf.Approximately(first.rankPointThreshold, 0f)
+                   && Mathf.Approximately(first.scoreMultiplier, 1f);
+        }
     }
 
     [Serializable]
@@ -67,7 +82,8 @@ namespace Characters.SO.CharacterDataSO
     {
         public string rankId;
         public float rankPointThreshold;
-        [ValidateInput("@scoreMultiplier >= 1f", "Score Multiplier must to be >= 1")] 
+
+        [ValidateInput("@scoreMultiplier >= 1f", "Score Multiplier must to be >= 1")]
         public float scoreMultiplier;
     }
 }

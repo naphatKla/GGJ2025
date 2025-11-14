@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Characters.SO.CharacterDataSO;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace Characters.ComboSystems
@@ -9,49 +10,85 @@ namespace Characters.ComboSystems
     public class CombatRankSystem : MonoBehaviour
     {
         // ===== Events =====
-        public event Action<int> OnRankPointAdded; // Added Amount
-        public event Action<int> OnRankPointChanged; // Current Rank Point
+        public event Action<int> OnRankPointAdded;      // Added Amount (delta)
+        public event Action<int> OnRankPointChanged;    // Current Rank Point
         public event Action<string, string> OnRankChanged; // (oldRankId, newRankId)
-        public event Action<string, string> OnRankUp; // (oldRankId, newRankId)
-        public event Action<string, string> OnRankDown; // (oldRankId, newRankId)
+        public event Action<string, string> OnRankUp;      // (oldRankId, newRankId)
+        public event Action<string, string> OnRankDown;    // (oldRankId, newRankId)
+        public event Action<int> OnKillStrikeChanged;   // Current KillStrike
 
         // ===== Data =====
         private List<CombatRankData> _rankDatas = new();
-        private int _currentRankPoint = 0;
-        private string _currentRankId = null;
-        private string _highestRecordedRankId = null;
+        private int _currentRankPoint;
+        private string _currentRankId;
+        private string _highestRecordedRankId;
+        private int _killStrike;
 
         public int CurrentRankPoint => _currentRankPoint;
         public string CurrentRankId => _currentRankId;
         public string HighestRecordedRankId => _highestRecordedRankId;
+        public int KillStrike => _killStrike;
 
+        private void OnEnable()
+        {
+            
+        }
+
+        private void OnDisable()
+        {
+           
+        }
+        
         public void AssignRankData(List<CombatRankData> rankDatas)
         {
             _rankDatas = rankDatas
                 .OrderBy(r => r.rankPointThreshold)
                 .ToList();
-        }
 
-        private int GetRankIndex(string rankId)
+            _currentRankId = _rankDatas[0].rankId;
+            _highestRecordedRankId = _rankDatas[0].rankId;
+        }
+        
+        [Button]
+        public void AddRankPoints(int amount)
         {
-            if (string.IsNullOrEmpty(rankId) || _rankDatas == null)
-                return -1;
+            if (amount == 0)
+                return;
 
-            return _rankDatas.FindIndex(r => r.rankId == rankId);
+            int oldPoint = _currentRankPoint;
+            _currentRankPoint = Mathf.Max(0, _currentRankPoint + amount);
+
+            int delta = _currentRankPoint - oldPoint;
+            if (delta == 0)
+                return;
+
+            OnRankPointAdded?.Invoke(delta);
+            OnRankPointChanged?.Invoke(_currentRankPoint);
+
+            CalculateRank();
         }
 
+        [Button]
+        public void AddKillStrike(int amount)
+        {
+            if (amount == 0)
+                return;
+
+            int old = _killStrike;
+            _killStrike = Mathf.Max(0, _killStrike + amount);
+
+            if (_killStrike == old)
+                return;
+
+            OnKillStrikeChanged?.Invoke(_killStrike);
+        }
+        
         private void CalculateRank()
         {
-            if (_rankDatas == null || _rankDatas.Count == 0)
-            {
-                Debug.LogWarning("Rank data are not assigned");
-                return;
-            }
-
             string oldRankId = _currentRankId;
             string newRankId = null;
 
-            // calculate rank
+            // calculate rank 
             foreach (var rank in _rankDatas)
             {
                 if (_currentRankPoint < rank.rankPointThreshold)
@@ -66,8 +103,8 @@ namespace Characters.ComboSystems
             _currentRankId = newRankId;
             OnRankChanged?.Invoke(oldRankId, newRankId);
 
-            int oldIndex = GetRankIndex(oldRankId);
-            int newIndex = GetRankIndex(newRankId);
+            int oldIndex     = GetRankIndex(oldRankId);
+            int newIndex     = GetRankIndex(newRankId);
             int highestIndex = GetRankIndex(_highestRecordedRankId);
 
             if (newIndex > oldIndex)
@@ -78,35 +115,25 @@ namespace Characters.ComboSystems
             if (newIndex > highestIndex)
                 _highestRecordedRankId = newRankId;
         }
-
-        public void AddRankPoints(int amount)
+        
+        private int GetRankIndex(string rankId)
         {
-            if (amount == 0) 
-                return;
+            if (string.IsNullOrEmpty(rankId) || _rankDatas == null)
+                return -1;
 
-            int oldPoint = _currentRankPoint;
-            _currentRankPoint = Mathf.Max(0, _currentRankPoint + amount);
-            
-            int delta = _currentRankPoint - oldPoint;
-            if (delta == 0)
-                return;
-            
-            OnRankPointAdded?.Invoke(delta);
-            OnRankPointChanged?.Invoke(_currentRankPoint);
-
-            CalculateRank();
+            return _rankDatas.FindIndex(r => r.rankId == rankId);
         }
         
         public void ResetCombatRankSystem(bool resetHighest = false)
         {
             _currentRankPoint = 0;
             OnRankPointChanged?.Invoke(_currentRankPoint);
-
-            _currentRankId = null;
-            CalculateRank();
-
-            if (resetHighest)
-                _highestRecordedRankId = null;
+            
+            _killStrike = 0;
+            OnKillStrikeChanged?.Invoke(_killStrike);
+            
+            if (!resetHighest) return;
+            _highestRecordedRankId = _rankDatas[0].rankId;
         }
     }
 }
