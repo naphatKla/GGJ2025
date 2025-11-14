@@ -89,6 +89,7 @@ namespace Challenge
         public string id = "challenge_id";
         public string title = "Challenge Title";
         [TextArea] public string description;
+        [TextArea] public string lockdescription;
 
         [Header("Score Bonus (Flat)")] [Tooltip("เช่น ให้ +100% ก็ใส่ 100")]
         public float flatScoreBonusPercent;

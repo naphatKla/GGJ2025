@@ -18,6 +18,7 @@ namespace Player
 
         // Progression
         public HashSet<string> UnlockedMaps = new HashSet<string>();
+        public HashSet<string> UnlockedChallenges = new HashSet<string>();
 
         // perMap data (key = mapId)
         public Dictionary<string, MapStat> MapStats = new Dictionary<string, MapStat>();
