@@ -62,4 +62,6 @@ namespace Characters.SO.CharacterDataSO
         public CameraShakeOption CounterAttackHitCameraShakeOption => counterAttackHitCameraShakeOption;
         public CameraShakeOption TakeDamageCameraShakeOption => takeDamageCameraShakeOption;
     }
+    
+    public struct 
 }
