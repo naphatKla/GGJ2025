@@ -9,8 +9,6 @@ namespace Characters.Data
         
         public int currentLevel;
         public string highestRank;
-        public int highestStreakCount;
-        public float averageExpMultiplier;
         
         public int totalEnemiesEliminated;
         public int totalDamageDeal;
@@ -30,8 +28,6 @@ namespace Characters.Data
             sb.AppendLine($"total score : {totalScore}");
             sb.AppendLine($"current level : {currentLevel}");
             sb.AppendLine($"highest rank : {(string.IsNullOrEmpty(highestRank) ? "-" : highestRank)}");
-            sb.AppendLine($"highest streak count : {highestStreakCount}");
-            sb.AppendLine($"average exp multiplier : {averageExpMultiplier:0.###}");
             sb.AppendLine($"total enemies eliminated : {totalEnemiesEliminated}");
             sb.AppendLine($"total damage deal : {totalDamageDeal}");
             sb.AppendLine($"critical count : {criticalCount}");

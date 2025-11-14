@@ -73,8 +73,7 @@ namespace Characters.Controllers
         protected override void SubscribeDependency()
         {
             levelSystem.OnLevelUp += skillUpgradeController.OnLevelUp;
-            combatSystem.OnKill += comboStreakSystem.OnEnemyKilled;
-            HealthSystem.OnTakeDamage += comboStreakSystem.OnPlayerHit;
+
             UIManager.Instance.OnAnyPanelOpen += OnAnyUIOpen;
             UIManager.Instance.OnAllPanelClosed += OnAllUIClosed;
             
@@ -84,8 +83,6 @@ namespace Characters.Controllers
         protected override void UnSubscribeDependency()
         {
             levelSystem.OnLevelUp -= skillUpgradeController.OnLevelUp;
-            combatSystem.OnKill -= comboStreakSystem.OnEnemyKilled;
-            HealthSystem.OnTakeDamage -= comboStreakSystem.OnPlayerHit;
             
             if (UIManager.IsAlive)
             {
@@ -100,7 +97,7 @@ namespace Characters.Controllers
         {
             levelSystem.ResetLevel();
             skillUpgradeController.ResetSkillUpgradeController();
-            comboStreakSystem.ResetAll();
+            combatRankSystem.ResetCombatRankSystem();
             Cinemachine2DCameraController.Instance.ResetAndClearAllRequests();
             
             base.ResetAllDependentBehavior();
@@ -126,12 +123,8 @@ namespace Characters.Controllers
         {
             PlayerSummaryStats statsPerRun = new PlayerSummaryStats();
             statsPerRun.totalScore = scoreSystem.CurrentScore;
-            
             statsPerRun.currentLevel = levelSystem.Level;
-            
-            statsPerRun.highestRank = comboStreakSystem.HighestRank;
-            statsPerRun.highestStreakCount = comboStreakSystem.HighestStreakCount;
-            statsPerRun.averageExpMultiplier = comboStreakSystem.AverageExpMultiplier;
+            statsPerRun.highestRank = combatRankSystem.HighestRecordedRankId;
             
             statsPerRun.totalEnemiesEliminated = combatSystem.TotalKill;
             statsPerRun.totalDamageDeal = combatSystem.TotalDamageDeal;
