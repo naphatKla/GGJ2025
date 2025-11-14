@@ -21,8 +21,8 @@ namespace Characters.SO.CharacterDataSO
         
         [FoldoutGroup("Combat")] [SerializeField] private float stepValue = 500;
 
-        [FoldoutGroup("Combat")] [OdinSerialize]
-        private Dictionary<CombatRankID, CombatRankData> combatRankDatas;
+        [FoldoutGroup("Combat")] [SerializeField]
+        private List<CombatRankData> combatRankDatas = new();
 
         [FoldoutGroup("Camera Settings")] [SerializeField]
         private CameraShakeOption attackHitCameraShakeOption;
@@ -36,7 +36,7 @@ namespace Characters.SO.CharacterDataSO
         public float BaseExpLevelUp => baseExpLevelUp;
         public int StepThreshold => stepThreshold;
         public float StepValue => stepValue;
-        public Dictionary<CombatRankID, CombatRankData> CombatRankDatas => combatRankDatas;
+        public List<CombatRankData> CombatRankDatas => combatRankDatas;
 
         [Space]
         [FoldoutGroup("Skills/Upgrade")]
@@ -66,23 +66,9 @@ namespace Characters.SO.CharacterDataSO
     [Serializable]
     public struct CombatRankData
     {
+        public string rankId;
         public float rankPointThreshold;
         [ValidateInput("@scoreMultiplier >= 1f", "Score Multiplier must to be >= 1")] 
         public float scoreMultiplier;
-    }
-
-    [Serializable]
-    public enum CombatRankID
-    {
-        None = 0,
-        F = 1,
-        D = 2,
-        C = 3,
-        B = 4,
-        A = 5,
-        S = 6,
-        SS = 7,
-        SSS = 8,
-        X = 9,
     }
 }
