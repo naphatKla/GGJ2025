@@ -54282,6 +54282,7 @@ GameObject:
   - component: {fileID: 5678313002177273158}
   - component: {fileID: 5147604314936671000}
   - component: {fileID: 4851925125693906224}
+  - component: {fileID: 2892957787733288361}
   - component: {fileID: 2317232942345144483}
   - component: {fileID: 6543663255383939677}
   - component: {fileID: 5144948324511787352}
@@ -54335,7 +54336,7 @@ MonoBehaviour:
   characterData: {fileID: 11400000, guid: 39ed973e8de08f84faa43653bfdd68e7, type: 2}
   autoAssignDataOnEnable: 1
   collectItemSystem: {fileID: 4851925125693906224}
-  comboStreakSystem: {fileID: 0}
+  combatRankSystem: {fileID: 2892957787733288361}
   levelSystem: {fileID: 1454970709746529031}
   skillUpgradeController: {fileID: 7127418468070666774}
   scoreSystem: {fileID: 5144948324511787352}
@@ -54351,15 +54352,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4725e48355ee0534d85ac63c3c44d90d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  comboStreakSystem: {fileID: 0}
+  combatRankSystem: {fileID: 0}
   comboUI: {fileID: 0}
-  killComboText: {fileID: 0}
-  scoreMultiply: {fileID: 0}
+  killStrikeText: {fileID: 0}
+  scoreMultiplyText: {fileID: 0}
   lightningCombo: {fileID: 0}
-  comboStreakBar: {fileID: 0}
+  rankPointBar: {fileID: 0}
   tweenDuration: 0.1
   scaleAmount: 1.2
-  gradeComboViewholder: {fileID: 0}
+  combatRankViewHolder: {fileID: 0}
   flowStageComboViewholder: {fileID: 0}
   combatSystem: {fileID: 7330480618453326501}
   worldTextUIPrefab: {fileID: 3505668433232323823, guid: 5f9a0b920a9bf3d458d1cba11d917f1c, type: 3}
@@ -54744,6 +54745,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1d29482e9b1ae7b48ba51f7683eddfad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &2892957787733288361
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2726293917207744010}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d78821f32f0277a4899a43b59ff412cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &2317232942345144483
