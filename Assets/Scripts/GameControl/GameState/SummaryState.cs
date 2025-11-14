@@ -1,3 +1,4 @@
+using System;
 using Characters.Controllers;
 using Dan.Main;
 using GameControl.Controller;
@@ -19,6 +20,11 @@ namespace GameControl.GameState
 
         public void Enter(GameStateController controller)
         {
+            SpawnerStateController.Instance.ClearPatternAsync();
+            SpawnerStateController.Instance.SetState(new SpawnerState.StopState());
+            SpawnerStateController.Instance.ClearEnemy();
+            SpawnerStateController.Instance.ClearItem();
+            GameTimer.Instance.UpdateUIText();
             UIManager.Instance.CloseAllPanels();
             UIManager.Instance.OpenResultMenu();
             SavePlayerDataAndUpload();
@@ -33,11 +39,14 @@ namespace GameControl.GameState
             var svc = ActiveProfileService.Instance;
             var profile = svc?.Current;
             if (profile == null) return;
-
+            
             var dataStatus = PlayerController.Instance.GetSummaryStatsOnStateEnd();
             int newScore = Mathf.Max(0, dataStatus.totalScore);
+            
             profile.LastScore = newScore;
-
+            profile.LastPlayedUnix = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+            profile.RegisterRun(GameStateController.Instance.CurrentMap.mapId, newScore);
+            
             bool isNewHigh = newScore > profile.HighestScore;
             if (isNewHigh)
             {

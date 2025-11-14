@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
+using Manager;
 using MoreMountains.Feedbacks;
 using Player;
 using ProjectExtensions;
@@ -10,6 +11,7 @@ using Sirenix.OdinInspector;
 using TMPro;
 using UI.ConfirmButton;
 using UI.Leaderboard;
+using UI.Manager;
 using UI.Transition;
 using UnityEngine;
 using UnityEngine.Events;
@@ -34,8 +36,8 @@ namespace UI
         MainMenu = 11,
         
         //MODE
-        LearningMode = 12,
-        NormalMode = 13,
+        NormalMode = 12,
+        HardMode = 13,
         EndlessMode = 14
     }
     
@@ -163,6 +165,9 @@ namespace UI
         {
             await UniTask.Yield(PlayerLoopTiming.LastPostLateUpdate);
             if (!_allLoad) _allLoad = true;
+            
+            ActiveProfileService.Instance.AutoCreate();
+            PlayerSaveSystem.Instance.AutoCreate();
         }
         
 
@@ -427,12 +432,26 @@ namespace UI
         /// <param name="playerNameInput"></param>
         public void OnClickNew(TMP_InputField playerNameInput)
         {
-            var id   = PlayerProfileManager.CreateNew(playerNameInput.text.Trim());
-            var data = PlayerSaveSystem.Read(id);
+            if (playerNameInput == null) return;
+            if (string.IsNullOrWhiteSpace(playerNameInput.text))
+            {
+                NotificationManager.Instance?.PlayNotification("notify_warn", "Please enter your name to continue.", 2f);
+                return;
+            }
 
-            ActiveProfileService.Instance?.SetActive(id);
-            OpenGameModePanel();
+            var trimmedName = playerNameInput.text.Trim();
+            var newData = PlayerSaveSystem.Instance.CreateNew(trimmedName);
+            ActiveProfileService.Instance.SetCurrent(newData);
+            
+            //First Unlock
+            ProgressionManager.Instance.UnlockMaps(new[]
+            {
+                "hard_mapvoidmetro",
+                "normal_mapvoidmetro"
+            });
+            
             LeaderboardItemPresenter.RefreshAll();
+            OpenGameModePanel();
         }
         
         /// <summary>
@@ -440,29 +459,28 @@ namespace UI
         /// </summary>
         public void OnClickContinue()
         {
-            var data = PlayerProfileManager.ContinueOrNull();
-            ActiveProfileService.Instance?.SetActive(data.ProfileId);
-            LeaderboardItemPresenter.RefreshAll();
+            var svc = ActiveProfileService.Instance;
+            var data = svc.LoadCurrent();
             if (data == null)
             {
-                Debug.Log("No active profile, show create screen.");
+                NotificationManager.Instance.PlayNotification("notify_warn", "Please create your new game first to continue.", 2f);
                 OpenDisplayPanel();
+                return;
             }
-            else
-            {
-                OpenGameModePanel();
-            }
+            LeaderboardItemPresenter.RefreshAll();
+            OpenGameModePanel();
         }
+
 
         public void OpenModePanel(string mode)
         {
             switch (mode)
             {
-                case "LearningMode":
-                    OpenPanel(UIPanelType.LearningMode).Forget();
-                    break;
                 case "NormalMode":
                     OpenPanel(UIPanelType.NormalMode).Forget();
+                    break;
+                case "HardMode":
+                    OpenPanel(UIPanelType.HardMode).Forget();
                     break;
                 case "EndlessMode":
                     OpenPanel(UIPanelType.EndlessMode).Forget();

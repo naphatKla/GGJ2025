@@ -36,32 +36,27 @@ namespace GameControl.EventMap
         delaybetweenEvent,
         chance
     }
-
-
+    
     [Serializable]
     public class MapEventStorageEntry
     {
         [HideInInspector] public Transform spawnPointRef;
         
-        [Title("➡️ Damage")]
-        [FoldoutGroup("$GroupName")] public float damage = 5f;
-
-        [Title("➡️ Time & Delay Data")]
-        [FoldoutGroup("$GroupName")] public float deleteTime = 2f;
-        [FoldoutGroup("$GroupName")] public float delayPerform = 1f;
-        [PropertySpace] [FoldoutGroup("$GroupName")] [Title("➡️ Runtime Data (Serializable)")]
-        public Vector3 spawnPosition;
+        [FoldoutGroup("$GroupName")] [BoxGroup("$GroupName/Data Setting")] public float damage = 5f;
+        [FoldoutGroup("$GroupName")] [BoxGroup("$GroupName/Data Setting")] public float deleteTime = 2f;
+        [FoldoutGroup("$GroupName")] [BoxGroup("$GroupName/Data Setting")] public float delayPerform = 1f;
         
-        [FoldoutGroup("$GroupName")] public Vector3 spawnEulerAngles;
-        [FoldoutGroup("$GroupName")] public HitboxType hitboxType = HitboxType.None;
-
+        [FoldoutGroup("$GroupName")] [BoxGroup("$GroupName/Tranform")] public Vector3 spawnPosition;
+        [FoldoutGroup("$GroupName")] [BoxGroup("$GroupName/Tranform")] public Vector3 spawnEulerAngles;
+        
+        [FoldoutGroup("$GroupName")] [BoxGroup("$GroupName/HitBox")] public HitboxType hitboxType = HitboxType.None;
         #region Box
 
         // Box
-        [FoldoutGroup("$GroupName")] [ShowIf("hitboxType", HitboxType.Box)]
+        [FoldoutGroup("$GroupName")] [BoxGroup("$GroupName/HitBox")] [ShowIf("hitboxType", HitboxType.Box)]
         public Vector3 boxSize;
 
-        [FoldoutGroup("$GroupName")] [ShowIf("hitboxType", HitboxType.Box)]
+        [FoldoutGroup("$GroupName")] [BoxGroup("$GroupName/HitBox")] [ShowIf("hitboxType", HitboxType.Box)]
         public Vector3 boxOffset;
 
         #endregion
@@ -69,10 +64,10 @@ namespace GameControl.EventMap
         #region Sphere
 
         // Sphere
-        [FoldoutGroup("$GroupName")] [ShowIf("hitboxType", HitboxType.Sphere)]
+        [FoldoutGroup("$GroupName")] [BoxGroup("$GroupName/HitBox")] [ShowIf("hitboxType", HitboxType.Sphere)]
         public float sphereRadius;
 
-        [FoldoutGroup("$GroupName")] [ShowIf("hitboxType", HitboxType.Sphere)]
+        [FoldoutGroup("$GroupName")] [BoxGroup("$GroupName/HitBox")] [ShowIf("hitboxType", HitboxType.Sphere)]
         public Vector3 sphereOffset;
 
         #endregion
@@ -80,26 +75,23 @@ namespace GameControl.EventMap
         #region Capsule
 
         // Capsule
-        [FoldoutGroup("$GroupName")] [ShowIf("hitboxType", HitboxType.Capsule)]
+        [FoldoutGroup("$GroupName")] [BoxGroup("$GroupName/HitBox")] [ShowIf("hitboxType", HitboxType.Capsule)]
         public float capsuleRadius;
 
-        [FoldoutGroup("$GroupName")] [ShowIf("hitboxType", HitboxType.Capsule)]
+        [FoldoutGroup("$GroupName")] [BoxGroup("$GroupName/HitBox")] [ShowIf("hitboxType", HitboxType.Capsule)]
         public float capsuleHeight;
 
-        [FoldoutGroup("$GroupName")] [ShowIf("hitboxType", HitboxType.Capsule)]
+        [FoldoutGroup("$GroupName")] [BoxGroup("$GroupName/HitBox")] [ShowIf("hitboxType", HitboxType.Capsule)]
         public Vector3 capsuleOffset;
 
         #endregion
 
-        [PropertySpace] [FoldoutGroup("$GroupName")] [AssetSelector(Paths = "Assets/Prefabs/MapEvent")]
+        [FoldoutGroup("$GroupName")] [BoxGroup("$GroupName/Map Setting")][AssetSelector(Paths = "Assets/Prefabs/MapEvent")] 
         public BaseMapEvent eventPrefab;
-
-        [FoldoutGroup("$GroupName")] public float delayBetweenEvents = 0.3f;
-
-        [FoldoutGroup("$GroupName")] [LabelText("Chance Event")]
-        public bool enableChance;
-
-        [FoldoutGroup("$GroupName")] [ShowIf("enableChance")] [Range(0, 1f)] [LabelText("Chance (0 - 1)")]
+        [FoldoutGroup("$GroupName")] [BoxGroup("$GroupName/Map Setting")] public float delayBetweenEvents = 0.3f;
+        
+        [FoldoutGroup("$GroupName")] [BoxGroup("$GroupName/Map Setting")] [LabelText("Chance Event")] public bool enableChance;
+        [FoldoutGroup("$GroupName")] [BoxGroup("$GroupName/Map Setting")] [ShowIf("enableChance")] [Range(0, 1f)] [LabelText("Chance (0 - 1)")]
         public float chance = 0.5f;
 
         public string GroupName => eventPrefab != null ? eventPrefab.name : "Ungrouped";
@@ -110,45 +102,69 @@ namespace GameControl.EventMap
     public class MapEventContainerSO : ScriptableObject
     {
         [Title("Event List")] public List<MapEventStorageEntry> entries = new();
+        
+        [FoldoutGroup("Import from scene Setting")]
+        [EnumToggleButtons, LabelText("Delay Mode")]
+        public DelayMode delayMode = DelayMode.Fixed;
 
-        [Title("Min Max Config")] public bool enableMinMax;
-
-        [ShowIf("enableMinMax")] public int minPlay;
-
-        [ShowIf("enableMinMax")] public int maxPlay;
-
-        [Title("Delay Config")] public DelayMode delayMode = DelayMode.Fixed;
-
+        [FoldoutGroup("Import from scene Setting")]
         [ShowIf("@delayMode == DelayMode.Fixed")]
+        [MinValue(0)] [LabelText("Default Delay")]
         public float defaultDelay = 0.3f;
 
+        [FoldoutGroup("Import from scene Setting")]
         [ShowIf("@delayMode == DelayMode.Additive")]
+        [MinValue(0)] [LabelText("Additive Step")]
         public float additiveStep = 0.1f;
 
+        [FoldoutGroup("Import from scene Setting")]
         [Title("Default Prefab Asset")] [AssetSelector(Paths = "Assets/Prefabs/MapEvent")]
         public BaseMapEvent defaultPrefabAsset;
+        
+        [FoldoutGroup("Map Event Play Setting")]
+        [ToggleLeft, LabelText("Enable Min/Max")]
+        public bool enableMinMax;
 
+        [FoldoutGroup("Map Event Play Setting")]
+        [BoxGroup("Map Event Play Setting/Play Limit")]
+        [ShowIf(nameof(enableMinMax))]
+        [MinValue(0)] [LabelText("Min Play")]
+        public int minPlay;
+
+        [FoldoutGroup("Map Event Play Setting")]
+        [BoxGroup("Map Event Play Setting/Play Limit")]
+        [ShowIf(nameof(enableMinMax))]
+        [MinValue(0)] [LabelText("Max Play")]
+        [ValidateInput(nameof(ValidateMinMax), "Max Play ต้องมากกว่าหรือเท่ากับ Min Play")]
+        public int maxPlay;
+        private bool ValidateMinMax(int value) => !enableMinMax || value >= minPlay;
+
+        [FoldoutGroup("Map Event Play Setting")]
         [Title("Event Mod")] [HideIf("enableRandomMode")]
         public EventMode eventMode;
 
+        [FoldoutGroup("Map Event Play Setting")]
         public bool enableRandomMode;
 
+        [FoldoutGroup("Map Event Play Setting")]
         [Range(0f, 1f)] [ShowIf("enableRandomMode")]
         public float playBySortChance = 0.5f;
 
+        [FoldoutGroup("Map Event Play Setting")]
         [Range(0f, 1f)] [ShowIf("enableRandomMode")]
         public float randomAndPlayChance = 0.5f;
 
-
         [Title("Editor Tools")]
-        [Button("Capture From Selection (Clear)", ButtonSizes.Medium)]
+        [FoldoutGroup("Import from scene Setting")]
+        [Button("ImportAll From Selection (Clear)", ButtonSizes.Large), GUIColor(0, 1, 0)]
         private void CaptureFromSelection()
         {
             entries.Clear();
             AddFromSelection_Internal();
         }
 
-        [Button("Add From Selection (Keep Old)", ButtonSizes.Medium)]
+        [FoldoutGroup("Import from scene Setting")]
+        [Button("Add From Selection (Keep Old)", ButtonSizes.Medium), GUIColor(1, 1, 0)]
         private void AddFromSelection()
         {
             AddFromSelection_Internal();
@@ -235,81 +251,46 @@ namespace GameControl.EventMap
 #endif
 
 #if UNITY_EDITOR
-        [Title("Batch Prefab Tool")]
-        [Button("Set Default Prefab", ButtonSizes.Medium)]
-        private void ApplyDefaultPrefab()
-        {
-            if (defaultPrefabAsset == null)
-            {
-                Debug.LogWarning("[MapEventContainerSO] Default prefab asset ยังไม่ถูกตั้งค่า!");
-                return;
-            }
-
-            foreach (var i in GetTargetIndexes())
-            {
-                if (i < 0 || i >= entries.Count) continue;
-                entries[i].eventPrefab = defaultPrefabAsset;
-            }
-
-            MarkDirty();
-            Debug.Log($"[Odin] Set Default Prefab ({defaultPrefabAsset.name}) ให้กับ {GetTargetIndexes().Count} entries");
-        }
-
-        [Button("Get Index From Selection", ButtonSizes.Medium)]
-        private void GetIndexFromSelection()
-        {
-            if (entries == null || entries.Count == 0)
-            {
-                Debug.LogWarning("[MapEventContainerSO] ไม่มี entries");
-                return;
-            }
-
-            foreach (var go in Selection.gameObjects)
-            {
-                // เทียบตำแหน่งกับ spawnPosition (เผื่อ user กดเลือกใน scene)
-                var idx = entries.FindIndex(e => e.spawnPosition == go.transform.position);
-                if (idx >= 0)
-                {
-                    Debug.Log($"[Odin] GameObject '{go.name}' → index {idx}");
-                }
-                else
-                {
-                    Debug.LogWarning($"[Odin] '{go.name}' ไม่พบใน entries");
-                }
-            }
-        }
-#endif
-
-#if UNITY_EDITOR
-        [Title("Batch Hitbox Config Tool")] [InfoBox("ปรับ Hitbox ของทุก Entry หรือเฉพาะ Index ที่เลือกได้")]
+        [FoldoutGroup("แก้ไข Map Event")][InfoBox("กรอง Filter Data ของทุกอย่าง (Hitbox,Data,Prefab)")]
         [InfoBox("ถ้าต้องการ Specifix Index สามารถพิมพ์ 0-5,7,9 จะได้ index 0,1,2,3,4,5,7,9 อัตโนมัติ")]
         public bool enableIndexFilter;
 
-        [ShowIf("enableIndexFilter")] [LabelText("Index to Edit (comma-separated, e.g. 0,2,5)")]
+        [FoldoutGroup("แก้ไข Map Event")][ShowIf("enableIndexFilter")] [LabelText("Index to Edit (comma-separated, e.g. 0,2,5)")]
         public string indexList = "";
 
+        [FoldoutGroup("แก้ไข Map Event/ปรับ Hitbox")]
+        [InfoBox("ส่วนนี้คือแก้ไขพวก Data ข้างในของ Hitbox เช่น Radius หรือ X Y ไม่ใช่การปรับ Type")]
         public HitboxType editType = HitboxType.None;
 
+        [FoldoutGroup("แก้ไข Map Event/ปรับ Hitbox")]
         [Title("Box Settings")] [LabelText("Box Size")] [ShowIf("@editType == HitboxType.Box")]
         public Vector3 boxSizeInput = new(2, 100, 0);
 
+        [FoldoutGroup("แก้ไข Map Event/ปรับ Hitbox")]
         [LabelText("Box Offset")] [ShowIf("@editType == HitboxType.Box")]
         public Vector3 boxOffsetInput = new(-1, 100, 0);
 
+        [FoldoutGroup("แก้ไข Map Event/ปรับ Hitbox")]
         [Title("Sphere Settings")] [LabelText("Sphere Radius")] [ShowIf("@editType == HitboxType.Sphere")]
         public float sphereRadiusInput = 1f;
 
+        [FoldoutGroup("แก้ไข Map Event/ปรับ Hitbox")]
         [LabelText("Sphere Offset")] [ShowIf("@editType == HitboxType.Sphere")]
         public Vector3 sphereOffsetInput = Vector3.zero;
 
+        [FoldoutGroup("แก้ไข Map Event/ปรับ Hitbox")]
         [Title("Capsule Settings")] [LabelText("Capsule Radius")] [ShowIf("@editType == HitboxType.Capsule")]
         public float capsuleRadiusInput = 0.5f;
 
+        [FoldoutGroup("แก้ไข Map Event/ปรับ Hitbox")]
         [LabelText("Capsule Height")] [ShowIf("@editType == HitboxType.Capsule")]
         public float capsuleHeightInput = 2f;
+        
+        [FoldoutGroup("แก้ไข Map Event/ปรับ Hitbox")]
         [LabelText("Capsule Offset")] [ShowIf("@editType == HitboxType.Capsule")]
         public Vector3 capsuleOffsetInput = Vector3.zero;
 
+        [FoldoutGroup("แก้ไข Map Event/ปรับ Hitbox")]
         [Button("Apply Hitbox Settings", ButtonSizes.Medium)]
         private void ApplyHitboxSettings()
         {
@@ -382,9 +363,35 @@ namespace GameControl.EventMap
 
             return validIndexes;
         }
+
+        [FoldoutGroup("แก้ไข Map Event/ปรับ Map Event Prefab")]
+        [InfoBox("ปรับ Prefab ของ Map Event ตามของใหม่ด้านล่างนี้")]
+        [Title("New Prefab Asset")] [AssetSelector(Paths = "Assets/Prefabs/MapEvent")]
+        public BaseMapEvent newPrefabAsset;
         
+        [FoldoutGroup("แก้ไข Map Event/ปรับ Map Event Prefab")]
+        [Button("Set Default Prefab", ButtonSizes.Medium)]
+        private void ApplyDefaultPrefab()
+        {
+            if (newPrefabAsset == null)
+            {
+                Debug.LogWarning("[MapEventContainerSO] Default prefab asset ยังไม่ถูกตั้งค่า!");
+                return;
+            }
+
+            foreach (var i in GetTargetIndexes())
+            {
+                if (i < 0 || i >= entries.Count) continue;
+                entries[i].eventPrefab = newPrefabAsset;
+            }
+
+            MarkDirty();
+            Debug.Log($"[Odin] Set Default Prefab ({newPrefabAsset.name}) ให้กับ {GetTargetIndexes().Count} entries");
+        }
+
 #if UNITY_EDITOR
-        [Title("Batch Hitbox Type Tool")]
+        [FoldoutGroup("แก้ไข Map Event/ปรับ Hitbox")]
+        [InfoBox("ส่วนนี้เป็นการปรับ Hitbox Type ของ MapEvent ใน List")]
         [Button("Apply Hitbox Type", ButtonSizes.Medium)]
         private void ApplyHitboxType(HitboxType type)
         {
@@ -398,9 +405,9 @@ namespace GameControl.EventMap
             AssetDatabase.SaveAssets();
         }
         
-        [Title("Batch Set Data")]
+        [FoldoutGroup("แก้ไข Map Event/ปรับ MapEvent Data (damage,delayPerform)")]
         [Button("Apply Data", ButtonSizes.Medium)]
-        private void ApplyHitboxType(DataSetting data, float num)
+        private void ApplyDataConfig(DataSetting data, float num)
         {
             foreach (var i in GetTargetIndexes())
             {

@@ -81,6 +81,9 @@ namespace Characters.FeedbackSystems
             public const string PiercerDashLv1 = "Skill/PiercerDash_Lv1";
             public const string ChargeBombLv1 = "Skill/ChargeBomb_Lv1";
             public const string PressureBombLv1 = "Skill/PressureBomb_Lv1";
+            public const string TwirlUseLv1 = "Skill/TwrilUse_Lv1";
+            public const string DrawBackUseLv1 = "Skill/DrawBackUse_Lv1";
+            public const string DrawBackSuccessLv1 = "Skill/DrawBackSuccess_Lv1";
         }
 
         // ---------- Caches ----------

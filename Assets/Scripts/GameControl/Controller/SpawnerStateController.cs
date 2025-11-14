@@ -21,19 +21,34 @@ namespace GameControl.Controller
         private float _maxEnemyPoint;
         private float _increaseRateEnemyPoint;
         private float _defaultEnemySpawnTimer;
+        private float _enemyAmount;
         
         [BoxGroup("Debug")] 
         [ShowInInspector, ReadOnly]
         private string _currentStateName;
         [BoxGroup("Debug")] 
         [ShowInInspector, ReadOnly]
+        public float EnemyPoint => _currentEnemyPoint;
+        [BoxGroup("Debug")] 
+        [ShowInInspector, ReadOnly]
+        public float EnemyAmount
+        {
+            get
+            {
+                if (_enemySpawnerController != null) return _enemySpawnerController.EnemyAmount;
+                return 0;
+            }
+        }
+
+        [BoxGroup("Debug")] 
+        [ShowInInspector, ReadOnly]
         private MapDataSO CurrentMap => GameStateController.Instance != null ? GameStateController.Instance.CurrentMap : null;
 
         
-        [BoxGroup("Setting")] [SerializeField] private EnemySpawnerController _enemySpawnerController;
-        [BoxGroup("Setting")] [SerializeField] private EnemyPatternController _enemyPatternController;
-        [BoxGroup("Setting")] [SerializeField] private ItemSpawnerController _itemSpawnerController;
-        [BoxGroup("Setting")] [SerializeField] private MapEventController _mapEventController;
+        [BoxGroup("Setting")] private EnemySpawnerController _enemySpawnerController;
+        [BoxGroup("Setting")] private EnemyPatternController _enemyPatternController;
+        [BoxGroup("Setting")] private ItemSpawnerController _itemSpawnerController;
+        [BoxGroup("Setting")] private MapEventController _mapEventController;
         [BoxGroup("Setting")] [Required] [SerializeField] private Transform enemyParent;
         [BoxGroup("Setting")] [Required] [SerializeField] private Transform itemParent;
         [BoxGroup("Setting")] [SerializeField] private Vector2 regionSize = Vector2.zero;
@@ -45,8 +60,6 @@ namespace GameControl.Controller
         
         [BoxGroup("Enable")] [SerializeField] private bool notSpawnEnemyOnStart = false;
         
-        [ShowInInspector, ReadOnly]
-        public float EnemyPoint => _currentEnemyPoint;
         public MapEventController MapEventController => _mapEventController;
         public EnemySpawnerController EnemySpawnerController => _enemySpawnerController;
         public EnemyPatternController EnemyPatternController => _enemyPatternController;
@@ -121,6 +134,7 @@ namespace GameControl.Controller
             if (gsc?.sceneCts != null)
             {
                 _enemyPatternController.BindCancellationToken(gsc.sceneCts.Token);
+                _enemySpawnerController.BindCancellationToken(gsc.sceneCts.Token);
             }
         }
 
@@ -164,6 +178,9 @@ namespace GameControl.Controller
             _enemyPatternController?.SetEnemySpawner(_enemySpawnerController);
             RescheduleAllFromNow(map);
             _enemyPatternController?.AddRandomPatterns((int)map.patternMax);
+            
+            //Play Pattern on Rush
+            _enemyPatternController?.TriggerAllPatterns();
         }
         
         private void RescheduleAllFromNow(MapDataSO map)
@@ -250,54 +267,63 @@ namespace GameControl.Controller
             Debug.Log("Point: " + _maxEnemyPoint);
         }
         
+        [FoldoutGroup("Spawner Control")]
         [Button("Start Spawning" , ButtonSizes.Large), GUIColor(0, 1, 0)]
         private void DebugStart()
         {
             SetState(_spawningState);
         }
 
+        [FoldoutGroup("Spawner Control")]
         [Button("Pause Spawning" , ButtonSizes.Large), GUIColor(1, 1, 0)]
         private void DebugPause()
         {
             SetState(_pauseState);
         }
 
+        [FoldoutGroup("Spawner Control")]
         [Button("Stop Spawnig" , ButtonSizes.Large), GUIColor(1, 0, 0)]
-        private void DebugStop()
+        public void StopSpawning()
         {
             SetState(_stopState);
         }
         
+        [FoldoutGroup("Spawner Control")]
         [Button("Trigger Pattern" , ButtonSizes.Large), GUIColor(1, 1, 0)]
         private void TriggerPattern()
         {
             _enemyPatternController.TriggerAllPatterns();
         }
         
+        [FoldoutGroup("Spawner Control")]
         [Button("Add Pattern" , ButtonSizes.Large), GUIColor(0, 1, 0)]
         private void TriggerAddPattern(int amount)
         {
             _enemyPatternController.AddRandomPatterns(amount);
         }
         
+        [FoldoutGroup("Spawner Control")]
         [Button("Clear all Enemy" , ButtonSizes.Large), GUIColor(1, 0, 0)]
         private void DebugClearEnemy()
         {
             ClearEnemy();
         }
         
+        [FoldoutGroup("Spawner Control")]
         [Button("Clear all Item" , ButtonSizes.Large), GUIColor(1, 0, 0)]
         private void DebugClearItem()
         {
             ClearItem();
         }
         
+        [FoldoutGroup("Spawner Control")]
         [Button("Add Enemy Point" , ButtonSizes.Large), GUIColor(0, 1, 0)]
         private void TriggerAddPoint()
         {
             UpgradeMaxSpawnPoint(20f);
         }
         
+        [FoldoutGroup("Spawner Control")]
         [Button("Random Map Event" , ButtonSizes.Large), GUIColor(0, 1, 0)]
         private void TriggerMapEvent()
         {

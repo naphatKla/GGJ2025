@@ -23,8 +23,13 @@ namespace Characters.SkillSystems.SkillRuntimes
     {
         protected float cooldown;
         protected float currentCooldown;
+        protected float globalCooldownCounter;
+        protected int maxStack;
+        protected int currentStack;
         public float Cooldown => cooldown;
         public float CurrentCooldown => currentCooldown;
+        public int MaxStack => maxStack;
+        public int CurrentStack => currentStack;
         public bool IsCooldown => currentCooldown > 0;
         public abstract bool IsPerforming { get; protected set; }
         private Action cooldownReadyCallback;
@@ -40,6 +45,7 @@ namespace Characters.SkillSystems.SkillRuntimes
             currentCooldown = Mathf.Max(0, value);
             if (prev > 0 && currentCooldown <= 0)
             {
+                currentStack = maxStack;
                 cooldownReadyCallback?.Invoke();
                 cooldownReadyCallback = null;
             }
@@ -47,8 +53,11 @@ namespace Characters.SkillSystems.SkillRuntimes
 
         public virtual void UpdateCoolDown(float deltaTime)
         {
-            if (currentCooldown <= 0) return;
-            SetCurrentCooldown(currentCooldown - deltaTime);
+            if (globalCooldownCounter > 0)
+                globalCooldownCounter -= deltaTime;
+            
+            if (currentCooldown > 0)
+                SetCurrentCooldown(currentCooldown - deltaTime);
         }
 
         public void RegisterCooldownReadyCallback(Action callback)
@@ -77,6 +86,8 @@ namespace Characters.SkillSystems.SkillRuntimes
             this.skillData = skillData as T;
             this.owner = owner;
             cooldown = skillData.Cooldown;
+            maxStack = skillData.MaxStack;
+            currentStack = maxStack;
             SetCurrentCooldown(skillData.Cooldown);
             effectsApplyOnStart = new List<StatusEffectDataPayload>(skillData.StatusEffectOnSkillStart);
         }
@@ -84,8 +95,13 @@ namespace Characters.SkillSystems.SkillRuntimes
         public override async void PerformSkill()
         {
             if (IsCooldown || IsPerforming) return;
+            if (globalCooldownCounter > 0) return;
 
-            SetCurrentCooldown(skillData.Cooldown);
+            globalCooldownCounter = skillData.GlobalCooldown;
+            currentStack = Mathf.Clamp(currentStack - 1, 0, maxStack);
+            
+            if (currentStack <= 0)
+                SetCurrentCooldown(skillData.Cooldown);
 
             HandleSkillStart();
             try

@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using Challenge;
+using Characters.Controllers;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using GameControl.GameState;
@@ -42,23 +44,26 @@ namespace GameControl.Controller
         private MapState _mapstate;
         public CancellationTokenSource sceneCts;
 
+        [BoxGroup("Debug")]
         [ShowInInspector, ReadOnly]
         private string _currentStateName;
         
+        [BoxGroup("Debug")]
         [ShowInInspector, ReadOnly]
         private MapDataSO _currentMapDataRuntime;
         
+        [BoxGroup("Debug")]
         [SerializeField] private MapSelectionDataContainer mapContainer;
+        [BoxGroup("Debug")]
         [Tooltip("The index of the current map in the mapData list.")]
         [SerializeField] private int currentMapIndex;
+        [BoxGroup("Debug")] public EndResult gameResult;
         private List<MapDataSO> MapDataList =>
             mapContainer != null && mapContainer.mapSelectionList != null
                 ? mapContainer.mapSelectionList
                 : new List<MapDataSO>();
         
         public MapDataSO CurrentMap => _currentMapDataRuntime;
-        
-        public EndResult gameResult;
         public IGameState CurrentState => _currentState;
         public MapState MapState { get => _mapstate; set => _mapstate = value; }
         private MapSelectionSender Sender => MapSelectionSender.Instance;
@@ -119,7 +124,9 @@ namespace GameControl.Controller
         private void AssignMapRuntime(MapDataSO asset)
         {
             if (_currentMapDataRuntime != null) Destroy(_currentMapDataRuntime);
-            _currentMapDataRuntime = MakeRuntimeCopy(asset);
+            var copyData = MakeRuntimeCopy(asset);
+            ModifyAllDataFromChallenge(copyData);
+            _currentMapDataRuntime = copyData;
             if (_currentMapDataRuntime.endlessMode)
             {
                 MapState = MapState.Endless;
@@ -129,6 +136,29 @@ namespace GameControl.Controller
                 MapState = MapState.Normal;
             }
         }
+
+        private void ModifyAllDataFromChallenge(MapDataSO mapData)
+        {
+            if (mapData == null || mapData.EnemyOptions == null || Sender == null) return;
+            var snap = Sender.challengeData;
+            
+            //Enemy Modify
+            foreach (var opt in mapData.EnemyOptions)
+            {
+                if (opt == null || opt.enemyData == null) continue;
+                
+                var id = string.IsNullOrWhiteSpace(opt.id) ? string.Empty : opt.id;
+                var eSnap = snap.GetEnemy(id);
+
+                float hpStats   = eSnap.Get(EnemyStat.MaxHP);
+                float baseDmgStats  = eSnap.Get(EnemyStat.Damage);
+                float baseSpdStats  = eSnap.Get(EnemyStat.MoveSpeed);
+
+                opt.enemyData = opt.enemyData.CopyInstance(hpStats, baseDmgStats, baseSpdStats);
+                opt.modifyNewData = true;
+            }
+        }
+
         
         private void EnterRush()
         {

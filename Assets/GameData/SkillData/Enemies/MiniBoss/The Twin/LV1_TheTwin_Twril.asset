@@ -37,7 +37,7 @@ MonoBehaviour:
   nextSkillDataUpgrade: {fileID: 0}
   level: 1
   cooldown: 5
-  startFeedback: 
+  startFeedback: TwrilUse_Lv1
   exitFeedback: 
   clearBuffOnSkillExit: 1
   statusEffectOnSkillStart:
@@ -46,14 +46,14 @@ MonoBehaviour:
     overrideDuration: 999
   baseDamagePerHit: 0
   damageMultiplier: 100
-  damageRadius: 10.15
-  expandRadius: 8
+  damageRadius: 8.65
+  expandRadius: 6.5
   startExpandDuration: 0.35
   twirlDuration: 4
   spinRound: 12
-  speedUpMultiplier: 100
-  delayEnableDamageAfterStartSpin: 0.6
-  damageDuration: 2.5
+  speedUpMultiplier: 150
+  delayEnableDamageAfterStartSpin: 0.5
+  damageDuration: 3
   mergeBackDuration: 0.05
   effectSelfOnSuccess:
   - effectData: {fileID: 11400000, guid: e5ae6010e3c4a7b43bc80da0bf5a9ef5, type: 2}
@@ -81,22 +81,22 @@ MonoBehaviour:
       inWeight: 0.94175977
       outWeight: 0.19277203
     - serializedVersion: 3
-      time: 0.60265106
-      value: 0.6659094
-      inSlope: 1.6007632
-      outSlope: 1.6007632
+      time: 0.66765803
+      value: 0.6772225
+      inSlope: 1.5556275
+      outSlope: 1.5556275
       tangentMode: 0
       weightedMode: 0
       inWeight: 0.33333334
-      outWeight: 0.19627453
+      outWeight: 0.37436867
     - serializedVersion: 3
-      time: 0.74039596
-      value: 0.89756876
-      inSlope: 1.4880484
-      outSlope: 1.4880484
+      time: 0.80540293
+      value: 0.90888184
+      inSlope: 1.7205541
+      outSlope: 1.7205541
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0.5492581
+      inWeight: 0.3444774
       outWeight: 0.2582651
     - serializedVersion: 3
       time: 1

@@ -1,10 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Characters.Controllers;
 using Characters.SO.CharacterDataSO;
+using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using GameControl.SO;
+using UI;
 using UI.Manager;
 using UnityEngine;
 using UnityEngine.Pool;
@@ -27,6 +30,13 @@ namespace GameControl.Controller
         
         public event Action<EnemyController, MapDataSO.EnemyOption> OnFirstSpawned;
         private readonly HashSet<string> _firstSpawnedTypeIds = new();
+        public int EnemyAmount => _activeEnemy.Count;
+        private CancellationToken _externalCt = CancellationToken.None;
+        
+        public void BindCancellationToken(CancellationToken ct)
+        {
+            _externalCt = ct;
+        }
         
         public EnemySpawnerController(MapDataSO mapData, SpawnerStateController state, Vector2 spawnRegion, bool debug, Camera mainCamera)
         {
@@ -86,7 +96,8 @@ namespace GameControl.Controller
         private void OnFirstEnemySpawn(EnemyController obj, MapDataSO.EnemyOption option)
         {
             if (GameStateController.Instance.MapState == MapState.Rush) return;
-            NotificationManager.Instance.PlayNotification("notify_enemy", $"NEW ENEMY DETECT - {option.displayName}", 4f, option.displayName);
+            if (!option.disableEnemyDetect) 
+                NotificationManager.Instance.PlayNotification("notify_enemy", $"NEW ENEMY DETECT - {option.displayName}", 4f, option.displayName);
             OnFirstSpawned?.Invoke(obj, option);
         }
         
@@ -104,13 +115,18 @@ namespace GameControl.Controller
             obj.FeedbackSystem.ShowTrail(true);
             obj.ResetAllDependentBehavior();
             obj.gameObject.SetActive(true);
-
             _activeEnemy.Add(obj);
         }
         
-        public Dictionary<string, ObjectPool<EnemyController>> GetEnemyList()
+        public Dictionary<string, ObjectPool<EnemyController>> GetEnemyListFiltered(MapDataSO map)
         {
-            return _enemyPools;
+            return _enemyPools
+                .Where(kv =>
+                {
+                    var opt = map.EnemyOptions.Find(o => o.id == kv.Key);
+                    return opt == null || !opt.disableInPattern;
+                })
+                .ToDictionary(kv => kv.Key, kv => kv.Value);
         }
         
         public List<MapDataSO.EnemyOption> GetEnemyOption()
@@ -137,20 +153,48 @@ namespace GameControl.Controller
             if (!opt.IsBelowPerEnemyMax()) return false;
             return true;
         }
+
+        public async UniTask SpawnEffect(MapDataSO.EnemyOption option)
+        {
+            foreach (var effect in option.spawnEffect)
+            {
+                switch (effect.effectType)
+                {
+                    case MapDataSO.EnemyOption.SpawnEffectType.ShowPopup:
+                        PopupUIManager.Instance.ShowPopup(effect.effectString, 2.0f, bypassStack: true);
+                        break;
+                    case MapDataSO.EnemyOption.SpawnEffectType.KillAllEnemy:
+                        ClearAllEnemys();
+                        break;
+                    case MapDataSO.EnemyOption.SpawnEffectType.StopEnemySpawn:
+                        SpawnerStateController.Instance.StopSpawning();
+                        break;
+                    case MapDataSO.EnemyOption.SpawnEffectType.DelaySpawn:
+                        await UniTask.Delay(TimeSpan.FromSeconds(effect.effectint), DelayType.DeltaTime, cancellationToken: _externalCt);
+                        break;
+                }
+            }
+        }
         
         public MapDataSO.EnemyOption SpawnEnemy()
         {
             var randomEnemy = RandomUtility.GetWeightedRandom(PickEnemy(false));
             if (randomEnemy == null) return null;
-            if (!ConditionCheck(randomEnemy)) return null;
+            SpawnerStateController.Instance.CurrentEnemyPoint -= randomEnemy.EnemyPoint;
+            SpawnDelayAsync(randomEnemy).Forget();
+            return randomEnemy;
+        }
+
+        public async UniTask SpawnDelayAsync(MapDataSO.EnemyOption randomEnemy)
+        {
+            if (!ConditionCheck(randomEnemy)) return;
+            randomEnemy.activeCount++;
+            if (randomEnemy.useSpawnEffect)
+                await SpawnEffect(randomEnemy);
             
-            if (!_enemyPools.TryGetValue(randomEnemy.id, out var pool)) return null;
+            if (!_enemyPools.TryGetValue(randomEnemy.id, out var pool)) return;
             var inst = pool.Get();
             inst.CountedByMax = true;
-            
-            randomEnemy.activeCount++;
-            SpawnerStateController.Instance.CurrentEnemyPoint -= randomEnemy.EnemyPoint;
-            return randomEnemy;
         }
         
         #endregion
@@ -179,13 +223,18 @@ namespace GameControl.Controller
                     customInterval = data.customInterval,
                     EnemyObject = data.EnemyObject,
                     Chance = data.Chance,
+                    disableNormalize = data.disableNormalize,
                     modifyNewData = data.modifyNewData,
+                    disableInPattern = data.disableInPattern,
+                    disableEnemyDetect = data.disableEnemyDetect,
                     enemyData = data.enemyData,
                     useSpawnConditions = data.useSpawnConditions,
                     conditionLogic = data.conditionLogic,
                     useMaxperEnemy = data.useMaxperEnemy,
                     maximumPerEnemy = data.maximumPerEnemy,
-                    spawnConditions = data.spawnConditions != null ? new List<EnemySpawnConditionSO>(data.spawnConditions) : null
+                    spawnConditions = data.spawnConditions != null ? new List<EnemySpawnConditionSO>(data.spawnConditions) : null,
+                    useSpawnEffect = data.useSpawnEffect,
+                    spawnEffect = data.spawnEffect != null ? new List<MapDataSO.EnemyOption.SpawnEffectStruct>(data.spawnEffect) : null,
                 };
                 cloned.InitRuntime();
                 _enemyOptionsList.Add(cloned);
@@ -219,31 +268,56 @@ namespace GameControl.Controller
                     data.EnemyPoint *= (1 + data.enemyPointGrowthRate / 100f);
             }
         }
+
         public void UpgradeEnemyChance()
         {
-            float totalChanceBefore = 0;
-            foreach (var data in _enemyOptionsList)
-                totalChanceBefore += data.Chance;
+            foreach (var e in _enemyOptionsList)
+                if (e.enemyChanceCanGrowth)
+                    e.Chance += e.enemyChanceGrowthRate;
 
-            foreach (var data in _enemyOptionsList)
+            NormalizeChancesRespectingFlags(_enemyOptionsList, _debug);
+        }
+        
+        private static void NormalizeChancesRespectingFlags(List<MapDataSO.EnemyOption> options, bool debugLog = false)
+        {
+            foreach (var e in options) e.Chance = Mathf.Max(0f, e.Chance);
+
+            float fixedSum = 0f;
+            float varSum   = 0f;
+
+            foreach (var e in options)
             {
-                if (data.enemyChanceCanGrowth)
-                    data.Chance += data.enemyChanceGrowthRate;
+                if (e.disableNormalize) fixedSum += e.Chance;
+                else                    varSum   += e.Chance;
             }
 
-            float totalChanceAfter = 0;
-            foreach (var data in _enemyOptionsList)
-                totalChanceAfter += data.Chance;
-
-            foreach (var data in _enemyOptionsList)
-                data.Chance = (data.Chance / totalChanceAfter) * 100f;
-
-            if (!_debug) return; Debug.Log("---- Enemy Spawn Chance After Normalize ----");
-            foreach (var data in _enemyOptionsList)
+            float remaining = Mathf.Max(0f, 100f - fixedSum);
+            if (varSum <= 0f)
             {
-                Debug.Log($"ID: {data.id} | Chance: {data.Chance:F2}%");
+                if (debugLog) Debug.Log($"[Normalize] No variable entries. fixedSum={fixedSum:F2}. Keep as-is.");
+                return;
+            }
+            
+            if (remaining <= 0f)
+            {
+                if (debugLog) Debug.Log($"[Normalize] fixedSum >= 100 → skip scaling variables (soft). Keep as-is.");
+                return;
+            }
+            
+            foreach (var e in options)
+            {
+                if (e.disableNormalize) continue;
+                e.Chance = (e.Chance / varSum) * remaining;
+            }
+
+            if (debugLog)
+            {
+                float sum = 0f;
+                foreach (var e in options) sum += e.Chance;
+                Debug.Log($"[Normalize] fixed={fixedSum:F2}, varRem={remaining:F2}, total={sum:F2})");
             }
         }
+
         public void ClearAllEnemysCompletely()
         {
             ReleaseAllEnemies();
@@ -251,10 +325,7 @@ namespace GameControl.Controller
         }
         public void ClearAllEnemys()
         {
-            foreach (var pool in _enemyPools.Values)
-            {
-                pool.Clear();
-            }
+            foreach (var pool in _enemyPools.Values) pool.Clear();
             _activeEnemy.Clear();
         }
         public void ReleaseAllEnemies()
