@@ -1,8 +1,9 @@
+using System;
 using System.Collections.Generic;
 using Cameras;
-using Characters.SO.ComboStreakDataSO;
 using Characters.SO.SkillDataSo;
 using Sirenix.OdinInspector;
+using Sirenix.Serialization;
 using UnityEngine;
 
 namespace Characters.SO.CharacterDataSO
@@ -20,8 +21,8 @@ namespace Characters.SO.CharacterDataSO
         
         [FoldoutGroup("Combat")] [SerializeField] private float stepValue = 500;
 
-        [FoldoutGroup("Combat")] 
-        [SerializeField] private ComboStreakDataSo comboStreakData;
+        [FoldoutGroup("Combat")] [OdinSerialize]
+        private Dictionary<CombatRankID, CombatRankData> combatRankDatas;
 
         [FoldoutGroup("Camera Settings")] [SerializeField]
         private CameraShakeOption attackHitCameraShakeOption;
@@ -35,8 +36,7 @@ namespace Characters.SO.CharacterDataSO
         public float BaseExpLevelUp => baseExpLevelUp;
         public int StepThreshold => stepThreshold;
         public float StepValue => stepValue;
-
-        public ComboStreakDataSo ComboStreakData => comboStreakData;
+        public Dictionary<CombatRankID, CombatRankData> CombatRankDatas => combatRankDatas;
 
         [Space]
         [FoldoutGroup("Skills/Upgrade")]
@@ -62,6 +62,27 @@ namespace Characters.SO.CharacterDataSO
         public CameraShakeOption CounterAttackHitCameraShakeOption => counterAttackHitCameraShakeOption;
         public CameraShakeOption TakeDamageCameraShakeOption => takeDamageCameraShakeOption;
     }
-    
-    public struct 
+
+    [Serializable]
+    public struct CombatRankData
+    {
+        [SerializeField] private float rankPointThreshold;
+
+        [ValidateInput("@scoreMultiplier >= 1f", "Score Multiplier must to be >= 1")] 
+        [SerializeField] private float scoreMultiplier;
+    }
+
+    [Serializable]
+    public enum CombatRankID
+    {
+        X = 0,
+        SSS = 1,
+        SS = 2,
+        S = 3,
+        A = 4,
+        B = 5,
+        C = 6,
+        D = 7,
+        F = 8,
+    }
 }
