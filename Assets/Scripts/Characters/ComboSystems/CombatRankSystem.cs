@@ -181,6 +181,16 @@ namespace Characters.ComboSystems
             }
         }
 
+        public void OnParrySuccessCondition(bool perfect, int damageNegate)
+        {
+            Debug.Log(damageNegate);
+        }
+
+        public void OnCounterDashCondition(bool perfect)
+        {
+            
+        }
+
         public void OnHealCondition(int healAmount)
         {
             int calculatedPoint = Mathf.CeilToInt(healAmount * (_ownerData.HealConditionData.healPercentage / 100));

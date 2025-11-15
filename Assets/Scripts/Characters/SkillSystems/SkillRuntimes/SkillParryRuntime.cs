@@ -14,6 +14,7 @@ namespace Characters.SkillSystems.SkillRuntimes
     {
         public event Action OnTriggerAutoSkill;
         private bool _isParryTrigger;
+        private int _damageNegate;
         private Collider2D ownerCollider2D;
 
         public override void AssignSkillData(BaseSkillDataSo skillData, BaseController owner)
@@ -34,7 +35,7 @@ namespace Characters.SkillSystems.SkillRuntimes
         private void OnParrySuccess()
         {
             OnTriggerAutoSkill?.Invoke();
-
+            
             owner.TryPlayFeedback(skillData.ParrySuccessFeedback);
             LayerMask damageLayer = CharacterGlobalSettings.Instance.EnemyLayerDictionary[owner.tag];
             var targetsInRange =
@@ -56,11 +57,17 @@ namespace Characters.SkillSystems.SkillRuntimes
                     target.ClosestPoint(owner.transform.position), skillData.ExplosionBaseDamage,
                     skillData.ExplosionDamageMultiplier, 0, 0, 0, 0);
             }
+
+            if (owner is PlayerController playerController)
+            {
+                playerController.CombatRankSystem.OnParrySuccessCondition(false, _damageNegate);
+            }
         }
 
         protected override void OnSkillStart()
         {
             _isParryTrigger = false;
+            _damageNegate = 0;
             owner.MovementSystem.StopFromParry(skillData.StopWhileParry);
         }
 
@@ -88,6 +95,7 @@ namespace Characters.SkillSystems.SkillRuntimes
         protected override void OnSkillExit()
         {
             _isParryTrigger = false;
+            _damageNegate = 0;
             owner.MovementSystem.StopFromParry(false);
 
             if (Math.Abs(skillData.ParryColliderSizeMultiplier - 1) < 0.01f) return;
@@ -98,10 +106,11 @@ namespace Characters.SkillSystems.SkillRuntimes
                 circle.radius /= skillData.ParryColliderSizeMultiplier;
         }
 
-        private void TriggerParry()
+        private void TriggerParry(int damageIncome)
         {
             if (!IsPerforming) return;
             _isParryTrigger = true;
+            _damageNegate = damageIncome;
         }
     }
 }

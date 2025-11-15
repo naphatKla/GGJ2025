@@ -54,10 +54,10 @@ namespace Characters.HeathSystems
         /// <summary>Event triggered when the character takes damage.</summary>
         public Action OnTakeDamage { get; set; }
 
-        public event Action OnHit;
+        public event Action<int> OnHit; // damage
         
         /// <summary>Event triggered when the character heals.</summary>
-        public Action OnHeal { get; set; }
+        public Action<int> OnHeal { get; set; }
 
         /// <summary>Event triggered when this character dies.</summary>
         public Action OnDead { get; set; }
@@ -108,7 +108,7 @@ namespace Characters.HeathSystems
         public virtual bool TakeDamage(float damage, BaseController attacker, GameObject realObjectAttack)
         {
             if (_isDead) return false;
-            OnHit?.Invoke();
+            OnHit?.Invoke((int)damage);
             
             if (_isInvincible || _isHitCooldown)  return false;
             
@@ -157,7 +157,7 @@ namespace Characters.HeathSystems
             if (_isDead) return;
             ModifyHealth(healAmount);
             TotalHeal += (int)healAmount;
-            OnHeal?.Invoke();
+            OnHeal?.Invoke((int)healAmount);
             owner?.TryPlayFeedback(FeedbackName.Character.Heal);
         }
 

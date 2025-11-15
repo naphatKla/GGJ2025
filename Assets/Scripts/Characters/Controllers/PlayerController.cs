@@ -31,6 +31,7 @@ namespace Characters.Controllers
         public CollectItemSystem CollectItemSystem => collectItemSystem;
         public LevelSystem LevelSystem => levelSystem;
         public ScoreSystem ScoreSystem => scoreSystem;
+        public CombatRankSystem CombatRankSystem => combatRankSystem;
 
         /// <summary>
         /// A global static reference to the current player instance.
@@ -84,6 +85,7 @@ namespace Characters.Controllers
             // combat rank dependencies
             CombatSystem.OnKill += combatRankSystem.OnKillCondition;
             HealthSystem.OnTakeDamage += combatRankSystem.OnTakeDamageCondition;
+            HealthSystem.OnHeal += combatRankSystem.OnHealCondition;
             
             // flow state
             combatRankSystem.OnRankPointAdded += flowStateController.OnRankPointAdd;
@@ -107,6 +109,7 @@ namespace Characters.Controllers
             // combat rank dependencies
             CombatSystem.OnKill -= combatRankSystem.OnKillCondition;
             HealthSystem.OnTakeDamage -= combatRankSystem.OnTakeDamageCondition;
+            HealthSystem.OnHeal -= combatRankSystem.OnHealCondition;
             
             // flow state
             combatRankSystem.OnRankPointAdded -= flowStateController.OnRankPointAdd;
