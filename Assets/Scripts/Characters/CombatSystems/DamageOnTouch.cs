@@ -249,6 +249,7 @@ namespace Characters.CombatSystems
                 CombatManager.ApplyCalculatedDamageTo(
                     target,
                     _owner,
+                    gameObject,
                     hitPosition,
                     instance.BaseSkillDamage,
                     instance.DamageMultiplier,

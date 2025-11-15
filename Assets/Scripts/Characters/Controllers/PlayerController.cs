@@ -1,6 +1,7 @@
 using System;
 using Cameras;
 using Characters.CollectItemSystems;
+using Characters.CombatSystems;
 using Characters.ComboSystems;
 using Characters.Data;
 using Characters.LevelSystems;
@@ -156,7 +157,9 @@ namespace Characters.Controllers
             statsPerRun.totalEnemiesEliminated = combatSystem.TotalKill;
             statsPerRun.totalDamageDeal = combatSystem.TotalDamageDeal;
             statsPerRun.criticalCount = combatSystem.TotalCriticalCount;
-            statsPerRun.totalCounterDashCount = combatSystem.TotalCounterDashCount;
+            
+            PlayerCombatSystem pc = combatSystem as PlayerCombatSystem;
+            statsPerRun.totalCounterDashCount = pc.TotalCounterDashCount;
 
             statsPerRun.totalPrimarySkillUsed = skillSystem.TotalPrimarySkillUsed;
             statsPerRun.totalSecondarySkillUsed = skillSystem.TotalSecondarySkillUsed;

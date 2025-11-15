@@ -33,7 +33,6 @@ namespace Characters.CombatSystems
         public int TotalKill { get; private set; }
         public int TotalDamageDeal { get; private set; }
         public int TotalCriticalCount { get; private set; }
-        public int TotalCounterDashCount { get; private set; }
 
         /// <summary>
         /// The current damage value used for actual damage calculations.
@@ -48,7 +47,7 @@ namespace Characters.CombatSystems
         /// <summary>
         /// Owner controller.
         /// </summary>
-        private BaseController _owner;
+        protected BaseController owner;
 
         public float CurrentDamage => _currentDamage;
 
@@ -57,11 +56,6 @@ namespace Characters.CombatSystems
         /// Useful for triggering combo counters, visual effects, or gameplay responses.
         /// </summary>
         public Action<DamageData> OnDealDamage { get; set; }
-
-        /// <summary>
-        /// Event triggered whenever this character and target perform attack in the same time.
-        /// </summary>
-        public Action OnCounterAttack { get; set; }
         
         public Action<BaseController> OnKill { get; set; } //object killed
 
@@ -76,7 +70,7 @@ namespace Characters.CombatSystems
         /// <param name="baseDamage">The base damage to be used for combat calculations.</param>
         public void AssignCombatData(BaseController owner, float baseDamage, float baseCriRate, float baseCriDamage, float baseLifeStealPercent, float baseLifeStealEffective)
         {
-            _owner = owner;
+            this.owner = owner;
             _baseDamage = baseDamage;
             _baseCriRate = baseCriRate;
             _baseCriDamage = baseCriDamage;
@@ -114,18 +108,11 @@ namespace Characters.CombatSystems
             var damageData = new DamageData(gameObject, target, hitPos, damageDeal, isCritical, lifeSteal);
             return damageData;
         }
-
-        public void OnCounterAttackHandler()
-        {
-            OnCounterAttack?.Invoke();
-            _owner.TryPlayFeedback(FeedbackName.Character.CounterAttack);
-            TotalCounterDashCount++;
-        }
-
+        
         public void OnDealDamageHandler(DamageData damageData)
         {
             OnDealDamage?.Invoke(damageData);
-            _owner.TryPlayFeedback(FeedbackName.Character.AttackHit);
+            owner.TryPlayFeedback(FeedbackName.Character.AttackHit);
             TotalDamageDeal += (int)damageData.Damage;
             
             if (damageData.IsCritical)

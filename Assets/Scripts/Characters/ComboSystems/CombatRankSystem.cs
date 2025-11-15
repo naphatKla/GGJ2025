@@ -188,9 +188,8 @@ namespace Characters.ComboSystems
         }
 
         // Reduce Rank
-        public void OnTakeDamageCondition(bool success)
+        public void OnTakeDamageCondition()
         {
-            if (!success) return;
             int calculatedPoint =
                 Mathf.CeilToInt(_currentRankPoint * (_ownerData.TakeDamageConditionData.lostPointPercentage / 100));
             AddKillStrike(-_killStrike); // reset kill strike

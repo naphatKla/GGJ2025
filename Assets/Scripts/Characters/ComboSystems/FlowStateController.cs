@@ -39,9 +39,8 @@ namespace Characters.ComboSystems
             AddFlowingMind(_ownerData.FlowingMindGainAmount);
         }
 
-        public void OnTakeDamage(bool success)
+        public void OnTakeDamage()
         {
-            if (!success) return;
             AddFlowingMind(-_ownerData.FlowingMindReduceOnTakeDamage);
         }
         

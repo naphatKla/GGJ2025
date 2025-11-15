@@ -72,7 +72,7 @@ namespace Tools
                 }
                 case EditorAction.ForceDie:
                 {
-                    PlayerController.Instance.HealthSystem.TakeDamage(PlayerController.Instance.HealthSystem.MaxHealth, out bool _);
+                    PlayerController.Instance.HealthSystem.TakeDamage(PlayerController.Instance.HealthSystem.MaxHealth, null, null);
                     break;
                 }
                 case EditorAction.ReduceTime10Sec:

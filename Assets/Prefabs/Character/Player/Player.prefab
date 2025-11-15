@@ -54273,12 +54273,12 @@ GameObject:
   - component: {fileID: 1766625338755230343}
   - component: {fileID: 7534513208806243613}
   - component: {fileID: 4786182755069043034}
-  - component: {fileID: 1611083095111674569}
+  - component: {fileID: 2110098855391983109}
   - component: {fileID: 1454970709746529031}
   - component: {fileID: 7127418468070666774}
   - component: {fileID: 1367073074030531616}
   - component: {fileID: 4177936962492003484}
-  - component: {fileID: 7330480618453326501}
+  - component: {fileID: 7274721556733233425}
   - component: {fileID: 5678313002177273158}
   - component: {fileID: 5147604314936671000}
   - component: {fileID: 4851925125693906224}
@@ -54329,9 +54329,9 @@ MonoBehaviour:
   body: {fileID: 4551693807369029157}
   movementSystem: {fileID: 4786182755069043034}
   skillSystem: {fileID: 1367073074030531616}
-  healthSystem: {fileID: 1611083095111674569}
+  healthSystem: {fileID: 2110098855391983109}
   statusEffectSystem: {fileID: 4177936962492003484}
-  combatSystem: {fileID: 7330480618453326501}
+  combatSystem: {fileID: 7274721556733233425}
   damageOnTouch: {fileID: 5678313002177273158}
   feedbackSystem: {fileID: 5147604314936671000}
   characterData: {fileID: 11400000, guid: 39ed973e8de08f84faa43653bfdd68e7, type: 2}
@@ -54365,7 +54365,7 @@ MonoBehaviour:
   scaleAmount: 1.2
   combatRankViewHolder: {fileID: 0}
   flowStateComboViewHolder: {fileID: 0}
-  combatSystem: {fileID: 7330480618453326501}
+  combatSystem: {fileID: 7274721556733233425}
   worldTextUIPrefab: {fileID: 3505668433232323823, guid: 5f9a0b920a9bf3d458d1cba11d917f1c, type: 3}
   worldTextUISkillFeedbackPrefab: {fileID: 3505668433232323823, guid: f18065b1323503c4296a19ece073be7a, type: 3}
   worldTextUIParryFeedbackPrefab: {fileID: 3505668433232323823, guid: b98cd7a45807eea44a95e85764091b85, type: 3}
@@ -54373,7 +54373,7 @@ MonoBehaviour:
   levelSystem: {fileID: 1454970709746529031}
   levelText: {fileID: 0}
   levelbar: {fileID: 0}
-  healthSystem: {fileID: 1611083095111674569}
+  healthSystem: {fileID: 2110098855391983109}
   hpProgressBar: {fileID: 0}
   hpText: {fileID: 0}
   skillUpgradeController: {fileID: 7127418468070666774}
@@ -54382,7 +54382,7 @@ MonoBehaviour:
   solfUpgradeSelectButton: {fileID: 0}
   buttonFeedBack: {fileID: 0}
   skillViewholder: {fileID: 962830566913950826, guid: 6d67c1d518eecff44ac461fb8b047f1c, type: 3}
-  mainskillViewholder: {fileID: 962830566913950826, guid: 4b26ae50e9667e3438c550d327091951, type: 3}
+  mainskillViewholder: {fileID: 962830566913950826, guid: 6d67c1d518eecff44ac461fb8b047f1c, type: 3}
   skillSystem: {fileID: 1367073074030531616}
   cooldownIsNotReadyText: {fileID: 0}
   skillSlotModel:
@@ -54427,7 +54427,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enableGizmos: 1
---- !u!114 &1611083095111674569
+--- !u!114 &2110098855391983109
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -54436,7 +54436,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2726293917207744010}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b5dd45224fe3c4d4ca1bd168263f9430, type: 3}
+  m_Script: {fileID: 11500000, guid: d90df1aeba0f1474eb1c3f4084b55687, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   blockTakeDamageFeedbackOnFinalHit: 0
@@ -54506,7 +54506,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e77eaefb48499a4e8999b1f5c3d7239, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &7330480618453326501
+--- !u!114 &7274721556733233425
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -54515,7 +54515,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2726293917207744010}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d393550483388384599d5d599e78be68, type: 3}
+  m_Script: {fileID: 11500000, guid: 37a981b7628dc3a4aa1e439f7ec3fa69, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &5678313002177273158
@@ -72931,7 +72931,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 705e2527bd0d5244bb7480d2e6b1c154, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ownerHealth: {fileID: 1611083095111674569}
+  ownerHealth: {fileID: 2110098855391983109}
   hpCanvas: {fileID: 4470315753218637389}
   canvasActivateOnHpPercent01: 0.5
   fadeDuration: 0.15

@@ -22,7 +22,7 @@ namespace Characters.HeathSystems
         [SerializeField] private bool blockTakeDamageFeedbackOnFinalHit;
         [SerializeField] private bool changeColorOnIframe;
         
-        private BaseController owner;
+        protected BaseController owner;
 
         /// <summary>The maximum health the character can have.</summary>
         [ShowInInspector, ReadOnly] [ShowIf("@UnityEngine.Application.isPlaying")]
@@ -52,7 +52,9 @@ namespace Characters.HeathSystems
         public bool IsDead => _isDead;
 
         /// <summary>Event triggered when the character takes damage.</summary>
-        public Action<bool> OnTakeDamage { get; set; }
+        public Action OnTakeDamage { get; set; }
+
+        public event Action OnHit;
         
         /// <summary>Event triggered when the character heals.</summary>
         public Action OnHeal { get; set; }
@@ -91,7 +93,7 @@ namespace Characters.HeathSystems
         /// </summary>
         /// <param name="maxHealth">Maximum health to assign.</param>
         /// <param name="invincibleTimePerHit">Cooldown duration after taking damage.</param>
-        public void AssignHealthData(float maxHealth, float invincibleTimePerHit, BaseController owner = null)
+        public virtual void AssignHealthData(float maxHealth, float invincibleTimePerHit, BaseController owner = null)
         {
             _maxHealth = Mathf.Clamp(maxHealth, 1, 99999999);
             _invincibleTimePerHit = invincibleTimePerHit;
@@ -103,29 +105,22 @@ namespace Characters.HeathSystems
         /// Reduces the character's health by the given damage amount.
         /// Prevents damage if the character is invincible, in cooldown, or already dead.
         /// </summary>
-        public bool TakeDamage(float damage, out bool dieThisFrame)
+        public virtual bool TakeDamage(float damage, BaseController attacker, GameObject realObjectAttack)
         {
-            dieThisFrame = false;
             if (_isDead) return false;
-            if (_isInvincible || _isHitCooldown)
-            {
-                OnTakeDamage?.Invoke(false);
-                return false;
-            }
-
-            ModifyHealth(-damage);
-            TotalDamageTaken += (int)damage;
-            OnTakeDamage?.Invoke(true);
-
+            OnHit?.Invoke();
+            
+            if (_isInvincible || _isHitCooldown)  return false;
+            
+            TakeDamageAction(damage, attacker, realObjectAttack);
             HitCooldownHandler().Forget();
 
             if (_currentHealth <= 0)
             {
-                dieThisFrame = true;
                 Dead();
+                attacker?.CombatSystem.OnKillHandler(owner);
+                if (blockTakeDamageFeedbackOnFinalHit) return true;
             }
-
-            if (dieThisFrame && blockTakeDamageFeedbackOnFinalHit) return true;
             
             if (Cinemachine2DCameraController.Instance != null &&
                 Cinemachine2DCameraController.Instance.IsTransformInView(transform))
@@ -134,6 +129,13 @@ namespace Characters.HeathSystems
             }
 
             return true;
+        }
+
+        protected virtual void TakeDamageAction(float damage, BaseController attacker, GameObject realObjectAttack)
+        {
+            ModifyHealth(-damage);
+            TotalDamageTaken += (int)damage;
+            OnTakeDamage?.Invoke();
         }
 
         public void ForceDead()
