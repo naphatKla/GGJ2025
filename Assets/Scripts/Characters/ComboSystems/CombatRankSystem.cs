@@ -49,6 +49,7 @@ namespace Characters.ComboSystems
         // Gain Rank Point Method
         private float _startTimeKill;
         private int deltaKillCountInTime;
+        private int deltaScore;
 
         public void OnKillCondition(BaseController targetKilled)
         {
@@ -59,23 +60,29 @@ namespace Characters.ComboSystems
             float duration = killConfig.killWithInDuration;
             int requiredKills = killConfig.killAmountToGainPoint;
 
+            var enemyData = targetKilled.CharacterData as EnemyDataSo;
+            if (enemyData == null) return;
+
             if (Time.time <= _startTimeKill + duration)
             {
                 deltaKillCountInTime++;
+                deltaScore += enemyData.ScoreDrop;
             }
             else
             {
                 _startTimeKill = Time.time;
                 deltaKillCountInTime = 1;
+                deltaScore = enemyData.ScoreDrop;
             }
 
             if (deltaKillCountInTime >= requiredKills)
             {
+                int bonusScore = deltaScore;
                 deltaKillCountInTime = 0;
+                deltaScore = 0;
                 _startTimeKill = 0f;
-                EnemyDataSo enemyData = targetKilled.CharacterData as EnemyDataSo;
-
-                AddRankPoints(100);
+                
+                AddRankPoints(bonusScore);
             }
         }
 
