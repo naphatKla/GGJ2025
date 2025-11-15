@@ -52,6 +52,8 @@ namespace Challenge
             [BoxGroup("Score")]
             public readonly float OverallScoreMultiplier;
             [BoxGroup("Score")]
+            public readonly float TotalPercent;
+            [BoxGroup("Score")]
             public readonly float FlatBonusPercent;
             [BoxGroup("Score")]
             public readonly float PlayerPercent;
@@ -65,11 +67,12 @@ namespace Challenge
             public readonly IReadOnlyDictionary<string, EnemySnapshot> Enemies;
 
             public ChallengeSnapshot(PlayerSnapshot player, IReadOnlyDictionary<string, EnemySnapshot> enemies,
-                float overallScoreMultiplier, float flatBonusPercent, float playerPercent, float enemiesPercent)
+                float overallScoreMultiplier,float totalBonus, float flatBonusPercent, float playerPercent, float enemiesPercent)
             {
                 Player = player;
                 Enemies = enemies;
                 OverallScoreMultiplier = overallScoreMultiplier;
+                TotalPercent = totalBonus;
                 FlatBonusPercent = flatBonusPercent;
                 PlayerPercent = playerPercent;
                 EnemiesPercent = enemiesPercent;

@@ -4,6 +4,8 @@ using Challenge;
 using Demo;
 using Player;
 using Sirenix.OdinInspector;
+using TMPro;
+using UI.MapSelection;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -19,6 +21,9 @@ namespace UI.Challenge
         
         [Space,Title("Container")]
         [SerializeField] public ChallengeContainer challengeDataContainer;
+        
+        [Space, Title("Display Status")] 
+        public TMP_Text scoreMultiply;
         
         [Space,Title("Debug")]
         [ShowInInspector] public HashSet<int> c_SelectedIndices = new();
@@ -71,6 +76,9 @@ namespace UI.Challenge
                         ChallengeManager.Instance.SelectChallenge(ch);
                 }
             }
+            
+            var sender = MapSelectionSender.Instance.challengeData;
+            if (scoreMultiply) scoreMultiply.text = sender.TotalPercent + "%";
         }
         
         private List<ChallengeDataSO> LoadItems()
@@ -129,6 +137,9 @@ namespace UI.Challenge
                 if (ChallengeManager.Instance != null)
                     ChallengeManager.Instance.SelectChallenge(challenge);
             }
+
+            var sender = MapSelectionSender.Instance.challengeData;
+            if (scoreMultiply) scoreMultiply.text = sender.TotalPercent + "%";
             OnSelected?.Invoke(index, challenge);
             ActiveProfileService.Instance?.SaveNow();
             GetComponent<LoopScrollRect>().RefreshCells();

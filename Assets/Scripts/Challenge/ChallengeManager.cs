@@ -230,6 +230,7 @@ namespace Challenge
             return new ChallengeSnapshot(
                 playerSnap, result,
                 _overallScoreMultiplier,
+                TotalPercent,
                 _flatBonus,
                 _playerPercent,
                 _enemiesPercent
