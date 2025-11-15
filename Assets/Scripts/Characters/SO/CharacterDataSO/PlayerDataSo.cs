@@ -22,12 +22,27 @@ namespace Characters.SO.CharacterDataSO
         [FoldoutGroup("Combat")] [SerializeField]
         private float stepValue = 500;
 
-        [FoldoutGroup("Combat")]
+        [FoldoutGroup("Combat/Rank")] 
         [ValidateInput(nameof(ValidateCombatRankDatas),
             "First rank must have rankPointThreshold = 0 and scoreMultiplier = 1")]
         [SerializeField]
         private List<CombatRankData> combatRankDatas = new();
 
+        [FoldoutGroup("Combat/Rank")] 
+        [SerializeField] private CombatRankParryConditionData parryConditionData;
+        
+        [FoldoutGroup("Combat/Rank")] 
+        [SerializeField] private CombatRankCounterDashConditionData counterDashConditionData;
+        
+        [FoldoutGroup("Combat/Rank")] 
+        [SerializeField] private CombatRankKillConditionData killConditionData;
+        
+        [FoldoutGroup("Combat/Rank")] 
+        [SerializeField] private CombatRankHealConditionData healConditionData;
+        
+        [FoldoutGroup("Combat/Rank")] 
+        [SerializeField] private CombatTakeDamageConditionData takeDamageConditionData;
+        
         [FoldoutGroup("Camera Settings")] [SerializeField]
         private CameraShakeOption attackHitCameraShakeOption;
 
@@ -84,5 +99,49 @@ namespace Characters.SO.CharacterDataSO
 
         [ValidateInput("@scoreMultiplier >= 1f", "Score Multiplier must to be >= 1")]
         public float scoreMultiplier;
+    }
+
+    [Serializable]
+    public record CombatRankParryConditionData
+    {
+        [Unit(Units.Percent)] [Tooltip("gain rank point when perfect parry =  % amount of damage negate")]
+        public float perfectParryPercentage;
+        
+        [Unit(Units.Percent)] [Tooltip("gain rank point when normal parry =  % amount of damage negate")]
+        public float normalParryPercentage;
+    }
+
+    [Serializable]
+    public record CombatRankCounterDashConditionData
+    {
+        [Unit(Units.Percent)] [Tooltip("gain rank point when perfect counter dash =  % amount of damage negate")]
+        public float perfectCounterDashPercentage;
+        
+        [Unit(Units.Percent)] [Tooltip("gain rank point when normal counter dash =  % amount of damage negate")]
+        public float normalCounterDashPercentage;
+    }
+    
+    [Serializable]
+    public record CombatRankKillConditionData
+    {
+        public int killAmountToGainPoint;
+        public float killWithInDuration;
+        
+        [Unit(Units.Percent)] [Tooltip("gain rank point when kill enemy within duration =  % amount of enemy score")]
+        public float scorePercentage;
+    }
+    
+    [Serializable]
+    public record CombatRankHealConditionData
+    {
+        [Unit(Units.Percent)] [Tooltip("gain rank point when heal =  % of heal amount")]
+        public float healPercentage;
+    }
+    
+    [Serializable]
+    public record CombatTakeDamageConditionData
+    {
+        [Unit(Units.Percent)] [Tooltip("lost rank point when take damage =  % of current rank point")]
+        public float lostPointPercentage;
     }
 }

@@ -58,6 +58,20 @@ MonoBehaviour:
   - rankId: X
     rankPointThreshold: 2100
     scoreMultiplier: 10
+  parryConditionData:
+    perfectParryPercentage: 100
+    normalParryPercentage: 50
+  counterDashConditionData:
+    perfectCounterDashPercentage: 100
+    normalCounterDashPercentage: 50
+  killConditionData:
+    killAmountToGainPoint: 5
+    killWithInDuration: 0.5
+    scorePercentage: 100
+  healConditionData:
+    healPercentage: 100
+  takeDamageConditionData:
+    lostPointPercentage: 25
   attackHitCameraShakeOption:
     force: 11
     frequency: 0.1
