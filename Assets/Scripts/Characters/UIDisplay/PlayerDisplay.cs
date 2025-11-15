@@ -251,7 +251,7 @@ namespace Characters.UIDisplay
             cooldownIsNotReadyText.alpha = 0;
         }
 
-        #region Combo UI (ใหม่)
+        #region Rank UI (ใหม่)
 
         private void UpdateRankPointBar(int currentRankPointThreshold, int currentRankPoint, int nextRankPointThreshold)
         {
@@ -259,7 +259,7 @@ namespace Characters.UIDisplay
 
             rankUI.SetActive(currentRankPoint > 0);
             rankPointBar.MinValue = currentRankPointThreshold;
-            rankPointBar.MaxValue = nextRankPointThreshold;
+            rankPointBar.MaxValue = nextRankPointThreshold == currentRankPointThreshold? nextRankPointThreshold + 1f : nextRankPointThreshold;
             var clampValue = Mathf.Clamp(currentRankPoint, currentRankPointThreshold, rankPointBar.MaxValue);
             rankPointBar.CurrentValue = clampValue;
         }

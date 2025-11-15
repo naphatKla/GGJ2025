@@ -14,8 +14,17 @@ namespace Characters.ComboSystems
         private int _currentFlowingMind;
         private GameObject _owner;
         private PlayerDataSo _ownerData;
+        private float _lastedTimeStamp;
         
         public event Action<string> OnStateChanged; // string = Current Flow State 
+
+        private void FixedUpdate()
+        {
+            if (_currentFlowingMind <= 0) return;
+            if (Time.time < _lastedTimeStamp + _ownerData.FlowingMindLifeTimePerStack) return;
+            _lastedTimeStamp = Time.time;
+            AddFlowingMind(-1);
+        }
 
         public void AssignData(GameObject owner, PlayerDataSo ownerData)
         {
@@ -40,7 +49,7 @@ namespace Characters.ComboSystems
             if (amount == 0)
                 return;
 
-            _currentFlowingMind = Mathf.Max(0, _currentFlowingMind + amount);
+            _currentFlowingMind = Mathf.Clamp(_currentFlowingMind + amount, 0, _ownerData.FlowingMindMaxCap);
             CalculateFlowState();
         }
 

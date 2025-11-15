@@ -53,6 +53,12 @@ namespace Characters.SO.CharacterDataSO
         
         [FoldoutGroup("Combat/FlowState")] [SerializeField]
         private int flowingMindReduceOnTakeDamage = 1;
+        
+        [FoldoutGroup("Combat/FlowState")] [SerializeField] [Unit(Units.Second)]
+        private int flowingMindLifeTimePerStack = 3;
+        
+        [FoldoutGroup("Combat/FlowState")] [SerializeField]
+        private int flowingMindMaxCap = 10;
 
         [FoldoutGroup("Camera Settings")] [SerializeField]
         private CameraShakeOption attackHitCameraShakeOption;
@@ -76,6 +82,9 @@ namespace Characters.SO.CharacterDataSO
         public List<FlowStateData> FlowStateDatas => flowStateDatas;
         public int FlowingMindGainAmount => flowingMindGainAmount;
         public int FlowingMindReduceOnTakeDamage => flowingMindReduceOnTakeDamage;
+        public int FlowingMindLifeTimePerStack => flowingMindLifeTimePerStack;
+        public int FlowingMindMaxCap => flowingMindMaxCap;
+        
 
         [Space]
         [FoldoutGroup("Skills/Upgrade")]
