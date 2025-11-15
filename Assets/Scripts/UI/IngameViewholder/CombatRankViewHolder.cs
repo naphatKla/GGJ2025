@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Characters.SO.CharacterDataSO;
+using Coffee.UIEffects;
 using DG.Tweening;
 using Sirenix.OdinInspector;
 using TMPro;
@@ -15,6 +16,9 @@ namespace UI.IngameViewholder
         public Image gradeImage;
         public Image gradeFlame;
         public TMP_Text gradeText;
+        public Image rankpointBarFill;
+        public GameObject thunderObj;
+        public UIEffect thunderColor;
 
         [Serializable]
         public struct GradeCombo
@@ -22,6 +26,9 @@ namespace UI.IngameViewholder
             public string gradeId;
             public string supText;
             public Sprite gradeImage;
+            public Color colorFill;
+            public bool alwayShowflame;
+            public bool showthunder;
         }
         
         public List<GradeCombo> gradeComboList;
@@ -35,13 +42,15 @@ namespace UI.IngameViewholder
             foreach (var g in gradeComboList)
                 if (g.gradeId == rankId)
                 {
-                    GradeFeedback(gradeImage, g.gradeImage);
+                    rankpointBarFill.color = g.colorFill;
+                    GradeFeedback(gradeImage, g.gradeImage, g.alwayShowflame);
+                    ThunderFeedback(g.colorFill, g.showthunder);
                     GradeTextFeedBack(gradeText, g.supText);
                     break;
                 }
         }
 
-        private void GradeFeedback(Image obj, Sprite newSprite)
+        private void GradeFeedback(Image obj, Sprite newSprite, bool showFlame)
         {
             var tf = obj.transform;
             var cg = obj.GetComponent<CanvasGroup>();
@@ -67,9 +76,23 @@ namespace UI.IngameViewholder
                 .AppendInterval(1.5f)
                 .AppendCallback(() =>
                 {
+                    if (showFlame) return;
                     flameCg.DOFade(0f, 0.5f).SetUpdate(true)
-                        .OnComplete(() => gradeFlame.gameObject.SetActive(false));
+                        .OnComplete(() => { gradeFlame.gameObject.SetActive(false); });
                 });
+        }
+        
+        private void ThunderFeedback(Color color, bool showThunder)
+        {
+            if (showThunder)
+            {
+                thunderObj.gameObject.SetActive(true);
+                thunderColor.color = color;
+            }
+            else
+            {
+                thunderObj.gameObject.SetActive(false);
+            }
         }
 
         private void GradeTextFeedBack(TMP_Text obj, string newText)

@@ -5226,34 +5226,64 @@ MonoBehaviour:
   gradeImage: {fileID: 1908912598}
   gradeFlame: {fileID: 301226517}
   gradeText: {fileID: 145958852}
+  rankpointBarFill: {fileID: 3197353784527012772}
+  thunderObj: {fileID: 1301823793}
+  thunderColor: {fileID: 1364867753}
   gradeComboList:
   - gradeId: F
     supText: FIGHT!
     gradeImage: {fileID: 21300000, guid: 904d85cdbfa3f5140bed7ca847a172e5, type: 3}
+    colorFill: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    alwayShowflame: 0
+    showthunder: 0
   - gradeId: D
     supText: DANGER!
     gradeImage: {fileID: 21300000, guid: 808025271bc5a214e8080c9f815f2d90, type: 3}
+    colorFill: {r: 0, g: 0.5550184, b: 1, a: 1}
+    alwayShowflame: 0
+    showthunder: 0
   - gradeId: C
     supText: CARNAGE
     gradeImage: {fileID: 21300000, guid: 5af82db5ce764eb4b98e2d6f5063e272, type: 3}
+    colorFill: {r: 0.25566882, g: 1, b: 0.1745283, a: 1}
+    alwayShowflame: 0
+    showthunder: 0
   - gradeId: B
     supText: BRUTAL
     gradeImage: {fileID: 21300000, guid: 36470d51f455f7940a9655a01fcbeada, type: 3}
+    colorFill: {r: 1, g: 0.85797274, b: 0, a: 1}
+    alwayShowflame: 0
+    showthunder: 0
   - gradeId: A
     supText: AGONY
     gradeImage: {fileID: 21300000, guid: 281d45a4e051aeb4fa3019db3b0ebae5, type: 3}
+    colorFill: {r: 1, g: 0.43189976, b: 0, a: 1}
+    alwayShowflame: 0
+    showthunder: 0
   - gradeId: S
     supText: SAVAGE
     gradeImage: {fileID: 21300000, guid: 548151c49e329d24bacf44146415d764, type: 3}
+    colorFill: {r: 1, g: 0, b: 0, a: 1}
+    alwayShowflame: 0
+    showthunder: 0
   - gradeId: SS
     supText: SLAUGHTER
     gradeImage: {fileID: 21300000, guid: 0cd221c86846258418344ec2ce0ad281, type: 3}
+    colorFill: {r: 1, g: 0, b: 0.71493673, a: 1}
+    alwayShowflame: 1
+    showthunder: 1
   - gradeId: SSS
     supText: SUPER SLAUGHTER
     gradeImage: {fileID: 21300000, guid: 3ebd3fdc28d4875469b49e120defafa2, type: 3}
+    colorFill: {r: 0.34555674, g: 0, b: 1, a: 1}
+    alwayShowflame: 1
+    showthunder: 1
   - gradeId: X
     supText: X&&&XTY%
     gradeImage: {fileID: 21300000, guid: 07af1237fc7b946429492656737d39e9, type: 3}
+    colorFill: {r: 0, g: 0.025779486, b: 1, a: 1}
+    alwayShowflame: 1
+    showthunder: 1
 --- !u!1 &526582437
 GameObject:
   m_ObjectHideFlags: 0
@@ -11067,7 +11097,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1301823794
 RectTransform:
   m_ObjectHideFlags: 0
@@ -11486,7 +11516,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_ToneFilter: 0
   m_ToneIntensity: 0.14386632
-  m_ColorFilter: 0
+  m_ColorFilter: 4
   m_ColorIntensity: 1
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_ColorGlow: 0
@@ -11559,7 +11589,7 @@ MonoBehaviour:
   m_ShadowColorFilter: 4
   m_ShadowColor: {r: 1, g: 1, b: 1, a: 1}
   m_ShadowColorGlow: 0
-  m_GradationMode: 2
+  m_GradationMode: 0
   m_GradationIntensity: 1
   m_GradationColorFilter: 1
   m_GradationColor1: {r: 1, g: 1, b: 1, a: 1}
@@ -11642,19 +11672,19 @@ MonoBehaviour:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0
+      value: 1
       inSlope: 0
-      outSlope: 1
-      tangentMode: 0
+      outSlope: 0
+      tangentMode: 34
       weightedMode: 0
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
       time: 1
       value: 1
-      inSlope: 1
+      inSlope: 0
       outSlope: 0
-      tangentMode: 0
+      tangentMode: 34
       weightedMode: 0
       inWeight: 0
       outWeight: 0
@@ -20187,7 +20217,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.28235295, g: 1, b: 0, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
