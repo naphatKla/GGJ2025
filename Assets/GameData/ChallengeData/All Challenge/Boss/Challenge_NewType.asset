@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 09b72255c8a83094cbc34892911a61ff, type: 3}
   m_Name: Challenge_NewType
   m_EditorClassIdentifier: 
-  id: challenge_mutant
-  title: Mutant
+  id: challenge_newtype
+  title: New Type
   description: "Increase Boss / Mini Boss DMG +50%\r\nIncrease Boss / Mini Boss Max
     HP +100%\r\nIncrease Boss / Mini Boss MSPD +25%\r\nReward\r\n+100% score multiply\r"
   lockdescription: Not assign description yet.
-  flatScoreBonusPercent: 100
+  flatScoreBonusPercent: 350
   statMode: 0
   playerSetMods: []
   playerMods: []
@@ -27,7 +27,7 @@ MonoBehaviour:
     enemyIds:
     - Boss_Twin
     stats:
-      maxHP: 100
-      damage: 50
-      moveSpeed: 25
+      maxHP: 200
+      damage: 500
+      moveSpeed: 0
       spawnChance: 0

@@ -148,6 +148,20 @@ namespace Player
                     GUILayout.Label($"• {m}", _kvStyle);
             else
                 GUILayout.Label("(empty)", _kvStyle);
+            
+            GUILayout.Label("UnlockedChallenge", _hdrStyle);
+            if (current.UnlockedChallenges is { Count: > 0 })
+                foreach (var m in current.UnlockedChallenges)
+                    GUILayout.Label($"• {m}", _kvStyle);
+            else
+                GUILayout.Label("(empty)", _kvStyle);
+            
+            GUILayout.Label("Selected Challenge", _hdrStyle);
+            if (current.SelectedChallenges is { Count: > 0 })
+                foreach (var m in current.SelectedChallenges)
+                    GUILayout.Label($"• {m}", _kvStyle);
+            else
+                GUILayout.Label("(empty)", _kvStyle);
 
             GUILayout.Space(8);
             GUILayout.Label("MapStats", _hdrStyle);
