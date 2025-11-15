@@ -2,13 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Challenge.Challenge;
+using ProjectExtensions;
 using Sirenix.OdinInspector;
 using UI.MapSelection;
 using UnityEngine;
 
 namespace Challenge
 {
-    public class ChallengeManager : MonoBehaviour
+    public class ChallengeManager : NonAutoCreateSingleton<ChallengeManager>
     {
         [Header("Catalog (via Container)")]
         public ChallengeContainer allChallenges;
@@ -176,18 +177,12 @@ namespace Challenge
                     add(EnemyStat.Damage, grp.stats.damage);
                     add(EnemyStat.MoveSpeed, grp.stats.moveSpeed);
                     add(EnemyStat.SpawnChance, grp.stats.spawnChance);
-
-                    if (grp.enemyIds == null || grp.enemyIds.Count == 0)
-                        AccumulateEnemyDict(GLOBAL_ID, dict);
-                    else
-                        foreach (var id in grp.enemyIds)
-                        {
-                            //Global + Per ID
-                            var key = string.IsNullOrWhiteSpace(id) ? GLOBAL_ID : id.Trim();
-                            AccumulateEnemyDict(key, dict);
-                        }
+                    
+                    if (grp.enemyIds == null || grp.enemyIds.Count == 0) AccumulateEnemyDict(GLOBAL_ID, dict);
+                    else foreach (var id in grp.enemyIds)
+                        AccumulateEnemyDict(string.IsNullOrWhiteSpace(id) ? GLOBAL_ID : id.Trim(), dict);
                 }
-                _enemiesPercent += perSO.enemiesPercentSum;
+                if (!ch.disableAutoCalculate) _enemiesPercent += perSO.enemiesPercentSum;
             }
 
             var totalPercent = _flatBonus + _playerPercent + _enemiesPercent;

@@ -88,8 +88,8 @@ namespace Challenge
     {
         public string id = "challenge_id";
         public string title = "Challenge Title";
-        [TextArea] public string description;
-        [TextArea] public string lockdescription;
+        [TextArea(4, 10)] public string description = "Not assign description yet.";
+        [TextArea(4, 10)] public string lockdescription = "Not assign description yet.";
 
         [Header("Score Bonus (Flat)")] [Tooltip("เช่น ให้ +100% ก็ใส่ 100")]
         public float flatScoreBonusPercent;
@@ -101,8 +101,9 @@ namespace Challenge
 
         [ShowIf("@statMode == StatMode.Additive")] [Header("Player Additive Debuffs (negative is harder)")]
         public List<PlayerStatMod> playerMods = new();
-
+        
         [Header("Enemy Groups (edit per group once)")]
+        public bool disableAutoCalculate = false;
         public List<EnemyGroupMod> enemyGroups = new();
         
         // -------- Debug fields (show-only) --------

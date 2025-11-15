@@ -26,6 +26,7 @@ namespace Player
         public void PostLoadInitializeAndMigrate()
         {
             UnlockedMaps ??= new HashSet<string>();
+            UnlockedChallenges ??= new HashSet<string>();
             MapStats ??= new Dictionary<string, MapStat>();
 
             const int CURRENT = 2;
