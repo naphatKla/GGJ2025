@@ -37,7 +37,9 @@ MonoBehaviour:
   previousSkillData: {fileID: 0}
   nextSkillDataUpgrade: {fileID: 0}
   level: 1
-  cooldown: 12
+  cooldown: 15
+  globalCooldown: 0.25
+  maxStack: 1
   startFeedback: DrawBackUse_Lv1
   exitFeedback: 
   clearBuffOnSkillExit: 1
@@ -51,7 +53,7 @@ MonoBehaviour:
   knockBackDuration: 0.25
   availableOnHpLessOrEqualThan: 50
   chargeTime: 3
-  followSpeed: 55
+  followSpeed: 42
   fleeDuration: 0
   attackMergeBackDuration: 0.07
   effectSelfSplitOut:
@@ -61,5 +63,5 @@ MonoBehaviour:
   effectSelfOnSuccess:
   - effectData: {fileID: 11400000, guid: e5ae6010e3c4a7b43bc80da0bf5a9ef5, type: 2}
     isOverrideDuration: 1
-    overrideDuration: 3
+    overrideDuration: 5
   attackSuccessFeedback: DrawBackSuccess_Lv1
