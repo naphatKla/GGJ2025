@@ -54283,6 +54283,7 @@ GameObject:
   - component: {fileID: 5147604314936671000}
   - component: {fileID: 4851925125693906224}
   - component: {fileID: 2892957787733288361}
+  - component: {fileID: 6716104770659087793}
   - component: {fileID: 2317232942345144483}
   - component: {fileID: 6543663255383939677}
   - component: {fileID: 5144948324511787352}
@@ -54337,6 +54338,7 @@ MonoBehaviour:
   autoAssignDataOnEnable: 1
   collectItemSystem: {fileID: 4851925125693906224}
   combatRankSystem: {fileID: 2892957787733288361}
+  flowStateController: {fileID: 6716104770659087793}
   levelSystem: {fileID: 1454970709746529031}
   skillUpgradeController: {fileID: 7127418468070666774}
   scoreSystem: {fileID: 5144948324511787352}
@@ -54353,15 +54355,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   combatRankSystem: {fileID: 2892957787733288361}
-  comboUI: {fileID: 0}
+  rankUI: {fileID: 0}
   killStrikeText: {fileID: 0}
   scoreMultiplyText: {fileID: 0}
-  lightningCombo: {fileID: 0}
+  lightningEffect: {fileID: 0}
   rankPointBar: {fileID: 0}
   tweenDuration: 0.1
   scaleAmount: 1.2
   combatRankViewHolder: {fileID: 0}
-  flowStageComboViewholder: {fileID: 0}
+  flowStateComboViewHolder: {fileID: 0}
   combatSystem: {fileID: 7330480618453326501}
   worldTextUIPrefab: {fileID: 3505668433232323823, guid: 5f9a0b920a9bf3d458d1cba11d917f1c, type: 3}
   worldTextUISkillFeedbackPrefab: {fileID: 3505668433232323823, guid: f18065b1323503c4296a19ece073be7a, type: 3}
@@ -54757,6 +54759,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d78821f32f0277a4899a43b59ff412cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &6716104770659087793
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2726293917207744010}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0f6233c10c2db9541aea2c474ed353e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &2317232942345144483

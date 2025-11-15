@@ -64,6 +64,17 @@ namespace Manager
         }
 
         /// <summary>
+        /// Removes multiple status effects from the target.
+        /// </summary>
+        /// <param name="target"></param>
+        /// <param name="effectPayloadList"></param>
+        public static void RemoveEffectAt(GameObject target, List<StatusEffectDataPayload> effectPayloadList)
+        {
+            foreach (var statusEffectDataPayload in effectPayloadList)
+                RemoveEffectAt(target, statusEffectDataPayload.EffectData.EffectName);
+        }
+
+        /// <summary>
         /// Removes all active status effects from the target GameObject.
         /// Skips if there are no effects or the system is missing.
         /// </summary>

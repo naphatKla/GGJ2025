@@ -73,18 +73,23 @@ MonoBehaviour:
   takeDamageConditionData:
     lostPointPercentage: 25
   flowStateDatas:
-  - flowStateId: flowState_I
+  - flowStateId: none_flow
+    flowingMindThreshold: 0
+    effectsApply: []
+  - flowStateId: flow_I
     flowingMindThreshold: 5
     effectsApply:
     - effectData: {fileID: 11400000, guid: cb459ae7d7879dc4f851ae39e9d9de8b, type: 2}
       isOverrideDuration: 1
       overrideDuration: 9999
-  - flowStateId: flowState_II
+  - flowStateId: flow_II
     flowingMindThreshold: 10
     effectsApply:
     - effectData: {fileID: 11400000, guid: 246112b4ed499a743bccd65d509af68e, type: 2}
       isOverrideDuration: 1
       overrideDuration: 9999
+  flowingMindGainAmount: 1
+  flowingMindReduceOnTakeDamage: 1
   attackHitCameraShakeOption:
     force: 11
     frequency: 0.1

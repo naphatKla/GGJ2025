@@ -22,6 +22,7 @@ namespace Characters.Controllers
 
         [SerializeField] private CollectItemSystem collectItemSystem;
         [SerializeField] protected CombatRankSystem combatRankSystem;
+        [SerializeField] protected FlowStateController flowStateController;
         [SerializeField] protected LevelSystem levelSystem;
         [SerializeField] protected SkillUpgradeController skillUpgradeController;
         [SerializeField] protected ScoreSystem scoreSystem;
@@ -60,6 +61,7 @@ namespace Characters.Controllers
                 levelSystem.AssignData(this, playerData.BaseExpLevelUp, playerData.StepThreshold, playerData.StepValue);
                 scoreSystem.AssignData(this);
                 combatRankSystem.AssignRankData(playerData);
+                flowStateController.AssignData(gameObject, playerData);
             }
             else
             {
@@ -77,6 +79,10 @@ namespace Characters.Controllers
             // combat rank dependencies
             CombatSystem.OnKill += combatRankSystem.OnKillCondition;
             HealthSystem.OnTakeDamage += combatRankSystem.OnTakeDamageCondition;
+            
+            // flow state
+            combatRankSystem.OnRankPointAdded += flowStateController.OnRankPointAdd;
+            HealthSystem.OnTakeDamage += flowStateController.OnTakeDamage;
 
             UIManager.Instance.OnAnyPanelOpen += OnAnyUIOpen;
             UIManager.Instance.OnAllPanelClosed += OnAllUIClosed;
@@ -92,6 +98,10 @@ namespace Characters.Controllers
             // combat rank dependencies
             CombatSystem.OnKill -= combatRankSystem.OnKillCondition;
             HealthSystem.OnTakeDamage -= combatRankSystem.OnTakeDamageCondition;
+            
+            // flow state
+            combatRankSystem.OnRankPointAdded -= flowStateController.OnRankPointAdd;
+            HealthSystem.OnTakeDamage -= flowStateController.OnTakeDamage;
             
             if (UIManager.IsAlive)
             {
