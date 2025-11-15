@@ -63,7 +63,7 @@ namespace Characters.CombatSystems
         /// </summary>
         public Action OnCounterAttack { get; set; }
         
-        public Action OnKill { get; set; }
+        public Action<BaseController> OnKill { get; set; } //object killed
 
         #endregion
 
@@ -132,9 +132,9 @@ namespace Characters.CombatSystems
                 TotalCriticalCount++;
         }
 
-        public void OnKillHandler()
+        public void OnKillHandler(BaseController targetKilled)
         {
-            OnKill?.Invoke();
+            OnKill?.Invoke(targetKilled);
             TotalKill++;
         }
         
