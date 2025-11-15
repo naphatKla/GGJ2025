@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using Cameras;
+using Challenge;
+using Challenge.Challenge;
 using Characters.SO.SkillDataSo;
 using Characters.StatusEffectSystems;
 using Sirenix.OdinInspector;
@@ -123,6 +125,23 @@ namespace Characters.SO.CharacterDataSO
             var first = list[0];
 
             return first.rankPointThreshold == 0 && Mathf.Approximately(first.scoreMultiplier, 1f);
+        }
+        
+        public PlayerDataSo CopyInstance(PlayerSnapshot snap)
+        {
+            PlayerDataSo newDat = Instantiate(this);
+            newDat.hideFlags = HideFlags.DontSave;
+            // 1) SET
+            if (snap.TryGetSet(PlayerSetStat.MaxHP, out var setHp))        newDat.maxHealth = setHp;
+            if (snap.TryGetSet(PlayerSetStat.BaseDamage, out var setDmg))  newDat.baseDamage = setDmg;
+            if (snap.TryGetSet(PlayerSetStat.MoveSpeed, out var setMspd))  newDat.baseSpeed = setMspd;
+
+            // 2) Additive(%)
+            newDat.maxHealth  *= 1f + snap.GetAdd(PlayerAdditiveStat.MaxHP) / 100f;
+            newDat.baseDamage *= 1f + snap.GetAdd(PlayerAdditiveStat.BaseDamage) / 100f;
+            newDat.baseSpeed  *= 1f + snap.GetAdd(PlayerAdditiveStat.MoveSpeed) / 100f;
+
+            return newDat;
         }
     }
 
