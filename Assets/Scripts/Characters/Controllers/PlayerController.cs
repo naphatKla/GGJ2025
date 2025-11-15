@@ -71,7 +71,12 @@ namespace Characters.Controllers
 
         protected override void SubscribeDependency()
         {
+            // skill upgrade
             levelSystem.OnLevelUp += skillUpgradeController.OnLevelUp;
+            
+            // combat rank dependencies
+            CombatSystem.OnKill += combatRankSystem.OnKillCondition;
+            HealthSystem.OnTakeDamage += combatRankSystem.OnTakeDamageCondition;
 
             UIManager.Instance.OnAnyPanelOpen += OnAnyUIOpen;
             UIManager.Instance.OnAllPanelClosed += OnAllUIClosed;
@@ -81,7 +86,12 @@ namespace Characters.Controllers
 
         protected override void UnSubscribeDependency()
         {
+            // skill upgrade
             levelSystem.OnLevelUp -= skillUpgradeController.OnLevelUp;
+            
+            // combat rank dependencies
+            CombatSystem.OnKill -= combatRankSystem.OnKillCondition;
+            HealthSystem.OnTakeDamage -= combatRankSystem.OnTakeDamageCondition;
             
             if (UIManager.IsAlive)
             {

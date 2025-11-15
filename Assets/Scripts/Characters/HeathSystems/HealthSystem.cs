@@ -53,7 +53,7 @@ namespace Characters.HeathSystems
 
         /// <summary>Event triggered when the character takes damage.</summary>
         public Action<bool> OnTakeDamage { get; set; }
-
+        
         /// <summary>Event triggered when the character heals.</summary>
         public Action OnHeal { get; set; }
 

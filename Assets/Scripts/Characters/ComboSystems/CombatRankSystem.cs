@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Characters.SO.CharacterDataSO;
-using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace Characters.ComboSystems
@@ -25,21 +24,12 @@ namespace Characters.ComboSystems
         private string _currentRankId;
         private string _highestRecordedRankId;
         private int _killStrike;
+        private float _rankPointMultiplier = 1f;
 
         public int CurrentRankPoint => _currentRankPoint;
         public string CurrentRankId => _currentRankId;
         public string HighestRecordedRankId => _highestRecordedRankId;
         public int KillStrike => _killStrike;
-
-        private void OnEnable()
-        {
-            
-        }
-
-        private void OnDisable()
-        {
-           
-        }
         
         public void AssignRankData(List<CombatRankData> rankDatas)
         {
@@ -50,9 +40,22 @@ namespace Characters.ComboSystems
             _currentRankId = _rankDatas[0].rankId;
             _highestRecordedRankId = _rankDatas[0].rankId;
         }
+
+        // Gain Rank Point Method
+        public void OnKillCondition()
+        {
+            AddKillStrike(1);
+            AddRankPoints(20);
+        }
         
-        [Button]
-        public void AddRankPoints(int amount)
+        // Reduce Rank
+        public void OnTakeDamageCondition(bool success)
+        {
+            if (!success) return;
+            AddKillStrike(-_killStrike); // reset kill strike
+        }
+        
+        private void AddRankPoints(int amount)
         {
             if (amount == 0)
                 return;
@@ -76,9 +79,8 @@ namespace Characters.ComboSystems
             OnUpdateRankPointProgression?.Invoke(_rankDatas[currentRankIndex].rankPointThreshold, _currentRankPoint,
                 _rankDatas[nextRankIndex].rankPointThreshold);
         }
-
-        [Button]
-        public void AddKillStrike(int amount)
+        
+        private void AddKillStrike(int amount)
         {
             if (amount == 0)
                 return;
