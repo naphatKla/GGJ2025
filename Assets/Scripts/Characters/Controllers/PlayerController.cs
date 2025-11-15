@@ -73,6 +73,9 @@ namespace Characters.Controllers
 
         protected override void SubscribeDependency()
         {
+            // add score on enemy kill
+            combatSystem.OnKill += scoreSystem.OnKill;
+            
             // skill upgrade
             levelSystem.OnLevelUp += skillUpgradeController.OnLevelUp;
             
@@ -92,6 +95,9 @@ namespace Characters.Controllers
 
         protected override void UnSubscribeDependency()
         {
+            // add score on enemy kill
+            combatSystem.OnKill -= scoreSystem.OnKill;
+            
             // skill upgrade
             levelSystem.OnLevelUp -= skillUpgradeController.OnLevelUp;
             

@@ -1,5 +1,6 @@
 using System;
 using Characters.Controllers;
+using Characters.SO.CharacterDataSO;
 using UnityEngine;
 
 namespace Characters.ScoreSystems
@@ -15,8 +16,14 @@ namespace Characters.ScoreSystems
         {
             _owner = owner;
         }
+
+        public void OnKill(BaseController enemy)
+        {
+            EnemyDataSo dat = enemy.CharacterData as EnemyDataSo;
+            AddScore(dat.ScoreDrop);
+        }
         
-        public void AddScore(int score, bool useMultiplier = true)
+        private void AddScore(int score, bool useMultiplier = true)
         {
             score = useMultiplier ? score * ScoreMultiplier : score;
             if (score == 0) return;

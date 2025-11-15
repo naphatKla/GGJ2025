@@ -48,6 +48,10 @@ namespace Characters.SO.CharacterDataSO
         private List<FlowStateData> flowStateDatas;
 
         [FoldoutGroup("Combat/FlowState")]
+        [Tooltip("if the method increase rank point less than this value, will not gain a flowing mind stack")]
+        [SerializeField] private int rankPointAddedThreshold = 5;
+        
+        [FoldoutGroup("Combat/FlowState")]
         [Tooltip("flowing mind = stack to enter each flow state, gain from every method increase rank point")]
         [SerializeField] private int flowingMindGainAmount = 1;
         
@@ -80,6 +84,8 @@ namespace Characters.SO.CharacterDataSO
         public CombatTakeDamageConditionData TakeDamageConditionData => takeDamageConditionData;
 
         public List<FlowStateData> FlowStateDatas => flowStateDatas;
+        
+        public int RankPointAddedThreshold => rankPointAddedThreshold;
         public int FlowingMindGainAmount => flowingMindGainAmount;
         public int FlowingMindReduceOnTakeDamage => flowingMindReduceOnTakeDamage;
         public int FlowingMindLifeTimePerStack => flowingMindLifeTimePerStack;
@@ -164,7 +170,10 @@ namespace Characters.SO.CharacterDataSO
     [Serializable]
     public record CombatRankKillConditionData
     {
+        public int pointPerKill;
+        [BoxGroup("Kill combo")]
         public int killAmountToGainPoint;
+        [BoxGroup("Kill combo")]
         public float killWithInDuration;
 
         [Unit(Units.Percent)] [Tooltip("gain rank point when kill enemy within duration =  % amount of enemy score")]

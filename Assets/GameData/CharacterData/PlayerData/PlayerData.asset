@@ -65,6 +65,7 @@ MonoBehaviour:
     perfectCounterDashPercentage: 100
     normalCounterDashPercentage: 50
   killConditionData:
+    pointPerKill: 1
     killAmountToGainPoint: 5
     killWithInDuration: 0.5
     scorePercentage: 100
@@ -88,8 +89,11 @@ MonoBehaviour:
     - effectData: {fileID: 11400000, guid: 246112b4ed499a743bccd65d509af68e, type: 2}
       isOverrideDuration: 1
       overrideDuration: 9999
+  rankPointAddedThreshold: 5
   flowingMindGainAmount: 1
   flowingMindReduceOnTakeDamage: 1
+  flowingMindLifeTimePerStack: 3
+  flowingMindMaxCap: 10
   attackHitCameraShakeOption:
     force: 11
     frequency: 0.1

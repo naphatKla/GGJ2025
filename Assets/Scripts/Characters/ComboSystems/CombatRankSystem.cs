@@ -53,6 +53,7 @@ namespace Characters.ComboSystems
         public void OnKillCondition(BaseController targetKilled)
         {
             AddKillStrike(1);
+            AddRankPoints(_ownerData.KillConditionData.pointPerKill);
 
             var killConfig = _ownerData.KillConditionData;
             float duration = killConfig.killWithInDuration;
@@ -167,14 +168,14 @@ namespace Characters.ComboSystems
 
         public void ResetCombatRankSystem(bool resetHighest = false)
         {
-            _currentRankPoint = 0;
+            /*_currentRankPoint = 0;
             OnRankPointChanged?.Invoke(_currentRankPoint);
 
             _killStrike = 0;
             OnKillStrikeChanged?.Invoke(_killStrike);
 
             if (!resetHighest) return;
-            _highestRecordedRankId = _rankDatas[0].rankId;
+            _highestRecordedRankId = _rankDatas[0].rankId;*/
         }
     }
 }

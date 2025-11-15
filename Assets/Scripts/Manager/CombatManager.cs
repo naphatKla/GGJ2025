@@ -96,6 +96,7 @@ namespace Manager
 
             if (!dieThisFrame) return;
             attackerController.CombatSystem.OnKillHandler(targetController);
+            
             if (targetController is PlayerController)
                 Debug.LogWarning(attackerController.name + "Kill Player!!!");
         }

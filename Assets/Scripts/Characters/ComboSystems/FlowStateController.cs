@@ -33,8 +33,9 @@ namespace Characters.ComboSystems
             _flowStateDatas = ownerData.FlowStateDatas.OrderBy(f => f.flowingMindThreshold).ToList();
         }
         
-        public void OnRankPointAdd(int point)
+        public void OnRankPointAdd(int pointAdded)
         {
+            if (pointAdded < _ownerData.RankPointAddedThreshold) return;
             AddFlowingMind(_ownerData.FlowingMindGainAmount);
         }
 

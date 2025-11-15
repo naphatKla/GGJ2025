@@ -20,7 +20,6 @@ namespace Characters.CollectItemSystems.CollectableItems
         {
             if (ownerSystem.Owner is PlayerController player)
             {
-                player.ScoreSystem.AddScore(itemData.Score);
                 player.LevelSystem.AddExp(itemData.Exp);
                 return;
             }
