@@ -190,9 +190,9 @@ namespace Characters.SO.CharacterDataSO
     public record CombatRankKillConditionData
     {
         public int pointPerKill;
-        [BoxGroup("Kill combo")]
+        [BoxGroup("Groups Kill")]
         public int killAmountToGainPoint;
-        [BoxGroup("Kill combo")]
+        [BoxGroup("Groups Kill")]
         public float killWithInDuration;
 
         [Unit(Units.Percent)] [Tooltip("gain rank point when kill enemy within duration =  % amount of enemy score")]

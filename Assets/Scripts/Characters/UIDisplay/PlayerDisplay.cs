@@ -7,6 +7,7 @@ using Characters.LevelSystems;
 using Characters.ScoreSystems;
 using Characters.SkillSystems;
 using Characters.SkillSystems.SkillRuntimes;
+using Characters.SO.CharacterDataSO;
 using Characters.SO.SkillDataSo;
 using Characters.StatusEffectSystems;
 using Cysharp.Threading.Tasks;
@@ -182,6 +183,7 @@ namespace Characters.UIDisplay
 
             combatSystem.OnDealDamage += UpdateDamageText;
             scoreSystem.OnScoreChange += UpdateScoreUI;
+            scoreSystem.OnScoreMultiplierChange += UpdateScoreMultiplierText;
 
             statusEffectSystem.OnStatusUIUpdate += UpdateStatusUI;
 
@@ -227,6 +229,7 @@ namespace Characters.UIDisplay
 
             combatSystem.OnDealDamage -= UpdateDamageText;
             scoreSystem.OnScoreChange -= UpdateScoreUI;
+            scoreSystem.OnScoreMultiplierChange -= UpdateScoreMultiplierText;
 
             statusEffectSystem.OnStatusUIUpdate -= UpdateStatusUI;
 
@@ -241,7 +244,8 @@ namespace Characters.UIDisplay
             if (killStrikeText) killStrikeText.text = "0 STRIKE!";
             if (scoreMultiplyText) scoreMultiplyText.text = "x1 SCORE!";
 
-            combatRankViewHolder.UpdateGradeCombo("F");
+            PlayerDataSo playerData = PlayerController.Instance.CharacterData as PlayerDataSo;
+            combatRankViewHolder.UpdateGradeCombo(playerData.CombatRankDatas[0], playerData.CombatRankDatas[0]);
             foreach (var statusSlotModel in statusSlots)
                 statusSlotModel.gameObject.SetActive(false);
 

@@ -9,31 +9,35 @@ namespace Characters.ComboSystems
 {
     public class CombatRankSystem : MonoBehaviour
     {
-        // ===== Events =====
+        #region Events
+
         public event Action<int> OnRankPointAdded; // Added Amount (delta)
-        public event Action<int> OnRankPointChanged; // Current Rank Point
-        public event Action<string> OnRankChanged; // Current Rank Changed ID
-        public event Action<string, string> OnRankUp; // (oldRankId, newRankId)
-        public event Action<string, string> OnRankDown; // (oldRankId, newRankId)
+        public event Action<CombatRankData, CombatRankData> OnRankChanged; // (old, new)
 
         public event Action<int, int, int>
             OnUpdateRankPointProgression; // (CurrentThreshold, CurrentPoint, NextThreshold)
 
         public event Action<int> OnKillStrikeChanged; // Current KillStrike
 
-        // ===== Data =====
+        #endregion
+
+        #region Variables
+
         private List<CombatRankData> _rankDatas = new();
         private int _currentRankPoint;
         private string _currentRankId;
         private string _highestRecordedRankId;
         private int _killStrike;
-        private float _rankPointMultiplier = 1f;
         private PlayerDataSo _ownerData;
 
         public int CurrentRankPoint => _currentRankPoint;
         public string CurrentRankId => _currentRankId;
         public string HighestRecordedRankId => _highestRecordedRankId;
         public int KillStrike => _killStrike;
+
+        #endregion
+
+        #region Methods
 
         public void AssignRankData(PlayerDataSo ownerData)
         {
@@ -44,53 +48,6 @@ namespace Characters.ComboSystems
 
             _currentRankId = _rankDatas[0].rankId;
             _highestRecordedRankId = _rankDatas[0].rankId;
-        }
-
-        // Gain Rank Point Method
-        private float _startTimeKill;
-        private int deltaKillCountInTime;
-        private int deltaScore;
-
-        public void OnKillCondition(BaseController targetKilled)
-        {
-            AddKillStrike(1);
-            AddRankPoints(_ownerData.KillConditionData.pointPerKill);
-
-            var killConfig = _ownerData.KillConditionData;
-            float duration = killConfig.killWithInDuration;
-            int requiredKills = killConfig.killAmountToGainPoint;
-
-            var enemyData = targetKilled.CharacterData as EnemyDataSo;
-            if (enemyData == null) return;
-
-            if (Time.time <= _startTimeKill + duration)
-            {
-                deltaKillCountInTime++;
-                deltaScore += enemyData.ScoreDrop;
-            }
-            else
-            {
-                _startTimeKill = Time.time;
-                deltaKillCountInTime = 1;
-                deltaScore = enemyData.ScoreDrop;
-            }
-
-            if (deltaKillCountInTime >= requiredKills)
-            {
-                int bonusScore = deltaScore;
-                deltaKillCountInTime = 0;
-                deltaScore = 0;
-                _startTimeKill = 0f;
-                
-                AddRankPoints(bonusScore);
-            }
-        }
-
-        // Reduce Rank
-        public void OnTakeDamageCondition(bool success)
-        {
-            if (!success) return;
-            AddKillStrike(-_killStrike); // reset kill strike
         }
 
         private void AddRankPoints(int amount)
@@ -106,7 +63,6 @@ namespace Characters.ComboSystems
                 return;
 
             OnRankPointAdded?.Invoke(delta);
-            OnRankPointChanged?.Invoke(_currentRankPoint);
 
             CalculateRank();
 
@@ -149,17 +105,12 @@ namespace Characters.ComboSystems
             if (newRankId == oldRankId)
                 return;
 
-            _currentRankId = newRankId;
-            OnRankChanged?.Invoke(newRankId);
-
             int oldIndex = GetRankIndex(oldRankId);
             int newIndex = GetRankIndex(newRankId);
             int highestIndex = GetRankIndex(_highestRecordedRankId);
 
-            if (newIndex > oldIndex)
-                OnRankUp?.Invoke(oldRankId, newRankId);
-            else if (newIndex < oldIndex)
-                OnRankDown?.Invoke(oldRankId, newRankId);
+            _currentRankId = newRankId;
+            OnRankChanged?.Invoke(_rankDatas[oldIndex], _rankDatas[newIndex]);
 
             if (newIndex > highestIndex)
                 _highestRecordedRankId = newRankId;
@@ -184,5 +135,71 @@ namespace Characters.ComboSystems
             if (!resetHighest) return;
             _highestRecordedRankId = _rankDatas[0].rankId;*/
         }
+
+        #endregion
+
+        #region Condition Event Methods
+
+        // Gain Rank Point Method
+        private float _startTimeKill;
+        private int deltaKillCountInTime;
+        private int deltaScore;
+
+        public void OnKillCondition(BaseController targetKilled)
+        {
+            AddKillStrike(1);
+            AddRankPoints(_ownerData.KillConditionData.pointPerKill);
+
+            var killConfig = _ownerData.KillConditionData;
+            float duration = killConfig.killWithInDuration;
+            int requiredKills = killConfig.killAmountToGainPoint;
+
+            var enemyData = targetKilled.CharacterData as EnemyDataSo;
+            if (enemyData == null) return;
+
+            if (Time.time <= _startTimeKill + duration)
+            {
+                deltaKillCountInTime++;
+                deltaScore += enemyData.ScoreDrop;
+            }
+            else
+            {
+                _startTimeKill = Time.time;
+                deltaKillCountInTime = 1;
+                deltaScore = enemyData.ScoreDrop;
+            }
+
+            if (deltaKillCountInTime >= requiredKills)
+            {
+                int calculatedPoint =
+                    Mathf.CeilToInt(deltaScore * (_ownerData.KillConditionData.scorePercentage / 100));
+                deltaKillCountInTime = 0;
+                deltaScore = 0;
+                _startTimeKill = 0f;
+
+                AddRankPoints(calculatedPoint);
+            }
+        }
+
+        public void OnHealCondition(int healAmount)
+        {
+            int calculatedPoint = Mathf.CeilToInt(healAmount * (_ownerData.HealConditionData.healPercentage / 100));
+            AddRankPoints(calculatedPoint);
+        }
+
+        // Reduce Rank
+        public void OnTakeDamageCondition(bool success)
+        {
+            if (!success) return;
+            int calculatedPoint =
+                Mathf.CeilToInt(_currentRankPoint * (_ownerData.TakeDamageConditionData.lostPointPercentage / 100));
+            AddKillStrike(-_killStrike); // reset kill strike
+            AddRankPoints(-calculatedPoint);
+        }
+
+        //public void OnBuff
+        //public void OnDeBuff
+
+        #endregion
     }
 }

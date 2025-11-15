@@ -75,6 +75,7 @@ namespace Characters.Controllers
         {
             // add score on enemy kill
             combatSystem.OnKill += scoreSystem.OnKill;
+            combatRankSystem.OnRankChanged += scoreSystem.OnRankModify;
             
             // skill upgrade
             levelSystem.OnLevelUp += skillUpgradeController.OnLevelUp;
@@ -97,6 +98,7 @@ namespace Characters.Controllers
         {
             // add score on enemy kill
             combatSystem.OnKill -= scoreSystem.OnKill;
+            combatRankSystem.OnRankChanged -= scoreSystem.OnRankModify;
             
             // skill upgrade
             levelSystem.OnLevelUp -= skillUpgradeController.OnLevelUp;

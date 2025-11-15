@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Characters.SO.CharacterDataSO;
 using DG.Tweening;
 using Sirenix.OdinInspector;
 using TMPro;
@@ -25,13 +26,14 @@ namespace UI.IngameViewholder
         
         public List<GradeCombo> gradeComboList;
         
-        public void UpdateGradeCombo(string grade)
+        public void UpdateGradeCombo(CombatRankData oldRank, CombatRankData newRank)
         {
-            gradeImage.gameObject.SetActive(grade != null);
-            gradeFlame.gameObject.SetActive(grade != null);
-            gradeText.gameObject.SetActive(grade != null);
+            string rankId = newRank.rankId;
+            gradeImage.gameObject.SetActive(rankId != null);
+            gradeFlame.gameObject.SetActive(rankId != null);
+            gradeText.gameObject.SetActive(rankId != null);
             foreach (var g in gradeComboList)
-                if (g.gradeId == grade)
+                if (g.gradeId == rankId)
                 {
                     GradeFeedback(gradeImage, g.gradeImage);
                     GradeTextFeedBack(gradeText, g.supText);
