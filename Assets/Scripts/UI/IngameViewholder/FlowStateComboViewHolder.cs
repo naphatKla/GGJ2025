@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace UI.IngameViewholder
 {
-    public class FlowStageComboViewholder : SerializedMonoBehaviour
+    public class FlowStateComboViewHolder : SerializedMonoBehaviour
     {
         [InfoBox("เขียน String ให้ตรงเช่น flow_i")]
         public Dictionary<string, GameObject> FlowStateDic;

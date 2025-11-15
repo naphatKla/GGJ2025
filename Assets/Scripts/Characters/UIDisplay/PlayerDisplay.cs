@@ -54,8 +54,8 @@ namespace Characters.UIDisplay
         [FormerlySerializedAs("combatRankViewholder")] [FormerlySerializedAs("gradeComboViewholder")] [Title("Grade Rank")] [FoldoutGroup("Rank Display")]
         public CombatRankViewHolder combatRankViewHolder;
         
-        [Title("FlowStage Combo")] [FoldoutGroup("Rank Display")]
-        public FlowStageComboViewholder flowStageComboViewholder;
+        [FormerlySerializedAs("flowStageComboViewholder")] [Title("FlowStage Combo")] [FoldoutGroup("Rank Display")]
+        public FlowStateComboViewHolder flowStateComboViewHolder;
 
         // ========= Combat =========
         [FoldoutGroup("Combat Display"), SerializeField]

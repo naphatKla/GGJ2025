@@ -4,7 +4,7 @@ using Characters.SO.StatusEffectSO;
 
 namespace Characters.StatusEffectSystems.StatusEffects
 {
-    public class FlowStageEffect : BaseStatusEffect<FlowStageEffectDataSo>
+    public class FlowStateEffect : BaseStatusEffect<FlowStateEffectDataSo>
     {
         public override void OnStart(BaseController owner)
         {

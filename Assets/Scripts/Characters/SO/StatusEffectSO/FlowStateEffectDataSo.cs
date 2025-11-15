@@ -3,8 +3,8 @@ using UnityEngine;
 
 namespace Characters.SO.StatusEffectSO
 {
-    [CreateAssetMenu(fileName = "FlowStageEffectData", menuName = "GameData/StatusEffectData/FlowStageEffectData")]
-    public class FlowStageEffectDataSo : BaseStatusEffectDataSo
+    [CreateAssetMenu(fileName = "FlowStateEffectData", menuName = "GameData/StatusEffectData/FlowStateEffectData")]
+    public class FlowStateEffectDataSo : BaseStatusEffectDataSo
     {
         [SerializeField] private float damageIncrease;
 

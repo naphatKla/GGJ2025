@@ -49,7 +49,7 @@ namespace Characters.StatusEffectSystems
     {
         Iframe = 0,
         Stun = 2,
-        FlowStage = 3,
+        FlowState = 3,
         IronBody = 4,
     }
 
