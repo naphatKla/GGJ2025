@@ -59,7 +59,7 @@ namespace Characters.Controllers
                 skillUpgradeController.AssignData(skillSystem, playerData);
                 levelSystem.AssignData(this, playerData.BaseExpLevelUp, playerData.StepThreshold, playerData.StepValue);
                 scoreSystem.AssignData(this);
-                combatRankSystem.AssignRankData(playerData.CombatRankDatas);
+                combatRankSystem.AssignRankData(playerData);
             }
             else
             {

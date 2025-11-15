@@ -16,7 +16,6 @@ namespace Characters.ComboSystems
         public event Action<string, string> OnRankDown;    // (oldRankId, newRankId)
         public event Action<int, int, int> OnUpdateRankPointProgression; // (CurrentThreshold, CurrentPoint, NextThreshold)
         public event Action<int> OnKillStrikeChanged;   // Current KillStrike
-        
 
         // ===== Data =====
         private List<CombatRankData> _rankDatas = new();
@@ -25,15 +24,17 @@ namespace Characters.ComboSystems
         private string _highestRecordedRankId;
         private int _killStrike;
         private float _rankPointMultiplier = 1f;
+        private PlayerDataSo _ownerData;
 
         public int CurrentRankPoint => _currentRankPoint;
         public string CurrentRankId => _currentRankId;
         public string HighestRecordedRankId => _highestRecordedRankId;
         public int KillStrike => _killStrike;
         
-        public void AssignRankData(List<CombatRankData> rankDatas)
+        public void AssignRankData(PlayerDataSo ownerData)
         {
-            _rankDatas = rankDatas
+            _ownerData = ownerData;
+            _rankDatas = ownerData.CombatRankDatas
                 .OrderBy(r => r.rankPointThreshold)
                 .ToList();
 

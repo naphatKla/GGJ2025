@@ -56,6 +56,11 @@ namespace Characters.SO.CharacterDataSO
         public int StepThreshold => stepThreshold;
         public float StepValue => stepValue;
         public List<CombatRankData> CombatRankDatas => combatRankDatas;
+        public CombatRankParryConditionData ParryConditionData => parryConditionData;
+        public CombatRankCounterDashConditionData CounterDashConditionData => counterDashConditionData;
+        public CombatRankKillConditionData KillConditionData => killConditionData;
+        public CombatRankHealConditionData HealConditionData => healConditionData;
+        public CombatTakeDamageConditionData TakeDamageConditionData => takeDamageConditionData;
 
         [Space]
         [FoldoutGroup("Skills/Upgrade")]
