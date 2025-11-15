@@ -15,13 +15,20 @@ namespace Characters.SkillSystems.SkillRuntimes
         public event Action OnTriggerAutoSkill;
         private bool _isParryTrigger;
         private Collider2D ownerCollider2D;
-
+        
         public override void AssignSkillData(BaseSkillDataSo skillData, BaseController owner)
         {
             base.AssignSkillData(skillData, owner);
             ownerCollider2D = owner.HealthSystem.GetComponent<Collider2D>();
+            owner.HealthSystem.OnTakeDamage += TriggerParry;
         }
 
+        private void OnDestroy()
+        {
+            if (!owner) return;
+            owner.HealthSystem.OnTakeDamage -= TriggerParry;
+        }
+        
         private void OnParrySuccess()
         {
             OnTriggerAutoSkill?.Invoke();
@@ -52,7 +59,6 @@ namespace Characters.SkillSystems.SkillRuntimes
         protected override void OnSkillStart()
         {
             _isParryTrigger = false;
-            owner.HealthSystem.OnTakeDamage += TriggerParry;
             owner.MovementSystem.StopFromParry(skillData.StopWhileParry);
             
             if (Math.Abs(skillData.ParryColliderSizeMultiplier - 1) < 0.01f)return;
@@ -76,7 +82,6 @@ namespace Characters.SkillSystems.SkillRuntimes
         {
             _isParryTrigger = false;
             owner.MovementSystem.StopFromParry(false);
-            owner.HealthSystem.OnTakeDamage -= TriggerParry;
             
             if (Math.Abs(skillData.ParryColliderSizeMultiplier - 1) < 0.01f)return;
             if (!ownerCollider2D) return;
@@ -88,13 +93,8 @@ namespace Characters.SkillSystems.SkillRuntimes
 
         private void TriggerParry(bool hitWithDamage)
         {
+            if (!IsPerforming) return;
             _isParryTrigger = true;
         }
-
-        /*private void OnDrawGizmos()
-        {
-            if (!owner) return;
-            Gizmos.DrawSphere(owner.gameObject.transform.position, skillData.ExplosionRadius);
-        }*/
     }
 }
