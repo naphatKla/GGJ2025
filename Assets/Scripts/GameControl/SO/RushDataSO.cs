@@ -232,7 +232,6 @@ namespace GameControl.SO
 
         #endregion
         
-        
         public void ApplyInto(MapDataSO target)
         {
             if (!target) return;

@@ -36,9 +36,8 @@ namespace UI
         MainMenu = 11,
         
         //MODE
-        NormalMode = 12,
-        HardMode = 13,
-        EndlessMode = 14
+        SurvivalMode = 12,
+        EndlessMode = 13
     }
     
     public enum StackType
@@ -476,11 +475,8 @@ namespace UI
         {
             switch (mode)
             {
-                case "NormalMode":
-                    OpenPanel(UIPanelType.NormalMode).Forget();
-                    break;
-                case "HardMode":
-                    OpenPanel(UIPanelType.HardMode).Forget();
+                case "SurvivalMode":
+                    OpenPanel(UIPanelType.SurvivalMode).Forget();
                     break;
                 case "EndlessMode":
                     OpenPanel(UIPanelType.EndlessMode).Forget();

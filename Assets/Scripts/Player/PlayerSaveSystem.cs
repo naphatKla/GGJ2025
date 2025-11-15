@@ -72,6 +72,7 @@ namespace Player
                 HighestScore = 0,
                 LastScore = 0,
                 UnlockedMaps = new HashSet<string>(),
+                UnlockedChallenges = new HashSet<string>(),
                 MapStats = new Dictionary<string, MapStat>()
             };
             Save(data);

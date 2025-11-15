@@ -16,7 +16,6 @@ namespace GameControl.SO
     [CreateAssetMenu(fileName = "MapData", menuName = "GameControl/SO/Map Data", order = 0)]
     public class MapDataSO : ScriptableObject
     {
-        
         [Serializable]
         public class EnemyOption : IRandomable
         {
@@ -439,6 +438,13 @@ namespace GameControl.SO
         [FoldoutGroup("Map Setting")]
         [Tooltip("Change to Endless Mode the time will not affect this mode the time will increase instend of decrease (Time will start from 0)")]
         public bool endlessMode = false;
+        #endregion
+
+        #region Player Class
+        [FoldoutGroup("Player Setting")]
+        [Tooltip("Data of each player class")]
+        public PlayerDataSo playerData;
+
         #endregion
 
         #region Enemy Setting

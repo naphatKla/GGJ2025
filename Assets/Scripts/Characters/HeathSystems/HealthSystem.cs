@@ -93,7 +93,7 @@ namespace Characters.HeathSystems
         /// <param name="invincibleTimePerHit">Cooldown duration after taking damage.</param>
         public void AssignHealthData(float maxHealth, float invincibleTimePerHit, BaseController owner = null)
         {
-            _maxHealth = maxHealth;
+            _maxHealth = Mathf.Clamp(maxHealth, 1, 99999999);
             _invincibleTimePerHit = invincibleTimePerHit;
             this.owner = owner;
             ResetHealthSystem();

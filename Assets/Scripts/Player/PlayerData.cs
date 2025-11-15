@@ -18,6 +18,10 @@ namespace Player
 
         // Progression
         public HashSet<string> UnlockedMaps = new HashSet<string>();
+        public HashSet<string> UnlockedChallenges = new HashSet<string>();
+        
+        // Selected Challenge
+        public HashSet<string> SelectedChallenges = new HashSet<string>();
 
         // perMap data (key = mapId)
         public Dictionary<string, MapStat> MapStats = new Dictionary<string, MapStat>();
@@ -25,7 +29,9 @@ namespace Player
         public void PostLoadInitializeAndMigrate()
         {
             UnlockedMaps ??= new HashSet<string>();
+            UnlockedChallenges ??= new HashSet<string>();
             MapStats ??= new Dictionary<string, MapStat>();
+            SelectedChallenges ??= new HashSet<string>();
 
             const int CURRENT = 2;
             if (SchemaVersion < 1)
