@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Cameras;
 using Characters.SO.SkillDataSo;
+using Characters.StatusEffectSystems;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -22,27 +23,37 @@ namespace Characters.SO.CharacterDataSO
         [FoldoutGroup("Combat")] [SerializeField]
         private float stepValue = 500;
 
-        [FoldoutGroup("Combat/Rank")] 
+        [FoldoutGroup("Combat/Rank")]
         [ValidateInput(nameof(ValidateCombatRankDatas),
             "First rank must have rankPointThreshold = 0 and scoreMultiplier = 1")]
         [SerializeField]
         private List<CombatRankData> combatRankDatas = new();
 
-        [FoldoutGroup("Combat/Rank")] 
-        [SerializeField] private CombatRankParryConditionData parryConditionData;
+        [FoldoutGroup("Combat/Rank")] [SerializeField]
+        private CombatRankParryConditionData parryConditionData;
+
+        [FoldoutGroup("Combat/Rank")] [SerializeField]
+        private CombatRankCounterDashConditionData counterDashConditionData;
+
+        [FoldoutGroup("Combat/Rank")] [SerializeField]
+        private CombatRankKillConditionData killConditionData;
+
+        [FoldoutGroup("Combat/Rank")] [SerializeField]
+        private CombatRankHealConditionData healConditionData;
+
+        [FoldoutGroup("Combat/Rank")] [SerializeField]
+        private CombatTakeDamageConditionData takeDamageConditionData;
+
+        [FoldoutGroup("Combat/FlowState")] [SerializeField]
+        private List<FlowStateData> flowStateDatas;
+
+        [FoldoutGroup("Combat/FlowState")]
+        [Tooltip("flowing mind = stack to enter each flow state, gain from every method increase rank point")]
+        [SerializeField] private int flowingMindGainAmount = 1;
         
-        [FoldoutGroup("Combat/Rank")] 
-        [SerializeField] private CombatRankCounterDashConditionData counterDashConditionData;
-        
-        [FoldoutGroup("Combat/Rank")] 
-        [SerializeField] private CombatRankKillConditionData killConditionData;
-        
-        [FoldoutGroup("Combat/Rank")] 
-        [SerializeField] private CombatRankHealConditionData healConditionData;
-        
-        [FoldoutGroup("Combat/Rank")] 
-        [SerializeField] private CombatTakeDamageConditionData takeDamageConditionData;
-        
+        [FoldoutGroup("Combat/FlowState")] [SerializeField]
+        private int flowingMindReduceOnTakeDamage = 1;
+
         [FoldoutGroup("Camera Settings")] [SerializeField]
         private CameraShakeOption attackHitCameraShakeOption;
 
@@ -61,6 +72,10 @@ namespace Characters.SO.CharacterDataSO
         public CombatRankKillConditionData KillConditionData => killConditionData;
         public CombatRankHealConditionData HealConditionData => healConditionData;
         public CombatTakeDamageConditionData TakeDamageConditionData => takeDamageConditionData;
+
+        public List<FlowStateData> FlowStateDatas => flowStateDatas;
+        public int FlowingMindGainAmount => flowingMindGainAmount;
+        public int FlowingMindReduceOnTakeDamage => flowingMindReduceOnTakeDamage;
 
         [Space]
         [FoldoutGroup("Skills/Upgrade")]
@@ -107,11 +122,22 @@ namespace Characters.SO.CharacterDataSO
     }
 
     [Serializable]
+    public struct FlowStateData
+    {
+        public string flowStateId;
+
+        [Tooltip("flowing mind = point threshold of each flow state")]
+        public int flowingMindThreshold;
+
+        public List<StatusEffectDataPayload> effectsApply;
+    }
+
+    [Serializable]
     public record CombatRankParryConditionData
     {
         [Unit(Units.Percent)] [Tooltip("gain rank point when perfect parry =  % amount of damage negate")]
         public float perfectParryPercentage;
-        
+
         [Unit(Units.Percent)] [Tooltip("gain rank point when normal parry =  % amount of damage negate")]
         public float normalParryPercentage;
     }
@@ -121,28 +147,28 @@ namespace Characters.SO.CharacterDataSO
     {
         [Unit(Units.Percent)] [Tooltip("gain rank point when perfect counter dash =  % amount of damage negate")]
         public float perfectCounterDashPercentage;
-        
+
         [Unit(Units.Percent)] [Tooltip("gain rank point when normal counter dash =  % amount of damage negate")]
         public float normalCounterDashPercentage;
     }
-    
+
     [Serializable]
     public record CombatRankKillConditionData
     {
         public int killAmountToGainPoint;
         public float killWithInDuration;
-        
+
         [Unit(Units.Percent)] [Tooltip("gain rank point when kill enemy within duration =  % amount of enemy score")]
         public float scorePercentage;
     }
-    
+
     [Serializable]
     public record CombatRankHealConditionData
     {
         [Unit(Units.Percent)] [Tooltip("gain rank point when heal =  % of heal amount")]
         public float healPercentage;
     }
-    
+
     [Serializable]
     public record CombatTakeDamageConditionData
     {

@@ -72,6 +72,19 @@ MonoBehaviour:
     healPercentage: 100
   takeDamageConditionData:
     lostPointPercentage: 25
+  flowStateDatas:
+  - flowStateId: flowState_I
+    flowingMindThreshold: 5
+    effectsApply:
+    - effectData: {fileID: 11400000, guid: cb459ae7d7879dc4f851ae39e9d9de8b, type: 2}
+      isOverrideDuration: 1
+      overrideDuration: 9999
+  - flowStateId: flowState_II
+    flowingMindThreshold: 10
+    effectsApply:
+    - effectData: {fileID: 11400000, guid: 246112b4ed499a743bccd65d509af68e, type: 2}
+      isOverrideDuration: 1
+      overrideDuration: 9999
   attackHitCameraShakeOption:
     force: 11
     frequency: 0.1
