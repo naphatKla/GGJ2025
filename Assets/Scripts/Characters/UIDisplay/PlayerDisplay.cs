@@ -242,7 +242,7 @@ namespace Characters.UIDisplay
                 rankPointBar.CurrentValue = 0f;
             
             if (killStrikeText) killStrikeText.text = "0 STRIKE!";
-            if (scoreMultiplyText) scoreMultiplyText.text = "x1 SCORE!";
+            if (scoreMultiplyText) UpdateScoreMultiplierText(scoreSystem.ScoreMultiplier);
 
             PlayerDataSo playerData = PlayerController.Instance.CharacterData as PlayerDataSo;
             combatRankViewHolder.UpdateGradeCombo(playerData.CombatRankDatas[0], playerData.CombatRankDatas[0]);
