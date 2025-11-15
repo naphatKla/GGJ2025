@@ -65,7 +65,7 @@ MonoBehaviour:
     perfectCounterDashPercentage: 100
     normalCounterDashPercentage: 50
   killConditionData:
-    pointPerKill: 1
+    pointPerKill: 100
     killAmountToGainPoint: 5
     killWithInDuration: 0.5
     scorePercentage: 100
@@ -77,13 +77,13 @@ MonoBehaviour:
   - flowStateId: none_flow
     flowingMindThreshold: 0
     effectsApply: []
-  - flowStateId: flow_I
+  - flowStateId: flow_i
     flowingMindThreshold: 5
     effectsApply:
     - effectData: {fileID: 11400000, guid: cb459ae7d7879dc4f851ae39e9d9de8b, type: 2}
       isOverrideDuration: 1
       overrideDuration: 9999
-  - flowStateId: flow_II
+  - flowStateId: flow_ii
     flowingMindThreshold: 10
     effectsApply:
     - effectData: {fileID: 11400000, guid: 246112b4ed499a743bccd65d509af68e, type: 2}

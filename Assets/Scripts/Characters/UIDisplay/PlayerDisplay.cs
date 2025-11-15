@@ -41,6 +41,9 @@ namespace Characters.UIDisplay
         [FoldoutGroup("Rank Display"), Title("Ref"), SerializeField]
         private CombatRankSystem combatRankSystem;
 
+        [FoldoutGroup("Rank Display")] [SerializeField]
+        private FlowStateController flowStateController;
+        
         [Title("UI"), FoldoutGroup("Rank Display")]
         public GameObject rankUI;
 
@@ -164,6 +167,11 @@ namespace Characters.UIDisplay
                 // score multiplier
             }
 
+            if (flowStateController != null)
+            {
+                flowStateController.OnStateChanged += flowStateComboViewHolder.UpdateFlowSceneFeedback;
+            }
+
             levelSystem.OnLevelUpdate += UpdateLevelUI;
             skillUpgradeController.OnSkillUpgradeOptionsGenerated += SolfUpgradePopup;
 
@@ -210,6 +218,11 @@ namespace Characters.UIDisplay
                 combatRankSystem.OnRankChanged -= combatRankViewHolder.UpdateGradeCombo;
                 combatRankSystem.OnUpdateRankPointProgression -= UpdateRankPointBar;
                 combatRankSystem.OnKillStrikeChanged -= UpdateKillStrikeText;
+            }
+            
+            if (flowStateController != null)
+            {
+                flowStateController.OnStateChanged -= flowStateComboViewHolder.UpdateFlowSceneFeedback;
             }
 
             levelSystem.OnLevelUpdate -= UpdateLevelUI;
