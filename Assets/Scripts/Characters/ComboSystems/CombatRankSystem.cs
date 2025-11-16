@@ -56,7 +56,8 @@ namespace Characters.ComboSystems
                 return;
 
             int oldPoint = _currentRankPoint;
-            _currentRankPoint = Mathf.Max(0, _currentRankPoint + amount);
+
+            _currentRankPoint = Mathf.Clamp(_currentRankPoint + amount, 0, _rankDatas[^1].rankPointThreshold);
 
             int delta = _currentRankPoint - oldPoint;
             if (delta == 0)

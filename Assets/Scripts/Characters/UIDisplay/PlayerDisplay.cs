@@ -274,8 +274,8 @@ namespace Characters.UIDisplay
             if (!rankPointBar || !rankUI) return;
 
             rankUI.SetActive(currentRankPoint > 0);
-            rankPointBar.MinValue = currentRankPointThreshold;
-            rankPointBar.MaxValue = nextRankPointThreshold == currentRankPointThreshold? nextRankPointThreshold + 1f : nextRankPointThreshold;
+            rankPointBar.MinValue = currentRankPointThreshold == nextRankPointThreshold? currentRankPointThreshold - 1 : currentRankPointThreshold;
+            rankPointBar.MaxValue = nextRankPointThreshold;
             var clampValue = Mathf.Clamp(currentRankPoint, currentRankPointThreshold, rankPointBar.MaxValue);
             rankPointBar.CurrentValue = clampValue;
         }
