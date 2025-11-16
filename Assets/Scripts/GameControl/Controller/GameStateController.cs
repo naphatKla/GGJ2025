@@ -190,8 +190,7 @@ namespace GameControl.Controller
             player.AssignCharacterData(playerDataSo); //Assign Player DataSO
             
             //Score Modify
-            var scoreMultiplyer = snap.OverallScoreMultiplier;
-            PlayerController.Instance.ScoreSystem.AddScoreMultiplyer(scoreMultiplyer - 1);
+            PlayerController.Instance.ScoreSystem.SetScoreMultiplyer(Mathf.Clamp(snap.OverallScoreMultiplier, 1f, snap.OverallScoreMultiplier));
             
             //Enemy Modify
             foreach (var opt in mapData.EnemyOptions)
