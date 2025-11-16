@@ -136,6 +136,8 @@ namespace Player
             GUILayout.Label("Current Profile", _hdrStyle);
             DrawKV("ProfileId", current.ProfileId);
             DrawKV("DisplayName", current.DisplayName);
+            DrawKV("Nano Coin", current.nanoCoin.ToString());
+            DrawKV("Rainbow Anergy", current.rainBowAnergy.ToString());
             DrawKV("HighestScore", current.HighestScore.ToString());
             DrawKV("LastScore", current.LastScore.ToString());
             DrawKV("LastPlayed (unix)", current.LastPlayedUnix.ToString());

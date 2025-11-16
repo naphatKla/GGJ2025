@@ -11,6 +11,10 @@ namespace Player
         public string ProfileId;
         public string DisplayName;
         public long LastPlayedUnix;
+        
+        //Currency
+        public int nanoCoin;
+        public int rainBowAnergy;
 
         // Global
         public int HighestScore;

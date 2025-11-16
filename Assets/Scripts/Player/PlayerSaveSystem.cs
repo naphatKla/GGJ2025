@@ -69,6 +69,8 @@ namespace Player
                 ProfileId = id,
                 DisplayName = displayName ?? "Player",
                 LastPlayedUnix = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
+                nanoCoin = 0,
+                rainBowAnergy = 0,
                 HighestScore = 0,
                 LastScore = 0,
                 UnlockedMaps = new HashSet<string>(),

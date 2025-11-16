@@ -163,13 +163,13 @@ namespace GameControl.Controller
             
             //Exp
             float expMultiplyer = 1f + snap.Player.GetAdd(PlayerAdditiveStat.ExpGain) / 100f;
-            player.LevelSystem.AddExpMultiplyer(expMultiplyer);
+            player.LevelSystem.AddExpMultiplyer(expMultiplyer - 1);
             var modifyPlayerStats = mapData.playerData.CopyInstance(snap.Player);
             player.AssignCharacterData(modifyPlayerStats);
             
             //Score Modify
             var scoreMultiplyer = snap.OverallScoreMultiplier;
-            PlayerController.Instance.ScoreSystem.AddScoreMultiplyer(scoreMultiplyer);
+            PlayerController.Instance.ScoreSystem.AddScoreMultiplyer(scoreMultiplyer - 1);
             
             //Enemy Modify
             foreach (var opt in mapData.EnemyOptions)

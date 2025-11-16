@@ -78,7 +78,7 @@ namespace UI.Challenge
             }
             
             var sender = MapSelectionSender.Instance.challengeData;
-            if (scoreMultiply) scoreMultiply.text = sender.TotalPercent + "%";
+            if (scoreMultiply) scoreMultiply.text = "+" + sender.TotalPercent + "%";
         }
         
         private List<ChallengeDataSO> LoadItems()
@@ -139,7 +139,7 @@ namespace UI.Challenge
             }
 
             var sender = MapSelectionSender.Instance.challengeData;
-            if (scoreMultiply) scoreMultiply.text = sender.TotalPercent + "%";
+            if (scoreMultiply) scoreMultiply.text = "+" + sender.TotalPercent + "%";
             OnSelected?.Invoke(index, challenge);
             ActiveProfileService.Instance?.SaveNow();
             GetComponent<LoopScrollRect>().RefreshCells();
