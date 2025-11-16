@@ -182,12 +182,19 @@ namespace Characters.ComboSystems
             }
         }
 
-        public void OnParrySuccessCondition(bool perfect, int damageNegate)
+        public void OnParrySuccessCondition(bool isPerfect, int damageNegate)
         {
-            Debug.Log(damageNegate);
+            float calculateMultiplier = isPerfect
+                ? _ownerData.ParryConditionData.perfectParryPercentage / 100
+                : _ownerData.ParryConditionData.normalParryPercentage / 100;
+
+            int calculatedPoint = Mathf.CeilToInt(damageNegate * calculateMultiplier);
+            
+            Debug.Log(calculatedPoint);
+            AddRankPoints(calculatedPoint);
         }
 
-        public void OnCounterDashCondition(bool perfect)
+        public void OnCounterDashCondition()
         {
             
         }
