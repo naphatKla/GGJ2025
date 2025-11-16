@@ -63,9 +63,9 @@ namespace Characters.SO.SkillDataSo
             string.IsNullOrEmpty(parrySuccessFeedback) ? null : FeedbackName.ResolveFullKey("Skill", parrySuccessFeedback);
         public List<StatusEffectDataPayload> SelfEffectsOnParrySuccess => selfEffectsOnParrySuccess;
         public List<StatusEffectDataPayload> ExplosionEffectsToTarget => explosionEffectsToTarget;
-
         public ParrySuccessData NormalParrySuccess => normalParrySuccess;
         public ParrySuccessData PerfectParrySuccess => perfectParrySuccess;
+        public float CooldownReduceOnPerfectParry => cooldownReduceOnPerfectParry;
 
         [Serializable]
         public struct ParrySuccessData

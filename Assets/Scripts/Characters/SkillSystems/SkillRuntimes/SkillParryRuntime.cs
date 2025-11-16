@@ -149,7 +149,10 @@ namespace Characters.SkillSystems.SkillRuntimes
             }
 
             if (isPerfect)
+            {
                 owner.TryPlayFeedback(FeedbackName.Skill.PerfectParry);
+                currentCooldown -= cooldown * (skillData.CooldownReduceOnPerfectParry / 100);
+            }
         }
 
         private void OnHitAttempt(HealthSystem.HitInfo info)
