@@ -77,6 +77,10 @@ namespace Challenge
         [FoldoutGroup("$groupName")]
         [Tooltip("ID ศัตรูที่อยู่ในกลุ่มนี้ (เช่น Enemy_Normal) | ใส่ \"*\" = ทุกตัว")]
         public List<string> enemyIds = new() { "Enemy_Normal" };
+        
+        [FoldoutGroup("$groupName")]
+        [Tooltip("ID ศัตรูที่จะไม่รวมอยู่ในกลุ่มนี้หรือถูกนำออกจาก Global")]
+        public List<string> enemyNotincluded;
 
         [FoldoutGroup("$groupName")]
         [Header("Stat Bundle (% from base)")]

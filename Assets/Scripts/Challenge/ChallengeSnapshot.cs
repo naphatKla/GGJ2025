@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Sirenix.OdinInspector;
 
 namespace Challenge
@@ -65,9 +66,12 @@ namespace Challenge
             
             [BoxGroup("Enemy")]
             public readonly IReadOnlyDictionary<string, EnemySnapshot> Enemies;
+            public readonly IReadOnlyCollection<string> GlobalExcludedIds;
 
             public ChallengeSnapshot(PlayerSnapshot player, IReadOnlyDictionary<string, EnemySnapshot> enemies,
-                float overallScoreMultiplier,float totalBonus, float flatBonusPercent, float playerPercent, float enemiesPercent)
+                float overallScoreMultiplier,float totalBonus, float flatBonusPercent, float playerPercent
+                , float enemiesPercent
+                ,IReadOnlyCollection<string> globalExcludedIds)
             {
                 Player = player;
                 Enemies = enemies;
@@ -76,6 +80,7 @@ namespace Challenge
                 FlatBonusPercent = flatBonusPercent;
                 PlayerPercent = playerPercent;
                 EnemiesPercent = enemiesPercent;
+                GlobalExcludedIds = globalExcludedIds;
             }
             
             public EnemySnapshot GetEnemy(string enemyId)
@@ -87,6 +92,9 @@ namespace Challenge
                 // ถ้ามี enemyId อยู่แล้ว (ซึ่งใน result ผสาน global ไว้แล้ว) ก็คืนเลย
                 if (Enemies.TryGetValue(id, out var self))
                     return self;
+                
+                if (GlobalExcludedIds != null && GlobalExcludedIds.Contains(id))
+                    return new EnemySnapshot(id, new Dictionary<EnemyStat, float>());
 
                 // enemyId → คืน global ตรง ๆ
                 if (Enemies.TryGetValue("*", out var global))
