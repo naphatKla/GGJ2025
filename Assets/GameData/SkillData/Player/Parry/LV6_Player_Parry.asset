@@ -57,9 +57,16 @@ MonoBehaviour:
   stopWhileParry: 0
   parryColliderSizeMultiplier: 2
   parryDuration: 0.75
-  knockBackDistance: 10
-  knockBackDuration: 0.25
-  healOnSuccess: 5
+  perfectParryDurationPercentage: 35
+  cooldownReduceOnPerfectParry: 50
+  normalParrySuccess:
+    knockBackDistance: 0
+    knockBackDuration: 0
+    healOnSuccess: 0
+  perfectParrySuccess:
+    knockBackDistance: 0
+    knockBackDuration: 0
+    healOnSuccess: 0
   parrySuccessFeedback: ParrySuccess_Lv6
   selfEffectsOnParrySuccess:
   - effectData: {fileID: 11400000, guid: aa4dff95f38494c4e876f8f95511ecf0, type: 2}

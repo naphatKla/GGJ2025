@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Characters.FeedbackSystems;
 using Characters.StatusEffectSystems;
@@ -32,14 +33,14 @@ namespace Characters.SO.SkillDataSo
         [FoldoutGroup("Parry Configs")] [SerializeField] [Unit(Units.Percent)]
         private float perfectParryDurationPercentage;
         
-        [FoldoutGroup("Parry Configs")] [SerializeField]
-        private float knockBackDistance;
+        [FoldoutGroup("Parry Configs")] [SerializeField] [Unit(Units.Percent)]
+        private float cooldownReduceOnPerfectParry;
 
         [FoldoutGroup("Parry Configs")] [SerializeField]
-        private float knockBackDuration;
+        private ParrySuccessData normalParrySuccess;
 
         [FoldoutGroup("Parry Configs")] [SerializeField]
-        private float healOnSuccess;
+        private ParrySuccessData perfectParrySuccess;
 
         [FoldoutGroup("Feedback")] 
         [ValueDropdown("@FeedbackName.Odin.ShortGroupWithNone(\"Skill\")")] 
@@ -62,8 +63,21 @@ namespace Characters.SO.SkillDataSo
             string.IsNullOrEmpty(parrySuccessFeedback) ? null : FeedbackName.ResolveFullKey("Skill", parrySuccessFeedback);
         public List<StatusEffectDataPayload> SelfEffectsOnParrySuccess => selfEffectsOnParrySuccess;
         public List<StatusEffectDataPayload> ExplosionEffectsToTarget => explosionEffectsToTarget;
-        public float KnockBackDistance => knockBackDistance;
-        public float KnockBackDuration => knockBackDuration;
-        public float HealOnSuccess => healOnSuccess;
+
+        public ParrySuccessData NormalParrySuccess => normalParrySuccess;
+        public ParrySuccessData PerfectParrySuccess => perfectParrySuccess;
+
+        [Serializable]
+        public struct ParrySuccessData
+        {
+            [SerializeField]
+            public float knockBackDistance;
+
+            [SerializeField]
+            public float knockBackDuration;
+
+            [SerializeField]
+            public float healOnSuccess;
+        }
     }
 }

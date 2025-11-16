@@ -92,6 +92,18 @@ namespace Characters.SkillSystems.SkillRuntimes
 
         private void OnParrySuccess(bool isPerfect)
         {
+            float healAmount = isPerfect
+                ? skillData.PerfectParrySuccess.healOnSuccess
+                : skillData.NormalParrySuccess.healOnSuccess;
+
+            float knockBackDistance = isPerfect
+                ? skillData.PerfectParrySuccess.knockBackDistance
+                : skillData.NormalParrySuccess.knockBackDistance;
+
+            float knockBackDuration = isPerfect
+                ? skillData.PerfectParrySuccess.knockBackDuration
+                : skillData.NormalParrySuccess.knockBackDuration;
+            
             OnTriggerAutoSkill?.Invoke();
 
             owner.TryPlayFeedback(skillData.ParrySuccessFeedback);
@@ -105,7 +117,7 @@ namespace Characters.SkillSystems.SkillRuntimes
 
             // เอฟเฟกต์ใส่ตัวเองตอน parry สำเร็จ
             StatusEffectManager.ApplyEffectTo(gameObject, skillData.SelfEffectsOnParrySuccess);
-            owner.HealthSystem.Heal(skillData.HealOnSuccess);
+            owner.HealthSystem.Heal(healAmount);
 
             // ระเบิดศัตรูรอบ ๆ + knockback + ดาเมจ
             foreach (var target in targetsInRange)
@@ -115,10 +127,10 @@ namespace Characters.SkillSystems.SkillRuntimes
                 Vector2 knockBackDirection = target.transform.position - owner.transform.position;
                 Vector2 knockBackDestination =
                     (Vector2)target.transform.position +
-                    knockBackDirection.normalized * skillData.KnockBackDistance;
+                    knockBackDirection.normalized * knockBackDistance;
 
                 target.GetComponent<BaseMovementSystem>()
-                    .TryMoveToPositionOverTime(knockBackDestination, skillData.KnockBackDuration);
+                    .TryMoveToPositionOverTime(knockBackDestination, knockBackDuration);
 
                 CombatManager.ApplyCalculatedDamageTo(
                     target.gameObject,
