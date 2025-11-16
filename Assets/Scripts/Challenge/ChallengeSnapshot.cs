@@ -23,6 +23,9 @@ namespace Challenge
 
             public float GetAdd(PlayerAdditiveStat stat) =>
                 AdditivePercent != null && AdditivePercent.TryGetValue(stat, out var v) ? v : 0f;
+            
+            public float GetSet(PlayerSetStat stat, float defaultValue = 0f) =>
+                SetOverrides != null && SetOverrides.TryGetValue(stat, out var v) ? v : defaultValue;
 
             public bool TryGetSet(PlayerSetStat stat, out float value)
             {

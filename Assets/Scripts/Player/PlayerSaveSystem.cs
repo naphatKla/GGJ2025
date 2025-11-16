@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
+using PermanentUpgrade;
 using ProjectExtensions;
 using UnityEngine;
 
@@ -73,6 +74,7 @@ namespace Player
                 rainBowAnergy = 0,
                 HighestScore = 0,
                 LastScore = 0,
+                PermanentUpgrades = new Dictionary<PermanentUpgradeType, int>(),
                 UnlockedMaps = new HashSet<string>(),
                 UnlockedChallenges = new HashSet<string>(),
                 MapStats = new Dictionary<string, MapStat>()

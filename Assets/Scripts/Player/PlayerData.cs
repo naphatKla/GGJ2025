@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using PermanentUpgrade;
 
 namespace Player
 {
@@ -19,6 +20,10 @@ namespace Player
         // Global
         public int HighestScore;
         public int LastScore;
+        
+        // Permanent Upgrade
+        public Dictionary<PermanentUpgradeType, int> PermanentUpgrades =
+            new Dictionary<PermanentUpgradeType, int>();
 
         // Progression
         public HashSet<string> UnlockedMaps = new HashSet<string>();
@@ -36,6 +41,7 @@ namespace Player
             UnlockedChallenges ??= new HashSet<string>();
             MapStats ??= new Dictionary<string, MapStat>();
             SelectedChallenges ??= new HashSet<string>();
+            PermanentUpgrades ??= new Dictionary<PermanentUpgradeType, int>();
 
             const int CURRENT = 2;
             if (SchemaVersion < 1)

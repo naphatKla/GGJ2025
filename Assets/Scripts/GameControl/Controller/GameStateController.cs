@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using System.Threading;
 using Challenge;
 using Characters.Controllers;
+using Characters.SO.CharacterDataSO;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using GameControl.GameState;
 using GameControl.Interface;
 using GameControl.SO;
 using MoreMountains.Tools;
+using PermanentUpgrade;
+using Player;
 using UnityEngine;
 using Sirenix.OdinInspector;
 using UI.MapSelection;
@@ -135,7 +138,7 @@ namespace GameControl.Controller
             if (_currentMapDataRuntime != null) Destroy(_currentMapDataRuntime);
             //Normal
             var copyMapData = MakeRuntimeCopy(asset);
-            ModifyAllDataFromChallenge(copyMapData);
+            ModifyAllDataBeforeStart(copyMapData);
             
             //Rush
             var copyRushData = MakeRushStateCopy(copyMapData.rushData);
@@ -153,19 +156,38 @@ namespace GameControl.Controller
             }
         }
 
-        private void ModifyAllDataFromChallenge(MapDataSO mapData)
+        private void ModifyAllDataBeforeStart(MapDataSO mapData)
         {
             if (mapData == null || mapData.EnemyOptions == null || Sender == null) return;
             var snap = Sender.challengeData;
             
             //Player Modify
+            var playerDataSo = mapData.playerData.CopyInstance(); // Create Player DataSO
             var player = PlayerController.Instance;
+            var profileData = ActiveProfileService.Instance?.Current;
+            var permanentConfig = ActiveProfileService.Instance?.PermanentConfig;
+            //Modify Permanent Upgrade
+            playerDataSo.SetPlayerStats(PlayerDataStats.MaxHealth
+                , profileData.ApplyPermanentUpgrade(PermanentUpgradeType.MaxHealth, permanentConfig, playerDataSo.MaxHealth));
+            
+            //Modify Challenge
             
             //Exp
             float expMultiplyer = 1f + snap.Player.GetAdd(PlayerAdditiveStat.ExpGain) / 100f;
             player.LevelSystem.AddExpMultiplyer(expMultiplyer - 1);
-            var modifyPlayerStats = mapData.playerData.CopyInstance(snap.Player);
-            player.AssignCharacterData(modifyPlayerStats);
+            //Stats
+            
+            //Set
+            playerDataSo.SetPlayerStats(PlayerDataStats.Damage, snap.Player.GetSet(PlayerSetStat.BaseDamage, playerDataSo.BaseDamage));
+            playerDataSo.SetPlayerStats(PlayerDataStats.Speed, snap.Player.GetSet(PlayerSetStat.MoveSpeed, playerDataSo.BaseSpeed));
+            playerDataSo.SetPlayerStats(PlayerDataStats.MaxHealth, snap.Player.GetSet(PlayerSetStat.MaxHP, playerDataSo.MaxHealth));
+
+            //Additive
+            playerDataSo.MutiplyPlayerStats(PlayerDataStats.Damage, 1f + snap.Player.GetAdd(PlayerAdditiveStat.BaseDamage) / 100f);
+            playerDataSo.MutiplyPlayerStats(PlayerDataStats.Speed, 1f + snap.Player.GetAdd(PlayerAdditiveStat.MoveSpeed) / 100f);
+            playerDataSo.MutiplyPlayerStats(PlayerDataStats.MaxHealth, 1f + snap.Player.GetAdd(PlayerAdditiveStat.MaxHP) / 100f);
+            
+            player.AssignCharacterData(playerDataSo); //Assign Player DataSO
             
             //Score Modify
             var scoreMultiplyer = snap.OverallScoreMultiplier;

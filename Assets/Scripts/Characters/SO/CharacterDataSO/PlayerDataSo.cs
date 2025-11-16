@@ -10,6 +10,20 @@ using UnityEngine;
 
 namespace Characters.SO.CharacterDataSO
 {
+    public enum PlayerDataStats
+    {
+        MaxHealth,
+        Speed,
+        Damage,
+        CritRate,
+        CritDamage,
+        LifeStealChance,
+        LifeStealEffective,
+        ExpMultiply,
+        PickupRadius,
+        HurtIFrame,
+    }
+    
     [CreateAssetMenu(fileName = "PlayerData", menuName = "GameData/CharacterData/PlayerData")]
     public class PlayerDataSo : BaseCharacterDataSo
     {
@@ -127,21 +141,59 @@ namespace Characters.SO.CharacterDataSO
             return first.rankPointThreshold == 0 && Mathf.Approximately(first.scoreMultiplier, 1f);
         }
         
-        public PlayerDataSo CopyInstance(PlayerSnapshot snap)
+        public PlayerDataSo CopyInstance()
         {
             PlayerDataSo newDat = Instantiate(this);
             newDat.hideFlags = HideFlags.DontSave;
-            // 1) SET
-            if (snap.TryGetSet(PlayerSetStat.MaxHP, out var setHp))        newDat.maxHealth = setHp;
-            if (snap.TryGetSet(PlayerSetStat.BaseDamage, out var setDmg))  newDat.baseDamage = setDmg;
-            if (snap.TryGetSet(PlayerSetStat.MoveSpeed, out var setMspd))  newDat.baseSpeed = setMspd;
-
-            // 2) Additive(%)
-            newDat.maxHealth  *= 1f + snap.GetAdd(PlayerAdditiveStat.MaxHP) / 100f;
-            newDat.baseDamage *= 1f + snap.GetAdd(PlayerAdditiveStat.BaseDamage) / 100f;
-            newDat.baseSpeed  *= 1f + snap.GetAdd(PlayerAdditiveStat.MoveSpeed) / 100f;
-
             return newDat;
+        }
+
+        public void AddPlayerStats(PlayerDataStats stats, float value)
+        {
+            switch (stats)
+            {
+                case PlayerDataStats.MaxHealth:
+                    maxHealth += value;
+                    break;
+                case PlayerDataStats.Damage:
+                    baseDamage += value;
+                    break;
+                case PlayerDataStats.Speed:
+                    baseSpeed += value;
+                    break;
+            }
+        }
+        
+        public void MutiplyPlayerStats(PlayerDataStats stats, float value)
+        {
+            switch (stats)
+            {
+                case PlayerDataStats.MaxHealth:
+                    maxHealth *= value;
+                    break;
+                case PlayerDataStats.Damage:
+                    baseDamage *= value;
+                    break;
+                case PlayerDataStats.Speed:
+                    baseSpeed *= value;
+                    break;
+            }
+        }
+        
+        public void SetPlayerStats(PlayerDataStats stats, float value)
+        {
+            switch (stats)
+            {
+                case PlayerDataStats.MaxHealth:
+                    maxHealth = value;
+                    break;
+                case PlayerDataStats.Damage:
+                    baseDamage = value;
+                    break;
+                case PlayerDataStats.Speed:
+                    baseSpeed = value;
+                    break;
+            }
         }
     }
 
