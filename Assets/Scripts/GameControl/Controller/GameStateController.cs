@@ -198,7 +198,6 @@ namespace GameControl.Controller
             float dmg     = eSnap.Get(EnemyStat.Damage);
             float mspd    = eSnap.Get(EnemyStat.MoveSpeed);
             float chanceP = eSnap.Get(EnemyStat.SpawnChance);
-
             if (float.IsFinite(chanceP))
             {
                 var newGrowthChance = opt.enemyChanceGrowthRate * (1f + (chanceP / 100f));
