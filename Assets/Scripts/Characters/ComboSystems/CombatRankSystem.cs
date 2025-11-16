@@ -190,13 +190,13 @@ namespace Characters.ComboSystems
 
             int calculatedPoint = Mathf.CeilToInt(damageNegate * calculateMultiplier);
             
-            Debug.Log(calculatedPoint);
             AddRankPoints(calculatedPoint);
         }
 
-        public void OnCounterDashCondition()
+        public void OnCounterDashCondition(int damageNegate)
         {
-            
+            int calculatedPoint = Mathf.CeilToInt(damageNegate * (_ownerData.CounterDashConditionData.counterDashPercentage/100));
+            AddRankPoints(calculatedPoint);
         }
 
         public void OnHealCondition(int healAmount)

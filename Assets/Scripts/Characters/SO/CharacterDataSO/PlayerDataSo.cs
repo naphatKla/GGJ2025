@@ -7,6 +7,7 @@ using Characters.SO.SkillDataSo;
 using Characters.StatusEffectSystems;
 using Sirenix.OdinInspector;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Characters.SO.CharacterDataSO
 {
@@ -231,11 +232,8 @@ namespace Characters.SO.CharacterDataSO
     [Serializable]
     public record CombatRankCounterDashConditionData
     {
-        [Unit(Units.Percent)] [Tooltip("gain rank point when perfect counter dash =  % amount of damage negate")]
-        public float perfectCounterDashPercentage;
-
-        [Unit(Units.Percent)] [Tooltip("gain rank point when normal counter dash =  % amount of damage negate")]
-        public float normalCounterDashPercentage;
+        [FormerlySerializedAs("normalCounterDashPercentage")] [Unit(Units.Percent)] [Tooltip("gain rank point when normal counter dash =  % amount of damage negate")]
+        public float counterDashPercentage;
     }
 
     [Serializable]

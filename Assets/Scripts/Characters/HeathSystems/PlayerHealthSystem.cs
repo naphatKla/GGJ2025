@@ -26,7 +26,7 @@ namespace Characters.HeathSystems
                 owner.DamageOnTouch.IsEnableDamage &&
                 hitInfo.attacker.DamageOnTouch.IsEnableDamage)
             {
-                playerCombat.OnCounterAttackHandler();
+                playerCombat.OnCounterAttackHandler(hitInfo);
                 return false;
             }
 
