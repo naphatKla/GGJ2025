@@ -78,6 +78,10 @@ namespace Characters.Controllers
 
         protected override void SubscribeDependency()
         {
+            // counter dash
+            PlayerCombatSystem playerCombatSystem = combatSystem as PlayerCombatSystem;
+            DamageOnTouch.OnHitWithDamageOnTouch += playerCombatSystem.OnCounterAttackHandler;
+            
             // add score on enemy kill
             combatSystem.OnKill += scoreSystem.OnKill;
             combatRankSystem.OnRankChanged += scoreSystem.OnRankModify;
@@ -102,6 +106,10 @@ namespace Characters.Controllers
 
         protected override void UnSubscribeDependency()
         {
+            // counter dash
+            PlayerCombatSystem playerCombatSystem = combatSystem as PlayerCombatSystem;
+            DamageOnTouch.OnHitWithDamageOnTouch -= playerCombatSystem.OnCounterAttackHandler;
+            
             // add score on enemy kill
             combatSystem.OnKill -= scoreSystem.OnKill;
             combatRankSystem.OnRankChanged -= scoreSystem.OnRankModify;

@@ -1,8 +1,7 @@
-using System;
 using Characters.Controllers;
 using Characters.FeedbackSystems;
 using Characters.HeathSystems;
-using UnityEngine;
+
 
 namespace Characters.CombatSystems
 {
@@ -10,11 +9,13 @@ namespace Characters.CombatSystems
     {
         public int TotalCounterDashCount { get; private set; }
         
-        public void OnCounterAttackHandler(HealthSystem.HitInfo hitInfo)
+        public void OnCounterAttackHandler(int damageNegate)
         {
             owner.TryPlayFeedback(FeedbackName.Character.CounterAttack);
             PlayerController player = owner as PlayerController;
-            player.CombatRankSystem.OnCounterDashCondition(Mathf.CeilToInt(hitInfo.damage));
+            PlayerHealthSystem playerHealthSystem = player.HealthSystem as PlayerHealthSystem;
+            player.CombatRankSystem.OnCounterDashCondition(damageNegate);
+            playerHealthSystem.OnCounterDash();
             TotalCounterDashCount++;
         }
     }
