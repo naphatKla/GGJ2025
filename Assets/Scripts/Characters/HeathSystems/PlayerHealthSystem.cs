@@ -1,7 +1,7 @@
 using Characters.CombatSystems;
 using Characters.Controllers;
 using Characters.FeedbackSystems;
-using UnityEngine;
+using Sirenix.OdinInspector;
 
 namespace Characters.HeathSystems
 {
@@ -9,29 +9,36 @@ namespace Characters.HeathSystems
     {
         private PlayerFeedbackSystem playerFeedback;
         private PlayerCombatSystem playerCombat;
-        
+
         public override void AssignHealthData(float maxHealth, float invincibleTimePerHit, BaseController owner = null)
         {
             base.AssignHealthData(maxHealth, invincibleTimePerHit, owner);
+
             playerFeedback = owner.FeedbackSystem as PlayerFeedbackSystem;
-            playerCombat = owner.CombatSystem as PlayerCombatSystem;
+            playerCombat   = owner.CombatSystem   as PlayerCombatSystem;
         }
 
-        public override bool TakeDamage(float damage, BaseController attacker, GameObject realObjectAttack)
+        [Button]
+        public override bool TakeDamage(HitInfo hitInfo)
         {
-            if (attacker && owner.DamageOnTouch.IsEnableDamage && attacker.DamageOnTouch.IsEnableDamage)
+            // logic counter dash เดิม
+            if (hitInfo.attacker &&
+                owner.DamageOnTouch.IsEnableDamage &&
+                hitInfo.attacker.DamageOnTouch.IsEnableDamage)
             {
                 playerCombat.OnCounterAttackHandler();
                 return false;
             }
-                
-            return base.TakeDamage(damage, attacker, realObjectAttack);
+
+            // ที่เหลือให้ base จัดการ (buffer attempt + pending + commit)
+            return base.TakeDamage(hitInfo);
         }
 
-        protected override void TakeDamageAction(float damage, BaseController attacker, GameObject realObjectAttack)
+        protected override void TakeDamageAction(HitInfo hitInfo)
         {
-            base.TakeDamageAction(damage, attacker, realObjectAttack);
-            playerFeedback.OpenFocusBlackDropOnHit(0.4f, realObjectAttack);
+            // ทำตอนเลือดลดจริงแล้ว (หลังผ่าน BeforeHitDelay)
+            base.TakeDamageAction(hitInfo);
+            playerFeedback?.OpenFocusBlackDropOnHit(0.4f, hitInfo.realObjectAttack);
         }
     }
 }

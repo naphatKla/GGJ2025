@@ -13,7 +13,7 @@ namespace Characters.HeathSystems
     /// <summary>
     /// Handles the health system of a character, including taking damage, healing,
     /// invincibility status, hit cooldown, and death state.
-    /// Prevents taking damage during temporary invincibility or hit cooldown period.
+    /// Provides hit attempt & pending hit buffers for coyote-time style mechanics.
     /// </summary>
     public class HealthSystem : MonoBehaviour
     {
@@ -21,7 +21,13 @@ namespace Characters.HeathSystems
 
         [SerializeField] private bool blockTakeDamageFeedbackOnFinalHit;
         [SerializeField] private bool changeColorOnIframe;
-        
+
+        /// <summary>
+        /// Delay (in seconds) before a valid hit actually commits damage.
+        /// If set to 0 or less, it will still buffer at least 1 frame.
+        /// </summary>
+        [SerializeField] private float beforeHitDelay = 0f;
+
         protected BaseController owner;
 
         /// <summary>The maximum health the character can have.</summary>
@@ -51,11 +57,18 @@ namespace Characters.HeathSystems
 
         public bool IsDead => _isDead;
 
-        /// <summary>Event triggered when the character takes damage.</summary>
+        /// <summary>Event triggered when the character takes damage (committed).</summary>
         public Action OnTakeDamage { get; set; }
 
-        public event Action<int> OnHit; // damage
-        
+        /// <summary>Called when damage is actually applied (after delay / pending).</summary>
+        public event Action<HitInfo> OnHit;
+
+        /// <summary>Called whenever TakeDamage is requested, regardless of iframe/cooldown/dead.</summary>
+        public event Action<HitInfo> OnHitAttempt;
+
+        /// <summary>Called when a valid pending hit starts buffering before committing.</summary>
+        public event Action<HitInfo> OnBeforeHit;
+
         /// <summary>Event triggered when the character heals.</summary>
         public Action<int> OnHeal { get; set; }
 
@@ -83,9 +96,37 @@ namespace Characters.HeathSystems
         public float CurrentHealth => _currentHealth;
         public float MaxHealth => _maxHealth;
 
+        /// <summary>Delay before a valid hit is committed. 0 = at least 1 frame buffer.</summary>
+        public float BeforeHitDelay
+        {
+            get => beforeHitDelay;
+            set => beforeHitDelay = Mathf.Max(0f, value);
+        }
+
+        public struct HitInfo
+        {
+            public float damage;
+            public BaseController attacker;
+            public GameObject realObjectAttack;
+        }
+
         #endregion
 
-        #region Methods
+        #region Buffers & CTS
+
+        /// <summary>ล่าสุดที่ถูก "พยายามตี" ไม่สน iframe/cooldown (อยู่อย่างน้อย 1 frame)</summary>
+        private HitInfo? _lastHitAttempt;
+
+        private CancellationTokenSource _hitAttemptCts;
+
+        /// <summary>hit ที่ผ่าน iframe/cooldown แล้ว และกำลังรอ commit จริง</summary>
+        private HitInfo? _pendingHit;
+
+        private CancellationTokenSource _pendingHitCts;
+
+        #endregion
+
+        #region Public API
 
         /// <summary>
         /// Assigns the health data for the character.
@@ -102,39 +143,62 @@ namespace Characters.HeathSystems
         }
 
         /// <summary>
-        /// Reduces the character's health by the given damage amount.
-        /// Prevents damage if the character is invincible, in cooldown, or already dead.
+        /// Core damage entry point.
+        /// - Always records a hit attempt (HitAttempt buffer + OnHitAttempt).
+        /// - Only creates a pending hit (BeforeHit buffer) if not dead, not iframe, not in hit cooldown.
+        /// - Actual damage is committed later via BeforeHitDelay.
+        /// Returns true if this hit was accepted as a valid pending hit.
         /// </summary>
-        public virtual bool TakeDamage(float damage, BaseController attacker, GameObject realObjectAttack)
+        public virtual bool TakeDamage(HitInfo hitInfo)
         {
+            // 1) Dead guard
             if (_isDead) return false;
-            OnHit?.Invoke((int)damage);
-            
-            if (_isInvincible || _isHitCooldown)  return false;
-            
-            TakeDamageAction(damage, attacker, realObjectAttack);
-            HitCooldownHandler().Forget();
 
-            if (_currentHealth <= 0)
-            {
-                Dead();
-                attacker?.CombatSystem.OnKillHandler(owner);
-                if (blockTakeDamageFeedbackOnFinalHit) return true;
-            }
-            
-            if (Cinemachine2DCameraController.Instance != null &&
-                Cinemachine2DCameraController.Instance.IsTransformInView(transform))
-            {
-                owner?.TryPlayFeedback(FeedbackName.Character.TakeDamage);
-            }
+            // 2) Record attempt (even during iframe/cooldown/dead)
+            BufferHitAttempt(hitInfo);
 
+            // 3) If iframe or hit cooldown → don't create pending hit
+            if (_isInvincible || _isHitCooldown) return false;
+
+            // 4) Create/overwrite pending hit; will commit after delay
+            BufferPendingHit(hitInfo);
             return true;
         }
 
-        protected virtual void TakeDamageAction(float damage, BaseController attacker, GameObject realObjectAttack)
+        /// <summary>
+        /// Consume the last hit attempt (ไม่สน iframe/cooldown).
+        /// ใช้สำหรับสกิลที่อยากรู้ว่า เมื่อกี้มี hit อะไรเพิ่งชนเรา
+        /// </summary>
+        public bool ConsumeHitAttempt(Action<HitInfo> onConsumed = null)
         {
-            ModifyHealth(-damage);
-            TotalDamageTaken += (int)damage;
+            if (!_lastHitAttempt.HasValue) return false;
+
+            var info = _lastHitAttempt.Value;
+            _lastHitAttempt = default;
+            CancelAndDispose(ref _hitAttemptCts);
+            onConsumed?.Invoke(info);
+            return true;
+        }
+
+        /// <summary>
+        /// Consume the current pending hit (ที่จะโดน commit จริง)
+        /// ใช้สำหรับ parry / shield ที่ต้องการ cancel ดาเมจนี้ออกไป
+        /// </summary>
+        public bool ConsumePendingHit(Action<HitInfo> onConsumed = null)
+        {
+            if (!_pendingHit.HasValue) return false;
+
+            var info = _pendingHit.Value;
+            _pendingHit = default;
+            CancelAndDispose(ref _pendingHitCts);
+            onConsumed?.Invoke(info);
+            return true;
+        }
+
+        protected virtual void TakeDamageAction(HitInfo hitInfo)
+        {
+            ModifyHealth(-hitInfo.damage);
+            TotalDamageTaken += (int)hitInfo.damage;
             OnTakeDamage?.Invoke();
         }
 
@@ -143,7 +207,7 @@ namespace Characters.HeathSystems
             Dead();
             ModifyHealth(-_maxHealth);
             if (blockTakeDamageFeedbackOnFinalHit) return;
-            
+
             if (Cinemachine2DCameraController.Instance != null &&
                 Cinemachine2DCameraController.Instance.IsTransformInView(transform))
             {
@@ -161,37 +225,41 @@ namespace Characters.HeathSystems
             owner?.TryPlayFeedback(FeedbackName.Character.Heal);
         }
 
-        private Tween colorTween;
-        private Color? startColor;
-
         /// <summary>Sets the character's invincibility state.</summary>
         public void SetInvincible(bool value)
         {
             _isInvincible = value;
             OnInvincible?.Invoke(_isInvincible);
 
+            // ถ้าเพิ่งเปิด iframe → ยกเลิกดาเมจที่กำลังรอคิวอยู่
+            if (value)
+            {
+                ConsumePendingHit();
+                // ไม่จำเป็นต้องยุ่งกับ HitAttempt; มันมีไว้ให้สกิลมาอ่านเอง
+            }
+
             // ป้องกัน NRE หาก owner หรือ Body ไม่มี
             if (owner?.Body == null) return;
 
             if (changeColorOnIframe)
             {
-                startColor ??= owner.Body.color;
+                _startColor ??= owner.Body.color;
 
-                colorTween?.Kill();
-                var target = value ? Color.cyan : startColor.Value;
+                _colorTween?.Kill();
+                var target = value ? Color.cyan : _startColor.Value;
 
-                colorTween = owner.Body
+                _colorTween = owner.Body
                     .DOColor(target, 0.05f)
-                    .SetLink(owner.Body.gameObject, LinkBehaviour.KillOnDestroy); // ผูก lifecycle
+                    .SetLink(owner.Body.gameObject, LinkBehaviour.KillOnDestroy);
             }
-            
+
             if (value) owner?.TryPlayFeedback(FeedbackName.Character.Iframe);
             else owner?.TryStopFeedback(FeedbackName.Character.Iframe);
         }
 
         /// <summary>
         /// Resets the character's health to maximum and revives them if they were dead.
-        /// Also clears invincibility and hit cooldown states.
+        /// Also clears invincibility and hit cooldown states and pending/attempt hits.
         /// </summary>
         public void ResetHealthSystem()
         {
@@ -200,10 +268,15 @@ namespace Characters.HeathSystems
             _isHitCooldown = false;
             _isDead = false;
 
-            // ยกเลิกงานรอ-dead ค้างทั้งหมด
+            // ยกเลิกงานรอ-dead / pending / attempt ค้างทั้งหมด
             CancelAndDispose(ref _linkedDeadCts);
             CancelAndDispose(ref _deadCts);
-            
+            CancelAndDispose(ref _pendingHitCts);
+            CancelAndDispose(ref _hitAttemptCts);
+
+            _pendingHit = null;
+            _lastHitAttempt = null;
+
             PlaySpawnFeedbackSync().Forget();
         }
 
@@ -221,6 +294,110 @@ namespace Characters.HeathSystems
             }
 
             if (this) _isHitCooldown = false;
+        }
+
+        #endregion
+
+        #region Internals
+
+        private Tween _colorTween;
+        private Color? _startColor;
+
+        private void BufferHitAttempt(HitInfo hitInfo)
+        {
+            _lastHitAttempt = hitInfo;
+            OnHitAttempt?.Invoke(hitInfo);
+
+            // อายุเท่ากับ PendingHit: ใช้ beforeHitDelay เดียวกัน
+            CancelAndDispose(ref _hitAttemptCts);
+            _hitAttemptCts = CancellationTokenSource.CreateLinkedTokenSource(destroyCancellationToken);
+            ExpireHitAttempt(_hitAttemptCts.Token).Forget();
+        }
+
+        private async UniTaskVoid ExpireHitAttempt(CancellationToken token)
+        {
+            try
+            {
+                if (beforeHitDelay > 0f)
+                {
+                    await UniTask.Delay(TimeSpan.FromSeconds(beforeHitDelay), cancellationToken: token);
+                }
+                else
+                {
+                    // อย่างน้อย 1 frame เหมือนเดิม ถ้า delay = 0
+                    await UniTask.NextFrame(token);
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                // ถูก cancel จาก ConsumeHitAttempt / Reset / Destroy
+                return;
+            }
+
+            _lastHitAttempt = null;
+            CancelAndDispose(ref _hitAttemptCts);
+        }
+
+        private void BufferPendingHit(HitInfo hitInfo)
+        {
+            // เคลียร์ของเก่า
+            CancelAndDispose(ref _pendingHitCts);
+
+            _pendingHit = hitInfo;
+            _pendingHitCts = CancellationTokenSource.CreateLinkedTokenSource(destroyCancellationToken);
+
+            OnBeforeHit?.Invoke(hitInfo);
+
+            ResolvePendingHit(hitInfo, _pendingHitCts.Token).Forget();
+        }
+
+        private async UniTaskVoid ResolvePendingHit(HitInfo info, CancellationToken token)
+        {
+            try
+            {
+                if (beforeHitDelay > 0f)
+                    await UniTask.Delay(TimeSpan.FromSeconds(beforeHitDelay), cancellationToken: token);
+                else
+                    // อย่างน้อย 1 frame
+                    await UniTask.NextFrame(token);
+            }
+            catch (OperationCanceledException)
+            {
+                // ถูก cancel จาก ConsumePendingHit / Destroy / Reset
+                return;
+            }
+
+            // ยังเป็น hit เดิมอยู่ไหม
+            if (!_pendingHit.HasValue || !_pendingHit.Value.Equals(info))
+                return;
+
+            _pendingHit = null;
+            CancelAndDispose(ref _pendingHitCts);
+
+            // ตรงนี้ค่อย commit ดาเมจจริง
+            ApplyDamageNow(info);
+        }
+
+        private void ApplyDamageNow(HitInfo hitInfo)
+        {
+            TakeDamageAction(hitInfo);
+            HitCooldownHandler().Forget();
+
+            if (_currentHealth <= 0)
+            {
+                Dead();
+                hitInfo.attacker?.CombatSystem.OnKillHandler(owner);
+                if (blockTakeDamageFeedbackOnFinalHit) return;
+            }
+
+            if (Cinemachine2DCameraController.Instance != null &&
+                Cinemachine2DCameraController.Instance.IsTransformInView(transform))
+            {
+                owner?.TryPlayFeedback(FeedbackName.Character.TakeDamage);
+            }
+
+            // ตอนนี้ค่อยถือว่า "โดนดาเมจจริง" แล้ว
+            OnHit?.Invoke(hitInfo);
         }
 
         /// <summary>Modifies the character's health by a given value.</summary>
@@ -243,7 +420,7 @@ namespace Characters.HeathSystems
             _linkedDeadCts = CancellationTokenSource.CreateLinkedTokenSource(_deadCts.Token, destroyCancellationToken);
 
             WaitDeadAnim(_linkedDeadCts.Token).Forget();
-            
+
             _isDead = true;
             OnDead?.Invoke();
         }
@@ -258,21 +435,17 @@ namespace Characters.HeathSystems
             {
                 owner?.TryPlayFeedback(FeedbackName.Character.Dead);
             }
-            
+
             try
             {
                 if (owner != null && owner.FeedbackSystem != null)
                 {
                     // รอจนกว่าจะหยุดเล่นอนิเมชันตาย หรือโดนยกเลิก
                     await UniTask.WaitUntil(
-                        () => !owner.FeedbackSystem.IsFeedbackPlaying(FeedbackName.Character.Dead) || !gameObject.activeSelf,
+                        () => !owner.FeedbackSystem.IsFeedbackPlaying(FeedbackName.Character.Dead) ||
+                              !gameObject.activeSelf,
                         cancellationToken: token
                     );
-                    // หรือจะกัน soft-lock:
-                    // await UniTask.WhenAny(
-                    //     UniTask.WaitUntil(() => !owner.FeedbackSystem.IsFeedbackPlaying(FeedbackName.Character.Dead), token),
-                    //     UniTask.Delay(TimeSpan.FromSeconds(2.0), cancellationToken: token)
-                    // );
                 }
             }
             catch (OperationCanceledException)
@@ -280,19 +453,20 @@ namespace Characters.HeathSystems
                 // ถูกยกเลิกจาก Reset/Destroy → ออกเฉย ๆ
                 return;
             }
-            
+
             OnDeadAnimationFinish?.Invoke();
             if (this && gameObject) gameObject.SetActive(false);
         }
 
         private async UniTaskVoid PlaySpawnFeedbackSync()
         {
-            await UniTask.WaitUntil(() => gameObject.activeSelf).TimeoutWithoutException(TimeSpan.FromSeconds(3f));
+            await UniTask.WaitUntil(() => gameObject.activeSelf)
+                .TimeoutWithoutException(TimeSpan.FromSeconds(3f));
             owner?.TryPlayFeedback(FeedbackName.Character.Spawn);
-            
         }
+
         // -------- CTS utilities & cleanup --------
-        private static void CancelAndDispose(ref CancellationTokenSource cts)
+        protected static void CancelAndDispose(ref CancellationTokenSource cts)
         {
             if (cts == null) return;
             try
@@ -312,8 +486,10 @@ namespace Characters.HeathSystems
         {
             CancelAndDispose(ref _linkedDeadCts);
             CancelAndDispose(ref _deadCts);
+            CancelAndDispose(ref _pendingHitCts);
+            CancelAndDispose(ref _hitAttemptCts);
 
-            colorTween?.Kill();
+            _colorTween?.Kill();
         }
 
         #endregion

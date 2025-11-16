@@ -78,6 +78,7 @@ namespace Characters.CombatSystems
             InternalEnableDamage(owner, caller, hitPerSec, baseSkillDamage, damageMultiplier, additionalCriRate, additionalCriDmg, lifeStealPercent, lifeStealEffective);
         }
 
+        [Button]
         public void EnableDamage(
             GameObject owner,
             object caller,

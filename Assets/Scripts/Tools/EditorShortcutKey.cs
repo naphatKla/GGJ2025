@@ -1,9 +1,11 @@
 #if UNITY_EDITOR
 using System.Collections.Generic;
 using Characters.Controllers;
+using Characters.HeathSystems;
 using Characters.LevelSystems;
 using Characters.SkillSystems;
 using GameControl;
+using Manager;
 using Sirenix.OdinInspector;
 using TMPro;
 using UnityEngine;
@@ -72,7 +74,7 @@ namespace Tools
                 }
                 case EditorAction.ForceDie:
                 {
-                    PlayerController.Instance.HealthSystem.TakeDamage(PlayerController.Instance.HealthSystem.MaxHealth, null, null);
+                    CombatManager.ApplyRawDamageTo(PlayerController.Instance.gameObject, null, PlayerController.Instance.HealthSystem.MaxHealth);
                     break;
                 }
                 case EditorAction.ReduceTime10Sec:

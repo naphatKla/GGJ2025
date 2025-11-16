@@ -63,7 +63,14 @@ namespace Manager
                 baseSkillDamage, multiplier, additionalCriRate, additionCriDamge, lifeStealPercent, lifeStealEffective);
             
             // Apply Damage To Target ==========================================
-            if (!targetController.HealthSystem.TakeDamage(damageData.Damage, attackerController, realObjectAttack)) return;
+            var hitInfo = new HealthSystem.HitInfo
+            {
+                damage           = damageData.Damage,
+                attacker         = attackerController,
+                realObjectAttack = realObjectAttack
+            };
+            
+            if (!targetController.HealthSystem.TakeDamage(hitInfo)) return;
             attackerController.CombatSystem.OnDealDamageHandler(damageData);
 
             if (damageData.LifeSteal > 0)
@@ -76,7 +83,15 @@ namespace Manager
                 _characterCaches.Add(target, target.GetComponent<BaseController>());
 
             var targetController = _characterCaches[target];
-            targetController.HealthSystem.TakeDamage(damage, null, objectAttacker);
+            
+            var hitInfo = new HealthSystem.HitInfo
+            {
+                damage           = damage,
+                attacker         = null,
+                realObjectAttack = objectAttacker
+            };
+            
+            targetController.HealthSystem.TakeDamage(hitInfo);
         }
 
         public static void ClearCache()
