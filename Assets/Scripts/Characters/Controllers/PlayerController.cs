@@ -8,6 +8,7 @@ using Characters.LevelSystems;
 using Characters.ScoreSystems;
 using Characters.SkillSystems;
 using Characters.SO.CharacterDataSO;
+using Characters.UIDisplay;
 using UI;
 using UnityEngine;
 
@@ -27,11 +28,13 @@ namespace Characters.Controllers
         [SerializeField] protected LevelSystem levelSystem;
         [SerializeField] protected SkillUpgradeController skillUpgradeController;
         [SerializeField] protected ScoreSystem scoreSystem;
+        [SerializeField] protected PlayerDisplay playerDisplay;
         
         public CollectItemSystem CollectItemSystem => collectItemSystem;
+        public CombatRankSystem CombatRankSystem => combatRankSystem;
         public LevelSystem LevelSystem => levelSystem;
         public ScoreSystem ScoreSystem => scoreSystem;
-        public CombatRankSystem CombatRankSystem => combatRankSystem;
+        public PlayerDisplay PlayerDisplay => playerDisplay;
 
         /// <summary>
         /// A global static reference to the current player instance.

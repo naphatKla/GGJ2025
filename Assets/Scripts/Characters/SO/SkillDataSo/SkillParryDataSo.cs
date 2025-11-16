@@ -28,6 +28,10 @@ namespace Characters.SO.SkillDataSo
         [FoldoutGroup("Parry Configs")] [SerializeField]
         private float parryDuration;
         
+        [Tooltip("If parry success with in this % parry duration, determine that's a perfect parry")]
+        [FoldoutGroup("Parry Configs")] [SerializeField] [Unit(Units.Percent)]
+        private float perfectParryDurationPercentage;
+        
         [FoldoutGroup("Parry Configs")] [SerializeField]
         private float knockBackDistance;
 
@@ -50,6 +54,7 @@ namespace Characters.SO.SkillDataSo
         public bool StopWhileParry => stopWhileParry;
         public float ParryColliderSizeMultiplier => parryColliderSizeMultiplier;
         public float ParryDuration => parryDuration;
+        public float PerfectParryDurationPercentage => perfectParryDurationPercentage;
         public float ExplosionBaseDamage => explosionBaseDamage;
         public float ExplosionDamageMultiplier => explosionDamageMultiplier;
         public float ExplosionRadius => explosionRadius;

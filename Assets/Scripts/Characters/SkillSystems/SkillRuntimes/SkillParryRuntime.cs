@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using Characters.Controllers;
+using Characters.FeedbackSystems;
 using Characters.HeathSystems;
 using Characters.MovementSystems;
 using Characters.SO.SkillDataSo;
@@ -51,30 +52,27 @@ namespace Characters.SkillSystems.SkillRuntimes
             bool success = false;
 
             // 1) ยกเลิกดาเมจที่กำลังจะโดนจริงก่อน (ถ้ามี)
-            success = owner.HealthSystem.ConsumePendingHit(info =>
-            {
-                _isParryTrigger = true;
-            });
+            success = owner.HealthSystem.ConsumePendingHit(info => { _isParryTrigger = true; });
 
             // 2) ถ้าไม่มี pending (เช่น ตอนนั้น iframe อยู่) → ลองดูจาก HitAttempt แทน
             if (!success)
             {
-                owner.HealthSystem.ConsumeHitAttempt(info =>
-                {
-                    _isParryTrigger = true;
-                });
+                owner.HealthSystem.ConsumeHitAttempt(info => { _isParryTrigger = true; });
             }
         }
 
         protected override async UniTask OnSkillUpdate(CancellationToken cancelToken)
         {
+            float timeUse = Time.time;
             await UniTask
                 .WaitUntil(() => _isParryTrigger, cancellationToken: cancelToken)
                 .TimeoutWithoutException(TimeSpan.FromSeconds(skillData.ParryDuration));
 
             if (!_isParryTrigger) return;
 
-            OnParrySuccess();
+            bool isPerfect = (Time.time - timeUse) <=
+                             (skillData.ParryDuration * (skillData.PerfectParryDurationPercentage / 100));
+            OnParrySuccess(isPerfect);
         }
 
         protected override void OnSkillExit()
@@ -92,7 +90,7 @@ namespace Characters.SkillSystems.SkillRuntimes
                 circle.radius /= skillData.ParryColliderSizeMultiplier;
         }
 
-        private void OnParrySuccess()
+        private void OnParrySuccess(bool isPerfect)
         {
             OnTriggerAutoSkill?.Invoke();
 
@@ -132,6 +130,14 @@ namespace Characters.SkillSystems.SkillRuntimes
                     0, 0, 0, 0
                 );
             }
+
+            if (owner is PlayerController player)
+            {
+                player.PlayerDisplay.UpdateParrySuccessFeedbackText(isPerfect ? "PERFECT PARRY!" : "PARRY!");
+            }
+
+            if (isPerfect)
+                owner.TryPlayFeedback(FeedbackName.Skill.PerfectParry);
         }
 
         private void OnHitAttempt(HealthSystem.HitInfo info)

@@ -187,7 +187,6 @@ namespace Characters.UIDisplay
             skillSystem.OnSkillPerform += SkillPerfrom;
             skillSystem.OnSlotCooldownSpeedChanged += OverloopFeedback;
             skillSystem.OnSkillPerformFail += NotifySkillPerformFail;
-            skillSystem.OnSecondarySuccess += UpdateParryFeedbackText;
 
             combatSystem.OnDealDamage += UpdateDamageText;
             scoreSystem.OnScoreChange += UpdateScoreUI;
@@ -599,7 +598,7 @@ namespace Characters.UIDisplay
             return Instantiate(worldTextUIParryFeedbackPrefab);
         }
         
-        private void UpdateParryFeedbackText(BaseSkillDataSo skillDataSo)
+        public void UpdateParrySuccessFeedbackText(string text)
         {
             var textInstance = PoolingManager.Instance.Get<TextMeshProUGUI>(worldTextUIParryFeedbackPrefab.name);
             NotificationManager.Instance.PlayNotification("notify_skilluse", "Parry Success!", 4.0f);
@@ -608,7 +607,7 @@ namespace Characters.UIDisplay
             Transform tf = textInstance.transform;
             tf.position = PlayerController.Instance.transform.position;
             tf.localScale = Vector3.zero;
-            textInstance.text = "PARRY SUCCESS!";
+            textInstance.text = text;
             textInstance.color = Color.white;
 
             // CanvasGroup for fade

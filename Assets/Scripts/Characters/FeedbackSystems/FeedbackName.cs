@@ -47,6 +47,7 @@ namespace Characters.FeedbackSystems
             public const string ParrySuccessLv4 = "Skill/ParrySuccess_Lv4";
             public const string ParrySuccessLv5 = "Skill/ParrySuccess_Lv5";
             public const string ParrySuccessLv6 = "Skill/ParrySuccess_Lv6";
+            public const string PerfectParry = "Skill/PerfectParry";
             public const string ReflectionLv1 = "Skill/Reflection_Lv1";
             public const string ReflectionLv2 = "Skill/Reflection_Lv2";
             public const string ReflectionLv3 = "Skill/Reflection_Lv3";
