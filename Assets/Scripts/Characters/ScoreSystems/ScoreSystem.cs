@@ -44,6 +44,12 @@ namespace Characters.ScoreSystems
             ScoreMultiplier += multiplyer;
             OnScoreMultiplierChange?.Invoke(ScoreMultiplier);
         }
+        
+        public void SetScoreMultiplyer(float multiplyer)
+        {
+            ScoreMultiplier = multiplyer;
+            OnScoreMultiplierChange?.Invoke(ScoreMultiplier);
+        }
 
         public void ResetScoreSystem()
         {
