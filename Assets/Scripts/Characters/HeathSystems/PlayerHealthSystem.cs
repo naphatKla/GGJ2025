@@ -7,7 +7,7 @@ namespace Characters.HeathSystems
     public class PlayerHealthSystem : HealthSystem
     {
         private PlayerFeedbackSystem playerFeedback;
-        private const float _counterDashIgnoreDamageDuration = 0.05f;
+        private const float _counterDashIgnoreDamageDuration = 0.075f;
         private float _lastTimeCounterDash;
 
         public override void AssignHealthData(float maxHealth, float invincibleTimePerHit, BaseController owner = null)
