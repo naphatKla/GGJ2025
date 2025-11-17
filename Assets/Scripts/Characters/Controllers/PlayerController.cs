@@ -8,6 +8,7 @@ using Characters.LevelSystems;
 using Characters.ScoreSystems;
 using Characters.SkillSystems;
 using Characters.SO.CharacterDataSO;
+using Characters.UIDisplay;
 using UI;
 using UnityEngine;
 
@@ -27,11 +28,15 @@ namespace Characters.Controllers
         [SerializeField] protected LevelSystem levelSystem;
         [SerializeField] protected SkillUpgradeController skillUpgradeController;
         [SerializeField] protected ScoreSystem scoreSystem;
+        [SerializeField] protected PlayerDisplay playerDisplay;
         
         public CollectItemSystem CollectItemSystem => collectItemSystem;
-        public LevelSystem LevelSystem => levelSystem;
-        public ScoreSystem ScoreSystem => scoreSystem;
         public CombatRankSystem CombatRankSystem => combatRankSystem;
+        public FlowStateController FlowStateController => flowStateController;
+        public LevelSystem LevelSystem => levelSystem;
+        public SkillUpgradeController SkillUpgradeController => skillUpgradeController;
+        public ScoreSystem ScoreSystem => scoreSystem;
+        public PlayerDisplay PlayerDisplay => playerDisplay;
 
         /// <summary>
         /// A global static reference to the current player instance.
@@ -75,6 +80,10 @@ namespace Characters.Controllers
 
         protected override void SubscribeDependency()
         {
+            // counter dash
+            PlayerCombatSystem playerCombatSystem = combatSystem as PlayerCombatSystem;
+            DamageOnTouch.OnHitWithDamageOnTouch += playerCombatSystem.OnCounterAttackHandler;
+            
             // add score on enemy kill
             combatSystem.OnKill += scoreSystem.OnKill;
             combatRankSystem.OnRankChanged += scoreSystem.OnRankModify;
@@ -88,8 +97,7 @@ namespace Characters.Controllers
             HealthSystem.OnHeal += combatRankSystem.OnHealCondition;
             
             // flow state
-            combatRankSystem.OnRankPointAdded += flowStateController.OnRankPointAdd;
-            HealthSystem.OnTakeDamage += flowStateController.OnTakeDamage;
+            combatRankSystem.OnRankConditionTrigger += flowStateController.OnRankConditionTrigger;
 
             UIManager.Instance.OnAnyPanelOpen += OnAnyUIOpen;
             UIManager.Instance.OnAllPanelClosed += OnAllUIClosed;
@@ -99,6 +107,10 @@ namespace Characters.Controllers
 
         protected override void UnSubscribeDependency()
         {
+            // counter dash
+            PlayerCombatSystem playerCombatSystem = combatSystem as PlayerCombatSystem;
+            DamageOnTouch.OnHitWithDamageOnTouch -= playerCombatSystem.OnCounterAttackHandler;
+            
             // add score on enemy kill
             combatSystem.OnKill -= scoreSystem.OnKill;
             combatRankSystem.OnRankChanged -= scoreSystem.OnRankModify;
@@ -112,8 +124,7 @@ namespace Characters.Controllers
             HealthSystem.OnHeal -= combatRankSystem.OnHealCondition;
             
             // flow state
-            combatRankSystem.OnRankPointAdded -= flowStateController.OnRankPointAdd;
-            HealthSystem.OnTakeDamage -= flowStateController.OnTakeDamage;
+            combatRankSystem.OnRankConditionTrigger -= flowStateController.OnRankConditionTrigger;
             
             if (UIManager.IsAlive)
             {

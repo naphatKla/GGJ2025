@@ -12,6 +12,7 @@ namespace Characters.ComboSystems
         #region Events
 
         public event Action<int> OnRankPointAdded; // Added Amount (delta)
+        public event Action<CombatRankConditionData> OnRankConditionTrigger;
         public event Action<CombatRankData, CombatRankData> OnRankChanged; // (old, new)
 
         public event Action<int, int, int>
@@ -23,17 +24,21 @@ namespace Characters.ComboSystems
 
         #region Variables
 
+        [SerializeField] private FlowStateController flowStateController;
+        
         private List<CombatRankData> _rankDatas = new();
         private int _currentRankPoint;
         private string _currentRankId;
         private string _highestRecordedRankId;
         private int _killStrike;
         private PlayerDataSo _ownerData;
+        private const float _localRankPointMultiplier = 1f;
 
         public int CurrentRankPoint => _currentRankPoint;
         public string CurrentRankId => _currentRankId;
         public string HighestRecordedRankId => _highestRecordedRankId;
         public int KillStrike => _killStrike;
+        public float RankPointMultiplier => _localRankPointMultiplier * flowStateController.FlowScoreMultiplier;
 
         #endregion
 
@@ -56,7 +61,9 @@ namespace Characters.ComboSystems
                 return;
 
             int oldPoint = _currentRankPoint;
-            _currentRankPoint = Mathf.Max(0, _currentRankPoint + amount);
+            int calculatedAmount = Mathf.CeilToInt(amount * RankPointMultiplier);
+
+            _currentRankPoint = Mathf.Clamp(_currentRankPoint + calculatedAmount, 0, _rankDatas[^1].rankPointThreshold);
 
             int delta = _currentRankPoint - oldPoint;
             if (delta == 0)
@@ -148,9 +155,11 @@ namespace Characters.ComboSystems
         public void OnKillCondition(BaseController targetKilled)
         {
             AddKillStrike(1);
-            AddRankPoints(_ownerData.KillConditionData.pointPerKill);
+            
+            AddRankPoints(_ownerData.SingleKillConditionData.pointAddedPerKill);
+            OnRankConditionTrigger?.Invoke(_ownerData.SingleKillConditionData);
 
-            var killConfig = _ownerData.KillConditionData;
+            var killConfig = _ownerData.GroupKillConditionData;
             float duration = killConfig.killWithInDuration;
             int requiredKills = killConfig.killAmountToGainPoint;
 
@@ -172,29 +181,42 @@ namespace Characters.ComboSystems
             if (deltaKillCountInTime >= requiredKills)
             {
                 int calculatedPoint =
-                    Mathf.CeilToInt(deltaScore * (_ownerData.KillConditionData.scorePercentage / 100));
+                    Mathf.CeilToInt(deltaScore * (_ownerData.GroupKillConditionData.scorePercentage / 100));
                 deltaKillCountInTime = 0;
                 deltaScore = 0;
                 _startTimeKill = 0f;
 
                 AddRankPoints(calculatedPoint);
+                OnRankConditionTrigger?.Invoke(_ownerData.GroupKillConditionData);
             }
         }
 
-        public void OnParrySuccessCondition(bool perfect, int damageNegate)
+        public void OnParrySuccessCondition(bool isPerfect, int damageNegate)
         {
-            Debug.Log(damageNegate);
+            float calculateMultiplier = isPerfect
+                ? _ownerData.PerfectParryConditionData.perfectParryPercentage / 100
+                : _ownerData.NormalParryConditionData.normalParryPercentage / 100;
+
+            int calculatedPoint = Mathf.CeilToInt(damageNegate * calculateMultiplier);
+            AddRankPoints(calculatedPoint);
+            
+            CombatRankConditionData conditionData =
+                isPerfect ? _ownerData.PerfectParryConditionData : _ownerData.NormalParryConditionData;
+            OnRankConditionTrigger?.Invoke(conditionData);
         }
 
-        public void OnCounterDashCondition(bool perfect)
+        public void OnCounterDashCondition(int damageNegate)
         {
-            
+            int calculatedPoint = Mathf.CeilToInt(damageNegate * (_ownerData.CounterDashConditionData.counterDashPercentage/100));
+            AddRankPoints(calculatedPoint);
+            OnRankConditionTrigger?.Invoke(_ownerData.CounterDashConditionData);
         }
 
         public void OnHealCondition(int healAmount)
         {
             int calculatedPoint = Mathf.CeilToInt(healAmount * (_ownerData.HealConditionData.healPercentage / 100));
             AddRankPoints(calculatedPoint);
+            OnRankConditionTrigger?.Invoke(_ownerData.HealConditionData);
         }
 
         // Reduce Rank
@@ -204,6 +226,7 @@ namespace Characters.ComboSystems
                 Mathf.CeilToInt(_currentRankPoint * (_ownerData.TakeDamageConditionData.lostPointPercentage / 100));
             AddKillStrike(-_killStrike); // reset kill strike
             AddRankPoints(-calculatedPoint);
+            OnRankConditionTrigger?.Invoke(_ownerData.TakeDamageConditionData);
         }
 
         //public void OnBuff

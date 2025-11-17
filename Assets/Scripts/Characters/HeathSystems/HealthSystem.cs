@@ -142,6 +142,7 @@ namespace Characters.HeathSystems
             ResetHealthSystem();
         }
 
+
         /// <summary>
         /// Core damage entry point.
         /// - Always records a hit attempt (HitAttempt buffer + OnHitAttempt).
@@ -149,6 +150,7 @@ namespace Characters.HeathSystems
         /// - Actual damage is committed later via BeforeHitDelay.
         /// Returns true if this hit was accepted as a valid pending hit.
         /// </summary>
+        [Button]
         public virtual bool TakeDamage(HitInfo hitInfo)
         {
             // 1) Dead guard
@@ -303,7 +305,7 @@ namespace Characters.HeathSystems
         private Tween _colorTween;
         private Color? _startColor;
 
-        private void BufferHitAttempt(HitInfo hitInfo)
+        protected void BufferHitAttempt(HitInfo hitInfo)
         {
             _lastHitAttempt = hitInfo;
             OnHitAttempt?.Invoke(hitInfo);

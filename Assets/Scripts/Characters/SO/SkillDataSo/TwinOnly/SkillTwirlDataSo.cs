@@ -18,6 +18,9 @@ namespace Characters.SO.SkillDataSo.TwinOnly
         [FoldoutGroup("Damage Configs"), SerializeField]
         private float damageRadius = 10.15f;
 
+        [FoldoutGroup("Damage Configs"), SerializeField]
+        private bool canCounterDash;
+
         // Expand Phase
         [FoldoutGroup("Twirl Config/Expand Phase"), SerializeField]
         private float expandRadius = 8;
@@ -54,6 +57,7 @@ namespace Characters.SO.SkillDataSo.TwinOnly
         public float BaseDamagePerHit => baseDamagePerHit;
         public float DamageMultiplier => damageMultiplier;
         public float DamageRadius => damageRadius;
+        public bool CanCounterDash => canCounterDash;
         public float SpeedUpMultiplier => speedUpMultiplier;
         public float DelayEnableDamageAfterStartSpin => delayEnableDamageAfterStartSpin;
         public float DamageDuration => damageDuration;

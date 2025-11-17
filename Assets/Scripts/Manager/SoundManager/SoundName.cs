@@ -25,6 +25,7 @@ namespace Manager.SoundManager
             public const string PlayerDash = Group + "/" + nameof(PlayerDash);
             public const string PlayerParryUse = Group + "/" + nameof(PlayerParryUse);
             public const string PlayerParrySuccess = Group + "/" + nameof(PlayerParrySuccess);
+            public const string PlayerPerfectParry = Group + "/" + nameof(PlayerPerfectParry);
             public const string PlayerReflection = Group + "/" + nameof(PlayerReflection);
             public const string PlayerLightStepUse = Group + "/" + nameof(PlayerLightStepUse);
             public const string PlayerLightStepEnd = Group + "/" + nameof(PlayerLightStepEnd);

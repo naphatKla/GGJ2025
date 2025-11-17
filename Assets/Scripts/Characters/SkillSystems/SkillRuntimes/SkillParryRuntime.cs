@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using Characters.Controllers;
+using Characters.FeedbackSystems;
 using Characters.HeathSystems;
 using Characters.MovementSystems;
 using Characters.SO.SkillDataSo;
@@ -18,6 +19,9 @@ namespace Characters.SkillSystems.SkillRuntimes
         private bool _isParryTrigger;
         private Collider2D ownerCollider2D;
 
+        // เก็บ hit ที่ทำให้ parry ติด (ไม่ว่าจะมาจาก coyote หรือ guard)
+        private HealthSystem.HitInfo? _parryHitInfo;
+
         private void OnDestroy()
         {
             if (!owner) return;
@@ -27,8 +31,10 @@ namespace Characters.SkillSystems.SkillRuntimes
         public override void AssignSkillData(BaseSkillDataSo skillData, BaseController owner)
         {
             base.AssignSkillData(skillData, owner);
+
             ownerCollider2D = owner.HealthSystem.GetComponent<Collider2D>();
 
+            // กัน duplicate subscribe
             owner.HealthSystem.OnHitAttempt -= OnHitAttempt;
             owner.HealthSystem.OnHitAttempt += OnHitAttempt;
         }
@@ -36,6 +42,8 @@ namespace Characters.SkillSystems.SkillRuntimes
         protected override void OnSkillStart()
         {
             _isParryTrigger = false;
+            _parryHitInfo   = null;
+
             owner.MovementSystem.StopFromParry(skillData.StopWhileParry);
 
             // ปรับขนาด collider ถ้าต้องการ
@@ -53,6 +61,7 @@ namespace Characters.SkillSystems.SkillRuntimes
             // 1) ยกเลิกดาเมจที่กำลังจะโดนจริงก่อน (ถ้ามี)
             success = owner.HealthSystem.ConsumePendingHit(info =>
             {
+                _parryHitInfo   = info;
                 _isParryTrigger = true;
             });
 
@@ -61,6 +70,7 @@ namespace Characters.SkillSystems.SkillRuntimes
             {
                 owner.HealthSystem.ConsumeHitAttempt(info =>
                 {
+                    _parryHitInfo   = info;
                     _isParryTrigger = true;
                 });
             }
@@ -68,18 +78,28 @@ namespace Characters.SkillSystems.SkillRuntimes
 
         protected override async UniTask OnSkillUpdate(CancellationToken cancelToken)
         {
+            // เวลาเริ่มช่วง parry window
+            float startTime = Time.time;
+
             await UniTask
                 .WaitUntil(() => _isParryTrigger, cancellationToken: cancelToken)
                 .TimeoutWithoutException(TimeSpan.FromSeconds(skillData.ParryDuration));
 
             if (!_isParryTrigger) return;
 
-            OnParrySuccess();
+            float elapsed = Time.time - startTime;
+            float perfectWindow = skillData.ParryDuration * (skillData.PerfectParryDurationPercentage / 100f);
+            bool isPerfect = elapsed <= perfectWindow;
+
+            var hitInfo = _parryHitInfo ?? default;
+            OnParrySuccess(hitInfo, isPerfect);
         }
 
         protected override void OnSkillExit()
         {
             _isParryTrigger = false;
+            _parryHitInfo   = null;
+
             owner.MovementSystem.StopFromParry(false);
 
             // คืนขนาด collider กลับค่าเดิม
@@ -92,8 +112,20 @@ namespace Characters.SkillSystems.SkillRuntimes
                 circle.radius /= skillData.ParryColliderSizeMultiplier;
         }
 
-        private void OnParrySuccess()
+        private void OnParrySuccess(HealthSystem.HitInfo hitInfo, bool isPerfect)
         {
+            float healAmount = isPerfect
+                ? skillData.PerfectParrySuccess.healOnSuccess
+                : skillData.NormalParrySuccess.healOnSuccess;
+
+            float knockBackDistance = isPerfect
+                ? skillData.PerfectParrySuccess.knockBackDistance
+                : skillData.NormalParrySuccess.knockBackDistance;
+
+            float knockBackDuration = isPerfect
+                ? skillData.PerfectParrySuccess.knockBackDuration
+                : skillData.NormalParrySuccess.knockBackDuration;
+
             OnTriggerAutoSkill?.Invoke();
 
             owner.TryPlayFeedback(skillData.ParrySuccessFeedback);
@@ -107,7 +139,7 @@ namespace Characters.SkillSystems.SkillRuntimes
 
             // เอฟเฟกต์ใส่ตัวเองตอน parry สำเร็จ
             StatusEffectManager.ApplyEffectTo(gameObject, skillData.SelfEffectsOnParrySuccess);
-            owner.HealthSystem.Heal(skillData.HealOnSuccess);
+            owner.HealthSystem.Heal(healAmount);
 
             // ระเบิดศัตรูรอบ ๆ + knockback + ดาเมจ
             foreach (var target in targetsInRange)
@@ -117,10 +149,10 @@ namespace Characters.SkillSystems.SkillRuntimes
                 Vector2 knockBackDirection = target.transform.position - owner.transform.position;
                 Vector2 knockBackDestination =
                     (Vector2)target.transform.position +
-                    knockBackDirection.normalized * skillData.KnockBackDistance;
+                    knockBackDirection.normalized * knockBackDistance;
 
                 target.GetComponent<BaseMovementSystem>()
-                    .TryMoveToPositionOverTime(knockBackDestination, skillData.KnockBackDuration);
+                    .TryMoveToPositionOverTime(knockBackDestination, knockBackDuration);
 
                 CombatManager.ApplyCalculatedDamageTo(
                     target.gameObject,
@@ -132,11 +164,26 @@ namespace Characters.SkillSystems.SkillRuntimes
                     0, 0, 0, 0
                 );
             }
+
+            if (owner is PlayerController player)
+            {
+                player.PlayerDisplay.UpdateParrySuccessFeedbackText(isPerfect ? "PERFECT PARRY!" : "PARRY!");
+                player.CombatRankSystem.OnParrySuccessCondition(isPerfect, Mathf.CeilToInt(hitInfo.damage));
+            }
+
+            if (isPerfect)
+            {
+                owner.TryPlayFeedback(FeedbackName.Skill.PerfectParry);
+                currentCooldown -= cooldown * (skillData.CooldownReduceOnPerfectParry / 100f);
+            }
         }
 
         private void OnHitAttempt(HealthSystem.HitInfo info)
         {
+            // กรณีกด parry ก่อน แล้วโดนตีในช่วง parry window
             if (!IsPerforming || _isParryTrigger) return;
+
+            _parryHitInfo   = info;
             _isParryTrigger = true;
         }
     }

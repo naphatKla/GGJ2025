@@ -17,6 +17,7 @@ namespace Characters.ComboSystems
         private float _lastedTimeStackModify;
         
         public event Action<string> OnStateChanged; // string = Current Flow State 
+        public float FlowScoreMultiplier { get; private set; } = 1f; // depends to rank point in combat rank system
 
         private void FixedUpdate()
         {
@@ -32,16 +33,10 @@ namespace Characters.ComboSystems
             _ownerData = ownerData;
             _flowStateDatas = ownerData.FlowStateDatas.OrderBy(f => f.flowingMindThreshold).ToList();
         }
-        
-        public void OnRankPointAdd(int pointAdded)
-        {
-            if (pointAdded < _ownerData.RankPointAddedThreshold) return;
-            AddFlowingMind(_ownerData.FlowingMindGainAmount);
-        }
 
-        public void OnTakeDamage()
+        public void OnRankConditionTrigger(CombatRankConditionData conditionData)
         {
-            AddFlowingMind(-_ownerData.FlowingMindReduceOnTakeDamage);
+            AddFlowingMind(conditionData.flowingMindModify);
         }
         
         private void AddFlowingMind(int amount = 1)
@@ -90,6 +85,11 @@ namespace Characters.ComboSystems
                 return -1;
 
             return _flowStateDatas.FindIndex(f => f.flowStateId == stateId);
+        }
+
+        public void AddFlowScoreMultiplier(float amount)
+        {
+            FlowScoreMultiplier += amount;
         }
     }
 }
