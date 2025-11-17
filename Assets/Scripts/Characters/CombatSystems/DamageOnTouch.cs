@@ -71,6 +71,24 @@ namespace Characters.CombatSystems
         public GameObject Owner => _owner;
         public bool IsEnableDamage => _isEnableDamage;
 
+        /// <summary>
+        /// ฝั่งเรามี instance ไหนบ้างที่ CanHitWithDamageOnTouch = true?
+        /// ใช้สำหรับเช็คว่า "เรายอมเล่น mechanic นี้" หรือเปล่า
+        /// </summary>
+        public bool HasAnyCanHitWithDamageOnTouch
+        {
+            get
+            {
+                for (int i = 0; i < _damageInstances.Count; i++)
+                {
+                    var inst = _damageInstances[i];
+                    if (inst != null && inst.CanHitWithDamageOnTouch)
+                        return true;
+                }
+                return false;
+            }
+        }
+
         #region Public API
 
         public void EnableDamage(
@@ -164,14 +182,14 @@ namespace Characters.CombatSystems
 
             _damageInstances.Add(new DamageInstance
             {
-                Caller = caller,
-                HitPerSec = Mathf.Max(hitPerSec, 0.01f),
-                BaseSkillDamage = baseSkillDamage,
-                DamageMultiplier = damageMultiplier,
-                AdditionalCriRate = additionalCriRate,
-                AdditionalCriDmg = additionalCriDmg,
-                LifeStealPercent = lifeStealPercent,
-                LifeStealEffective = lifeStealEffective,
+                Caller                 = caller,
+                HitPerSec              = Mathf.Max(hitPerSec, 0.01f),
+                BaseSkillDamage        = baseSkillDamage,
+                DamageMultiplier       = damageMultiplier,
+                AdditionalCriRate      = additionalCriRate,
+                AdditionalCriDmg       = additionalCriDmg,
+                LifeStealPercent       = lifeStealPercent,
+                LifeStealEffective     = lifeStealEffective,
                 CanHitWithDamageOnTouch = canHitWithDamageOnTouch,
             });
 
@@ -285,9 +303,9 @@ namespace Characters.CombatSystems
         // Use instances snapshot instead of iterating the live list
         private void TryApplyDamageTo(Collider2D collider, List<DamageInstance> instancesSnapshot)
         {
-            GameObject target = collider.gameObject;
-            float now = Time.time;
-            Vector2 hitPosition = collider.ClosestPoint(transform.position);
+            GameObject target      = collider.gameObject;
+            float      now         = Time.time;
+            Vector2    hitPosition = collider.ClosestPoint(transform.position);
 
             for (int i = 0; i < instancesSnapshot.Count; i++)
             {
@@ -315,16 +333,23 @@ namespace Characters.CombatSystems
                 _cooldownMap[key] = now + cooldown;
                 OnHit?.Invoke(target);
 
-                // ถ้า instance นี้เปิดให้เช็คชนกับ DamageOnTouch เป้าหมาย
-                if (instance.CanHitWithDamageOnTouch && OnHitWithDamageOnTouch != null)
-                {
-                    var targetDoT = target.GetComponent<DamageOnTouch>();
-                    if (targetDoT != null && targetDoT.IsEnableDamage)
-                    {
-                        int targetDamage = targetDoT.GetApproxTotalDamagePerHit();
-                        OnHitWithDamageOnTouch?.Invoke(targetDamage);
-                    }
-                }
+                // ===== เงื่อนไข Trigger CounterDash =====
+                // 1) instance นี้ต้องอนุญาต
+                if (!instance.CanHitWithDamageOnTouch || OnHitWithDamageOnTouch == null)
+                    continue;
+
+                // 2) ฝั่ง target ต้องมี DamageOnTouch เปิดอยู่ด้วย
+                var targetDoT = target.GetComponent<DamageOnTouch>();
+                if (targetDoT == null || !targetDoT.IsEnableDamage)
+                    continue;
+
+                // 3) และ targetDoT เองก็ต้องมี instance อย่างน้อยหนึ่งอันที่ CanHitWithDamageOnTouch = true
+                if (!targetDoT.HasAnyCanHitWithDamageOnTouch)
+                    continue;
+
+                // ใช้ค่าดาเมจประมาณของ "ฝั่งเป้าหมาย" ตามเดิม
+                int targetDamage = targetDoT.GetApproxTotalDamagePerHit();
+                OnHitWithDamageOnTouch.Invoke(targetDamage);
             }
         }
 
@@ -332,8 +357,8 @@ namespace Characters.CombatSystems
 
         #region Odin Helper
 
-        private bool IsBox() => shape == OverlapShape.Box;
-        private bool IsCircle() => shape == OverlapShape.Circle;
+        private bool IsBox()   => shape == OverlapShape.Box;
+        private bool IsCircle()=> shape == OverlapShape.Circle;
 
 #if UNITY_EDITOR
         private void OnShapeChanged() => UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
@@ -355,8 +380,8 @@ namespace Characters.CombatSystems
         private void OnDrawGizmosSelected()
         {
             Gizmos.color = Color.red;
-            Vector2 pos = transform.position;
-            float angle = transform.eulerAngles.z;
+            Vector2 pos   = transform.position;
+            float  angle = transform.eulerAngles.z;
 
             switch (shape)
             {
