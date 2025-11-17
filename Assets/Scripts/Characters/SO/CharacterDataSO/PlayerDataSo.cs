@@ -46,8 +46,11 @@ namespace Characters.SO.CharacterDataSO
         [SerializeField]
         private List<CombatRankData> combatRankDatas = new();
 
+        [FormerlySerializedAs("parryConditionData")] [FoldoutGroup("Combat/Rank")] [SerializeField]
+        private CombatRankNormalParryConditionData normalParryConditionData;
+
         [FoldoutGroup("Combat/Rank")] [SerializeField]
-        private CombatRankParryConditionData parryConditionData;
+        private CombatRankPerfectParryConditionData perfectParryConditionData;
 
         [FoldoutGroup("Combat/Rank")] [SerializeField]
         private CombatRankCounterDashConditionData counterDashConditionData;
@@ -86,7 +89,8 @@ namespace Characters.SO.CharacterDataSO
         public int StepThreshold => stepThreshold;
         public float StepValue => stepValue;
         public List<CombatRankData> CombatRankDatas => combatRankDatas;
-        public CombatRankParryConditionData ParryConditionData => parryConditionData;
+        public CombatRankNormalParryConditionData NormalParryConditionData => normalParryConditionData;
+        public CombatRankPerfectParryConditionData PerfectParryConditionData => perfectParryConditionData;
         public CombatRankCounterDashConditionData CounterDashConditionData => counterDashConditionData;
         public CombatRankSingleKillConditionData SingleKillConditionData => singleKillConditionData;
         public CombatRankGroupKillConditionData GroupKillConditionData => groupKillConditionData;
@@ -216,13 +220,17 @@ namespace Characters.SO.CharacterDataSO
     }
     
     [Serializable]
-    public record CombatRankParryConditionData : CombatRankConditionData
+    public record CombatRankNormalParryConditionData : CombatRankConditionData
+    {
+        [Unit(Units.Percent)] [Tooltip("gain rank point when normal parry =  % amount of damage negate")]
+        public float normalParryPercentage;
+    }
+    
+    [Serializable]
+    public record CombatRankPerfectParryConditionData : CombatRankConditionData
     {
         [Unit(Units.Percent)] [Tooltip("gain rank point when perfect parry =  % amount of damage negate")]
         public float perfectParryPercentage;
-
-        [Unit(Units.Percent)] [Tooltip("gain rank point when normal parry =  % amount of damage negate")]
-        public float normalParryPercentage;
     }
 
     [Serializable]

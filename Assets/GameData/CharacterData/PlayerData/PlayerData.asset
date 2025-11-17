@@ -58,11 +58,14 @@ MonoBehaviour:
   - rankId: X
     rankPointThreshold: 1750
     scoreMultiplier: 10
-  parryConditionData:
-    conditionID: parry_condtition
+  normalParryConditionData:
+    conditionID: normalParry_condtition
     flowingMindModify: 1
-    perfectParryPercentage: 100
     normalParryPercentage: 50
+  perfectParryConditionData:
+    conditionID: perfectParry_condtition
+    flowingMindModify: 2
+    perfectParryPercentage: 100
   counterDashConditionData:
     conditionID: counterDash_condtition
     flowingMindModify: 1

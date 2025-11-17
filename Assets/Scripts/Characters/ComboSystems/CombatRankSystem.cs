@@ -194,13 +194,15 @@ namespace Characters.ComboSystems
         public void OnParrySuccessCondition(bool isPerfect, int damageNegate)
         {
             float calculateMultiplier = isPerfect
-                ? _ownerData.ParryConditionData.perfectParryPercentage / 100
-                : _ownerData.ParryConditionData.normalParryPercentage / 100;
+                ? _ownerData.PerfectParryConditionData.perfectParryPercentage / 100
+                : _ownerData.NormalParryConditionData.normalParryPercentage / 100;
 
             int calculatedPoint = Mathf.CeilToInt(damageNegate * calculateMultiplier);
-            
             AddRankPoints(calculatedPoint);
-            OnRankConditionTrigger?.Invoke(_ownerData.ParryConditionData);
+            
+            CombatRankConditionData conditionData =
+                isPerfect ? _ownerData.PerfectParryConditionData : _ownerData.NormalParryConditionData;
+            OnRankConditionTrigger?.Invoke(conditionData);
         }
 
         public void OnCounterDashCondition(int damageNegate)
