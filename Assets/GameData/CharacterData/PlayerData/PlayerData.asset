@@ -30,7 +30,70 @@ MonoBehaviour:
   baseExpLevelUp: 1000
   stepThreshold: 1
   stepValue: 100
-  comboStreakData: {fileID: 11400000, guid: 8af15b87ccb71984cab04b4cbff7a709, type: 2}
+  combatRankDatas:
+  - rankId: F
+    rankPointThreshold: 0
+    scoreMultiplier: 1
+  - rankId: D
+    rankPointThreshold: 150
+    scoreMultiplier: 1.5
+  - rankId: C
+    rankPointThreshold: 300
+    scoreMultiplier: 1.75
+  - rankId: B
+    rankPointThreshold: 450
+    scoreMultiplier: 2
+  - rankId: A
+    rankPointThreshold: 600
+    scoreMultiplier: 3
+  - rankId: S
+    rankPointThreshold: 800
+    scoreMultiplier: 4
+  - rankId: SS
+    rankPointThreshold: 1000
+    scoreMultiplier: 5
+  - rankId: SSS
+    rankPointThreshold: 1300
+    scoreMultiplier: 7
+  - rankId: X
+    rankPointThreshold: 1750
+    scoreMultiplier: 10
+  parryConditionData:
+    perfectParryPercentage: 100
+    normalParryPercentage: 50
+  counterDashConditionData:
+    perfectCounterDashPercentage: 50
+    normalCounterDashPercentage: 25
+  killConditionData:
+    pointPerKill: 1
+    killAmountToGainPoint: 5
+    killWithInDuration: 0.5
+    scorePercentage: 10
+  healConditionData:
+    healPercentage: 100
+  takeDamageConditionData:
+    lostPointPercentage: 50
+  flowStateDatas:
+  - flowStateId: none_flow
+    flowingMindThreshold: 0
+    effectsApply: []
+  - flowStateId: flow_i
+    flowingMindThreshold: 5
+    effectsApply:
+    - effectData: {fileID: 11400000, guid: cb459ae7d7879dc4f851ae39e9d9de8b, type: 2}
+      isOverrideDuration: 1
+      overrideDuration: 9999
+  - flowStateId: flow_ii
+    flowingMindThreshold: 10
+    effectsApply:
+    - effectData: {fileID: 11400000, guid: 246112b4ed499a743bccd65d509af68e, type: 2}
+      isOverrideDuration: 1
+      overrideDuration: 9999
+  rankPointAddedThreshold: 5
+  flowingMindGainAmount: 1
+  flowingMindReduceOnTakeDamage: 1
+  flowingMindLifeTimePerStack: 3
+  flowingMindMaxCap: 10
   attackHitCameraShakeOption:
     force: 11
     frequency: 0.1

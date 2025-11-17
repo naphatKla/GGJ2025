@@ -67,7 +67,7 @@ namespace Characters.SkillSystems.SkillRuntimes.TwinOnly
             // damage on here
             owner.DamageOnTouch.EnableDamage(gameObject, this, 3f, DamageOnTouch.OverlapShape.Circle,
                 circle: skillData.DamageRadius, baseSkillDamage: skillData.BaseDamagePerHit,
-                damageMultiplier: skillData.DamageMultiplier);
+                damageMultiplier: skillData.DamageMultiplier, canHitWithDamageOnTouch: skillData.CanCounterDash);
 
             await UniTask.WaitForSeconds(skillData.DamageDuration, cancellationToken: cancelToken);
 

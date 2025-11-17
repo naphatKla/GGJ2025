@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using PermanentUpgrade;
 
 namespace Player
 {
@@ -11,13 +12,25 @@ namespace Player
         public string ProfileId;
         public string DisplayName;
         public long LastPlayedUnix;
+        
+        //Currency
+        public int nanoCoin;
+        public int rainBowAnergy;
 
         // Global
         public int HighestScore;
         public int LastScore;
+        
+        // Permanent Upgrade
+        public Dictionary<PermanentUpgradeType, int> PermanentUpgrades =
+            new Dictionary<PermanentUpgradeType, int>();
 
         // Progression
         public HashSet<string> UnlockedMaps = new HashSet<string>();
+        public HashSet<string> UnlockedChallenges = new HashSet<string>();
+        
+        // Selected Challenge
+        public HashSet<string> SelectedChallenges = new HashSet<string>();
 
         // perMap data (key = mapId)
         public Dictionary<string, MapStat> MapStats = new Dictionary<string, MapStat>();
@@ -25,7 +38,10 @@ namespace Player
         public void PostLoadInitializeAndMigrate()
         {
             UnlockedMaps ??= new HashSet<string>();
+            UnlockedChallenges ??= new HashSet<string>();
             MapStats ??= new Dictionary<string, MapStat>();
+            SelectedChallenges ??= new HashSet<string>();
+            PermanentUpgrades ??= new Dictionary<PermanentUpgradeType, int>();
 
             const int CURRENT = 2;
             if (SchemaVersion < 1)

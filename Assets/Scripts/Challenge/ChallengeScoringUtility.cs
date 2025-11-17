@@ -19,12 +19,24 @@ namespace Challenge
         {
             var b = new ScoreBreakdown();
             if (def == null) { b.multiplier = 1f; return b; }
-
             b.flatBonus = def.flatScoreBonusPercent;
-            b.playerPercent = PosScoreFromPlayerDebuffs(AggregatePlayer(def.playerMods));
+            
+            if (def.disableAutoCalculate)
+            {
+                b.playerPercent      = 0f;
+                b.enemiesPercentSum  = 0f;
+                b.totalPercent       = b.flatBonus;
+                b.multiplier         = 1f + (b.totalPercent / 100f);
+                return b;
+            }
+            
+            if (def.statMode == StatMode.Additive)
+                b.playerPercent = PosScoreFromPlayerDebuffs(AggregatePlayer(def.playerMods));
+
             b.enemiesPercentSum = SumEnemyGroups(def.enemyGroups);
+
             b.totalPercent = b.flatBonus + b.playerPercent + b.enemiesPercentSum;
-            b.multiplier = 1f + (b.totalPercent / 100f);
+            b.multiplier   = 1f + (b.totalPercent / 100f);
             return b;
         }
 
@@ -43,10 +55,10 @@ namespace Challenge
 
         private static float PosScoreFromPlayerDebuffs(Dictionary<PlayerAdditiveStat, float> mods)
         {
-            mods.TryGetValue(PlayerAdditiveStat.MaxHP,     out var hp);
-            mods.TryGetValue(PlayerAdditiveStat.ExpGain,   out var exp);
-            mods.TryGetValue(PlayerAdditiveStat.BaseDamage,out var dmg);
-            mods.TryGetValue(PlayerAdditiveStat.MoveSpeed, out var mspd);
+            mods.TryGetValue(PlayerAdditiveStat.MaxHP,      out var hp);
+            mods.TryGetValue(PlayerAdditiveStat.ExpGain,    out var exp);
+            mods.TryGetValue(PlayerAdditiveStat.BaseDamage, out var dmg);
+            mods.TryGetValue(PlayerAdditiveStat.MoveSpeed,  out var mspd);
 
             float p = 0f;
             p += Mathf.Max(0f, -hp)   * 1f; // -1% Max HP = +1%
@@ -63,9 +75,12 @@ namespace Challenge
             foreach (var g in groups)
             {
                 if (g == null || g.stats.IsZero) continue;
+                if (g.enemyIds.Contains("*")) continue;
+
                 sum += Mathf.Max(0f, g.stats.maxHP)       * 0.5f; // +1% HP = +0.5%
                 sum += Mathf.Max(0f, g.stats.damage)      * 0.5f; // +1% DMG = +0.5%
                 sum += Mathf.Max(0f, g.stats.moveSpeed)   * 1.0f; // +1% MSPD = +1%
+                sum += Mathf.Max(0f, g.stats.spawnChance) * 0.5f; // +1% SPAWN CHANCE = +0.5%
             }
             return sum;
         }

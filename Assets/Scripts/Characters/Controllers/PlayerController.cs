@@ -1,14 +1,16 @@
 using System;
 using Cameras;
 using Characters.CollectItemSystems;
+using Characters.CombatSystems;
+using Characters.ComboSystems;
 using Characters.Data;
 using Characters.LevelSystems;
 using Characters.ScoreSystems;
 using Characters.SkillSystems;
 using Characters.SO.CharacterDataSO;
+using Characters.UIDisplay;
 using UI;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Characters.Controllers
 {
@@ -21,14 +23,18 @@ namespace Characters.Controllers
         #region Inspector & Variables
 
         [SerializeField] private CollectItemSystem collectItemSystem;
-        [FormerlySerializedAs("comboSystem")] [SerializeField] public ComboSystem.ComboStreakSystem comboStreakSystem;
+        [SerializeField] protected CombatRankSystem combatRankSystem;
+        [SerializeField] protected FlowStateController flowStateController;
         [SerializeField] protected LevelSystem levelSystem;
         [SerializeField] protected SkillUpgradeController skillUpgradeController;
         [SerializeField] protected ScoreSystem scoreSystem;
+        [SerializeField] protected PlayerDisplay playerDisplay;
         
         public CollectItemSystem CollectItemSystem => collectItemSystem;
+        public CombatRankSystem CombatRankSystem => combatRankSystem;
         public LevelSystem LevelSystem => levelSystem;
         public ScoreSystem ScoreSystem => scoreSystem;
+        public PlayerDisplay PlayerDisplay => playerDisplay;
 
         /// <summary>
         /// A global static reference to the current player instance.
@@ -59,7 +65,8 @@ namespace Characters.Controllers
                 skillUpgradeController.AssignData(skillSystem, playerData);
                 levelSystem.AssignData(this, playerData.BaseExpLevelUp, playerData.StepThreshold, playerData.StepValue);
                 scoreSystem.AssignData(this);
-                comboStreakSystem.AssignData(this, playerData.ComboStreakData);
+                combatRankSystem.AssignRankData(playerData);
+                flowStateController.AssignData(gameObject, playerData);
             }
             else
             {
@@ -71,9 +78,26 @@ namespace Characters.Controllers
 
         protected override void SubscribeDependency()
         {
+            // counter dash
+            PlayerCombatSystem playerCombatSystem = combatSystem as PlayerCombatSystem;
+            DamageOnTouch.OnHitWithDamageOnTouch += playerCombatSystem.OnCounterAttackHandler;
+            
+            // add score on enemy kill
+            combatSystem.OnKill += scoreSystem.OnKill;
+            combatRankSystem.OnRankChanged += scoreSystem.OnRankModify;
+            
+            // skill upgrade
             levelSystem.OnLevelUp += skillUpgradeController.OnLevelUp;
-            combatSystem.OnKill += comboStreakSystem.OnEnemyKilled;
-            HealthSystem.OnTakeDamage += comboStreakSystem.OnPlayerHit;
+            
+            // combat rank dependencies
+            CombatSystem.OnKill += combatRankSystem.OnKillCondition;
+            HealthSystem.OnTakeDamage += combatRankSystem.OnTakeDamageCondition;
+            HealthSystem.OnHeal += combatRankSystem.OnHealCondition;
+            
+            // flow state
+            combatRankSystem.OnRankPointAdded += flowStateController.OnRankPointAdd;
+            HealthSystem.OnTakeDamage += flowStateController.OnTakeDamage;
+
             UIManager.Instance.OnAnyPanelOpen += OnAnyUIOpen;
             UIManager.Instance.OnAllPanelClosed += OnAllUIClosed;
             
@@ -82,9 +106,25 @@ namespace Characters.Controllers
 
         protected override void UnSubscribeDependency()
         {
+            // counter dash
+            PlayerCombatSystem playerCombatSystem = combatSystem as PlayerCombatSystem;
+            DamageOnTouch.OnHitWithDamageOnTouch -= playerCombatSystem.OnCounterAttackHandler;
+            
+            // add score on enemy kill
+            combatSystem.OnKill -= scoreSystem.OnKill;
+            combatRankSystem.OnRankChanged -= scoreSystem.OnRankModify;
+            
+            // skill upgrade
             levelSystem.OnLevelUp -= skillUpgradeController.OnLevelUp;
-            combatSystem.OnKill -= comboStreakSystem.OnEnemyKilled;
-            HealthSystem.OnTakeDamage -= comboStreakSystem.OnPlayerHit;
+            
+            // combat rank dependencies
+            CombatSystem.OnKill -= combatRankSystem.OnKillCondition;
+            HealthSystem.OnTakeDamage -= combatRankSystem.OnTakeDamageCondition;
+            HealthSystem.OnHeal -= combatRankSystem.OnHealCondition;
+            
+            // flow state
+            combatRankSystem.OnRankPointAdded -= flowStateController.OnRankPointAdd;
+            HealthSystem.OnTakeDamage -= flowStateController.OnTakeDamage;
             
             if (UIManager.IsAlive)
             {
@@ -99,7 +139,7 @@ namespace Characters.Controllers
         {
             levelSystem.ResetLevel();
             skillUpgradeController.ResetSkillUpgradeController();
-            comboStreakSystem.ResetAll();
+            combatRankSystem.ResetCombatRankSystem();
             Cinemachine2DCameraController.Instance.ResetAndClearAllRequests();
             
             base.ResetAllDependentBehavior();
@@ -125,17 +165,15 @@ namespace Characters.Controllers
         {
             PlayerSummaryStats statsPerRun = new PlayerSummaryStats();
             statsPerRun.totalScore = scoreSystem.CurrentScore;
-            
             statsPerRun.currentLevel = levelSystem.Level;
-            
-            statsPerRun.highestRank = comboStreakSystem.HighestRank;
-            statsPerRun.highestStreakCount = comboStreakSystem.HighestStreakCount;
-            statsPerRun.averageExpMultiplier = comboStreakSystem.AverageExpMultiplier;
+            statsPerRun.highestRank = combatRankSystem.HighestRecordedRankId;
             
             statsPerRun.totalEnemiesEliminated = combatSystem.TotalKill;
             statsPerRun.totalDamageDeal = combatSystem.TotalDamageDeal;
             statsPerRun.criticalCount = combatSystem.TotalCriticalCount;
-            statsPerRun.totalCounterDashCount = combatSystem.TotalCounterDashCount;
+            
+            PlayerCombatSystem pc = combatSystem as PlayerCombatSystem;
+            statsPerRun.totalCounterDashCount = pc.TotalCounterDashCount;
 
             statsPerRun.totalPrimarySkillUsed = skillSystem.TotalPrimarySkillUsed;
             statsPerRun.totalSecondarySkillUsed = skillSystem.TotalSecondarySkillUsed;

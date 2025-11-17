@@ -1,13 +1,13 @@
 using System.Collections.Generic;
 using Characters.CombatSystems;
-using Characters.ComboSystem;
+using Characters.ComboSystems;
 using Characters.Controllers;
 using Characters.HeathSystems;
 using Characters.LevelSystems;
 using Characters.ScoreSystems;
 using Characters.SkillSystems;
 using Characters.SkillSystems.SkillRuntimes;
-using Characters.SO.ComboStreakDataSO.StageDataSO;
+using Characters.SO.CharacterDataSO;
 using Characters.SO.SkillDataSo;
 using Characters.StatusEffectSystems;
 using Cysharp.Threading.Tasks;
@@ -23,6 +23,7 @@ using UI;
 using UI.IngameViewholder;
 using UI.Manager;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 using Button = UnityEngine.UI.Button;
 using Random = UnityEngine.Random;
@@ -37,25 +38,28 @@ namespace Characters.UIDisplay
 {
     public class PlayerDisplay : MonoBehaviour
     {
-        [FoldoutGroup("Combo Display"), Title("Ref"), SerializeField]
-        private ComboStreakSystem comboStreakSystem;
+        [FoldoutGroup("Rank Display"), Title("Ref"), SerializeField]
+        private CombatRankSystem combatRankSystem;
 
-        [Title("UI"), FoldoutGroup("Combo Display")]
-        public GameObject comboUI;
-
-        [FoldoutGroup("Combo Display")] public TMP_Text killComboText;
-        [FoldoutGroup("Combo Display")] public TMP_Text scoreMultiply; // แสดงตัวคูณ Boost (xN)
-        [FoldoutGroup("Combo Display")] public GameObject lightningCombo;
-        [FoldoutGroup("Combo Display")] public ValueBar comboStreakBar;
-        [FoldoutGroup("Combo Display")] public float tweenDuration = 0.1f;
-        [FoldoutGroup("Combo Display")] public float scaleAmount = 1.2f;
-
-
-        [Title("Grade Combo")] [FoldoutGroup("Combo Display")]
-        public GradeComboViewholder gradeComboViewholder;
+        [FoldoutGroup("Rank Display")] [SerializeField]
+        private FlowStateController flowStateController;
         
-        [Title("FlowStage Combo")] [FoldoutGroup("Combo Display")]
-        public FlowStageComboViewholder flowStageComboViewholder;
+        [Title("UI"), FoldoutGroup("Rank Display")]
+        public GameObject rankUI;
+
+        [FoldoutGroup("Rank Display")] public TMP_Text killStrikeText;
+        [FoldoutGroup("Rank Display")] public TMP_Text scoreMultiplyText; // แสดงตัวคูณ Boost (xN)
+        [FoldoutGroup("Rank Display")] public GameObject lightningEffect;
+        [FormerlySerializedAs("comboStreakBar")] [FoldoutGroup("Rank Display")] public ValueBar rankPointBar;
+        [FoldoutGroup("Rank Display")] public float tweenDuration = 0.1f;
+        [FoldoutGroup("Rank Display")] public float scaleAmount = 1.2f;
+
+
+        [FormerlySerializedAs("combatRankViewholder")] [FormerlySerializedAs("gradeComboViewholder")] [Title("Grade Rank")] [FoldoutGroup("Rank Display")]
+        public CombatRankViewHolder combatRankViewHolder;
+        
+        [FormerlySerializedAs("flowStageComboViewholder")] [Title("FlowStage Combo")] [FoldoutGroup("Rank Display")]
+        public FlowStateComboViewHolder flowStateComboViewHolder;
 
         // ========= Combat =========
         [FoldoutGroup("Combat Display"), SerializeField]
@@ -151,18 +155,21 @@ namespace Characters.UIDisplay
                 solfUpgradeSelectButton.onClick.AddListener(() => OnConfirmPressed());
             }
 
-            if (comboStreakSystem != null)
+            if (combatRankSystem != null)
             {
-                comboStreakSystem.OnKillComboChanged += UpdateKillComboText; // int → UI streak
-                comboStreakSystem.OnStageUpdate += UpdateComboStreakBar;
-                comboStreakSystem.OnBoostChanged += UpdateBoostMultiplierText; // float xN
-                //comboStreakSystem.OnTimerTick  // float seconds
-                comboStreakSystem.OnGradeChanged += gradeComboViewholder.UpdateGradeCombo;
-                comboStreakSystem.OnStageEnter += ComboValueBarUpdate;
-                //comboStreakSystem.OnStageExit += ComboValueBarUpdate;
-                comboStreakSystem.OnBerserkEnter += OnBerserkEnter;
-                comboStreakSystem.OnBerserkExit += OnBerserkExit;
-                //comboStreakSystem.OnStageExit
+                combatRankSystem.OnRankChanged += combatRankViewHolder.UpdateGradeCombo;
+                combatRankSystem.OnUpdateRankPointProgression += UpdateRankPointBar;
+                combatRankSystem.OnKillStrikeChanged += UpdateKillStrikeText;
+
+                //combatRankSystem.OnRankChanged   update combatRankViewHolder.UpdateGradeCombo;
+                //combatRankSystem.OnRankPointChanged  update ComboValueBarUpdate
+                // strike changed
+                // score multiplier
+            }
+
+            if (flowStateController != null)
+            {
+                flowStateController.OnStateChanged += flowStateComboViewHolder.UpdateFlowSceneFeedback;
             }
 
             levelSystem.OnLevelUpdate += UpdateLevelUI;
@@ -180,10 +187,10 @@ namespace Characters.UIDisplay
             skillSystem.OnSkillPerform += SkillPerfrom;
             skillSystem.OnSlotCooldownSpeedChanged += OverloopFeedback;
             skillSystem.OnSkillPerformFail += NotifySkillPerformFail;
-            skillSystem.OnSecondarySuccess += UpdateParryFeedbackText;
 
             combatSystem.OnDealDamage += UpdateDamageText;
             scoreSystem.OnScoreChange += UpdateScoreUI;
+            scoreSystem.OnScoreMultiplierChange += UpdateScoreMultiplierText;
 
             statusEffectSystem.OnStatusUIUpdate += UpdateStatusUI;
 
@@ -205,16 +212,16 @@ namespace Characters.UIDisplay
             if (solfUpgradeSelectButton != null)
                 solfUpgradeSelectButton.transform.DOKill();
 
-            if (comboStreakSystem != null)
+            if (combatRankSystem != null)
             {
-                comboStreakSystem.OnStreakChanged -= UpdateKillComboText;
-                comboStreakSystem.OnBoostChanged -= UpdateBoostMultiplierText;
-                comboStreakSystem.OnStageUpdate -= UpdateComboStreakBar;
-                comboStreakSystem.OnStageEnter -= ComboValueBarUpdate;
-                //comboStreakSystem.OnStageExit -= ComboValueBarUpdate;
-                comboStreakSystem.OnBerserkEnter -= OnBerserkEnter;
-                comboStreakSystem.OnBerserkExit -= OnBerserkExit;
-                comboStreakSystem.OnGradeChanged -= gradeComboViewholder.UpdateGradeCombo;
+                combatRankSystem.OnRankChanged -= combatRankViewHolder.UpdateGradeCombo;
+                combatRankSystem.OnUpdateRankPointProgression -= UpdateRankPointBar;
+                combatRankSystem.OnKillStrikeChanged -= UpdateKillStrikeText;
+            }
+            
+            if (flowStateController != null)
+            {
+                flowStateController.OnStateChanged -= flowStateComboViewHolder.UpdateFlowSceneFeedback;
             }
 
             levelSystem.OnLevelUpdate -= UpdateLevelUI;
@@ -234,6 +241,7 @@ namespace Characters.UIDisplay
 
             combatSystem.OnDealDamage -= UpdateDamageText;
             scoreSystem.OnScoreChange -= UpdateScoreUI;
+            scoreSystem.OnScoreMultiplierChange -= UpdateScoreMultiplierText;
 
             statusEffectSystem.OnStatusUIUpdate -= UpdateStatusUI;
 
@@ -242,13 +250,14 @@ namespace Characters.UIDisplay
 
         private void UpdateAllUI()
         {
-            if (comboStreakBar != null && comboStreakSystem.Data != null)
-                comboStreakBar.CurrentValue = 0f;
+            if (rankPointBar != null)
+                rankPointBar.CurrentValue = 0f;
+            
+            if (killStrikeText) killStrikeText.text = "0 STRIKE!";
+            if (scoreMultiplyText) UpdateScoreMultiplierText(scoreSystem.ScoreMultiplier);
 
-            if (comboUI) comboUI.SetActive(false);
-            if (killComboText) killComboText.text = "0 STRIKE!";
-            if (scoreMultiply) scoreMultiply.text = "x0";
-
+            PlayerDataSo playerData = PlayerController.Instance.CharacterData as PlayerDataSo;
+            combatRankViewHolder.UpdateGradeCombo(playerData.CombatRankDatas[0], playerData.CombatRankDatas[0]);
             foreach (var statusSlotModel in statusSlots)
                 statusSlotModel.gameObject.SetActive(false);
 
@@ -258,78 +267,39 @@ namespace Characters.UIDisplay
             cooldownIsNotReadyText.alpha = 0;
         }
 
-        #region Combo UI (ใหม่)
+        #region Rank UI (ใหม่)
 
-        private void UpdateComboStreakBar(int currentStageMinStreak, int currentStreak, int nextStageMinStreak)
+        private void UpdateRankPointBar(int currentRankPointThreshold, int currentRankPoint, int nextRankPointThreshold)
         {
-            if (!comboStreakBar || !comboUI) return;
+            if (!rankPointBar || !rankUI) return;
 
-            comboUI.SetActive(currentStreak > 0);
-            comboStreakBar.MinValue = currentStageMinStreak == nextStageMinStreak
-                ? currentStageMinStreak - 1
-                : currentStageMinStreak;
-            comboStreakBar.MaxValue = nextStageMinStreak;
-            var clampValue = Mathf.Clamp(currentStreak, currentStageMinStreak, comboStreakBar.MaxValue);
-            comboStreakBar.CurrentValue = clampValue;
+            rankUI.SetActive(currentRankPoint > 0);
+            rankPointBar.MinValue = currentRankPointThreshold == nextRankPointThreshold? currentRankPointThreshold - 1 : currentRankPointThreshold;
+            rankPointBar.MaxValue = nextRankPointThreshold;
+            var clampValue = Mathf.Clamp(currentRankPoint, currentRankPointThreshold, rankPointBar.MaxValue);
+            rankPointBar.CurrentValue = clampValue;
         }
 
-        private void UpdateKillComboText(int streak)
+        private void UpdateKillStrikeText(int streak)
         {
-            if (!comboUI) return;
-
-            comboUI.SetActive(streak > 0);
-
-            if (killComboText != null)
-                killComboText.text = $"{streak} STRIKE!";
+            if (!rankUI) return;
+            
+            if (killStrikeText != null)
+                killStrikeText.text = $"{streak} STRIKE!";
 
             // pop tween
-            comboUI.transform
+            rankUI.transform
                 .DOScale(new Vector3(scaleAmount, scaleAmount, 1), tweenDuration)
                 .SetEase(Ease.OutBack)
-                .OnComplete(() => comboUI.transform.DOScale(Vector3.one, tweenDuration));
+                .OnComplete(() => rankUI.transform.DOScale(Vector3.one, tweenDuration));
         }
 
-        private void UpdateBoostMultiplierText(float multiplierX)
+        private void UpdateScoreMultiplierText(float multiplierX)
         {
-            if (scoreMultiply == null) return;
-            scoreMultiply.text = $"x{multiplierX:0.##} ENERGY!";
+            if (scoreMultiplyText == null) return;
+            scoreMultiplyText.text = $"x{multiplierX:0.##} SCORE!";
         }
-
-        private void ComboValueBarUpdate(BaseComboStageSo combo)
-        {
-            if (combo == null)     // unstage
-            {
-                flowStageComboViewholder.CloseCurrent();
-                comboStreakBar.FillImage.color = Color.green;
-                return;
-            }
-            
-            flowStageComboViewholder.UpdateFlowSceneFeedback(combo.stageId);
-            
-            switch (combo.stageId)
-            {
-                case "flow_i":
-                    comboStreakBar.FillImage.color = Color.yellow;
-                    break;
-                case "flow_ii":
-                    comboStreakBar.FillImage.color = Color.red;
-                    break;
-                default:
-                    comboStreakBar.FillImage.color = Color.green;
-                    break;
-            }
-        }
-
-        private void OnBerserkEnter()
-        {
-            lightningCombo.SetActive(true);
-        }
-
-        private void OnBerserkExit()
-        {
-            lightningCombo.SetActive(false);
-        }
-
+        
         #endregion
 
         #region Combat UI
@@ -628,7 +598,7 @@ namespace Characters.UIDisplay
             return Instantiate(worldTextUIParryFeedbackPrefab);
         }
         
-        private void UpdateParryFeedbackText(BaseSkillDataSo skillDataSo)
+        public void UpdateParrySuccessFeedbackText(string text)
         {
             var textInstance = PoolingManager.Instance.Get<TextMeshProUGUI>(worldTextUIParryFeedbackPrefab.name);
             NotificationManager.Instance.PlayNotification("notify_skilluse", "Parry Success!", 4.0f);
@@ -637,7 +607,7 @@ namespace Characters.UIDisplay
             Transform tf = textInstance.transform;
             tf.position = PlayerController.Instance.transform.position;
             tf.localScale = Vector3.zero;
-            textInstance.text = "PARRY SUCCESS!";
+            textInstance.text = text;
             textInstance.color = Color.white;
 
             // CanvasGroup for fade

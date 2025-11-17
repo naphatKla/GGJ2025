@@ -185,7 +185,6 @@ namespace UI.IngameViewholder
             var sb = new StringBuilder(256);
             
             sb.AppendLine($"<color=#aeb0af>Level :</color> <color=#00FF00>{dataStatus.currentLevel}</color>");
-            sb.AppendLine($"<color=#aeb0af>Highest Streak :</color> <color=#FFA500>{dataStatus.highestStreakCount}</color>");
             sb.AppendLine($"<color=#aeb0af>Enemies Eliminated :</color> <color=#FF0000>{dataStatus.totalEnemiesEliminated}</color>");
             sb.AppendLine($"<color=#aeb0af>Damage Deal :</color> <color=#FF4500>{dataStatus.totalDamageDeal}</color>");
             sb.AppendLine($"<color=#aeb0af>Critical Count :</color> <color=#FFD700>{dataStatus.criticalCount}</color>");

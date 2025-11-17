@@ -11,6 +11,9 @@ namespace Characters.SO.CharacterDataSO
         [FoldoutGroup("Combat")] [SerializeField, PropertyTooltip("Exp drop after dead")]
         protected int expDrop;
         
+        [FoldoutGroup("Combat")] [SerializeField, PropertyTooltip("Score drop after dead")]
+        private int scoreDrop;
+        
         [FoldoutGroup("Skills")]
         [SerializeField, PropertyTooltip("Delay before performing skill after being eligible.")]
         protected float delayBeforePerformSkill = 0.5f;
@@ -25,6 +28,7 @@ namespace Characters.SO.CharacterDataSO
         protected List<EnemyStateDataPayload> stateList;
 
         public int ExpDrop => expDrop;
+        public int ScoreDrop => scoreDrop;
         public float DelayBeforePerformSkill => delayBeforePerformSkill;
         public BaseEnemyStateDataSo DefaultState => defaultState;
         public List<EnemyStateDataPayload> StateList => stateList;

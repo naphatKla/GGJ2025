@@ -37,6 +37,8 @@ MonoBehaviour:
   nextSkillDataUpgrade: {fileID: 0}
   level: 1
   cooldown: 5
+  globalCooldown: 0.25
+  maxStack: 1
   startFeedback: TwrilUse_Lv1
   exitFeedback: 
   clearBuffOnSkillExit: 1
@@ -58,7 +60,7 @@ MonoBehaviour:
   effectSelfOnSuccess:
   - effectData: {fileID: 11400000, guid: e5ae6010e3c4a7b43bc80da0bf5a9ef5, type: 2}
     isOverrideDuration: 1
-    overrideDuration: 3
+    overrideDuration: 7
   twirlSpeedCurve:
     serializedVersion: 2
     m_Curve:

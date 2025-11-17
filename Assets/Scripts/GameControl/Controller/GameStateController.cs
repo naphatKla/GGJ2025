@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using System.Threading;
 using Challenge;
 using Characters.Controllers;
+using Characters.SO.CharacterDataSO;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using GameControl.GameState;
 using GameControl.Interface;
 using GameControl.SO;
 using MoreMountains.Tools;
+using PermanentUpgrade;
+using Player;
 using UnityEngine;
 using Sirenix.OdinInspector;
 using UI.MapSelection;
@@ -120,13 +123,29 @@ namespace GameControl.Controller
             copy.hideFlags = HideFlags.DontSave;
             return copy;
         }
+        
+        private RushDataSO MakeRushStateCopy(RushDataSO src)
+        {
+            if (src == null) return null;
+            var copy = Instantiate(src);
+            copy.name = src.name + " (Runtime)";
+            copy.hideFlags = HideFlags.DontSave;
+            return copy;
+        }
 
         private void AssignMapRuntime(MapDataSO asset)
         {
             if (_currentMapDataRuntime != null) Destroy(_currentMapDataRuntime);
-            var copyData = MakeRuntimeCopy(asset);
-            ModifyAllDataFromChallenge(copyData);
-            _currentMapDataRuntime = copyData;
+            //Normal
+            var copyMapData = MakeRuntimeCopy(asset);
+            ModifyAllDataBeforeStart(copyMapData);
+            
+            //Rush
+            var copyRushData = MakeRushStateCopy(copyMapData.rushData);
+            ModifyAllRushDataFromChallenge(copyRushData);
+            copyMapData.rushData = copyRushData;
+            
+            _currentMapDataRuntime = copyMapData;
             if (_currentMapDataRuntime.endlessMode)
             {
                 MapState = MapState.Endless;
@@ -137,38 +156,79 @@ namespace GameControl.Controller
             }
         }
 
-        private void ModifyAllDataFromChallenge(MapDataSO mapData)
+        private void ModifyAllDataBeforeStart(MapDataSO mapData)
         {
             if (mapData == null || mapData.EnemyOptions == null || Sender == null) return;
             var snap = Sender.challengeData;
             
             //Player Modify
+            var playerDataSo = mapData.playerData.CopyInstance(); // Create Player DataSO
             var player = PlayerController.Instance;
+            var profileData = ActiveProfileService.Instance?.Current;
+            var permanentConfig = ActiveProfileService.Instance?.PermanentConfig;
+            //Modify Permanent Upgrade
+            playerDataSo.SetPlayerStats(PlayerDataStats.MaxHealth
+                , profileData.ApplyPermanentUpgrade(PermanentUpgradeType.MaxHealth, permanentConfig, playerDataSo.MaxHealth));
+            
+            //Modify Challenge
             
             //Exp
-            float expMultiplyer = snap.Player.GetAdd(PlayerAdditiveStat.ExpGain)/100;
-            player.LevelSystem.AddExpMultiplyer(expMultiplyer);
-            var modifyPlayerStats = mapData.playerData.CopyInstance(snap.Player);
-            player.AssignCharacterData(modifyPlayerStats);
+            float expMultiplyer = 1f + snap.Player.GetAdd(PlayerAdditiveStat.ExpGain) / 100f;
+            player.LevelSystem.AddExpMultiplyer(expMultiplyer - 1);
+            //Stats
+            
+            //Set
+            playerDataSo.SetPlayerStats(PlayerDataStats.Damage, snap.Player.GetSet(PlayerSetStat.BaseDamage, playerDataSo.BaseDamage));
+            playerDataSo.SetPlayerStats(PlayerDataStats.Speed, snap.Player.GetSet(PlayerSetStat.MoveSpeed, playerDataSo.BaseSpeed));
+            playerDataSo.SetPlayerStats(PlayerDataStats.MaxHealth, snap.Player.GetSet(PlayerSetStat.MaxHP, playerDataSo.MaxHealth));
+
+            //Additive
+            playerDataSo.MutiplyPlayerStats(PlayerDataStats.Damage, 1f + snap.Player.GetAdd(PlayerAdditiveStat.BaseDamage) / 100f);
+            playerDataSo.MutiplyPlayerStats(PlayerDataStats.Speed, 1f + snap.Player.GetAdd(PlayerAdditiveStat.MoveSpeed) / 100f);
+            playerDataSo.MutiplyPlayerStats(PlayerDataStats.MaxHealth, 1f + snap.Player.GetAdd(PlayerAdditiveStat.MaxHP) / 100f);
+            
+            player.AssignCharacterData(playerDataSo); //Assign Player DataSO
             
             //Score Modify
-            var scoreMultiplyer = snap.OverallScoreMultiplier;
-            PlayerController.Instance.ScoreSystem.AddScoreMultiplyer(scoreMultiplyer);
+            PlayerController.Instance.ScoreSystem.SetScoreMultiplyer(Mathf.Clamp(snap.OverallScoreMultiplier, 1f, snap.OverallScoreMultiplier));
             
             //Enemy Modify
             foreach (var opt in mapData.EnemyOptions)
             {
-                if (opt == null || opt.enemyData == null) continue;
-                if (!snap.Enemies.ContainsKey(opt.id)) continue;
-                var id = string.IsNullOrWhiteSpace(opt.id) ? string.Empty : opt.id;
-                var eSnap = snap.GetEnemy(id);
+                var e = snap.GetEnemy((opt.id ?? "").Trim()); 
+                ApplyEnemyOption(opt, e);
+            }
+        }
+        
+        private void ModifyAllRushDataFromChallenge(RushDataSO rushData)
+        {
+            if (rushData == null || rushData.enemyOptions == null || Sender == null) return;
+            var snap = Sender.challengeData;
+            
+            //Enemy Modify
+            foreach (var opt in rushData.enemyOptions)
+            {
+                var e = snap.GetEnemy((opt.id ?? "").Trim()); 
+                ApplyEnemyOption(opt, e);
+            }
+        }
+        
+        private static void ApplyEnemyOption(MapDataSO.EnemyOption opt, in Challenge.Challenge.EnemySnapshot eSnap)
+        {
+            float hp      = eSnap.Get(EnemyStat.MaxHP);
+            float dmg     = eSnap.Get(EnemyStat.Damage);
+            float mspd    = eSnap.Get(EnemyStat.MoveSpeed);
+            float chanceP = eSnap.Get(EnemyStat.SpawnChance);
+            if (float.IsFinite(chanceP))
+            {
+                var newGrowthChance = opt.enemyChanceGrowthRate * (1f + (chanceP / 100f));
+                opt.enemyChanceGrowthRate  = Mathf.Max(0f, newGrowthChance);
+            }
 
-                float hpStats   = eSnap.Get(EnemyStat.MaxHP);
-                float baseDmgStats  = eSnap.Get(EnemyStat.Damage);
-                float baseSpdStats  = eSnap.Get(EnemyStat.MoveSpeed);
-
-                var modifyEnemyStats = opt.enemyData.CopyInstance(hpStats, baseDmgStats, baseSpdStats);
-                opt.enemyData = modifyEnemyStats;
+            if (opt.enemyData != null)
+            {
+                var modified = opt.enemyData.CopyInstance(hp, dmg, mspd);
+                opt.enemyData = modified;
                 opt.modifyNewData = true;
             }
         }

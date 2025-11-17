@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Characters.SkillSystems.SkillRuntimes;
 using Cysharp.Threading.Tasks;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace Characters.SkillSystems
@@ -18,6 +19,8 @@ namespace Characters.SkillSystems
         
         // string = context failed.
         public event Action<string> OnSkillPerformFail;
+        
+        [Button]
 
         public override void PerformSkill(SkillType type)
         {

@@ -3409,7 +3409,7 @@ GameObject:
   - component: {fileID: 351446528}
   - component: {fileID: 351446529}
   m_Layer: 5
-  m_Name: ComboText
+  m_Name: KillStrikeText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3923,6 +3923,7 @@ MonoBehaviour:
     SerializedBytes: 
     ReferencedUnityObjects:
     - {fileID: 1672325731}
+    - {fileID: 1714217790}
     SerializedBytesString: 
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
@@ -3941,7 +3942,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 12
-      Data: 1
+      Data: 2
     - Name: 
       Entry: 7
       Data: 
@@ -3951,6 +3952,18 @@ MonoBehaviour:
     - Name: $v
       Entry: 10
       Data: 0
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 
+    - Name: $k
+      Entry: 1
+      Data: flow_i
+    - Name: $v
+      Entry: 10
+      Data: 1
     - Name: 
       Entry: 8
       Data: 
@@ -4925,10 +4938,6 @@ MonoBehaviour:
 
     TEXT:
 
-    TEXT:
-
-    TEXT:
-
     TEXT:'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 2dc7aeb059816db4192dac5f7d09c010, type: 2}
@@ -5168,9 +5177,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 519609468}
-  - component: {fileID: 519609469}
+  - component: {fileID: 519609470}
   m_Layer: 5
-  m_Name: ComboUI
+  m_Name: RankUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5202,7 +5211,7 @@ RectTransform:
   m_AnchoredPosition: {x: -175, y: 137}
   m_SizeDelta: {x: 350, y: 165}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &519609469
+--- !u!114 &519609470
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -5211,34 +5220,70 @@ MonoBehaviour:
   m_GameObject: {fileID: 519609467}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a48b06ce5ac11c04aa6d0484686e40a3, type: 3}
+  m_Script: {fileID: 11500000, guid: da16ad3cc61b91f4781946377360f4e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   gradeImage: {fileID: 1908912598}
   gradeFlame: {fileID: 301226517}
   gradeText: {fileID: 145958852}
+  rankpointBarFill: {fileID: 3197353784527012772}
+  thunderObj: {fileID: 1301823793}
+  thunderColor: {fileID: 1364867753}
   gradeComboList:
   - gradeId: F
     supText: FIGHT!
     gradeImage: {fileID: 21300000, guid: 904d85cdbfa3f5140bed7ca847a172e5, type: 3}
+    colorFill: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    alwayShowflame: 0
+    showthunder: 0
   - gradeId: D
     supText: DANGER!
     gradeImage: {fileID: 21300000, guid: 808025271bc5a214e8080c9f815f2d90, type: 3}
+    colorFill: {r: 0, g: 0.5550184, b: 1, a: 1}
+    alwayShowflame: 0
+    showthunder: 0
   - gradeId: C
     supText: CARNAGE
     gradeImage: {fileID: 21300000, guid: 5af82db5ce764eb4b98e2d6f5063e272, type: 3}
+    colorFill: {r: 0.25566882, g: 1, b: 0.1745283, a: 1}
+    alwayShowflame: 0
+    showthunder: 0
   - gradeId: B
     supText: BRUTAL
     gradeImage: {fileID: 21300000, guid: 36470d51f455f7940a9655a01fcbeada, type: 3}
+    colorFill: {r: 1, g: 0.85797274, b: 0, a: 1}
+    alwayShowflame: 0
+    showthunder: 0
   - gradeId: A
     supText: AGONY
     gradeImage: {fileID: 21300000, guid: 281d45a4e051aeb4fa3019db3b0ebae5, type: 3}
+    colorFill: {r: 1, g: 0.43189976, b: 0, a: 1}
+    alwayShowflame: 0
+    showthunder: 0
   - gradeId: S
     supText: SAVAGE
     gradeImage: {fileID: 21300000, guid: 548151c49e329d24bacf44146415d764, type: 3}
+    colorFill: {r: 1, g: 0, b: 0, a: 1}
+    alwayShowflame: 0
+    showthunder: 0
   - gradeId: SS
     supText: SLAUGHTER
     gradeImage: {fileID: 21300000, guid: 0cd221c86846258418344ec2ce0ad281, type: 3}
+    colorFill: {r: 1, g: 0, b: 0.71493673, a: 1}
+    alwayShowflame: 1
+    showthunder: 1
+  - gradeId: SSS
+    supText: SUPER SLAUGHTER
+    gradeImage: {fileID: 21300000, guid: 3ebd3fdc28d4875469b49e120defafa2, type: 3}
+    colorFill: {r: 0.34555674, g: 0, b: 1, a: 1}
+    alwayShowflame: 1
+    showthunder: 1
+  - gradeId: X
+    supText: X&&&XTY%
+    gradeImage: {fileID: 21300000, guid: 07af1237fc7b946429492656737d39e9, type: 3}
+    colorFill: {r: 0, g: 0.025779486, b: 1, a: 1}
+    alwayShowflame: 1
+    showthunder: 1
 --- !u!1 &526582437
 GameObject:
   m_ObjectHideFlags: 0
@@ -7074,8 +7119,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 202.17, y: -21.97711}
-  m_SizeDelta: {x: 80.868, y: 91.63}
+  m_AnchoredPosition: {x: 202, y: -18.174}
+  m_SizeDelta: {x: 75.51, y: 91.63}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &706879588
 MonoBehaviour:
@@ -7096,7 +7141,7 @@ MonoBehaviour:
   m_Elasticity: 0.1
   m_Inertia: 1
   m_DecelerationRate: 0.135
-  m_ScrollSensitivity: 0.4
+  m_ScrollSensitivity: 0.001
   m_Viewport: {fileID: 1817841938}
   m_HorizontalScrollbar: {fileID: 0}
   m_VerticalScrollbar: {fileID: 1783046798}
@@ -9405,8 +9450,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -0.00000035763, y: 0.0027160645}
-  m_SizeDelta: {x: -0, y: 12.576599}
+  m_AnchoredPosition: {x: -0.00000035763, y: 0.0029907227}
+  m_SizeDelta: {x: -0, y: 15.434906}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1099952999
 MonoBehaviour:
@@ -11052,7 +11097,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1301823794
 RectTransform:
   m_ObjectHideFlags: 0
@@ -11471,7 +11516,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_ToneFilter: 0
   m_ToneIntensity: 0.14386632
-  m_ColorFilter: 0
+  m_ColorFilter: 4
   m_ColorIntensity: 1
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_ColorGlow: 0
@@ -11544,7 +11589,7 @@ MonoBehaviour:
   m_ShadowColorFilter: 4
   m_ShadowColor: {r: 1, g: 1, b: 1, a: 1}
   m_ShadowColorGlow: 0
-  m_GradationMode: 2
+  m_GradationMode: 0
   m_GradationIntensity: 1
   m_GradationColorFilter: 1
   m_GradationColor1: {r: 1, g: 1, b: 1, a: 1}
@@ -11627,19 +11672,19 @@ MonoBehaviour:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0
+      value: 1
       inSlope: 0
-      outSlope: 1
-      tangentMode: 0
+      outSlope: 0
+      tangentMode: 34
       weightedMode: 0
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
       time: 1
       value: 1
-      inSlope: 1
+      inSlope: 0
       outSlope: 0
-      tangentMode: 0
+      tangentMode: 34
       weightedMode: 0
       inWeight: 0
       outWeight: 0
@@ -11947,7 +11992,7 @@ GameObject:
   - component: {fileID: 1410884233}
   - component: {fileID: 1410884231}
   m_Layer: 5
-  m_Name: ComboBoostedText
+  m_Name: ScoreMultiplyText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -12018,7 +12063,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: X ENERGY
+  m_text: X SCORE!
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 2dc7aeb059816db4192dac5f7d09c010, type: 2}
   m_sharedMaterial: {fileID: 3646004497337031475, guid: 2dc7aeb059816db4192dac5f7d09c010, type: 2}
@@ -13066,7 +13111,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -204, y: -108}
+  m_AnchoredPosition: {x: -178.95, y: -111.7}
   m_SizeDelta: {x: 282.16, y: 278.67}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1494566754
@@ -15700,8 +15745,8 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 923919009}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0.12702118}
-  m_AnchorMax: {x: 1, y: 0.99997705}
+  m_AnchorMin: {x: 0, y: 0.15588972}
+  m_AnchorMax: {x: 1, y: 0.99997413}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -15974,7 +16019,7 @@ GameObject:
   - component: {fileID: 1672325732}
   - component: {fileID: 1672325733}
   m_Layer: 5
-  m_Name: FlowStageII
+  m_Name: FlowStateII
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -16955,6 +17000,10 @@ MonoBehaviour:
     gradeImage: {fileID: 21300000, guid: 548151c49e329d24bacf44146415d764, type: 3}
   - gradeId: SS
     gradeImage: {fileID: 21300000, guid: 0cd221c86846258418344ec2ce0ad281, type: 3}
+  - gradeId: SSS
+    gradeImage: {fileID: 21300000, guid: 3ebd3fdc28d4875469b49e120defafa2, type: 3}
+  - gradeId: X
+    gradeImage: {fileID: 21300000, guid: 07af1237fc7b946429492656737d39e9, type: 3}
 --- !u!225 &1713170223
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -16978,7 +17027,7 @@ GameObject:
   - component: {fileID: 1714217791}
   - component: {fileID: 1714217793}
   m_Layer: 5
-  m_Name: FlowStageI
+  m_Name: FlowStateI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -17711,8 +17760,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1645572233}
   m_HandleRect: {fileID: 1645572232}
   m_Direction: 2
-  m_Value: 0.9998192
-  m_Size: 0.87295586
+  m_Value: 0.99983394
+  m_Size: 0.8440844
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -17912,7 +17961,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 4.370102, y: -3.0214005}
-  m_SizeDelta: {x: -9.9389, y: -5.2066}
+  m_SizeDelta: {x: -9.94, y: -8.0649}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1817841939
 MonoBehaviour:
@@ -20032,7 +20081,7 @@ GameObject:
   - component: {fileID: 3958719696229400106}
   - component: {fileID: 5676825271868335486}
   m_Layer: 5
-  m_Name: ComboStreakBar
+  m_Name: RankPointBar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -20168,7 +20217,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.28235295, g: 1, b: 0, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -20853,7 +20902,7 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 2021511996}
     - target: {fileID: 1766625338755230343, guid: ef87c6aedde00684a81e6139e502fb41, type: 3}
-      propertyPath: comboUI
+      propertyPath: rankUI
       value: 
       objectReference: {fileID: 519609467}
     - target: {fileID: 1766625338755230343, guid: ef87c6aedde00684a81e6139e502fb41, type: 3}
@@ -20869,45 +20918,41 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1587800936}
     - target: {fileID: 1766625338755230343, guid: ef87c6aedde00684a81e6139e502fb41, type: 3}
+      propertyPath: rankPointBar
+      value: 
+      objectReference: {fileID: 5676825271868335486}
+    - target: {fileID: 1766625338755230343, guid: ef87c6aedde00684a81e6139e502fb41, type: 3}
       propertyPath: hpProgressBar
       value: 
       objectReference: {fileID: 13686465}
-    - target: {fileID: 1766625338755230343, guid: ef87c6aedde00684a81e6139e502fb41, type: 3}
-      propertyPath: killComboText
-      value: 
-      objectReference: {fileID: 351446527}
-    - target: {fileID: 1766625338755230343, guid: ef87c6aedde00684a81e6139e502fb41, type: 3}
-      propertyPath: scoreMultiply
-      value: 
-      objectReference: {fileID: 1410884233}
     - target: {fileID: 1766625338755230343, guid: ef87c6aedde00684a81e6139e502fb41, type: 3}
       propertyPath: buttonFeedBack
       value: 
       objectReference: {fileID: 460703897}
     - target: {fileID: 1766625338755230343, guid: ef87c6aedde00684a81e6139e502fb41, type: 3}
-      propertyPath: comboStreakBar
+      propertyPath: killStrikeText
       value: 
-      objectReference: {fileID: 5676825271868335486}
+      objectReference: {fileID: 351446527}
     - target: {fileID: 1766625338755230343, guid: ef87c6aedde00684a81e6139e502fb41, type: 3}
-      propertyPath: lightningCombo
+      propertyPath: lightningEffect
       value: 
       objectReference: {fileID: 1301823793}
-    - target: {fileID: 1766625338755230343, guid: ef87c6aedde00684a81e6139e502fb41, type: 3}
-      propertyPath: skillViewholder
-      value: 
-      objectReference: {fileID: 962830566913950826, guid: 6d67c1d518eecff44ac461fb8b047f1c, type: 3}
     - target: {fileID: 1766625338755230343, guid: ef87c6aedde00684a81e6139e502fb41, type: 3}
       propertyPath: solfUpgradePanel
       value: 
       objectReference: {fileID: 1939544330}
     - target: {fileID: 1766625338755230343, guid: ef87c6aedde00684a81e6139e502fb41, type: 3}
+      propertyPath: scoreMultiplyText
+      value: 
+      objectReference: {fileID: 1410884233}
+    - target: {fileID: 1766625338755230343, guid: ef87c6aedde00684a81e6139e502fb41, type: 3}
       propertyPath: mainskillViewholder
       value: 
-      objectReference: {fileID: 962830566913950826, guid: 4b26ae50e9667e3438c550d327091951, type: 3}
+      objectReference: {fileID: 962830566913950826, guid: 6d67c1d518eecff44ac461fb8b047f1c, type: 3}
     - target: {fileID: 1766625338755230343, guid: ef87c6aedde00684a81e6139e502fb41, type: 3}
-      propertyPath: gradeComboViewholder
+      propertyPath: combatRankViewHolder
       value: 
-      objectReference: {fileID: 519609469}
+      objectReference: {fileID: 519609470}
     - target: {fileID: 1766625338755230343, guid: ef87c6aedde00684a81e6139e502fb41, type: 3}
       propertyPath: cooldownIsNotReadyText
       value: 
@@ -20917,7 +20962,7 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 383199155}
     - target: {fileID: 1766625338755230343, guid: ef87c6aedde00684a81e6139e502fb41, type: 3}
-      propertyPath: flowStageComboViewholder
+      propertyPath: flowStateComboViewHolder
       value: 
       objectReference: {fileID: 368227361}
     - target: {fileID: 1766625338755230343, guid: ef87c6aedde00684a81e6139e502fb41, type: 3}
@@ -20976,13 +21021,9 @@ PrefabInstance:
       propertyPath: serializationData.Prefab
       value: 
       objectReference: {fileID: 5147604314936671000, guid: ef87c6aedde00684a81e6139e502fb41, type: 3}
-    - target: {fileID: 8511207443460752088, guid: ef87c6aedde00684a81e6139e502fb41, type: 3}
-      propertyPath: m_Size.x
+    - target: {fileID: 8896851534345665359, guid: ef87c6aedde00684a81e6139e502fb41, type: 3}
+      propertyPath: m_Enabled
       value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8511207443460752088, guid: ef87c6aedde00684a81e6139e502fb41, type: 3}
-      propertyPath: m_Size.y
-      value: 1.25
       objectReference: {fileID: 0}
     - target: {fileID: 8974750955813567560, guid: ef87c6aedde00684a81e6139e502fb41, type: 3}
       propertyPath: m_LocalPosition.x

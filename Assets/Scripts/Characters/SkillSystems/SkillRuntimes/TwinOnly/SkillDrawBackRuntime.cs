@@ -192,7 +192,7 @@ namespace Characters.SkillSystems.SkillRuntimes.TwinOnly
                 target.GetComponent<BaseMovementSystem>()
                     .TryMoveToPositionOverTime(knockBackDestination, skillData.KnockBackDuration);
                 
-                CombatManager.ApplyCalculatedDamageTo(target.gameObject, owner.gameObject,
+                CombatManager.ApplyCalculatedDamageTo(target.gameObject, owner.gameObject, owner.gameObject,
                     target.ClosestPoint(owner.transform.position), skillData.BaseExplosionDamagePerHit,
                     skillData.ExplosionDamageMultiplier, 0, 0, 0, 0);
             }

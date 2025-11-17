@@ -32,6 +32,7 @@ namespace Challenge
         MaxHP,
         Damage,
         MoveSpeed,
+        SpawnChance
     }
 
     [Serializable]
@@ -57,10 +58,13 @@ namespace Challenge
         public float damage;
         [Tooltip("+1% MSPD = +1%")]
         public float moveSpeed;
+        [Tooltip("+1% SPAWN CHANCE = +0.5%")]
+        public float spawnChance;
         public bool IsZero =>
             Mathf.Approximately(maxHP, 0) &&
             Mathf.Approximately(damage, 0) &&
-            Mathf.Approximately(moveSpeed, 0);
+            Mathf.Approximately(moveSpeed, 0) &&
+            Mathf.Approximately(spawnChance, 0);
     }
     
     [Serializable]
@@ -73,6 +77,10 @@ namespace Challenge
         [FoldoutGroup("$groupName")]
         [Tooltip("ID ศัตรูที่อยู่ในกลุ่มนี้ (เช่น Enemy_Normal) | ใส่ \"*\" = ทุกตัว")]
         public List<string> enemyIds = new() { "Enemy_Normal" };
+        
+        [FoldoutGroup("$groupName")]
+        [Tooltip("ID ศัตรูที่จะไม่รวมอยู่ในกลุ่มนี้หรือถูกนำออกจาก Global")]
+        public List<string> enemyNotincluded;
 
         [FoldoutGroup("$groupName")]
         [Header("Stat Bundle (% from base)")]
@@ -84,7 +92,8 @@ namespace Challenge
     {
         public string id = "challenge_id";
         public string title = "Challenge Title";
-        [TextArea] public string description;
+        [TextArea(4, 10)] public string description = "Not assign description yet.";
+        [TextArea(4, 10)] public string lockdescription = "Not assign description yet.";
 
         [Header("Score Bonus (Flat)")] [Tooltip("เช่น ให้ +100% ก็ใส่ 100")]
         public float flatScoreBonusPercent;
@@ -96,8 +105,9 @@ namespace Challenge
 
         [ShowIf("@statMode == StatMode.Additive")] [Header("Player Additive Debuffs (negative is harder)")]
         public List<PlayerStatMod> playerMods = new();
-
+        
         [Header("Enemy Groups (edit per group once)")]
+        public bool disableAutoCalculate = false;
         public List<EnemyGroupMod> enemyGroups = new();
         
         // -------- Debug fields (show-only) --------

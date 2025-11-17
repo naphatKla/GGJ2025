@@ -1,0 +1,37 @@
+using Cameras;
+using Characters.Controllers;
+using Characters.SO.StatusEffectSO;
+
+namespace Characters.StatusEffectSystems.StatusEffects
+{
+    public class FlowStateEffect : BaseStatusEffect<FlowStateEffectDataSo>
+    {
+        public override void OnStart(BaseController owner)
+        {
+            owner.CombatSystem.AddCurrentDamage(effectData.DamageIncrease);
+            owner.CombatSystem.AddCurrentDamageMultiplierPercent(effectData.DamagePercentIncrease);
+            owner.MovementSystem.AddCurrentSpeedMultiplier(effectData.SpeedPercentIncrease);
+
+            if (!effectData.ExpandCamera) return;
+            if (owner is not PlayerController player) return;
+            Cinemachine2DCameraController.Instance.PushOrtho(
+                Cinemachine2DCameraController.Instance.defaultOrthoSize + effectData.AdditionalExpandSize, duration, this, 0.25f);
+        }
+
+        public override void OnUpdate(BaseController owner, float deltaTime)
+        {
+            
+        }
+
+        public override void OnExit(BaseController owner)
+        {
+            owner.CombatSystem.AddCurrentDamage(-effectData.DamageIncrease);
+            owner.CombatSystem.AddCurrentDamageMultiplierPercent(-effectData.DamagePercentIncrease);
+            owner.MovementSystem.AddCurrentSpeedMultiplier(-effectData.SpeedPercentIncrease);
+
+            if (!effectData.ExpandCamera) return;
+            if (owner is not PlayerController player) return;
+            Cinemachine2DCameraController.Instance.CancelByOwner(this);
+        }
+    }
+}

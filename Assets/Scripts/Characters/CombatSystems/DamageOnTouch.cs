@@ -18,6 +18,9 @@ namespace Characters.CombatSystems
             public float AdditionalCriDmg;
             public float LifeStealPercent;
             public float LifeStealEffective;
+
+            // สามารถยิง event ชนกับ DamageOnTouch เป้าหมายได้ไหม
+            public bool CanHitWithDamageOnTouch;
         }
 
         public enum OverlapShape
@@ -54,10 +57,16 @@ namespace Characters.CombatSystems
         // --- Physics buffer ---
         private readonly Collider2D[] _overlapResults = new Collider2D[32];
 
-        // --- NEW: Snapshot buffer to avoid "modified during iteration" ---
+        // Snapshot buffer to avoid "modified during iteration"
         private readonly List<DamageInstance> _iterBuffer = new(8);
 
         public event Action<GameObject> OnHit;
+
+        /// <summary>
+        /// เมื่อชนกับเป้าหมายที่มี DamageOnTouch เปิดอยู่ด้วย
+        /// int = ค่าดาเมจโดยประมาณต่อ 1 hit ของ DamageOnTouch เป้าหมาย
+        /// </summary>
+        public event Action<int> OnHitWithDamageOnTouch;
 
         public GameObject Owner => _owner;
         public bool IsEnableDamage => _isEnableDamage;
@@ -73,11 +82,23 @@ namespace Characters.CombatSystems
             float additionalCriRate = 0f,
             float additionalCriDmg = 0f,
             float lifeStealPercent = 0f,
-            float lifeStealEffective = 0f)
+            float lifeStealEffective = 0f,
+            bool canHitWithDamageOnTouch = false)
         {
-            InternalEnableDamage(owner, caller, hitPerSec, baseSkillDamage, damageMultiplier, additionalCriRate, additionalCriDmg, lifeStealPercent, lifeStealEffective);
+            InternalEnableDamage(
+                owner,
+                caller,
+                hitPerSec,
+                baseSkillDamage,
+                damageMultiplier,
+                additionalCriRate,
+                additionalCriDmg,
+                lifeStealPercent,
+                lifeStealEffective,
+                canHitWithDamageOnTouch);
         }
 
+        [Button]
         public void EnableDamage(
             GameObject owner,
             object caller,
@@ -91,14 +112,25 @@ namespace Characters.CombatSystems
             float additionalCriRate = 0f,
             float additionalCriDmg = 0f,
             float lifeStealPercent = 0f,
-            float lifeStealEffective = 0f)
+            float lifeStealEffective = 0f,
+            bool canHitWithDamageOnTouch = false)
         {
             this.shape = shape;
-            if (layerMask.HasValue)  this.targetLayer = layerMask.Value;
+            if (layerMask.HasValue) targetLayer = layerMask.Value;
             if (box.HasValue) boxSize = box.Value;
             if (circle.HasValue) circleRadius = circle.Value;
 
-            InternalEnableDamage(owner, caller, hitPerSec, baseSkillDamage, damageMultiplier, additionalCriRate, additionalCriDmg, lifeStealPercent, lifeStealEffective);
+            InternalEnableDamage(
+                owner,
+                caller,
+                hitPerSec,
+                baseSkillDamage,
+                damageMultiplier,
+                additionalCriRate,
+                additionalCriDmg,
+                lifeStealPercent,
+                lifeStealEffective,
+                canHitWithDamageOnTouch);
         }
 
         private void InternalEnableDamage(
@@ -110,7 +142,8 @@ namespace Characters.CombatSystems
             float additionalCriRate,
             float additionalCriDmg,
             float lifeStealPercent,
-            float lifeStealEffective)
+            float lifeStealEffective,
+            bool canHitWithDamageOnTouch)
         {
             if (caller == null || owner == null)
             {
@@ -139,6 +172,7 @@ namespace Characters.CombatSystems
                 AdditionalCriDmg = additionalCriDmg,
                 LifeStealPercent = lifeStealPercent,
                 LifeStealEffective = lifeStealEffective,
+                CanHitWithDamageOnTouch = canHitWithDamageOnTouch,
             });
 
             if (!_isEnableDamage)
@@ -186,6 +220,25 @@ namespace Characters.CombatSystems
             _owner = null;
         }
 
+        /// <summary>
+        /// ดาเมจโดยประมาณต่อ 1 hit ของ DamageOnTouch ตัวนี้
+        /// ใช้ตอนโดนชนโดยอีกฝั่งที่สนใจ counter / compare damage
+        /// </summary>
+        public int GetApproxTotalDamagePerHit()
+        {
+            float total = 0f;
+
+            for (int i = 0; i < _damageInstances.Count; i++)
+            {
+                var inst = _damageInstances[i];
+                if (inst == null) continue;
+
+                total += inst.BaseSkillDamage * (inst.DamageMultiplier / 100f);
+            }
+
+            return Mathf.CeilToInt(total);
+        }
+
         #endregion
 
         #region Damage Logic
@@ -195,7 +248,7 @@ namespace Characters.CombatSystems
             if (!_isEnableDamage || _owner == null)
                 return;
 
-            // --- Snapshot instances to avoid "modified during iteration" ---
+            // Snapshot instances to avoid "modified during iteration"
             _iterBuffer.Clear();
             _iterBuffer.AddRange(_damageInstances);
 
@@ -249,6 +302,7 @@ namespace Characters.CombatSystems
                 CombatManager.ApplyCalculatedDamageTo(
                     target,
                     _owner,
+                    gameObject,
                     hitPosition,
                     instance.BaseSkillDamage,
                     instance.DamageMultiplier,
@@ -260,6 +314,17 @@ namespace Characters.CombatSystems
                 float cooldown = 1f / instance.HitPerSec;
                 _cooldownMap[key] = now + cooldown;
                 OnHit?.Invoke(target);
+
+                // ถ้า instance นี้เปิดให้เช็คชนกับ DamageOnTouch เป้าหมาย
+                if (instance.CanHitWithDamageOnTouch && OnHitWithDamageOnTouch != null)
+                {
+                    var targetDoT = target.GetComponent<DamageOnTouch>();
+                    if (targetDoT != null && targetDoT.IsEnableDamage)
+                    {
+                        int targetDamage = targetDoT.GetApproxTotalDamagePerHit();
+                        OnHitWithDamageOnTouch?.Invoke(targetDamage);
+                    }
+                }
             }
         }
 

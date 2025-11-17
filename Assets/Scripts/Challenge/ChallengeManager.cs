@@ -2,13 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Challenge.Challenge;
+using ProjectExtensions;
 using Sirenix.OdinInspector;
 using UI.MapSelection;
 using UnityEngine;
 
 namespace Challenge
 {
-    public class ChallengeManager : MonoBehaviour
+    public class ChallengeManager : NonAutoCreateSingleton<ChallengeManager>
     {
         [Header("Catalog (via Container)")]
         public ChallengeContainer allChallenges;
@@ -20,6 +21,7 @@ namespace Challenge
         private readonly Dictionary<PlayerSetStat, float> _aggPlayerSets = new(); //Set
         
         private readonly Dictionary<string, Dictionary<EnemyStat, float>> _aggEnemyMods = new();
+        private readonly HashSet<string> _globalExcludedIds = new HashSet<string>();
         
         private float _overallScoreMultiplier = 1f;
         private float _flatBonus = 0f;
@@ -132,6 +134,7 @@ namespace Challenge
             _aggPlayerMods.Clear();
             _aggEnemyMods.Clear();
             _aggPlayerSets.Clear();
+            _globalExcludedIds.Clear();
 
             _flatBonus = 0f;
             _playerPercent = 0f;
@@ -144,6 +147,7 @@ namespace Challenge
                 // Flat
                 _flatBonus += ch.flatScoreBonusPercent;
 
+                var perSO = ChallengeScoringUtility.Compute(ch);
                 // Player
                 if (ch.statMode == StatMode.Set)
                 {
@@ -156,9 +160,7 @@ namespace Challenge
                 {
                     foreach (var pm in ch.playerMods)
                         _aggPlayerMods[pm.stat] = _aggPlayerMods.TryGetValue(pm.stat, out var cur) ? cur + pm.percentDelta : pm.percentDelta;
-                    var perSO = ChallengeScoringUtility.Compute(ch);
                     _playerPercent  += perSO.playerPercent;
-                    _enemiesPercent += perSO.enemiesPercentSum;
                 }
 
                 // Enemy (grouped)
@@ -176,17 +178,37 @@ namespace Challenge
                     add(EnemyStat.MaxHP, grp.stats.maxHP);
                     add(EnemyStat.Damage, grp.stats.damage);
                     add(EnemyStat.MoveSpeed, grp.stats.moveSpeed);
+                    add(EnemyStat.SpawnChance, grp.stats.spawnChance);
 
-                    if (grp.enemyIds == null || grp.enemyIds.Count == 0)
+                    var isGlobal = grp.enemyIds == null || grp.enemyIds.Count == 0;
+                    if (!isGlobal && grp.enemyIds != null)
+                        foreach (var raw in grp.enemyIds)
+                            if (string.IsNullOrWhiteSpace(raw) || raw.Trim() == GLOBAL_ID)
+                            {
+                                isGlobal = true;
+                                break;
+                            }
+
+                    if (isGlobal)
+                    {
                         AccumulateEnemyDict(GLOBAL_ID, dict);
+                        if (grp.enemyNotincluded != null)
+                            foreach (var raw in grp.enemyNotincluded)
+                            {
+                                var id = raw?.Trim();
+                                if (!string.IsNullOrEmpty(id) && id != GLOBAL_ID) _globalExcludedIds.Add(id);
+                            }
+                    }
                     else
-                        foreach (var id in grp.enemyIds)
+                    {
+                        foreach (var raw in grp.enemyIds)
                         {
-                            //Global + Per ID
-                            var key = string.IsNullOrWhiteSpace(id) ? GLOBAL_ID : id.Trim();
+                            var key = string.IsNullOrWhiteSpace(raw) ? GLOBAL_ID : raw.Trim();
                             AccumulateEnemyDict(key, dict);
                         }
+                    }
                 }
+                if (!ch.disableAutoCalculate) _enemiesPercent += perSO.enemiesPercentSum;
             }
 
             var totalPercent = _flatBonus + _playerPercent + _enemiesPercent;
@@ -204,7 +226,9 @@ namespace Challenge
             var result = new Dictionary<string, EnemySnapshot>();
             
             //Global
-            var global = _aggEnemyMods.TryGetValue(GLOBAL_ID, out var g) ? g : null;
+            var hasGlobal = _aggEnemyMods.TryGetValue(GLOBAL_ID, out var g);
+            if (hasGlobal)
+                result[GLOBAL_ID] = new EnemySnapshot(GLOBAL_ID, new Dictionary<EnemyStat, float>(g));
             
             //Enemy Key
             foreach (var kv in _aggEnemyMods)
@@ -215,10 +239,12 @@ namespace Challenge
                 var merged = new Dictionary<EnemyStat, float>();
                 
                 //Add Global
-                if (global != null)
-                    foreach (var (stat, val) in global)
+                if (hasGlobal && !_globalExcludedIds.Contains(enemyId))
+                {
+                    foreach (var (stat, val) in g)
                         if (!Mathf.Approximately(val, 0))
                             merged[stat] = val;
+                }
 
                 //Add Specific
                 foreach (var (stat, val) in kv.Value)
@@ -233,9 +259,11 @@ namespace Challenge
             return new ChallengeSnapshot(
                 playerSnap, result,
                 _overallScoreMultiplier,
+                TotalPercent,
                 _flatBonus,
                 _playerPercent,
-                _enemiesPercent
+                _enemiesPercent,
+                _globalExcludedIds
             );
         }
 

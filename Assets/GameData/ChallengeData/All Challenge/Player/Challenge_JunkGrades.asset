@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 09b72255c8a83094cbc34892911a61ff, type: 3}
+  m_Name: Challenge_JunkGrades
+  m_EditorClassIdentifier: 
+  id: challenge_junkgrades
+  title: Junk Grades
+  description: "Decrease Max HP = 1\r\nReward\r\n+300% score multiply\r"
+  lockdescription: Not assign description yet.
+  flatScoreBonusPercent: 300
+  statMode: 1
+  playerSetMods:
+  - stat: 0
+    setDelta: 1
+  playerMods:
+  - stat: 0
+    percentDelta: -50
+  enemyGroups: []
