@@ -69,16 +69,22 @@ namespace Characters.StatusEffectSystems
 
         private BaseController _owner;
         private bool _stepping;
+        private float _stunResistancePercentage;
 
         public event Action<IReadOnlyList<StatusEffectUIData>> OnStatusUIUpdate;
+        public float StunResistancePercentage => _stunResistancePercentage;
 
         private readonly List<StatusEffectUIData> _uiBuffer = new(8);
 
-        public virtual void AssignData(BaseController owner) => _owner = owner;
+        public virtual void AssignData(BaseController owner)
+        {
+            _owner = owner;
+            _stunResistancePercentage = owner.CharacterData.StunResistancePercentage;
+        } 
 
         private void OnEnable() => FixedUpdateManager.Instance.Register(this);
         private void OnDisable() => FixedUpdateManager.Current?.Unregister(this);
-
+        
         public void OnFixedUpdate()
         {
             float dt = Time.fixedDeltaTime;
@@ -298,6 +304,11 @@ namespace Characters.StatusEffectSystems
                     CurrentDuration = eff.CurrentDuration
                 });
             }
+        }
+
+        public void AddStunResistancePercentage(float amount)
+        {
+            _stunResistancePercentage = Mathf.Clamp(_stunResistancePercentage + amount, 0, 100);
         }
     }
 

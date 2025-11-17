@@ -21,6 +21,14 @@ namespace Characters.StatusEffectSystems.StatusEffects
             {
                 return;
             }
+
+            if (owner.StatusEffectSystem.StunResistancePercentage > 0)
+            {
+                if (owner.StatusEffectSystem.StunResistancePercentage >= 100) return;
+                float reduceDuration = (duration * owner.CharacterData.StunResistancePercentage / 100);
+                duration = duration - reduceDuration;
+                currentDuration = duration;
+            }
             
             _isStunSuccess = true;
             owner.MovementSystem.StopFromStun(true);

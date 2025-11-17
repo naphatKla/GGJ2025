@@ -101,7 +101,8 @@ namespace Characters.Controllers
         /// Should be assigned via Inspector or at runtime.
         /// </summary>
         public HealthSystem HealthSystem => healthSystem;
-
+        
+        public StatusEffectSystem StatusEffectSystem => statusEffectSystem;
         public SkillSystem SkillSystem => skillSystem;
 
         public CombatSystem CombatSystem => combatSystem;

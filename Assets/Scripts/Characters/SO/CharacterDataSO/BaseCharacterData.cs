@@ -14,6 +14,9 @@ namespace Characters.SO.CharacterDataSO
         [FoldoutGroup("Health"), MinValue(0), PropertyTooltip("Invincible time after hit (sec).")]
         [SerializeField] protected float invincibleTimePerHit = 0.1f;
 
+        [FoldoutGroup("Effects"), MinValue(0), MaxValue(100), PropertyTooltip("Stun Resistance")] [SerializeField]
+        protected float stunResistancePercentage;
+
         [FoldoutGroup("Movement"), PropertyTooltip("Base movement speed (unit/sec).")]
         [SerializeField] protected float baseSpeed = 5;
 
@@ -102,6 +105,7 @@ namespace Characters.SO.CharacterDataSO
         // Public Getters
         public float MaxHealth => maxHealth;
         public float InvincibleTimePerHit => invincibleTimePerHit;
+        public float StunResistancePercentage => stunResistancePercentage;
         public float BaseSpeed => baseSpeed;
         public float MoveAccelerationRate => moveAccelerationRate;
         public float TurnAccelerationRate => turnAccelerationRate;
