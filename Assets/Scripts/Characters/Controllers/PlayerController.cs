@@ -32,7 +32,9 @@ namespace Characters.Controllers
         
         public CollectItemSystem CollectItemSystem => collectItemSystem;
         public CombatRankSystem CombatRankSystem => combatRankSystem;
+        public FlowStateController FlowStateController => flowStateController;
         public LevelSystem LevelSystem => levelSystem;
+        public SkillUpgradeController SkillUpgradeController => skillUpgradeController;
         public ScoreSystem ScoreSystem => scoreSystem;
         public PlayerDisplay PlayerDisplay => playerDisplay;
 
@@ -95,8 +97,7 @@ namespace Characters.Controllers
             HealthSystem.OnHeal += combatRankSystem.OnHealCondition;
             
             // flow state
-            combatRankSystem.OnRankPointAdded += flowStateController.OnRankPointAdd;
-            HealthSystem.OnTakeDamage += flowStateController.OnTakeDamage;
+            combatRankSystem.OnRankConditionTrigger += flowStateController.OnRankConditionTrigger;
 
             UIManager.Instance.OnAnyPanelOpen += OnAnyUIOpen;
             UIManager.Instance.OnAllPanelClosed += OnAllUIClosed;
@@ -123,8 +124,7 @@ namespace Characters.Controllers
             HealthSystem.OnHeal -= combatRankSystem.OnHealCondition;
             
             // flow state
-            combatRankSystem.OnRankPointAdded -= flowStateController.OnRankPointAdd;
-            HealthSystem.OnTakeDamage -= flowStateController.OnTakeDamage;
+            combatRankSystem.OnRankConditionTrigger -= flowStateController.OnRankConditionTrigger;
             
             if (UIManager.IsAlive)
             {

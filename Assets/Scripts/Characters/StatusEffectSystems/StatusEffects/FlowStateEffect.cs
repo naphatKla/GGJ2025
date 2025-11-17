@@ -12,8 +12,11 @@ namespace Characters.StatusEffectSystems.StatusEffects
             owner.CombatSystem.AddCurrentDamageMultiplierPercent(effectData.DamagePercentIncrease);
             owner.MovementSystem.AddCurrentSpeedMultiplier(effectData.SpeedPercentIncrease);
 
-            if (!effectData.ExpandCamera) return;
+      
             if (owner is not PlayerController player) return;
+            player.FlowStateController.AddFlowScoreMultiplier(effectData.FlowScorePercentageAdded/100);
+            
+            if (!effectData.ExpandCamera) return;
             Cinemachine2DCameraController.Instance.PushOrtho(
                 Cinemachine2DCameraController.Instance.defaultOrthoSize + effectData.AdditionalExpandSize, duration, this, 0.25f);
         }
@@ -28,9 +31,11 @@ namespace Characters.StatusEffectSystems.StatusEffects
             owner.CombatSystem.AddCurrentDamage(-effectData.DamageIncrease);
             owner.CombatSystem.AddCurrentDamageMultiplierPercent(-effectData.DamagePercentIncrease);
             owner.MovementSystem.AddCurrentSpeedMultiplier(-effectData.SpeedPercentIncrease);
-
-            if (!effectData.ExpandCamera) return;
+            
             if (owner is not PlayerController player) return;
+            player.FlowStateController.AddFlowScoreMultiplier(-effectData.FlowScorePercentageAdded/100);
+            
+            if (!effectData.ExpandCamera) return;
             Cinemachine2DCameraController.Instance.CancelByOwner(this);
         }
     }

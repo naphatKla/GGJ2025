@@ -19,11 +19,16 @@ namespace Characters.SO.StatusEffectSO
 
         [EnableIf(nameof(expandCamera))]
         [SerializeField] private float additionalExpandSize = 1.5f;
+
+        [Unit(Units.Percent)] 
+        [SerializeField] private float flowScorePercentageAdded;
         
         public float DamageIncrease => damageIncrease;
         public float DamagePercentIncrease => damagePercentIncrease;
         public float SpeedPercentIncrease => speedPercentIncrease;
         public bool ExpandCamera => expandCamera;
         public float AdditionalExpandSize => additionalExpandSize;
+
+        public float FlowScorePercentageAdded => flowScorePercentageAdded;
     }
 }

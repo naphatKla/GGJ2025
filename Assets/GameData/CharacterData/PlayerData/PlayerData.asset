@@ -59,19 +59,31 @@ MonoBehaviour:
     rankPointThreshold: 1750
     scoreMultiplier: 10
   parryConditionData:
+    conditionID: parry_condtition
+    flowingMindModify: 1
     perfectParryPercentage: 100
     normalParryPercentage: 50
   counterDashConditionData:
-    perfectCounterDashPercentage: 50
-    normalCounterDashPercentage: 25
-  killConditionData:
-    pointPerKill: 1
+    conditionID: counterDash_condtition
+    flowingMindModify: 1
+    counterDashPercentage: 25
+  singleKillConditionData:
+    conditionID: singleKill_condtition
+    flowingMindModify: 0
+    pointAddedPerKill: 1
+  groupKillConditionData:
+    conditionID: groupKill_condtition
+    flowingMindModify: 1
     killAmountToGainPoint: 5
     killWithInDuration: 0.5
     scorePercentage: 10
   healConditionData:
+    conditionID: heal_condtition
+    flowingMindModify: 1
     healPercentage: 100
   takeDamageConditionData:
+    conditionID: takeDamage_condtition
+    flowingMindModify: -1
     lostPointPercentage: 50
   flowStateDatas:
   - flowStateId: none_flow
@@ -89,9 +101,6 @@ MonoBehaviour:
     - effectData: {fileID: 11400000, guid: 246112b4ed499a743bccd65d509af68e, type: 2}
       isOverrideDuration: 1
       overrideDuration: 9999
-  rankPointAddedThreshold: 5
-  flowingMindGainAmount: 1
-  flowingMindReduceOnTakeDamage: 1
   flowingMindLifeTimePerStack: 3
   flowingMindMaxCap: 10
   attackHitCameraShakeOption:
