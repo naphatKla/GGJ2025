@@ -166,7 +166,7 @@ namespace Characters.HeathSystems
             BufferPendingHit(hitInfo);
             return true;
         }
-
+        
         /// <summary>
         /// Consume the last hit attempt (ไม่สน iframe/cooldown).
         /// ใช้สำหรับสกิลที่อยากรู้ว่า เมื่อกี้มี hit อะไรเพิ่งชนเรา
@@ -342,7 +342,11 @@ namespace Characters.HeathSystems
 
         private void BufferPendingHit(HitInfo hitInfo)
         {
-            // เคลียร์ของเก่า
+            // ถ้ามี pending อยู่แล้ว → ไม่รับ hit ใหม่ในช่วง beforeHitDelay
+            if (_pendingHit.HasValue)
+                return;
+
+            // เคลียร์ของเก่า (กันกรณีหลงเหลือจาก state เก่า เช่น revive/reset)
             CancelAndDispose(ref _pendingHitCts);
 
             _pendingHit = hitInfo;
@@ -352,6 +356,7 @@ namespace Characters.HeathSystems
 
             ResolvePendingHit(hitInfo, _pendingHitCts.Token).Forget();
         }
+
 
         private async UniTaskVoid ResolvePendingHit(HitInfo info, CancellationToken token)
         {
