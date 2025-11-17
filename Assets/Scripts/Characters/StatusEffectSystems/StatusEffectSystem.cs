@@ -308,7 +308,7 @@ namespace Characters.StatusEffectSystems
 
         public void AddStunResistancePercentage(float amount)
         {
-            _stunResistancePercentage = Mathf.Clamp(_stunResistancePercentage + amount, 0, 100);
+            _stunResistancePercentage += amount;
         }
     }
 
