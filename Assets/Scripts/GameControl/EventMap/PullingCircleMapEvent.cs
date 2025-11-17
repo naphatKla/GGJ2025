@@ -1,5 +1,4 @@
 using Cysharp.Threading.Tasks;
-using DG.Tweening;
 using UnityEngine;
 using Characters.MovementSystems;
 using Manager;
@@ -70,11 +69,14 @@ namespace GameControl.EventMap
             PullPlayer();
             //Dmg on touch Center
             DamageOnTouch();
-            
         }
 
+        private float _lastTimeHit;
+        private const float _hitPerSec = 0.5f;
         private void DamageOnTouch()
         {
+            if (Time.time <= _lastTimeHit + _hitPerSec) return;
+            
             Vector2 center = firePoint ? firePoint.TransformPoint(sphereOffset) : (Vector2)transform.TransformPoint(sphereOffset);
             var count = Physics2D.OverlapCircleNonAlloc(center, dmgCenterRadius, _hits, hitLayer);
             if (count == 0) return;
@@ -87,6 +89,8 @@ namespace GameControl.EventMap
                 var go = col.gameObject;
                 if (go == gameObject) continue;
                 CombatManager.ApplyRawDamageTo(go, gameObject, damage);
+                _lastTimeHit = Time.time;
+                Debug.Log("Black Hole Attack");
             }
         }
 
