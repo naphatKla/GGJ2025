@@ -1,4 +1,5 @@
 using Player;
+using UnityEngine;
 
 namespace PermanentUpgrade
 {
@@ -98,10 +99,10 @@ namespace PermanentUpgrade
             switch (entry.mode)
             {
                 case PermanentUpgradeValueMode.Flat:
-                    return baseValue + bonus;
+                    return bonus;
 
                 case PermanentUpgradeValueMode.Percent:
-                    return baseValue * (1f + bonus);
+                    return baseValue * (bonus/100);
 
                 default:
                     return baseValue;

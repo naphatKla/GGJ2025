@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace PermanentUpgrade
@@ -34,5 +35,11 @@ namespace PermanentUpgrade
             }
             return _cache != null && _cache.TryGetValue(type, out var e) ? e : null;
         }
+        
+        public List<PermanentUpgradeEntry> GetAllEntry()
+        {
+            return entries;
+        }
+        
     }
 }

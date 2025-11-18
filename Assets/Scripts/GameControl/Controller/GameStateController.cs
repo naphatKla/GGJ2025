@@ -164,11 +164,32 @@ namespace GameControl.Controller
             //Player Modify
             var playerDataSo = mapData.playerData.CopyInstance(); // Create Player DataSO
             var player = PlayerController.Instance;
-            var profileData = ActiveProfileService.Instance?.Current;
+            var profileData = ActiveProfileService.Instance?.CurrentProfile;
             var permanentConfig = ActiveProfileService.Instance?.PermanentConfig;
             //Modify Permanent Upgrade
-            playerDataSo.SetPlayerStats(PlayerDataStats.MaxHealth
+            playerDataSo.AddPlayerStats(PlayerDataStats.MaxHealth
                 , profileData.ApplyPermanentUpgrade(PermanentUpgradeType.MaxHealth, permanentConfig, playerDataSo.MaxHealth));
+            playerDataSo.AddPlayerStats(PlayerDataStats.Speed
+                , profileData.ApplyPermanentUpgrade(PermanentUpgradeType.Speed, permanentConfig, playerDataSo.BaseSpeed));
+            playerDataSo.AddPlayerStats(PlayerDataStats.Damage
+                , profileData.ApplyPermanentUpgrade(PermanentUpgradeType.Damage, permanentConfig, playerDataSo.BaseDamage));
+            
+            playerDataSo.AddPlayerStats(PlayerDataStats.CritDamage
+                , profileData.ApplyPermanentUpgrade(PermanentUpgradeType.CritDamage, permanentConfig, playerDataSo.BaseCriDamage));
+            playerDataSo.AddPlayerStats(PlayerDataStats.CritRate
+                , profileData.ApplyPermanentUpgrade(PermanentUpgradeType.CritRate, permanentConfig, playerDataSo.BaseCriRate));
+            
+            playerDataSo.AddPlayerStats(PlayerDataStats.LifeStealChance
+                , profileData.ApplyPermanentUpgrade(PermanentUpgradeType.LifeStealChance, permanentConfig, playerDataSo.BaseLifeStealPercent));
+            playerDataSo.AddPlayerStats(PlayerDataStats.LifeStealEffective
+                , profileData.ApplyPermanentUpgrade(PermanentUpgradeType.LifeStealEffective, permanentConfig, playerDataSo.BaseLifeStealEffective));
+
+            player.LevelSystem.AddExpMultiplyer(profileData.ApplyPermanentUpgrade(PermanentUpgradeType.ExpMultiply, permanentConfig, player.LevelSystem.ExpMultiplyer));
+            
+            playerDataSo.AddPlayerStats(PlayerDataStats.PickupRadius
+                , profileData.ApplyPermanentUpgrade(PermanentUpgradeType.PickupRadius, permanentConfig, playerDataSo.PullItemRadius));
+            playerDataSo.AddPlayerStats(PlayerDataStats.HurtIFrame
+                , profileData.ApplyPermanentUpgrade(PermanentUpgradeType.HurtIFrame, permanentConfig, playerDataSo.InvincibleTimePerHit));
             
             //Modify Challenge
             

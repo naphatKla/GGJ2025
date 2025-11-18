@@ -38,7 +38,7 @@ namespace UI.MapSelectionRework
         Stack<Transform> pool = new Stack<Transform>();
         private List<MapDataSO> _items = new();
         public event Action<int, MapDataSO> OnSelected;
-        private PlayerData Current => ActiveProfileService.Instance != null ? ActiveProfileService.Instance.Current : null;
+        private PlayerData Current => ActiveProfileService.Instance != null ? ActiveProfileService.Instance.CurrentProfile : null;
         
         void Awake()
         {

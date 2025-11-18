@@ -12,8 +12,8 @@ namespace Player
 {
     public class ActiveProfileService : AutoCreateSingleton<ActiveProfileService>
     {
-        public PlayerData Current { get; private set; }
-        public bool HasCurrent => Current != null;
+        public PlayerData CurrentProfile { get; private set; }
+        public bool HasCurrent => CurrentProfile != null;
         private const string PREFS_KEY = "current_profile_id";
         
         [Header("Debug Overlay")]
@@ -27,6 +27,7 @@ namespace Player
         private GUIStyle _kvStyle;
 
         public PermanentUpgradeConfig PermanentConfig => debugUpgradeConfig;
+        public Action OnPermanentUpgrade;
 
         protected override void Awake()
         {
@@ -42,7 +43,7 @@ namespace Player
 
         public void SetCurrent(PlayerData data)
         {
-            Current = data;
+            CurrentProfile = data;
             if (data != null && !string.IsNullOrEmpty(data.ProfileId))
             {
                 PlayerPrefs.SetString(PREFS_KEY, data.ProfileId);
@@ -52,7 +53,7 @@ namespace Player
 
         public PlayerData LoadCurrent()
         {
-            if (Current != null) return Current;
+            if (CurrentProfile != null) return CurrentProfile;
 
             //from PlayerPrefs
             var id = PlayerPrefs.GetString(PREFS_KEY, string.Empty);
@@ -70,12 +71,12 @@ namespace Player
         
         public void SaveNow()
         {
-            if (Current == null)
+            if (CurrentProfile == null)
             {
-                Debug.LogWarning("[ActiveProfileService] SaveNow() skipped: Current is null.");
+                Debug.LogWarning("[ActiveProfileService] SaveNow() skipped: CurrentProfile is null.");
                 return;
             }
-            PlayerSaveSystem.Instance.Save(Current);
+            PlayerSaveSystem.Instance.Save(CurrentProfile);
         }
         
         
@@ -112,14 +113,14 @@ namespace Player
 
         private void DrawWindow(int id)
         {
-            var current = Current;
+            var current = CurrentProfile;
 
             GUILayout.BeginVertical();
             _scroll = GUILayout.BeginScrollView(_scroll);
 
             if (current == null)
             {
-                GUILayout.Label("Current: <null>", _hdrStyle);
+                GUILayout.Label("CurrentProfile: <null>", _hdrStyle);
                 GUILayout.Space(6);
 
                 if (GUILayout.Button("LoadCurrent()"))
@@ -137,7 +138,7 @@ namespace Player
             }
 
             // Header
-            GUILayout.Label("Current Profile", _hdrStyle);
+            GUILayout.Label("CurrentProfile Profile", _hdrStyle);
             DrawKV("ProfileId", current.ProfileId);
             DrawKV("DisplayName", current.DisplayName);
             DrawKV("Nano Coin", current.nanoCoin.ToString());
@@ -215,6 +216,7 @@ namespace Player
                         if (GUILayout.Button("Upgrade", GUILayout.Width(80f)))
                             if (current.TryUpgrade(type, debugUpgradeConfig))
                             {
+                                OnPermanentUpgrade?.Invoke();
                                 SaveNow();
                                 Debug.Log($"[ActiveProfileService] Debug Upgrade {type} => Lv {current.GetPermanentUpgradeLevel(type)}, Nano={current.nanoCoin}");
                             }
@@ -231,18 +233,21 @@ namespace Player
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("+100 Nano"))
             {
+                OnPermanentUpgrade?.Invoke();
                 current.nanoCoin += 100;
                 Debug.Log($"[ActiveProfileService] Debug: +100 Nano Coin => {current.nanoCoin}");
             }
 
-            if (GUILayout.Button("+1000 Nano"))
+            if (GUILayout.Button("+10000 Nano"))
             {
-                current.nanoCoin += 1000;
-                Debug.Log($"[ActiveProfileService] Debug: +1000 Nano Coin => {current.nanoCoin}");
+                OnPermanentUpgrade?.Invoke();
+                current.nanoCoin += 10000;
+                Debug.Log($"[ActiveProfileService] Debug: +10000 Nano Coin => {current.nanoCoin}");
             }
 
             if (GUILayout.Button("Reset Permanent Upgrades"))
             {
+                OnPermanentUpgrade?.Invoke();
                 current.PermanentUpgrades.Clear();
                 Debug.Log("[ActiveProfileService] Debug: PermanentUpgrades cleared.");
             }
@@ -267,10 +272,10 @@ namespace Player
                     if (re != null) SetCurrent(re);
                 }
 
-            if (GUILayout.Button("Clear Current"))
+            if (GUILayout.Button("Clear CurrentProfile"))
             {
                 SetCurrent(null);
-                Debug.Log("[ActiveProfileService] Current cleared.");
+                Debug.Log("[ActiveProfileService] CurrentProfile cleared.");
             }
             
             GUILayout.Space(1);

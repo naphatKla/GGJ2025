@@ -158,15 +158,14 @@ namespace UI
             ApplyPauseState();
             
             _allLoad = false;
+            ActiveProfileService.Instance.AutoCreate();
+            PlayerSaveSystem.Instance.AutoCreate();
         }
         
         private async void Start()
         {
             await UniTask.Yield(PlayerLoopTiming.LastPostLateUpdate);
             if (!_allLoad) _allLoad = true;
-            
-            ActiveProfileService.Instance.AutoCreate();
-            PlayerSaveSystem.Instance.AutoCreate();
         }
         
 

@@ -28,6 +28,7 @@ namespace Player
         // Progression
         public HashSet<string> UnlockedMaps = new HashSet<string>();
         public HashSet<string> UnlockedChallenges = new HashSet<string>();
+        public HashSet<PermanentUpgradeType> UnlockedPermanentUpgrade = new HashSet<PermanentUpgradeType>();
         
         // Selected Challenge
         public HashSet<string> SelectedChallenges = new HashSet<string>();

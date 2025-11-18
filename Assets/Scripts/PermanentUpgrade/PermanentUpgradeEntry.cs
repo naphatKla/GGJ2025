@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace PermanentUpgrade
@@ -34,13 +35,25 @@ namespace PermanentUpgrade
     [Serializable]
     public class PermanentUpgradeEntry
     {
+        [FoldoutGroup("$type")]
         public PermanentUpgradeType type;
         
-        [Header("Value Config")]
+        //Display Data
+        [FoldoutGroup("$type")]
+        public string nameUpgrade;
+        [FoldoutGroup("$type")]
+        public Sprite iconUpgrade;
+        [FoldoutGroup("$type")] [TextArea(4, 10)]
+        public string descriptionUpgrade;
+        [FoldoutGroup("$type")] [TextArea(4, 10)]
+        public string lockDescriptionUpgrade;
+        
+        [Header("Value Config")] [FoldoutGroup("$type")]
         public PermanentUpgradeValueMode mode = PermanentUpgradeValueMode.Flat;
 
-        [Tooltip("เลเวลเรียงจาก 1,2,3,...; ขนาด list = max level")]
+        [Tooltip("เลเวลเรียงจาก 1,2,3,...; ขนาด list = max level")] [FoldoutGroup("$type")]
         public List<PermanentUpgradeLevelData> levels = new List<PermanentUpgradeLevelData>();
+        [FoldoutGroup("$type")]
         public int MaxLevel => levels != null ? levels.Count : 0;
 
         public PermanentUpgradeLevelData GetLevelData(int level)

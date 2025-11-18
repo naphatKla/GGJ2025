@@ -154,6 +154,24 @@ namespace Characters.SO.CharacterDataSO
                 case PlayerDataStats.Speed:
                     baseSpeed += value;
                     break;
+                case PlayerDataStats.CritRate:
+                    baseCriRate += value;
+                    break;
+                case PlayerDataStats.CritDamage:
+                    baseCriDamage += value;
+                    break;
+                case PlayerDataStats.LifeStealChance:
+                    baseLifeStealPercent += value;
+                    break;
+                case PlayerDataStats.LifeStealEffective:
+                    baseLifeStealEffective += value;
+                    break;
+                case PlayerDataStats.PickupRadius:
+                    pullItemRadius += value;
+                    break;
+                case PlayerDataStats.HurtIFrame:
+                    invincibleTimePerHit += value;
+                    break;
             }
         }
         
@@ -169,6 +187,21 @@ namespace Characters.SO.CharacterDataSO
                     break;
                 case PlayerDataStats.Speed:
                     baseSpeed *= value;
+                    break;
+                case PlayerDataStats.CritRate:
+                    baseCriRate *= value;
+                    break;
+                case PlayerDataStats.CritDamage:
+                    baseCriDamage *= value;
+                    break;
+                case PlayerDataStats.LifeStealChance:
+                    baseLifeStealPercent *= value;
+                    break;
+                case PlayerDataStats.LifeStealEffective:
+                    baseLifeStealEffective *= value;
+                    break;
+                case PlayerDataStats.HurtIFrame:
+                    invincibleTimePerHit *= value;
                     break;
             }
         }

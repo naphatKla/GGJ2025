@@ -22,7 +22,7 @@ namespace Manager
             {
                 var svc = ActiveProfileService.Instance;
                 if (svc == null) return null;
-                return svc.Current ?? svc.LoadCurrent();
+                return svc.CurrentProfile ?? svc.LoadCurrent();
             }
         }
 
