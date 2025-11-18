@@ -115,7 +115,7 @@ namespace UI.IngameViewholder
         {
             try
             {
-                await UpdateGradeResult(dataStatus.highestRank);
+                await UpdateGradeResult(dataStatus.currentRank);
                 await PlayCountUpAsync(dataStatus.totalScore, 2);
                 CheckHighestScore(dataStatus);
             }
