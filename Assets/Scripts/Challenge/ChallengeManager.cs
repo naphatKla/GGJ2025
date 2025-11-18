@@ -14,7 +14,7 @@ namespace Challenge
         [Header("Catalog (via Container)")]
         public ChallengeContainer allChallenges;
 
-        [Header("Current Selected")]
+        [Header("CurrentProfile Selected")]
         public List<ChallengeDataSO> selected = new();
 
         private readonly Dictionary<PlayerAdditiveStat, float> _aggPlayerMods = new(); //Additive
@@ -58,8 +58,8 @@ namespace Challenge
 
         private void OnDisable()
         {
-            if (MapSelectionSender.Instance != null)
-                OnSnapshotChanged -= MapSelectionSender.Instance.UpdateChallengeData;
+            if (MapSelectionSender.Current != null)
+                OnSnapshotChanged -= MapSelectionSender.Current.UpdateChallengeData;
         }
 
         

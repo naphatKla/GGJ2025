@@ -35,5 +35,11 @@ namespace PermanentUpgrade
             }
             return _cache != null && _cache.TryGetValue(type, out var e) ? e : null;
         }
+        
+        public List<PermanentUpgradeEntry> GetAllEntry()
+        {
+            return entries;
+        }
+        
     }
 }

@@ -92,7 +92,7 @@ namespace UI.Leaderboard
 
         private static string BuildSubmitName()
         {
-            var profile = ActiveProfileService.Instance?.Current;
+            var profile = ActiveProfileService.Instance?.CurrentProfile;
             return profile?.DisplayName;
         }
 

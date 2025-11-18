@@ -164,7 +164,7 @@ namespace GameControl.Controller
             //Player Modify
             var playerDataSo = mapData.playerData.CopyInstance(); // Create Player DataSO
             var player = PlayerController.Instance;
-            var profileData = ActiveProfileService.Instance?.Current;
+            var profileData = ActiveProfileService.Instance?.CurrentProfile;
             var permanentConfig = ActiveProfileService.Instance?.PermanentConfig;
             //Modify Permanent Upgrade
             playerDataSo.AddPlayerStats(PlayerDataStats.MaxHealth

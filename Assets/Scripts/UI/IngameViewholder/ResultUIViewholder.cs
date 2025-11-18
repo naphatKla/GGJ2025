@@ -140,9 +140,9 @@ namespace UI.IngameViewholder
         private void CheckHighestScore(PlayerSummaryStats dataStatus)
         {
             var svc = ActiveProfileService.Instance;
-            if (svc?.Current == null) return;
+            if (svc?.CurrentProfile == null) return;
             int newScore = Mathf.Max(0, dataStatus.totalScore);
-            if (newScore == svc?.Current.HighestScore) NewRecordFeedback(newRecordText.transform).Forget();
+            if (newScore == svc?.CurrentProfile.HighestScore) NewRecordFeedback(newRecordText.transform).Forget();
         }
         
         private async UniTask NewRecordFeedback(Transform tf)

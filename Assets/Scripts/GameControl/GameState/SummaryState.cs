@@ -37,7 +37,7 @@ namespace GameControl.GameState
         private void SavePlayerDataAndUpload()
         {
             var svc = ActiveProfileService.Instance;
-            var profile = svc?.Current;
+            var profile = svc?.CurrentProfile;
             if (profile == null) return;
             
             var dataStatus = PlayerController.Instance.GetSummaryStatsOnStateEnd();

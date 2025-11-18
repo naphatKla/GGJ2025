@@ -38,6 +38,16 @@ namespace PermanentUpgrade
         [FoldoutGroup("$type")]
         public PermanentUpgradeType type;
         
+        //Display Data
+        [FoldoutGroup("$type")]
+        public string nameUpgrade;
+        [FoldoutGroup("$type")]
+        public Sprite iconUpgrade;
+        [FoldoutGroup("$type")] [TextArea(4, 10)]
+        public string descriptionUpgrade;
+        [FoldoutGroup("$type")] [TextArea(4, 10)]
+        public string lockDescriptionUpgrade;
+        
         [Header("Value Config")] [FoldoutGroup("$type")]
         public PermanentUpgradeValueMode mode = PermanentUpgradeValueMode.Flat;
 

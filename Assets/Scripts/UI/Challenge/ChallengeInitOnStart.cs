@@ -35,7 +35,7 @@ namespace UI.Challenge
         public event Action<int, ChallengeDataSO> OnSelected;
         public IReadOnlyCollection<int> GetSelectedIndices() => c_SelectedIndices;
         public IReadOnlyList<ChallengeDataSO> GetSelectedChallenges() => c_SelectedObjects;
-        private PlayerData Current => ActiveProfileService.Instance != null ? ActiveProfileService.Instance.Current : null;
+        private PlayerData Current => ActiveProfileService.Instance != null ? ActiveProfileService.Instance.CurrentProfile : null;
         
         void Awake()
         {
