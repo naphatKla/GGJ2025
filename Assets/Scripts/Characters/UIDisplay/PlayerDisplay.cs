@@ -782,6 +782,7 @@ namespace Characters.UIDisplay
         {
             if (_skillPerformFailSequence.IsActive()) return;
 
+            SoundManager.Instance.PlayUI(SoundName.UI.Gameplay_SkillPerformFail);
             var originPos = cooldownIsNotReadyText.transform.position;
             cooldownIsNotReadyText.text = contextReason;
             cooldownIsNotReadyText.alpha = 0;
