@@ -55121,6 +55121,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8974750955813567560}
+  - component: {fileID: 814567762830049459}
   - component: {fileID: 8896851534345665359}
   - component: {fileID: 1766625338755230343}
   - component: {fileID: 7534513208806243613}
@@ -55166,6 +55167,83 @@ Transform:
   - {fileID: 7843600179253180551}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &814567762830049459
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2726293917207744010}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6af0a38ee0e639f4c9524e407f1f9f93, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  items:
+  - label: max health
+    group: 1_Health
+    target: {fileID: 2110098855391983109}
+    memberKey: 'P: MaxHealth'
+  - label: current health
+    group: 1_Health
+    target: {fileID: 2110098855391983109}
+    memberKey: 'P: CurrentHealth'
+  - label: Invincible Time Per Hit
+    group: 1_Health
+    target: {fileID: 2110098855391983109}
+    memberKey: 'F: invincibleTimePerHit'
+  - label: stun resistance %
+    group: 2_Effects
+    target: {fileID: 4177936962492003484}
+    memberKey: 'P: StunResistancePercentage'
+  - label: current speed
+    group: 3_Movement
+    target: {fileID: 4786182755069043034}
+    memberKey: 'F: currentSpeed'
+  - label: current speed modifier %
+    group: 3_Movement
+    target: {fileID: 4786182755069043034}
+    memberKey: 'F: currentSpeedModifierPercentage'
+  - label: move acceleration rate
+    group: 3_Movement
+    target: {fileID: 4786182755069043034}
+    memberKey: 'F: moveAccelerationRate'
+  - label: turn acceleration rate
+    group: 3_Movement
+    target: {fileID: 4786182755069043034}
+    memberKey: 'F: turnAccelerationRate'
+  - label: current damage
+    group: 4_Combat
+    target: {fileID: 7274721556733233425}
+    memberKey: 'P: CurrentDamage'
+  - label: base crirate %
+    group: 4_Combat
+    target: {fileID: 7274721556733233425}
+    memberKey: 'F: baseCriRate'
+  - label: base cri damage %
+    group: 4_Combat
+    target: {fileID: 7274721556733233425}
+    memberKey: 'F: baseCriDamage'
+  - label: base life steal %
+    group: 4_Combat
+    target: {fileID: 7274721556733233425}
+    memberKey: 'F: baseLifeStealPercent'
+  - label: base life effective %
+    group: 4_Combat
+    target: {fileID: 7274721556733233425}
+    memberKey: 'F: baseLifeStealEffective'
+  - label: exp multiplier
+    group: 4_Combat
+    target: {fileID: 1454970709746529031}
+    memberKey: 'P: ExpMultiplyer'
+  - label: score multiplier
+    group: 4_Combat
+    target: {fileID: 5144948324511787352}
+    memberKey: 'P: ScoreMultiplier'
+  - label: pull item radius
+    group: 4_Combat
+    target: {fileID: 4851925125693906224}
+    memberKey: 'F: _pullItemRadius'
 --- !u!114 &8896851534345665359
 MonoBehaviour:
   m_ObjectHideFlags: 0

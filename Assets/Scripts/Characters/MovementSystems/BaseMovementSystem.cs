@@ -35,7 +35,7 @@ namespace Characters.MovementSystems
         protected float currentSpeed;
         
         [ShowInInspector, ReadOnly]
-        protected float currentSpeedMultiplier;
+        protected float currentSpeedModifierPercentage;
 
         /// <summary>
         /// Controls how quickly the entity accelerates toward its maximum movement speed in a straight line.
@@ -262,9 +262,9 @@ namespace Characters.MovementSystems
             currentSpeed = Mathf.Max(0, currentSpeed + value);
         }
 
-        public virtual void AddCurrentSpeedMultiplier(float multiplierPercentage)
+        public virtual void AddCurrentSpeedModifierPercentage(float multiplierPercentage)
         {
-            currentSpeedMultiplier += multiplierPercentage;
+            currentSpeedModifierPercentage += multiplierPercentage;
         }
         
         /// <summary>
@@ -274,7 +274,7 @@ namespace Characters.MovementSystems
         public void ResetSpeedToDefault()
         {
             currentSpeed = _baseSpeed;
-            currentSpeedMultiplier = 0;
+            currentSpeedModifierPercentage = 0;
         }
 
         /// <summary>

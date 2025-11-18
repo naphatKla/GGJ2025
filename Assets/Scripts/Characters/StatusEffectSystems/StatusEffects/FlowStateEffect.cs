@@ -10,7 +10,7 @@ namespace Characters.StatusEffectSystems.StatusEffects
         {
             owner.CombatSystem.AddCurrentDamage(effectData.DamageIncrease);
             owner.CombatSystem.AddCurrentDamageMultiplierPercent(effectData.DamagePercentIncrease);
-            owner.MovementSystem.AddCurrentSpeedMultiplier(effectData.SpeedPercentIncrease);
+            owner.MovementSystem.AddCurrentSpeedModifierPercentage(effectData.SpeedPercentIncrease);
 
       
             if (owner is not PlayerController player) return;
@@ -30,7 +30,7 @@ namespace Characters.StatusEffectSystems.StatusEffects
         {
             owner.CombatSystem.AddCurrentDamage(-effectData.DamageIncrease);
             owner.CombatSystem.AddCurrentDamageMultiplierPercent(-effectData.DamagePercentIncrease);
-            owner.MovementSystem.AddCurrentSpeedMultiplier(-effectData.SpeedPercentIncrease);
+            owner.MovementSystem.AddCurrentSpeedModifierPercentage(-effectData.SpeedPercentIncrease);
             
             if (owner is not PlayerController player) return;
             player.FlowStateController.AddFlowScoreMultiplier(-effectData.FlowScorePercentageAdded/100);

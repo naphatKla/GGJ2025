@@ -20,15 +20,15 @@ namespace Characters.CombatSystems
         /// The original base damage assigned to this character.
         /// Typically defined by character stats or ScriptableObject data.
         /// </summary>
-        private float _baseDamage;
+        protected float baseDamage;
         
-        private float _baseCriRate;
+        protected float baseCriRate;
         
-        private float _baseCriDamage;
+        protected float baseCriDamage;
         
-        private float _baseLifeStealPercent;
+        protected float baseLifeStealPercent;
         
-        private float _baseLifeStealEffective;
+        protected float baseLifeStealEffective;
         
         public int TotalKill { get; private set; }
         public int TotalDamageDeal { get; private set; }
@@ -71,11 +71,11 @@ namespace Characters.CombatSystems
         public void AssignCombatData(BaseController owner, float baseDamage, float baseCriRate, float baseCriDamage, float baseLifeStealPercent, float baseLifeStealEffective)
         {
             this.owner = owner;
-            _baseDamage = baseDamage;
-            _baseCriRate = baseCriRate;
-            _baseCriDamage = baseCriDamage;
-            _baseLifeStealPercent = baseLifeStealPercent;
-            _baseLifeStealEffective = baseLifeStealEffective;
+            this.baseDamage = baseDamage;
+            this.baseCriRate = baseCriRate;
+            this.baseCriDamage = baseCriDamage;
+            this.baseLifeStealPercent = baseLifeStealPercent;
+            this.baseLifeStealEffective = baseLifeStealEffective;
             _currentDamage = baseDamage;
         }
 
@@ -89,10 +89,10 @@ namespace Characters.CombatSystems
             float multiplier, float additionalCriRate, float additionCriDamage, float additionalLifeStealPercent,
             float additionalLifeStealEffective)
         {
-            var calculatedCriRate = _baseCriRate + additionalCriRate;
-            var calculatedCriDamage = _baseCriDamage + additionCriDamage;
-            var calculatedLifeStealPercent = _baseLifeStealPercent + additionalLifeStealPercent;
-            var calculatedLifeStealEffective = _baseLifeStealEffective + additionalLifeStealEffective;
+            var calculatedCriRate = baseCriRate + additionalCriRate;
+            var calculatedCriDamage = baseCriDamage + additionCriDamage;
+            var calculatedLifeStealPercent = baseLifeStealPercent + additionalLifeStealPercent;
+            var calculatedLifeStealEffective = baseLifeStealEffective + additionalLifeStealEffective;
             var calculatedCurrentDamage = _currentDamage + (_currentDamage * (_currentDamageMultiplier/100));
             
             bool isCritical = Random.Range(0, 100) < calculatedCriRate;
@@ -137,7 +137,7 @@ namespace Characters.CombatSystems
 
         public void ResetCombatSystem()
         {
-            _currentDamage = _baseDamage;
+            _currentDamage = baseDamage;
             _currentDamageMultiplier = 0;
         }
 

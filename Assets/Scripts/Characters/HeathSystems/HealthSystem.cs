@@ -46,7 +46,7 @@ namespace Characters.HeathSystems
         /// The duration (in seconds) of temporary hit cooldown after taking damage.
         /// During this time, additional hits will be ignored.
         /// </summary>
-        private float _invincibleTimePerHit;
+        protected float invincibleTimePerHit;
 
         /// <summary>Whether the character is currently in hit cooldown state.</summary>
         private bool _isHitCooldown;
@@ -137,7 +137,7 @@ namespace Characters.HeathSystems
         public virtual void AssignHealthData(float maxHealth, float invincibleTimePerHit, BaseController owner = null)
         {
             _maxHealth = Mathf.Clamp(maxHealth, 1, 99999999);
-            _invincibleTimePerHit = invincibleTimePerHit;
+            this.invincibleTimePerHit = invincibleTimePerHit;
             this.owner = owner;
             ResetHealthSystem();
         }
@@ -288,7 +288,7 @@ namespace Characters.HeathSystems
             _isHitCooldown = true;
             try
             {
-                await UniTask.WaitForSeconds(_invincibleTimePerHit, cancellationToken: destroyCancellationToken);
+                await UniTask.WaitForSeconds(invincibleTimePerHit, cancellationToken: destroyCancellationToken);
             }
             catch (OperationCanceledException)
             {

@@ -15,7 +15,7 @@ namespace Characters.MovementSystems
         {
             float dt = Time.fixedDeltaTime;
             currentDirection = SmoothVector(currentDirection, direction, turnAccelerationRate);
-            float calculatedCurrentSpeed = currentSpeed + (currentSpeed * (currentSpeedMultiplier / 100));
+            float calculatedCurrentSpeed = currentSpeed + (currentSpeed * (currentSpeedModifierPercentage / 100));
             
             Vector2 desiredVelocity = overrideVelocity ?? currentDirection * calculatedCurrentSpeed;
             currentVelocity = SmoothVector(currentVelocity, desiredVelocity, moveAccelerationRate);

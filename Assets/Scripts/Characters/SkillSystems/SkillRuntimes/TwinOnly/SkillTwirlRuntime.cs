@@ -33,8 +33,8 @@ namespace Characters.SkillSystems.SkillRuntimes.TwinOnly
         protected override void OnSkillStart()
         {
             owner.SkillSystem.SetCanUseSkills(false);
-            owner.MovementSystem.AddCurrentSpeedMultiplier(-100f);
-            owner.MovementSystem.AddCurrentSpeedMultiplier(skillData.SpeedUpMultiplier);
+            owner.MovementSystem.AddCurrentSpeedModifierPercentage(-100f);
+            owner.MovementSystem.AddCurrentSpeedModifierPercentage(skillData.SpeedUpMultiplier);
             tws.Clear();
         }
 
@@ -48,7 +48,7 @@ namespace Characters.SkillSystems.SkillRuntimes.TwinOnly
             await UniTask.WaitForSeconds(skillData.StartExpandDuration, cancellationToken: cancelToken);
             if (cancelToken.IsCancellationRequested) return;
 
-            owner.MovementSystem.AddCurrentSpeedMultiplier(100f);
+            owner.MovementSystem.AddCurrentSpeedModifierPercentage(100f);
 
             tws.Add(_twirlController.Body.transform
                 .DORotate(new Vector3(0f, 0f, 360f * skillData.SpinRound), skillData.TwirlDuration,
@@ -60,7 +60,7 @@ namespace Characters.SkillSystems.SkillRuntimes.TwinOnly
 
             if (cancelToken.IsCancellationRequested)
             {
-                owner.MovementSystem.AddCurrentSpeedMultiplier(-100f);
+                owner.MovementSystem.AddCurrentSpeedModifierPercentage(-100f);
                 return;
             }
 
@@ -73,7 +73,7 @@ namespace Characters.SkillSystems.SkillRuntimes.TwinOnly
 
             if (cancelToken.IsCancellationRequested)
             {
-                owner.MovementSystem.AddCurrentSpeedMultiplier(-100f);
+                owner.MovementSystem.AddCurrentSpeedModifierPercentage(-100f);
                 return;
             }
 
@@ -86,11 +86,11 @@ namespace Characters.SkillSystems.SkillRuntimes.TwinOnly
 
             if (cancelToken.IsCancellationRequested)
             {
-                owner.MovementSystem.AddCurrentSpeedMultiplier(-100f);
+                owner.MovementSystem.AddCurrentSpeedModifierPercentage(-100f);
                 return;
             }
 
-            owner.MovementSystem.AddCurrentSpeedMultiplier(-100f);
+            owner.MovementSystem.AddCurrentSpeedModifierPercentage(-100f);
             tws.Add(_twirlController.RedBody.transform.DOLocalMove(_twirlController.RedBodyLocalPosOnStart,
                 skillData.MergeBackDuration));
             tws.Add(_twirlController.BlueBody.transform.DOLocalMove(_twirlController.BlueBodyLocalPosOnStart,
@@ -107,8 +107,8 @@ namespace Characters.SkillSystems.SkillRuntimes.TwinOnly
 
         protected override void OnSkillExit()
         {
-            owner.MovementSystem.AddCurrentSpeedMultiplier(100f);
-            owner.MovementSystem.AddCurrentSpeedMultiplier(-skillData.SpeedUpMultiplier);
+            owner.MovementSystem.AddCurrentSpeedModifierPercentage(100f);
+            owner.MovementSystem.AddCurrentSpeedModifierPercentage(-skillData.SpeedUpMultiplier);
 
             foreach (var tween in tws)
             {
