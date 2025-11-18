@@ -10,7 +10,7 @@ using Input = UnityEngine.Input;
 
 namespace Player
 {
-    public class ActiveProfileService : AutoCreateSingleton<ActiveProfileService>
+    public class ActiveProfileService : NonAutoCreatePersistentSingleton <ActiveProfileService>
     {
         public PlayerData CurrentProfile { get; private set; }
         public bool HasCurrent => CurrentProfile != null;
@@ -28,13 +28,7 @@ namespace Player
 
         public PermanentUpgradeConfig PermanentConfig => debugUpgradeConfig;
         public Action OnPermanentUpgrade;
-
-        protected override void Awake()
-        {
-            base.Awake();
-            DontDestroyOnLoad(gameObject);
-        }
-
+        
         public void AutoCreate()
         {
             Debug.Log("ActiveProfileService created.");
