@@ -235,10 +235,10 @@ namespace Player
                 Debug.Log($"[ActiveProfileService] Debug: +100 Nano Coin => {current.nanoCoin}");
             }
 
-            if (GUILayout.Button("+1000 Nano"))
+            if (GUILayout.Button("+10000 Nano"))
             {
-                current.nanoCoin += 1000;
-                Debug.Log($"[ActiveProfileService] Debug: +1000 Nano Coin => {current.nanoCoin}");
+                current.nanoCoin += 10000;
+                Debug.Log($"[ActiveProfileService] Debug: +10000 Nano Coin => {current.nanoCoin}");
             }
 
             if (GUILayout.Button("Reset Permanent Upgrades"))
