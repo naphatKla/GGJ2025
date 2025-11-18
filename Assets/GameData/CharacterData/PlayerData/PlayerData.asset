@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 50
   invincibleTimePerHit: 1.5
+  stunResistancePercentage: 0
   baseSpeed: 15
   moveAccelerationRate: 15
   turnAccelerationRate: 20
@@ -87,7 +88,7 @@ MonoBehaviour:
   takeDamageConditionData:
     conditionID: takeDamage_condtition
     flowingMindModify: -1
-    lostPointPercentage: 50
+    lostPointPercentage: 25
   flowStateDatas:
   - flowStateId: none_flow
     flowingMindThreshold: 0
