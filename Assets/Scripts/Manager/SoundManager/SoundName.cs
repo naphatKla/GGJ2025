@@ -73,6 +73,7 @@ namespace Manager.SoundManager
             public const string Gameplay_ActionTextNotification = Group + "/" + nameof(Gameplay_ActionTextNotification);
             public const string Gameplay_MainSkillCooldownReady = Group + "/" + nameof(Gameplay_MainSkillCooldownReady);
             public const string Gameplay_AutoSkillCooldownReady = Group + "/" + nameof(Gameplay_AutoSkillCooldownReady);
+            public const string Gameplay_SkillPerformFail = Group + "/" + nameof(Gameplay_SkillPerformFail);
         }
 
         public static class BGM
