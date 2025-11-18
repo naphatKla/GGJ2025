@@ -5,7 +5,7 @@ using Sirenix.OdinInspector;
 
 namespace UI.MapSelection
 {
-    public class MapSelectionSender : NonAutoCreateSingleton<MapSelectionSender>
+    public class MapSelectionSender : AutoCreatePersistentSingleton<MapSelectionSender>
     {
         public int currentMapSelectionIndex = 0;
         public MapSelectionDataContainer currentmapSelectionDataContainer;
@@ -14,11 +14,6 @@ namespace UI.MapSelection
         public void UpdateChallengeData(ChallengeSnapshot snap)
         {
             challengeData = snap;
-        }
-        
-        void Start()
-        {
-            DontDestroyOnLoad(this);
         }
     }
 }
