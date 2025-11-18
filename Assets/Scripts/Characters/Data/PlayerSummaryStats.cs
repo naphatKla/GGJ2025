@@ -8,6 +8,8 @@ namespace Characters.Data
         //public int currency;
         
         public int currentLevel;
+        
+        public string currentRank;
         public string highestRank;
         
         public int totalEnemiesEliminated;
@@ -27,6 +29,7 @@ namespace Characters.Data
             var sb = new System.Text.StringBuilder(256);
             sb.AppendLine($"total score : {totalScore}");
             sb.AppendLine($"current level : {currentLevel}");
+            sb.AppendLine($"highest rank : {(string.IsNullOrEmpty(currentRank) ? "-" : currentRank)}");
             sb.AppendLine($"highest rank : {(string.IsNullOrEmpty(highestRank) ? "-" : highestRank)}");
             sb.AppendLine($"total enemies eliminated : {totalEnemiesEliminated}");
             sb.AppendLine($"total damage deal : {totalDamageDeal}");

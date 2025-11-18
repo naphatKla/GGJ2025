@@ -166,6 +166,8 @@ namespace Characters.Controllers
             PlayerSummaryStats statsPerRun = new PlayerSummaryStats();
             statsPerRun.totalScore = scoreSystem.CurrentScore;
             statsPerRun.currentLevel = levelSystem.Level;
+
+            statsPerRun.currentRank = combatRankSystem.CurrentRankId;
             statsPerRun.highestRank = combatRankSystem.HighestRecordedRankId;
             
             statsPerRun.totalEnemiesEliminated = combatSystem.TotalKill;
