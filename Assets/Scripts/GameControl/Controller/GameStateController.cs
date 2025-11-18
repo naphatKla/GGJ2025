@@ -169,6 +169,10 @@ namespace GameControl.Controller
             //Modify Permanent Upgrade
             playerDataSo.SetPlayerStats(PlayerDataStats.MaxHealth
                 , profileData.ApplyPermanentUpgrade(PermanentUpgradeType.MaxHealth, permanentConfig, playerDataSo.MaxHealth));
+            playerDataSo.SetPlayerStats(PlayerDataStats.Speed
+                , profileData.ApplyPermanentUpgrade(PermanentUpgradeType.Speed, permanentConfig, playerDataSo.BaseSpeed));
+            playerDataSo.SetPlayerStats(PlayerDataStats.Damage
+                , profileData.ApplyPermanentUpgrade(PermanentUpgradeType.Damage, permanentConfig, playerDataSo.BaseDamage));
             
             //Modify Challenge
             
