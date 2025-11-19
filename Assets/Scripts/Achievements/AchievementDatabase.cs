@@ -11,29 +11,29 @@ namespace Achievements
 
     public enum AchievementTriggerType
     {
-        OnRunEnd,
-        OnMapClear,
+        OnRunEnd = 0,
+        OnRunWin = 1
     }
 
     public enum AchievementConditionType
     {
-        None,
-        MapIdEquals,
-        HighestScoreAtLeast,
+        None = 0,
+        MapIdEquals = 1,
+        HighestScoreAtLeast = 2,
     }
 
     public enum AchievementConditionLogic
     {
-        And,
-        Or
+        And = 0,
+        Or = 1,
     }
 
     public enum AchievementRewardType
     {
-        NanoCoin,
-        UnlockMap,
-        UnlockChallenge,
-        UnlockPermanentUpgrade,
+        NanoCoin = 0,
+        UnlockMap = 1,
+        UnlockChallenge = 2,
+        UnlockPermanentUpgrade = 3,
     }
 
     /// <summary>Context ตอนเช็คเงื่อนไข</summary>
@@ -42,14 +42,7 @@ namespace Achievements
         public AchievementTriggerType TriggerType;
 
         public string MapId;
-        public int FinalScore;
-        public float SurviveSeconds;
-        public bool IsClear;
-
         public PlayerData Player;
-
-        public int TotalKill;
-        public int PermanentLevelChanged;
     }
 
     // ───────── Condition / Reward config ─────────
@@ -58,7 +51,13 @@ namespace Achievements
     public class AchievementConditionConfig
     {
         public AchievementConditionType type;
-
+        
+        [ShowIf(nameof(type), AchievementConditionType.MapIdEquals)]
+        public string mapId;
+        
+        [ShowIf(nameof(type), AchievementConditionType.HighestScoreAtLeast)]
+        public int minHighestScore;
+        
         // แสดงสรุปให้ดูอ่านง่าย (ไม่บังคับใช้ก็ได้)
         [ShowInInspector, ReadOnly]
         private string Summary =>
@@ -69,12 +68,6 @@ namespace Achievements
                 AchievementConditionType.HighestScoreAtLeast     => $"HighestScore ≥ {minHighestScore}",
                 _ => ""
             };
-        
-        [ShowIf(nameof(type), AchievementConditionType.MapIdEquals)]
-        public string mapId;
-        
-        [ShowIf(nameof(type), AchievementConditionType.HighestScoreAtLeast)]
-        public int minHighestScore;
     }
 
     [Serializable]

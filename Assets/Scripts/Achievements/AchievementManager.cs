@@ -26,8 +26,9 @@ namespace Achievements
             ActiveProfileService.Instance?.CurrentProfile ??
             ActiveProfileService.Instance?.LoadCurrent();
 
+        #region AchievementTrigger
         /// <summary>เรียกเมื่อจบ 1 run</summary>
-        public void OnRunEnded(string mapId, int finalScore, float surviveSeconds, bool isClear)
+        public void OnRunEnded(string mapId)
         {
             var p = CurrentPlayerData;
             if (p == null || !database) return;
@@ -36,15 +37,80 @@ namespace Achievements
             {
                 TriggerType = AchievementTriggerType.OnRunEnd,
                 MapId = mapId,
-                FinalScore = finalScore,
-                SurviveSeconds = surviveSeconds,
-                IsClear = isClear,
                 Player = p
             };
 
             EvaluateAll(ctx);
         }
+        
+        public void OnRunWin(string mapId)
+        {
+            var p = CurrentPlayerData;
+            if (p == null || !database) return;
 
+            var ctx = new AchievementContext
+            {
+                TriggerType = AchievementTriggerType.OnRunWin,
+                MapId = mapId,
+                Player = p
+            };
+
+            EvaluateAll(ctx);
+        }
+        #endregion
+        
+        #region Condition and Reward
+        private bool EvaluateCondition(AchievementConditionConfig c, AchievementContext ctx)
+        {
+            var p = ctx.Player;
+
+            switch (c.type)
+            {
+                case AchievementConditionType.None:
+                    return true;
+                
+                case AchievementConditionType.MapIdEquals:
+                    if (string.IsNullOrEmpty(c.mapId)) return true;
+                    return ctx.MapId == c.mapId;
+                
+                case AchievementConditionType.HighestScoreAtLeast:
+                    if (p == null) return false;
+                    return p.HighestScore >= c.minHighestScore;
+            }
+
+            return false;
+        }
+
+        
+        private void ApplyRewards(PlayerData p, AchievementEntry entry)
+        {
+            if (p == null || entry.rewards == null) return;
+
+            foreach (var r in entry.rewards)
+            {
+                switch (r.type)
+                {
+                    case AchievementRewardType.NanoCoin:
+                        //  p.nanoCoin += r.nanoAmount;
+                        break;
+
+                    case AchievementRewardType.UnlockMap:
+                        if (!string.IsNullOrEmpty(r.refId))
+                            ProgressionManager.Instance.UnlockMap(r.refId, saveNow: false, silent: true);
+                        break;
+
+                    case AchievementRewardType.UnlockChallenge:
+                        //
+                        break;
+
+                    case AchievementRewardType.UnlockPermanentUpgrade:
+                        //
+                        break;
+                }
+            }
+        }
+        #endregion
+        
         private void EvaluateAll(AchievementContext ctx)
         {
             if (database.entries == null) return;
@@ -68,7 +134,7 @@ namespace Achievements
                     silent: false);
             }
         }
-
+        
         private bool AreConditionsSatisfied(AchievementEntry entry, AchievementContext ctx)
         {
             var list = entry.conditions;
@@ -91,56 +157,6 @@ namespace Achievements
 
                 default:
                     return true;
-            }
-        }
-
-        private bool EvaluateCondition(AchievementConditionConfig c, AchievementContext ctx)
-        {
-            var p = ctx.Player;
-
-            switch (c.type)
-            {
-                case AchievementConditionType.None:
-                    return true;
-                
-                case AchievementConditionType.MapIdEquals:
-                    if (string.IsNullOrEmpty(c.mapId)) return true;
-                    return ctx.MapId == c.mapId;
-                
-                case AchievementConditionType.HighestScoreAtLeast:
-                    if (p == null) return false;
-                    return p.HighestScore >= c.minHighestScore;
-            }
-
-            return false;
-        }
-
-        private void ApplyRewards(PlayerData p, AchievementEntry entry)
-        {
-            if (p == null || entry.rewards == null) return;
-
-            foreach (var r in entry.rewards)
-            {
-                switch (r.type)
-                {
-                    case AchievementRewardType.NanoCoin:
-                        p.nanoCoin += r.nanoAmount;
-                        break;
-
-                    case AchievementRewardType.UnlockMap:
-                        if (!string.IsNullOrEmpty(r.refId))
-                            ProgressionManager.Instance.UnlockMap(r.refId, saveNow: false, silent: true);
-                        break;
-
-                    case AchievementRewardType.UnlockChallenge:
-                        if (!string.IsNullOrEmpty(r.refId))
-                            p.UnlockedChallenges.Add(r.refId);
-                        break;
-
-                    case AchievementRewardType.UnlockPermanentUpgrade:
-                        p.UnlockedPermanentUpgrade.Add(r.permanentType);
-                        break;
-                }
             }
         }
     }
