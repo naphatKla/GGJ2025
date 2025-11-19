@@ -9,6 +9,7 @@ namespace Manager
     {
         public static event Action<string> OnMapUnlocked;
         public static event Action<string> OnMapLocked;
+        public static event Action<string> OnAchievementUnlocked;
 
         protected override void Awake()
         {
@@ -77,14 +78,45 @@ namespace Manager
         
         #endregion
 
+        #region Achievement
+
+        public bool IsAchievementUnlocked(string achievementId)
+        {
+            var p = CurrentPlayerData;
+            if (p == null || string.IsNullOrEmpty(achievementId)) return false;
+            p.UnlockedAchievements ??= new HashSet<string>();
+            return p.UnlockedAchievements.Contains(achievementId);
+        }
+
+        public bool UnlockAchievement(
+            string achievementId,
+            Action<PlayerData> onReward = null,
+            bool saveNow = true,
+            bool silent = false)
+        {
+            var p = CurrentPlayerData;
+            if (p == null || string.IsNullOrEmpty(achievementId)) return false;
+
+            p.UnlockedAchievements ??= new HashSet<string>();
+
+            if (!p.UnlockedAchievements.Add(achievementId))
+                return false;
+
+            onReward?.Invoke(p);
+
+            if (saveNow)
+                ActiveProfileService.Instance.SaveNow();
+
+            if (!silent)
+                OnAchievementUnlocked?.Invoke(achievementId);
+
+            return true;
+        }
+
+        #endregion
+
         #region Utility
 
-        /// <summary>
-        /// ให้รางวัล/ปลดล็อกแบบ “ให้ครั้งเดียว” ตาม predicate เช่น: คะแนนถึง, เล่นครบ X ครั้ง
-        /// ตัวอย่าง 
-        /// ProgressionManager.Instance.GrantOnce(condition: p => p.HighestScore >= 100000,onGrant: p =>
-        /// { ProgressionManager.Instance.UnlockMap("hard_mapvoidmetro", saveNow: false); },saveNow: true);
-        /// </summary>
         public bool GrantOnce(Func<PlayerData, bool> condition, Action<PlayerData> onGrant, bool saveNow = true)
         {
             var p = CurrentPlayerData;
@@ -97,7 +129,7 @@ namespace Manager
             }
             return false;
         }
-        
+
 
         #endregion
     }

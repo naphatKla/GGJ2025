@@ -78,7 +78,9 @@ namespace Player
                 UnlockedMaps = new HashSet<string>(),
                 UnlockedChallenges = new HashSet<string>(),
                 UnlockedPermanentUpgrade = new HashSet<PermanentUpgradeType>(),
-                MapStats = new Dictionary<string, MapStat>()
+                UnlockedAchievements = new HashSet<string>(),
+                SelectedChallenges = new HashSet<string>(),
+                MapStats = new Dictionary<string, MapStat>(),
             };
             Save(data);
             return data;

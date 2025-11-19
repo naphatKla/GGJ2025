@@ -13,7 +13,7 @@ namespace Player
         public string DisplayName;
         public long LastPlayedUnix;
         
-        //Currency
+        // Currency
         public int nanoCoin;
         public int rainBowAnergy;
 
@@ -29,10 +29,11 @@ namespace Player
         public HashSet<string> UnlockedMaps = new HashSet<string>();
         public HashSet<string> UnlockedChallenges = new HashSet<string>();
         public HashSet<PermanentUpgradeType> UnlockedPermanentUpgrade = new HashSet<PermanentUpgradeType>();
+        public HashSet<string> UnlockedAchievements = new HashSet<string>();
         
         // Selected Challenge
         public HashSet<string> SelectedChallenges = new HashSet<string>();
-
+        
         // perMap data (key = mapId)
         public Dictionary<string, MapStat> MapStats = new Dictionary<string, MapStat>();
         
@@ -40,15 +41,16 @@ namespace Player
         {
             UnlockedMaps ??= new HashSet<string>();
             UnlockedChallenges ??= new HashSet<string>();
-            UnlockedPermanentUpgrade ??= new HashSet<PermanentUpgradeType>();
             MapStats ??= new Dictionary<string, MapStat>();
             SelectedChallenges ??= new HashSet<string>();
             PermanentUpgrades ??= new Dictionary<PermanentUpgradeType, int>();
+            UnlockedPermanentUpgrade ??= new HashSet<PermanentUpgradeType>();
+            UnlockedAchievements ??= new HashSet<string>();
 
             const int CURRENT = 2;
             if (SchemaVersion < 1)
             {
-                // v1 → v2: เติมค่า default fields ใหม่ ฯลฯ
+                // v1 → v2: ใส่ migration logic ถ้ามี
             }
 
             SchemaVersion = CURRENT;
