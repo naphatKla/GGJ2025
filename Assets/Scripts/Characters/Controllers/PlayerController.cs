@@ -140,7 +140,9 @@ namespace Characters.Controllers
             levelSystem.ResetLevel();
             skillUpgradeController.ResetSkillUpgradeController();
             combatRankSystem.ResetCombatRankSystem();
-            Cinemachine2DCameraController.Instance.ResetAndClearAllRequests();
+            
+            if (Cinemachine2DCameraController.Current)
+                Cinemachine2DCameraController.Current.ResetAndClearAllRequests();
             
             base.ResetAllDependentBehavior();
         }

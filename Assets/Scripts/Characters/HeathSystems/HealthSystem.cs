@@ -85,7 +85,7 @@ namespace Characters.HeathSystems
 
         public int TotalDamageTaken { get; set; }
         public int TotalHeal { get; set; }
-
+        public bool CanAim { get; set; } = true;
         public bool IsInvincible => _isInvincible;
         public float HealthPercentage01 => _currentHealth / _maxHealth;
 
@@ -210,8 +210,8 @@ namespace Characters.HeathSystems
             ModifyHealth(-_maxHealth);
             if (blockTakeDamageFeedbackOnFinalHit) return;
 
-            if (Cinemachine2DCameraController.Instance != null &&
-                Cinemachine2DCameraController.Instance.IsTransformInView(transform))
+            if (Cinemachine2DCameraController.Current != null &&
+                Cinemachine2DCameraController.Current.IsTransformInView(transform))
             {
                 owner?.TryPlayFeedback(FeedbackName.Character.TakeDamage);
             }
@@ -397,8 +397,8 @@ namespace Characters.HeathSystems
                 if (blockTakeDamageFeedbackOnFinalHit) return;
             }
 
-            if (Cinemachine2DCameraController.Instance != null &&
-                Cinemachine2DCameraController.Instance.IsTransformInView(transform))
+            if (Cinemachine2DCameraController.Current != null &&
+                Cinemachine2DCameraController.Current.IsTransformInView(transform))
             {
                 owner?.TryPlayFeedback(FeedbackName.Character.TakeDamage);
             }
@@ -437,8 +437,8 @@ namespace Characters.HeathSystems
 
         private async UniTaskVoid WaitDeadAnim(CancellationToken token)
         {
-            if (Cinemachine2DCameraController.Instance != null &&
-                Cinemachine2DCameraController.Instance.IsTransformInView(transform))
+            if (Cinemachine2DCameraController.Current != null &&
+                Cinemachine2DCameraController.Current.IsTransformInView(transform))
             {
                 owner?.TryPlayFeedback(FeedbackName.Character.Dead);
             }

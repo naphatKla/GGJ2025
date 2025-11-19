@@ -47,6 +47,7 @@ namespace Characters.SkillSystems.SkillRuntimes.TwinOnly
         {
             _twirlController.InputSystem.Enable = false;
             _twirlController.SkillSystem.SetCanUseSkills(false);
+            _twirlController.HealthSystem.CanAim = false;   
             tws.Clear();
 
             stunTime = skillData.EffectSelfOnSuccess.Count > 0
@@ -206,6 +207,7 @@ namespace Characters.SkillSystems.SkillRuntimes.TwinOnly
         protected override void OnSkillExit()
         {
             _twirlController.InputSystem.Enable = true;
+            _twirlController.HealthSystem.CanAim = true;
             _twirlController.SkillSystem.SetCanUseSkills(true);
             Cinemachine2DCameraController.Current.CancelByOwner(this);
 

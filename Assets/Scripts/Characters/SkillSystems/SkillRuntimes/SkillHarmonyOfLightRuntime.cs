@@ -73,8 +73,8 @@ namespace Characters.SkillSystems.SkillRuntimes
 
         protected override void OnSkillExit()
         {
-            if (owner is PlayerController player)
-                Cinemachine2DCameraController.Instance.CancelByOwner(this);
+            if (owner is PlayerController player && Cinemachine2DCameraController.Current)
+                Cinemachine2DCameraController.Current.CancelByOwner(this);
             
             foreach (var obj in _skillObjects)
             {

@@ -34,7 +34,7 @@ namespace Characters.SkillSystems.SkillRuntimes
             base.AssignSkillData(skillData, owner);
             if (owner is not PlayerController playerController) return;
             
-            float camSize =    Cinemachine2DCameraController.Instance.startOrthoSize + (skillData.Level - 1) * 0.135f;
+            float camSize =  Cinemachine2DCameraController.Instance.startOrthoSize + (skillData.Level - 1) * 0.135f;
             Cinemachine2DCameraController.Instance.defaultOrthoSize = camSize;
 
             Cinemachine2DCameraController.Instance.PushOrtho(camSize, 1f, this, 0.25f);

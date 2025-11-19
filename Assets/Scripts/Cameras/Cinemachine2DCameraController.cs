@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Cinemachine;
 using MoreMountains.Tools;
+using ProjectExtensions;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -38,7 +39,7 @@ namespace Cameras
     /// - Shake camera ด้วย CinemachineImpulse
     /// - Lerp follow damping ภายใน (ไม่ใช้ UniTask)
     /// </summary>
-    public class Cinemachine2DCameraController : MMSingleton<Cinemachine2DCameraController>
+    public class Cinemachine2DCameraController : NonAutoCreateSingleton<Cinemachine2DCameraController>
     {
         [Header("Camera References")] [SerializeField]
         private CinemachineVirtualCamera[] virtualCameras;

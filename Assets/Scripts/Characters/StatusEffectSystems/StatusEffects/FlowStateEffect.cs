@@ -36,7 +36,8 @@ namespace Characters.StatusEffectSystems.StatusEffects
             player.FlowStateController.AddFlowScoreMultiplier(-effectData.FlowScorePercentageAdded/100);
             
             if (!effectData.ExpandCamera) return;
-            Cinemachine2DCameraController.Instance.CancelByOwner(this);
+            if (!Cinemachine2DCameraController.Current) return;
+            Cinemachine2DCameraController.Current.CancelByOwner(this);
         }
     }
 }
