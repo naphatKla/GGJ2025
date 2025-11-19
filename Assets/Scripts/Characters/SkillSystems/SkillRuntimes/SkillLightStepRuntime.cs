@@ -157,6 +157,7 @@ namespace Characters.SkillSystems.SkillRuntimes
 
             if (targetFound <= 0) return false;
 
+            int targetAimable = 0;
             float sumHpOfTargets = 0f;
 
             for (int i = 0; i < targetFound; i++)
@@ -170,6 +171,7 @@ namespace Characters.SkillSystems.SkillRuntimes
                 if (!health.CanAim) continue;
 
                 sumHpOfTargets += health.CurrentHealth;
+                targetAimable++;
             }
 
             var damageCalculatedPerHit = owner.CombatSystem.CalculateSkillDamageDeal(
@@ -181,8 +183,14 @@ namespace Characters.SkillSystems.SkillRuntimes
             );
 
             const int minimumHitToStartSkill = 3;
-            if (sumHpOfTargets < (damageCalculatedPerHit.Damage * minimumHitToStartSkill))
+            const int minimumTargetInRange = 3;
+            
+            if (sumHpOfTargets < (damageCalculatedPerHit.Damage * minimumHitToStartSkill) 
+                && targetAimable < minimumTargetInRange)
+            {
                 return false;
+            }
+               
 
             return true;
         }
