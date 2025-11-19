@@ -138,7 +138,7 @@ namespace Characters.SkillSystems.SkillRuntimes
             OnSkillExit();
             
             if (!skillData.ClearBuffOnSkillExit) return;
-            
+            if (!owner) return;
             foreach (var statusEffectName in skillData.StatusEffectOnSkillStart.Select(effect => effect.EffectData.EffectName))
                 StatusEffectManager.RemoveEffectAt(owner.gameObject, statusEffectName);
         }
