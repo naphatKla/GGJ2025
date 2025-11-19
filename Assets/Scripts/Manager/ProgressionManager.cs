@@ -16,7 +16,7 @@ namespace Manager
             DontDestroyOnLoad(gameObject);
         }
 
-        private PlayerData Current
+        private PlayerData CurrentPlayerData
         {
             get
             {
@@ -30,7 +30,7 @@ namespace Manager
         /// <summary>ปลดล็อกแมพ (คืนค่า true ถ้ามีการเปลี่ยนแปลงจริง)</summary>
         public bool UnlockMap(string mapId, bool saveNow = true, bool silent = false)
         {
-            var p = Current;
+            var p = CurrentPlayerData;
             if (p == null || string.IsNullOrEmpty(mapId)) return false;
 
             if (p.UnlockedMaps.Add(mapId))
@@ -45,7 +45,7 @@ namespace Manager
         /// <summary>ล็อกแมพกลับ (สำหรับดีบัก/รีเซ็ต)</summary>
         public bool LockMap(string mapId, bool saveNow = true, bool silent = false)
         {
-            var p = Current;
+            var p = CurrentPlayerData;
             if (p == null || string.IsNullOrEmpty(mapId)) return false;
 
             if (p.UnlockedMaps.Remove(mapId))
@@ -60,7 +60,7 @@ namespace Manager
         /// <summary>ปลดล็อกหลายแมพรวดเดียว</summary>
         public int UnlockMaps(IEnumerable<string> mapIds, bool saveNow = true, bool silent = false)
         {
-            var p = Current;
+            var p = CurrentPlayerData;
             if (p == null || mapIds == null) return 0;
 
             var count = 0;
@@ -87,7 +87,7 @@ namespace Manager
         /// </summary>
         public bool GrantOnce(Func<PlayerData, bool> condition, Action<PlayerData> onGrant, bool saveNow = true)
         {
-            var p = Current;
+            var p = CurrentPlayerData;
             if (p == null || condition == null || onGrant == null) return false;
             if (condition(p))
             {
