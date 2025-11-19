@@ -5,18 +5,12 @@ using ProjectExtensions;
 
 namespace Manager
 {
-    public class ProgressionManager : AutoCreateSingleton<ProgressionManager>
+    public class ProgressionManager : AutoCreatePersistentSingleton<ProgressionManager>
     {
         public static event Action<string> OnMapUnlocked;
         public static event Action<string> OnMapLocked;
         public static event Action<string> OnAchievementUnlocked;
-
-        protected override void Awake()
-        {
-            base.Awake();
-            DontDestroyOnLoad(gameObject);
-        }
-
+        
         private PlayerData CurrentPlayerData
         {
             get
