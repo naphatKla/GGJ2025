@@ -37,6 +37,8 @@ MonoBehaviour:
   nextSkillDataUpgrade: {fileID: 0}
   level: 1
   cooldown: 5
+  globalCooldown: 0.25
+  maxStack: 1
   startFeedback: ParryUse_Lv1
   exitFeedback: 
   clearBuffOnSkillExit: 1
@@ -48,12 +50,21 @@ MonoBehaviour:
   explosionDamageMultiplier: 0
   explosionRadius: 15
   stopWhileParry: 0
+  parryColliderSizeMultiplier: 1
   parryDuration: 3
-  knockBackDistance: 14
-  knockBackDuration: 0.25
+  perfectParryDurationPercentage: 0
+  cooldownReduceOnPerfectParry: 0
+  normalParrySuccess:
+    knockBackDistance: 0
+    knockBackDuration: 0
+    healOnSuccess: 0
+  perfectParrySuccess:
+    knockBackDistance: 0
+    knockBackDuration: 0
+    healOnSuccess: 0
   parrySuccessFeedback: ParrySuccess_Lv1
   selfEffectsOnParrySuccess: []
   explosionEffectsToTarget:
   - effectData: {fileID: 11400000, guid: e5ae6010e3c4a7b43bc80da0bf5a9ef5, type: 2}
     isOverrideDuration: 1
-    overrideDuration: 1
+    overrideDuration: 1.5
