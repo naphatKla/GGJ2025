@@ -40,6 +40,7 @@ namespace Player
         {
             UnlockedMaps ??= new HashSet<string>();
             UnlockedChallenges ??= new HashSet<string>();
+            UnlockedPermanentUpgrade ??= new HashSet<PermanentUpgradeType>();
             MapStats ??= new Dictionary<string, MapStat>();
             SelectedChallenges ??= new HashSet<string>();
             PermanentUpgrades ??= new Dictionary<PermanentUpgradeType, int>();

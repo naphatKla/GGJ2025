@@ -77,6 +77,7 @@ namespace Player
                 PermanentUpgrades = new Dictionary<PermanentUpgradeType, int>(),
                 UnlockedMaps = new HashSet<string>(),
                 UnlockedChallenges = new HashSet<string>(),
+                UnlockedPermanentUpgrade = new HashSet<PermanentUpgradeType>(),
                 MapStats = new Dictionary<string, MapStat>()
             };
             Save(data);
