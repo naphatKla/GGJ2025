@@ -1,6 +1,7 @@
 using Manager;
 using Player;
 using ProjectExtensions;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace Achievements
@@ -158,6 +159,16 @@ namespace Achievements
                 default:
                     return true;
             }
+        }
+
+        [Button]
+        public void TestSave(string achievementId)
+        {
+            ProgressionManager.Instance.UnlockAchievement(
+                achievementId,
+                null,
+                saveNow: true,
+                silent: false);
         }
     }
 }
