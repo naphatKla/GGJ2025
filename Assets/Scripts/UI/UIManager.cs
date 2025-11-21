@@ -451,8 +451,7 @@ namespace UI
             //First Unlock
             ProgressionManager.Instance.UnlockMaps(new[]
             {
-                "hard_mapvoidmetro",
-                "normal_mapvoidmetro"
+                "map_voidmetro"
             });
             
             LeaderboardItemPresenter.RefreshAll();

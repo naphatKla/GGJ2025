@@ -34,7 +34,7 @@ namespace UI.PermanentUpgrade
             if (currentLevel == entry.MaxLevel) return "MAX UPGRADE";
 
             var lvlData = entry.GetLevelData(nextLevel);
-            return "COST " +lvlData.nanoCost.ToString();
+            return "COST " +lvlData.nanoCost;
         }
     }
 }
