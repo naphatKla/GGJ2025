@@ -383,7 +383,6 @@ namespace UI
 
         public async void CloseAllPanels()
         {
-            Debug.Log("[UIManager] CloseAllPanels() CALLED");
             try
             {
                 await ClearStackAsync(invokeClosedEvent: true);
@@ -641,8 +640,6 @@ namespace UI
         {
             if (type == UIPanelType.None) return;
             if (!_panelMap.TryGetValue(type, out var go) || go == null) return;
-            
-            Debug.Log($"[UIManager] HidePanel {type}  (caller: {Environment.StackTrace})");
 
             var entry = GetType(type);
             if (entry == null)return;
