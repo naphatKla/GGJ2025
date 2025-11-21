@@ -61,7 +61,6 @@ namespace Characters.CombatSystems
 
         // Snapshot buffer to avoid "modified during iteration"
         private readonly List<DamageInstance> _iterBuffer = new(8);
-
         public event Action<GameObject> OnHit;
 
         /// <summary>
@@ -69,10 +68,9 @@ namespace Characters.CombatSystems
         /// int = ค่าดาเมจโดยประมาณต่อ 1 hit ของ DamageOnTouch เป้าหมาย
         /// </summary>
         public event Action<int> OnHitWithDamageOnTouch;
-
         public GameObject Owner => _owner;
-        public string OwnerId => _ownerId;
         public bool IsEnableDamage => _isEnableDamage;
+        public string OwnerId => _ownerId;
 
         /// <summary>
         /// ฝั่งเรามี instance ไหนบ้างที่ CanHitWithDamageOnTouch = true?
@@ -171,6 +169,8 @@ namespace Characters.CombatSystems
             float lifeStealEffective,
             bool canHitWithDamageOnTouch)
         {
+            _ownerId = ownerId;
+            
             if (caller == null || owner == null)
             {
                 Debug.LogWarning("[DamageOnTouch] Invalid caller or owner.");

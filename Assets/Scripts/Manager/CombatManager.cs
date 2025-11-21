@@ -65,7 +65,7 @@ namespace Manager
             // Apply Damage To Target ==========================================
             var hitInfo = new HealthSystem.HitInfo
             {
-                attackerId         = attackerId,
+                attackerId       = attackerId,
                 damage           = damageData.Damage,
                 attacker         = attackerController,
                 realObjectAttack = realObjectAttack
@@ -87,6 +87,7 @@ namespace Manager
             
             var hitInfo = new HealthSystem.HitInfo
             {
+                attackerId       = attackerId,
                 damage           = damage,
                 attacker         = null,
                 realObjectAttack = objectAttacker
