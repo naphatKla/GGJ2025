@@ -27,7 +27,7 @@ namespace GameControl.GameState
             SpawnerStateController.Instance.ClearItem();
             GameTimer.Instance.UpdateUIText();
             UIManager.Instance.OpenResultMenu();
-            SavePlayerDataAndUpload();
+            SavePlayerDataAndUpload(controller);
 
             AchievementManager.Current.OnRunEnded(controller.CurrentMap.mapId);
             
@@ -43,7 +43,7 @@ namespace GameControl.GameState
 
         public void Exit(GameStateController controller) { }
         
-        private void SavePlayerDataAndUpload()
+        private void SavePlayerDataAndUpload(GameStateController controller)
         {
             var svc = ActiveProfileService.Instance;
             var profile = svc?.CurrentProfile;
@@ -67,7 +67,9 @@ namespace GameControl.GameState
             }
             
             profile.LastPlayedUnix = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-            profile.RegisterRun(GameStateController.Instance.CurrentMap.mapId, newScore);
+
+            bool isWin = controller.gameResult == EndResult.Completed;
+            profile.RegisterRun(GameStateController.Instance.CurrentMap.mapId, newScore, isWin);
             
             bool isNewHigh = newScore > profile.HighestScore;
             if (isNewHigh)

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using PermanentUpgrade;
 using Player;
 using Sirenix.OdinInspector;
@@ -25,6 +26,7 @@ namespace Achievements
         TotalKillAtLeast = 5,
         ChallengeAtLeast = 6,
         ParryAtLeast = 7,
+        WinAtLeast = 8,
     }
 
     public enum AchievementConditionLogic
@@ -79,6 +81,9 @@ namespace Achievements
 
         [ShowIf(nameof(type), AchievementConditionType.ParryAtLeast)]
         public int minParryAmountOnRun;
+
+        [ShowIf(nameof(type), AchievementConditionType.WinAtLeast)]
+        public int winAtLeast;
         
         // แสดงสรุปให้ดูอ่านง่าย (ไม่บังคับใช้ก็ได้)
         [ShowInInspector, ReadOnly]
@@ -93,6 +98,7 @@ namespace Achievements
                 AchievementConditionType.TotalKillAtLeast        => $"TotalKill {enemyId} ≥ {minKillAtLeast}",
                 AchievementConditionType.ChallengeAtLeast        => $"Challenge >= {challengeAtLeast}",
                 AchievementConditionType.ParryAtLeast            => $"Parry >= {minParryAmountOnRun}",
+                AchievementConditionType.WinAtLeast              => $"Win >= {winAtLeast}",
                 _ => ""
             };
         
@@ -129,6 +135,11 @@ namespace Achievements
                 case AchievementConditionType.ParryAtLeast:
                     target = minParryAmountOnRun;
                     current = Mathf.Min(p.HighestParryUseOnRun, target);
+                    return true;
+                
+                case AchievementConditionType.WinAtLeast:
+                    target = winAtLeast;
+                    current = Mathf.Min(p.MapStats.Sum(w => w.Value.WinAmount), target);
                     return true;
                 default:
                     return false;

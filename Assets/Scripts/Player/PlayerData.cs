@@ -106,7 +106,8 @@ namespace Player
     [Serializable]
     public class MapStat
     {
-        public int TimesPlayed;
+        public int TimesPlayed; // amount
+        public int WinAmount;
         public int HighestScore;
         public int LastScore;
     }
@@ -125,13 +126,14 @@ namespace Player
         }
 
         /// <summary>อัปเดตสถิติเมื่อเล่นจบ 1 รอบในแผนที่ที่กำหนด</summary>
-        public static void RegisterRun(this PlayerData p, string mapId, int score)
+        public static void RegisterRun(this PlayerData p, string mapId, int score, bool isWin)
         {
             var stat = p.GetOrCreateMapStat(mapId);
             if (stat == null) return;
 
             stat.TimesPlayed++;
             stat.LastScore = score;
+            stat.WinAmount = isWin ? stat.WinAmount + 1 : stat.WinAmount;
             if (score > stat.HighestScore) stat.HighestScore = score;
         }
 

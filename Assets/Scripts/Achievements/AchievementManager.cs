@@ -1,3 +1,4 @@
+using System.Linq;
 using Manager;
 using Player;
 using ProjectExtensions;
@@ -95,6 +96,9 @@ namespace Achievements
                 
                 case AchievementConditionType.ParryAtLeast:
                     return p.HighestParryUseOnRun >= c.minParryAmountOnRun;
+                
+                case AchievementConditionType.WinAtLeast:
+                    return p.MapStats.Sum(w => w.Value.WinAmount) >= c.winAtLeast;
             }
 
             return false;
