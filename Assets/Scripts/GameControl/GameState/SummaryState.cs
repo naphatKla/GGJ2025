@@ -90,7 +90,7 @@ namespace GameControl.GameState
                 profile.HighestScore = newScore;
             } 
             //Exchange 10% of score to currency
-            var currency = (newScore / 100) * 10;
+            var currency = (newScore / 100) * 1;
             profile.nanoCoin += currency;
             svc.SaveNow();
             
