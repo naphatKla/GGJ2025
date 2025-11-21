@@ -23,6 +23,8 @@ namespace Achievements
         HighestScoreAtLeast = 3,
         TotalDamageAtLeast = 4,
         TotalKillAtLeast = 5,
+        ChallengeAtLeast = 6,
+        ParryAtLeast = 7,
     }
 
     public enum AchievementConditionLogic
@@ -71,6 +73,12 @@ namespace Achievements
         public string enemyId;
         [ShowIf(nameof(type), AchievementConditionType.TotalKillAtLeast)]
         public int minKillAtLeast;
+
+        [ShowIf(nameof(type), AchievementConditionType.ChallengeAtLeast)]
+        public int challengeAtLeast;
+
+        [ShowIf(nameof(type), AchievementConditionType.ParryAtLeast)]
+        public int minParryAmountOnRun;
         
         // แสดงสรุปให้ดูอ่านง่าย (ไม่บังคับใช้ก็ได้)
         [ShowInInspector, ReadOnly]
@@ -81,8 +89,10 @@ namespace Achievements
                 AchievementConditionType.MapIdEquals             => $"Map = {mapId}",
                 AchievementConditionType.ChallengeIdEquals       => $"Challenge = {challengeId}",
                 AchievementConditionType.HighestScoreAtLeast     => $"HighestScore ≥ {minHighestScore}",
-                AchievementConditionType.TotalDamageAtLeast     => $"TotalDamage ≥ {minTotalDamage}",
-                AchievementConditionType.TotalKillAtLeast     => $"TotalKill {enemyId} ≥ {minKillAtLeast}",
+                AchievementConditionType.TotalDamageAtLeast      => $"TotalDamage ≥ {minTotalDamage}",
+                AchievementConditionType.TotalKillAtLeast        => $"TotalKill {enemyId} ≥ {minKillAtLeast}",
+                AchievementConditionType.ChallengeAtLeast        => $"Challenge >= {challengeAtLeast}",
+                AchievementConditionType.ParryAtLeast            => $"Parry >= {minParryAmountOnRun}",
                 _ => ""
             };
         
@@ -101,13 +111,25 @@ namespace Achievements
                 case AchievementConditionType.HighestScoreAtLeast:
                     target  = minHighestScore;
                     current = p.HighestScore;
+                    current = Mathf.Min(current, target);
                     return true;
 
                 case AchievementConditionType.TotalDamageAtLeast:
                     target  = minTotalDamage;
                     current = p.TotalDamageDeal;
+                    current = Mathf.Min(current, target);
                     return true;
-
+                
+                case AchievementConditionType.TotalKillAtLeast:
+                    target = minKillAtLeast;
+                    p.TotalKill.TryGetValue(enemyId, out current);
+                    current = Mathf.Min(current, target);
+                    return true;
+                
+                case AchievementConditionType.ParryAtLeast:
+                    target = minParryAmountOnRun;
+                    current = Mathf.Min(p.HighestParryUseOnRun, target);
+                    return true;
                 default:
                     return false;
             }
@@ -163,27 +185,76 @@ namespace Achievements
         [FoldoutGroup("$displayName")]
         public List<AchievementRewardConfig> rewards = new();
         
-        /// <summary>
-        /// สำหรับ UI: ขอ "progress หลัก" ของ achievement นี้
-        /// ดีฟอลต์: ใช้เงื่อนไขแรกที่มี TryGetProgress ได้
-        /// </summary>
         public bool TryGetMainProgress(PlayerData p, out int current, out int target)
         {
             current = 0;
             target  = 0;
 
-            if (conditions == null || conditions.Count == 0) 
+            if (conditions == null || conditions.Count == 0 || p == null)
                 return false;
+
+            // รวบรวมทุก condition ที่มี progress
+            var tmpCurrents = new List<int>();
+            var tmpTargets  = new List<int>();
 
             foreach (var c in conditions)
             {
-                if (c != null && c.TryGetProgress(p, out current, out target))
+                if (c == null) continue;
+
+                if (c.TryGetProgress(p, out var cCur, out var cTar))
                 {
-                    return true;
+                    // กัน division by zero
+                    if (cTar <= 0) continue;
+
+                    tmpCurrents.Add(cCur);
+                    tmpTargets.Add(cTar);
                 }
             }
 
-            return false;
+            if (tmpTargets.Count == 0)
+                return false;
+
+            if (logic == AchievementConditionLogic.And)
+            {
+                // AND: มองว่าต้องทำครบทุกเงื่อนไข
+                // วิธีง่าย: รวมเป็นเป้ารวม แล้วใช้ sum(current)/sum(target)
+                int sumCur = 0;
+                int sumTar = 0;
+                for (int i = 0; i < tmpTargets.Count; i++)
+                {
+                    sumCur += tmpCurrents[i];
+                    sumTar += tmpTargets[i];
+                }
+
+                current = Mathf.Min(sumCur, sumTar); // กันไม่ให้เกินเป้า
+                target  = sumTar;
+                return true;
+            }
+            else // AchievementConditionLogic.Or
+            {
+                // OR: ผ่านอันไหนก็ได้ → ใช้ progress ที่ "ไกลสุด"
+                float bestRatio = 0f;
+                int bestCur = 0;
+                int bestTar = 0;
+
+                for (int i = 0; i < tmpTargets.Count; i++)
+                {
+                    float ratio = (float)tmpCurrents[i] / tmpTargets[i];
+                    if (ratio > bestRatio)
+                    {
+                        bestRatio = ratio;
+                        bestCur   = tmpCurrents[i];
+                        bestTar   = tmpTargets[i];
+                    }
+                }
+
+                if (bestTar <= 0)
+                    return false;
+
+                current = Mathf.Min(bestCur, bestTar);
+                target  = bestTar;
+                return true;
+            }
         }
     }
 

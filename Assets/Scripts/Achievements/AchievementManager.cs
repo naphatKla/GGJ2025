@@ -89,6 +89,12 @@ namespace Achievements
                         return false;
                     p.TotalKill.TryGetValue(c.enemyId, out int count);
                     return count >= c.minKillAtLeast;
+                
+                case AchievementConditionType.ChallengeAtLeast:
+                    return p.SelectedChallenges.Count >= c.challengeAtLeast;
+                
+                case AchievementConditionType.ParryAtLeast:
+                    return p.HighestParryUseOnRun >= c.minParryAmountOnRun;
             }
 
             return false;

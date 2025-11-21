@@ -39,6 +39,8 @@ MonoBehaviour:
       minTotalDamage: 0
       enemyId: 
       minKillAtLeast: 0
+      challengeAtLeast: 0
+      minParryAmountOnRun: 0
     rewards:
     - type: 2
       nanoAmount: 0
@@ -77,6 +79,8 @@ MonoBehaviour:
       minTotalDamage: 0
       enemyId: 
       minKillAtLeast: 0
+      challengeAtLeast: 0
+      minParryAmountOnRun: 0
     rewards:
     - type: 2
       nanoAmount: 0
@@ -99,6 +103,8 @@ MonoBehaviour:
       minTotalDamage: 0
       enemyId: 
       minKillAtLeast: 0
+      challengeAtLeast: 0
+      minParryAmountOnRun: 0
     rewards:
     - type: 2
       nanoAmount: 0
@@ -121,6 +127,8 @@ MonoBehaviour:
       minTotalDamage: 1000000
       enemyId: 
       minKillAtLeast: 0
+      challengeAtLeast: 0
+      minParryAmountOnRun: 0
     rewards:
     - type: 2
       nanoAmount: 0
@@ -143,8 +151,223 @@ MonoBehaviour:
       minTotalDamage: 0
       enemyId: Enemy_Tank
       minKillAtLeast: 300
+      challengeAtLeast: 0
+      minParryAmountOnRun: 0
     rewards:
     - type: 2
       nanoAmount: 0
       refId: challenge_tuff
+      permanentType: 0
+  - id: achievement_deadshot
+    displayName: Dead Shot
+    description: 'Kill Piercer 300 in total
+
+      Kill Javilin 300 in total
+
+      Kill
+      Comet 300 in total
+
+      Reward: Unlock "Dead Shot" in challenge option'
+    icon: {fileID: 0}
+    triggerType: 0
+    logic: 0
+    conditions:
+    - type: 5
+      mapId: 
+      challengeId: 
+      minHighestScore: 0
+      minTotalDamage: 0
+      enemyId: Enemy_Piercer
+      minKillAtLeast: 300
+      challengeAtLeast: 0
+      minParryAmountOnRun: 0
+    - type: 5
+      mapId: 
+      challengeId: 
+      minHighestScore: 0
+      minTotalDamage: 0
+      enemyId: Enemy_Javelin
+      minKillAtLeast: 300
+      challengeAtLeast: 300
+      minParryAmountOnRun: 0
+    - type: 5
+      mapId: 
+      challengeId: 
+      minHighestScore: 0
+      minTotalDamage: 0
+      enemyId: Enemy_Comet
+      minKillAtLeast: 300
+      challengeAtLeast: 0
+      minParryAmountOnRun: 0
+    rewards:
+    - type: 2
+      nanoAmount: 0
+      refId: challenge_deadshot
+      permanentType: 0
+  - id: achievement_energyoverflowing
+    displayName: Energy Overflowing
+    description: 'Kill Pressure 300 in total
+
+      Kill Firecracker 300 in total
+
+      Kill
+      Bomber 300 in total
+
+      Reward: Unlock "Energy Overflowing" in challenge
+      option'
+    icon: {fileID: 0}
+    triggerType: 0
+    logic: 0
+    conditions:
+    - type: 5
+      mapId: 
+      challengeId: 
+      minHighestScore: 0
+      minTotalDamage: 0
+      enemyId: Enemy_Pressure
+      minKillAtLeast: 300
+      challengeAtLeast: 0
+      minParryAmountOnRun: 0
+    - type: 5
+      mapId: 
+      challengeId: 
+      minHighestScore: 0
+      minTotalDamage: 0
+      enemyId: Enemy_Firecraker
+      minKillAtLeast: 300
+      challengeAtLeast: 0
+      minParryAmountOnRun: 0
+    - type: 5
+      mapId: 
+      challengeId: 
+      minHighestScore: 0
+      minTotalDamage: 0
+      enemyId: Enemy_Bomber
+      minKillAtLeast: 300
+      challengeAtLeast: 0
+      minParryAmountOnRun: 0
+    rewards:
+    - type: 2
+      nanoAmount: 0
+      refId: challenge_energyoverflowing
+      permanentType: 0
+  - id: achievement_supersoldier
+    displayName: Super Soldier
+    description: 'Kill Soldier 1000 in total
+
+      Reward: Unlock "Super Soldier"
+      in challenge option'
+    icon: {fileID: 0}
+    triggerType: 0
+    logic: 0
+    conditions:
+    - type: 5
+      mapId: 
+      challengeId: 
+      minHighestScore: 0
+      minTotalDamage: 0
+      enemyId: Enemy_Soldier
+      minKillAtLeast: 1000
+      challengeAtLeast: 0
+      minParryAmountOnRun: 0
+    rewards:
+    - type: 2
+      nanoAmount: 0
+      refId: challenge_supersoldier
+      permanentType: 0
+  - id: achievement_comet
+    displayName: COMET
+    description: 'Kill Comet 1000 in total
+
+      Reward: Unlock "COMET" in challenge
+      option'
+    icon: {fileID: 0}
+    triggerType: 0
+    logic: 0
+    conditions:
+    - type: 5
+      mapId: 
+      challengeId: challenge_comet
+      minHighestScore: 0
+      minTotalDamage: 0
+      enemyId: Enemy_Comet
+      minKillAtLeast: 1000
+      challengeAtLeast: 0
+      minParryAmountOnRun: 0
+    rewards:
+    - type: 2
+      nanoAmount: 0
+      refId: challenge_comet
+      permanentType: 0
+  - id: achievement_nuclear
+    displayName: Nuclear
+    description: 'Kill Bomber 200 in total
+
+      Reward: Unlock "Nuclear" in challenge
+      option'
+    icon: {fileID: 0}
+    triggerType: 0
+    logic: 0
+    conditions:
+    - type: 5
+      mapId: 
+      challengeId: 
+      minHighestScore: 0
+      minTotalDamage: 0
+      enemyId: Enemy_Bomber
+      minKillAtLeast: 200
+      challengeAtLeast: 0
+      minParryAmountOnRun: 0
+    rewards:
+    - type: 2
+      nanoAmount: 0
+      refId: challenge_nuclear
+      permanentType: 0
+  - id: achievement_showstopper
+    displayName: Show Stopper
+    description: 'Kill Absorption 200 in total
+
+      Reward: Unlock "Show Stopper"
+      in challenge option'
+    icon: {fileID: 0}
+    triggerType: 0
+    logic: 0
+    conditions:
+    - type: 5
+      mapId: 
+      challengeId: 
+      minHighestScore: 0
+      minTotalDamage: 0
+      enemyId: Enemy_Absorption
+      minKillAtLeast: 200
+      challengeAtLeast: 0
+      minParryAmountOnRun: 0
+    rewards:
+    - type: 2
+      nanoAmount: 0
+      refId: challenge_showstopper
+      permanentType: 0
+  - id: achievement_frenzy
+    displayName: Frenzy
+    description: 'Parry 50 times in one run
+
+      Reward: Unlock "Frenzy" in challenge
+      option'
+    icon: {fileID: 0}
+    triggerType: 0
+    logic: 0
+    conditions:
+    - type: 7
+      mapId: 
+      challengeId: 
+      minHighestScore: 0
+      minTotalDamage: 0
+      enemyId: 
+      minKillAtLeast: 0
+      challengeAtLeast: 0
+      minParryAmountOnRun: 50
+    rewards:
+    - type: 2
+      nanoAmount: 0
+      refId: 
       permanentType: 0

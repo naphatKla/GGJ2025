@@ -56,6 +56,9 @@ namespace GameControl.GameState
             profile.LastScore = newScore;
             profile.TotalDamageDeal += damageDealThisRun;
             
+            if (dataStatus.totalSecondarySkillUsed > profile.HighestParryUseOnRun)
+                profile.HighestParryUseOnRun = dataStatus.totalSecondarySkillUsed;
+            
             // add total kill of each enemy type in this run
             foreach (var kv in dataStatus.totalKillDictionary)
             {

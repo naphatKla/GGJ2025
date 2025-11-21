@@ -167,6 +167,7 @@ namespace Player
                 GUILayout.Label("(empty)", _kvStyle);
             }
             
+            DrawKV("HighestParryUse", current.HighestParryUseOnRun.ToString());
             DrawKV("LastPlayed (unix)", current.LastPlayedUnix.ToString());
             DrawKV("LastPlayed (local)", UnixToLocalString(current.LastPlayedUnix));
 

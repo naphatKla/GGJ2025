@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using PermanentUpgrade;
+using UnityEngine.Serialization;
 
 namespace Player
 {
@@ -22,6 +23,7 @@ namespace Player
         public int LastScore;
         public int TotalDamageDeal;
         public Dictionary<string, int> TotalKill = new(); // string = enemy id
+        public int HighestParryUseOnRun;
         
         // Permanent Upgrade
         public Dictionary<PermanentUpgradeType, int> PermanentUpgrades =
