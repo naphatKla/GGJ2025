@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
+using PermanentUpgrade;
 using Player;
 using ProjectExtensions;
+using UI.Manager;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Manager
 {
@@ -12,6 +15,7 @@ namespace Manager
         public static event Action<string> OnMapLocked;
         public static event Action<string> OnChallengeUnlocked; 
         public static event Action<string> OnAchievementUnlocked;
+        public static event Action<PermanentUpgradeType> OnPermanentUnlocked;
         
         private PlayerData CurrentPlayerData
         {
@@ -128,6 +132,40 @@ namespace Manager
             return true;
         }
 
+        #endregion
+        
+        #region Permanent Upgrade
+        
+        public int UnlockMultiPermanents(IEnumerable<PermanentUpgradeType> permanentType, bool saveNow = true, bool silent = false)
+        {
+            var p = CurrentPlayerData;
+            if (p == null || permanentType == null) return 0;
+
+            var count = 0;
+            foreach (var type in permanentType)
+                if (p.UnlockedPermanentUpgrade.Add(type))
+                {
+                    count++;
+                    if (!silent) OnPermanentUnlocked?.Invoke(type);
+                }
+
+            if (count > 0 && saveNow) ActiveProfileService.Instance.SaveNow();
+            return count;
+        }
+        
+        public bool UnlockPermanentUpgrade(PermanentUpgradeType type, bool saveNow = true)
+        {
+            var p = CurrentPlayerData;
+            if (p == null) return false;
+
+            if (p.UnlockedPermanentUpgrade.Add(type))
+            {
+                if (saveNow) ActiveProfileService.Instance.SaveNow();
+                return true;
+            }
+            return false;
+        }
+        
         #endregion
 
         #region Utility

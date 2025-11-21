@@ -2,7 +2,9 @@ using System.Linq;
 using Manager;
 using Player;
 using ProjectExtensions;
+using UI.Manager;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Achievements
 {
@@ -176,6 +178,9 @@ namespace Achievements
                     player => ApplyRewards(player, entry),
                     saveNow: true,
                     silent: false);
+                
+                if (SceneManager.GetActiveScene().name == "Gameplay") 
+                    NotificationManager.Instance?.PlayNotification("notify_unlock", $"Unlock achivement {entry.displayName}!", 10f);
             }
         }
 
