@@ -146,10 +146,10 @@ namespace Characters.SO.CharacterDataSO
             switch (stats)
             {
                 case PlayerDataStats.MaxHealth:
-                    maxHealth += value;
+                    maxHealth = Mathf.CeilToInt(maxHealth + value);
                     break;
                 case PlayerDataStats.Damage:
-                    baseDamage += value;
+                    baseDamage = Mathf.CeilToInt(baseDamage + value);
                     break;
                 case PlayerDataStats.Speed:
                     baseSpeed += value;
@@ -180,10 +180,10 @@ namespace Characters.SO.CharacterDataSO
             switch (stats)
             {
                 case PlayerDataStats.MaxHealth:
-                    maxHealth *= value;
+                    maxHealth = Mathf.CeilToInt(maxHealth * value);
                     break;
                 case PlayerDataStats.Damage:
-                    baseDamage *= value;
+                    baseDamage = Mathf.CeilToInt(baseDamage * value);
                     break;
                 case PlayerDataStats.Speed:
                     baseSpeed *= value;
@@ -211,10 +211,10 @@ namespace Characters.SO.CharacterDataSO
             switch (stats)
             {
                 case PlayerDataStats.MaxHealth:
-                    maxHealth = value;
+                    maxHealth = Mathf.CeilToInt(value);
                     break;
                 case PlayerDataStats.Damage:
-                    baseDamage = value;
+                    baseDamage = Mathf.CeilToInt(value);
                     break;
                 case PlayerDataStats.Speed:
                     baseSpeed = value;
