@@ -30,7 +30,16 @@ namespace GameControl.Controller
         
         public event Action<EnemyController, MapDataSO.EnemyOption> OnFirstSpawned;
         private readonly HashSet<string> _firstSpawnedTypeIds = new();
-        public int EnemyAmount => _activeEnemy.Count;
+        public int EnemyAmount
+        {
+            get
+            {
+                _activeEnemy.RemoveAll(e => e == null || e.gameObject == null);
+                return _activeEnemy.Count(e => e.gameObject.activeInHierarchy);
+            }
+        }
+
+
         private CancellationToken _externalCt = CancellationToken.None;
         
         public void BindCancellationToken(CancellationToken ct)
@@ -65,6 +74,7 @@ namespace GameControl.Controller
         public void ActionOnDestroy(EnemyController obj, MapDataSO.EnemyOption option)
         {
             Object.Destroy(obj.gameObject);
+            _activeEnemy.Remove(obj);
         }
 
         public void ActionOnRelease(EnemyController obj, MapDataSO.EnemyOption option)
