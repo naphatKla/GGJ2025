@@ -217,8 +217,14 @@ namespace UI
         public async UniTaskVoid OpenPanel(UIPanelType type)
         {
             if (!TryGetPanel(type, out _)) return;
-            if (_isPanelBusy) return;
-
+            
+            if (_isPanelBusy)
+            {
+                _pendingOpens.Enqueue(type);
+                Debug.Log($"[UIManager] Queue OpenPanel({type}) because busy");
+                return;
+            }
+            
             _isPanelBusy = true;
             try
             {
@@ -227,6 +233,28 @@ namespace UI
             finally
             {
                 _isPanelBusy = false;
+                ProcessPendingOpens().Forget();
+            }
+        }
+        
+        private async UniTaskVoid ProcessPendingOpens()
+        {
+            if (_isPanelBusy) return;
+
+            while (_pendingOpens.Count > 0)
+            {
+                var next = _pendingOpens.Dequeue();
+                if (!TryGetPanel(next, out _)) continue;
+
+                _isPanelBusy = true;
+                try
+                {
+                    await OpenPanelInternal(next);
+                }
+                finally
+                {
+                    _isPanelBusy = false;
+                }
             }
         }
         
@@ -286,6 +314,7 @@ namespace UI
             finally
             {
                 _isPanelBusy = false;
+                ProcessPendingOpens().Forget();
             }
         }
 
@@ -354,6 +383,7 @@ namespace UI
 
         public async void CloseAllPanels()
         {
+            Debug.Log("[UIManager] CloseAllPanels() CALLED");
             try
             {
                 await ClearStackAsync(invokeClosedEvent: true);
@@ -611,6 +641,8 @@ namespace UI
         {
             if (type == UIPanelType.None) return;
             if (!_panelMap.TryGetValue(type, out var go) || go == null) return;
+            
+            Debug.Log($"[UIManager] HidePanel {type}  (caller: {Environment.StackTrace})");
 
             var entry = GetType(type);
             if (entry == null)return;
@@ -662,6 +694,7 @@ namespace UI
                 _pauseOwners.Clear();
                 ApplyPauseState();
                 RefreshTopAsync().Forget();
+                ProcessPendingOpens().Forget();
                 MMTimeScaleEvent.Trigger(MMTimeScaleMethods.Reset, 1f, 0, false, 0f, false);
             }
         }
@@ -790,6 +823,7 @@ namespace UI
         
         private async UniTask Open_CloseAllAndPushAsync(UIPanelType type)
         {
+            Debug.Log($"[UIManager] Open_CloseAllAndPushAsync({type}) CALLED");
             try
             {
                 await ClearStackAsync(invokeClosedEvent: false);

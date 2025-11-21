@@ -15,19 +15,16 @@ namespace UI.Transition
         public override async UniTask PlayAsync(GameObject target, bool isAppear, CancellationToken cts)
         {
             if (!target) return;
+
             var canvasGroup = target.GetComponent<CanvasGroup>();
             if (!canvasGroup)
             {
-                canvasGroup = target.AddComponent<CanvasGroup>();
+                Debug.LogError($"[FadeTransition] {target.name} has no CanvasGroup on root.");
+                return;
             }
-            
             DOTween.Kill(canvasGroup, complete: false);
 
-            float from = isAppear ? 0f : 1f;
-            float to   = isAppear ? 1f : 0f;
-
-            canvasGroup.alpha = from;
-
+            float to = isAppear ? 1f : 0f;
             try
             {
                 await canvasGroup
@@ -38,7 +35,6 @@ namespace UI.Transition
             }
             catch (OperationCanceledException)
             {
-                canvasGroup.alpha = to;
             }
         }
     }
