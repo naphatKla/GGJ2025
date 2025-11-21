@@ -1,4 +1,5 @@
 using System;
+using Achievements;
 using Characters.Controllers;
 using Dan.Main;
 using GameControl.Controller;
@@ -28,6 +29,15 @@ namespace GameControl.GameState
             UIManager.Instance.CloseAllPanels();
             UIManager.Instance.OpenResultMenu();
             SavePlayerDataAndUpload();
+
+            AchievementManager.Current.OnRunEnded(controller.CurrentMap.mapId);
+            
+            switch (GameStateController.Current.gameResult)
+            {
+                case EndResult.Completed:
+                    AchievementManager.Current.OnRunWin(controller.CurrentMap.mapId);
+                    break;
+            }
         }
 
         public void Update(GameStateController controller) { }

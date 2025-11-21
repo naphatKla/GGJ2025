@@ -127,6 +127,7 @@ namespace Achievements
     [CreateAssetMenu(menuName = "Config/Achievement Database", fileName = "AchievementDatabase")]
     public class AchievementDatabase : SerializedScriptableObject
     {
+        [ListDrawerSettings(ShowIndexLabels = true) ]
         public List<AchievementEntry> entries = new();
     }
 }

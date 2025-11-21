@@ -113,7 +113,7 @@ namespace UI.Challenge
 
             if (challenge == null || string.IsNullOrEmpty(challenge.id)) return;
             
-            // if (IsLockedByPlayer(challenge)) return;
+            if (IsLockedByPlayer(challenge)) return;
             
             if (c_SelectedIndices.Contains(index))
             {
@@ -167,7 +167,7 @@ namespace UI.Challenge
             {
                 var content = _items[idx];
                 vh.SetPrefabName("Challenge"); 
-                //vh.IsLocked = IsLockedByPlayer(content);
+                vh.IsLocked = IsLockedByPlayer(content);
                 vh.ScrollCellIndex(idx, content);
                 vh.UpdateViewholder(content);
                 bool isSelected = c_SelectedIndices.Contains(idx);

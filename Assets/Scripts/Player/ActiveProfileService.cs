@@ -164,6 +164,13 @@ namespace Player
                     GUILayout.Label($"• {m}", _kvStyle);
             else
                 GUILayout.Label("(empty)", _kvStyle);
+            
+            GUILayout.Label("Unlocked Achievement", _hdrStyle);
+            if (current.UnlockedAchievements is { Count: > 0 })
+                foreach (var m in current.UnlockedAchievements)
+                    GUILayout.Label($"• {m}", _kvStyle);
+            else
+                GUILayout.Label("(empty)", _kvStyle);
 
             GUILayout.Space(8);
             GUILayout.Label("MapStats", _hdrStyle);

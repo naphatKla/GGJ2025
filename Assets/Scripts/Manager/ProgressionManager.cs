@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Player;
 using ProjectExtensions;
+using UnityEngine;
 
 namespace Manager
 {
@@ -104,6 +105,7 @@ namespace Manager
             if (!silent)
                 OnAchievementUnlocked?.Invoke(achievementId);
 
+            Debug.Log(achievementId);
             return true;
         }
 
