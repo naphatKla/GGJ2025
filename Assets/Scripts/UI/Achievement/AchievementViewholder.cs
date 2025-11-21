@@ -2,6 +2,7 @@ using Achievements;
 using Coffee.UIEffects;
 using Demo;
 using PixelUI;
+using Player;
 using Sirenix.OdinInspector;
 using TMPro;
 using UnityEngine;
@@ -26,7 +27,7 @@ namespace UI.Achievement
         public Color lockColorBg;
         public Gradient unlockGradient;
 
-        public void UpdateViewholder(AchievementEntry achievementData)
+        public void UpdateViewholder(AchievementEntry achievementData, PlayerData playerData)
         {
             if (!IsLocked)
             {
@@ -36,6 +37,7 @@ namespace UI.Achievement
                 if (descriptionVh != null) descriptionVh.text = achievementData.description;
                 m_Button.interactable = false;
                 m_Button.image.color = unlockColorBg;
+                UpdateProgressionBar(achievementData, playerData);
             }
             else
             {
@@ -45,12 +47,22 @@ namespace UI.Achievement
                 if (descriptionVh != null) descriptionVh.text = achievementData.description;
                 m_Button.interactable = false;
                 m_Button.image.color = lockColorBg;
+                UpdateProgressionBar(achievementData, playerData);
             }
         }
         
-        public void UpdateProgressionBar(AchievementEntry achievementData)
+        public void UpdateProgressionBar(AchievementEntry achievementData, PlayerData playerData)
         {
+            achievementData.TryGetMainProgress(playerData, out int current, out int target);
+            
+            if (current == 0 && target == 0) 
+                progressionBar.gameObject.SetActive(false);
+            else
+                progressionBar.gameObject.SetActive(true);
+            
             progressionBar.MinValue = 0;
+            progressionBar.MaxValue = target;
+            progressionBar.CurrentValue = current;
         }
         
         public void ApplyLockGradient()

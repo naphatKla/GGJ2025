@@ -492,6 +492,7 @@ namespace UI
         public void OpenSettingsPanel() => OpenPanel(UIPanelType.Setting).Forget();
         public void OpenClassSelectionPanel() => OpenPanel(UIPanelType.ClassSelection).Forget();
         public void OpenPermanentUpgradePanel() => OpenPanel(UIPanelType.PermanentUpgrade).Forget();
+        public void OpenAchievementPanel() => OpenPanel(UIPanelType.Achievement).Forget();
 
         
         /// <summary>

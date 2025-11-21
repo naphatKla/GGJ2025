@@ -43,7 +43,13 @@ namespace UI.Achievement
             ls.RefillCells();
             ls.RefreshCells();
         }
-        
+
+        private void OnEnable()
+        {
+            var ls = GetComponent<LoopScrollRect>();
+            ls.RefreshCells();
+        }
+
         private List<AchievementEntry> LoadItems()
         {
             return achievementDataContainer.entries;
@@ -96,7 +102,7 @@ namespace UI.Achievement
                 vh.ScrollCellIndex(idx, content);
                 //vh.SetClickedColor(idx == m_SelectedIndex);*/
                 vh.IsLocked = IsLockedByPlayer(content);
-                vh.UpdateViewholder(_items[idx]);
+                vh.UpdateViewholder(_items[idx], Current);
             }
             else
             {
