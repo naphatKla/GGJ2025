@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using PermanentUpgrade;
+using UnityEngine;
 
 namespace Player
 {
@@ -48,13 +49,54 @@ namespace Player
             UnlockedPermanentUpgrade ??= new HashSet<PermanentUpgradeType>();
             UnlockedAchievements ??= new HashSet<string>();
 
+            Migrate_MapId_Renames();
             const int CURRENT = 2;
-            if (SchemaVersion < 1)
-            {
-                // v1 → v2: ใส่ migration logic ถ้ามี
-            }
-
             SchemaVersion = CURRENT;
+        }
+
+        /// <summary>
+        /// รวม migration ที่เกี่ยวกับการ rename map id ทั้งหมด
+        /// </summary>
+        private void Migrate_MapId_Renames()
+        {
+            var mapIdMap = new Dictionary<string, string>
+            {
+                { "hard_mapvoidmetro", "map_voidmetro" }
+                // { "old_id_2", "new_id_2" },
+            };
+
+            foreach (var kv in mapIdMap) RenameMapId(kv.Key, kv.Value);
+        }
+
+        /// <summary>
+        /// ย้ายข้อมูลจาก oldId → newId ในทั้ง UnlockedMaps และ MapStats
+        /// </summary>
+        private void RenameMapId(string oldId, string newId)
+        {
+            if (string.IsNullOrEmpty(oldId) || string.IsNullOrEmpty(newId) || oldId == newId)
+                return;
+
+            // 1) UnlockedMaps : ถ้ามี id เก่าอยู่ ให้ลบแล้วใส่ id ใหม่
+            if (UnlockedMaps.Remove(oldId)) UnlockedMaps.Add(newId);
+
+            // 2) MapStats : ย้ายค่า stat จาก key เก่าไป key ใหม่
+            if (MapStats.TryGetValue(oldId, out var oldStat))
+            {
+                if (MapStats.TryGetValue(newId, out var existing))
+                {
+                    existing.TimesPlayed += oldStat.TimesPlayed;
+                    existing.LastScore = Math.Max(existing.LastScore, oldStat.LastScore);
+                    existing.HighestScore = Math.Max(existing.HighestScore, oldStat.HighestScore);
+
+                    MapStats[newId] = existing;
+                }
+                else
+                {
+                    MapStats[newId] = oldStat;
+                }
+
+                MapStats.Remove(oldId);
+            }
         }
     }
 

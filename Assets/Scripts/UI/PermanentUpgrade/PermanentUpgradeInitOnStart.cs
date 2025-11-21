@@ -6,6 +6,7 @@ using PermanentUpgrade;
 using Player;
 using Sirenix.OdinInspector;
 using TMPro;
+using UI.Manager;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -151,7 +152,15 @@ namespace UI.PermanentUpgrade
             permanentDisplay.upgradeButton.onClick.RemoveAllListeners();
             permanentDisplay.upgradeButton.onClick.AddListener(() =>
             {
-                CurrentProfile.TryUpgrade(_items[index].type,permanentConfig);
+                var click = CurrentProfile.TryUpgrade(_items[index].type,permanentConfig);
+                if (click)
+                {
+                    NotificationManager.Instance?.PlayNotification("notify_warnrb", "Upgrade Successfully!", 2f);
+                }
+                else
+                {
+                    NotificationManager.Instance?.PlayNotification("notify_warnrb", "Not enough coin!", 2f);
+                }
                 SaveAndRefresh();
             });
         }
