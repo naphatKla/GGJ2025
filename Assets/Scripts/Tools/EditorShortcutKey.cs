@@ -74,7 +74,7 @@ namespace Tools
                 }
                 case EditorAction.ForceDie:
                 {
-                    CombatManager.ApplyRawDamageTo(PlayerController.Instance.gameObject, null, PlayerController.Instance.HealthSystem.MaxHealth);
+                    CombatManager.ApplyRawDamageTo(PlayerController.Instance.gameObject, null, "GM", PlayerController.Instance.HealthSystem.MaxHealth);
                     break;
                 }
                 case EditorAction.ReduceTime10Sec:

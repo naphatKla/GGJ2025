@@ -46,7 +46,7 @@ namespace Manager
         /// <param name="target">The GameObject receiving the damage.</param>
         /// <param name="attacker">The GameObject dealing the damage.</param>
         /// <param name="multiplier">A multiplier applied to the attacker's damage (default is 100%).</param>
-        public static void ApplyCalculatedDamageTo(GameObject target, GameObject attacker, GameObject realObjectAttack, Vector2 hitPosition,
+        public static void ApplyCalculatedDamageTo(GameObject target, GameObject attacker, string attackerId, GameObject realObjectAttack, Vector2 hitPosition,
             float baseSkillDamage, float multiplier, float additionalCriRate, float additionCriDamge,
             float lifeStealPercent, float lifeStealEffective)
         {
@@ -65,6 +65,7 @@ namespace Manager
             // Apply Damage To Target ==========================================
             var hitInfo = new HealthSystem.HitInfo
             {
+                attackerId         = attackerId,
                 damage           = damageData.Damage,
                 attacker         = attackerController,
                 realObjectAttack = realObjectAttack
@@ -77,7 +78,7 @@ namespace Manager
                 attackerController.HealthSystem.Heal(damageData.LifeSteal);
         }
 
-        public static void ApplyRawDamageTo(GameObject target, GameObject objectAttacker, float damage)
+        public static void ApplyRawDamageTo(GameObject target, GameObject objectAttacker, string attackerId, float damage)
         {
             if (!_characterCaches.ContainsKey(target))
                 _characterCaches.Add(target, target.GetComponent<BaseController>());

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Characters.Controllers;
 using UnityEngine;
 using Manager;
 using Sirenix.OdinInspector;
@@ -48,6 +49,7 @@ namespace Characters.CombatSystems
         private bool _isEnableDamage;
 
         private GameObject _owner;
+        private string _ownerId;
 
         // --- Core data ---
         private readonly List<DamageInstance> _damageInstances = new();
@@ -69,6 +71,7 @@ namespace Characters.CombatSystems
         public event Action<int> OnHitWithDamageOnTouch;
 
         public GameObject Owner => _owner;
+        public string OwnerId => _ownerId;
         public bool IsEnableDamage => _isEnableDamage;
 
         /// <summary>
@@ -93,6 +96,7 @@ namespace Characters.CombatSystems
 
         public void EnableDamage(
             GameObject owner,
+            string ownerId,
             object caller,
             float hitPerSec,
             float baseSkillDamage,
@@ -105,6 +109,7 @@ namespace Characters.CombatSystems
         {
             InternalEnableDamage(
                 owner,
+                ownerId,
                 caller,
                 hitPerSec,
                 baseSkillDamage,
@@ -119,6 +124,7 @@ namespace Characters.CombatSystems
         [Button]
         public void EnableDamage(
             GameObject owner,
+            string ownerId,
             object caller,
             float hitPerSec,
             OverlapShape shape,
@@ -140,6 +146,7 @@ namespace Characters.CombatSystems
 
             InternalEnableDamage(
                 owner,
+                ownerId,
                 caller,
                 hitPerSec,
                 baseSkillDamage,
@@ -153,6 +160,7 @@ namespace Characters.CombatSystems
 
         private void InternalEnableDamage(
             GameObject owner,
+            string ownerId,
             object caller,
             float hitPerSec,
             float baseSkillDamage,
@@ -320,6 +328,7 @@ namespace Characters.CombatSystems
                 CombatManager.ApplyCalculatedDamageTo(
                     target,
                     _owner,
+                    _ownerId,
                     gameObject,
                     hitPosition,
                     instance.BaseSkillDamage,

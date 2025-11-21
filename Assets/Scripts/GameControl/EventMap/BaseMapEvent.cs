@@ -12,19 +12,20 @@ namespace GameControl.EventMap
     public abstract class BaseMapEvent : MonoBehaviour
     {
         [ReadOnly][ShowInInspector] private float _overAllTime;
+        [SerializeField] protected string mapEventId;
         public float deletetime;
         public float previewDuration;
         public float delayBeforePerformAfterPreview;
         public float damage;
         public ParticleSystem previewEffect;
-
         public bool debug;
-
+        
         [SerializeField] protected MMF_Player notifyFeedback;
         [SerializeField] protected MMF_Player playFeedback;
 
         private IObjectPool<BaseMapEvent> _pool;
         private CancellationTokenSource _cts;
+        public string MapEventId => mapEventId;
 
         private void OnValidate()
         {

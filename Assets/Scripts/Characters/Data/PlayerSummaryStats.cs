@@ -13,7 +13,7 @@ namespace Characters.Data
         public string currentRank;
         public string highestRank;
 
-        public Dictionary<string, int> totalKillDictionary;
+        public Dictionary<string, int> totalKillDictionary; // target killed id, amount
         public int totalEnemiesEliminated;
         public int totalDamageDeal;
         public int criticalCount;
@@ -25,6 +25,7 @@ namespace Characters.Data
         
         public int totalDamageTaken;
         public int totalHeal;
+        public Dictionary<string, int> takeDamageAmountDictionary; // attacker id, amount
 
         public void DebugStat()
         {

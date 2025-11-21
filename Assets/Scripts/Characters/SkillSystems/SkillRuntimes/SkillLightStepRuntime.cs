@@ -56,6 +56,7 @@ namespace Characters.SkillSystems.SkillRuntimes
                 owner.DamageOnTouch.DisableDamage(this);
                 owner.DamageOnTouch.EnableDamage(
                     owner.gameObject,
+                    owner.CharacterData.CharacterId,
                     this,
                     7f,
                     skillData.BaseDamagePerHit,

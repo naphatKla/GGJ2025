@@ -157,6 +157,7 @@ namespace Characters.SkillSystems.SkillRuntimes
                 CombatManager.ApplyCalculatedDamageTo(
                     target.gameObject,
                     owner.gameObject,
+                    owner.CharacterData.CharacterId,
                     owner.gameObject,
                     target.ClosestPoint(owner.transform.position),
                     skillData.ExplosionBaseDamage,

@@ -128,7 +128,7 @@ namespace Achievements
                 
                 case AchievementConditionType.TotalKillAtLeast:
                     target = minKillAtLeast;
-                    p.TotalKill.TryGetValue(enemyId, out current);
+                    p.totalKillDictionary.TryGetValue(enemyId, out current);
                     current = Mathf.Min(current, target);
                     return true;
                 

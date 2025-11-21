@@ -88,7 +88,7 @@ namespace Achievements
                 case AchievementConditionType.TotalKillAtLeast:
                     if (p == null || string.IsNullOrEmpty(c.enemyId)) 
                         return false;
-                    p.TotalKill.TryGetValue(c.enemyId, out int count);
+                    p.totalKillDictionary.TryGetValue(c.enemyId, out int count);
                     return count >= c.minKillAtLeast;
                 
                 case AchievementConditionType.ChallengeAtLeast:

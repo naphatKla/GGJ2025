@@ -88,7 +88,7 @@ namespace GameControl.EventMap
 
                 var go = col.gameObject;
                 if (go == gameObject) continue;
-                CombatManager.ApplyRawDamageTo(go, gameObject, damage);
+                CombatManager.ApplyRawDamageTo(go, gameObject, mapEventId, damage);
                 _lastTimeHit = Time.time;
                 Debug.Log("Black Hole Attack");
             }

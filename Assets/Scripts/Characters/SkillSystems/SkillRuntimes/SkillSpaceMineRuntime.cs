@@ -44,7 +44,7 @@ namespace Characters.SkillSystems.SkillRuntimes
             bomb.transform.position = owner.transform.position;
             bomb.gameObject.SetActive(true);
             await bomb.WaitPlaceBombAsync();
-            bomb.DamageOnTouch.EnableDamage(owner.gameObject, this, 1, skillData.BaseDamage, skillData.DamageMultiplier);
+            bomb.DamageOnTouch.EnableDamage(owner.gameObject,owner.CharacterData.CharacterId, this, 1, skillData.BaseDamage, skillData.DamageMultiplier);
             await UniTask.Yield();
             bomb.DamageOnTouch.DisableDamage(this);
             bomb.gameObject.SetActive(false);

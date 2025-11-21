@@ -145,9 +145,9 @@ namespace Player
             GUILayout.Space(8);
             GUILayout.Label("Total Kill (per enemy)", _hdrStyle);
 
-            if (current.TotalKill != null && current.TotalKill.Count > 0)
+            if (current.totalKillDictionary != null && current.totalKillDictionary.Count > 0)
             {
-                foreach (var kv in current.TotalKill)
+                foreach (var kv in current.totalKillDictionary)
                 {
                     // แบบง่าย แสดงเป็น 1 บรรทัด
                     // Example: • slime_basic : 123
@@ -167,7 +167,34 @@ namespace Player
                 GUILayout.Label("(empty)", _kvStyle);
             }
             
-            DrawKV("HighestParryUse", current.HighestParryUseOnRun.ToString());
+            // ───────── Take Damage Hit Per Enemy On Run ─────────
+            GUILayout.Space(8);
+            GUILayout.Label("Take Damage Hit (per enemy)", _hdrStyle);
+
+            if (current.takeDamageOnRunDictionary!= null && current.takeDamageOnRunDictionary.Count > 0)
+            {
+                foreach (var kv in current.takeDamageOnRunDictionary)
+                {
+                    // แบบง่าย แสดงเป็น 1 บรรทัด
+                    // Example: • slime_basic : 123
+                    GUILayout.Label($"• {kv.Key} : {kv.Value}", _kvStyle);
+
+                    // ถ้าอยากจัดเป็นสองคอลัมน์ตรง ๆ ก็ใช้แบบนี้แทน:
+                    /*
+                    GUILayout.BeginHorizontal();
+                    GUILayout.Label(kv.Key + ":", GUILayout.Width(140));
+                    GUILayout.Label(kv.Value.ToString(), _kvStyle);
+                    GUILayout.EndHorizontal();
+                    */
+                }
+            }
+            else
+            {
+                GUILayout.Label("(empty)", _kvStyle);
+            }
+            
+            DrawKV("HighestHealOnRun", current.HighestHealOnRun.ToString());
+            DrawKV("HighestParryUseOnRun", current.HighestParryUseOnRun.ToString());
             DrawKV("LastPlayed (unix)", current.LastPlayedUnix.ToString());
             DrawKV("LastPlayed (local)", UnixToLocalString(current.LastPlayedUnix));
 

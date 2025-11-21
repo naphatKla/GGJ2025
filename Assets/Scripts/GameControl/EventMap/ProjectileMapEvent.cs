@@ -47,7 +47,7 @@ namespace GameControl.EventMap
             var size = Physics2D.OverlapBoxNonAlloc(center, hitboxSize, transform.eulerAngles.z, _hits, hitLayer);
             
             for (int i = 0; i < size; i++)
-                CombatManager.ApplyRawDamageTo(_hits[i].gameObject, gameObject, damage);
+                CombatManager.ApplyRawDamageTo(_hits[i].gameObject, gameObject, mapEventId, damage);
         }
         
         private void OnDrawGizmos()

@@ -40,7 +40,7 @@ namespace Characters.SkillSystems.SkillRuntimes
                 skillInstance.transform.rotation = Quaternion.Euler(0f, 0f, angle);
 
                 skillInstance.gameObject.SetActive(true);
-                skillInstance.DamageOnTouch.EnableDamage(owner.gameObject, this, skillData.DamageHitPerSec, skillData.BaseDamagePerHit, skillData.DamageMultiplier);
+                skillInstance.DamageOnTouch.EnableDamage(owner.gameObject, owner.CharacterData.CharacterId, this, skillData.DamageHitPerSec, skillData.BaseDamagePerHit, skillData.DamageMultiplier);
                 _skillObjects.Add(skillInstance);
             }
 

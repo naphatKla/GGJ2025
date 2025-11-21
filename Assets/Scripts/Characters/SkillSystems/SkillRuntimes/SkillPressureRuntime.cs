@@ -37,7 +37,7 @@ namespace Characters.SkillSystems.SkillRuntimes
             owner.TryPlayFeedback(skillData.BombFeedback);
             foreach (var target in targets)
             {
-                CombatManager.ApplyCalculatedDamageTo(target.gameObject, owner.gameObject, owner.gameObject,
+                CombatManager.ApplyCalculatedDamageTo(target.gameObject, owner.gameObject,owner.CharacterData.CharacterId , owner.gameObject,
                     target.ClosestPoint(owner.transform.position), skillData.BaseDamage, skillData.DamageMultiplier, 0,
                     0, 0, 0);
             }

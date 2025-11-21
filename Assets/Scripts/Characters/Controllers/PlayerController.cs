@@ -6,6 +6,7 @@ using Characters.CollectItemSystems;
 using Characters.CombatSystems;
 using Characters.ComboSystems;
 using Characters.Data;
+using Characters.HeathSystems;
 using Characters.LevelSystems;
 using Characters.ScoreSystems;
 using Characters.SkillSystems;
@@ -182,14 +183,19 @@ namespace Characters.Controllers
             statsPerRun.criticalCount = combatSystem.TotalCriticalCount;
             
             PlayerCombatSystem pc = combatSystem as PlayerCombatSystem;
+            PlayerHealthSystem hs = HealthSystem as PlayerHealthSystem;
+                
             statsPerRun.totalCounterDashCount = pc.TotalCounterDashCount;
 
             statsPerRun.totalPrimarySkillUsed = skillSystem.TotalPrimarySkillUsed;
             statsPerRun.totalSecondarySkillUsed = skillSystem.TotalSecondarySkillUsed;
             statsPerRun.totalAutoSkillUsed = skillSystem.TotalAutoSkillUsed;
 
-            statsPerRun.totalDamageTaken = HealthSystem.TotalDamageTaken;
-            statsPerRun.totalHeal = HealthSystem.TotalHeal;
+            statsPerRun.totalDamageTaken = hs.TotalDamageTaken;
+            statsPerRun.totalHeal = hs.TotalHeal;
+            var takeDamageDict = hs.TakeDamageAmountDictionary ?? new();
+            statsPerRun.takeDamageAmountDictionary = new Dictionary<string, int>(takeDamageDict);
+            
             return statsPerRun;
         }
 

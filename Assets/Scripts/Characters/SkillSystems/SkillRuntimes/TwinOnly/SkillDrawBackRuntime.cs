@@ -47,7 +47,7 @@ namespace Characters.SkillSystems.SkillRuntimes.TwinOnly
         {
             _twirlController.InputSystem.Enable = false;
             _twirlController.SkillSystem.SetCanUseSkills(false);
-            _twirlController.HealthSystem.CanAim = false;   
+            _twirlController.HealthSystem.CanAim = false;
             tws.Clear();
 
             stunTime = skillData.EffectSelfOnSuccess.Count > 0
@@ -77,9 +77,10 @@ namespace Characters.SkillSystems.SkillRuntimes.TwinOnly
             if (await SplitOut(cancelToken, rotateAngle, rotateDuration, delayChargeAfterRotate, chargeDistance,
                     moveToChargeDistanceDuration, delayBeforeZoomOut, orthoSize, zoomOutDuration,
                     blendOverride)) return;
-            
+
             if (await Follow(cancelToken, chaseDuration, followSpeed, fleeDuration)) return;
-            if (await Attack(cancelToken, attackMergeBackDuration, attackCamShake, hitPerSec, normalDamageRadius)) return;
+            if (await Attack(cancelToken, attackMergeBackDuration, attackCamShake, hitPerSec,
+                    normalDamageRadius)) return;
 
             if (cancelToken.IsCancellationRequested) return;
 
@@ -90,7 +91,7 @@ namespace Characters.SkillSystems.SkillRuntimes.TwinOnly
 
             await UniTask.WaitForSeconds(rotateDuration, cancellationToken: cancelToken);
         }
-        
+
         private async Task<bool> SplitOut(CancellationToken cancelToken, float rotateAngle, float rotateDuration,
             float delayChargeAfterRotate, float chargeDistance, float moveToChargeDistanceDuration,
             float delayBeforeZoomOut,
@@ -116,8 +117,9 @@ namespace Characters.SkillSystems.SkillRuntimes.TwinOnly
             Cinemachine2DCameraController.Current.PushOrtho(orthoSize, zoomOutDuration, this, blendOverride);
             return false;
         }
-        
-        private async Task<bool> Follow(CancellationToken cancelToken, float chaseDuration, float speed, float fleeDuration)
+
+        private async Task<bool> Follow(CancellationToken cancelToken, float chaseDuration, float speed,
+            float fleeDuration)
         {
             float timeCount = 0f;
 
@@ -137,7 +139,7 @@ namespace Characters.SkillSystems.SkillRuntimes.TwinOnly
 
             return cancelToken.IsCancellationRequested;
         }
-        
+
         private async Task<bool> Attack(CancellationToken cancelToken, float attackDuration, float attackCamShake,
             float hitPerSec,
             float damageRadius)
@@ -153,8 +155,9 @@ namespace Characters.SkillSystems.SkillRuntimes.TwinOnly
 
             Cinemachine2DCameraController.Current.ShakeCamera(attackCamShake);
             StatusEffectManager.RemoveEffectAt(owner.gameObject, StatusEffectName.Iframe);
-            
-            owner.DamageOnTouch.EnableDamage(gameObject, this, hitPerSec, DamageOnTouch.OverlapShape.Circle,
+
+            owner.DamageOnTouch.EnableDamage(owner.gameObject, owner.CharacterData.CharacterId, this, hitPerSec,
+                DamageOnTouch.OverlapShape.Circle,
                 circle: damageRadius,
                 baseSkillDamage: skillData.BaseDamagePerHit, damageMultiplier: skillData.DamageMultiplier);
 
@@ -179,11 +182,11 @@ namespace Characters.SkillSystems.SkillRuntimes.TwinOnly
             }
 
             StatusEffectManager.ApplyEffectTo(owner.gameObject, skillData.EffectSelfOnSuccess);
-            
+
             LayerMask damageLayer = CharacterGlobalSettings.Instance.EnemyLayerDictionary[owner.tag];
             var targetsInRange =
                 Physics2D.OverlapCircleAll(owner.transform.position, skillData.ExplosionRadius, damageLayer);
-            
+
             foreach (var target in targetsInRange)
             {
                 Vector2 knockBackDirection = target.transform.position - owner.transform.position;
@@ -192,14 +195,15 @@ namespace Characters.SkillSystems.SkillRuntimes.TwinOnly
 
                 target.GetComponent<BaseMovementSystem>()
                     .TryMoveToPositionOverTime(knockBackDestination, skillData.KnockBackDuration);
-                
-                CombatManager.ApplyCalculatedDamageTo(target.gameObject, owner.gameObject, owner.gameObject,
+
+                CombatManager.ApplyCalculatedDamageTo(target.gameObject, owner.gameObject,
+                    owner.CharacterData.CharacterId, owner.gameObject,
                     target.ClosestPoint(owner.transform.position), skillData.BaseExplosionDamagePerHit,
                     skillData.ExplosionDamageMultiplier, 0, 0, 0, 0);
             }
-            
+
             owner.TryPlayFeedback(skillData.AttackSuccessFeedback);
-            
+
             await UniTask.WaitForSeconds(stunTime, cancellationToken: cancelToken);
             return false;
         }

@@ -63,7 +63,7 @@ namespace Characters.SkillSystems.SkillRuntimes
             if (cancelToken.IsCancellationRequested) return;
             
             owner.TryPlayFeedback(skillData.DashFeedback);
-            owner.DamageOnTouch.EnableDamage(owner.gameObject, this, 1, skillData.DashBaseDamage,
+            owner.DamageOnTouch.EnableDamage(owner.gameObject,owner.CharacterData.CharacterId ,this, 1, skillData.DashBaseDamage,
                 skillData.DamageMultiplier, canHitWithDamageOnTouch: true);
 
             var dashTask = owner.MovementSystem.TryMoveToPositionOverTime(destination, skillData.DashDuration,

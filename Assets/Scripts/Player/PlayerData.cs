@@ -22,8 +22,10 @@ namespace Player
         public int HighestScore;
         public int LastScore;
         public int TotalDamageDeal;
-        public Dictionary<string, int> TotalKill = new(); // string = enemy id
+        public Dictionary<string, int> totalKillDictionary = new(); // string = enemy id
         public int HighestParryUseOnRun;
+        public int HighestHealOnRun;
+        public Dictionary<string, int> takeDamageOnRunDictionary = new();
         
         // Permanent Upgrade
         public Dictionary<PermanentUpgradeType, int> PermanentUpgrades =
@@ -48,7 +50,8 @@ namespace Player
             MapStats ??= new Dictionary<string, MapStat>();
             SelectedChallenges ??= new HashSet<string>();
             PermanentUpgrades ??= new Dictionary<PermanentUpgradeType, int>();
-            TotalKill ??= new Dictionary<string, int>();
+            totalKillDictionary ??= new Dictionary<string, int>();
+            takeDamageOnRunDictionary ??= new();
             UnlockedPermanentUpgrade ??= new HashSet<PermanentUpgradeType>();
             UnlockedAchievements ??= new HashSet<string>();
 

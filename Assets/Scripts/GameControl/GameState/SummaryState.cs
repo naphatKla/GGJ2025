@@ -58,12 +58,22 @@ namespace GameControl.GameState
             
             if (dataStatus.totalSecondarySkillUsed > profile.HighestParryUseOnRun)
                 profile.HighestParryUseOnRun = dataStatus.totalSecondarySkillUsed;
+
+            if (dataStatus.totalHeal > profile.HighestHealOnRun)
+                profile.HighestHealOnRun = dataStatus.totalHeal;
+            
+            // add total take damage hit from each enemy type in this run
+            foreach (var keyValuePair in dataStatus.takeDamageAmountDictionary)
+            {
+                profile.takeDamageOnRunDictionary.TryAdd(keyValuePair.Key, 0);
+                profile.takeDamageOnRunDictionary[keyValuePair.Key]++;
+            }
             
             // add total kill of each enemy type in this run
             foreach (var kv in dataStatus.totalKillDictionary)
             {
-                profile.TotalKill.TryAdd(kv.Key, 0);
-                profile.TotalKill[kv.Key] += kv.Value;
+                profile.totalKillDictionary.TryAdd(kv.Key, 0);
+                profile.totalKillDictionary[kv.Key] += kv.Value;
             }
             
             profile.LastPlayedUnix = DateTimeOffset.UtcNow.ToUnixTimeSeconds();

@@ -105,6 +105,7 @@ namespace Characters.HeathSystems
 
         public struct HitInfo
         {
+            public string attackerId;
             public float damage;
             public BaseController attacker;
             public GameObject realObjectAttack;
