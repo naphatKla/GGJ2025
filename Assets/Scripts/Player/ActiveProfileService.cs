@@ -206,7 +206,7 @@ namespace Player
                 foreach (var kv in current.MapStats)
                 {
                     var s = kv.Value;
-                    GUILayout.Label($"• {kv.Key}  |  Times: {s.TimesPlayed}  HS: {s.HighestScore}  Last: {s.LastScore}",
+                    GUILayout.Label($"• {kv.Key}  |  Times: {s.TimesPlayed} WIN: {s.WinAmount}  HS: {s.HighestScore}  Last: {s.LastScore}",
                         _kvStyle);
                 }
             else
