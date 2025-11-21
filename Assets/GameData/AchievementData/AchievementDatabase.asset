@@ -22,7 +22,7 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   entries:
-  - id: junior_officers
+  - id: achivement_juniorofficers
     displayName: Junior Officers
     description: Win one game in survival mode
     icon: {fileID: 0}
@@ -31,9 +31,78 @@ MonoBehaviour:
     conditions:
     - type: 1
       mapId: 
+      challengeId: 
       minHighestScore: 0
+      minTotalDamage: 0
     rewards:
-    - type: 1
+    - type: 2
       nanoAmount: 0
-      refId: 
+      refId: challenge_ordinary
+      permanentType: 0
+    - type: 2
+      nanoAmount: 0
+      refId: challenge_cheapmaterials
+      permanentType: 0
+    - type: 2
+      nanoAmount: 0
+      refId: challenge_strongbody
+      permanentType: 0
+    - type: 2
+      nanoAmount: 0
+      refId: challenge_dash1
+      permanentType: 0
+    - type: 2
+      nanoAmount: 0
+      refId: challenge_thirsty
+      permanentType: 0
+  - id: achievement_arrogant
+    displayName: Arrogant
+    description: Win anymode mode with "Ordinary" challenge enable
+    icon: {fileID: 0}
+    triggerType: 1
+    logic: 0
+    conditions:
+    - type: 2
+      mapId: 
+      challengeId: challenge_ordinary
+      minHighestScore: 0
+      minTotalDamage: 0
+    rewards:
+    - type: 2
+      nanoAmount: 0
+      refId: challenge_arrogant
+      permanentType: 0
+  - id: achievement_junkgrades
+    displayName: Junk grades
+    description: Win anymode mode with "Cheap materials" challenge enable
+    icon: {fileID: 0}
+    triggerType: 1
+    logic: 0
+    conditions:
+    - type: 2
+      mapId: 
+      challengeId: challenge_cheapmaterials
+      minHighestScore: 0
+      minTotalDamage: 0
+    rewards:
+    - type: 2
+      nanoAmount: 0
+      refId: challenge_junkgrades
+      permanentType: 0
+  - id: plastic_fang
+    displayName: Plastic Fang
+    description: Deal 1,000,000 total damage
+    icon: {fileID: 0}
+    triggerType: 0
+    logic: 0
+    conditions:
+    - type: 4
+      mapId: 
+      challengeId: 
+      minHighestScore: 0
+      minTotalDamage: 1000000
+    rewards:
+    - type: 2
+      nanoAmount: 0
+      refId: challenge_plasticfang
       permanentType: 0

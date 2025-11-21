@@ -13,7 +13,7 @@ namespace GameControl.GameState
 
         public void OnDisable(GameStateController controller)
         {
-            PlayerController.Instance.HealthSystem.OnDead -= PlayerDeathResult;
+            PlayerController.Instance.HealthSystem.OnDeadAnimationFinish -= PlayerDeathResult;
         }
 
         public void Enter(GameStateController controller)
@@ -40,7 +40,7 @@ namespace GameControl.GameState
         private void PlayerDeathResult()
         {
             GameStateController.Instance.gameResult = EndResult.Failed;
-            PlayerController.Instance.HealthSystem.OnDead -= PlayerDeathResult;
+            PlayerController.Instance.HealthSystem.OnDeadAnimationFinish -= PlayerDeathResult;
             GameStateController.Instance.SetState(new SummaryState());
         }
         

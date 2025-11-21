@@ -21,6 +21,7 @@ namespace Player
         // Global
         public int HighestScore;
         public int LastScore;
+        public int TotalDamageDeal;
         
         // Permanent Upgrade
         public Dictionary<PermanentUpgradeType, int> PermanentUpgrades =

@@ -1,4 +1,5 @@
 using System;
+using Achievements;
 using Characters.Controllers;
 using Dan.Main;
 using GameControl.Controller;
@@ -27,6 +28,15 @@ namespace GameControl.GameState
             GameTimer.Instance.UpdateUIText();
             UIManager.Instance.OpenResultMenu();
             SavePlayerDataAndUpload();
+
+            AchievementManager.Current.OnRunEnded(controller.CurrentMap.mapId);
+            
+            switch (GameStateController.Current.gameResult)
+            {
+                case EndResult.Completed:
+                    AchievementManager.Current.OnRunWin(controller.CurrentMap.mapId);
+                    break;
+            }
         }
 
         public void Update(GameStateController controller) { }
@@ -41,8 +51,10 @@ namespace GameControl.GameState
             
             var dataStatus = PlayerController.Instance.GetSummaryStatsOnStateEnd();
             int newScore = Mathf.Max(0, dataStatus.totalScore);
+            int damageDealThisRun = Mathf.Max(0, dataStatus.totalDamageDeal);
             
             profile.LastScore = newScore;
+            profile.TotalDamageDeal += damageDealThisRun;
             profile.LastPlayedUnix = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
             profile.RegisterRun(GameStateController.Instance.CurrentMap.mapId, newScore);
             

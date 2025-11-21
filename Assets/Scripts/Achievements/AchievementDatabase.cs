@@ -19,7 +19,9 @@ namespace Achievements
     {
         None = 0,
         MapIdEquals = 1,
-        HighestScoreAtLeast = 2,
+        ChallengeIdEquals = 2,
+        HighestScoreAtLeast = 3,
+        TotalDamageAtLeast = 4,
     }
 
     public enum AchievementConditionLogic
@@ -55,8 +57,14 @@ namespace Achievements
         [ShowIf(nameof(type), AchievementConditionType.MapIdEquals)]
         public string mapId;
         
+        [ShowIf(nameof(type), AchievementConditionType.ChallengeIdEquals)]
+        public string challengeId;
+        
         [ShowIf(nameof(type), AchievementConditionType.HighestScoreAtLeast)]
         public int minHighestScore;
+
+        [ShowIf(nameof(type), AchievementConditionType.TotalDamageAtLeast)]
+        public int minTotalDamage;
         
         // แสดงสรุปให้ดูอ่านง่าย (ไม่บังคับใช้ก็ได้)
         [ShowInInspector, ReadOnly]
@@ -65,7 +73,9 @@ namespace Achievements
             {
                 AchievementConditionType.None                    => "(Always true)",
                 AchievementConditionType.MapIdEquals             => $"Map = {mapId}",
+                AchievementConditionType.ChallengeIdEquals       => $"Challenge = {challengeId}",
                 AchievementConditionType.HighestScoreAtLeast     => $"HighestScore ≥ {minHighestScore}",
+                AchievementConditionType.TotalDamageAtLeast     => $"TotalDamage ≥ {minTotalDamage}",
                 _ => ""
             };
     }
@@ -117,6 +127,7 @@ namespace Achievements
     [CreateAssetMenu(menuName = "Config/Achievement Database", fileName = "AchievementDatabase")]
     public class AchievementDatabase : SerializedScriptableObject
     {
+        [ListDrawerSettings(ShowIndexLabels = true) ]
         public List<AchievementEntry> entries = new();
     }
 }

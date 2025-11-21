@@ -139,6 +139,7 @@ namespace Player
             DrawKV("Rainbow Anergy", current.rainBowAnergy.ToString());
             DrawKV("HighestScore", current.HighestScore.ToString());
             DrawKV("LastScore", current.LastScore.ToString());
+            DrawKV("TotalDamageDeal", current.TotalDamageDeal.ToString());
             DrawKV("LastPlayed (unix)", current.LastPlayedUnix.ToString());
             DrawKV("LastPlayed (local)", UnixToLocalString(current.LastPlayedUnix));
 
@@ -160,6 +161,13 @@ namespace Player
             GUILayout.Label("Selected Challenge", _hdrStyle);
             if (current.SelectedChallenges is { Count: > 0 })
                 foreach (var m in current.SelectedChallenges)
+                    GUILayout.Label($"• {m}", _kvStyle);
+            else
+                GUILayout.Label("(empty)", _kvStyle);
+            
+            GUILayout.Label("Unlocked Achievement", _hdrStyle);
+            if (current.UnlockedAchievements is { Count: > 0 })
+                foreach (var m in current.UnlockedAchievements)
                     GUILayout.Label($"• {m}", _kvStyle);
             else
                 GUILayout.Label("(empty)", _kvStyle);
