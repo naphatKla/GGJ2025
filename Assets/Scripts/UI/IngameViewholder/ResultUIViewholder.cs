@@ -196,7 +196,7 @@ namespace UI.IngameViewholder
             sb.AppendLine($"<color=#aeb0af>Heal :</color> <color=#32CD32>{dataStatus.totalHeal}</color>");
             
             //10% of Currency
-            var currency = (dataStatus.totalScore / 100) * 10;
+            var currency = (dataStatus.totalScore / 100) * 1;
             sb.AppendLine($"<color=#6ea9e4>Nano Coin :</color> <color=#52d137>{svc.CurrentProfile.nanoCoin}</color> + <color=#ffed48>{currency}</color>");
             
             return sb;

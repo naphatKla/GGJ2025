@@ -54,6 +54,8 @@ namespace UI.PermanentUpgrade
         {
             SelectIndexImmediate(0);
             ActiveProfileService.Instance.OnPermanentUpgrade += UpdateUI;
+            var ls = GetComponent<LoopScrollRect>();
+            ls.RefreshCells();
         }
 
         private void OnDisable()

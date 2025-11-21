@@ -41,8 +41,6 @@ namespace UI.Challenge
         {
             _items = LoadItems() ?? new List<ChallengeDataSO>();
             totalCount = _items.Count;
-            
-            LoadSelectionFromPlayerData();
         }
         
         void Start()
@@ -52,6 +50,13 @@ namespace UI.Challenge
             ls.dataSource = this;
             ls.totalCount = totalCount;
             ls.RefillCells();
+            ls.RefreshCells();
+        }
+
+        private void OnEnable()
+        {
+            LoadSelectionFromPlayerData();
+            var ls = GetComponent<LoopScrollRect>();
             ls.RefreshCells();
         }
 
