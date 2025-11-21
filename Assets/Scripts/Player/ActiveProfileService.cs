@@ -139,6 +139,7 @@ namespace Player
             DrawKV("Rainbow Anergy", current.rainBowAnergy.ToString());
             DrawKV("HighestScore", current.HighestScore.ToString());
             DrawKV("LastScore", current.LastScore.ToString());
+            DrawKV("TotalDamageDeal", current.TotalDamageDeal.ToString());
             DrawKV("LastPlayed (unix)", current.LastPlayedUnix.ToString());
             DrawKV("LastPlayed (local)", UnixToLocalString(current.LastPlayedUnix));
 

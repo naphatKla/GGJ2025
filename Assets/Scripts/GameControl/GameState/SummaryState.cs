@@ -42,8 +42,10 @@ namespace GameControl.GameState
             
             var dataStatus = PlayerController.Instance.GetSummaryStatsOnStateEnd();
             int newScore = Mathf.Max(0, dataStatus.totalScore);
+            int damageDealThisRun = Mathf.Max(0, dataStatus.totalDamageDeal);
             
             profile.LastScore = newScore;
+            profile.TotalDamageDeal += damageDealThisRun;
             profile.LastPlayedUnix = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
             profile.RegisterRun(GameStateController.Instance.CurrentMap.mapId, newScore);
             

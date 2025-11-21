@@ -74,6 +74,7 @@ namespace Player
                 rainBowAnergy = 0,
                 HighestScore = 0,
                 LastScore = 0,
+                TotalDamageDeal = 0,
                 PermanentUpgrades = new Dictionary<PermanentUpgradeType, int>(),
                 UnlockedMaps = new HashSet<string>(),
                 UnlockedChallenges = new HashSet<string>(),
