@@ -74,6 +74,9 @@ namespace Achievements
                     if (string.IsNullOrEmpty(c.mapId)) return true;
                     return ctx.MapId == c.mapId;
                 
+                case AchievementConditionType.ChallengeIdEquals:
+                    return p.SelectedChallenges.Contains(c.challengeId);
+                
                 case AchievementConditionType.HighestScoreAtLeast:
                     if (p == null) return false;
                     return p.HighestScore >= c.minHighestScore;

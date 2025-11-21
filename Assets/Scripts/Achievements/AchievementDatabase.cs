@@ -19,7 +19,8 @@ namespace Achievements
     {
         None = 0,
         MapIdEquals = 1,
-        HighestScoreAtLeast = 2,
+        ChallengeIdEquals = 2,
+        HighestScoreAtLeast = 3,
     }
 
     public enum AchievementConditionLogic
@@ -55,6 +56,9 @@ namespace Achievements
         [ShowIf(nameof(type), AchievementConditionType.MapIdEquals)]
         public string mapId;
         
+        [ShowIf(nameof(type), AchievementConditionType.ChallengeIdEquals)]
+        public string challengeId;
+        
         [ShowIf(nameof(type), AchievementConditionType.HighestScoreAtLeast)]
         public int minHighestScore;
         
@@ -65,6 +69,7 @@ namespace Achievements
             {
                 AchievementConditionType.None                    => "(Always true)",
                 AchievementConditionType.MapIdEquals             => $"Map = {mapId}",
+                AchievementConditionType.ChallengeIdEquals       => $"Challenge = {challengeId}",
                 AchievementConditionType.HighestScoreAtLeast     => $"HighestScore ≥ {minHighestScore}",
                 _ => ""
             };
