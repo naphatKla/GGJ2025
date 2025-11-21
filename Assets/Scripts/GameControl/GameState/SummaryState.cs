@@ -26,7 +26,6 @@ namespace GameControl.GameState
             SpawnerStateController.Instance.ClearEnemy();
             SpawnerStateController.Instance.ClearItem();
             GameTimer.Instance.UpdateUIText();
-            UIManager.Instance.CloseAllPanels();
             UIManager.Instance.OpenResultMenu();
             SavePlayerDataAndUpload();
 

@@ -1,10 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using Challenge;
+using Coffee.UIEffects;
 using Demo;
 using Sirenix.OdinInspector;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace UI.Challenge
 {
@@ -15,22 +17,56 @@ namespace UI.Challenge
         public TMP_Text descriptionVh;
 
         [Title("Lock Display")] 
+        public UIEffect uiEffect;
+        public Color unlockColorBg;
+        public Gradient lockGradient;
+        public Color lockColorBg;
+        public Gradient unlockGradient;
+        
         public bool IsLocked;
-        public Sprite lockimageVh;
         
         public void UpdateViewholder(ChallengeDataSO challengeData)
         {
             if (!IsLocked)
             {
                 if (nameVh != null) nameVh.text = challengeData.title;
+                if (uiEffect != null) ApplyUnlockGradient();
                 if (descriptionVh != null) descriptionVh.text = challengeData.description;
+                m_Button.interactable = true;
+                m_Button.image.color = unlockColorBg;
             }
             else
             {
                 if (nameVh != null) nameVh.text = "LOCKED";
+                if (uiEffect != null) ApplyLockGradient();
                 if (descriptionVh != null) descriptionVh.text = challengeData.lockdescription;
+                m_Button.interactable = false;
+                m_Button.image.color = lockColorBg;
             }
         }
+        
+        public void ApplyLockGradient()
+        {
+            ApplyGradient(uiEffect, lockGradient);
+        }
+
+        public void ApplyUnlockGradient()
+        {
+            ApplyGradient(uiEffect, unlockGradient);
+        }
+        
+        private void ApplyGradient(UIEffect effect, Gradient gradient)
+        {
+            if (!effect || gradient == null) return;
+            effect.gradationMode = GradationMode.HorizontalGradient;
+            effect.gradationIntensity = 1f;
+            effect.SetGradientKeys(
+                gradient.colorKeys,
+                gradient.alphaKeys,
+                gradient.mode
+            );
+        }
+        
         public void SetClickedColor(bool isClicked)
         {
             if (m_Button == null || m_Button.image == null) return;

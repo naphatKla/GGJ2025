@@ -144,6 +144,8 @@ namespace UI
         private CancellationTokenSource _confirmCts;
         private bool _isPauseApplied;
         private bool _allLoad;
+        private bool _isClosingPanel;
+        private bool _isPanelBusy;
 
         // === Shortcuts ===
         public bool AllLoad => _allLoad;
@@ -214,15 +216,56 @@ namespace UI
 
         public async UniTaskVoid OpenPanel(UIPanelType type)
         {
-            //if (_isTransitioning) return;
             if (!TryGetPanel(type, out _)) return;
             
+            if (_isPanelBusy)
+            {
+                _pendingOpens.Enqueue(type);
+                Debug.Log($"[UIManager] Queue OpenPanel({type}) because busy");
+                return;
+            }
+            
+            _isPanelBusy = true;
+            try
+            {
+                await OpenPanelInternal(type);
+            }
+            finally
+            {
+                _isPanelBusy = false;
+                ProcessPendingOpens().Forget();
+            }
+        }
+        
+        private async UniTaskVoid ProcessPendingOpens()
+        {
+            if (_isPanelBusy) return;
+
+            while (_pendingOpens.Count > 0)
+            {
+                var next = _pendingOpens.Dequeue();
+                if (!TryGetPanel(next, out _)) continue;
+
+                _isPanelBusy = true;
+                try
+                {
+                    await OpenPanelInternal(next);
+                }
+                finally
+                {
+                    _isPanelBusy = false;
+                }
+            }
+        }
+        
+        private async UniTask OpenPanelInternal(UIPanelType type)
+        {
             if (TopType == type)
             {
                 await ClosePanelAsync();
                 return;
             }
-            
+
             bool prePaused = TryPreApplyPause(type);
             try
             {
@@ -233,9 +276,9 @@ namespace UI
 
                 switch (mode)
                 {
-                    case StackType.PushStack: await Open_PushStackAsync(type); break;
-                    case StackType.ShowOnlyPushStack: await Open_PushNonActiveStackAsync(type); break;
-                    case StackType.CloseAllAndPush: await Open_CloseAllAndPushAsync(type); break;
+                    case StackType.PushStack:          await Open_PushStackAsync(type);          break;
+                    case StackType.ShowOnlyPushStack:  await Open_PushNonActiveStackAsync(type); break;
+                    case StackType.CloseAllAndPush:    await Open_CloseAllAndPushAsync(type);    break;
                 }
 
                 var isFirst = before == 0 && _stack.Count > 0;
@@ -260,6 +303,26 @@ namespace UI
         public async UniTask ClosePanelAsync()
         {
             if (!HasOpenPanels) return;
+            
+            if (_isPanelBusy) return;
+
+            _isPanelBusy = true;
+            try
+            {
+                await ClosePanelInternal();
+            }
+            finally
+            {
+                _isPanelBusy = false;
+                ProcessPendingOpens().Forget();
+            }
+        }
+
+        
+        private async UniTask ClosePanelInternal()
+        {
+            if (!HasOpenPanels) return;
+
             try
             {
                 var closing = _stack.Pop();
@@ -274,13 +337,13 @@ namespace UI
                 {
                     OnAllPanelClosed?.Invoke();
                 }
-                
+
                 ApplyPauseState();
                 RefreshTopAsync().Forget();
             }
             catch (OperationCanceledException)
             {
-                Debug.Log("[UIManager] ClosePanelAsync was cancelled");
+                Debug.Log("[UIManager] ClosePanelInternal was cancelled");
             }
             finally
             {
@@ -628,6 +691,7 @@ namespace UI
                 _pauseOwners.Clear();
                 ApplyPauseState();
                 RefreshTopAsync().Forget();
+                ProcessPendingOpens().Forget();
                 MMTimeScaleEvent.Trigger(MMTimeScaleMethods.Reset, 1f, 0, false, 0f, false);
             }
         }
@@ -756,6 +820,7 @@ namespace UI
         
         private async UniTask Open_CloseAllAndPushAsync(UIPanelType type)
         {
+            Debug.Log($"[UIManager] Open_CloseAllAndPushAsync({type}) CALLED");
             try
             {
                 await ClearStackAsync(invokeClosedEvent: false);
