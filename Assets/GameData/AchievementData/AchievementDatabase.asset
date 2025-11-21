@@ -42,6 +42,9 @@ MonoBehaviour:
       challengeAtLeast: 0
       minParryAmountOnRun: 0
       winAtLeast: 0
+      takeHitFromId: 
+      takeHitLessThan: 0
+      healAtLeastOnRun: 0
     rewards:
     - type: 2
       nanoAmount: 0
@@ -83,6 +86,9 @@ MonoBehaviour:
       challengeAtLeast: 0
       minParryAmountOnRun: 0
       winAtLeast: 0
+      takeHitFromId: 
+      takeHitLessThan: 0
+      healAtLeastOnRun: 0
     rewards:
     - type: 2
       nanoAmount: 0
@@ -108,6 +114,9 @@ MonoBehaviour:
       challengeAtLeast: 0
       minParryAmountOnRun: 0
       winAtLeast: 0
+      takeHitFromId: 
+      takeHitLessThan: 0
+      healAtLeastOnRun: 0
     rewards:
     - type: 2
       nanoAmount: 0
@@ -133,6 +142,9 @@ MonoBehaviour:
       challengeAtLeast: 0
       minParryAmountOnRun: 0
       winAtLeast: 0
+      takeHitFromId: 
+      takeHitLessThan: 0
+      healAtLeastOnRun: 0
     rewards:
     - type: 2
       nanoAmount: 0
@@ -158,6 +170,9 @@ MonoBehaviour:
       challengeAtLeast: 0
       minParryAmountOnRun: 0
       winAtLeast: 0
+      takeHitFromId: 
+      takeHitLessThan: 0
+      healAtLeastOnRun: 0
     rewards:
     - type: 2
       nanoAmount: 0
@@ -187,6 +202,9 @@ MonoBehaviour:
       challengeAtLeast: 0
       minParryAmountOnRun: 0
       winAtLeast: 0
+      takeHitFromId: 
+      takeHitLessThan: 0
+      healAtLeastOnRun: 0
     - type: 5
       mapId: 
       challengeId: 
@@ -197,6 +215,9 @@ MonoBehaviour:
       challengeAtLeast: 300
       minParryAmountOnRun: 0
       winAtLeast: 0
+      takeHitFromId: 
+      takeHitLessThan: 0
+      healAtLeastOnRun: 0
     - type: 5
       mapId: 
       challengeId: 
@@ -207,6 +228,9 @@ MonoBehaviour:
       challengeAtLeast: 0
       minParryAmountOnRun: 0
       winAtLeast: 0
+      takeHitFromId: 
+      takeHitLessThan: 0
+      healAtLeastOnRun: 0
     rewards:
     - type: 2
       nanoAmount: 0
@@ -237,6 +261,9 @@ MonoBehaviour:
       challengeAtLeast: 0
       minParryAmountOnRun: 0
       winAtLeast: 0
+      takeHitFromId: 
+      takeHitLessThan: 0
+      healAtLeastOnRun: 0
     - type: 5
       mapId: 
       challengeId: 
@@ -247,6 +274,9 @@ MonoBehaviour:
       challengeAtLeast: 0
       minParryAmountOnRun: 0
       winAtLeast: 0
+      takeHitFromId: 
+      takeHitLessThan: 0
+      healAtLeastOnRun: 0
     - type: 5
       mapId: 
       challengeId: 
@@ -257,6 +287,9 @@ MonoBehaviour:
       challengeAtLeast: 0
       minParryAmountOnRun: 0
       winAtLeast: 0
+      takeHitFromId: 
+      takeHitLessThan: 0
+      healAtLeastOnRun: 0
     rewards:
     - type: 2
       nanoAmount: 0
@@ -282,6 +315,9 @@ MonoBehaviour:
       challengeAtLeast: 0
       minParryAmountOnRun: 0
       winAtLeast: 0
+      takeHitFromId: 
+      takeHitLessThan: 0
+      healAtLeastOnRun: 0
     rewards:
     - type: 2
       nanoAmount: 0
@@ -307,6 +343,9 @@ MonoBehaviour:
       challengeAtLeast: 0
       minParryAmountOnRun: 0
       winAtLeast: 0
+      takeHitFromId: 
+      takeHitLessThan: 0
+      healAtLeastOnRun: 0
     rewards:
     - type: 2
       nanoAmount: 0
@@ -332,6 +371,9 @@ MonoBehaviour:
       challengeAtLeast: 0
       minParryAmountOnRun: 0
       winAtLeast: 0
+      takeHitFromId: 
+      takeHitLessThan: 0
+      healAtLeastOnRun: 0
     rewards:
     - type: 2
       nanoAmount: 0
@@ -357,6 +399,9 @@ MonoBehaviour:
       challengeAtLeast: 0
       minParryAmountOnRun: 0
       winAtLeast: 0
+      takeHitFromId: 
+      takeHitLessThan: 0
+      healAtLeastOnRun: 0
     rewards:
     - type: 2
       nanoAmount: 0
@@ -382,6 +427,9 @@ MonoBehaviour:
       challengeAtLeast: 0
       minParryAmountOnRun: 50
       winAtLeast: 0
+      takeHitFromId: 
+      takeHitLessThan: 0
+      healAtLeastOnRun: 0
     rewards:
     - type: 2
       nanoAmount: 0
@@ -407,6 +455,9 @@ MonoBehaviour:
       challengeAtLeast: 0
       minParryAmountOnRun: 0
       winAtLeast: 0
+      takeHitFromId: 
+      takeHitLessThan: 0
+      healAtLeastOnRun: 0
     rewards:
     - type: 2
       nanoAmount: 0
@@ -432,8 +483,97 @@ MonoBehaviour:
       challengeAtLeast: 0
       minParryAmountOnRun: 0
       winAtLeast: 5
+      takeHitFromId: 
+      takeHitLessThan: 0
+      healAtLeastOnRun: 0
     rewards:
     - type: 2
       nanoAmount: 0
       refId: challenge_mutant
       permanentType: 0
+  - id: achievement_newtype
+    displayName: New Type
+    description: "Win survivor mode without getting hit by Mini-Boss \nReward: Unlock
+      \"New Type\" in challenge option"
+    icon: {fileID: 0}
+    triggerType: 1
+    logic: 0
+    conditions:
+    - type: 9
+      mapId: 
+      challengeId: 
+      minHighestScore: 0
+      minTotalDamage: 0
+      enemyId: 
+      minKillAtLeast: 0
+      challengeAtLeast: 0
+      minParryAmountOnRun: 0
+      winAtLeast: 0
+      takeHitFromId: Boss_Twin
+      takeHitLessThan: 1
+      healAtLeastOnRun: 0
+    rewards:
+    - type: 2
+      nanoAmount: 0
+      refId: challenge_newtype
+      permanentType: 0
+  - id: achievement_draculasurviving
+    displayName: Dracula Surviving
+    description: 'Heal over 500 health in one run
+
+      Reward: "Life steal" upgrade
+      form shop'
+    icon: {fileID: 0}
+    triggerType: 0
+    logic: 0
+    conditions:
+    - type: 10
+      mapId: 
+      challengeId: 
+      minHighestScore: 0
+      minTotalDamage: 0
+      enemyId: 
+      minKillAtLeast: 0
+      challengeAtLeast: 0
+      minParryAmountOnRun: 0
+      winAtLeast: 0
+      takeHitFromId: 
+      takeHitLessThan: 0
+      healAtLeastOnRun: 500
+    rewards:
+    - type: 3
+      nanoAmount: 0
+      refId: 
+      permanentType: 5
+    - type: 3
+      nanoAmount: 0
+      refId: 
+      permanentType: 6
+  - id: achievement_iunderstanditnow
+    displayName: I understand it now
+    description: 'Upgrade every softs skill in one run
+
+      Reward: "EXP Multiply"
+      upgrade form shop'
+    icon: {fileID: 0}
+    triggerType: 0
+    logic: 0
+    conditions:
+    - type: 3
+      mapId: 
+      challengeId: 
+      minHighestScore: 1000000
+      minTotalDamage: 0
+      enemyId: 
+      minKillAtLeast: 0
+      challengeAtLeast: 0
+      minParryAmountOnRun: 0
+      winAtLeast: 0
+      takeHitFromId: 
+      takeHitLessThan: 0
+      healAtLeastOnRun: 0
+    rewards:
+    - type: 3
+      nanoAmount: 0
+      refId: 
+      permanentType: 7

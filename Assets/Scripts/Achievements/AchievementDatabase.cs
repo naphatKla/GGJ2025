@@ -27,6 +27,8 @@ namespace Achievements
         ChallengeAtLeast = 6,
         ParryAtLeast = 7,
         WinAtLeast = 8,
+        TakeHitLessThan = 9,
+        HealAtLeast = 10,
     }
 
     public enum AchievementConditionLogic
@@ -73,6 +75,7 @@ namespace Achievements
 
         [ShowIf(nameof(type), AchievementConditionType.TotalKillAtLeast)]
         public string enemyId;
+        
         [ShowIf(nameof(type), AchievementConditionType.TotalKillAtLeast)]
         public int minKillAtLeast;
 
@@ -84,6 +87,15 @@ namespace Achievements
 
         [ShowIf(nameof(type), AchievementConditionType.WinAtLeast)]
         public int winAtLeast;
+
+        [ShowIf(nameof(type), AchievementConditionType.TakeHitLessThan)]
+        public string takeHitFromId;
+        
+        [ShowIf(nameof(type), AchievementConditionType.TakeHitLessThan)]
+        public int takeHitLessThan;
+
+        [ShowIf(nameof(type), AchievementConditionType.HealAtLeast)]
+        public int healAtLeastOnRun;
         
         // แสดงสรุปให้ดูอ่านง่าย (ไม่บังคับใช้ก็ได้)
         [ShowInInspector, ReadOnly]
@@ -99,6 +111,8 @@ namespace Achievements
                 AchievementConditionType.ChallengeAtLeast        => $"Challenge >= {challengeAtLeast}",
                 AchievementConditionType.ParryAtLeast            => $"Parry >= {minParryAmountOnRun}",
                 AchievementConditionType.WinAtLeast              => $"Win >= {winAtLeast}",
+                AchievementConditionType.TakeHitLessThan         => $"TakeHit {takeHitFromId} < {takeHitLessThan}",
+                AchievementConditionType.HealAtLeast             => $"Heal >= {healAtLeastOnRun} On Run",
                 _ => ""
             };
         
@@ -141,6 +155,7 @@ namespace Achievements
                     target = winAtLeast;
                     current = Mathf.Min(p.MapStats.Sum(w => w.Value.WinAmount), target);
                     return true;
+                
                 default:
                     return false;
             }

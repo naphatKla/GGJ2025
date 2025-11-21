@@ -2,7 +2,6 @@ using System.Linq;
 using Manager;
 using Player;
 using ProjectExtensions;
-using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace Achievements
@@ -99,6 +98,13 @@ namespace Achievements
                 
                 case AchievementConditionType.WinAtLeast:
                     return p.MapStats.Sum(w => w.Value.WinAmount) >= c.winAtLeast;
+                
+                case AchievementConditionType.TakeHitLessThan:
+                    p.takeDamageOnRunDictionary.TryGetValue(c.takeHitFromId, out int hit);
+                    return hit < c.takeHitLessThan;
+                
+                case AchievementConditionType.HealAtLeast:
+                    return p.HighestHealOnRun >= c.healAtLeastOnRun;
             }
 
             return false;
