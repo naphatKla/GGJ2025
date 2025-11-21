@@ -80,6 +80,9 @@ namespace Achievements
                 case AchievementConditionType.HighestScoreAtLeast:
                     if (p == null) return false;
                     return p.HighestScore >= c.minHighestScore;
+                
+                case AchievementConditionType.TotalDamageAtLeast:
+                    return p.TotalDamageDeal >= c.minTotalDamage;
             }
 
             return false;

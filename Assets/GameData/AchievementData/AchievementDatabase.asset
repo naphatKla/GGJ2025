@@ -31,28 +31,46 @@ MonoBehaviour:
     conditions:
     - type: 1
       mapId: 
+      challengeId: 
       minHighestScore: 0
-    rewards:
-    - type: 1
-      nanoAmount: 0
-      refId: 
-      permanentType: 0
+      minTotalDamage: 0
+    rewards: []
   - id: arrogant
     displayName: Arrogant
-    description: 
+    description: Win anymode mode with "Ordinary" challenge enable
     icon: {fileID: 0}
     triggerType: 0
     logic: 0
     conditions:
-    - type: 0
+    - type: 2
       mapId: 
+      challengeId: 
       minHighestScore: 0
+      minTotalDamage: 0
     rewards: []
   - id: junk_grades
     displayName: Junk grades
-    description: 
+    description: Win anymode mode with "Cheap materials" challenge enable
     icon: {fileID: 0}
     triggerType: 0
     logic: 0
-    conditions: []
+    conditions:
+    - type: 2
+      mapId: 
+      challengeId: 
+      minHighestScore: 0
+      minTotalDamage: 0
+    rewards: []
+  - id: plastic_fang
+    displayName: Plastic Fang
+    description: Deal 1,000,000 total damage
+    icon: {fileID: 0}
+    triggerType: 0
+    logic: 0
+    conditions:
+    - type: 4
+      mapId: 
+      challengeId: 
+      minHighestScore: 0
+      minTotalDamage: 1000000
     rewards: []

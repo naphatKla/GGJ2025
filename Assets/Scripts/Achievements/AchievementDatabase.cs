@@ -21,6 +21,7 @@ namespace Achievements
         MapIdEquals = 1,
         ChallengeIdEquals = 2,
         HighestScoreAtLeast = 3,
+        TotalDamageAtLeast = 4,
     }
 
     public enum AchievementConditionLogic
@@ -61,6 +62,9 @@ namespace Achievements
         
         [ShowIf(nameof(type), AchievementConditionType.HighestScoreAtLeast)]
         public int minHighestScore;
+
+        [ShowIf(nameof(type), AchievementConditionType.TotalDamageAtLeast)]
+        public int minTotalDamage;
         
         // แสดงสรุปให้ดูอ่านง่าย (ไม่บังคับใช้ก็ได้)
         [ShowInInspector, ReadOnly]
@@ -71,6 +75,7 @@ namespace Achievements
                 AchievementConditionType.MapIdEquals             => $"Map = {mapId}",
                 AchievementConditionType.ChallengeIdEquals       => $"Challenge = {challengeId}",
                 AchievementConditionType.HighestScoreAtLeast     => $"HighestScore ≥ {minHighestScore}",
+                AchievementConditionType.TotalDamageAtLeast     => $"TotalDamage ≥ {minTotalDamage}",
                 _ => ""
             };
     }
