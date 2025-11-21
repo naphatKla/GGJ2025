@@ -17,6 +17,8 @@ namespace UI.Achievement
         public TMP_Text descriptionVh;
         public Image imageVh;
         public ValueBar progressionBar;
+        public TMP_Text progressionValue;
+        public TMP_Text progressionPercent;
 
         [Title("Display")] 
         public bool IsLocked;
@@ -54,15 +56,27 @@ namespace UI.Achievement
         public void UpdateProgressionBar(AchievementEntry achievementData, PlayerData playerData)
         {
             achievementData.TryGetMainProgress(playerData, out int current, out int target);
-            
-            if (current == 0 && target == 0) 
+
+            if (current == 0 && target == 0)
+            {
                 progressionBar.gameObject.SetActive(false);
+                progressionValue.gameObject.SetActive(false);
+                progressionPercent.gameObject.SetActive(false);
+                return;
+            }
             else
+            {
                 progressionBar.gameObject.SetActive(true);
+                progressionValue.gameObject.SetActive(true);
+                progressionPercent.gameObject.SetActive(true);
+            }
             
             progressionBar.MinValue = 0;
             progressionBar.MaxValue = target;
             progressionBar.CurrentValue = current;
+            progressionValue.text = $"{current}/{target}";
+            var percentProgress = (current / target) * 100;
+            progressionPercent.text = percentProgress + "%";
         }
         
         public void ApplyLockGradient()
