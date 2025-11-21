@@ -158789,6 +158789,7 @@ GameObject:
   - component: {fileID: 4551693807369029157}
   - component: {fileID: 6788755257245282408}
   - component: {fileID: 5754434314398175321}
+  - component: {fileID: 9029837051052710638}
   m_Layer: 0
   m_Name: Sprite
   m_TagString: Untagged
@@ -158978,6 +158979,26 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   StartShakingButton: 0
+--- !u!114 &9029837051052710638
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6549836709308188830}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a6b9958998e45648a6a6b69828c4a02, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  levelSystem: {fileID: 1454970709746529031}
+  spriteLevelChangerDatas:
+  - sprite: {fileID: 662711536823826335}
+    LevelThreshold: 12
+  - sprite: {fileID: 1848481818340438074}
+    LevelThreshold: 24
+  - sprite: {fileID: 406737840860961607}
+    LevelThreshold: 36
 --- !u!1 &6584197906939530931
 GameObject:
   m_ObjectHideFlags: 0
