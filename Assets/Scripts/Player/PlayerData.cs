@@ -26,6 +26,7 @@ namespace Player
         public int HighestParryUseOnRun;
         public int HighestHealOnRun;
         public Dictionary<string, int> takeDamageOnRunDictionary = new();
+        public Dictionary<string, int> totalDiedDictionary = new();
         
         // Permanent Upgrade
         public Dictionary<PermanentUpgradeType, int> PermanentUpgrades =
@@ -52,6 +53,7 @@ namespace Player
             PermanentUpgrades ??= new Dictionary<PermanentUpgradeType, int>();
             totalKillDictionary ??= new Dictionary<string, int>();
             takeDamageOnRunDictionary ??= new();
+            totalDiedDictionary ??= new();
             UnlockedPermanentUpgrade ??= new HashSet<PermanentUpgradeType>();
             UnlockedAchievements ??= new HashSet<string>();
 

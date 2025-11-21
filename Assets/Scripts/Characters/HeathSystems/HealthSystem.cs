@@ -36,7 +36,7 @@ namespace Characters.HeathSystems
 
         /// <summary>The current health of the character.</summary>
         [ShowInInspector, ReadOnly] [ShowIf("@UnityEngine.Application.isPlaying")]
-        private float _currentHealth;
+        protected float currentHealth;
 
         /// <summary>Determines if the character is temporarily invincible.</summary>
         [ShowInInspector, ReadOnly] [ShowIf("@UnityEngine.Application.isPlaying")]
@@ -87,13 +87,13 @@ namespace Characters.HeathSystems
         public int TotalHeal { get; set; }
         public bool CanAim { get; set; } = true;
         public bool IsInvincible => _isInvincible;
-        public float HealthPercentage01 => _currentHealth / _maxHealth;
+        public float HealthPercentage01 => currentHealth / _maxHealth;
 
         #endregion
 
         #region Properties
 
-        public float CurrentHealth => _currentHealth;
+        public float CurrentHealth => currentHealth;
         public float MaxHealth => _maxHealth;
 
         /// <summary>Delay before a valid hit is committed. 0 = at least 1 frame buffer.</summary>
@@ -266,7 +266,7 @@ namespace Characters.HeathSystems
         /// </summary>
         public void ResetHealthSystem()
         {
-            _currentHealth = _maxHealth;
+            currentHealth = _maxHealth;
             SetInvincible(false);
             _isHitCooldown = false;
             _isDead = false;
@@ -391,7 +391,7 @@ namespace Characters.HeathSystems
             TakeDamageAction(hitInfo);
             HitCooldownHandler().Forget();
 
-            if (_currentHealth <= 0)
+            if (currentHealth <= 0)
             {
                 Dead();
                 hitInfo.attacker?.CombatSystem.OnKillHandler(owner);
@@ -411,8 +411,8 @@ namespace Characters.HeathSystems
         /// <summary>Modifies the character's health by a given value.</summary>
         private void ModifyHealth(float value)
         {
-            _currentHealth += value;
-            _currentHealth = Mathf.Clamp(_currentHealth, 0, _maxHealth);
+            currentHealth += value;
+            currentHealth = Mathf.Clamp(currentHealth, 0, _maxHealth);
             OnHealthChange?.Invoke(value);
         }
 

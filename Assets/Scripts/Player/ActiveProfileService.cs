@@ -169,11 +169,37 @@ namespace Player
             
             // ───────── Take Damage Hit Per Enemy On Run ─────────
             GUILayout.Space(8);
-            GUILayout.Label("Take Damage Hit (per enemy)", _hdrStyle);
+            GUILayout.Label("Take Damage Hit (per enemy) In Current Run", _hdrStyle);
 
             if (current.takeDamageOnRunDictionary!= null && current.takeDamageOnRunDictionary.Count > 0)
             {
                 foreach (var kv in current.takeDamageOnRunDictionary)
+                {
+                    // แบบง่าย แสดงเป็น 1 บรรทัด
+                    // Example: • slime_basic : 123
+                    GUILayout.Label($"• {kv.Key} : {kv.Value}", _kvStyle);
+
+                    // ถ้าอยากจัดเป็นสองคอลัมน์ตรง ๆ ก็ใช้แบบนี้แทน:
+                    /*
+                    GUILayout.BeginHorizontal();
+                    GUILayout.Label(kv.Key + ":", GUILayout.Width(140));
+                    GUILayout.Label(kv.Value.ToString(), _kvStyle);
+                    GUILayout.EndHorizontal();
+                    */
+                }
+            }
+            else
+            {
+                GUILayout.Label("(empty)", _kvStyle);
+            }
+            
+            // ───────── Total Died from enemies ─────────
+            GUILayout.Space(8);
+            GUILayout.Label("Total Died From Enemies", _hdrStyle);
+
+            if (current.totalDiedDictionary != null && current.totalDiedDictionary.Count > 0)
+            {
+                foreach (var kv in current.totalDiedDictionary)
                 {
                     // แบบง่าย แสดงเป็น 1 บรรทัด
                     // Example: • slime_basic : 123

@@ -62,14 +62,17 @@ namespace GameControl.GameState
             if (dataStatus.totalHeal > profile.HighestHealOnRun)
                 profile.HighestHealOnRun = dataStatus.totalHeal;
             
-            // add total take damage hit from each enemy type in this run
-            foreach (var keyValuePair in dataStatus.takeDamageAmountDictionary)
+            // set total take damage hit from each enemy type in this run
+            profile.takeDamageOnRunDictionary = dataStatus.takeDamageAmountDictionary;
+            
+            // add total died damage hit from each enemy type 
+            foreach (var keyValuePair in dataStatus.diedDictionary)
             {
-                profile.takeDamageOnRunDictionary.TryAdd(keyValuePair.Key, 0);
-                profile.takeDamageOnRunDictionary[keyValuePair.Key]++;
+                profile.totalDiedDictionary.TryAdd(keyValuePair.Key, 0);
+                profile.totalDiedDictionary[keyValuePair.Key]++;
             }
             
-            // add total kill of each enemy type in this run
+            // add total kill of each enemy type  
             foreach (var kv in dataStatus.totalKillDictionary)
             {
                 profile.totalKillDictionary.TryAdd(kv.Key, 0);

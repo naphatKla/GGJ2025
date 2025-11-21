@@ -79,6 +79,7 @@ namespace Player
                 totalKillDictionary = new(),
                 HighestHealOnRun = 0,
                 takeDamageOnRunDictionary = new(),
+                totalDiedDictionary = new(),
                 PermanentUpgrades = new Dictionary<PermanentUpgradeType, int>(),
                 UnlockedMaps = new HashSet<string>(),
                 UnlockedChallenges = new HashSet<string>(),

@@ -28,6 +28,7 @@ namespace Achievements
             ActiveProfileService.Instance?.LoadCurrent();
 
         #region AchievementTrigger
+
         /// <summary>เรียกเมื่อจบ 1 run</summary>
         public void OnRunEnded(string mapId)
         {
@@ -43,7 +44,7 @@ namespace Achievements
 
             EvaluateAll(ctx);
         }
-        
+
         public void OnRunWin(string mapId)
         {
             var p = CurrentPlayerData;
@@ -58,9 +59,11 @@ namespace Achievements
 
             EvaluateAll(ctx);
         }
+
         #endregion
-        
+
         #region Condition and Reward
+
         private bool EvaluateCondition(AchievementConditionConfig c, AchievementContext ctx)
         {
             var p = ctx.Player;
@@ -69,48 +72,58 @@ namespace Achievements
             {
                 case AchievementConditionType.None:
                     return true;
-                
+
                 case AchievementConditionType.MapIdEquals:
                     if (string.IsNullOrEmpty(c.mapId)) return true;
                     return ctx.MapId == c.mapId;
-                
+
                 case AchievementConditionType.ChallengeIdEquals:
                     return p.SelectedChallenges.Contains(c.challengeId);
-                
+
                 case AchievementConditionType.HighestScoreAtLeast:
                     if (p == null) return false;
                     return p.HighestScore >= c.minHighestScore;
-                
+
                 case AchievementConditionType.TotalDamageAtLeast:
                     return p.TotalDamageDeal >= c.minTotalDamage;
-                
+
                 case AchievementConditionType.TotalKillAtLeast:
-                    if (p == null || string.IsNullOrEmpty(c.enemyId)) 
+                    if (p == null || string.IsNullOrEmpty(c.enemyId))
                         return false;
                     p.totalKillDictionary.TryGetValue(c.enemyId, out int count);
                     return count >= c.minKillAtLeast;
-                
+
                 case AchievementConditionType.ChallengeAtLeast:
                     return p.SelectedChallenges.Count >= c.challengeAtLeast;
-                
+
                 case AchievementConditionType.ParryAtLeast:
                     return p.HighestParryUseOnRun >= c.minParryAmountOnRun;
-                
+
                 case AchievementConditionType.WinAtLeast:
                     return p.MapStats.Sum(w => w.Value.WinAmount) >= c.winAtLeast;
-                
+
                 case AchievementConditionType.TakeHitLessThan:
                     p.takeDamageOnRunDictionary.TryGetValue(c.takeHitFromId, out int hit);
                     return hit < c.takeHitLessThan;
-                
+
                 case AchievementConditionType.HealAtLeast:
                     return p.HighestHealOnRun >= c.healAtLeastOnRun;
+
+                case AchievementConditionType.DiedAtLeast:
+                    int diedCount = 0;
+
+                    if (c.diedFromId == "*")
+                        diedCount = p.totalDiedDictionary.Sum(e => e.Value);
+                    else
+                        p.totalKillDictionary.TryGetValue(c.diedFromId, out diedCount);
+
+                    return diedCount >= c.diedAtLeast;
             }
 
             return false;
         }
 
-        
+
         private void ApplyRewards(PlayerData p, AchievementEntry entry)
         {
             if (p == null || entry.rewards == null) return;
@@ -139,8 +152,9 @@ namespace Achievements
                 }
             }
         }
+
         #endregion
-        
+
         private void EvaluateAll(AchievementContext ctx)
         {
             if (database.entries == null) return;
@@ -164,7 +178,7 @@ namespace Achievements
                     silent: false);
             }
         }
-        
+
         private bool AreConditionsSatisfied(AchievementEntry entry, AchievementContext ctx)
         {
             var list = entry.conditions;

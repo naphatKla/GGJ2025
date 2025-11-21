@@ -29,6 +29,7 @@ namespace Achievements
         WinAtLeast = 8,
         TakeHitLessThan = 9,
         HealAtLeast = 10,
+        DiedAtLeast = 11,
     }
 
     public enum AchievementConditionLogic
@@ -96,6 +97,12 @@ namespace Achievements
 
         [ShowIf(nameof(type), AchievementConditionType.HealAtLeast)]
         public int healAtLeastOnRun;
+
+        [ShowIf(nameof(type), AchievementConditionType.DiedAtLeast)]
+        public string diedFromId;
+        
+        [ShowIf(nameof(type), AchievementConditionType.DiedAtLeast)]
+        public int diedAtLeast;
         
         // แสดงสรุปให้ดูอ่านง่าย (ไม่บังคับใช้ก็ได้)
         [ShowInInspector, ReadOnly]
@@ -113,6 +120,7 @@ namespace Achievements
                 AchievementConditionType.WinAtLeast              => $"Win >= {winAtLeast}",
                 AchievementConditionType.TakeHitLessThan         => $"TakeHit {takeHitFromId} < {takeHitLessThan}",
                 AchievementConditionType.HealAtLeast             => $"Heal >= {healAtLeastOnRun} On Run",
+                AchievementConditionType.DiedAtLeast             => $"Died from {diedFromId} <= {diedAtLeast}",
                 _ => ""
             };
         
@@ -154,6 +162,17 @@ namespace Achievements
                 case AchievementConditionType.WinAtLeast:
                     target = winAtLeast;
                     current = Mathf.Min(p.MapStats.Sum(w => w.Value.WinAmount), target);
+                    return true;
+                
+                case AchievementConditionType.DiedAtLeast:
+                    target = diedAtLeast;
+                    
+                    if (diedFromId == "*")
+                        current = p.totalDiedDictionary.Sum(e => e.Value);
+                    else 
+                        p.totalDiedDictionary.TryGetValue(diedFromId, out current);
+                    
+                    current = Mathf.Min(current, target);
                     return true;
                 
                 default:

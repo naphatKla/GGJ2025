@@ -12,7 +12,10 @@ namespace Characters.HeathSystems
         private const float _counterDashIgnoreDamageDuration = 0.075f;
         private float _lastTimeCounterDash;
         private readonly Dictionary<string, int> _takeDamageAmountDictionary = new(); // attacker id, hit amount
+        private readonly Dictionary<string, int> _diedAmountDictionary = new();
         public Dictionary<string, int> TakeDamageAmountDictionary => _takeDamageAmountDictionary;
+        public Dictionary<string, int> DiedAmountDictionary => _diedAmountDictionary;
+
 
         public override void AssignHealthData(float maxHealth, float invincibleTimePerHit, BaseController owner = null)
         {
@@ -42,6 +45,10 @@ namespace Characters.HeathSystems
             if (String.IsNullOrEmpty(hitInfo.attackerId)) return;
             _takeDamageAmountDictionary.TryAdd(hitInfo.attackerId, 0);
             _takeDamageAmountDictionary[hitInfo.attackerId]++;
+            
+            if (currentHealth > 0) return;
+            _diedAmountDictionary.TryAdd(hitInfo.attackerId, 0);
+            _diedAmountDictionary[hitInfo.attackerId]++;
         }
 
         public void OnCounterDash()

@@ -195,6 +195,9 @@ namespace Characters.Controllers
             statsPerRun.totalHeal = hs.TotalHeal;
             var takeDamageDict = hs.TakeDamageAmountDictionary ?? new();
             statsPerRun.takeDamageAmountDictionary = new Dictionary<string, int>(takeDamageDict);
+
+            var diedDict = hs.DiedAmountDictionary ?? new();
+            statsPerRun.diedDictionary = new Dictionary<string, int>(diedDict);
             
             return statsPerRun;
         }

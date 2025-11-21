@@ -26,6 +26,7 @@ namespace Characters.Data
         public int totalDamageTaken;
         public int totalHeal;
         public Dictionary<string, int> takeDamageAmountDictionary; // attacker id, amount
+        public Dictionary<string, int> diedDictionary;
 
         public void DebugStat()
         {
