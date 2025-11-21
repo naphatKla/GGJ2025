@@ -37,7 +37,11 @@ namespace UI
         
         //MODE
         SurvivalMode = 12,
-        EndlessMode = 13
+        EndlessMode = 13,
+        
+        PermanentUpgrade = 14,
+        ClassSelection = 15,
+        Achievement = 16
     }
     
     public enum StackType
@@ -423,6 +427,9 @@ namespace UI
         public void OpenTutorialPanel() => OpenPanel(UIPanelType.TutorialPanel).Forget();
         public void OpenResultMenu() => OpenPanel(UIPanelType.MapResult).Forget();
         public void OpenSettingsPanel() => OpenPanel(UIPanelType.Setting).Forget();
+        public void OpenClassSelectionPanel() => OpenPanel(UIPanelType.ClassSelection).Forget();
+        public void OpenPermanentUpgradePanel() => OpenPanel(UIPanelType.PermanentUpgrade).Forget();
+
         
         /// <summary>
         /// New Game

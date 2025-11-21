@@ -9,6 +9,7 @@ using UI.Manager;
 using UI.MapSelection;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace UI.MapSelectionRework
@@ -24,8 +25,8 @@ namespace UI.MapSelectionRework
         [Space,Title("Container")]
         [SerializeField] public MapSelectionDataContainer mapSelectionDataContainer;
 
-        [Space, Title("Display Status")] 
-        public Button startButton;
+        [FormerlySerializedAs("startButton")] [Space, Title("Display Status")] 
+        public Button classSelectButton;
         public Image imageDisplay;
         public TMP_Text mapNameText;
         public TMP_Text runText;
@@ -55,8 +56,8 @@ namespace UI.MapSelectionRework
             ls.RefillCells();
             ls.RefreshCells();
             
-            startButton.onClick.RemoveAllListeners();
-            startButton.onClick.AddListener(() => AssignStartButton());
+            classSelectButton.onClick.RemoveAllListeners();
+            classSelectButton.onClick.AddListener(() => AssignClassButton());
         }
         
         private void OnEnable()
@@ -65,14 +66,14 @@ namespace UI.MapSelectionRework
             MapSelectionSender.Instance.currentmapSelectionDataContainer = mapSelectionDataContainer;
         }
         
-        private void AssignStartButton()
+        private void AssignClassButton()
         {
             if (m_SelectedObject == null || Current == null)
             {
                 NotificationManager.Instance?.PlayNotification("notify_warn", "Lock, Please unlock to continue.", 2f);
                 return;
             }
-            SceneManager.LoadScene("Gameplay");
+            UIManager.Instance.OpenClassSelectionPanel();
         }
         
         public GameObject GetObject(int index)
