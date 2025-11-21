@@ -78,6 +78,33 @@ namespace Achievements
                 AchievementConditionType.TotalDamageAtLeast     => $"TotalDamage ≥ {minTotalDamage}",
                 _ => ""
             };
+        
+        /// <summary>
+        /// สำหรับ UI: คืน current / target ถ้าเงื่อนไขนี้เป็นแบบตัวเลข (มี progression ได้)
+        /// เช่น HighestScoreAtLeast, TotalDamageAtLeast
+        /// </summary>
+        public bool TryGetProgress(PlayerData p, out int current, out int target)
+        {
+            current = 0;
+            target  = 0;
+            if (p == null) return false;
+
+            switch (type)
+            {
+                case AchievementConditionType.HighestScoreAtLeast:
+                    target  = minHighestScore;
+                    current = p.HighestScore;
+                    return true;
+
+                case AchievementConditionType.TotalDamageAtLeast:
+                    target  = minTotalDamage;
+                    current = p.TotalDamageDeal;
+                    return true;
+
+                default:
+                    return false;
+            }
+        }
     }
 
     [Serializable]
@@ -120,6 +147,29 @@ namespace Achievements
         public AchievementConditionLogic logic = AchievementConditionLogic.And;
         public List<AchievementConditionConfig> conditions = new();
         public List<AchievementRewardConfig> rewards = new();
+        
+        /// <summary>
+        /// สำหรับ UI: ขอ "progress หลัก" ของ achievement นี้
+        /// ดีฟอลต์: ใช้เงื่อนไขแรกที่มี TryGetProgress ได้
+        /// </summary>
+        public bool TryGetMainProgress(PlayerData p, out int current, out int target)
+        {
+            current = 0;
+            target  = 0;
+
+            if (conditions == null || conditions.Count == 0) 
+                return false;
+
+            foreach (var c in conditions)
+            {
+                if (c != null && c.TryGetProgress(p, out current, out target))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
     }
 
     // ───────── Database SO ─────────
