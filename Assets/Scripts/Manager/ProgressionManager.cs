@@ -10,6 +10,7 @@ namespace Manager
     {
         public static event Action<string> OnMapUnlocked;
         public static event Action<string> OnMapLocked;
+        public static event Action<string> OnChallengeUnlocked; 
         public static event Action<string> OnAchievementUnlocked;
         
         private PlayerData CurrentPlayerData
@@ -73,6 +74,24 @@ namespace Manager
         
         #endregion
 
+        #region Challenge
+
+        public bool UnlockChallenge(string challengeId, bool saveNow = true, bool silent = false)
+        {
+            var p = CurrentPlayerData;
+            if (p == null || string.IsNullOrEmpty(challengeId)) return false;
+
+            if (p.UnlockedChallenges.Add(challengeId))
+            {
+                if (saveNow) ActiveProfileService.Instance.SaveNow();
+                if (!silent) OnChallengeUnlocked?.Invoke(challengeId);
+                return true;
+            }
+            return false;
+        }
+
+        #endregion
+        
         #region Achievement
 
         public bool IsAchievementUnlocked(string achievementId)

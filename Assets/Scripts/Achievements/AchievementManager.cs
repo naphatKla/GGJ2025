@@ -103,11 +103,12 @@ namespace Achievements
 
                     case AchievementRewardType.UnlockMap:
                         if (!string.IsNullOrEmpty(r.refId))
-                            ProgressionManager.Instance.UnlockMap(r.refId, saveNow: false, silent: true);
+                            ProgressionManager.Instance.UnlockMap(r.refId, saveNow: true);
                         break;
 
                     case AchievementRewardType.UnlockChallenge:
-                        //
+                        if (!string.IsNullOrEmpty(r.refId))
+                            ProgressionManager.Instance.UnlockChallenge(r.refId, saveNow: true);
                         break;
 
                     case AchievementRewardType.UnlockPermanentUpgrade:
