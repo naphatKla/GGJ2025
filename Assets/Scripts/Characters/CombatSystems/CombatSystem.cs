@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Characters.Controllers;
 using Characters.FeedbackSystems;
 using Manager;
@@ -29,10 +30,11 @@ namespace Characters.CombatSystems
         protected float baseLifeStealPercent;
         
         protected float baseLifeStealEffective;
-        
-        public int TotalKill { get; private set; }
+
+        protected Dictionary<string, int> totalKillDictionary = new(); // string = enemy id
         public int TotalDamageDeal { get; private set; }
         public int TotalCriticalCount { get; private set; }
+        public Dictionary<string, int> TotalKillDictionary => totalKillDictionary;
 
         /// <summary>
         /// The current damage value used for actual damage calculations.
@@ -122,7 +124,10 @@ namespace Characters.CombatSystems
         public void OnKillHandler(BaseController targetKilled)
         {
             OnKill?.Invoke(targetKilled);
-            TotalKill++;
+            
+            string enemyId = targetKilled.CharacterData.CharacterId;
+            totalKillDictionary.TryAdd(enemyId, 0);
+            totalKillDictionary[enemyId]++;
         }
         
         public void AddCurrentDamage(float value)

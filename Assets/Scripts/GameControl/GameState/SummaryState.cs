@@ -56,6 +56,14 @@ namespace GameControl.GameState
             
             profile.LastScore = newScore;
             profile.TotalDamageDeal += damageDealThisRun;
+            
+            // add total kill of each enemy type in this run
+            foreach (var kv in dataStatus.totalKillDictionary)
+            {
+                profile.TotalKill.TryAdd(kv.Key, 0);
+                profile.TotalKill[kv.Key] += kv.Value;
+            }
+            
             profile.LastPlayedUnix = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
             profile.RegisterRun(GameStateController.Instance.CurrentMap.mapId, newScore);
             

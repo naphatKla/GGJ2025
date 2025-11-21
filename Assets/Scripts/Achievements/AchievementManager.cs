@@ -83,6 +83,12 @@ namespace Achievements
                 
                 case AchievementConditionType.TotalDamageAtLeast:
                     return p.TotalDamageDeal >= c.minTotalDamage;
+                
+                case AchievementConditionType.TotalKillAtLeast:
+                    if (p == null || string.IsNullOrEmpty(c.enemyId)) 
+                        return false;
+                    p.TotalKill.TryGetValue(c.enemyId, out int count);
+                    return count >= c.minKillAtLeast;
             }
 
             return false;
@@ -166,16 +172,6 @@ namespace Achievements
                 default:
                     return true;
             }
-        }
-
-        [Button]
-        public void TestSave(string achievementId)
-        {
-            ProgressionManager.Instance.UnlockAchievement(
-                achievementId,
-                null,
-                saveNow: true,
-                silent: false);
         }
     }
 }

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using PermanentUpgrade;
-using UnityEngine;
 
 namespace Player
 {
@@ -22,6 +21,7 @@ namespace Player
         public int HighestScore;
         public int LastScore;
         public int TotalDamageDeal;
+        public Dictionary<string, int> TotalKill = new(); // string = enemy id
         
         // Permanent Upgrade
         public Dictionary<PermanentUpgradeType, int> PermanentUpgrades =
@@ -46,6 +46,7 @@ namespace Player
             MapStats ??= new Dictionary<string, MapStat>();
             SelectedChallenges ??= new HashSet<string>();
             PermanentUpgrades ??= new Dictionary<PermanentUpgradeType, int>();
+            TotalKill ??= new Dictionary<string, int>();
             UnlockedPermanentUpgrade ??= new HashSet<PermanentUpgradeType>();
             UnlockedAchievements ??= new HashSet<string>();
 

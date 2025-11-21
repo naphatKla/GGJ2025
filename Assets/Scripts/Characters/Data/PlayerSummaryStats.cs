@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Characters.Data
@@ -11,7 +12,8 @@ namespace Characters.Data
         
         public string currentRank;
         public string highestRank;
-        
+
+        public Dictionary<string, int> totalKillDictionary;
         public int totalEnemiesEliminated;
         public int totalDamageDeal;
         public int criticalCount;

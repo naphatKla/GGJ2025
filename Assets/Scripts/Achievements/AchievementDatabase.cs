@@ -22,6 +22,7 @@ namespace Achievements
         ChallengeIdEquals = 2,
         HighestScoreAtLeast = 3,
         TotalDamageAtLeast = 4,
+        TotalKillAtLeast = 5,
     }
 
     public enum AchievementConditionLogic
@@ -65,6 +66,11 @@ namespace Achievements
 
         [ShowIf(nameof(type), AchievementConditionType.TotalDamageAtLeast)]
         public int minTotalDamage;
+
+        [ShowIf(nameof(type), AchievementConditionType.TotalKillAtLeast)]
+        public string enemyId;
+        [ShowIf(nameof(type), AchievementConditionType.TotalKillAtLeast)]
+        public int minKillAtLeast;
         
         // แสดงสรุปให้ดูอ่านง่าย (ไม่บังคับใช้ก็ได้)
         [ShowInInspector, ReadOnly]
@@ -76,6 +82,7 @@ namespace Achievements
                 AchievementConditionType.ChallengeIdEquals       => $"Challenge = {challengeId}",
                 AchievementConditionType.HighestScoreAtLeast     => $"HighestScore ≥ {minHighestScore}",
                 AchievementConditionType.TotalDamageAtLeast     => $"TotalDamage ≥ {minTotalDamage}",
+                AchievementConditionType.TotalKillAtLeast     => $"TotalKill {enemyId} ≥ {minKillAtLeast}",
                 _ => ""
             };
         
