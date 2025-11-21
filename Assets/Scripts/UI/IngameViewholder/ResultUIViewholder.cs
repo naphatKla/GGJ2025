@@ -183,7 +183,7 @@ namespace UI.IngameViewholder
         private StringBuilder GroupStatus(PlayerSummaryStats dataStatus)
         {
             var sb = new StringBuilder(256);
-            
+            var svc = ActiveProfileService.Instance;
             sb.AppendLine($"<color=#aeb0af>Level :</color> <color=#00FF00>{dataStatus.currentLevel}</color>");
             sb.AppendLine($"<color=#aeb0af>Enemies Eliminated :</color> <color=#FF0000>{dataStatus.totalEnemiesEliminated}</color>");
             sb.AppendLine($"<color=#aeb0af>Damage Deal :</color> <color=#FF4500>{dataStatus.totalDamageDeal}</color>");
@@ -194,7 +194,11 @@ namespace UI.IngameViewholder
             sb.AppendLine($"<color=#aeb0af>Auto Skill Used :</color> <color=#BA55D3>{dataStatus.totalAutoSkillUsed}</color>");
             sb.AppendLine($"<color=#aeb0af>Damage Taken :</color> <color=#DC143C>{dataStatus.totalDamageTaken}</color>");
             sb.AppendLine($"<color=#aeb0af>Heal :</color> <color=#32CD32>{dataStatus.totalHeal}</color>");
-
+            
+            //10% of Currency
+            var currency = (dataStatus.totalScore / 100) * 10;
+            sb.AppendLine($"<color=#6ea9e4>Nano Coin :</color> <color=#52d137>{svc.CurrentProfile.nanoCoin}</color> + <color=#ffed48>{currency}</color>");
+            
             return sb;
         }
 

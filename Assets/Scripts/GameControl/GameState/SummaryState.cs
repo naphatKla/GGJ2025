@@ -51,8 +51,10 @@ namespace GameControl.GameState
             if (isNewHigh)
             {
                 profile.HighestScore = newScore;
-            }
-            
+            } 
+            //Exchange 10% of score to currency
+            var currency = (newScore / 100) * 10;
+            profile.nanoCoin += currency;
             svc.SaveNow();
             
             // Leaderboard
