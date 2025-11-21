@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using Player;
 using ProjectExtensions;
+using UI.Manager;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Manager
 {
