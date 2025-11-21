@@ -493,7 +493,19 @@ namespace UI
         public void OpenSettingsPanel() => OpenPanel(UIPanelType.Setting).Forget();
         public void OpenClassSelectionPanel() => OpenPanel(UIPanelType.ClassSelection).Forget();
         public void OpenPermanentUpgradePanel() => OpenPanel(UIPanelType.PermanentUpgrade).Forget();
-        public void OpenAchievementPanel() => OpenPanel(UIPanelType.Achievement).Forget();
+
+        public void OpenAchievementPanel()
+        {
+            var svc = ActiveProfileService.Instance;
+            var data = svc.LoadCurrent();
+            if (data == null)
+            {
+                NotificationManager.Instance.PlayNotification("notify_warn", "Please create your new game first to continue.", 2f);
+                OpenDisplayPanel();
+                return;
+            }
+            OpenPanel(UIPanelType.Achievement).Forget();
+        }
 
         
         /// <summary>
