@@ -149,7 +149,7 @@ namespace Achievements
                         break;
 
                     case AchievementRewardType.UnlockPermanentUpgrade:
-                        //
+                        ProgressionManager.Instance.UnlockPermanentUpgrade(r.permanentType);
                         break;
                 }
             }
