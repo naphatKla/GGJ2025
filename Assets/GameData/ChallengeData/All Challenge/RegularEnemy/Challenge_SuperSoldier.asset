@@ -14,10 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: challenge_supersoldier
   title: Super Soldier
-  description: "Soldier DMG+100%\r\nSoldier Max HP +200%\r\nSoldier MSPD +50%\r\nReward\r\n+62.5%
+  description: "Soldier DMG+80%\r\nSoldier Max HP +200%\r\nSoldier MSPD +60%\r\nReward\r\n+75%
     score multiply\r"
   lockdescription: Not assign description yet.
-  flatScoreBonusPercent: 62.5
+  flatScoreBonusPercent: 75
   statMode: 0
   playerSetMods: []
   playerMods: []
@@ -26,8 +26,9 @@ MonoBehaviour:
   - groupName: 1
     enemyIds:
     - Enemy_Soldier
+    enemyNotincluded: []
     stats:
-      maxHP: 100
+      maxHP: 80
       damage: 200
-      moveSpeed: 50
+      moveSpeed: 60
       spawnChance: 0

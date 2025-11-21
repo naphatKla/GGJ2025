@@ -33,15 +33,17 @@ MonoBehaviour:
   skillIcon: {fileID: 21300000, guid: da4b3d9561ea35645bba84607ba15cfc, type: 3}
   skillName: Overloop
   skillDescription: "<color=#24f269><b>[Support]</b></color>\r\n<color=#adadad><i>[Cooldown
-    Reduction]</i></color>\n<color=#5CE5FF><b>[UPGRADE]</b></color> \r\n<color=#FFE02E><b>[++]</b></color>
-    Acceleration efficiency\r\n\r\nCooldown: <b>20s</b>\r\n\r\n- Randomly select
-    a skill to <color=#FFE02E>accelerate their cooldown timer</color> for a period
-    of time.\r\n<color=#E6E6FA>! <i>Only activate if there are other skills available</i>
-    !</color>\n\n"
+    Reduction]</i></color>\n<color=#5CE5FF><b>[UPGRADE]</b></color> \r\n<color=#FFE02E><b>[+]</b></color>
+    Acceleration efficiency\r\n<color=#FFE02E><b>[+]</b></color> Duration\r\n\r\nCooldown:
+    <b>20s</b>\r\n\r\n- Randomly select a skill to <color=#FFE02E>accelerate their
+    cooldown timer</color> for a period of time.\r\n<color=#E6E6FA>! <i>Only activate
+    if there are other skills available</i> !</color>\n\n"
   previousSkillData: {fileID: 11400000, guid: e6b1a946ae98f4f4d8a42fd3ca5924a0, type: 2}
   nextSkillDataUpgrade: {fileID: 11400000, guid: 3450dbd9a95d3224cb4e60b1f47e1ee2, type: 2}
   level: 3
   cooldown: 20
+  globalCooldown: 0.25
+  maxStack: 1
   startFeedback: Overloop_Lv3
   exitFeedback: 
   clearBuffOnSkillExit: 0
