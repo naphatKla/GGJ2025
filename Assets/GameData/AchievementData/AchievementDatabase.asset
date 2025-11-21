@@ -34,6 +34,8 @@ MonoBehaviour:
       challengeId: 
       minHighestScore: 0
       minTotalDamage: 0
+      enemyId: 
+      minKillAtLeast: 0
     rewards:
     - type: 2
       nanoAmount: 0
@@ -67,6 +69,8 @@ MonoBehaviour:
       challengeId: challenge_ordinary
       minHighestScore: 0
       minTotalDamage: 0
+      enemyId: 
+      minKillAtLeast: 0
     rewards:
     - type: 2
       nanoAmount: 0
@@ -84,12 +88,14 @@ MonoBehaviour:
       challengeId: challenge_cheapmaterials
       minHighestScore: 0
       minTotalDamage: 0
+      enemyId: 
+      minKillAtLeast: 0
     rewards:
     - type: 2
       nanoAmount: 0
       refId: challenge_junkgrades
       permanentType: 0
-  - id: plastic_fang
+  - id: achievement_plasticfang
     displayName: Plastic Fang
     description: Deal 1,000,000 total damage
     icon: {fileID: 0}
@@ -101,8 +107,25 @@ MonoBehaviour:
       challengeId: 
       minHighestScore: 0
       minTotalDamage: 1000000
+      enemyId: 
+      minKillAtLeast: 0
     rewards:
     - type: 2
       nanoAmount: 0
       refId: challenge_plasticfang
       permanentType: 0
+  - id: achievement_tuff
+    displayName: Tuff
+    description: Kill Tank 300 in total
+    icon: {fileID: 0}
+    triggerType: 0
+    logic: 0
+    conditions:
+    - type: 5
+      mapId: 
+      challengeId: 
+      minHighestScore: 0
+      minTotalDamage: 0
+      enemyId: Enemy_Tank
+      minKillAtLeast: 5
+    rewards: []

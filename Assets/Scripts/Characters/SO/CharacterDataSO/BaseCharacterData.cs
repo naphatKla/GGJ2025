@@ -8,6 +8,8 @@ namespace Characters.SO.CharacterDataSO
 {
     public abstract class BaseCharacterDataSo : ScriptableObject
     {
+        [SerializeField] private string characterId;
+        
         [FoldoutGroup("Health"), MinValue(1), PropertyTooltip("Maximum health value.")]
         [SerializeField] protected float maxHealth = 100;
 
@@ -103,6 +105,7 @@ namespace Characters.SO.CharacterDataSO
         }
 
         // Public Getters
+        public string CharacterId => characterId;
         public float MaxHealth => maxHealth;
         public float InvincibleTimePerHit => invincibleTimePerHit;
         public float StunResistancePercentage => stunResistancePercentage;

@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Cameras;
 using Characters.CollectItemSystems;
 using Characters.CombatSystems;
@@ -171,8 +173,11 @@ namespace Characters.Controllers
 
             statsPerRun.currentRank = combatRankSystem.CurrentRankId;
             statsPerRun.highestRank = combatRankSystem.HighestRecordedRankId;
-            
-            statsPerRun.totalEnemiesEliminated = combatSystem.TotalKill;
+
+            var killDict = combatSystem.TotalKillDictionary ?? new Dictionary<string, int>();
+
+            statsPerRun.totalKillDictionary = new Dictionary<string, int>(killDict);
+            statsPerRun.totalEnemiesEliminated = killDict.Sum(e => e.Value);
             statsPerRun.totalDamageDeal = combatSystem.TotalDamageDeal;
             statsPerRun.criticalCount = combatSystem.TotalCriticalCount;
             

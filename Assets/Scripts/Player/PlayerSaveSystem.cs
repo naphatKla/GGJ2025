@@ -75,6 +75,7 @@ namespace Player
                 HighestScore = 0,
                 LastScore = 0,
                 TotalDamageDeal = 0,
+                TotalKill = new(),
                 PermanentUpgrades = new Dictionary<PermanentUpgradeType, int>(),
                 UnlockedMaps = new HashSet<string>(),
                 UnlockedChallenges = new HashSet<string>(),

@@ -22,6 +22,7 @@ namespace Achievements
         ChallengeIdEquals = 2,
         HighestScoreAtLeast = 3,
         TotalDamageAtLeast = 4,
+        TotalKillAtLeast = 5,
     }
 
     public enum AchievementConditionLogic
@@ -65,6 +66,11 @@ namespace Achievements
 
         [ShowIf(nameof(type), AchievementConditionType.TotalDamageAtLeast)]
         public int minTotalDamage;
+
+        [ShowIf(nameof(type), AchievementConditionType.TotalKillAtLeast)]
+        public string enemyId;
+        [ShowIf(nameof(type), AchievementConditionType.TotalKillAtLeast)]
+        public int minKillAtLeast;
         
         // แสดงสรุปให้ดูอ่านง่าย (ไม่บังคับใช้ก็ได้)
         [ShowInInspector, ReadOnly]
@@ -76,8 +82,36 @@ namespace Achievements
                 AchievementConditionType.ChallengeIdEquals       => $"Challenge = {challengeId}",
                 AchievementConditionType.HighestScoreAtLeast     => $"HighestScore ≥ {minHighestScore}",
                 AchievementConditionType.TotalDamageAtLeast     => $"TotalDamage ≥ {minTotalDamage}",
+                AchievementConditionType.TotalKillAtLeast     => $"TotalKill {enemyId} ≥ {minKillAtLeast}",
                 _ => ""
             };
+        
+        /// <summary>
+        /// สำหรับ UI: คืน current / target ถ้าเงื่อนไขนี้เป็นแบบตัวเลข (มี progression ได้)
+        /// เช่น HighestScoreAtLeast, TotalDamageAtLeast
+        /// </summary>
+        public bool TryGetProgress(PlayerData p, out int current, out int target)
+        {
+            current = 0;
+            target  = 0;
+            if (p == null) return false;
+
+            switch (type)
+            {
+                case AchievementConditionType.HighestScoreAtLeast:
+                    target  = minHighestScore;
+                    current = p.HighestScore;
+                    return true;
+
+                case AchievementConditionType.TotalDamageAtLeast:
+                    target  = minTotalDamage;
+                    current = p.TotalDamageDeal;
+                    return true;
+
+                default:
+                    return false;
+            }
+        }
     }
 
     [Serializable]
@@ -120,6 +154,29 @@ namespace Achievements
         public AchievementConditionLogic logic = AchievementConditionLogic.And;
         public List<AchievementConditionConfig> conditions = new();
         public List<AchievementRewardConfig> rewards = new();
+        
+        /// <summary>
+        /// สำหรับ UI: ขอ "progress หลัก" ของ achievement นี้
+        /// ดีฟอลต์: ใช้เงื่อนไขแรกที่มี TryGetProgress ได้
+        /// </summary>
+        public bool TryGetMainProgress(PlayerData p, out int current, out int target)
+        {
+            current = 0;
+            target  = 0;
+
+            if (conditions == null || conditions.Count == 0) 
+                return false;
+
+            foreach (var c in conditions)
+            {
+                if (c != null && c.TryGetProgress(p, out current, out target))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
     }
 
     // ───────── Database SO ─────────
