@@ -460,9 +460,11 @@ namespace Characters.HeathSystems
                 // ถูกยกเลิกจาก Reset/Destroy → ออกเฉย ๆ
                 return;
             }
-
-            OnDeadAnimationFinish?.Invoke();
-            if (this && gameObject) gameObject.SetActive(false);
+            finally
+            {
+                OnDeadAnimationFinish?.Invoke();
+                if (this && gameObject) gameObject.SetActive(false);
+            }
         }
 
         private async UniTaskVoid PlaySpawnFeedbackSync()
