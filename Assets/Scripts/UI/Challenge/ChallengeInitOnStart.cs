@@ -79,8 +79,6 @@ namespace UI.Challenge
                     c_SelectedObjects.Add(ch);
                     if (ChallengeManager.Instance != null)
                         ChallengeManager.Instance.SelectChallenge(ch);
-                    var ls = GetComponent<LoopScrollRect>();
-                    ls.RefreshCells();
                 }
             }
             
