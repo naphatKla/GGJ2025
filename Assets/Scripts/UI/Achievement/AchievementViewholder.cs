@@ -1,48 +1,56 @@
-using System.Collections;
-using System.Collections.Generic;
-using Challenge;
+using Achievements;
 using Coffee.UIEffects;
 using Demo;
+using PixelUI;
 using Sirenix.OdinInspector;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace UI.Challenge
+namespace UI.Achievement
 {
-    public class ChallengeSelectViewholder : ScrollIndexCallbackBase
+    public class AchievementViewholder : ScrollIndexCallbackBase
     {
         [Title("Viewholder")] 
         public TMP_Text nameVh;
         public TMP_Text descriptionVh;
+        public Image imageVh;
+        public ValueBar progressionBar;
 
         [Title("Display")] 
+        public bool IsLocked;
+        public Sprite lockimageVh;
         public UIEffect uiEffect;
         public Color unlockColorBg;
         public Gradient lockGradient;
         public Color lockColorBg;
         public Gradient unlockGradient;
-        
-        public bool IsLocked;
-        
-        public void UpdateViewholder(ChallengeDataSO challengeData)
+
+        public void UpdateViewholder(AchievementEntry achievementData)
         {
             if (!IsLocked)
             {
-                if (nameVh != null) nameVh.text = challengeData.title;
+                if (imageVh != null) imageVh.sprite = achievementData.icon;
+                if (nameVh != null) nameVh.text = achievementData.displayName;
                 if (uiEffect != null) ApplyUnlockGradient();
-                if (descriptionVh != null) descriptionVh.text = challengeData.description;
-                m_Button.interactable = true;
+                if (descriptionVh != null) descriptionVh.text = achievementData.description;
+                m_Button.interactable = false;
                 m_Button.image.color = unlockColorBg;
             }
             else
             {
-                if (nameVh != null) nameVh.text = "LOCKED";
+                if (imageVh != null) imageVh.sprite = lockimageVh;
+                if (nameVh != null) nameVh.text = achievementData.displayName;
                 if (uiEffect != null) ApplyLockGradient();
-                if (descriptionVh != null) descriptionVh.text = challengeData.lockdescription;
+                if (descriptionVh != null) descriptionVh.text = achievementData.description;
                 m_Button.interactable = false;
                 m_Button.image.color = lockColorBg;
             }
+        }
+        
+        public void UpdateProgressionBar(AchievementEntry achievementData)
+        {
+            progressionBar.MinValue = 0;
         }
         
         public void ApplyLockGradient()
@@ -72,7 +80,6 @@ namespace UI.Challenge
             if (m_Button == null || m_Button.image == null) return;
             m_Button.image.color = isClicked ? Color.green : Color.white;
         }
+
     }
-
 }
-
