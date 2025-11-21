@@ -89,7 +89,7 @@ namespace UI.PermanentUpgrade
                 cb.onClick_InitOnStart.AddListener(() =>
                 {
                     var pEntry = _items[index];
-                    //if (IsLockedByPlayer(pEntry)) return;
+                    if (IsLockedByPlayer(pEntry)) return;
 
                     p_SelectedIndex = index;
                     p_SelectedObject = pEntry;
@@ -115,7 +115,7 @@ namespace UI.PermanentUpgrade
             {
                 var content = _items[idx];
                 vh.SetPrefabName("PermanentUpgrade");   
-                //vh.IsLocked = IsLockedByPlayer(content);
+                vh.IsLocked = IsLockedByPlayer(content);
                 vh.ScrollCellIndex(idx, content);
                 vh.SetClickedColor(idx == p_SelectedIndex);
                 vh.UpdateViewholder(_items[idx], CurrentProfile);
@@ -130,7 +130,7 @@ namespace UI.PermanentUpgrade
         public void SelectIndexImmediate(int index)
         {
             if (_items == null || _items.Count == 0) return;
-            //if (IsLockedByPlayer(_items[index])) return;
+            if (IsLockedByPlayer(_items[index])) return;
             index = Mathf.Clamp(index, 0, _items.Count - 1);
             if (index < 0)
             {

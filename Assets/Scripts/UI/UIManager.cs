@@ -5,6 +5,7 @@ using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using Manager;
 using MoreMountains.Feedbacks;
+using PermanentUpgrade;
 using Player;
 using ProjectExtensions;
 using Sirenix.OdinInspector;
@@ -518,6 +519,14 @@ namespace UI
                 "map_voidmetro"
             });
             
+            ProgressionManager.Instance.UnlockMultiPermanents(new []
+            {
+                PermanentUpgradeType.Damage,
+                PermanentUpgradeType.Speed,
+                PermanentUpgradeType.MaxHealth,
+                PermanentUpgradeType.CritRate,
+                PermanentUpgradeType.CritDamage
+            });
             LeaderboardItemPresenter.RefreshAll();
             OpenGameModePanel();
         }
