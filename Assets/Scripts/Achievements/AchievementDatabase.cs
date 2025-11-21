@@ -145,14 +145,22 @@ namespace Achievements
     [Serializable]
     public class AchievementEntry
     {
+        [FoldoutGroup("$displayName")]
         public string id;
+        [FoldoutGroup("$displayName")]
         public string displayName;
+        [FoldoutGroup("$displayName")] [TextArea]
         public string description;
+        [FoldoutGroup("$displayName")]
         public Sprite icon;
+        [FoldoutGroup("$displayName")]
         public AchievementTriggerType triggerType;
         
+        [FoldoutGroup("$displayName")]
         public AchievementConditionLogic logic = AchievementConditionLogic.And;
+        [FoldoutGroup("$displayName")]
         public List<AchievementConditionConfig> conditions = new();
+        [FoldoutGroup("$displayName")]
         public List<AchievementRewardConfig> rewards = new();
         
         /// <summary>
@@ -184,7 +192,6 @@ namespace Achievements
     [CreateAssetMenu(menuName = "Config/Achievement Database", fileName = "AchievementDatabase")]
     public class AchievementDatabase : SerializedScriptableObject
     {
-        [ListDrawerSettings(ShowIndexLabels = true) ]
         public List<AchievementEntry> entries = new();
     }
 }

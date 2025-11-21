@@ -24,7 +24,10 @@ MonoBehaviour:
   entries:
   - id: achivement_juniorofficers
     displayName: Junior Officers
-    description: Win one game in survival mode
+    description: 'Win one game in survival mode
+
+      Reward: Unlock "Challenge
+      mode"'
     icon: {fileID: 0}
     triggerType: 1
     logic: 0
@@ -59,7 +62,10 @@ MonoBehaviour:
       permanentType: 0
   - id: achievement_arrogant
     displayName: Arrogant
-    description: Win anymode mode with "Ordinary" challenge enable
+    description: 'Win anymode mode with "Ordinary" challenge enable
+
+      Reward:
+      Unlock "Arrogant" in challenge option'
     icon: {fileID: 0}
     triggerType: 1
     logic: 0
@@ -78,7 +84,10 @@ MonoBehaviour:
       permanentType: 0
   - id: achievement_junkgrades
     displayName: Junk grades
-    description: Win anymode mode with "Cheap materials" challenge enable
+    description: 'Win anymode mode with "Cheap materials" challenge enable
+
+      Reward:
+      Unlock "Junk grades" in challenge option'
     icon: {fileID: 0}
     triggerType: 1
     logic: 0
@@ -97,7 +106,10 @@ MonoBehaviour:
       permanentType: 0
   - id: achievement_plasticfang
     displayName: Plastic Fang
-    description: Deal 1,000,000 total damage
+    description: 'Deal 1,000,000 total damage
+
+      Reward: Unlock "Plastic Fang"
+      in challenge option'
     icon: {fileID: 0}
     triggerType: 0
     logic: 0
@@ -116,7 +128,10 @@ MonoBehaviour:
       permanentType: 0
   - id: achievement_tuff
     displayName: Tuff
-    description: Kill Tank 300 in total
+    description: 'Kill Tank 300 in total
+
+      Reward: Unlock "Tuff" in challenge
+      option'
     icon: {fileID: 0}
     triggerType: 0
     logic: 0
@@ -127,5 +142,9 @@ MonoBehaviour:
       minHighestScore: 0
       minTotalDamage: 0
       enemyId: Enemy_Tank
-      minKillAtLeast: 5
-    rewards: []
+      minKillAtLeast: 300
+    rewards:
+    - type: 2
+      nanoAmount: 0
+      refId: challenge_tuff
+      permanentType: 0
