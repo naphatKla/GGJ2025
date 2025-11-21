@@ -75,8 +75,9 @@ namespace UI.Achievement
             progressionBar.MaxValue = target;
             progressionBar.CurrentValue = current;
             progressionValue.text = $"{current}/{target}";
-            var percentProgress = (current / target) * 100;
-            progressionPercent.text = percentProgress + "%";
+            float percentProgress = (float)current / target * 100f;
+            Debug.Log(percentProgress);
+            progressionPercent.text = $"{percentProgress:F2} %";
         }
         
         public void ApplyLockGradient()
