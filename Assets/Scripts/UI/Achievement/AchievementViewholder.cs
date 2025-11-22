@@ -76,7 +76,6 @@ namespace UI.Achievement
             progressionBar.CurrentValue = current;
             progressionValue.text = $"{current}/{target}";
             float percentProgress = (float)current / target * 100f;
-            Debug.Log(percentProgress);
             progressionPercent.text = $"{percentProgress:F2} %";
         }
         
@@ -101,12 +100,5 @@ namespace UI.Achievement
                 gradient.mode
             );
         }
-        
-        public void SetClickedColor(bool isClicked)
-        {
-            if (m_Button == null || m_Button.image == null) return;
-            m_Button.image.color = isClicked ? Color.green : Color.white;
-        }
-
     }
 }

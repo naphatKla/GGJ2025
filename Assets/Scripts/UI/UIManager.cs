@@ -501,7 +501,6 @@ namespace UI
             if (data == null)
             {
                 NotificationManager.Instance.PlayNotification("notify_warn", "Please create your new game first to continue.", 2f);
-                OpenDisplayPanel();
                 return;
             }
             OpenPanel(UIPanelType.Achievement).Forget();

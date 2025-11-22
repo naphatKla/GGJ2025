@@ -47,6 +47,7 @@ namespace UI.Achievement
         private void OnEnable()
         {
             var ls = GetComponent<LoopScrollRect>();
+            ls.RefillCells();
             ls.RefreshCells();
         }
 
@@ -65,21 +66,10 @@ namespace UI.Achievement
         {
             var go = pool.Count == 0 ? Instantiate(item) : pool.Pop().gameObject;
             go.SetActive(true);
-            
             var cb = go.GetComponent<ScrollIndexCallbackBase>();
             if (cb != null)
             {
                 cb.onClick_InitOnStart.RemoveAllListeners();
-                /*cb.onClick_InitOnStart.AddListener(() =>
-                {
-                    var achievementEntry = _items[index];
-                    if (IsLockedByPlayer(achievementEntry)) return;
-
-                    m_SelectedIndex = index;
-                    m_SelectedObject = achievementEntry;
-                    OnSelected?.Invoke(m_SelectedIndex, m_SelectedObject);
-                    GetComponent<LoopScrollRect>().RefreshCells();
-                });*/
             }
             return go;
         }
@@ -98,11 +88,11 @@ namespace UI.Achievement
             if (vh != null)
             {
                 var content = _items[idx];
+                var p = Current;
                 vh.SetPrefabName("Achievement");   
                 vh.ScrollCellIndex(idx, content);
-                //vh.SetClickedColor(idx == m_SelectedIndex);*/
                 vh.IsLocked = IsLockedByPlayer(content);
-                vh.UpdateViewholder(_items[idx], Current);
+                vh.UpdateViewholder(_items[idx], p);
             }
             else
             {
