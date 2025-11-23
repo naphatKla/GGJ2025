@@ -4,6 +4,7 @@ using Achievements;
 using Demo;
 using Player;
 using Sirenix.OdinInspector;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -20,6 +21,9 @@ namespace UI.Achievement
         [Space,Title("Container")]
         [SerializeField] public AchievementDatabase achievementDataContainer;
 
+        [Space, Title("UI")] 
+        public TMP_Text completeAchievement;
+        
         [Space,Title("Debug")]
         [ShowInInspector] public int m_SelectedIndex = -1;
         [ShowInInspector] public AchievementEntry m_SelectedObject;
@@ -49,12 +53,47 @@ namespace UI.Achievement
             var ls = GetComponent<LoopScrollRect>();
             ls.RefillCells();
             ls.RefreshCells();
+            UpdateCompleteText();
+        }
+
+        private void UpdateCompleteText()
+        {
+            if (completeAchievement != null)
+            {
+                var allachievement = achievementDataContainer.entries.Count;
+                var complete = Current.UnlockedAchievements.Count;
+                var percent = ((float)complete / allachievement) * 100;
+                completeAchievement.text = $"COMPLETED <color=#fdb520>{complete}/{allachievement}</color> | TOTAL <color=#00a86b>{percent:F0}%</color>";
+            }
         }
 
         private List<AchievementEntry> LoadItems()
         {
-            return achievementDataContainer.entries;
+            // copy list จาก database กัน side-effect
+            var list = new List<AchievementEntry>(achievementDataContainer.entries);
+
+            if (Current != null)
+            {
+                list.Sort((a, b) =>
+                {
+                    bool aComplete = Current.UnlockedAchievements.Contains(a.id);
+                    bool bComplete = Current.UnlockedAchievements.Contains(b.id);
+
+                    // ยังไม่ complete (aComplete == false) ให้อยู่ก่อน
+                    if (aComplete == bComplete)
+                    {
+                        // ถ้าอยากจัดต่อด้วยชื่อ/ลำดับ ก็ใส่ตรงนี้
+                        return string.Compare(a.id, b.id, StringComparison.Ordinal);
+                    }
+
+                    // false ก่อน true  -> ไม่ complete อยู่บน, complete อยู่ล่าง
+                    return aComplete ? 1 : -1;
+                });
+            }
+
+            return list;
         }
+
         
         private bool IsLockedByPlayer(AchievementEntry achievementEntry)
         {

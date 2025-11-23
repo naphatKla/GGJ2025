@@ -55,29 +55,40 @@ namespace UI.Achievement
         
         public void UpdateProgressionBar(AchievementEntry achievementData, PlayerData playerData)
         {
-            achievementData.TryGetMainProgress(playerData, out int current, out int target);
-
-            if (current == 0 && target == 0)
+            if (!achievementData.TryGetMainProgress(playerData, out int current, out int target))
             {
                 progressionBar.gameObject.SetActive(false);
                 progressionValue.gameObject.SetActive(false);
                 progressionPercent.gameObject.SetActive(false);
                 return;
             }
-            else
-            {
-                progressionBar.gameObject.SetActive(true);
-                progressionValue.gameObject.SetActive(true);
-                progressionPercent.gameObject.SetActive(true);
-            }
             
+            if (target <= 0)
+            {
+                progressionBar.gameObject.SetActive(false);
+                progressionValue.gameObject.SetActive(false);
+                progressionPercent.gameObject.SetActive(false);
+                return;
+            }
+
+            // ถ้ามีข้อมูลค่อยโชว์
+            progressionBar.gameObject.SetActive(true);
+            progressionValue.gameObject.SetActive(true);
+            progressionPercent.gameObject.SetActive(true);
+
+            // กัน current โผล่เกิน target
+            current = Mathf.Clamp(current, 0, target);
+
             progressionBar.MinValue = 0;
             progressionBar.MaxValue = target;
             progressionBar.CurrentValue = current;
+
             progressionValue.text = $"{current}/{target}";
+
             float percentProgress = (float)current / target * 100f;
             progressionPercent.text = $"{percentProgress:F2} %";
         }
+
         
         public void ApplyLockGradient()
         {
