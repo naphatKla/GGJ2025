@@ -17,6 +17,7 @@ using UI.Transition;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace UI
@@ -101,12 +102,10 @@ namespace UI
 
     public class UIManager : NonAutoCreateSingleton<UIManager>
     {
-        [Header("Scene Names")] [SerializeField]
-        private string menuScene;
-
-        [SerializeField] private string gamePlayScene;
-        [SerializeField] private string endCreditsScene;
-      
+        [SerializeField] private MMF_Player menuSceneLoader;
+        [SerializeField] private MMF_Player gameplaySceneLoader;
+        [SerializeField] private MMF_Player endCreditSceneLoader;
+        
         [Header("UI Panels (registry)")] [SerializeField]
         private List<UIPanelEntry> panelEntries = new();
         
@@ -455,20 +454,19 @@ namespace UI
         public async void BackMenu()
         {
             CloseAllPanels();
-            await SceneManager.LoadSceneAsync(menuScene).ToUniTask();
-            await UniTask.Yield();
+            menuSceneLoader.PlayFeedbacks();
         }
 
         public void LoadToGamePlayScene()
         {
             CloseAllPanels();
-            SceneManager.LoadScene(gamePlayScene);
+            gameplaySceneLoader.PlayFeedbacks();
         }
 
         public void LoadToCreditsScene()
         {
             CloseAllPanels();
-            SceneManager.LoadScene(endCreditsScene);
+            endCreditSceneLoader.PlayFeedbacks();
         }
 
         public void QuitGame()
