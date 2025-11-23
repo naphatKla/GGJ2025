@@ -15,7 +15,7 @@ MonoBehaviour:
   id: challenge_junkgrades
   title: Junk Grades
   description: "Decrease Max HP = 1\r\nReward\r\n+300% score multiply\r"
-  lockdescription: Not assign description yet.
+  lockdescription: Unlock from <color=yellow>Achievement.
   flatScoreBonusPercent: 300
   statMode: 1
   playerSetMods:
@@ -24,4 +24,5 @@ MonoBehaviour:
   playerMods:
   - stat: 0
     percentDelta: -50
+  disableAutoCalculate: 0
   enemyGroups: []

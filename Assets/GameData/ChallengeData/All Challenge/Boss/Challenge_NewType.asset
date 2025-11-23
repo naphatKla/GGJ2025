@@ -16,7 +16,7 @@ MonoBehaviour:
   title: New Type
   description: "Increase Boss / Mini Boss DMG +500%\r\nIncrease Boss / Mini Boss
     Max HP +200%\r\nReward\r\n+350% score multiply\r"
-  lockdescription: Not assign description yet.
+  lockdescription: Unlock from <color=yellow>Achievement.
   flatScoreBonusPercent: 350
   statMode: 0
   playerSetMods: []
@@ -26,6 +26,7 @@ MonoBehaviour:
   - groupName: 1
     enemyIds:
     - Boss_Twin
+    enemyNotincluded: []
     stats:
       maxHP: 200
       damage: 500
