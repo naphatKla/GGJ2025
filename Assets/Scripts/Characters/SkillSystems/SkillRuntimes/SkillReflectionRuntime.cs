@@ -121,6 +121,7 @@ namespace Characters.SkillSystems.SkillRuntimes
         {
             foreach (var skillObject in _skillObjects)
             {
+                if (!skillObject.gameObject) continue;
                 skillObject.DamageOnTouch.DisableDamage(this);
                 skillObject.gameObject.SetActive(false);
                 skillObject.transform.position = owner.transform.position;
