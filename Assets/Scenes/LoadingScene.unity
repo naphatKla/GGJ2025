@@ -891,6 +891,7 @@ GameObject:
   - component: {fileID: 1501077388}
   - component: {fileID: 1501077387}
   - component: {fileID: 1501077386}
+  - component: {fileID: 1501077389}
   m_Layer: 0
   m_Name: UI Camera
   m_TagString: Untagged
@@ -1008,6 +1009,14 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!81 &1501077389
+AudioListener:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1501077385}
+  m_Enabled: 1
 --- !u!1 &1858372241
 GameObject:
   m_ObjectHideFlags: 0
@@ -1147,7 +1156,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 85f9f16a22943814196e731ffb6b0f62, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  LoadingAudioListener: {fileID: 0}
+  LoadingAudioListener: {fileID: 1501077389}
   FaderID: 500
   DebugMode: 0
   SetRealtimeProgressValue:
