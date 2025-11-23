@@ -40,7 +40,7 @@ namespace MoreMountains.Tools
 		{
 			float remappedValue = MMMaths.Remap(newValue, 0f, 1f, RemapMin, RemapMax);
 			float displayValue = MMMaths.RoundToDecimal(remappedValue, NumberOfDecimals);
-			_text.text = displayValue.ToString(CultureInfo.InvariantCulture);
+			_text.text = displayValue.ToString(CultureInfo.InvariantCulture) + "%";
 		}
 	}
 }
