@@ -45,6 +45,8 @@ namespace PermanentUpgrade
         public Sprite iconUpgrade;
         [FoldoutGroup("$type")] [TextArea(4, 10)]
         public string descriptionUpgrade;
+        [FoldoutGroup("$type")]
+        public string unit;
         [FoldoutGroup("$type")] [TextArea(4, 10)]
         public string lockDescriptionUpgrade;
         

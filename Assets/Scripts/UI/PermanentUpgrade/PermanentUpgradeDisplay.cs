@@ -20,7 +20,18 @@ namespace UI.PermanentUpgrade
             if (currentNanoCoinText != null) currentNanoCoinText.text = playerData.nanoCoin.ToString();
             if (nameText != null) nameText.text = pEntry.nameUpgrade;
             if (costText != null) costText.text = GetCurrentLevel(config,pEntry,playerData);
-            if (descriptionText != null) descriptionText.text = pEntry.descriptionUpgrade;
+            if (descriptionText != null)
+            {
+                var currentLevel = playerData.GetPermanentUpgradeLevel(pEntry.type);
+                var nextLevel = currentLevel + 1;
+
+                string t = currentLevel >= pEntry.MaxLevel
+                    ? pEntry.descriptionUpgrade
+                    : descriptionText.text =
+                        $"+{pEntry.levels[nextLevel].value}{pEntry.unit} {pEntry.descriptionUpgrade}";
+                descriptionText.text = t;
+
+            }
             if (imageDisplay != null) imageDisplay.sprite = pEntry.iconUpgrade;
         }
         
