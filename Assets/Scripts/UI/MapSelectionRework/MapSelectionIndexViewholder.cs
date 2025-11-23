@@ -1,3 +1,4 @@
+using Coffee.UIEffects;
 using Demo;
 using GameControl.SO;
 using Sirenix.OdinInspector;
@@ -13,6 +14,7 @@ namespace UI.MapSelectionRework
         public TMP_Text nameVh;
         public TMP_Text descriptionVh;
         public Image imageVh;
+        public UIEffect uieffect;
 
         [Title("Lock Display")] 
         public bool IsLocked;
@@ -36,7 +38,16 @@ namespace UI.MapSelectionRework
         public void SetClickedColor(bool isClicked)
         {
             if (m_Button == null || m_Button.image == null) return;
-            m_Button.image.color = isClicked ? Color.green : Color.white;
+            if (isClicked)
+            {
+                uieffect.edgeMode = EdgeMode.Shiny;
+                uieffect.gradationMode = GradationMode.HorizontalGradient;
+            }
+            else
+            {
+                uieffect.edgeMode = EdgeMode.None;
+                uieffect.gradationMode = GradationMode.None;
+            }
         }
     }
 }

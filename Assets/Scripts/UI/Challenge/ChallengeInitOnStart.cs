@@ -88,7 +88,29 @@ namespace UI.Challenge
         
         private List<ChallengeDataSO> LoadItems()
         {
-            return challengeDataContainer.challengeList;
+            // copy list จาก database กัน side-effect
+            var list = new List<ChallengeDataSO>(challengeDataContainer.challengeList);
+
+            if (Current != null)
+            {
+                list.Sort((a, b) =>
+                {
+                    bool aUnlocked = Current.UnlockedChallenges.Contains(a.id);
+                    bool bUnlocked = Current.UnlockedChallenges.Contains(b.id);
+
+                    // ถ้าสถานะเหมือนกัน (ทั้งคู่ปลดล็อกแล้ว หรือทั้งคู่ยัง)
+                    if (aUnlocked == bUnlocked)
+                    {
+                        // จัดต่อด้วย id (หรือตัวอื่นถ้าอยากเปลี่ยน)
+                        return string.Compare(a.id, b.id, StringComparison.Ordinal);
+                    }
+
+                    // true ก่อน false  -> ปลดล็อกแล้วอยู่บน, ยังไม่ปลดล็อกอยู่ล่าง
+                    return aUnlocked ? -1 : 1;
+                });
+            }
+
+            return list;
         }
         
         public GameObject GetObject(int index)

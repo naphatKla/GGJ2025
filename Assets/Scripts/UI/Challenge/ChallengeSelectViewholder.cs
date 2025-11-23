@@ -17,6 +17,7 @@ namespace UI.Challenge
         public TMP_Text descriptionVh;
 
         [Title("Display")] 
+        public UIEffect selectedUIEffect;
         public UIEffect uiEffect;
         public Color unlockColorBg;
         public Gradient lockGradient;
@@ -70,7 +71,18 @@ namespace UI.Challenge
         public void SetClickedColor(bool isClicked)
         {
             if (m_Button == null || m_Button.image == null) return;
-            m_Button.image.color = isClicked ? Color.green : Color.white;
+            if (isClicked)
+            {
+                selectedUIEffect.transitionFilter = TransitionFilter.Pattern;
+                selectedUIEffect.edgeMode = EdgeMode.Shiny;
+                selectedUIEffect.gradationMode = GradationMode.HorizontalGradient;
+            }
+            else
+            {
+                selectedUIEffect.transitionFilter = TransitionFilter.None;
+                selectedUIEffect.edgeMode = EdgeMode.None;
+                selectedUIEffect.gradationMode = GradationMode.None;
+            }
         }
     }
 
