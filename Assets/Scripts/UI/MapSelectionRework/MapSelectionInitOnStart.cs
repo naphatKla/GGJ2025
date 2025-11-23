@@ -70,7 +70,7 @@ namespace UI.MapSelectionRework
         {
             if (m_SelectedObject == null || Current == null)
             {
-                NotificationManager.Instance?.PlayNotification("notify_warn", "Lock, Please unlock to continue.", 2f);
+                NotificationManager.Instance?.PlayNotification("notify_warn", "Lock, Please unlock to continue.", 2f, NotificationType.Normal);
                 return;
             }
             UIManager.Instance.OpenClassSelectionPanel();

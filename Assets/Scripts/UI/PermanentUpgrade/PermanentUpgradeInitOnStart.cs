@@ -157,13 +157,11 @@ namespace UI.PermanentUpgrade
                 var click = CurrentProfile.TryUpgrade(_items[index].type,permanentConfig);
                 if (click)
                 {
-                    NotificationManager.Instance?.PlayNotification("notify_warnrb", "Upgrade Successfully!", 2f);
-                    
+                    NotificationManager.Instance?.PlayNotification("notify_warnrb", "Upgrade Successfully!", 2f, NotificationType.Normal);
                 }
                 else
                 {
-                    NotificationManager.Instance?.PlayNotification("notify_warnrb", "Not enough coin!", 2f);
-                    
+                    NotificationManager.Instance?.PlayNotification("notify_warnrb", "Not enough coin!", 2f, NotificationType.Error);
                 }
                 SaveAndRefresh();
             });

@@ -180,7 +180,7 @@ namespace Achievements
                     silent: false);
                 
                 if (SceneManager.GetActiveScene().name == "Gameplay") 
-                    NotificationManager.Instance?.PlayNotification("notify_unlock", $"Unlock achivement {entry.displayName}!", 10f);
+                    NotificationManager.Instance?.PlayNotification("notify_unlock", $"Unlock achivement {entry.displayName}!", 10f, NotificationType.Reward);
             }
         }
 

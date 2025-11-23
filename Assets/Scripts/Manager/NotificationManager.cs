@@ -11,6 +11,13 @@ using Random = UnityEngine.Random;
 
 namespace UI.Manager
 {
+    public enum NotificationType
+    {
+        Normal = 0,
+        Error = 1,
+        Reward = 2,
+    }
+    
     public class NotificationManager : NonAutoCreateSingleton<NotificationManager>
     {
         [Serializable]
@@ -57,11 +64,23 @@ namespace UI.Manager
         /// <summary>
         /// Call Notification
         /// </summary>
-        public void PlayNotification(string notifyID, string text, float lifeTimeSeconds, string variable = null)
+        public void PlayNotification(string notifyID, string text, float lifeTimeSeconds, NotificationType type, string variable = null)
         {
             if (string.IsNullOrEmpty(notifyID)) notifyID = "_default";
+
+            switch (type)
+            {
+                case NotificationType.Normal:
+                    SoundManager.Instance.PlayUI(SoundName.UI.Notification);
+                    break;
+                case NotificationType.Error:
+                    SoundManager.Instance.PlayUI(SoundName.UI.Error);
+                    break;
+                case NotificationType.Reward:
+                    SoundManager.Instance.PlayUI(SoundName.UI.Reward);
+                    break;
+            }
             
-            SoundManager.Instance.PlayUI(SoundName.UI.Gameplay_ActionTextNotification);
             var key = MakeKey(notifyID, text);
 
             if (_activeById.TryGetValue(key, out var entry))
@@ -307,7 +326,7 @@ namespace UI.Manager
         {
             var id = ResolveRandomTestId();
             var text = $"{edRT_TextPrefix} {__RandToken()}";
-            PlayNotification(id, text, edRT_Lifetime);
+            PlayNotification(id, text, edRT_Lifetime, NotificationType.Normal);
         }
 
         [FoldoutGroup("EditorTest")]
@@ -325,7 +344,7 @@ namespace UI.Manager
         {
             var id = ResolveRandomTestId();
             var text = $"{edRT_TextPrefix}";
-            PlayNotification(id, text, edRT_Lifetime);
+            PlayNotification(id, text, edRT_Lifetime, NotificationType.Normal);
         }
 
         private async UniTask ED_PlayRandomText_BurstAsync()
@@ -334,7 +353,7 @@ namespace UI.Manager
             {
                 var id = ResolveRandomTestId();
                 var text = $"{edRT_TextPrefix} {__RandToken()}";
-                PlayNotification(id, text, edRT_Lifetime);
+                PlayNotification(id, text, edRT_Lifetime, NotificationType.Normal);
 
                 if (edRT_StepDelay > 0f)
                     await UniTask.Delay(TimeSpan.FromSeconds(edRT_StepDelay), DelayType.UnscaledDeltaTime);

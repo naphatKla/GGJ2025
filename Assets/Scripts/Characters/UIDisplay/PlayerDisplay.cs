@@ -601,7 +601,7 @@ namespace Characters.UIDisplay
         public void UpdateParrySuccessFeedbackText(string text)
         {
             var textInstance = PoolingManager.Instance.Get<TextMeshProUGUI>(worldTextUIParryFeedbackPrefab.name);
-            NotificationManager.Instance.PlayNotification("notify_skilluse", "Parry Success!", 4.0f);
+            NotificationManager.Instance.PlayNotification("notify_skilluse", "Parry Success!", 4.0f, NotificationType.Normal);
 
             // Reset & Prepare
             Transform tf = textInstance.transform;
@@ -708,7 +708,7 @@ namespace Characters.UIDisplay
         private void UpdateFeedbackText(BaseSkillDataSo skillDataSo)
         {
             var textInstance = PoolingManager.Instance.Get<TextMeshProUGUI>(worldTextUISkillFeedbackPrefab.name);
-            NotificationManager.Instance.PlayNotification("notify_skilluse", skillDataSo.SkillName, 4.0f);
+            NotificationManager.Instance.PlayNotification("notify_skilluse", skillDataSo.SkillName, 4.0f, NotificationType.Normal);
             PopupUIManager.Instance.ShowPopup("SkillTopPullup", 3f);
             PopupUIManager.Instance.ShowPopup("SkillBottomPullup", 3f);
             feedbackSkill?.PlayFeedbacks();

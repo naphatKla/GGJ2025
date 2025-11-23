@@ -498,7 +498,7 @@ namespace UI
             var data = svc.LoadCurrent();
             if (data == null)
             {
-                NotificationManager.Instance.PlayNotification("notify_warn", "Please create your new game first to continue.", 2f);
+                NotificationManager.Instance.PlayNotification("notify_warn", "Please create your new game first to continue.", 2f, NotificationType.Normal);
                 return;
             }
             OpenPanel(UIPanelType.Achievement).Forget();
@@ -514,7 +514,7 @@ namespace UI
             if (playerNameInput == null) return;
             if (string.IsNullOrWhiteSpace(playerNameInput.text))
             {
-                NotificationManager.Instance?.PlayNotification("notify_warn", "Please enter your name to continue.", 2f);
+                NotificationManager.Instance?.PlayNotification("notify_warn", "Please enter your name to continue.", 2f, NotificationType.Normal);
                 return;
             }
 
@@ -549,7 +549,7 @@ namespace UI
             var data = svc.LoadCurrent();
             if (data == null)
             {
-                NotificationManager.Instance.PlayNotification("notify_warn", "Please create your new game first to continue.", 2f);
+                NotificationManager.Instance.PlayNotification("notify_warn", "Please create your new game first to continue.", 2f, NotificationType.Normal);
                 OpenDisplayPanel();
                 return;
             }

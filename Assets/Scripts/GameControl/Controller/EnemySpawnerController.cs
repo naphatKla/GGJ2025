@@ -107,7 +107,7 @@ namespace GameControl.Controller
         {
             if (GameStateController.Instance.MapState == MapState.Rush) return;
             if (!option.disableEnemyDetect) 
-                NotificationManager.Instance.PlayNotification("notify_enemy", $"NEW ENEMY DETECT - {option.displayName}", 4f, option.displayName);
+                NotificationManager.Instance.PlayNotification("notify_enemy", $"NEW ENEMY DETECT - {option.displayName}", 4f,NotificationType.Normal, option.displayName);
             OnFirstSpawned?.Invoke(obj, option);
         }
         
