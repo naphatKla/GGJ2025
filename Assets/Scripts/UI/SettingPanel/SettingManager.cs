@@ -9,69 +9,92 @@ namespace UI.SettingPanel
     public class SettingManager : MonoBehaviour
     {
         public AudioMixer audioMixer;
-        
+
         [Title("Slider")]
         public Slider masterSlider;
         public Slider musicSlider;
         public Slider sfxSlider;
         public Slider uiSlider;
 
+        const float MIN_DB = -80f;   // ค่าเงียบ
+
         private void Start()
         {
             LoadVolume();
+            ApplyAllVolumes();
         }
-        
+
         private void OnEnable()
         {
             LoadVolume();
+            ApplyAllVolumes();
         }
-        
+
         private void OnDisable()
         {
             SaveVolume();
         }
 
-        public void UpdateMasterVolume(float volume)
+        // ---------- ปรับจาก slider (0–1) เป็น dB ----------
+
+        public void UpdateMasterVolume(float value01)
         {
-            audioMixer.SetFloat("MasterVolume", volume);
+            SetMixerVolume("MasterVolume", value01);
         }
- 
-        public void UpdateMusicVolume(float volume)
+
+        public void UpdateMusicVolume(float value01)
         {
-            audioMixer.SetFloat("MusicVolume", volume);
+            SetMixerVolume("MusicVolume", value01);
         }
-        
-        public void UpdateSfxVolume(float volume)
+
+        public void UpdateSfxVolume(float value01)
         {
-            audioMixer.SetFloat("SfxVolume", volume);
+            SetMixerVolume("SfxVolume", value01);
         }
-        
-        public void UpdateUiVolume(float volume)
+
+        public void UpdateUiVolume(float value01)
         {
-            audioMixer.SetFloat("UiVolume", volume);
+            SetMixerVolume("UiVolume", value01);
         }
-        
+
+        private void SetMixerVolume(string parameter, float value01)
+        {
+            // value01 = 0..1 จาก slider
+            float dB;
+
+            if (value01 <= 0.0001f)
+                dB = MIN_DB;                 // เงียบ
+            else
+                dB = Mathf.Log10(value01) * 20f;  // แปลงเป็น dB
+
+            audioMixer.SetFloat(parameter, dB);
+        }
+
+        // ---------- Save / Load ----------
+
         public void SaveVolume()
         {
-            audioMixer.GetFloat("MasterVolume", out float masterVolume);
-            PlayerPrefs.SetFloat("MasterVolume", masterVolume);
-            
-            audioMixer.GetFloat("MusicVolume", out float musicVolume);
-            PlayerPrefs.SetFloat("MusicVolume", musicVolume);
-            
-            audioMixer.GetFloat("SfxVolume", out float sfxVolume);
-            PlayerPrefs.SetFloat("SfxVolume", sfxVolume);
-            
-            audioMixer.GetFloat("UiVolume", out float uiVolume);
-            PlayerPrefs.SetFloat("UiVolume", uiVolume);
+            PlayerPrefs.SetFloat("MasterVolume", masterSlider.value);
+            PlayerPrefs.SetFloat("MusicVolume",  musicSlider.value);
+            PlayerPrefs.SetFloat("SfxVolume",    sfxSlider.value);
+            PlayerPrefs.SetFloat("UiVolume",     uiSlider.value);
+            PlayerPrefs.Save();
         }
-        
+
         public void LoadVolume()
         {
-            masterSlider.value = PlayerPrefs.GetFloat("MasterVolume");
-            uiSlider.value = PlayerPrefs.GetFloat("UiVolume");
-            musicSlider.value = PlayerPrefs.GetFloat("MusicVolume");
-            sfxSlider.value = PlayerPrefs.GetFloat("SfxVolume");
+            masterSlider.value = PlayerPrefs.GetFloat("MasterVolume", 1f);
+            musicSlider.value  = PlayerPrefs.GetFloat("MusicVolume",  1f);
+            sfxSlider.value    = PlayerPrefs.GetFloat("SfxVolume",    1f);
+            uiSlider.value     = PlayerPrefs.GetFloat("UiVolume",     1f);
+        }
+
+        private void ApplyAllVolumes()
+        {
+            UpdateMasterVolume(masterSlider.value);
+            UpdateMusicVolume(musicSlider.value);
+            UpdateSfxVolume(sfxSlider.value);
+            UpdateUiVolume(uiSlider.value);
         }
     }
 }
