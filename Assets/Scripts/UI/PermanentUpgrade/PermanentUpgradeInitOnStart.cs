@@ -158,10 +158,12 @@ namespace UI.PermanentUpgrade
                 if (click)
                 {
                     NotificationManager.Instance?.PlayNotification("notify_warnrb", "Upgrade Successfully!", 2f);
+                    
                 }
                 else
                 {
                     NotificationManager.Instance?.PlayNotification("notify_warnrb", "Not enough coin!", 2f);
+                    
                 }
                 SaveAndRefresh();
             });
