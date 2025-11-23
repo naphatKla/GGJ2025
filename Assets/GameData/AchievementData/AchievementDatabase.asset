@@ -24,10 +24,8 @@ MonoBehaviour:
   entries:
   - id: achivement_juniorofficers
     displayName: Junior Officers
-    description: 'Win one game in survival mode
-
-      Reward: Unlock "Challenge
-      mode"'
+    description: "Win <color=#5ea0ed><b>Survival mode</b></color>\r\nReward: Unlock
+      \"Challenge mode\"\r"
     icon: {fileID: 21300000, guid: 29ee7a0ab6e65ab4abf5c9cf721f6021, type: 3}
     triggerType: 1
     logic: 0
@@ -68,12 +66,126 @@ MonoBehaviour:
       nanoAmount: 0
       refId: challenge_thirsty
       permanentType: 0
+  - id: achievement_stilllearning
+    displayName: Still learning
+    description: "<color=#ffce00><b>First dead</b></color> of the game\r\nReward:
+      \"Pick up range\" upgrade form shop\r"
+    icon: {fileID: 21300000, guid: 28abdb1ebbc060e4b9d7fbe72e26335a, type: 3}
+    triggerType: 0
+    logic: 0
+    conditions:
+    - type: 11
+      mapId: 
+      challengeId: 
+      minHighestScore: 0
+      minTotalDamage: 0
+      enemyId: 
+      minKillAtLeast: 0
+      challengeAtLeast: 0
+      minParryAmountOnRun: 0
+      winAtLeast: 0
+      takeHitFromId: 
+      takeHitLessThan: 0
+      healAtLeastOnRun: 0
+      diedFromId: '*'
+      diedAtLeast: 1
+    rewards:
+    - type: 3
+      nanoAmount: 0
+      refId: 
+      permanentType: 8
+  - id: achievement_draculasurviving
+    displayName: Dracula Surviving
+    description: "Heal <color=#acda4d><b>500 health</b></color> in one run\r\nReward:
+      \"Life steal\" upgrade form shop\r"
+    icon: {fileID: 21300000, guid: 35dfbd2649fcece4892a4d320d33d811, type: 3}
+    triggerType: 0
+    logic: 0
+    conditions:
+    - type: 10
+      mapId: 
+      challengeId: 
+      minHighestScore: 0
+      minTotalDamage: 0
+      enemyId: 
+      minKillAtLeast: 0
+      challengeAtLeast: 0
+      minParryAmountOnRun: 0
+      winAtLeast: 0
+      takeHitFromId: 
+      takeHitLessThan: 0
+      healAtLeastOnRun: 500
+      diedFromId: 
+      diedAtLeast: 0
+    rewards:
+    - type: 3
+      nanoAmount: 0
+      refId: 
+      permanentType: 5
+    - type: 3
+      nanoAmount: 0
+      refId: 
+      permanentType: 6
+  - id: achievement_plasticfang
+    displayName: Plastic Fang
+    description: "Deal <color=#ffce00><b>1,000,000</b></color> total damage\r\nReward:
+      Unlock \"Plastic Fang\" in challenge option\r"
+    icon: {fileID: 21300000, guid: 6d5a6423a9844d24bafb5e98f0bdca20, type: 3}
+    triggerType: 0
+    logic: 0
+    conditions:
+    - type: 4
+      mapId: 
+      challengeId: 
+      minHighestScore: 0
+      minTotalDamage: 1000000
+      enemyId: 
+      minKillAtLeast: 0
+      challengeAtLeast: 0
+      minParryAmountOnRun: 0
+      winAtLeast: 0
+      takeHitFromId: 
+      takeHitLessThan: 0
+      healAtLeastOnRun: 0
+      diedFromId: 
+      diedAtLeast: 0
+    rewards:
+    - type: 2
+      nanoAmount: 0
+      refId: challenge_plasticfang
+      permanentType: 0
+  - id: achievement_iunderstanditnow
+    displayName: I understand it now
+    description: "Have <color=#ffce00><b>1,000,000</b></color> highest score\r\nReward:
+      \"EXP Multiply\" upgrade form shop\r"
+    icon: {fileID: 21300000, guid: a345b64b18b50a34291d962599b9e8bf, type: 3}
+    triggerType: 0
+    logic: 0
+    conditions:
+    - type: 3
+      mapId: 
+      challengeId: 
+      minHighestScore: 1000000
+      minTotalDamage: 0
+      enemyId: 
+      minKillAtLeast: 0
+      challengeAtLeast: 0
+      minParryAmountOnRun: 0
+      winAtLeast: 0
+      takeHitFromId: 
+      takeHitLessThan: 0
+      healAtLeastOnRun: 0
+      diedFromId: 
+      diedAtLeast: 0
+    rewards:
+    - type: 3
+      nanoAmount: 0
+      refId: 
+      permanentType: 7
   - id: achievement_arrogant
     displayName: Arrogant
-    description: 'Win anymode mode with "Ordinary" challenge enable
-
-      Reward:
-      Unlock "Arrogant" in challenge option'
+    description: "Win anymode mode with \"<color=#c38fe1><b>Ordinary</b></color>\"
+      challenge enable\r\nReward: Unlock \"Arrogant\" in challenge option\r"
     icon: {fileID: 21300000, guid: 9aa4f0f1f3a0f024ea3bc86c1f7b07e2, type: 3}
     triggerType: 1
     logic: 0
@@ -100,10 +212,8 @@ MonoBehaviour:
       permanentType: 0
   - id: achievement_junkgrades
     displayName: Junk grades
-    description: 'Win anymode mode with "Cheap materials" challenge enable
-
-      Reward:
-      Unlock "Junk grades" in challenge option'
+    description: "Win anymode mode with \"<color=#c38fe1><b>Cheap materials</b></color>\"
+      challenge enable\r\nReward: Unlock \"Junk grades\" in challenge option\r"
     icon: {fileID: 21300000, guid: cd6a83072e890d646810cd485170d118, type: 3}
     triggerType: 1
     logic: 0
@@ -128,21 +238,19 @@ MonoBehaviour:
       nanoAmount: 0
       refId: challenge_junkgrades
       permanentType: 0
-  - id: achievement_plasticfang
-    displayName: Plastic Fang
-    description: 'Deal 1,000,000 total damage
-
-      Reward: Unlock "Plastic Fang"
-      in challenge option'
-    icon: {fileID: 21300000, guid: 6d5a6423a9844d24bafb5e98f0bdca20, type: 3}
-    triggerType: 0
+  - id: achievement_homingfirecracker
+    displayName: Homing Firecracker
+    description: "Win anymode mode with \"<color=#c38fe1><b>Thirsty</b></color>\"
+      challenge enable\r\nReward: Unlock \"Homing Firecracker\" in challenge option\r"
+    icon: {fileID: 21300000, guid: ff79d7b81581d5b4cae1dc0925fb12a7, type: 3}
+    triggerType: 1
     logic: 0
     conditions:
-    - type: 4
+    - type: 2
       mapId: 
-      challengeId: 
+      challengeId: challenge_thirsty
       minHighestScore: 0
-      minTotalDamage: 1000000
+      minTotalDamage: 0
       enemyId: 
       minKillAtLeast: 0
       challengeAtLeast: 0
@@ -156,14 +264,12 @@ MonoBehaviour:
     rewards:
     - type: 2
       nanoAmount: 0
-      refId: challenge_plasticfang
+      refId: challenge_homingfirecracker
       permanentType: 0
   - id: achievement_tuff
     displayName: Tuff
-    description: 'Kill 300 Tank in total
-
-      Reward: Unlock "Tuff" in challenge
-      option'
+    description: "Kill <color=#ffce00><b>300 Tank</b></color> in total\r\nReward:
+      Unlock \"Tuff\" in challenge option\r"
     icon: {fileID: 21300000, guid: 00cc74e6e2455574ea47c27d961d3542, type: 3}
     triggerType: 0
     logic: 0
@@ -190,14 +296,9 @@ MonoBehaviour:
       permanentType: 0
   - id: achievement_deadshot
     displayName: Dead Shot
-    description: 'Kill 300 Piercer in total
-
-      Kill 300 Javilin in total
-
-      Kill
-      300 Comet in total
-
-      Reward: Unlock "Dead Shot" in challenge option'
+    description: "Kill <color=#ffce00><b>300 Piercer</b></color> in total\r\nKill
+      <color=#ffce00><b>300 Javelin</b></color> in total\r\nKill <color=#ffce00><b>300
+      Comet</b></color> in total\r\nReward: Unlock \"Dead Shot\" in challenge option\r"
     icon: {fileID: 21300000, guid: 803a0607540afcb41a396661aa686dc6, type: 3}
     triggerType: 0
     logic: 0
@@ -254,15 +355,16 @@ MonoBehaviour:
       permanentType: 0
   - id: achievement_energyoverflowing
     displayName: Energy Overflowing
-    description: 'Kill 300 Pressure in total
-
-      Kill 300 Firecracker in total
+    description: 'Kill <color=#ffce00><b>300 Pressure</b></color> in total
 
       Kill
-      300 Bomber in total
+      <color=#ffce00><b>300 Firecracker</b></color> in total
 
-      Reward: Unlock "Energy Overflowing" in challenge
-      option'
+      Kill <color=#ffce00><b>300
+      Bomber</b></color> in total
+
+      Reward: Unlock "Energy Overflowing" in
+      challenge option'
     icon: {fileID: 21300000, guid: 8580f3e0d2b338140a11b39d712fef17, type: 3}
     triggerType: 0
     logic: 0
@@ -319,10 +421,8 @@ MonoBehaviour:
       permanentType: 0
   - id: achievement_supersoldier
     displayName: Super Soldier
-    description: 'Kill 1000 Soldier in total
-
-      Reward: Unlock "Super Soldier"
-      in challenge option'
+    description: "Kill <color=#ffce00><b>1000 Soldier</b></color> in total\r\nReward:
+      Unlock \"Super Soldier\" in challenge option\r"
     icon: {fileID: 21300000, guid: 2542d964875b2db448516d37a1933747, type: 3}
     triggerType: 0
     logic: 0
@@ -349,10 +449,8 @@ MonoBehaviour:
       permanentType: 0
   - id: achievement_comet
     displayName: COMET
-    description: 'Kill 1000 Comet in total
-
-      Reward: Unlock "COMET" in challenge
-      option'
+    description: "Kill <color=#ffce00><b>1000 Comet</b></color> in total\r\nReward:
+      Unlock \"COMET\" in challenge option\r"
     icon: {fileID: 21300000, guid: a6981b697e50c524a8cb7055b05627fd, type: 3}
     triggerType: 0
     logic: 0
@@ -379,10 +477,8 @@ MonoBehaviour:
       permanentType: 0
   - id: achievement_nuclear
     displayName: Nuclear
-    description: 'Kill 200 Bomber in total
-
-      Reward: Unlock "Nuclear" in challenge
-      option'
+    description: "Kill <color=#ffce00><b>200 Bomber</b></color> in total\r\nReward:
+      Unlock \"Nuclear\" in challenge option\r"
     icon: {fileID: 21300000, guid: 18576444507ec144dae3eaf82cb5168a, type: 3}
     triggerType: 0
     logic: 0
@@ -409,10 +505,8 @@ MonoBehaviour:
       permanentType: 0
   - id: achievement_showstopper
     displayName: Show Stopper
-    description: 'Kill 200 Absorption in total
-
-      Reward: Unlock "Show Stopper"
-      in challenge option'
+    description: "Kill <color=#ffce00><b>200 Absorption</b></color> in total\r\nReward:
+      Unlock \"Show Stopper\" in challenge option\r"
     icon: {fileID: 21300000, guid: eb0ea07038daabe4ca88003e77eef9c1, type: 3}
     triggerType: 0
     logic: 0
@@ -437,42 +531,10 @@ MonoBehaviour:
       nanoAmount: 0
       refId: challenge_showstopper
       permanentType: 0
-  - id: achievement_homingfirecracker
-    displayName: Homing Firecracker
-    description: 'Win anymode mode with "Thirsty" challenge enable
-
-      Reward:
-      Unlock "Homing Firecracker" in challenge option'
-    icon: {fileID: 21300000, guid: ff79d7b81581d5b4cae1dc0925fb12a7, type: 3}
-    triggerType: 1
-    logic: 0
-    conditions:
-    - type: 2
-      mapId: 
-      challengeId: challenge_thirsty
-      minHighestScore: 0
-      minTotalDamage: 0
-      enemyId: 
-      minKillAtLeast: 0
-      challengeAtLeast: 0
-      minParryAmountOnRun: 0
-      winAtLeast: 0
-      takeHitFromId: 
-      takeHitLessThan: 0
-      healAtLeastOnRun: 0
-      diedFromId: 
-      diedAtLeast: 0
-    rewards:
-    - type: 2
-      nanoAmount: 0
-      refId: challenge_homingfirecracker
-      permanentType: 0
   - id: achievement_mutant
     displayName: Mutant
-    description: 'Win survivor mode 5 times in total
-
-      Reward: Unlock "Mutant"
-      in challenge option'
+    description: "Win <color=#5ea0ed><b>Survivor Mode</b></color> 5 times in total\r\nReward:
+      Unlock \"Mutant\" in challenge option\r"
     icon: {fileID: 21300000, guid: 1ae5bb98ca12c344a8e12e03345aa9ee, type: 3}
     triggerType: 1
     logic: 0
@@ -499,8 +561,9 @@ MonoBehaviour:
       permanentType: 0
   - id: achievement_newtype
     displayName: New Type
-    description: "Win survivor mode without getting hit by Mini-Boss \nReward: Unlock
-      \"New Type\" in challenge option"
+    description: "Win Survivor mode <color=#ff0065><b>without</b></color> getting
+      hit by <color=#bcb6ef><b>The Twin</b></color>\r\nReward: Unlock \"New Type\"
+      in challenge option\r"
     icon: {fileID: 21300000, guid: 0e21479ee1174334bb5ea4b31a2b85ce, type: 3}
     triggerType: 1
     logic: 0
@@ -525,106 +588,10 @@ MonoBehaviour:
       nanoAmount: 0
       refId: challenge_newtype
       permanentType: 0
-  - id: achievement_draculasurviving
-    displayName: Dracula Surviving
-    description: 'Heal over 500 health in one run
-
-      Reward: "Life steal" upgrade
-      form shop'
-    icon: {fileID: 21300000, guid: 35dfbd2649fcece4892a4d320d33d811, type: 3}
-    triggerType: 0
-    logic: 0
-    conditions:
-    - type: 10
-      mapId: 
-      challengeId: 
-      minHighestScore: 0
-      minTotalDamage: 0
-      enemyId: 
-      minKillAtLeast: 0
-      challengeAtLeast: 0
-      minParryAmountOnRun: 0
-      winAtLeast: 0
-      takeHitFromId: 
-      takeHitLessThan: 0
-      healAtLeastOnRun: 500
-      diedFromId: 
-      diedAtLeast: 0
-    rewards:
-    - type: 3
-      nanoAmount: 0
-      refId: 
-      permanentType: 5
-    - type: 3
-      nanoAmount: 0
-      refId: 
-      permanentType: 6
-  - id: achievement_iunderstanditnow
-    displayName: I understand it now
-    description: 'Have 1,000,000 highest score
-
-      Reward: "EXP Multiply" upgrade
-      form shop'
-    icon: {fileID: 21300000, guid: a345b64b18b50a34291d962599b9e8bf, type: 3}
-    triggerType: 0
-    logic: 0
-    conditions:
-    - type: 3
-      mapId: 
-      challengeId: 
-      minHighestScore: 1000000
-      minTotalDamage: 0
-      enemyId: 
-      minKillAtLeast: 0
-      challengeAtLeast: 0
-      minParryAmountOnRun: 0
-      winAtLeast: 0
-      takeHitFromId: 
-      takeHitLessThan: 0
-      healAtLeastOnRun: 0
-      diedFromId: 
-      diedAtLeast: 0
-    rewards:
-    - type: 3
-      nanoAmount: 0
-      refId: 
-      permanentType: 7
-  - id: achievement_stilllearning
-    displayName: Still learning
-    description: 'First dead of the game
-
-      Reward: "Pick up range" upgrade form
-      shop'
-    icon: {fileID: 21300000, guid: 28abdb1ebbc060e4b9d7fbe72e26335a, type: 3}
-    triggerType: 0
-    logic: 0
-    conditions:
-    - type: 11
-      mapId: 
-      challengeId: 
-      minHighestScore: 0
-      minTotalDamage: 0
-      enemyId: 
-      minKillAtLeast: 0
-      challengeAtLeast: 0
-      minParryAmountOnRun: 0
-      winAtLeast: 0
-      takeHitFromId: 
-      takeHitLessThan: 0
-      healAtLeastOnRun: 0
-      diedFromId: '*'
-      diedAtLeast: 1
-    rewards:
-    - type: 3
-      nanoAmount: 0
-      refId: 
-      permanentType: 8
   - id: achievement_bulkbeings
     displayName: Bulk Beings?
-    description: 'Died by "Black hole" event
-
-      Reward: "Invincible time after
-      hurt" upgrade form shop'
+    description: "Died by \"<color=#bcb6ef><b>Black hole</b></color>\" event\r\nReward:
+      \"Invincible time after hurt\" upgrade form shop\r"
     icon: {fileID: 21300000, guid: a46883cf73df6b54fa21641803e2969c, type: 3}
     triggerType: 0
     logic: 1
