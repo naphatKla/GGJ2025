@@ -33,9 +33,9 @@ RectTransform:
   - {fileID: 2029600716594177076}
   m_Father: {fileID: 2131444390342300520}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 50, y: -112.03}
   m_SizeDelta: {x: 450, y: 44}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7342988382212525241
@@ -1229,9 +1229,9 @@ RectTransform:
   - {fileID: 6312501528943204266}
   m_Father: {fileID: 2131444390342300520}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 50, y: -202.06}
   m_SizeDelta: {x: 450, y: 44}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3190099734422873711
@@ -1971,9 +1971,9 @@ RectTransform:
   - {fileID: 6881511337726429969}
   m_Father: {fileID: 2131444390342300520}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 50, y: -22}
   m_SizeDelta: {x: 450, y: 44}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8723012568695395808
@@ -2299,7 +2299,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 20}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &6454746979007243795
 MonoBehaviour:
@@ -2919,7 +2919,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: CHALLENGE
+  m_text: CHALLENGES
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 2dc7aeb059816db4192dac5f7d09c010, type: 2}
   m_sharedMaterial: {fileID: 3646004497337031475, guid: 2dc7aeb059816db4192dac5f7d09c010, type: 2}
@@ -2946,12 +2946,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 10
+  m_fontSize: 8
   m_fontSizeBase: 10
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 0
-  m_fontSizeMax: 0
+  m_fontSizeMax: 8
   m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -3832,7 +3832,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &29345685491112693
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3840,7 +3840,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7399190296715361903}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -5449,7 +5449,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -22.878475, y: -0.23208618}
+  m_AnchoredPosition: {x: -22.878479, y: 1.1940002}
   m_SizeDelta: {x: -94.24305, y: -48.2677}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &4596309078629678540
@@ -5480,11 +5480,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1531368808257812542, guid: ad4e87ace52b4c24498c50b08edbac62, type: 3}
       propertyPath: m_Name
-      value: StartButton
+      value: ClassButton
       objectReference: {fileID: 0}
     - target: {fileID: 5296442079026384039, guid: ad4e87ace52b4c24498c50b08edbac62, type: 3}
       propertyPath: m_text
-      value: START GAME
+      value: SELECT CLASS
+      objectReference: {fileID: 0}
+    - target: {fileID: 5296442079026384039, guid: ad4e87ace52b4c24498c50b08edbac62, type: 3}
+      propertyPath: m_fontSize
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 5296442079026384039, guid: ad4e87ace52b4c24498c50b08edbac62, type: 3}
+      propertyPath: m_fontSizeBase
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 6942113486017901861, guid: ad4e87ace52b4c24498c50b08edbac62, type: 3}
       propertyPath: m_Pivot.x
