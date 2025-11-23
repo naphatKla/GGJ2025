@@ -91176,6 +91176,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 183744, guid: 985af7adf503e204799fd6f1d0834792, type: 3}
     - target: {fileID: 4325708769183990312, guid: 9f8fafb85a87ce94ea2cb6ce5a5f43eb, type: 3}
+      propertyPath: useDefaultPrefab
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4325708769183990312, guid: 9f8fafb85a87ce94ea2cb6ce5a5f43eb, type: 3}
       propertyPath: defaultItemPrefab
       value: 
       objectReference: {fileID: 183744, guid: 7f85f3eb7945e0f468aea419188e7ec3, type: 3}
@@ -96146,7 +96150,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2259910066873706925, guid: 41be05087871bdc4db68a5bed5779727, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 80.10361
+      value: 80.103615
       objectReference: {fileID: 0}
     - target: {fileID: 2259910066873706925, guid: 41be05087871bdc4db68a5bed5779727, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -259740,11 +259744,11 @@ MonoBehaviour:
   m_Content: {fileID: 98158587}
   m_Horizontal: 0
   m_Vertical: 1
-  m_MovementType: 1
+  m_MovementType: 2
   m_Elasticity: 0.1
   m_Inertia: 1
   m_DecelerationRate: 0.135
-  m_ScrollSensitivity: 1
+  m_ScrollSensitivity: 0.05
   m_Viewport: {fileID: 1406103479}
   m_HorizontalScrollbar: {fileID: 0}
   m_VerticalScrollbar: {fileID: 98310555}

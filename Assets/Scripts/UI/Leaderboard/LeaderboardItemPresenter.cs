@@ -36,6 +36,7 @@ namespace UI.Leaderboard
         [Header("Options")]
         public int maxEntries = 100;
         public bool sortDescending = true;
+        public bool useDefaultPrefab = true;
 
         [Header("Networking")]
         public float requestTimeoutSeconds = 15f;
@@ -133,6 +134,7 @@ namespace UI.Leaderboard
                     if (currentRankText)
                         currentRankText.text = (myRank > 0) ? $"YOUR RANK #{myRank}" : $"NOT IN TOP {maxEntries}";
                     success = true;
+                    _ls.ScrollToCell(0,1000);
                 }
                 catch (Exception ex)
                 {
@@ -286,6 +288,7 @@ namespace UI.Leaderboard
         // ---------- Helpers ----------
         private ItemPrefabKind GetKindForIndex(int index)
         {
+            if (useDefaultPrefab) return ItemPrefabKind.Default;
             if (index == 0 && top1ItemPrefab) return ItemPrefabKind.Top1;
             if (index == 1 && top2ItemPrefab) return ItemPrefabKind.Top2;
             if (index == 2 && top3ItemPrefab) return ItemPrefabKind.Top3;
@@ -296,6 +299,7 @@ namespace UI.Leaderboard
         {
             switch (kind)
             {
+                case ItemPrefabKind.Default: return defaultItemPrefab;
                 case ItemPrefabKind.Top1:   return top1ItemPrefab;
                 case ItemPrefabKind.Top2:   return top2ItemPrefab;
                 case ItemPrefabKind.Top3:   return top3ItemPrefab;
