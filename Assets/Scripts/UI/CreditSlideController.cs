@@ -1,4 +1,5 @@
 using System.Collections;
+using MoreMountains.Feedbacks;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -21,7 +22,7 @@ public class CreditSlideController : MonoBehaviour
     [SerializeField] private bool  holdAnyKeyAlsoWorks = true;
 
     [Header("Return")]
-    [SerializeField] private string mainSceneName = "Main";
+    [SerializeField] private MMF_Player mainMenuLoader;
 
     [Header("UI")]
     [SerializeField] private string hintMessage = "Hold to speed up...";
@@ -53,6 +54,9 @@ public class CreditSlideController : MonoBehaviour
         float t = 0f;
         while (t < duration && !_returning)
         {
+            if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.Space))
+                break;
+            
             float speedMul = IsHoldActive() ? holdSpeedMultiplier : 1f;
             t += Time.deltaTime * Mathf.Max(0.01f, speedMul);
 
@@ -116,6 +120,6 @@ public class CreditSlideController : MonoBehaviour
     {
         if (_returning) return;
         _returning = true;
-        SceneManager.LoadScene(mainSceneName);
+        mainMenuLoader.PlayFeedbacks();
     }
 }
