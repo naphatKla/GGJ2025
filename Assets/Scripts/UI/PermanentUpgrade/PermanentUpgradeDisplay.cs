@@ -26,7 +26,7 @@ namespace UI.PermanentUpgrade
                 var nextLevel = currentLevel + 1;
 
                 string t = currentLevel >= pEntry.MaxLevel
-                    ? pEntry.descriptionUpgrade
+                    ? "(MAX) " + pEntry.descriptionUpgrade
                     : descriptionText.text =
                         $"+{pEntry.levels[nextLevel].value}{pEntry.unit} {pEntry.descriptionUpgrade}";
                 descriptionText.text = t;
