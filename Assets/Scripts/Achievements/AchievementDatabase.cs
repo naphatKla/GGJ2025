@@ -61,13 +61,13 @@ namespace Achievements
     public class AchievementConditionConfig
     {
         public AchievementConditionType type;
-        
+
         [ShowIf(nameof(type), AchievementConditionType.MapIdEquals)]
         public string mapId;
-        
+
         [ShowIf(nameof(type), AchievementConditionType.ChallengeIdEquals)]
         public string challengeId;
-        
+
         [ShowIf(nameof(type), AchievementConditionType.HighestScoreAtLeast)]
         public int minHighestScore;
 
@@ -76,7 +76,7 @@ namespace Achievements
 
         [ShowIf(nameof(type), AchievementConditionType.TotalKillAtLeast)]
         public string enemyId;
-        
+
         [ShowIf(nameof(type), AchievementConditionType.TotalKillAtLeast)]
         public int minKillAtLeast;
 
@@ -91,7 +91,7 @@ namespace Achievements
 
         [ShowIf(nameof(type), AchievementConditionType.TakeHitLessThan)]
         public string takeHitFromId;
-        
+
         [ShowIf(nameof(type), AchievementConditionType.TakeHitLessThan)]
         public int takeHitLessThan;
 
@@ -100,30 +100,30 @@ namespace Achievements
 
         [ShowIf(nameof(type), AchievementConditionType.DiedAtLeast)]
         public string diedFromId;
-        
+
         [ShowIf(nameof(type), AchievementConditionType.DiedAtLeast)]
         public int diedAtLeast;
-        
+
         // แสดงสรุปให้ดูอ่านง่าย (ไม่บังคับใช้ก็ได้)
         [ShowInInspector, ReadOnly]
         private string Summary =>
             type switch
             {
-                AchievementConditionType.None                    => "(Always true)",
-                AchievementConditionType.MapIdEquals             => $"Map = {mapId}",
-                AchievementConditionType.ChallengeIdEquals       => $"Challenge = {challengeId}",
-                AchievementConditionType.HighestScoreAtLeast     => $"HighestScore ≥ {minHighestScore}",
-                AchievementConditionType.TotalDamageAtLeast      => $"TotalDamage ≥ {minTotalDamage}",
-                AchievementConditionType.TotalKillAtLeast        => $"TotalKill {enemyId} ≥ {minKillAtLeast}",
-                AchievementConditionType.ChallengeAtLeast        => $"Challenge >= {challengeAtLeast}",
-                AchievementConditionType.ParryAtLeast            => $"Parry >= {minParryAmountOnRun}",
-                AchievementConditionType.WinAtLeast              => $"Win >= {winAtLeast}",
-                AchievementConditionType.TakeHitLessThan         => $"TakeHit {takeHitFromId} < {takeHitLessThan}",
-                AchievementConditionType.HealAtLeast             => $"Heal >= {healAtLeastOnRun} On Run",
-                AchievementConditionType.DiedAtLeast             => $"Died from {diedFromId} <= {diedAtLeast}",
+                AchievementConditionType.None => "(Always true)",
+                AchievementConditionType.MapIdEquals => $"Map = {mapId}",
+                AchievementConditionType.ChallengeIdEquals => $"Challenge = {challengeId}",
+                AchievementConditionType.HighestScoreAtLeast => $"HighestScore ≥ {minHighestScore}",
+                AchievementConditionType.TotalDamageAtLeast => $"TotalDamage ≥ {minTotalDamage}",
+                AchievementConditionType.TotalKillAtLeast => $"TotalKill {enemyId} ≥ {minKillAtLeast}",
+                AchievementConditionType.ChallengeAtLeast => $"Challenge >= {challengeAtLeast}",
+                AchievementConditionType.ParryAtLeast => $"Parry >= {minParryAmountOnRun}",
+                AchievementConditionType.WinAtLeast => $"Win >= {winAtLeast}",
+                AchievementConditionType.TakeHitLessThan => $"TakeHit {takeHitFromId} < {takeHitLessThan}",
+                AchievementConditionType.HealAtLeast => $"Heal >= {healAtLeastOnRun} On Run",
+                AchievementConditionType.DiedAtLeast => $"Died from {diedFromId} >= {diedAtLeast}",
                 _ => ""
             };
-        
+
         /// <summary>
         /// สำหรับ UI: คืน current / target ถ้าเงื่อนไขนี้เป็นแบบตัวเลข (มี progression ได้)
         /// เช่น HighestScoreAtLeast, TotalDamageAtLeast
@@ -131,50 +131,50 @@ namespace Achievements
         public bool TryGetProgress(PlayerData p, out int current, out int target)
         {
             current = 0;
-            target  = 0;
+            target = 0;
             if (p == null) return false;
 
             switch (type)
             {
                 case AchievementConditionType.HighestScoreAtLeast:
-                    target  = minHighestScore;
+                    target = minHighestScore;
                     current = p.HighestScore;
                     current = Mathf.Min(current, target);
                     return true;
 
                 case AchievementConditionType.TotalDamageAtLeast:
-                    target  = minTotalDamage;
+                    target = minTotalDamage;
                     current = p.TotalDamageDeal;
                     current = Mathf.Min(current, target);
                     return true;
-                
+
                 case AchievementConditionType.TotalKillAtLeast:
                     target = minKillAtLeast;
                     p.totalKillDictionary.TryGetValue(enemyId, out current);
                     current = Mathf.Min(current, target);
                     return true;
-                
+
                 case AchievementConditionType.ParryAtLeast:
                     target = minParryAmountOnRun;
                     current = Mathf.Min(p.HighestParryUseOnRun, target);
                     return true;
-                
+
                 case AchievementConditionType.WinAtLeast:
                     target = winAtLeast;
                     current = Mathf.Min(p.MapStats.Sum(w => w.Value.WinAmount), target);
                     return true;
-                
+
                 case AchievementConditionType.DiedAtLeast:
                     target = diedAtLeast;
-                    
+
                     if (diedFromId == "*")
                         current = p.totalDiedDictionary.Sum(e => e.Value);
-                    else 
+                    else
                         p.totalDiedDictionary.TryGetValue(diedFromId, out current);
-                    
+
                     current = Mathf.Min(current, target);
                     return true;
-                
+
                 default:
                     return false;
             }
@@ -190,9 +190,9 @@ namespace Achievements
         private string Summary =>
             type switch
             {
-                AchievementRewardType.NanoCoin               => $"+{nanoAmount} Nano",
-                AchievementRewardType.UnlockMap              => $"Unlock Map: {refId}",
-                AchievementRewardType.UnlockChallenge        => $"Unlock Challenge: {refId}",
+                AchievementRewardType.NanoCoin => $"+{nanoAmount} Nano",
+                AchievementRewardType.UnlockMap => $"Unlock Map: {refId}",
+                AchievementRewardType.UnlockChallenge => $"Unlock Challenge: {refId}",
                 AchievementRewardType.UnlockPermanentUpgrade => $"Unlock Perm: {permanentType}",
                 _ => ""
             };
@@ -212,57 +212,66 @@ namespace Achievements
     [Serializable]
     public class AchievementEntry
     {
-        [FoldoutGroup("$displayName")]
-        public string id;
-        [FoldoutGroup("$displayName")]
-        public string displayName;
+        [FoldoutGroup("$displayName")] public string id;
+        [FoldoutGroup("$displayName")] public string displayName;
+
         [FoldoutGroup("$displayName")] [TextArea]
         public string description;
-        [FoldoutGroup("$displayName")]
-        public Sprite icon;
-        [FoldoutGroup("$displayName")]
-        public AchievementTriggerType triggerType;
-        
-        [FoldoutGroup("$displayName")]
-        public AchievementConditionLogic logic = AchievementConditionLogic.And;
-        [FoldoutGroup("$displayName")]
-        public List<AchievementConditionConfig> conditions = new();
-        [FoldoutGroup("$displayName")]
-        public List<AchievementRewardConfig> rewards = new();
-        
+
+        [FoldoutGroup("$displayName")] public Sprite icon;
+        [FoldoutGroup("$displayName")] public AchievementTriggerType triggerType;
+
+        [FoldoutGroup("$displayName")] public AchievementConditionLogic logic = AchievementConditionLogic.And;
+        [FoldoutGroup("$displayName")] public List<AchievementConditionConfig> conditions = new();
+        [FoldoutGroup("$displayName")] public List<AchievementRewardConfig> rewards = new();
+
         public bool TryGetMainProgress(PlayerData p, out int current, out int target)
         {
             current = 0;
-            target  = 0;
+            target = 0;
 
-            if (conditions == null || conditions.Count == 0 || p == null)
+            if (p == null)
                 return false;
 
-            // รวบรวมทุก condition ที่มี progress
-            var tmpCurrents = new List<int>();
-            var tmpTargets  = new List<int>();
+            // ป้องกัน null
+            conditions ??= new List<AchievementConditionConfig>();
 
+            var tmpCurrents = new List<int>();
+            var tmpTargets = new List<int>();
+
+            // ดึง progress แบบตัวเลขจากแต่ละ condition (เฉพาะที่มี case ใน TryGetProgress)
             foreach (var c in conditions)
             {
                 if (c == null) continue;
 
                 if (c.TryGetProgress(p, out var cCur, out var cTar))
                 {
-                    // กัน division by zero
-                    if (cTar <= 0) continue;
+                    if (cTar <= 0) continue; // กัน division by zero / เป้า 0
 
                     tmpCurrents.Add(cCur);
                     tmpTargets.Add(cTar);
                 }
             }
 
+            // ─────────────────────────────
+            // 🔸 กรณี "ไม่มี numeric progress เลย" → default เป็น 0/1 หรือ 1/1 ตามปลดล็อก
+            // ─────────────────────────────
             if (tmpTargets.Count == 0)
-                return false;
+            {
+                bool unlocked = p.UnlockedAchievements != null &&
+                                p.UnlockedAchievements.Contains(id);
 
+                current = unlocked ? 1 : 0; // ปลดแล้ว = 1/1, ยัง = 0/1
+                target = 1;
+                return true; // ให้ UI ใช้ค่า 0/1 นี้ได้เสมอ
+            }
+
+            // ─────────────────────────────
+            // 🔹 กรณีมี numeric progress อย่างน้อย 1 อัน → ใช้ logic เดิม
+            // ─────────────────────────────
             if (logic == AchievementConditionLogic.And)
             {
-                // AND: มองว่าต้องทำครบทุกเงื่อนไข
-                // วิธีง่าย: รวมเป็นเป้ารวม แล้วใช้ sum(current)/sum(target)
+                // AND → มองรวมว่าเป็นเป้าใหญ่ก้อนเดียว
                 int sumCur = 0;
                 int sumTar = 0;
                 for (int i = 0; i < tmpTargets.Count; i++)
@@ -271,14 +280,14 @@ namespace Achievements
                     sumTar += tmpTargets[i];
                 }
 
-                current = Mathf.Min(sumCur, sumTar); // กันไม่ให้เกินเป้า
-                target  = sumTar;
+                current = Mathf.Min(sumCur, sumTar);
+                target = sumTar;
                 return true;
             }
             else // AchievementConditionLogic.Or
             {
-                // OR: ผ่านอันไหนก็ได้ → ใช้ progress ที่ "ไกลสุด"
-                float bestRatio = 0f;
+                // OR → ใช้อันที่ progress เดินไกลสุด (ratio สูงสุด)
+                float bestRatio = -1f;
                 int bestCur = 0;
                 int bestTar = 0;
 
@@ -288,8 +297,8 @@ namespace Achievements
                     if (ratio > bestRatio)
                     {
                         bestRatio = ratio;
-                        bestCur   = tmpCurrents[i];
-                        bestTar   = tmpTargets[i];
+                        bestCur = tmpCurrents[i];
+                        bestTar = tmpTargets[i];
                     }
                 }
 
@@ -297,7 +306,7 @@ namespace Achievements
                     return false;
 
                 current = Mathf.Min(bestCur, bestTar);
-                target  = bestTar;
+                target = bestTar;
                 return true;
             }
         }

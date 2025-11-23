@@ -117,7 +117,7 @@ namespace Achievements
                     if (c.diedFromId == "*")
                         diedCount = p.totalDiedDictionary.Sum(e => e.Value);
                     else
-                        p.totalKillDictionary.TryGetValue(c.diedFromId, out diedCount);
+                        p.totalDiedDictionary.TryGetValue(c.diedFromId, out diedCount);
 
                     return diedCount >= c.diedAtLeast;
             }
