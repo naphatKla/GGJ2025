@@ -1,4 +1,3 @@
-using System;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.Audio;
@@ -16,7 +15,13 @@ namespace UI.SettingPanel
         public Slider sfxSlider;
         public Slider uiSlider;
 
-        const float MIN_DB = -80f;   // ค่าเงียบ
+        [Title("Volume Curve")]
+        [Tooltip("ยิ่งมาก ยิ่งหนักไปทางขวา (ละเอียดฝั่งดัง) น้อยกว่า 1 จะหนักซ้าย")]
+        [Range(0.3f, 3f)]
+        public float volumeCurve = 1;
+
+        // dB ต่ำสุด (ไม่ต้องเงียบสนิทเกินไป เดี๋ยวครึ่งนึงหายเลย)
+        const float MIN_DB = -80f;
 
         private void Start()
         {
@@ -35,42 +40,27 @@ namespace UI.SettingPanel
             SaveVolume();
         }
 
-        // ---------- ปรับจาก slider (0–1) เป็น dB ----------
+        // -------- จากสไลเดอร์ (0–1) → dB ด้วย curve --------
 
-        public void UpdateMasterVolume(float value01)
+        public void UpdateMasterVolume(float value01) => SetMixerVolume("MasterVolume", value01);
+        public void UpdateMusicVolume(float value01)  => SetMixerVolume("MusicVolume", value01);
+        public void UpdateSfxVolume(float value01)    => SetMixerVolume("SfxVolume", value01);
+        public void UpdateUiVolume(float value01)     => SetMixerVolume("UiVolume", value01);
+
+        private void SetMixerVolume(string parameter, float slider01)
         {
-            SetMixerVolume("MasterVolume", value01);
-        }
+            slider01 = Mathf.Clamp01(slider01);
 
-        public void UpdateMusicVolume(float value01)
-        {
-            SetMixerVolume("MusicVolume", value01);
-        }
+            // ปรับโค้งให้เปลี่ยนชัดขึ้นฝั่งขวา (แก้หนักซ้าย)
+            float t = Mathf.Pow(slider01, volumeCurve);   // volumeCurve > 1 = ละเอียดฝั่งดัง
 
-        public void UpdateSfxVolume(float value01)
-        {
-            SetMixerVolume("SfxVolume", value01);
-        }
-
-        public void UpdateUiVolume(float value01)
-        {
-            SetMixerVolume("UiVolume", value01);
-        }
-
-        private void SetMixerVolume(string parameter, float value01)
-        {
-            // value01 = 0..1 จาก slider
-            float dB;
-
-            if (value01 <= 0.0001f)
-                dB = MIN_DB;                 // เงียบ
-            else
-                dB = Mathf.Log10(value01) * 20f;  // แปลงเป็น dB
+            // แปลงเป็น dB แบบ linear ในช่วง MIN_DB → 0
+            float dB = Mathf.Lerp(MIN_DB, 0f, t);
 
             audioMixer.SetFloat(parameter, dB);
         }
 
-        // ---------- Save / Load ----------
+        // -------- Save / Load ค่า slider (0–1) --------
 
         public void SaveVolume()
         {
