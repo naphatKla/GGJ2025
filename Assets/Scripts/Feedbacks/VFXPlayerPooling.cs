@@ -85,19 +85,18 @@ namespace Feedbacks
                 if (followMode == FollowMode.Follow)
                     await FollowWhileAlive(instance);
                 else
-                    await UniTask.WaitWhile(() => instance.IsAlive(true) && instance, cancellationToken: token);
-
-                // If instance was destroyed during waiting
-                if (!instance) return;
-                
-                instance.Stop();
-                instance.gameObject.SetActive(false);
-                PoolingManager.Current?.Release(vfxPrefab.name, instance);
-                _currentVFXInstance = null;
+                    await UniTask.WaitWhile(
+                        () => instance && instance.IsAlive(true),
+                        cancellationToken: token
+                    );
             }
             catch (OperationCanceledException)
             {
                 // Canceled via disable/destroy
+            }
+            finally
+            {
+                ReleaseInstance(instance);
             }
         }
 
@@ -145,6 +144,22 @@ namespace Feedbacks
             var vfxInstance = Instantiate(vfxPrefab);
             vfxInstance.gameObject.SetActive(false);
             return vfxInstance;
+        }
+        
+        private void ReleaseInstance(ParticleSystem instance)
+        {
+            if (!instance) return; 
+
+            instance.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+            instance.gameObject.SetActive(false);
+
+            if (PoolingManager.Current != null)
+            {
+                PoolingManager.Current.Release(vfxPrefab.name, instance);
+            }
+
+            if (_currentVFXInstance == instance)
+                _currentVFXInstance = null;
         }
     }
 }
