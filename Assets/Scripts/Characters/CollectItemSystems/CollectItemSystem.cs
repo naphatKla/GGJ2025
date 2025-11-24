@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Characters.CollectItemSystems.CollectableItems;
 using Characters.Controllers;
 using Characters.FeedbackSystems;
@@ -26,6 +27,7 @@ namespace Characters.CollectItemSystems
         private float _pullItemRadius;
         private BaseController _owner;
         public BaseController Owner => _owner;
+        private Dictionary<GameObject, BaseCollectableItem> _itemsDict = new();
 
         #endregion
 
@@ -47,9 +49,30 @@ namespace Characters.CollectItemSystems
 
             foreach (Collider2D obj in objectsDetected)
             {
-                if (!obj.TryGetComponent(out BaseCollectableItem item)) continue;
+                if (!TryGetItemCache(obj.gameObject, out BaseCollectableItem item)) continue;
                 item.PullToTarget(transform, () => CollectItem(item));
             }
+        }
+
+        private bool TryGetItemCache(GameObject itemTarget, out BaseCollectableItem item)
+        {
+            item = null;
+
+            if (itemTarget == null)
+                return false;
+            
+            if (_itemsDict.TryGetValue(itemTarget, out item))
+            {
+                if (item)
+                    return true;
+                
+                _itemsDict.Remove(itemTarget);
+                item = null;
+            }
+
+            if (!itemTarget.TryGetComponent(out item)) return false;
+            _itemsDict[itemTarget] = item;
+            return true;
         }
         
         #endregion

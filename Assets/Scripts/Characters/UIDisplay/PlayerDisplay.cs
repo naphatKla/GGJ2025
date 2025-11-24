@@ -304,9 +304,13 @@ namespace Characters.UIDisplay
 
         #region Combat UI
 
+        private Dictionary<GameObject, CanvasGroup> _worldTextDictCaches = new();
+        
         private TextMeshProUGUI CreateDamageText()
         {
-            return Instantiate(worldTextUIPrefab);
+            var obj = Instantiate(worldTextUIPrefab);
+            _worldTextDictCaches.TryAdd(obj.gameObject, obj.gameObject.AddComponent<CanvasGroup>());
+            return obj;
         }
         
         private void UpdateDamageText(DamageData damageData)
@@ -323,9 +327,7 @@ namespace Characters.UIDisplay
             textInstance.color = Color.white;
 
             // CanvasGroup for fade
-            var canvasGroup = textInstance.GetComponent<CanvasGroup>();
-            if (canvasGroup == null)
-                canvasGroup = textInstance.gameObject.AddComponent<CanvasGroup>();
+            var canvasGroup = _worldTextDictCaches[textInstance.gameObject];
             canvasGroup.alpha = 1;
 
             bool isCrit = damageData.IsCritical;
@@ -378,9 +380,7 @@ namespace Characters.UIDisplay
             textInstance.text = healthChange + " HP";
             textInstance.color = Color.red;
 
-            var canvasGroup = textInstance.GetComponent<CanvasGroup>();
-            if (canvasGroup == null)
-                canvasGroup = textInstance.gameObject.AddComponent<CanvasGroup>();
+            var canvasGroup = _worldTextDictCaches[textInstance.gameObject];
             canvasGroup.alpha = 1;
 
             if (healthChange >= 0)
@@ -595,7 +595,9 @@ namespace Characters.UIDisplay
         
         private TextMeshProUGUI CreateParryFeedbackText()
         {
-            return Instantiate(worldTextUIParryFeedbackPrefab);
+            var obj = Instantiate(worldTextUIParryFeedbackPrefab);
+            _worldTextDictCaches.TryAdd(obj.gameObject, obj.gameObject.AddComponent<CanvasGroup>());
+            return obj;
         }
         
         public void UpdateParrySuccessFeedbackText(string text)
@@ -611,9 +613,7 @@ namespace Characters.UIDisplay
             textInstance.color = Color.white;
 
             // CanvasGroup for fade
-            var canvasGroup = textInstance.GetComponent<CanvasGroup>();
-            if (canvasGroup == null)
-                canvasGroup = textInstance.gameObject.AddComponent<CanvasGroup>();
+            var canvasGroup = _worldTextDictCaches[textInstance.gameObject];
             canvasGroup.alpha = 1;
             tf.SetAsLastSibling();
 
@@ -702,7 +702,9 @@ namespace Characters.UIDisplay
         
         private TextMeshProUGUI CreateFeedbackText()
         {
-            return Instantiate(worldTextUISkillFeedbackPrefab);
+            var obj = Instantiate(worldTextUISkillFeedbackPrefab);
+            _worldTextDictCaches.TryAdd(obj.gameObject, obj.gameObject.AddComponent<CanvasGroup>());
+            return obj;
         }
         
         private void UpdateFeedbackText(BaseSkillDataSo skillDataSo)
@@ -721,9 +723,7 @@ namespace Characters.UIDisplay
             textInstance.color = Color.white;
 
             // CanvasGroup for fade
-            var canvasGroup = textInstance.GetComponent<CanvasGroup>();
-            if (canvasGroup == null)
-                canvasGroup = textInstance.gameObject.AddComponent<CanvasGroup>();
+            var canvasGroup = _worldTextDictCaches[textInstance.gameObject];
             canvasGroup.alpha = 1;
             tf.SetAsLastSibling();
 
