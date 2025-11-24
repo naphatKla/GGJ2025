@@ -348,7 +348,7 @@ namespace Characters.CombatSystems
                     continue;
 
                 // 2) ฝั่ง target ต้องมี DamageOnTouch เปิดอยู่ด้วย
-                var targetDoT = target.GetComponent<DamageOnTouch>();
+                CombatManager.TryGetDamageOnTouchFromCache(target.gameObject, out var targetDoT);
                 if (targetDoT == null || !targetDoT.IsEnableDamage)
                     continue;
 

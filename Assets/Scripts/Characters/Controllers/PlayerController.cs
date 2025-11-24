@@ -12,6 +12,7 @@ using Characters.ScoreSystems;
 using Characters.SkillSystems;
 using Characters.SO.CharacterDataSO;
 using Characters.UIDisplay;
+using Manager;
 using UI;
 using UnityEngine;
 
@@ -60,6 +61,7 @@ namespace Characters.Controllers
         {
             if (Instance) return;
             Instance = this;
+            CombatManager.ClearCache();
         }
 
         public override void AssignCharacterData(BaseCharacterDataSo data)

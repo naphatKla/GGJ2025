@@ -36,6 +36,7 @@ namespace Manager
     {
         // ----- Component Caches -----
         private static readonly Dictionary<GameObject, BaseController> _characterCaches = new();
+        private static readonly Dictionary<GameObject, DamageOnTouch> _damageOnTouches = new();
 
         /// <summary>
         /// Applies damage from an attacker GameObject to a target GameObject.
@@ -50,14 +51,8 @@ namespace Manager
             float baseSkillDamage, float multiplier, float additionalCriRate, float additionCriDamge,
             float lifeStealPercent, float lifeStealEffective)
         {
-            if (!_characterCaches.ContainsKey(target))
-                _characterCaches.Add(target, target.GetComponent<BaseController>());
-
-            if (!_characterCaches.ContainsKey(attacker))
-                _characterCaches.Add(attacker, attacker.GetComponent<BaseController>());
-
-            var targetController = _characterCaches[target];
-            var attackerController = _characterCaches[attacker];
+            TryGetCharacterFromCache(target, out var targetController);
+            TryGetCharacterFromCache(attacker, out var attackerController);
             
             var damageData = attackerController.CombatSystem.CalculateSkillDamageDeal(target, hitPosition,
                 baseSkillDamage, multiplier, additionalCriRate, additionCriDamge, lifeStealPercent, lifeStealEffective);
@@ -80,10 +75,7 @@ namespace Manager
 
         public static void ApplyRawDamageTo(GameObject target, GameObject objectAttacker, string attackerId, float damage)
         {
-            if (!_characterCaches.ContainsKey(target))
-                _characterCaches.Add(target, target.GetComponent<BaseController>());
-
-            var targetController = _characterCaches[target];
+            TryGetCharacterFromCache(target, out var targetController);
             
             var hitInfo = new HealthSystem.HitInfo
             {
@@ -96,6 +88,48 @@ namespace Manager
             targetController.HealthSystem.TakeDamage(hitInfo);
         }
 
+        public static bool TryGetCharacterFromCache(GameObject target, out BaseController controller)
+        {
+            controller = null;
+
+            if (target == null)
+                return false;
+            
+            if (_characterCaches.TryGetValue(target, out controller))
+            {
+                if (controller)
+                    return true;
+                
+                _characterCaches.Remove(target);
+                controller = null;
+            }
+
+            if (!target.TryGetComponent(out controller)) return false;
+            _characterCaches[target] = controller;
+            return true;
+        }
+        
+        public static bool TryGetDamageOnTouchFromCache(GameObject target, out DamageOnTouch damageOnTouch)
+        {
+            damageOnTouch = null;
+
+            if (target == null)
+                return false;
+            
+            if (_damageOnTouches.TryGetValue(target, out damageOnTouch))
+            {
+                if (damageOnTouch)
+                    return true;
+                
+                _damageOnTouches.Remove(target);
+                damageOnTouch = null;
+            }
+
+            if (!target.TryGetComponent(out damageOnTouch)) return false;
+            _damageOnTouches[target] = damageOnTouch;
+            return true;
+        }
+        
         public static void ClearCache()
         {
             _characterCaches.Clear();
