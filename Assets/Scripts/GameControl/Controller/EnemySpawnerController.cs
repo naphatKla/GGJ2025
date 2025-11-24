@@ -68,6 +68,17 @@ namespace GameControl.Controller
                 controller.AssignCharacterData(option.enemyData);
             else 
                 controller.AssignCharacterData(controller.CharacterData);
+            
+            controller.HealthSystem.OnDead += () =>
+            {
+                if (controller.CharacterData is EnemyDataSo enemyData)
+                {
+                    int totalExp = Mathf.CeilToInt(enemyData.ExpDrop * _anergyDropMultiplier);
+                    _state.ItemSpawnerController.SpawnExpItem(totalExp, obj.transform.position);
+                }
+                SpawnerStateController.Instance.CurrentEnemyPoint += option.EnemyPoint;
+            };
+            
             return controller;
         }
         
@@ -80,12 +91,7 @@ namespace GameControl.Controller
         public void ActionOnRelease(EnemyController obj, MapDataSO.EnemyOption option)
         {
             DOTween.Kill(obj.transform, complete: true);
-            if (obj.CharacterData is EnemyDataSo enemyData)
-            {
-                int totalExp = Mathf.CeilToInt(enemyData.ExpDrop * _anergyDropMultiplier);
-                _state.ItemSpawnerController.SpawnExpItem(totalExp, obj.transform.position);
-            }
-
+            
             if (obj.CountedByMax)
             {
                 option.activeCount = Mathf.Max(0, option.activeCount - 1);
@@ -94,7 +100,6 @@ namespace GameControl.Controller
             obj.gameObject.SetActive(false);
             obj.FeedbackSystem.ShowTrail(false);
             obj.transform.position = SpawnUtility.RandomSpawnAroundPlayerCamera(_mainCamera, 10f);
-            SpawnerStateController.Instance.CurrentEnemyPoint += option.EnemyPoint;
             _activeEnemy.Remove(obj);
         }
 
@@ -256,6 +261,12 @@ namespace GameControl.Controller
                     obj => ActionOnDestroy(obj, cloned),
                     false
                 );
+
+                for (int i = 0; i < data.prewarmCount; i++)
+                {
+                    var objPrewarm = CreateFunc(cloned);
+                    _enemyPools[cloned.id].Release(objPrewarm);
+                }
             }
         }
         public void ReloadOptions(List<MapDataSO.EnemyOption> newOptions)

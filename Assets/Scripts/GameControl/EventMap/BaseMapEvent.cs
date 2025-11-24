@@ -13,6 +13,7 @@ namespace GameControl.EventMap
     {
         [ReadOnly][ShowInInspector] private float _overAllTime;
         [SerializeField] protected string mapEventId;
+        public int prewarmCount;
         public float deletetime;
         public float previewDuration;
         public float delayBeforePerformAfterPreview;

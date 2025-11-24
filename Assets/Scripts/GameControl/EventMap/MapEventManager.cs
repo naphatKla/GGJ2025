@@ -185,6 +185,12 @@ namespace GameControl.EventMap
                 false, 10, 100
             );
 
+            for (int i = 0; i < prefab.prewarmCount; i++)
+            {
+                var obj = Instantiate(prefab, eventMapParent);
+                pool.Release(obj);
+            }
+
             _poolDict[prefab] = pool;
             return pool;
         }

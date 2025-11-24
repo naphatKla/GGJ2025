@@ -15,6 +15,8 @@ namespace GameControl.GameState
         {
             UIManager.Instance.OpenTutorialPanel();
             SpawnerStateController.Instance.ClearEnemy();
+            SpawnerStateController.Instance.ClearItem();
+            SpawnerStateController.Instance.SetupMapAndEnemy().Forget();
         }
 
         public void Update(GameStateController controller) { }

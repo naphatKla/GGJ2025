@@ -25,6 +25,8 @@ namespace GameControl.SO
             public string displayName;
             [FoldoutGroup("$id")]
             public EnemyController enemyController;
+            [FoldoutGroup("$id")] 
+            public int prewarmCount;
             
             [FoldoutGroup("$id")] [Title("Spawn Point")]
             [Tooltip("Start of spawn point")]
@@ -239,6 +241,8 @@ namespace GameControl.SO
             public string id;
             [FoldoutGroup("$id")]
             public BaseCollectableItem itemObj;
+            [FoldoutGroup("$id")] 
+            public int prewarmCount;
           
             [FoldoutGroup("$id")][Title("Chance Setting")]
             [Range(0, 100)] public float chance = 100;

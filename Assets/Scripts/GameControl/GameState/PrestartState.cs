@@ -21,9 +21,6 @@ namespace GameControl.GameState
             SpawnerStateController.Instance.SetState(new SpawnerState.StopState());
             CheckMode(controller);
             GameTimer.Instance.StopTimer();
-            SpawnerStateController.Instance.ClearEnemy();
-            SpawnerStateController.Instance.ClearItem();
-            SpawnerStateController.Instance.SetupMapAndEnemy().Forget();
             controller.gameResult = EndResult.None;
             
             if (!PlayerController.Instance.gameObject.activeInHierarchy) PlayerController.Instance.gameObject.SetActive(true);
