@@ -7,6 +7,9 @@ using System.IO;
 using PermanentUpgrade;
 using Debug = UnityEngine.Debug;
 using Input = UnityEngine.Input;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace Player
 {
@@ -25,6 +28,7 @@ namespace Player
         private Rect _windowRect = new Rect(20, 20, 440, 400);
         private GUIStyle _hdrStyle;
         private GUIStyle _kvStyle;
+        private bool _showProfileList = false;
 
         public PermanentUpgradeConfig PermanentConfig => debugUpgradeConfig;
         public Action OnPermanentUpgrade;
@@ -367,8 +371,13 @@ namespace Player
                 var root = PlayerSaveSystem.Instance.GetRootPath();
                 OpenFolderWindows(root);
             }
+            
+            if (GUILayout.Button("Load JSON Profile..."))
+            {
+                BrowseAndLoadJsonProfile();
+            }
             GUILayout.EndHorizontal();
-
+            
             GUILayout.EndScrollView();
             GUILayout.EndVertical();
             GUI.DragWindow(new Rect(0, 0, 10000, 18));
@@ -401,6 +410,32 @@ namespace Player
                 return "-";
             }
         }
+        
+        private void BrowseAndLoadJsonProfile()
+        {
+#if UNITY_EDITOR
+            var root = PlayerSaveSystem.Instance.GetRootPath();
+            if (string.IsNullOrEmpty(root))
+                root = Application.persistentDataPath;
+            string path = EditorUtility.OpenFilePanel("Select profile JSON", root, "json");
+            if (string.IsNullOrEmpty(path))
+                return;
+
+            var data = PlayerSaveSystem.Instance.ReadFromPath(path, migrate: true);
+            if (data != null)
+            {
+                SetCurrent(data);
+                Debug.Log($"[ActiveProfileService] Loaded profile from JSON: {path}");
+            }
+            else
+            {
+                Debug.LogWarning($"[ActiveProfileService] Failed to load profile from JSON: {path}");
+            }
+#else
+    Debug.LogWarning("[ActiveProfileService] BrowseAndLoadJsonProfile is Editor-only.");
+#endif
+        }
+
 
         private void DrawKV(string k, string v)
         {

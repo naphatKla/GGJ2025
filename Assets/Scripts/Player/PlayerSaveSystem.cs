@@ -12,7 +12,6 @@ namespace Player
 {
     public class PlayerSaveSystem : AutoCreateSingleton<PlayerSaveSystem>
     {
-        private int SchemaVersion = 1;
         //PersistentDataPath
         [SerializeField] private string folderName = "PlayerSaves";
         //Serializer (Json.NET)
@@ -66,7 +65,7 @@ namespace Player
             var id = Guid.NewGuid().ToString("N");
             var data = new PlayerData
             {
-                SchemaVersion = SchemaVersion,
+                SchemaVersion = PlayerData.CURRENT_SCHEMA_VERSION,
                 ProfileId = id,
                 DisplayName = displayName ?? "Player",
                 LastPlayedUnix = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
@@ -101,7 +100,7 @@ namespace Player
                 return;
             }
 
-            data.SchemaVersion = SchemaVersion;
+            data.SchemaVersion = PlayerData.CURRENT_SCHEMA_VERSION;
             EnsureRootExists();
             data.LastPlayedUnix = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 
@@ -122,7 +121,21 @@ namespace Player
             {
                 string json = File.ReadAllText(path, Encoding.UTF8);
                 var data = JsonConvert.DeserializeObject<PlayerData>(json, s_settings);
-                data?.PostLoadInitializeAndMigrate();
+                if (data == null) return null;
+
+                int originalVersion = data.SchemaVersion;
+
+                data.PostLoadInitializeAndMigrate(PlayerData.CURRENT_SCHEMA_VERSION);
+
+                // ถ้ามีการอัปเกรดเวอร์ชัน → backup แล้วเขียนไฟล์ใหม่
+                if (data.SchemaVersion != originalVersion)
+                {
+                    BackupOldFile(path, originalVersion);
+                    string newJson = JsonConvert.SerializeObject(data, s_settings);
+                    WriteAtomic(path, newJson);
+                    Debug.Log($"[PlayerSaveSystem] Migrated profile {profileId} from v{originalVersion} to v{data.SchemaVersion}");
+                }
+
                 return data;
             }
             catch (Exception e)
@@ -132,6 +145,53 @@ namespace Player
             }
         }
 
+        private void BackupOldFile(string originalPath, int oldVersion)
+        {
+            try
+            {
+                if (!File.Exists(originalPath)) return;
+
+                var dir = Path.GetDirectoryName(originalPath);
+                var fileNameWithoutExt = Path.GetFileNameWithoutExtension(originalPath);
+                var backupName = $"{fileNameWithoutExt}_v{oldVersion}_backup.json";
+                var backupPath = Path.Combine(dir!, backupName);
+
+                if (!File.Exists(backupPath))
+                {
+                    File.Copy(originalPath, backupPath);
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"[PlayerSaveSystem] BackupOldFile failed: {e}");
+            }
+        }
+        
+        public PlayerData ReadFromPath(string fullPath, bool migrate = true)
+        {
+            if (string.IsNullOrEmpty(fullPath) || !File.Exists(fullPath))
+                return null;
+
+            try
+            {
+                string json = File.ReadAllText(fullPath, Encoding.UTF8);
+                var data = JsonConvert.DeserializeObject<PlayerData>(json, s_settings);
+                if (data == null) return null;
+
+                if (migrate)
+                {
+                    int originalVersion = data.SchemaVersion;
+                    data.PostLoadInitializeAndMigrate(PlayerData.CURRENT_SCHEMA_VERSION);
+                }
+
+                return data;
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"[PlayerSaveSystem] ReadFromPath failed ({fullPath}): {e}");
+                return null;
+            }
+        }
 
         public bool Exists(string profileId)
         {
