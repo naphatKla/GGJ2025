@@ -63,9 +63,9 @@ namespace PixelUI {
         /// Sets the current value.
         /// </summary>
         public void SetValue(float value) {
-            if (value == currentValue) return;
-            if (currentValue <= MinValue && value <= MinValue) return;
-            if (currentValue >= MaxValue && value >= MaxValue) return;
+            if (Math.Abs(value - currentValue) < 0.001f) return;
+            if (value < MinValue) return;
+            if (value > MaxValue) return;
 
             var difference = value - currentValue;
             var differenceAbsolute = Math.Abs(difference);

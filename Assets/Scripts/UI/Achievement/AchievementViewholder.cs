@@ -82,7 +82,6 @@ namespace UI.Achievement
             progressionBar.MinValue = 0;
             progressionBar.MaxValue = target;
             progressionBar.CurrentValue = current;
-
             progressionValue.text = $"{current}/{target}";
 
             float percentProgress = (float)current / target * 100f;
