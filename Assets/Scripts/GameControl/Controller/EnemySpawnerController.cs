@@ -61,7 +61,7 @@ namespace GameControl.Controller
         #region Pooling
         private EnemyController CreateFunc(MapDataSO.EnemyOption option)
         {
-            var obj = Object.Instantiate(option.EnemyObject);
+            var obj = Object.Instantiate(option.EnemyObject, _state.EnemyParent);
             var controller = obj.GetComponent<EnemyController>();
             controller.HealthSystem.OnDead = () => _enemyPools[option.id].Release(controller);
             if (option.modifyNewData) 
@@ -126,7 +126,6 @@ namespace GameControl.Controller
                 OnFirstEnemySpawn(obj, option);
             }
             obj.transform.position = SpawnUtility.RandomBetweenMouseAndCamera(_mainCamera);
-            obj.transform.SetParent(_state.EnemyParent);
             obj.FeedbackSystem.ShowTrail(true);
             obj.ResetAllDependentBehavior();
             obj.gameObject.SetActive(true);

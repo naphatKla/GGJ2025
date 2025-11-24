@@ -32,6 +32,7 @@ namespace GameControl.EventMap
         [SerializeField] private List<MapCatagory> catagorieEntries;
 
         [SerializeField] private Transform eventMapParent;
+        [SerializeField] private bool autoPrewarmOnAwake = true;
 
         private Dictionary<string, MapEventContainerSO> _mapStorageDict;
         private Dictionary<BaseMapEvent, ObjectPool<BaseMapEvent>> _poolDict = new();
@@ -44,11 +45,57 @@ namespace GameControl.EventMap
             base.Awake();
             _cts = new CancellationTokenSource();
             _mapStorageDict = new Dictionary<string, MapEventContainerSO>();
-            foreach (var catagory in catagorieEntries) 
-            foreach (var entry in catagory.storageEntries)
-                _mapStorageDict[entry.id] = entry.storage;
+            foreach (var catagory in catagorieEntries)
+            {
+                if (catagory == null || catagory.storageEntries == null) continue;
+
+                foreach (var entry in catagory.storageEntries)
+                {
+                    if (entry.storage == null || string.IsNullOrEmpty(entry.id))
+                        continue;
+
+                    _mapStorageDict[entry.id] = entry.storage;
+                }
+            }
+
+            if (autoPrewarmOnAwake) PrewarmAllPools();
         }
         
+        private void PrewarmAllPools()
+        {
+            foreach (var catagory in catagorieEntries)
+            {
+                if (catagory == null || catagory.storageEntries == null) continue;
+        
+                foreach (var storageEntry in catagory.storageEntries)
+                {
+                    if (storageEntry.storage == null) continue;
+                    foreach (var mapEntry in storageEntry.storage.entries)
+                    {
+                        if (mapEntry.eventPrefab == null) continue;
+                        var pool = GetOrCreatePool(mapEntry.eventPrefab);
+                        PrewarmPool(pool, mapEntry.eventPrefab.prewarmCount);
+                    }
+                }
+            }
+        }
+        
+        private void PrewarmPool(ObjectPool<BaseMapEvent> pool, int count)
+        {
+            if (count <= 0) return;
+            var temp = new List<BaseMapEvent>(count);
+            for (int i = 0; i < count; i++)
+            {
+                var obj = pool.Get();
+                temp.Add(obj);
+            }
+            for (int i = 0; i < temp.Count; i++)
+            {
+                pool.Release(temp[i]);
+            }
+        }
+
+
         private void OnDisable()
         {
             _cts?.Cancel();
@@ -156,43 +203,52 @@ namespace GameControl.EventMap
 
         private ObjectPool<BaseMapEvent> GetOrCreatePool(BaseMapEvent prefab)
         {
-            if (_poolDict.TryGetValue(prefab, out var pool)) return pool;
-            pool = new ObjectPool<BaseMapEvent>(
-                () =>
-                {
-                    var obj = Instantiate(prefab, eventMapParent);
-                    return obj;
-                },
-                obj =>
-                {
-                    if (obj == null) return;
-                    //obj.ClearVFX();
-                    obj.SetPool(pool);
-                    obj.gameObject.SetActive(true);
-                },
-                obj =>
-                {
-                    if (obj == null || obj.gameObject == null) return;
-                    //obj.ClearVFX();
-                    obj.gameObject.SetActive(false);
-                },
-                obj =>
-                {
-                    if (obj == null) return;
-                    obj.ClearVFX();
-                    Destroy(obj.gameObject);
-                },
-                false, 10, 100
-            );
+            if (_poolDict.TryGetValue(prefab, out var pool))
+                return pool;
 
-            for (int i = 0; i < prefab.prewarmCount; i++)
-            {
-                var obj = Instantiate(prefab, eventMapParent);
-                pool.Release(obj);
-            }
-
+            pool = CreatePool(prefab);
             _poolDict[prefab] = pool;
             return pool;
+        }
+        
+        private ObjectPool<BaseMapEvent> CreatePool(BaseMapEvent prefab)
+        {
+            var pool = new ObjectPool<BaseMapEvent>(
+                () => ActionOnCreate(prefab),
+                ActionOnGet,
+                ActionOnRelease,
+                ActionOnDestroy,
+                collectionCheck: false
+            );
+            return pool;
+        }
+        
+        private BaseMapEvent ActionOnCreate(BaseMapEvent prefab)
+        {
+            if (prefab == null) return null;
+            var obj = Instantiate(prefab, eventMapParent);
+            obj.gameObject.SetActive(false);
+            return obj;
+        }
+        
+        private void ActionOnGet(BaseMapEvent obj)
+        {
+            if (obj == null) return;
+            obj.gameObject.SetActive(true);
+        }
+        
+        private void ActionOnRelease(BaseMapEvent obj)
+        {
+            if (obj == null || obj.gameObject == null) return;
+            obj.gameObject.SetActive(false);
+        }
+        
+        private void ActionOnDestroy(BaseMapEvent obj)
+        {
+            if (obj == null) return;
+
+            obj.ClearVFX();
+            Destroy(obj.gameObject);
         }
         
         public void RunEvent(string id, Action<EventOverrides> configure)
