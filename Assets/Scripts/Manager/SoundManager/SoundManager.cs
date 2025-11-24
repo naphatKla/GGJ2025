@@ -473,6 +473,48 @@ namespace Manager.SoundManager
             if (_bgmA.clip) _bgmA.UnPause();
             if (_bgmB.clip) _bgmB.UnPause();
         }
+        
+        public void PrewarmSFXSources(int count)
+        {
+            if (count <= 0) return;
+
+            // ให้แน่ใจว่าพูลถูกสร้างแล้ว
+            EnsureSfxPool();
+
+            var tmp = new List<AudioSource>(count);
+            for (int i = 0; i < count; i++)
+            {
+                var src = PoolingManager.Instance.Get<AudioSource>(POOL_SFX);
+                if (!src) break;
+                tmp.Add(src);
+            }
+
+            // ปล่อยกลับเข้า pool
+            foreach (var src in tmp)
+            {
+                PoolingManager.Instance.Release(POOL_SFX, src);
+            }
+        }
+
+        public void PrewarmUISources(int count)
+        {
+            if (count <= 0) return;
+
+            EnsureUiPool();
+
+            var tmp = new List<AudioSource>(count);
+            for (int i = 0; i < count; i++)
+            {
+                var src = PoolingManager.Instance.Get<AudioSource>(POOL_UI);
+                if (!src) break;
+                tmp.Add(src);
+            }
+
+            foreach (var src in tmp)
+            {
+                PoolingManager.Instance.Release(POOL_UI, src);
+            }
+        }
 
         private IEnumerator CrossFadeBGM(AudioSource from, AudioSource to, float fadeOut, float fadeIn,
             float targetInVolume, bool useScaledTime)

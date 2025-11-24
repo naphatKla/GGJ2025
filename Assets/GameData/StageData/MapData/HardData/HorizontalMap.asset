@@ -26,6 +26,7 @@ MonoBehaviour:
   - id: Enemy_Normal
     displayName: NORMAL
     enemyController: {fileID: 8145196360709479149, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
+    prewarmCount: 50
     spawnPoint: 1
     enemyPointCanGrowth: 0
     enemyPointGrowthRate: 12.5
@@ -50,6 +51,7 @@ MonoBehaviour:
   - id: Enemy_Worker
     displayName: WORKER
     enemyController: {fileID: 6978469296619682545, guid: 82d6560287672fa4a8c895bc3a10c950, type: 3}
+    prewarmCount: 50
     spawnPoint: 1.2
     enemyPointCanGrowth: 0
     enemyPointGrowthRate: 12.5
@@ -74,6 +76,7 @@ MonoBehaviour:
   - id: Enemy_Soldier
     displayName: SOLDIER
     enemyController: {fileID: 6978469296619682545, guid: a0503233dadc52f46bbd80a4952cd4e1, type: 3}
+    prewarmCount: 50
     spawnPoint: 1.8
     enemyPointCanGrowth: 0
     enemyPointGrowthRate: 12.5
@@ -98,6 +101,7 @@ MonoBehaviour:
   - id: Enemy_Tank
     displayName: TANK
     enemyController: {fileID: 1371981663885322251, guid: c825ab4cef105ab40aa986fd07615367, type: 3}
+    prewarmCount: 50
     spawnPoint: 2.3
     enemyPointCanGrowth: 0
     enemyPointGrowthRate: 12.5
@@ -122,6 +126,7 @@ MonoBehaviour:
   - id: Enemy_Absolute
     displayName: ABSOLUTE
     enemyController: {fileID: 1371981663885322251, guid: eec6f0bc923ca8c4e8d1f911f0441879, type: 3}
+    prewarmCount: 50
     spawnPoint: 3.3
     enemyPointCanGrowth: 0
     enemyPointGrowthRate: 12.5
@@ -146,6 +151,7 @@ MonoBehaviour:
   - id: Enemy_Absorption
     displayName: ABSORPTION
     enemyController: {fileID: 1371981663885322251, guid: fd4d927248ba7894fab69bd0611e5dd6, type: 3}
+    prewarmCount: 50
     spawnPoint: 6.4
     enemyPointCanGrowth: 0
     enemyPointGrowthRate: 12.5
@@ -170,6 +176,7 @@ MonoBehaviour:
   - id: Enemy_Piercer
     displayName: PIERCER
     enemyController: {fileID: 5352284219382747297, guid: c31b489d153b0634585086d777023f54, type: 3}
+    prewarmCount: 50
     spawnPoint: 1.4
     enemyPointCanGrowth: 0
     enemyPointGrowthRate: 12.5
@@ -194,6 +201,7 @@ MonoBehaviour:
   - id: Enemy_Javelin
     displayName: JAVELIN
     enemyController: {fileID: 5352284219382747297, guid: 9b50d372f60f2b44e8902b9700c8ff75, type: 3}
+    prewarmCount: 50
     spawnPoint: 2
     enemyPointCanGrowth: 0
     enemyPointGrowthRate: 12.5
@@ -218,6 +226,7 @@ MonoBehaviour:
   - id: Enemy_Comet
     displayName: COMET
     enemyController: {fileID: 5352284219382747297, guid: f393a17767905ac4ca15da0af7bc1668, type: 3}
+    prewarmCount: 50
     spawnPoint: 2.7
     enemyPointCanGrowth: 0
     enemyPointGrowthRate: 12.5
@@ -242,6 +251,7 @@ MonoBehaviour:
   - id: Enemy_Pressure
     displayName: PRESSURE
     enemyController: {fileID: 241806535288265801, guid: 79dec73735459964a8ca48d4f07d4f9a, type: 3}
+    prewarmCount: 50
     spawnPoint: 2.3
     enemyPointCanGrowth: 0
     enemyPointGrowthRate: 12.5
@@ -266,6 +276,7 @@ MonoBehaviour:
   - id: Enemy_Firecraker
     displayName: FIRECRACKER
     enemyController: {fileID: 241806535288265801, guid: 27b7309a2863d144f92c41ed68909b7a, type: 3}
+    prewarmCount: 50
     spawnPoint: 3.1
     enemyPointCanGrowth: 0
     enemyPointGrowthRate: 12.5
@@ -290,6 +301,7 @@ MonoBehaviour:
   - id: Enemy_Bomber
     displayName: BOMBER
     enemyController: {fileID: 241806535288265801, guid: e35823daef8ec1d4190c0960c0e7bb8b, type: 3}
+    prewarmCount: 50
     spawnPoint: 7
     enemyPointCanGrowth: 0
     enemyPointGrowthRate: 12.5
@@ -314,6 +326,7 @@ MonoBehaviour:
   - id: Boss_Twin
     displayName: The Twin
     enemyController: {fileID: 3283012694853145645, guid: 269d66a18656a9b4b81ea0fe0cb26bae, type: 3}
+    prewarmCount: 1
     spawnPoint: 0
     enemyPointCanGrowth: 0
     enemyPointGrowthRate: 12.5
@@ -484,6 +497,7 @@ MonoBehaviour:
   ItemOptions:
   - id: Red_Anergy
     itemObj: {fileID: 8589778046636973207, guid: eb2f8352aac61d446a4ef94d6303afbf, type: 3}
+    prewarmCount: 50
     chance: 100
     useCustomInterval: 0
     customInterval: 0
@@ -496,6 +510,7 @@ MonoBehaviour:
     spawnConditions: []
   - id: Yellow_Anergy
     itemObj: {fileID: 8589778046636973207, guid: bcd6f0236a2272d4fb026da93e3cf62f, type: 3}
+    prewarmCount: 50
     chance: 0
     useCustomInterval: 0
     customInterval: 0
@@ -508,6 +523,7 @@ MonoBehaviour:
     spawnConditions: []
   - id: Green_Anergy
     itemObj: {fileID: 8589778046636973207, guid: 12751c5192bb6d94889f43fd00e7ac25, type: 3}
+    prewarmCount: 50
     chance: 0
     useCustomInterval: 0
     customInterval: 0
@@ -520,6 +536,7 @@ MonoBehaviour:
     spawnConditions: []
   - id: Blue_Anergy
     itemObj: {fileID: 8589778046636973207, guid: d368e253dae383e4a91232ea32194723, type: 3}
+    prewarmCount: 50
     chance: 0
     useCustomInterval: 0
     customInterval: 0
@@ -532,6 +549,7 @@ MonoBehaviour:
     spawnConditions: []
   - id: Purple_Anergy
     itemObj: {fileID: 8589778046636973207, guid: a4b740de62c54a6498402145effe5f7d, type: 3}
+    prewarmCount: 50
     chance: 0
     useCustomInterval: 0
     customInterval: 0

@@ -5496,6 +5496,236 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 526661206}
   m_CullTransparentMesh: 1
+--- !u!1 &541609337
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 541609338}
+  - component: {fileID: 541609339}
+  m_Layer: 0
+  m_Name: PoolPreLoaders
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &541609338
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 541609337}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1746735402}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &541609339
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 541609337}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9316bb8f486e7f647a85e1fafab59eca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  vfxEntries:
+  - prefab: {fileID: 9212584962805733596, guid: bb532015f24961a43964b9e9868267d8, type: 3}
+    overrideKey: 
+    prewarmCount: 120
+  - prefab: {fileID: 8127464484710613483, guid: 995f4415b6ac98b4b9c7db689b2221fb, type: 3}
+    overrideKey: 
+    prewarmCount: 50
+  - prefab: {fileID: 5742859516330534167, guid: 010a90b008f5e4d479bc8ee9695dad76, type: 3}
+    overrideKey: 
+    prewarmCount: 100
+  - prefab: {fileID: 5051339287076059163, guid: 201ec809541b95546a33e248a2f3f6e7, type: 3}
+    overrideKey: 
+    prewarmCount: 100
+  - prefab: {fileID: 4923192885908265, guid: 35a73281f6847994f825fe030ac69e82, type: 3}
+    overrideKey: 
+    prewarmCount: 50
+  - prefab: {fileID: 4320908021722611320, guid: 8b067409ed954824ebd14cc3c6cb8997, type: 3}
+    overrideKey: 
+    prewarmCount: 100
+  - prefab: {fileID: 4103451553150941713, guid: 4651416639eef5646945258d707e8bf2, type: 3}
+    overrideKey: 
+    prewarmCount: 100
+  - prefab: {fileID: 5320976764624842975, guid: ce02e0160de4ede448582f86df10d0cf, type: 3}
+    overrideKey: 
+    prewarmCount: 30
+  - prefab: {fileID: 5743966682061007364, guid: 5d960df155def024e939522c1dad6fdc, type: 3}
+    overrideKey: 
+    prewarmCount: 50
+  - prefab: {fileID: 3330394642650755801, guid: c0149f065b11ea742a1a595ef83ad8dd, type: 3}
+    overrideKey: 
+    prewarmCount: 70
+  - prefab: {fileID: 2041236220686452509, guid: 4b15bc430247b62498cb048281b0d753, type: 3}
+    overrideKey: 
+    prewarmCount: 60
+  - prefab: {fileID: 8421433658705362917, guid: b9e9970aa0e37c74b81dfcee1c94c561, type: 3}
+    overrideKey: 
+    prewarmCount: 30
+  - prefab: {fileID: 9031892910825326118, guid: b2f4007d1d8f4a546aa794e864d1a2b1, type: 3}
+    overrideKey: 
+    prewarmCount: 20
+  - prefab: {fileID: 4034534426056009322, guid: f77caf1c4c01de9408722628b9b257ce, type: 3}
+    overrideKey: 
+    prewarmCount: 15
+  - prefab: {fileID: 7718178230085614703, guid: ab0079344803b394092ba05e0d40afcd, type: 3}
+    overrideKey: 
+    prewarmCount: 30
+  - prefab: {fileID: 7976832994215977253, guid: d1d4a3ec7a2a2534881ea4d7f0f880da, type: 3}
+    overrideKey: 
+    prewarmCount: 100
+  - prefab: {fileID: 6667987592460369122, guid: dc8e49cb9d7e87548b234202a11a378a, type: 3}
+    overrideKey: 
+    prewarmCount: 60
+  - prefab: {fileID: 4837988583817273199, guid: 778fed3bb44bcf749983f211b1018955, type: 3}
+    overrideKey: 
+    prewarmCount: 40
+  - prefab: {fileID: 1572890559719368324, guid: 44f8b0154d114bf42a72b2e494c0610d, type: 3}
+    overrideKey: 
+    prewarmCount: 50
+  - prefab: {fileID: 6703130524077865605, guid: cbcb42601b9152a48807d39790798fb7, type: 3}
+    overrideKey: 
+    prewarmCount: 20
+  - prefab: {fileID: 6800281776132748420, guid: 3ffc1348fff9ac84e9161f4243754094, type: 3}
+    overrideKey: 
+    prewarmCount: 50
+  - prefab: {fileID: 6909318758257544524, guid: b60a21d4d70d84c4eb7fe191fd968f90, type: 3}
+    overrideKey: 
+    prewarmCount: 50
+  - prefab: {fileID: 7338217513978147799, guid: 6eae5ef7830876942af38c663ffb7f5d, type: 3}
+    overrideKey: 
+    prewarmCount: 40
+  - prefab: {fileID: 4328569059527682782, guid: be6f83f2ce9acab48ab36ffe21edc1b4, type: 3}
+    overrideKey: 
+    prewarmCount: 40
+  - prefab: {fileID: 2317466729435664412, guid: 94c46ab9be159144681e8178ddb746ce, type: 3}
+    overrideKey: 
+    prewarmCount: 10
+  - prefab: {fileID: 8127464484710613483, guid: 14775368750ad9b48b6ace208bd9f3ac, type: 3}
+    overrideKey: 
+    prewarmCount: 130
+  - prefab: {fileID: 5742859516330534167, guid: db5475209ac5d6149b8246891719e64f, type: 3}
+    overrideKey: 
+    prewarmCount: 70
+  - prefab: {fileID: 6332117443044618609, guid: c5e82aaf684a70a44ad1ecb354810fe6, type: 3}
+    overrideKey: 
+    prewarmCount: 70
+  - prefab: {fileID: 6374027556061433036, guid: 037f7275fd4f8db439ca080d3ee6858e, type: 3}
+    overrideKey: 
+    prewarmCount: 40
+  - prefab: {fileID: 8917098466535517001, guid: 3f12d07d60c3fa244a4ee626d4894cd1, type: 3}
+    overrideKey: 
+    prewarmCount: 100
+  - prefab: {fileID: 2449736108099018885, guid: 66832050d0b99014db9edb3604be8f16, type: 3}
+    overrideKey: 
+    prewarmCount: 60
+  - prefab: {fileID: 8816160997270074876, guid: 0262afb578f2a2b489976b8dea07d466, type: 3}
+    overrideKey: 
+    prewarmCount: 60
+  - prefab: {fileID: 3996835355466466452, guid: 4768825eb8353cd458a83640d8b05102, type: 3}
+    overrideKey: 
+    prewarmCount: 80
+  - prefab: {fileID: 2167738899832102184, guid: be8bde2692c8ff147bb2c370086898d1, type: 3}
+    overrideKey: 
+    prewarmCount: 50
+  - prefab: {fileID: 1198036340508010477, guid: 9d26e42fcfd9dad488bec260cae64a1b, type: 3}
+    overrideKey: 
+    prewarmCount: 50
+  - prefab: {fileID: 8758082089854209156, guid: f57894be8ac33424e959e9c08a5154cd, type: 3}
+    overrideKey: 
+    prewarmCount: 80
+  - prefab: {fileID: 8416764966044251172, guid: fbf574effbd697c41bb514670a743c05, type: 3}
+    overrideKey: 
+    prewarmCount: 50
+  - prefab: {fileID: 8639843035645385954, guid: 8f2eb2dc7409de14eb3b52fb24fd10d5, type: 3}
+    overrideKey: 
+    prewarmCount: 50
+  - prefab: {fileID: 4866033557054383483, guid: 463a543da5a9c334aa438775b8ef1869, type: 3}
+    overrideKey: 
+    prewarmCount: 40
+  - prefab: {fileID: 4593042607902267160, guid: 3fced7662c9e0794c8b43513d5aaa671, type: 3}
+    overrideKey: 
+    prewarmCount: 40
+  - prefab: {fileID: 7256566248002992100, guid: 2c5f621029977f24b9a6f9c3e924e557, type: 3}
+    overrideKey: 
+    prewarmCount: 20
+  - prefab: {fileID: 4516501847790187827, guid: 83b12712bf6d09541a3bb16e7255c4e2, type: 3}
+    overrideKey: 
+    prewarmCount: 100
+  - prefab: {fileID: 3010793926413495774, guid: d428cf1a8814b76489f29076267cd6fd, type: 3}
+    overrideKey: 
+    prewarmCount: 60
+  - prefab: {fileID: 3310414358264393369, guid: 37581c829a308084cbb96be870e5ff6e, type: 3}
+    overrideKey: 
+    prewarmCount: 40
+  - prefab: {fileID: 4371933773715918868, guid: 03c98b9e3c5fda64aa889d291e078ff8, type: 3}
+    overrideKey: 
+    prewarmCount: 100
+  - prefab: {fileID: 7846243062297555881, guid: 1ff827bf5b2229246a2d7d2b840f9882, type: 3}
+    overrideKey: 
+    prewarmCount: 50
+  - prefab: {fileID: 2324996878878531017, guid: c7f78f438ad758843a40b7459a18817b, type: 3}
+    overrideKey: 
+    prewarmCount: 40
+  - prefab: {fileID: 8503638934788849431, guid: 30f91ec67bfd8a344a164a1ac6426918, type: 3}
+    overrideKey: 
+    prewarmCount: 50
+  - prefab: {fileID: 2444923826470980389, guid: 0b3b935eec30367488f8c76068617eae, type: 3}
+    overrideKey: 
+    prewarmCount: 50
+  - prefab: {fileID: 3725785357189725314, guid: 5db0af9d102f0a04fb3266f499d6309a, type: 3}
+    overrideKey: 
+    prewarmCount: 50
+  - prefab: {fileID: 8324661899838926497, guid: 8f798079ade2d8b49a94e210cb99b61f, type: 3}
+    overrideKey: 
+    prewarmCount: 50
+  - prefab: {fileID: 1154923789392129506, guid: 6d0ee1ea7a69391429aa500da198f669, type: 3}
+    overrideKey: 
+    prewarmCount: 20
+  - prefab: {fileID: 5742859516330534167, guid: 413ece0ed7780a848b24d599de861705, type: 3}
+    overrideKey: 
+    prewarmCount: 20
+  - prefab: {fileID: 6901706540181855520, guid: adb8c6786ef1465479fdb45d16cc62a0, type: 3}
+    overrideKey: 
+    prewarmCount: 20
+  - prefab: {fileID: 615772293024948125, guid: e2486961c84908b4dac2fb2c9561b719, type: 3}
+    overrideKey: 
+    prewarmCount: 10
+  - prefab: {fileID: 4239418445613052604, guid: 9414ced5e8641af499a03fcc53ea3502, type: 3}
+    overrideKey: 
+    prewarmCount: 20
+  - prefab: {fileID: 3570938341805670653, guid: c20d0eff15865064d9db4aaf21f12b9e, type: 3}
+    overrideKey: 
+    prewarmCount: 30
+  - prefab: {fileID: 966331835538602055, guid: 6d4d754eab0fd434b81b0b698bb5436d, type: 3}
+    overrideKey: 
+    prewarmCount: 30
+  - prefab: {fileID: 4702465196536908607, guid: 6a8a77407064614479dc60f2205800bd, type: 3}
+    overrideKey: 
+    prewarmCount: 20
+  - prefab: {fileID: 2346578037806033948, guid: e6df5c0720fa9f149a908be67775b740, type: 3}
+    overrideKey: 
+    prewarmCount: 20
+  - prefab: {fileID: 5603116733832060535, guid: b307fd71a9febc84093729e3081511a9, type: 3}
+    overrideKey: 
+    prewarmCount: 20
+  sfxPrewarmCount: 100
+  uiPrewarmCount: 8
 --- !u!1 &554439815
 GameObject:
   m_ObjectHideFlags: 0
@@ -17446,6 +17676,7 @@ Transform:
   - {fileID: 1189885756}
   - {fileID: 1787450936}
   - {fileID: 1521339891}
+  - {fileID: 541609338}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1750393947

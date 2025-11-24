@@ -24,7 +24,7 @@ namespace Characters.SkillSystems.SkillRuntimes
         {
             base.AssignSkillData(skillData, owner);
             PoolingManager.Instance.Create<ReflectionSkillObject>(this.skillData.ReflectionSkillObject.name, PoolingGroupName.SkillObject, 
-                CreatePoolInstance);
+                CreatePoolInstance, prewarmCount: this.skillData.SkillObjectAmount);
         }
 
         /// <summary>

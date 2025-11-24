@@ -29,6 +29,8 @@ namespace GameControl.Controller
             _mapdata = mapData;
             _state = state;
             _itemRegionSize = spawnRegion;
+            
+            PrewarmItem();
         }
         
         public void PrewarmItem()
@@ -43,6 +45,7 @@ namespace GameControl.Controller
                 {
                     id = data.id,
                     itemObj = data.itemObj,
+                    prewarmCount = data.prewarmCount,
                     useCustomInterval = data.useCustomInterval,
                     customInterval = data.customInterval,
                     useLifetimeInterval = data.useLifetimeInterval,
@@ -68,6 +71,12 @@ namespace GameControl.Controller
                     obj => ActionOnDestroy(obj, cloned),
                     false
                 );
+                
+                for (int i = 0; i < data.prewarmCount; i++)
+                {
+                    var objPrewarm = CreateFunc(cloned);
+                    _itemPools[cloned.id].Release(objPrewarm);
+                }
             }
         }
         
@@ -75,6 +84,7 @@ namespace GameControl.Controller
         {
             var obj = Object.Instantiate(option.itemObj);
             var baseCollectable = obj.GetComponent<BaseCollectableItem>();
+            obj.transform.SetParent(_state.ItemParent);
             baseCollectable.OnThisItemCollected = () => _itemPools[option.id].Release(baseCollectable);
             return baseCollectable;
         }
@@ -94,7 +104,6 @@ namespace GameControl.Controller
         private void ActionOnGet(BaseCollectableItem obj, MapDataSO.ItemOption option)
         {
             _activeItem.Add(obj);
-            obj.transform.SetParent(_state.ItemParent);
             obj.gameObject.SetActive(true);
             if (option.useLifetimeInterval)
             {
