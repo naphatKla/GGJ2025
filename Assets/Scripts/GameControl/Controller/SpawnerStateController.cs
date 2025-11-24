@@ -153,12 +153,9 @@ namespace GameControl.Controller
             _currentEnemyPoint = CurrentMap.startEnemyPoint;
             _maxEnemyPoint = CurrentMap.maxEnemyPoint;
             _increaseRateEnemyPoint = CurrentMap.rateIncreaseEnemyPoint;
-            
-            _itemSpawnerController.PrewarmItem();
             _enemyPatternController.SetEnemySpawner(_enemySpawnerController);
             _enemyPatternController.AddRandomPattern();
             
-            RescheduleAllFromNow(CurrentMap);
             GameTimer.Instance.ScheduleOnceAtRemaining(62, () => PopupUIManager.Instance.ShowPopup("Warning", 2.0f, bypassStack: true));
             GameStateController.Instance.ScheduleRush();
         }
@@ -183,7 +180,7 @@ namespace GameControl.Controller
             _enemyPatternController?.TriggerAllPatterns();
         }
         
-        private void RescheduleAllFromNow(MapDataSO map)
+        public void RescheduleAllFromNow(MapDataSO map)
         {
             var timer = GameTimer.Instance;
             if (timer == null || map == null) return;
