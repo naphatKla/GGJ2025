@@ -107,9 +107,10 @@ namespace GameControl.EventMap
 
                 var go = col.gameObject;
                 if (go == gameObject) continue;
+                if (!CombatManager.TryGetCharacterFromCache(go, out var targetController)) continue;
 
-                var mover = go.GetComponent<BaseMovementSystem>();
-                if (mover == null) continue;
+                var mover = targetController.MovementSystem;
+                if (!mover) continue;
 
                 Vector2 pos = mover.transform.position;
                 var toCenter = center - pos;

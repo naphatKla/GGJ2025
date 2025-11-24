@@ -165,10 +165,10 @@ namespace Characters.SkillSystems.SkillRuntimes
             {
                 var col = _candidates[i];
                 if (!col) continue;
+                if (!CombatManager.TryGetCharacterFromCache(col.gameObject, out var targetController)) continue;
 
                 // ใช้ GetComponentInParent เผื่อ enemy มีหลาย collider
-                var health = col.GetComponentInParent<HealthSystem>();
-                if (!health) continue;
+                var health = targetController.HealthSystem;
                 if (!health.CanAim) continue;
 
                 sumHpOfTargets += health.CurrentHealth;
@@ -263,9 +263,10 @@ namespace Characters.SkillSystems.SkillRuntimes
             {
                 var col = _candidates[i];
                 if (!col) continue;
-
-                var health = col.GetComponentInParent<HealthSystem>();
-                if (!health) continue;
+                if (CombatManager.TryGetCharacterFromCache(col.gameObject, out var targetController)) continue;
+                
+                var health = targetController.HealthSystem;
+             
                 if (!health.CanAim) continue;
 
                 Transform t = health.transform;

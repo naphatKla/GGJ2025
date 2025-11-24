@@ -24,7 +24,7 @@ namespace Manager
         /// <param name="effectPayload">Payload containing effect data and optional override settings.</param>
         public static void ApplyEffectTo(GameObject target, StatusEffectDataPayload effectPayload)
         {
-            if (!target.TryGetComponent(out StatusEffectSystem targetSystem)) return;
+            if (!CombatManager.TryGetCharacterFromCache(target, out var targetController)) return;
 
             BaseStatusEffectDataSo effectData = effectPayload.EffectData;
 
@@ -36,7 +36,7 @@ namespace Manager
                 : effectData.DefaultDuration;
 
             newEffect.AssignEffectData(effectData, effectDuration);
-            targetSystem.AddEffect(newEffect);
+            targetController.StatusEffectSystem.AddEffect(newEffect);
         }
 
         /// <summary>
@@ -59,8 +59,8 @@ namespace Manager
         /// <param name="effectName">The enum name of the effect to remove.</param>
         public static void RemoveEffectAt(GameObject target, StatusEffectName effectName)
         {
-            if (!target.TryGetComponent(out StatusEffectSystem targetSystem)) return;
-            targetSystem.RemoveEffect(effectName);
+            if (!CombatManager.TryGetCharacterFromCache(target, out var targetController)) return;
+            targetController.StatusEffectSystem.RemoveEffect(effectName);
         }
 
         /// <summary>
@@ -81,8 +81,8 @@ namespace Manager
         /// <param name="target">The GameObject to clear all effects from.</param>
         public static void RemoveAllEffectAt(GameObject target)
         {
-            if (!target.TryGetComponent(out StatusEffectSystem targetSystem)) return;
-            targetSystem.RemoveAllEffect();
+            if (!CombatManager.TryGetCharacterFromCache(target, out var targetController)) return;
+            targetController.StatusEffectSystem.RemoveAllEffect();
         }
 
         /// <summary>
@@ -94,13 +94,13 @@ namespace Manager
         /// <returns></returns>
         public static bool TryGetEffect(GameObject target, StatusEffectName effectName, out BaseStatusEffect effect)
         {
-            if (!target.TryGetComponent(out StatusEffectSystem targetSystem))
+            if (!CombatManager.TryGetCharacterFromCache(target, out var targetController))
             {
                 effect = null;
                 return false;
             }
 
-            return targetSystem.TryGetEffect(effectName, out effect);
+            return targetController.StatusEffectSystem.TryGetEffect(effectName, out effect);
         }
         
         #endregion

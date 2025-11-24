@@ -151,8 +151,8 @@ namespace Characters.SkillSystems.SkillRuntimes
                     (Vector2)target.transform.position +
                     knockBackDirection.normalized * knockBackDistance;
 
-                target.GetComponent<BaseMovementSystem>()
-                    .TryMoveToPositionOverTime(knockBackDestination, knockBackDuration);
+                CombatManager.TryGetCharacterFromCache(target.gameObject, out var targetController);
+                targetController.MovementSystem.TryMoveToPositionOverTime(knockBackDestination, knockBackDuration);
 
                 CombatManager.ApplyCalculatedDamageTo(
                     target.gameObject,

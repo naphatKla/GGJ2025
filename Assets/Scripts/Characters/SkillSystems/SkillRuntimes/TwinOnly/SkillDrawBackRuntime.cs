@@ -193,9 +193,12 @@ namespace Characters.SkillSystems.SkillRuntimes.TwinOnly
                 Vector2 knockBackDestination = (Vector2)target.transform.position +
                                                (knockBackDirection.normalized * skillData.KnockBackDistance);
 
-                target.GetComponent<BaseMovementSystem>()
-                    .TryMoveToPositionOverTime(knockBackDestination, skillData.KnockBackDuration);
-
+                if (CombatManager.TryGetCharacterFromCache(target.gameObject, out var targetController))
+                {
+                    targetController.MovementSystem.TryMoveToPositionOverTime(knockBackDestination,
+                        skillData.KnockBackDuration);
+                }
+                
                 CombatManager.ApplyCalculatedDamageTo(target.gameObject, owner.gameObject,
                     owner.CharacterData.CharacterId, owner.gameObject,
                     target.ClosestPoint(owner.transform.position), skillData.BaseExplosionDamagePerHit,

@@ -75,6 +75,7 @@ namespace GameControl.Controller
                 {
                     int totalExp = Mathf.CeilToInt(enemyData.ExpDrop * _anergyDropMultiplier);
                     _state.ItemSpawnerController.SpawnExpItem(totalExp, obj.transform.position);
+                    obj.transform.position = SpawnUtility.RandomSpawnAroundPlayerCamera(_mainCamera, 10f);
                 }
                 SpawnerStateController.Instance.CurrentEnemyPoint += option.EnemyPoint;
             };
@@ -99,7 +100,6 @@ namespace GameControl.Controller
             
             obj.gameObject.SetActive(false);
             obj.FeedbackSystem.ShowTrail(false);
-            obj.transform.position = SpawnUtility.RandomSpawnAroundPlayerCamera(_mainCamera, 10f);
             _activeEnemy.Remove(obj);
         }
 
