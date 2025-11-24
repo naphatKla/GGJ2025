@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using PermanentUpgrade;
+using UnityEngine;
 using UnityEngine.Serialization;
 
 namespace Player
@@ -8,6 +9,8 @@ namespace Player
     [Serializable]
     public class PlayerData
     {
+        public const int CURRENT_SCHEMA_VERSION = 2;
+        
         public int SchemaVersion;
         
         public string ProfileId;
@@ -44,8 +47,9 @@ namespace Player
         // perMap data (key = mapId)
         public Dictionary<string, MapStat> MapStats = new Dictionary<string, MapStat>();
         
-        public void PostLoadInitializeAndMigrate()
+        public void PostLoadInitializeAndMigrate(int targetSchemaVersion)
         {
+            //null safety
             UnlockedMaps ??= new HashSet<string>();
             UnlockedChallenges ??= new HashSet<string>();
             MapStats ??= new Dictionary<string, MapStat>();
@@ -57,55 +61,63 @@ namespace Player
             UnlockedPermanentUpgrade ??= new HashSet<PermanentUpgradeType>();
             UnlockedAchievements ??= new HashSet<string>();
 
-            Migrate_MapId_Renames();
-            const int CURRENT = 2;
-            SchemaVersion = CURRENT;
+            //migration
+            if (SchemaVersion < 2)
+            {
+            }
+            
+            if (SchemaVersion < targetSchemaVersion)
+            {
+                Debug.LogWarning($"[PlayerData] SchemaVersion({SchemaVersion}) < target({targetSchemaVersion}) but no migration defined.");
+                SchemaVersion = targetSchemaVersion;
+            }
         }
+        
+        /*private void Migrate_Challenge()
+        {
+            var challengeIdMap = new Dictionary<string, string>
+            {
+                { "hard_mapvoidmetro", "map_voidmetro" },
+                { "old_challenge_id", "new_challenge_id" },
+            };
 
-        /// <summary>
-        /// รวม migration ที่เกี่ยวกับการ rename map id ทั้งหมด
-        /// </summary>
-        private void Migrate_MapId_Renames()
+            foreach (var kv in challengeIdMap)
+            {
+                if (UnlockedChallenges.Remove(kv.Key))
+                    UnlockedChallenges.Add(kv.Value);
+            }
+        }*/
+        
+        /*private void Migrate_Map()
         {
             var mapIdMap = new Dictionary<string, string>
             {
-                { "hard_mapvoidmetro", "map_voidmetro" }
-                // { "old_id_2", "new_id_2" },
+                { "hard_mapvoidmetro", "map_voidmetro" },
             };
 
-            foreach (var kv in mapIdMap) RenameMapId(kv.Key, kv.Value);
-        }
-
-        /// <summary>
-        /// ย้ายข้อมูลจาก oldId → newId ในทั้ง UnlockedMaps และ MapStats
-        /// </summary>
-        private void RenameMapId(string oldId, string newId)
-        {
-            if (string.IsNullOrEmpty(oldId) || string.IsNullOrEmpty(newId) || oldId == newId)
-                return;
-
-            // 1) UnlockedMaps : ถ้ามี id เก่าอยู่ ให้ลบแล้วใส่ id ใหม่
-            if (UnlockedMaps.Remove(oldId)) UnlockedMaps.Add(newId);
-
-            // 2) MapStats : ย้ายค่า stat จาก key เก่าไป key ใหม่
-            if (MapStats.TryGetValue(oldId, out var oldStat))
+            foreach (var (oldId, newId) in mapIdMap)
             {
-                if (MapStats.TryGetValue(newId, out var existing))
-                {
-                    existing.TimesPlayed += oldStat.TimesPlayed;
-                    existing.LastScore = Math.Max(existing.LastScore, oldStat.LastScore);
-                    existing.HighestScore = Math.Max(existing.HighestScore, oldStat.HighestScore);
+                if (UnlockedMaps.Remove(oldId))
+                    UnlockedMaps.Add(newId);
 
-                    MapStats[newId] = existing;
-                }
-                else
+                if (MapStats.TryGetValue(oldId, out var stat))
                 {
-                    MapStats[newId] = oldStat;
-                }
+                    if (MapStats.TryGetValue(newId, out var existing))
+                    {
+                        existing.TimesPlayed += stat.TimesPlayed;
+                        existing.HighestScore = Math.Max(existing.HighestScore, stat.HighestScore);
+                        existing.LastScore = stat.LastScore;
+                    }
+                    else
+                    {
+                        MapStats[newId] = stat;
+                    }
 
-                MapStats.Remove(oldId);
+                    MapStats.Remove(oldId);
+                }
             }
-        }
+        }*/
+
     }
 
     [Serializable]
