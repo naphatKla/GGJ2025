@@ -195,13 +195,13 @@ namespace Characters.UIDisplay
             statusEffectSystem.OnStatusUIUpdate += UpdateStatusUI;
 
             PoolingManager.Instance.Create<TextMeshProUGUI>(worldTextUIPrefab.name, PoolingGroupName.UI,
-                CreateDamageText);
+                CreateDamageText, prewarmCount: 100);
             
             PoolingManager.Instance.Create<TextMeshProUGUI>(worldTextUISkillFeedbackPrefab.name, PoolingGroupName.UI,
-                CreateFeedbackText);
+                CreateFeedbackText, prewarmCount: 5);
 
             PoolingManager.Instance.Create<TextMeshProUGUI>(worldTextUIParryFeedbackPrefab.name, PoolingGroupName.UI,
-                CreateParryFeedbackText);
+                CreateParryFeedbackText, prewarmCount: 3);
             
             UpdateAllUI();
         }

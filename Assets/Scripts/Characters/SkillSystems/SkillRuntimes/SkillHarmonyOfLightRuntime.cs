@@ -21,7 +21,7 @@ namespace Characters.SkillSystems.SkillRuntimes
             base.AssignSkillData(skillData, owner);
             PoolingManager.Instance.Create<HarmonyOfLightSkillObject>(this.skillData.LightPrefab.name,
                 PoolingGroupName.SkillObject,
-                CreatePoolInstance);
+                CreatePoolInstance, prewarmCount:this.skillData.LightAmount);
         }
 
         protected override void OnSkillStart()

@@ -12,7 +12,7 @@ namespace Characters.SkillSystems.SkillRuntimes
         public override void AssignSkillData(BaseSkillDataSo skillData, BaseController owner)
         {
             base.AssignSkillData(skillData, owner);
-            PoolingManager.Instance.Create<SpaceMineSkillObject>(this.skillData.SpaceMineSkillObject.name, PoolingGroupName.SkillObject, CreatePoolInstance);
+            PoolingManager.Instance.Create<SpaceMineSkillObject>(this.skillData.SpaceMineSkillObject.name, PoolingGroupName.SkillObject, CreatePoolInstance, prewarmCount: 2);
         }
 
         protected override void OnSkillStart()

@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Pool;
-using MoreMountains.Tools;
 using ProjectExtensions;
 
 namespace Manager
@@ -42,7 +41,8 @@ namespace Manager
             Action<T> onDestroy = null,
             bool collectionCheck = false,
             int defaultCapacity = 10,
-            int? maxSize = null
+            int? maxSize = null,
+            int prewarmCount = 0       
         ) where T : Component
         {
             if (string.IsNullOrEmpty(nameOrID) || createFunc == null)
@@ -82,7 +82,27 @@ namespace Manager
             );
 
             _typedPools[nameOrID] = pool;
+
+            // ---------- PREWARM ----------
+            int count = prewarmCount;
+            if (count > 0)
+            {
+                var buffer = new List<T>(count);
+
+                for (int i = 0; i < count; i++)
+                {
+                    var inst = pool.Get();
+                    buffer.Add(inst);
+                }
+
+                // ปล่อยกลับ pool (OnRelease จะถูกเรียก)
+                for (int i = 0; i < buffer.Count; i++)
+                {
+                    pool.Release(buffer[i]);
+                }
+            }
         }
+
 
         public T Get<T>(string nameOrID) where T : Component
         {
