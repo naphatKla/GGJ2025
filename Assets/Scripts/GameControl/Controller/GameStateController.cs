@@ -14,6 +14,7 @@ using PermanentUpgrade;
 using Player;
 using UnityEngine;
 using Sirenix.OdinInspector;
+using UI;
 using UI.MapSelection;
 using UnityEngine.SceneManagement;
 
@@ -309,7 +310,7 @@ namespace GameControl.Controller
             try { sceneCts?.Cancel(); } catch { }
             SpawnerStateController.Instance.ClearPatternAsync();
             DOTween.KillAll();
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            UIManager.Instance.LoadToGamePlayScene();
             //SetState(_prestartState);
         }
         
