@@ -53,6 +53,8 @@ namespace UI.Leaderboard
         private LoopScrollRect _ls;
         private bool _isFetching;
         private Coroutine refresh;
+        private bool _scrollToTopPending;
+
 
         void Awake()
         {
@@ -134,7 +136,6 @@ namespace UI.Leaderboard
                     if (currentRankText)
                         currentRankText.text = (myRank > 0) ? $"YOUR RANK #{myRank}" : $"NOT IN TOP {maxEntries}";
                     success = true;
-                    _ls.ScrollToCell(0,1000);
                 }
                 catch (Exception ex)
                 {
@@ -157,7 +158,9 @@ namespace UI.Leaderboard
             if (!done) error = "Timeout";
 
             if (success)
+            {
                 SetStatus("");
+            }
             else
             {
                 Debug.LogError($"[Leaderboard] fetch failed: {error}");
@@ -274,7 +277,7 @@ namespace UI.Leaderboard
             if (refill)
             {
                 _ls.RefillCells(); 
-                _ls.verticalNormalizedPosition = 1f;
+                _ls.verticalNormalizedPosition = 0f;
                 Canvas.ForceUpdateCanvases();
                 LayoutRebuilder.ForceRebuildLayoutImmediate(_ls.content);
             }
