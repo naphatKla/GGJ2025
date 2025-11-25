@@ -102,6 +102,14 @@ namespace Challenge
             OnSnapshotChanged?.Invoke(Snapshot);
         }
 
+        public void ResetAllSelectedChallenge()
+        {
+            selected.Clear();
+            RecalculateAll();
+            Snapshot = CreateSnapshot();
+            OnSnapshotChanged?.Invoke(Snapshot);
+        }
+
         public void ToggleChallenge(ChallengeDataSO def)
         {
             if (def == null) return;

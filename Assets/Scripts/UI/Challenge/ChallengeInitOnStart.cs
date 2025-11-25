@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Challenge;
 using Demo;
+using Interface;
 using Player;
 using Sirenix.OdinInspector;
 using TMPro;
@@ -13,7 +14,7 @@ namespace UI.Challenge
 {
     [RequireComponent(typeof(LoopScrollRect))]
     [DisallowMultipleComponent]
-    public class ChallengeInitOnStart : MonoBehaviour, LoopScrollPrefabSource, LoopScrollDataSource
+    public class ChallengeInitOnStart : MonoBehaviour, LoopScrollPrefabSource, LoopScrollDataSource, IRefreshUI
     {
         [Space,Title("Setting")]
         public GameObject item;
@@ -55,6 +56,16 @@ namespace UI.Challenge
 
         private void OnEnable()
         {
+            RefreshUI();
+        }
+
+        public GameObject GetGameObject()
+        {
+            return gameObject;
+        }
+
+        public void RefreshUI()
+        {
             LoadSelectionFromPlayerData();
             var ls = GetComponent<LoopScrollRect>();
             ls.RefreshCells();
@@ -67,6 +78,8 @@ namespace UI.Challenge
 
             c_SelectedIndices.Clear();
             c_SelectedObjects.Clear();
+            if (ChallengeManager.Instance != null) 
+                ChallengeManager.Instance.ResetAllSelectedChallenge();
 
             for (var i = 0; i < _items.Count; i++)
             {

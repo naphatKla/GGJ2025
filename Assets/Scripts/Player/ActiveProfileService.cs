@@ -4,6 +4,7 @@ using System.Diagnostics;
 using ProjectExtensions;
 using UnityEngine;
 using System.IO;
+using Challenge;
 using PermanentUpgrade;
 using Debug = UnityEngine.Debug;
 using Input = UnityEngine.Input;
@@ -377,6 +378,19 @@ namespace Player
                 BrowseAndLoadJsonProfile();
             }
             GUILayout.EndHorizontal();
+            GUILayout.Space(10);
+            GUILayout.Label("Unlock Section", _hdrStyle);
+            GUILayout.BeginHorizontal();
+            if (GUILayout.Button("Unlock All Challenge"))
+            {
+                foreach (var challenge in ChallengeManager.Instance.allChallenges.challengeList)
+                {
+                    current.UnlockedChallenges.Add(challenge.id);
+                }
+                SaveNow();
+            }
+            GUILayout.EndHorizontal();
+
             
             GUILayout.EndScrollView();
             GUILayout.EndVertical();

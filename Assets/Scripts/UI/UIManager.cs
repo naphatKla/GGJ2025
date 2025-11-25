@@ -839,7 +839,6 @@ namespace UI
         
         private async UniTask Open_CloseAllAndPushAsync(UIPanelType type)
         {
-            Debug.Log($"[UIManager] Open_CloseAllAndPushAsync({type}) CALLED");
             try
             {
                 await ClearStackAsync(invokeClosedEvent: false);

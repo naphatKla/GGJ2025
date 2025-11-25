@@ -1,6 +1,7 @@
 using System;
 using Coffee.UIEffects;
 using DG.Tweening;
+using Interface;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -17,11 +18,13 @@ namespace UI
             [Tooltip("ปุ่มที่ใช้เลือกโหมดนี้")]
             public Button button;
 
-            [Tooltip("Panel / GameObject ที่ต้องเปิดเมื่อเลือกโหมดนี้")]
-            public GameObject contentRoot;
+            [Tooltip("Component ที่ implements IRefreshUI อยู่บน GameObject Panel")]
+            [SerializeField] private MonoBehaviour contentRootBehaviour;
 
             [Tooltip("Feedback ตอนโหมดนี้ถูก Select (เช่น กรอบ, Highlight, Glow ฯลฯ)")]
             public UIEffect selectedFeedback;
+            
+            public IRefreshUI ContentRoot => contentRootBehaviour as IRefreshUI;
         }
 
         [Header("ตั้งค่าโหมดต่าง ๆ")]
@@ -53,10 +56,9 @@ namespace UI
 
         private void Awake()
         {
-            // ผูกปุ่มทุกอันให้เรียก SelectMode(index)
             for (var i = 0; i < modes.Length; i++)
             {
-                var index = i; // เก็บไว้ใน local เพื่อใช้ใน lambda
+                var index = i;
                 if (modes[i].button != null)
                     modes[i].button.onClick.AddListener(() => SelectMode(index));
             }
@@ -79,11 +81,19 @@ namespace UI
 
         private void OnEnable()
         {
-            // เลือกค่าเริ่มต้นตอนเปิด
+            RefreshAllUI();
             if (modes != null && modes.Length > 0)
             {
                 defaultIndex = Mathf.Clamp(defaultIndex, 0, modes.Length - 1);
                 SelectMode(defaultIndex);
+            }
+        }
+
+        private void RefreshAllUI()
+        {
+            foreach (var item in modes)
+            {
+                item.ContentRoot?.RefreshUI();
             }
         }
 
@@ -97,16 +107,17 @@ namespace UI
 
             if (index < 0 || index >= modes.Length)
                 return;
-
             _currentIndex = index;
 
             for (var i = 0; i < modes.Length; i++)
             {
                 var item = modes[i];
-
                 // เปิด/ปิด Panel ตามโหมด
-                if (item.contentRoot != null)
-                    item.contentRoot.SetActive(i == index);
+                if (item.ContentRoot != null)
+                {
+                    item.ContentRoot?.GetGameObject().SetActive(i == index);
+                    item.ContentRoot?.RefreshUI();
+                }
 
                 // เปิด/ปิด Feedback ปุ่ม (เช่น กรอบ, Glow, ขยาย scale ฯลฯ)
                 if (item.selectedFeedback != null)

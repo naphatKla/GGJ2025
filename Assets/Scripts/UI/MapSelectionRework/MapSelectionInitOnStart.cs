@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Demo;
 using GameControl.SO;
+using Interface;
 using Player;
 using Sirenix.OdinInspector;
 using TMPro;
@@ -16,7 +17,7 @@ namespace UI.MapSelectionRework
 {
     [RequireComponent(typeof(LoopScrollRect))]
     [DisallowMultipleComponent]
-    public class MapSelectionInitOnStart : MonoBehaviour, LoopScrollPrefabSource, LoopScrollDataSource
+    public class MapSelectionInitOnStart : MonoBehaviour, LoopScrollPrefabSource, LoopScrollDataSource, IRefreshUI
     {
         [Space,Title("Setting")]
         public GameObject item;
@@ -62,6 +63,16 @@ namespace UI.MapSelectionRework
         
         private void OnEnable()
         {
+            RefreshUI();
+        }
+
+        public GameObject GetGameObject()
+        {
+            return gameObject;
+        }
+
+        public void RefreshUI()
+        {
             SelectIndexImmediate(0);
             MapSelectionSender.Instance.currentmapSelectionDataContainer = mapSelectionDataContainer;
         }
@@ -100,7 +111,7 @@ namespace UI.MapSelectionRework
             }
             return go;
         }
-        
+
         private bool IsLockedByPlayer(MapDataSO map)
         {
             if (Current == null || map == null) return false;
