@@ -34,14 +34,16 @@ MonoBehaviour:
   skillName: Overloop
   skillDescription: "<color=#24f269><b>[Support]</b></color>\r\n<color=#adadad><i>[Cooldown
     Reduction]</i></color>\n<color=#5CE5FF><b>[UPGRADE]</b></color> \r\n<color=#FFE02E><b>[+]</b></color>
-    Acceleration efficiency\r\n\r\nCooldown: <b>20s</b>\r\n\r\n- Randomly select
-    a skill to <color=#FFE02E>accelerate their cooldown timer</color> for a period
+    Acceleration efficiency\r\n\r\nCooldown: <b>20s</b>\r\n\n- Randomly select a
+    skill to <color=#FFE02E>accelerate their cooldown timer</color> for a period
     of time.\r\n<color=#E6E6FA>! <i>Only activate if there are other skills available</i>
     !</color>\n\n"
   previousSkillData: {fileID: 11400000, guid: e84ada3c5bce8024fb05f6faad9d978c, type: 2}
   nextSkillDataUpgrade: {fileID: 11400000, guid: 881668291e471b44f87218e770d07421, type: 2}
   level: 2
   cooldown: 20
+  globalCooldown: 0.25
+  maxStack: 1
   startFeedback: Overloop_Lv2
   exitFeedback: 
   clearBuffOnSkillExit: 0

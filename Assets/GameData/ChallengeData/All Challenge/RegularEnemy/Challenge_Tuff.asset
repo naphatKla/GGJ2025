@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: challenge_tuff
   title: Tuff
-  description: "Increase Tank type Max HP +300%\r\nReward\r\n+75% score multiply\r"
+  description: "Tank type Max HP +300%\r\nReward\r\n+75% score multiply\r"
   lockdescription: Not assign description yet.
   flatScoreBonusPercent: 75
   statMode: 0
@@ -25,6 +25,7 @@ MonoBehaviour:
   - groupName: 1
     enemyIds:
     - Enemy_Tank
+    enemyNotincluded: []
     stats:
       maxHP: 300
       damage: 0
