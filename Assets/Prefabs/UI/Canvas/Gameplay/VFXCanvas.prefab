@@ -5157,7 +5157,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gradeMainTransform: {fileID: 0}
-  gradeVFX: {fileID: 1116273546935802431}
+  gradeVFXHolder: {fileID: 0}
+  gradeVFXHolderOffset: {x: 0, y: -0.48, z: 0}
+  levelUpUI: {fileID: 7726915922368255358}
 --- !u!1001 &4405339287735401549
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5166,6 +5168,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1116273546935802431}
     m_Modifications:
+    - target: {fileID: 306582677931380483, guid: 2a312eba8717e444db5aab6b1b2918cf, type: 3}
+      propertyPath: m_SortingLayer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1487017581117205070, guid: 2a312eba8717e444db5aab6b1b2918cf, type: 3}
+      propertyPath: m_SortingLayer
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1729864981346975139, guid: 2a312eba8717e444db5aab6b1b2918cf, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -5254,6 +5264,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8918206286681542314, guid: 2a312eba8717e444db5aab6b1b2918cf, type: 3}
+      propertyPath: m_SortingLayer
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -5276,6 +5290,10 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 8
       objectReference: {fileID: 0}
+    - target: {fileID: 141711209846860861, guid: 44ad4f6756703264da355e5ffa00f521, type: 3}
+      propertyPath: m_SortingLayer
+      value: 14
+      objectReference: {fileID: 0}
     - target: {fileID: 257371169039378511, guid: 44ad4f6756703264da355e5ffa00f521, type: 3}
       propertyPath: InitialModule.startSize.scalar
       value: 0.32
@@ -5284,6 +5302,10 @@ PrefabInstance:
       propertyPath: EmissionModule.rateOverDistance.scalar
       value: 5
       objectReference: {fileID: 0}
+    - target: {fileID: 592798415615757804, guid: 44ad4f6756703264da355e5ffa00f521, type: 3}
+      propertyPath: m_SortingLayer
+      value: 14
+      objectReference: {fileID: 0}
     - target: {fileID: 818205604592908907, guid: 44ad4f6756703264da355e5ffa00f521, type: 3}
       propertyPath: m_Layer
       value: 8
@@ -5291,6 +5313,10 @@ PrefabInstance:
     - target: {fileID: 913815950309467246, guid: 44ad4f6756703264da355e5ffa00f521, type: 3}
       propertyPath: m_Layer
       value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 1595146324345058397, guid: 44ad4f6756703264da355e5ffa00f521, type: 3}
+      propertyPath: m_SortingLayer
+      value: 14
       objectReference: {fileID: 0}
     - target: {fileID: 1604160749260112772, guid: 44ad4f6756703264da355e5ffa00f521, type: 3}
       propertyPath: m_Pivot.x
@@ -5384,6 +5410,10 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 8
       objectReference: {fileID: 0}
+    - target: {fileID: 1708010590737560342, guid: 44ad4f6756703264da355e5ffa00f521, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1729225177903713516, guid: 44ad4f6756703264da355e5ffa00f521, type: 3}
       propertyPath: m_Layer
       value: 8
@@ -5419,6 +5449,10 @@ PrefabInstance:
     - target: {fileID: 3031474825723681369, guid: 44ad4f6756703264da355e5ffa00f521, type: 3}
       propertyPath: InitialModule.startLifetime.scalar
       value: 0.25
+      objectReference: {fileID: 0}
+    - target: {fileID: 3048872296894805161, guid: 44ad4f6756703264da355e5ffa00f521, type: 3}
+      propertyPath: m_SortingLayer
+      value: 14
       objectReference: {fileID: 0}
     - target: {fileID: 3372630228791832523, guid: 44ad4f6756703264da355e5ffa00f521, type: 3}
       propertyPath: ShapeModule.m_Scale.x
@@ -5484,9 +5518,29 @@ PrefabInstance:
       propertyPath: InitialModule.startSize.minScalar
       value: 0.04
       objectReference: {fileID: 0}
+    - target: {fileID: 6762435110305418763, guid: 44ad4f6756703264da355e5ffa00f521, type: 3}
+      propertyPath: m_SortingLayer
+      value: 14
+      objectReference: {fileID: 0}
+    - target: {fileID: 6852600166511904810, guid: 44ad4f6756703264da355e5ffa00f521, type: 3}
+      propertyPath: m_SortingLayer
+      value: 14
+      objectReference: {fileID: 0}
     - target: {fileID: 7124766954375750187, guid: 44ad4f6756703264da355e5ffa00f521, type: 3}
       propertyPath: m_Layer
       value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 7231011454627506904, guid: 44ad4f6756703264da355e5ffa00f521, type: 3}
+      propertyPath: m_SortingLayer
+      value: 14
+      objectReference: {fileID: 0}
+    - target: {fileID: 7235000542679940253, guid: 44ad4f6756703264da355e5ffa00f521, type: 3}
+      propertyPath: m_SortingLayer
+      value: 14
+      objectReference: {fileID: 0}
+    - target: {fileID: 7596276537608311241, guid: 44ad4f6756703264da355e5ffa00f521, type: 3}
+      propertyPath: m_SortingLayer
+      value: 14
       objectReference: {fileID: 0}
     - target: {fileID: 8066474876039303035, guid: 44ad4f6756703264da355e5ffa00f521, type: 3}
       propertyPath: InitialModule.startSize.scalar
@@ -5500,9 +5554,17 @@ PrefabInstance:
       propertyPath: EmissionModule.rateOverTime.scalar
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8317864259459162664, guid: 44ad4f6756703264da355e5ffa00f521, type: 3}
+      propertyPath: m_SortingLayer
+      value: 14
+      objectReference: {fileID: 0}
     - target: {fileID: 8779390967330091675, guid: 44ad4f6756703264da355e5ffa00f521, type: 3}
       propertyPath: m_Layer
       value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 8791050568268008236, guid: 44ad4f6756703264da355e5ffa00f521, type: 3}
+      propertyPath: m_SortingLayer
+      value: 14
       objectReference: {fileID: 0}
     - target: {fileID: 9021847089400800777, guid: 44ad4f6756703264da355e5ffa00f521, type: 3}
       propertyPath: m_Layer
@@ -5519,5 +5581,10 @@ PrefabInstance:
 --- !u!224 &7695675608811152876 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 1604160749260112772, guid: 44ad4f6756703264da355e5ffa00f521, type: 3}
+  m_PrefabInstance: {fileID: 8975559169651615336}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &7726915922368255358 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1708010590737560342, guid: 44ad4f6756703264da355e5ffa00f521, type: 3}
   m_PrefabInstance: {fileID: 8975559169651615336}
   m_PrefabAsset: {fileID: 0}

@@ -57,7 +57,7 @@ namespace Characters.ComboSystems
         }
 
         [Button]
-        private void AddRankPoints(int amount)
+        public void AddRankPoints(int amount)
         {
             if (amount == 0)
                 return;

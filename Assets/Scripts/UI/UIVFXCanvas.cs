@@ -8,6 +8,8 @@ public class UIVFXCanvas : NonAutoCreateSingleton<UIVFXCanvas>
     [SerializeField] private RectTransform gradeMainTransform;
     [SerializeField] private RectTransform gradeVFXHolder;
     [SerializeField] private Vector3 gradeVFXHolderOffset;
+
+    [SerializeField] private GameObject levelUpUI;
     void Start()
     {
         
@@ -17,15 +19,23 @@ public class UIVFXCanvas : NonAutoCreateSingleton<UIVFXCanvas>
     void Update()
     {
         gradeVFXHolder.transform.localScale = gradeMainTransform.transform.localScale;
-        gradeVFXHolder.transform.position = gradeMainTransform.transform.position ;
+        gradeVFXHolder.transform.position = gradeMainTransform.transform.position + gradeVFXHolderOffset ;
     }
 
     public void GradeVFXUpdate(GameObject GradeVFXprefab)
     {
-        for (int i = gradeVFXHolder.childCount - 1; i >= 0; i--)
+        if (gradeVFXHolder.childCount >= 1)
         {
-            Destroy(gradeVFXHolder.GetChild(i).gameObject);
+            for (int i = gradeVFXHolder.childCount - 1; i >= 0; i--)
+            {
+                Destroy(gradeVFXHolder.GetChild(i).gameObject);
+            }
         }
         Instantiate(GradeVFXprefab, gradeVFXHolder);
+    }
+
+    public void SetActiveLevelUpUI(bool isActive)
+    {
+        levelUpUI.SetActive(isActive);
     }
 }

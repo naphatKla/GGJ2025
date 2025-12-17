@@ -453,6 +453,7 @@ namespace Characters.UIDisplay
             Debug.Log(skillList);
             if (!isChoosingSkill)
                 ShowNextSkillPopup();
+            
         }
 
         private void ShowNextSkillPopup()
@@ -467,6 +468,7 @@ namespace Characters.UIDisplay
 
             UIManager.Instance.OpenPanel(UIPanelType.SolfUpgrade).Forget();
             ClearSkillCards();
+            UIVFXCanvas.Instance.SetActiveLevelUpUI(true);
 
             int count = Mathf.Min(cardsPerShow, skillQueue.Count);
             for (int i = 0; i < count; i++)
@@ -570,6 +572,7 @@ namespace Characters.UIDisplay
         {
             UIManager.Instance.CloseAllPanels();
             skillUpgradeController.SelectSkill(_currentSelect);
+            UIVFXCanvas.Instance.SetActiveLevelUpUI(false);
             
             ClearSkillCards();
             ShowNextSkillPopup();

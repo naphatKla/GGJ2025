@@ -20,6 +20,8 @@ namespace Tools
         ForceDie = 1,
         ReduceTime10Sec = 2,
         UpgradeMax = 3,
+        IncreaseCombatScore = 4,
+        DecreaseCombatScore = 5
     }
 
     public class EditorShortcutKey : SerializedMonoBehaviour
@@ -87,6 +89,17 @@ namespace Tools
                     PlayerController.Instance.GetComponent<SkillUpgradeController>().Dev_UpgradeAllToMaxNow();
                     break;
                 }
+                case EditorAction.IncreaseCombatScore:
+                {
+                    PlayerController.Instance.CombatRankSystem.AddRankPoints(100);
+                    break;
+                }
+                case EditorAction.DecreaseCombatScore:
+                {
+                    PlayerController.Instance.CombatRankSystem.AddRankPoints(-100);
+                    break;
+                }
+                
             }
         }
     }

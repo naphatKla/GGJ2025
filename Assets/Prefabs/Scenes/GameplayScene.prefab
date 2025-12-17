@@ -261,7 +261,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 12
-      Data: 4
+      Data: 6
     - Name: 
       Entry: 7
       Data: 
@@ -307,6 +307,30 @@ MonoBehaviour:
     - Name: $v
       Entry: 3
       Data: 3
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 
+    - Name: $k
+      Entry: 3
+      Data: 257
+    - Name: $v
+      Entry: 3
+      Data: 4
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 
+    - Name: $k
+      Entry: 3
+      Data: 258
+    - Name: $v
+      Entry: 3
+      Data: 5
     - Name: 
       Entry: 8
       Data: 
@@ -4673,6 +4697,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 8344282508276957767}
     m_Modifications:
+    - target: {fileID: 423294369119017334, guid: 58bec0da392ed7c40a7e1e138650a1f7, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2668282342112447423, guid: 58bec0da392ed7c40a7e1e138650a1f7, type: 3}
       propertyPath: gradeVFXHolder
       value: 
@@ -4681,14 +4709,14 @@ PrefabInstance:
       propertyPath: gradeMainTransform
       value: 
       objectReference: {fileID: 5244228714367695050}
-    - target: {fileID: 2668282342112447423, guid: 58bec0da392ed7c40a7e1e138650a1f7, type: 3}
-      propertyPath: gradeVFXHolderOffset.y
-      value: -113
-      objectReference: {fileID: 0}
     - target: {fileID: 2851486109162729168, guid: 58bec0da392ed7c40a7e1e138650a1f7, type: 3}
       propertyPath: m_Camera
       value: 
       objectReference: {fileID: 4086291534965394832}
+    - target: {fileID: 2941926313752655437, guid: 58bec0da392ed7c40a7e1e138650a1f7, type: 3}
+      propertyPath: prewarm
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4655337004431703798, guid: 58bec0da392ed7c40a7e1e138650a1f7, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -4773,8 +4801,8 @@ PrefabInstance:
       propertyPath: m_Name
       value: GradeHolder
       objectReference: {fileID: 0}
-    - target: {fileID: 7726915922368255358, guid: 58bec0da392ed7c40a7e1e138650a1f7, type: 3}
-      propertyPath: m_IsActive
+    - target: {fileID: 7174856133082316093, guid: 58bec0da392ed7c40a7e1e138650a1f7, type: 3}
+      propertyPath: prewarm
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8561191356953988300, guid: 58bec0da392ed7c40a7e1e138650a1f7, type: 3}
