@@ -41,6 +41,9 @@ namespace Player
         public HashSet<PermanentUpgradeType> UnlockedPermanentUpgrade = new HashSet<PermanentUpgradeType>();
         public HashSet<string> UnlockedAchievements = new HashSet<string>();
         
+        // Key ที่ยังไม่เคยเปิดดู
+        public HashSet<string> RedDotKeys = new();
+        
         // Selected Challenge
         public HashSet<string> SelectedChallenges = new HashSet<string>();
         

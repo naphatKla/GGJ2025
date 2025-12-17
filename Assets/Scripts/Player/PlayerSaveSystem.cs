@@ -84,6 +84,7 @@ namespace Player
                 UnlockedChallenges = new HashSet<string>(),
                 UnlockedPermanentUpgrade = new HashSet<PermanentUpgradeType>(),
                 UnlockedAchievements = new HashSet<string>(),
+                RedDotKeys = new(),
                 SelectedChallenges = new HashSet<string>(),
                 MapStats = new Dictionary<string, MapStat>(),
             };

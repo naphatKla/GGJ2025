@@ -1,6 +1,8 @@
+using System;
 using Achievements;
 using Coffee.UIEffects;
 using Demo;
+using DotNotify;
 using PixelUI;
 using Player;
 using Sirenix.OdinInspector;
@@ -29,6 +31,9 @@ namespace UI.Achievement
         public Color lockColorBg;
         public Gradient unlockGradient;
 
+        [Title("Red Dot")] 
+        public RedDotView reddotNoti;
+
         public void UpdateViewholder(AchievementEntry achievementData, PlayerData playerData)
         {
             if (!IsLocked)
@@ -40,6 +45,7 @@ namespace UI.Achievement
                 m_Button.interactable = false;
                 m_Button.image.color = unlockColorBg;
                 UpdateProgressionBar(achievementData, playerData);
+                UpdateDotNotify(achievementData.id);
             }
             else
             {
@@ -50,7 +56,13 @@ namespace UI.Achievement
                 m_Button.interactable = false;
                 m_Button.image.color = lockColorBg;
                 UpdateProgressionBar(achievementData, playerData);
+                UpdateDotNotify(achievementData.id);
             }
+        }
+
+        public void UpdateDotNotify(string id)
+        {
+            reddotNoti.KeyDot = "Achievement:" + id;
         }
         
         public void UpdateProgressionBar(AchievementEntry achievementData, PlayerData playerData)
