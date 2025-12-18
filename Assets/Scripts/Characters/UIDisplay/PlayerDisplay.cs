@@ -272,6 +272,7 @@ namespace Characters.UIDisplay
             if (!rankPointBar || !rankUI) return;
 
             rankUI.SetActive(currentRankPoint > 0);
+            UIVFXCanvas.Instance.GradeVFXHolderSetActive(currentRankPoint > 0);
             rankPointBar.MinValue = currentRankPointThreshold == nextRankPointThreshold? currentRankPointThreshold - 1 : currentRankPointThreshold;
             rankPointBar.MaxValue = nextRankPointThreshold;
             var clampValue = Mathf.Clamp(currentRankPoint, currentRankPointThreshold, rankPointBar.MaxValue);
@@ -468,7 +469,7 @@ namespace Characters.UIDisplay
 
             UIManager.Instance.OpenPanel(UIPanelType.SolfUpgrade).Forget();
             ClearSkillCards();
-            UIManager.Instance.TweenAlphaGameplayCanvasGroup(0.03f,0.5f);
+            UIManager.Instance.TweenAlphaInGamePanelCanvasGroup(0.03f,0.5f);
             UIVFXCanvas.Instance.SetActiveLevelUpUI(true);
 
             int count = Mathf.Min(cardsPerShow, skillQueue.Count);
@@ -573,7 +574,7 @@ namespace Characters.UIDisplay
         {
             UIManager.Instance.CloseAllPanels();
             skillUpgradeController.SelectSkill(_currentSelect);
-            UIManager.Instance.TweenAlphaGameplayCanvasGroup(1f,0.5f);
+            UIManager.Instance.TweenAlphaInGamePanelCanvasGroup(1f,0.5f);
             UIVFXCanvas.Instance.SetActiveLevelUpUI(false);
             
             ClearSkillCards();

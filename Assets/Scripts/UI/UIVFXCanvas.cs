@@ -34,6 +34,11 @@ public class UIVFXCanvas : NonAutoCreateSingleton<UIVFXCanvas>
         Instantiate(GradeVFXprefab, gradeVFXHolder);
     }
 
+    public void GradeVFXHolderSetActive(bool isActive)
+    {
+        gradeVFXHolder.gameObject.SetActive(isActive);
+    }
+
     public void SetActiveLevelUpUI(bool isActive)
     {
         levelUpUI.SetActive(isActive);
