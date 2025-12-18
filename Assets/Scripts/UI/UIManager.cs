@@ -105,7 +105,8 @@ namespace UI
         [SerializeField] private MMF_Player menuSceneLoader;
         [SerializeField] private MMF_Player gameplaySceneLoader;
         [SerializeField] private MMF_Player endCreditSceneLoader;
-        
+
+        [SerializeField] private CanvasGroup gameplayUICanvasGroup;
         [Header("UI Panels (registry)")] [SerializeField]
         private List<UIPanelEntry> panelEntries = new();
         
@@ -402,6 +403,11 @@ namespace UI
         public bool IsPanelOpen(UIPanelType type)
         {
             return _panelMap.TryGetValue(type, out var go) && go.activeSelf;
+        }
+
+        public void TweenAlphaGameplayCanvasGroup(float endValue,float time,bool isIgnoreTimeScale = true)
+        {
+            gameplayUICanvasGroup.DOFade(endValue, time).SetUpdate(isIgnoreTimeScale);;
         }
 
         #endregion

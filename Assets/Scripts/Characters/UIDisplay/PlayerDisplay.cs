@@ -468,6 +468,7 @@ namespace Characters.UIDisplay
 
             UIManager.Instance.OpenPanel(UIPanelType.SolfUpgrade).Forget();
             ClearSkillCards();
+            UIManager.Instance.TweenAlphaGameplayCanvasGroup(0.03f,0.5f);
             UIVFXCanvas.Instance.SetActiveLevelUpUI(true);
 
             int count = Mathf.Min(cardsPerShow, skillQueue.Count);
@@ -572,6 +573,7 @@ namespace Characters.UIDisplay
         {
             UIManager.Instance.CloseAllPanels();
             skillUpgradeController.SelectSkill(_currentSelect);
+            UIManager.Instance.TweenAlphaGameplayCanvasGroup(1f,0.5f);
             UIVFXCanvas.Instance.SetActiveLevelUpUI(false);
             
             ClearSkillCards();
