@@ -6,6 +6,7 @@ using Interface;
 using Player;
 using Sirenix.OdinInspector;
 using TMPro;
+using UI.DotNotify;
 using UI.MapSelection;
 using UnityEngine;
 using UnityEngine.UI;
@@ -150,11 +151,10 @@ namespace UI.Challenge
             
             var challenge = _items[index];
             var player = Current;
-
             if (challenge == null || string.IsNullOrEmpty(challenge.id)) return;
             
             if (IsLockedByPlayer(challenge)) return;
-            
+            RedDotService.Instance.Remove("Challenge:"+challenge.id);
             if (c_SelectedIndices.Contains(index))
             {
                 c_SelectedIndices.Remove(index);

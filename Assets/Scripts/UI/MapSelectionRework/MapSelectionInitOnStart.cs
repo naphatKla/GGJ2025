@@ -6,6 +6,7 @@ using Interface;
 using Player;
 using Sirenix.OdinInspector;
 using TMPro;
+using UI.DotNotify;
 using UI.Manager;
 using UI.MapSelection;
 using UnityEngine;
@@ -99,6 +100,7 @@ namespace UI.MapSelectionRework
                 cb.onClick_InitOnStart.AddListener(() =>
                 {
                     var map = _items[index];
+                    RedDotService.Instance.Remove("Map:"+map.mapId);
                     if (IsLockedByPlayer(map)) return;
 
                     m_SelectedIndex = index;
