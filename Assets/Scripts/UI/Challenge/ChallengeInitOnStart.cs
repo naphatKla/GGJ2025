@@ -67,6 +67,7 @@ namespace UI.Challenge
 
         public void RefreshUI()
         {
+            SortItems();
             LoadSelectionFromPlayerData();
             var ls = GetComponent<LoopScrollRect>();
             ls.RefreshCells();
@@ -75,56 +76,61 @@ namespace UI.Challenge
         private void LoadSelectionFromPlayerData()
         {
             var p = Current;
-            if (p == null || p.SelectedChallenges == null) return;
+            if (p == null || p.SelectedChallengesPerMap == null) return;
+            string mapId = Current.selectedMapIds;
 
             c_SelectedIndices.Clear();
             c_SelectedObjects.Clear();
-            if (ChallengeManager.Instance != null) 
-                ChallengeManager.Instance.ResetAllSelectedChallenge();
 
-            for (var i = 0; i < _items.Count; i++)
+            ChallengeManager.Instance?.ResetAllSelectedChallenge();
+
+            if (!p.SelectedChallengesPerMap.TryGetValue(mapId, out var selectedIds))
+                selectedIds = null;
+
+            for (int i = 0; i < _items.Count; i++)
             {
                 var ch = _items[i];
                 if (ch == null || string.IsNullOrEmpty(ch.id)) continue;
 
-                if (p.SelectedChallenges.Contains(ch.id))
+                if (selectedIds != null && selectedIds.Contains(ch.id))
                 {
                     c_SelectedIndices.Add(i);
                     c_SelectedObjects.Add(ch);
-                    if (ChallengeManager.Instance != null)
-                        ChallengeManager.Instance.SelectChallenge(ch);
+                    ChallengeManager.Instance?.SelectChallenge(ch);
                 }
             }
-            
+
             var sender = MapSelectionSender.Instance.challengeData;
             if (scoreMultiply) scoreMultiply.text = "+" + sender.TotalPercent + "%";
         }
         
         private List<ChallengeDataSO> LoadItems()
         {
-            // copy list จาก database กัน side-effect
-            var list = new List<ChallengeDataSO>(challengeDataContainer.challengeList);
+            _items = new List<ChallengeDataSO>(challengeDataContainer.challengeList);
+            SortItems();
+            return _items;
+        }
+        
+        private void SortItems()
+        {
+            if (Current == null || _items == null) return;
 
-            if (Current != null)
+            _items.Sort((a, b) =>
             {
-                list.Sort((a, b) =>
-                {
-                    bool aUnlocked = Current.UnlockedChallenges.Contains(a.id);
-                    bool bUnlocked = Current.UnlockedChallenges.Contains(b.id);
+                if (a == null && b == null) return 0;
+                if (a == null) return 1;
+                if (b == null) return -1;
 
-                    // ถ้าสถานะเหมือนกัน (ทั้งคู่ปลดล็อกแล้ว หรือทั้งคู่ยัง)
-                    if (aUnlocked == bUnlocked)
-                    {
-                        // จัดต่อด้วย id (หรือตัวอื่นถ้าอยากเปลี่ยน)
-                        return string.Compare(a.id, b.id, StringComparison.Ordinal);
-                    }
+                bool aUnlocked = Current.UnlockedChallenges.Contains(a.id);
+                bool bUnlocked = Current.UnlockedChallenges.Contains(b.id);
 
-                    // true ก่อน false  -> ปลดล็อกแล้วอยู่บน, ยังไม่ปลดล็อกอยู่ล่าง
+                // Unlocked ขึ้นก่อน
+                if (aUnlocked != bUnlocked)
                     return aUnlocked ? -1 : 1;
-                });
-            }
 
-            return list;
+                // ถ้าสถานะเหมือนกัน → เรียงตาม id
+                return string.Compare(a.id, b.id, StringComparison.Ordinal);
+            });
         }
         
         public GameObject GetObject(int index)
@@ -146,40 +152,45 @@ namespace UI.Challenge
 
         private void OnItemClicked(int index)
         {
-            if (index < 0 || index >= _items.Count)
-                return;
-            
+            if (index < 0 || index >= _items.Count) return;
             var challenge = _items[index];
             var player = Current;
             if (challenge == null || string.IsNullOrEmpty(challenge.id)) return;
-            
             if (IsLockedByPlayer(challenge)) return;
-            RedDotService.Instance.Remove("Challenge:"+challenge.id);
-            if (c_SelectedIndices.Contains(index))
+            string mapId = MapSelectionSender.Instance.currentMapSelection.mapId;
+
+            RedDotService.Instance.Remove("Challenge:" + challenge.id);
+
+            if (!player.SelectedChallengesPerMap.TryGetValue(mapId, out var set))
             {
+                set = new HashSet<string>();
+                player.SelectedChallengesPerMap[mapId] = set;
+            }
+
+            if (set.Contains(challenge.id))
+            {
+                // Unselect
+                set.Remove(challenge.id);
                 c_SelectedIndices.Remove(index);
                 c_SelectedObjects.Remove(challenge);
-                if (player?.SelectedChallenges != null)
-                    player.SelectedChallenges.Remove(challenge.id);
-                
-                if (ChallengeManager.Instance != null)
-                    ChallengeManager.Instance.DeselectChallenge(challenge);
+                ChallengeManager.Instance?.DeselectChallenge(challenge);
             }
             else
             {
+                // Select
+                set.Add(challenge.id);
                 c_SelectedIndices.Add(index);
                 if (!c_SelectedObjects.Contains(challenge))
                     c_SelectedObjects.Add(challenge);
-                
-                if (player?.SelectedChallenges != null)
-                    player.SelectedChallenges.Add(challenge.id);
-                
-                if (ChallengeManager.Instance != null)
-                    ChallengeManager.Instance.SelectChallenge(challenge);
+                ChallengeManager.Instance?.SelectChallenge(challenge);
             }
+
+            if (set.Count == 0)
+                player.SelectedChallengesPerMap.Remove(mapId);
 
             var sender = MapSelectionSender.Instance.challengeData;
             if (scoreMultiply) scoreMultiply.text = "+" + sender.TotalPercent + "%";
+
             OnSelected?.Invoke(index, challenge);
             ActiveProfileService.Instance?.SaveNow();
             GetComponent<LoopScrollRect>().RefreshCells();

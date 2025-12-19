@@ -71,11 +71,15 @@ namespace UI.MapSelectionRework
             ls.totalCount = totalCount;
             ls.RefillCells();
             ls.RefreshCells();
+            
+            mapButtonText.text = "SELECT CLASS";
+            mapButton.onClick.RemoveAllListeners();
+            mapButton.onClick.AddListener(() => AssignClassButton());
         }
         
         private void OnEnable()
         {
-            RefreshUI();
+            if (Current != null) RefreshUI();
         }
 
         public GameObject GetGameObject()
@@ -85,12 +89,11 @@ namespace UI.MapSelectionRework
 
         public void RefreshUI()
         {
-            UnConfirmMap(true);
-            SelectIndexImmediate(0);
+            SelectFromID(Current.selectedMapIds);
             MapSelectionSender.Instance.currentmapSelectionDataContainer = mapSelectionDataContainer;
         }
 
-        private void ConfirmMap()
+        /*private void ConfirmMap()
         {
             mapConfirm = true;
             mapButtonText.text = "SELECT CLASS";
@@ -147,7 +150,7 @@ namespace UI.MapSelectionRework
                 {
                     challengeObjectList.SetActive(false);
                 });
-        }
+        }*/
         
         private void AssignClassButton()
         {
@@ -173,14 +176,17 @@ namespace UI.MapSelectionRework
                     var map = _items[index];
                     RedDotService.Instance.Remove("Map:"+map.mapId);
                     if (IsLockedByPlayer(map)) return;
-
-                    UnConfirmMap(false);
                     m_SelectedIndex = index;
                     m_SelectedObject = map;
                     OnSelected?.Invoke(m_SelectedIndex, m_SelectedObject);
                     GetComponent<LoopScrollRect>().RefreshCells();
                     UpdateDisplayStats(_items[index], Current);
+                    
+                    //if (Current.selectedMapIds != m_SelectedObject.mapId) UnConfirmMap(false);
+                    Current.selectedMapIds = map.mapId;
                     MapSelectionSender.Instance.currentMapSelectionIndex = index;
+                    MapSelectionSender.Instance.currentMapSelection = map;
+                    challengeScript.RefreshUI();
                 });
             }
             return go;
@@ -230,7 +236,32 @@ namespace UI.MapSelectionRework
             UpdateDisplayStats(_items[index], Current);
             GetComponent<LoopScrollRect>().RefreshCells();
             MapSelectionSender.Instance.currentMapSelectionIndex = index;
+            MapSelectionSender.Instance.currentMapSelection = _items[index];
+            Current.selectedMapIds = _items[index].mapId;
         }
+        
+        public void SelectFromID(string mapId)
+        {
+            if (_items == null || _items.Count == 0) return;
+            if (string.IsNullOrEmpty(mapId)) return;
+            int index = _items.FindIndex(m => m != null && m.mapId == mapId);
+            if (index < 0) return;
+            if (IsLockedByPlayer(_items[index])) return;
+
+            m_SelectedIndex = index;
+            m_SelectedObject = _items[index];
+
+            OnSelected?.Invoke(m_SelectedIndex, m_SelectedObject);
+
+            UpdateDisplayStats(_items[index], Current);
+            GetComponent<LoopScrollRect>().RefreshCells();
+
+            MapSelectionSender.Instance.currentMapSelectionIndex = index;
+            MapSelectionSender.Instance.currentMapSelection = _items[index];
+
+            Current.selectedMapIds = mapId;
+        }
+
 
         public void ReturnObject(Transform trans)
         {
