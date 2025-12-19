@@ -1,17 +1,17 @@
 using System;
 using System.Collections.Generic;
 using Demo;
+using DG.Tweening;
 using GameControl.SO;
 using Interface;
 using Player;
 using Sirenix.OdinInspector;
 using TMPro;
+using UI.Challenge;
 using UI.DotNotify;
 using UI.Manager;
 using UI.MapSelection;
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace UI.MapSelectionRework
@@ -26,9 +26,14 @@ namespace UI.MapSelectionRework
         
         [Space,Title("Container")]
         [SerializeField] public MapSelectionDataContainer mapSelectionDataContainer;
+        
+        [Space,Title("Challenge")]
+        [SerializeField] public GameObject challengeObjectList;
+        [SerializeField] public ChallengeInitOnStart challengeScript;
 
-        [FormerlySerializedAs("startButton")] [Space, Title("Display Status")] 
-        public Button classSelectButton;
+        [Space, Title("Display Status")] 
+        public Button mapButton;
+        public TMP_Text mapButtonText;
         public Image imageDisplay;
         public TMP_Text mapNameText;
         public TMP_Text runText;
@@ -38,15 +43,24 @@ namespace UI.MapSelectionRework
         [ShowInInspector] public int m_SelectedIndex = -1;
         [ShowInInspector] public MapDataSO m_SelectedObject;
         
+        public bool mapConfirm;
         Stack<Transform> pool = new Stack<Transform>();
         private List<MapDataSO> _items = new();
         public event Action<int, MapDataSO> OnSelected;
         private PlayerData Current => ActiveProfileService.Instance != null ? ActiveProfileService.Instance.CurrentProfile : null;
         
+        private Sequence _challengeSeq;
+        private RectTransform _challengeRect;
+        private CanvasGroup _challengeCanvas;
+        private Vector2 _challengeoriginPos;
+        
         void Awake()
         {
             _items = LoadItems() ?? new List<MapDataSO>();
             totalCount = _items.Count;
+            _challengeRect = challengeObjectList.GetComponent<RectTransform>();
+            _challengeCanvas = challengeObjectList.GetComponent<CanvasGroup>();
+            _challengeoriginPos = _challengeRect.anchoredPosition;
         }
         
         void Start()
@@ -57,9 +71,6 @@ namespace UI.MapSelectionRework
             ls.totalCount = totalCount;
             ls.RefillCells();
             ls.RefreshCells();
-            
-            classSelectButton.onClick.RemoveAllListeners();
-            classSelectButton.onClick.AddListener(() => AssignClassButton());
         }
         
         private void OnEnable()
@@ -74,8 +85,68 @@ namespace UI.MapSelectionRework
 
         public void RefreshUI()
         {
+            UnConfirmMap(true);
             SelectIndexImmediate(0);
             MapSelectionSender.Instance.currentmapSelectionDataContainer = mapSelectionDataContainer;
+        }
+
+        private void ConfirmMap()
+        {
+            mapConfirm = true;
+            mapButtonText.text = "SELECT CLASS";
+            
+            ShowChallenge();
+            
+            mapButton.onClick.RemoveAllListeners();
+            mapButton.onClick.AddListener(() => AssignClassButton());
+        }
+        
+        private void UnConfirmMap(bool forceHide)
+        {
+            mapConfirm = false;
+            mapButtonText.text = "CONFIRM MAP";
+            
+            HideChallenge(forceHide);
+            
+            mapButton.onClick.RemoveAllListeners();
+            mapButton.onClick.AddListener(() => ConfirmMap());
+        }
+
+        private void ShowChallenge()
+        {
+            _challengeSeq?.Kill();
+
+            challengeObjectList.SetActive(true);
+
+            _challengeRect.anchoredPosition = _challengeoriginPos + Vector2.left * 200f;
+            _challengeCanvas.alpha = 0f;
+
+            _challengeSeq = DOTween.Sequence()
+                .Append(_challengeRect.DOAnchorPos(_challengeoriginPos, 0.45f)
+                    .SetEase(Ease.OutCubic))
+                .Join(_challengeCanvas.DOFade(1f, 0.35f))
+                .SetUpdate(true);
+        }
+        
+        private void HideChallenge(bool forceHide)
+        {
+            if (forceHide)
+            {
+                _challengeSeq?.Kill();
+                challengeObjectList.SetActive(false);
+                return;
+            }
+            _challengeSeq?.Kill();
+
+            _challengeSeq = DOTween.Sequence()
+                .Append(_challengeRect.DOAnchorPos(_challengeoriginPos + Vector2.left * 200f, 0.35f)
+                    .SetEase(Ease.InCubic))
+                .Join(_challengeCanvas.DOFade(0f, 0.25f))
+                .SetUpdate(true)
+                .OnComplete(() =>
+                {
+                    challengeObjectList.SetActive(false);
+                });
         }
         
         private void AssignClassButton()
@@ -103,6 +174,7 @@ namespace UI.MapSelectionRework
                     RedDotService.Instance.Remove("Map:"+map.mapId);
                     if (IsLockedByPlayer(map)) return;
 
+                    UnConfirmMap(false);
                     m_SelectedIndex = index;
                     m_SelectedObject = map;
                     OnSelected?.Invoke(m_SelectedIndex, m_SelectedObject);
