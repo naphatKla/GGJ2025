@@ -32,16 +32,21 @@ namespace UI.Challenge
         [ShowInInspector] public List<ChallengeDataSO> c_SelectedObjects = new();
         
         Stack<Transform> pool = new Stack<Transform>();
+        private List<ChallengeDataSO> _allItems = new();
         private List<ChallengeDataSO> _items = new();
         
         public event Action<int, ChallengeDataSO> OnSelected;
         public IReadOnlyCollection<int> GetSelectedIndices() => c_SelectedIndices;
         public IReadOnlyList<ChallengeDataSO> GetSelectedChallenges() => c_SelectedObjects;
         private PlayerData Current => ActiveProfileService.Instance != null ? ActiveProfileService.Instance.CurrentProfile : null;
+        private string CurrentMapId => MapSelectionSender.Instance != null && MapSelectionSender.Instance.currentMapSelection != null
+                ? MapSelectionSender.Instance.currentMapSelection.mapId
+                : null;
         
         void Awake()
         {
-            _items = LoadItems() ?? new List<ChallengeDataSO>();
+            _allItems = new List<ChallengeDataSO>(challengeDataContainer.challengeList);
+            RebuildVisibleItems(); 
             totalCount = _items.Count;
         }
         
@@ -67,17 +72,33 @@ namespace UI.Challenge
 
         public void RefreshUI()
         {
-            SortItems();
+            RebuildVisibleItems();
             LoadSelectionFromPlayerData();
             var ls = GetComponent<LoopScrollRect>();
             ls.RefreshCells();
         }
+        
+        private void RebuildVisibleItems()
+        {
+            var mapId = CurrentMapId;
+            _items.Clear();
+
+            for (int i = 0; i < _allItems.Count; i++)
+            {
+                var ch = _allItems[i];
+                if (ch == null) continue;
+                if (!ch.IsAvailableForMap(mapId)) continue;
+                _items.Add(ch);
+            }
+            SortItems(); 
+        }
+
 
         private void LoadSelectionFromPlayerData()
         {
             var p = Current;
             if (p == null || p.SelectedChallengesPerMap == null) return;
-            string mapId = Current.selectedMapIds;
+            string mapId = CurrentMapId;
 
             c_SelectedIndices.Clear();
             c_SelectedObjects.Clear();
@@ -104,13 +125,6 @@ namespace UI.Challenge
             if (scoreMultiply) scoreMultiply.text = "+" + sender.TotalPercent + "%";
         }
         
-        private List<ChallengeDataSO> LoadItems()
-        {
-            _items = new List<ChallengeDataSO>(challengeDataContainer.challengeList);
-            SortItems();
-            return _items;
-        }
-        
         private void SortItems()
         {
             if (Current == null || _items == null) return;
@@ -124,11 +138,9 @@ namespace UI.Challenge
                 bool aUnlocked = Current.UnlockedChallenges.Contains(a.id);
                 bool bUnlocked = Current.UnlockedChallenges.Contains(b.id);
 
-                // Unlocked ขึ้นก่อน
                 if (aUnlocked != bUnlocked)
                     return aUnlocked ? -1 : 1;
 
-                // ถ้าสถานะเหมือนกัน → เรียงตาม id
                 return string.Compare(a.id, b.id, StringComparison.Ordinal);
             });
         }
