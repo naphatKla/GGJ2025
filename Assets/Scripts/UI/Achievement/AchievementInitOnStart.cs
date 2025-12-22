@@ -5,6 +5,7 @@ using Demo;
 using Player;
 using Sirenix.OdinInspector;
 using TMPro;
+using UI.DotNotify;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -66,6 +67,12 @@ namespace UI.Achievement
                 completeAchievement.text = $"COMPLETED <color=#fdb520>{complete}/{allachievement}</color> | TOTAL <color=#00a86b>{percent:F0}%</color>";
             }
         }
+        
+        public void ResetDotNotify()
+        {
+            RedDotService.Instance.RemovePrefix("Achievement");
+        }
+
 
         private List<AchievementEntry> LoadItems()
         {
@@ -112,7 +119,7 @@ namespace UI.Achievement
             }
             return go;
         }
-
+        
         public void ReturnObject(Transform trans)
         {
             trans.SendMessage("ScrollCellReturn", SendMessageOptions.DontRequireReceiver);

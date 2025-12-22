@@ -68,6 +68,7 @@ namespace Player
                 SchemaVersion = PlayerData.CURRENT_SCHEMA_VERSION,
                 ProfileId = id,
                 DisplayName = displayName ?? "Player",
+                
                 LastPlayedUnix = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
                 nanoCoin = 0,
                 rainBowAnergy = 0,
@@ -84,7 +85,9 @@ namespace Player
                 UnlockedChallenges = new HashSet<string>(),
                 UnlockedPermanentUpgrade = new HashSet<PermanentUpgradeType>(),
                 UnlockedAchievements = new HashSet<string>(),
-                SelectedChallenges = new HashSet<string>(),
+                RedDotKeys = new(),
+                SelectedChallengesPerMap = new Dictionary<string, HashSet<string>>(),
+                selectedMapIds = "map_voidmetro",
                 MapStats = new Dictionary<string, MapStat>(),
             };
             Save(data);

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using PermanentUpgrade;
 using Player;
 using ProjectExtensions;
+using UI.DotNotify;
 using UI.Manager;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -26,6 +27,13 @@ namespace Manager
                 return svc.CurrentProfile ?? svc.LoadCurrent();
             }
         }
+        
+        #region Dot Notify
+        private void AddRedDot(string key)
+        {
+            RedDotService.Instance.Add(key);
+        }
+        #endregion
 
         #region Map
         /// <summary>ปลดล็อกแมพ (คืนค่า true ถ้ามีการเปลี่ยนแปลงจริง)</summary>
@@ -37,6 +45,7 @@ namespace Manager
             if (p.UnlockedMaps.Add(mapId))
             {
                 if (saveNow) ActiveProfileService.Instance.SaveNow();
+                AddRedDot($"Map:{mapId}");
                 if (!silent) OnMapUnlocked?.Invoke(mapId);
                 return true;
             }
@@ -69,6 +78,7 @@ namespace Manager
                 if (!string.IsNullOrEmpty(id) && p.UnlockedMaps.Add(id))
                 {
                     count++;
+                    AddRedDot($"Map:{id}");
                     if (!silent) OnMapUnlocked?.Invoke(id);
                 }
 
@@ -88,6 +98,7 @@ namespace Manager
             if (p.UnlockedChallenges.Add(challengeId))
             {
                 if (saveNow) ActiveProfileService.Instance.SaveNow();
+                AddRedDot($"Challenge:{challengeId}");
                 if (!silent) OnChallengeUnlocked?.Invoke(challengeId);
                 return true;
             }
@@ -124,7 +135,8 @@ namespace Manager
 
             if (saveNow)
                 ActiveProfileService.Instance.SaveNow();
-
+            
+            AddRedDot($"Achievement:{achievementId}");
             if (!silent)
                 OnAchievementUnlocked?.Invoke(achievementId);
 
@@ -146,6 +158,7 @@ namespace Manager
                 if (p.UnlockedPermanentUpgrade.Add(type))
                 {
                     count++;
+                    AddRedDot($"Permanent:{type}");
                     if (!silent) OnPermanentUnlocked?.Invoke(type);
                 }
 
@@ -160,6 +173,7 @@ namespace Manager
 
             if (p.UnlockedPermanentUpgrade.Add(type))
             {
+                AddRedDot($"Permanent:{type}");
                 if (saveNow) ActiveProfileService.Instance.SaveNow();
                 return true;
             }
