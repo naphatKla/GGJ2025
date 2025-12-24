@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using Manager;
 using Player;
@@ -69,7 +70,8 @@ namespace Achievements
         private bool EvaluateCondition(AchievementConditionConfig c, AchievementContext ctx)
         {
             var p = ctx.Player;
-
+            p.SelectedChallengesPerMap.TryGetValue(p.selectedMapIds, out var challenge);
+            
             switch (c.type)
             {
                 case AchievementConditionType.None:
@@ -80,7 +82,7 @@ namespace Achievements
                     return ctx.MapId == c.mapId;
 
                 case AchievementConditionType.ChallengeIdEquals:
-                    return p.SelectedChallenges.Contains(c.challengeId);
+                    return challenge != null && challenge.Contains(c.challengeId);
 
                 case AchievementConditionType.HighestScoreAtLeast:
                     if (p == null) return false;
@@ -96,7 +98,7 @@ namespace Achievements
                     return count >= c.minKillAtLeast;
 
                 case AchievementConditionType.ChallengeAtLeast:
-                    return p.SelectedChallenges.Count >= c.challengeAtLeast;
+                    return challenge != null && challenge.Count >= c.challengeAtLeast;
 
                 case AchievementConditionType.ParryAtLeast:
                     return p.HighestParryUseOnRun >= c.minParryAmountOnRun;

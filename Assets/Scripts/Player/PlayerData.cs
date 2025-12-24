@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using GameControl.SO;
 using PermanentUpgrade;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -41,8 +42,12 @@ namespace Player
         public HashSet<PermanentUpgradeType> UnlockedPermanentUpgrade = new HashSet<PermanentUpgradeType>();
         public HashSet<string> UnlockedAchievements = new HashSet<string>();
         
-        // Selected Challenge
-        public HashSet<string> SelectedChallenges = new HashSet<string>();
+        // Key ที่ยังไม่เคยเปิดดู
+        public HashSet<string> RedDotKeys = new();
+        
+        // Selected Data
+        public string selectedMapIds;
+        public Dictionary<string, HashSet<string>> SelectedChallengesPerMap = new();
         
         // perMap data (key = mapId)
         public Dictionary<string, MapStat> MapStats = new Dictionary<string, MapStat>();
@@ -53,7 +58,8 @@ namespace Player
             UnlockedMaps ??= new HashSet<string>();
             UnlockedChallenges ??= new HashSet<string>();
             MapStats ??= new Dictionary<string, MapStat>();
-            SelectedChallenges ??= new HashSet<string>();
+            selectedMapIds = "map_voidmetro";
+            SelectedChallengesPerMap ??= new Dictionary<string, HashSet<string>>();
             PermanentUpgrades ??= new Dictionary<PermanentUpgradeType, int>();
             totalKillDictionary ??= new Dictionary<string, int>();
             takeDamageOnRunDictionary ??= new();

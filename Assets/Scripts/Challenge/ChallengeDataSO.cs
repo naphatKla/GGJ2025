@@ -94,6 +94,17 @@ namespace Challenge
         public string title = "Challenge Title";
         [TextArea(4, 10)] public string description = "Not assign description yet.";
         [TextArea(4, 10)] public string lockdescription = "Not assign description yet.";
+        
+        [Header("Map Filter")]
+        [Tooltip("ถ้าว่าง = แสดงทุกแมพ, ถ้ามีค่า = แสดงเฉพาะแมพที่อยู่ในลิสต์นี้ เช่น map_voidmetro")]
+        public List<string> allowedMapIds = new(); // "map_voidmetro"
+
+        public bool IsAvailableForMap(string mapId)
+        {
+            if (string.IsNullOrEmpty(mapId)) return true;
+            if (allowedMapIds == null || allowedMapIds.Count == 0) return true;
+            return allowedMapIds.Contains(mapId);
+        }
 
         [Header("Score Bonus (Flat)")] [Tooltip("เช่น ให้ +100% ก็ใส่ 100")]
         public float flatScoreBonusPercent;
