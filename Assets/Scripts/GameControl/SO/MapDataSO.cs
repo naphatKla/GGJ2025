@@ -438,6 +438,7 @@ namespace GameControl.SO
                 public int scoreAtLeast;
             }
 
+            public bool winRequired = true;
             public LevelMilestoneConditionLogic logic;
             public List<LevelMilestoneConfig>  conditionConfigs;
         }
@@ -634,7 +635,7 @@ namespace GameControl.SO
         private List<LevelMilestoneOption> milestoneOptions;
         public int MaxMilestoneLevel => milestoneOptions.Count;
         
-        public int EvaluateLevelMilestoneOption(PlayerSummaryStats playerStatsThisRun, int currentMilestoneLevel)
+        public int EvaluateLevelMilestoneOption(PlayerSummaryStats playerStatsThisRun, int currentMilestoneLevel, bool isWin)
         {
             var currentMilestoneOption = milestoneOptions[currentMilestoneLevel];
             int conditionPassCount = 0;
@@ -656,6 +657,9 @@ namespace GameControl.SO
                 isCompleteMilestone = conditionPassCount >= milestoneOptions.Count;
             else
                 isCompleteMilestone = conditionPassCount > 0;
+
+            if (currentMilestoneOption.winRequired && !isWin)
+                isCompleteMilestone = false;
 
             currentMilestoneLevel = isCompleteMilestone ? currentMilestoneLevel + 1 : currentMilestoneLevel;
             currentMilestoneLevel = Mathf.Clamp(currentMilestoneLevel, 0, MaxMilestoneLevel);

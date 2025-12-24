@@ -94,7 +94,7 @@ namespace GameControl.GameState
             var mapStats = profile.GetOrCreateMapStat(GameStateController.Instance.CurrentMap.mapId);
             int currentLevelMilestone = mapStats.CurrentLevelMilestone;
             int calculatedLevelMilestone =
-                GameStateController.Instance.CurrentMap.EvaluateLevelMilestoneOption(dataStatus, currentLevelMilestone);
+                GameStateController.Instance.CurrentMap.EvaluateLevelMilestoneOption(dataStatus, currentLevelMilestone, isWin);
 
             profile.RegisterRun(GameStateController.Instance.CurrentMap.mapId, newScore, isWin,
                 calculatedLevelMilestone);
