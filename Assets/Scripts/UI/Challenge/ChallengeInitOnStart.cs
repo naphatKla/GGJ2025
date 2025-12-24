@@ -80,49 +80,65 @@ namespace UI.Challenge
         
         private void RebuildVisibleItems()
         {
-            var mapId = CurrentMapId;
             _items.Clear();
+            var mapId = CurrentMapId;
 
-            for (int i = 0; i < _allItems.Count; i++)
+            foreach (var ch in _allItems)
             {
-                var ch = _allItems[i];
                 if (ch == null) continue;
+                if (ch.hideFromUI) continue;
                 if (!ch.IsAvailableForMap(mapId)) continue;
                 _items.Add(ch);
             }
-            SortItems(); 
-        }
 
+            SortItems();
+        }
 
         private void LoadSelectionFromPlayerData()
         {
             var p = Current;
             if (p == null || p.SelectedChallengesPerMap == null) return;
+
             string mapId = CurrentMapId;
 
             c_SelectedIndices.Clear();
             c_SelectedObjects.Clear();
-
             ChallengeManager.Instance?.ResetAllSelectedChallenge();
 
-            if (!p.SelectedChallengesPerMap.TryGetValue(mapId, out var selectedIds))
-                selectedIds = null;
+            if (!p.SelectedChallengesPerMap.TryGetValue(mapId, out var selectedIds) || selectedIds == null)
+            {
+                selectedIds = new HashSet<string>();
+                p.SelectedChallengesPerMap[mapId] = selectedIds;
+            }
+            
+            //Force confirm-selected challenges
+            for (int i = 0; i < _items.Count; i++)
+            {
+                var ch = _items[i];
+                if (ch == null || string.IsNullOrEmpty(ch.id)) continue;
+                if (IsLockedByPlayer(ch)) continue;
+                if (ch.IsConfirmSelectedForMap(mapId))
+                    selectedIds.Add(ch.id);
+            }
 
+            //Build UI selection caches
             for (int i = 0; i < _items.Count; i++)
             {
                 var ch = _items[i];
                 if (ch == null || string.IsNullOrEmpty(ch.id)) continue;
 
-                if (selectedIds != null && selectedIds.Contains(ch.id))
+                if (selectedIds.Contains(ch.id))
                 {
                     c_SelectedIndices.Add(i);
                     c_SelectedObjects.Add(ch);
                     ChallengeManager.Instance?.SelectChallenge(ch);
                 }
             }
-
+            
+            if (selectedIds.Count == 0) p.SelectedChallengesPerMap.Remove(mapId);
             var sender = MapSelectionSender.Instance.challengeData;
             if (scoreMultiply) scoreMultiply.text = "+" + sender.TotalPercent + "%";
+            ActiveProfileService.Instance?.SaveNow();
         }
         
         private void SortItems()
@@ -181,6 +197,9 @@ namespace UI.Challenge
 
             if (set.Contains(challenge.id))
             {
+                if (challenge.IsConfirmSelectedForMap(mapId))
+                    return;
+                
                 // Unselect
                 set.Remove(challenge.id);
                 c_SelectedIndices.Remove(index);

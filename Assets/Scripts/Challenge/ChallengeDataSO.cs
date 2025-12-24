@@ -94,16 +94,28 @@ namespace Challenge
         public string title = "Challenge Title";
         [TextArea(4, 10)] public string description = "Not assign description yet.";
         [TextArea(4, 10)] public string lockdescription = "Not assign description yet.";
+        public bool hideFromUI;
         
         [Header("Map Filter")]
         [Tooltip("ถ้าว่าง = แสดงทุกแมพ, ถ้ามีค่า = แสดงเฉพาะแมพที่อยู่ในลิสต์นี้ เช่น map_voidmetro")]
         public List<string> allowedMapIds = new(); // "map_voidmetro"
+        
+        [Header("Auto Selected")]
+        [Tooltip("ถ้าใส่แปลว่าแมพนั้นถูกเลือกแน่นอน เช่น map_voidmetro")]
+        public List<string> confirmSelectedMapIds = new(); // "map_voidmetro"
 
         public bool IsAvailableForMap(string mapId)
         {
             if (string.IsNullOrEmpty(mapId)) return true;
             if (allowedMapIds == null || allowedMapIds.Count == 0) return true;
             return allowedMapIds.Contains(mapId);
+        }
+        
+        public bool IsConfirmSelectedForMap(string mapId)
+        {
+            if (string.IsNullOrEmpty(mapId)) return false;
+            if (confirmSelectedMapIds == null || confirmSelectedMapIds.Count == 0) return false;
+            return confirmSelectedMapIds.Contains(mapId);
         }
 
         [Header("Score Bonus (Flat)")] [Tooltip("เช่น ให้ +100% ก็ใส่ 100")]
