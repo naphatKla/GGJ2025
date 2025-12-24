@@ -3,12 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using Characters.CollectItemSystems.CollectableItems;
 using Characters.Controllers;
+using Characters.Data;
 using Characters.SO.CharacterDataSO;
 using GameControl.Controller;
 using GameControl.Interface;
 using GameControl.Pattern;
 using Sirenix.OdinInspector;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
 namespace GameControl.SO
@@ -412,6 +414,34 @@ namespace GameControl.SO
             public float Chance { get => eventMapChance; set => eventMapChance = value; }
         }
         
+        [Serializable]
+        public class LevelMilestoneOption
+        {
+            public enum LevelMilestoneCondition
+            {
+                None = 0,
+                ScoreAtLeast = 1,
+            }
+    
+            public enum LevelMilestoneConditionLogic
+            {
+                And = 0,
+                Or = 1,
+            }
+
+            [Serializable]
+            public class LevelMilestoneConfig
+            {
+                public LevelMilestoneCondition conditionType;
+                
+                [ShowIf(nameof(conditionType), LevelMilestoneCondition.ScoreAtLeast)]
+                public int scoreAtLeast;
+            }
+
+            public LevelMilestoneConditionLogic logic;
+            public List<LevelMilestoneConfig>  conditionConfigs;
+        }
+        
         #region Map Setting
         [FoldoutGroup("Map Setting")]
         [Tooltip("id")]
@@ -594,6 +624,44 @@ namespace GameControl.SO
         [FoldoutGroup("Rush Setting")] 
         [Tooltip("Time to enter rush (Default Last 60 seconds)")]
         public float rushTime = 60f;
+
+        #endregion
+
+        #region LevelMilestone
+
+        [FoldoutGroup("Level Milestone")] [SerializeField]
+        [ListDrawerSettings(ShowIndexLabels = true)]
+        private List<LevelMilestoneOption> milestoneOptions;
+        public int MaxMilestoneLevel => milestoneOptions.Count;
+        
+        public int EvaluateLevelMilestoneOption(PlayerSummaryStats playerStatsThisRun, int currentMilestoneLevel)
+        {
+            var currentMilestoneOption = milestoneOptions[currentMilestoneLevel];
+            int conditionPassCount = 0;
+            
+            foreach (var config in currentMilestoneOption.conditionConfigs)
+            {
+                switch (config.conditionType)
+                {
+                    case LevelMilestoneOption.LevelMilestoneCondition.ScoreAtLeast:
+                        if (playerStatsThisRun.totalScore >= config.scoreAtLeast)
+                            conditionPassCount++;
+                        break;
+                }
+            }
+
+            bool isCompleteMilestone;
+
+            if (currentMilestoneOption.logic == LevelMilestoneOption.LevelMilestoneConditionLogic.And)
+                isCompleteMilestone = conditionPassCount >= milestoneOptions.Count;
+            else
+                isCompleteMilestone = conditionPassCount > 0;
+
+            currentMilestoneLevel = isCompleteMilestone ? currentMilestoneLevel + 1 : currentMilestoneLevel;
+            currentMilestoneLevel = Mathf.Clamp(currentMilestoneLevel, 0, MaxMilestoneLevel);
+
+            return currentMilestoneLevel;
+        }
 
         #endregion
     }
