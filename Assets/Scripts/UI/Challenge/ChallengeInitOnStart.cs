@@ -98,8 +98,8 @@ namespace UI.Challenge
         {
             var p = Current;
             if (p == null || p.SelectedChallengesPerMap == null) return;
-
             string mapId = CurrentMapId;
+            MapStat mapState = PlayerDataExtensions.GetOrCreateMapStat( p, mapId);
 
             c_SelectedIndices.Clear();
             c_SelectedObjects.Clear();
@@ -117,7 +117,7 @@ namespace UI.Challenge
                 var ch = _items[i];
                 if (ch == null || string.IsNullOrEmpty(ch.id)) continue;
                 if (IsLockedByPlayer(ch)) continue;
-                if (ch.IsConfirmSelectedForMap(mapId))
+                if (ch.IsConfirmSelectedForMap(mapId, mapState.CurrentLevelMilestone))
                     selectedIds.Add(ch.id);
             }
 
@@ -185,7 +185,9 @@ namespace UI.Challenge
             var player = Current;
             if (challenge == null || string.IsNullOrEmpty(challenge.id)) return;
             if (IsLockedByPlayer(challenge)) return;
-            string mapId = MapSelectionSender.Instance.currentMapSelection.mapId;
+            string mapId = CurrentMapId;
+            MapStat mapState = PlayerDataExtensions.GetOrCreateMapStat( player, mapId);
+
 
             RedDotService.Instance.Remove("Challenge:" + challenge.id);
 
@@ -197,7 +199,7 @@ namespace UI.Challenge
 
             if (set.Contains(challenge.id))
             {
-                if (challenge.IsConfirmSelectedForMap(mapId))
+                if (challenge.IsConfirmSelectedForMap(mapId, mapState.CurrentLevelMilestone))
                     return;
                 
                 // Unselect

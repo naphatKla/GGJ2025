@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -86,6 +87,13 @@ namespace Challenge
         [Header("Stat Bundle (% from base)")]
         public EnemyStatBundle stats;
     }
+    
+    [Serializable]
+    public struct AutoSelectedChallenge
+    {
+        public string autoSelectedMapID;
+        public int selectOnLevel;
+    }
 
     [CreateAssetMenu(menuName = "Challenge/ChallengeData", fileName = "ChallengeData")]
     public class ChallengeDataSO : ScriptableObject
@@ -101,8 +109,8 @@ namespace Challenge
         public List<string> allowedMapIds = new(); // "map_voidmetro"
         
         [Header("Auto Selected")]
-        [Tooltip("ถ้าใส่แปลว่าแมพนั้นถูกเลือกแน่นอน เช่น map_voidmetro")]
-        public List<string> confirmSelectedMapIds = new(); // "map_voidmetro"
+        [Tooltip("ถ้าใส่แปลว่าแมพนั้นถูกเลือกแน่นอน เช่น map_voidmetro และตามด้วย Milestone")]
+        public List<AutoSelectedChallenge> confirmSelectedMapIds = new(); // "map_voidmetro"
 
         public bool IsAvailableForMap(string mapId)
         {
@@ -111,11 +119,11 @@ namespace Challenge
             return allowedMapIds.Contains(mapId);
         }
         
-        public bool IsConfirmSelectedForMap(string mapId)
+        public bool IsConfirmSelectedForMap(string mapId, int milestoneLevel)
         {
             if (string.IsNullOrEmpty(mapId)) return false;
             if (confirmSelectedMapIds == null || confirmSelectedMapIds.Count == 0) return false;
-            return confirmSelectedMapIds.Contains(mapId);
+            return confirmSelectedMapIds.Any(x => x.autoSelectedMapID == mapId && x.selectOnLevel == milestoneLevel);
         }
 
         [Header("Score Bonus (Flat)")] [Tooltip("เช่น ให้ +100% ก็ใส่ 100")]
