@@ -4,6 +4,7 @@ using Characters.Controllers;
 using Dan.Main;
 using GameControl.Controller;
 using GameControl.Interface;
+using Manager;
 using Player;
 using UI;
 using UI.Leaderboard;
@@ -14,10 +15,14 @@ namespace GameControl.GameState
     public class SummaryState : IGameState
     {
         private bool _uploadedThisRun = false;
-        
-        public void OnEnable(GameStateController controller) { }
 
-        public void OnDisable(GameStateController controller) { }
+        public void OnEnable(GameStateController controller)
+        {
+        }
+
+        public void OnDisable(GameStateController controller)
+        {
+        }
 
         public void Enter(GameStateController controller)
         {
@@ -30,7 +35,7 @@ namespace GameControl.GameState
             SavePlayerDataAndUpload(controller);
 
             AchievementManager.Current.OnRunEnded(controller.CurrentMap.mapId);
-            
+
             switch (GameStateController.Current.gameResult)
             {
                 case EndResult.Completed:
@@ -39,65 +44,76 @@ namespace GameControl.GameState
             }
         }
 
-        public void Update(GameStateController controller) { }
+        public void Update(GameStateController controller)
+        {
+        }
 
-        public void Exit(GameStateController controller) { }
-        
+        public void Exit(GameStateController controller)
+        {
+        }
+
         private void SavePlayerDataAndUpload(GameStateController controller)
         {
             var svc = ActiveProfileService.Instance;
             var profile = svc?.CurrentProfile;
             if (profile == null) return;
-            
+
             var dataStatus = PlayerController.Instance.GetSummaryStatsOnStateEnd();
             int newScore = Mathf.Max(0, dataStatus.totalScore);
             int damageDealThisRun = Mathf.Max(0, dataStatus.totalDamageDeal);
-            
+
             profile.LastScore = newScore;
             profile.TotalDamageDeal += damageDealThisRun;
-            
+
             if (dataStatus.totalSecondarySkillUsed > profile.HighestParryUseOnRun)
                 profile.HighestParryUseOnRun = dataStatus.totalSecondarySkillUsed;
 
             if (dataStatus.totalHeal > profile.HighestHealOnRun)
                 profile.HighestHealOnRun = dataStatus.totalHeal;
-            
+
             // set total take damage hit from each enemy type in this run
             profile.takeDamageOnRunDictionary = dataStatus.takeDamageAmountDictionary;
-            
+
             // add total died damage hit from each enemy type 
             foreach (var keyValuePair in dataStatus.diedDictionary)
             {
                 profile.totalDiedDictionary.TryAdd(keyValuePair.Key, 0);
                 profile.totalDiedDictionary[keyValuePair.Key]++;
             }
-            
+
             // add total kill of each enemy type  
             foreach (var kv in dataStatus.totalKillDictionary)
             {
                 profile.totalKillDictionary.TryAdd(kv.Key, 0);
                 profile.totalKillDictionary[kv.Key] += kv.Value;
             }
-            
+
             profile.LastPlayedUnix = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 
             bool isWin = controller.gameResult == EndResult.Completed;
-            profile.RegisterRun(GameStateController.Instance.CurrentMap.mapId, newScore, isWin);
-            
+            var mapStats = profile.GetOrCreateMapStat(GameStateController.Instance.CurrentMap.mapId);
+            int currentLevelMilestone = mapStats.CurrentLevelMilestone;
+            int calculatedLevelMilestone =
+                GameStateController.Instance.CurrentMap.EvaluateLevelMilestoneOption(dataStatus, currentLevelMilestone, isWin);
+
+            profile.RegisterRun(GameStateController.Instance.CurrentMap.mapId, newScore, isWin,
+                calculatedLevelMilestone);
+
             bool isNewHigh = newScore > profile.HighestScore;
             if (isNewHigh)
             {
                 profile.HighestScore = newScore;
-            } 
+            }
+
             //Exchange 10% of score to currency
             var currency = (newScore / 100) * 1;
             profile.nanoCoin += currency;
             svc.SaveNow();
-            
+
             // Leaderboard
             if (isNewHigh)
             {
-                LeaderboardCreator.SetUserGuid(profile.ProfileId);  
+                LeaderboardCreator.SetUserGuid(profile.ProfileId);
                 string name = $"{profile.DisplayName}";
                 Leaderboards.ThailandGameShow.UploadNewEntry(
                     name, newScore,
@@ -112,7 +128,6 @@ namespace GameControl.GameState
                         LeaderboardItemPresenter.RefreshAll();
                     }
                 );
-                
             }
         }
     }
