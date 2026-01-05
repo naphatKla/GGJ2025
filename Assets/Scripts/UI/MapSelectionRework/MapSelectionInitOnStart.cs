@@ -33,8 +33,8 @@ namespace UI.MapSelectionRework
 
         [Space, Title("Display Status")] 
         public Button mapButton;
-        public TMP_Text mapButtonText;
-        public Image imageDisplay;
+        public TMP_Text mapButtonText; 
+        //public Image imageDisplay;
         public TMP_Text mapNameText;
         public TMP_Text runText;
         public TMP_Text highestScoreText;
@@ -281,7 +281,7 @@ namespace UI.MapSelectionRework
         {
             if (mapData == null || playerData == null) return;
 
-            if (imageDisplay != null) imageDisplay.sprite = mapData.image;
+            //if (imageDisplay != null) imageDisplay.sprite = mapData.image;
             if (mapNameText != null) mapNameText.text = mapData.mapName.ToUpper();
             if (runText != null)
             {
