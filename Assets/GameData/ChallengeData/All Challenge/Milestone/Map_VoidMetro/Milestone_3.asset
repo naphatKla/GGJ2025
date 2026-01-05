@@ -10,20 +10,30 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 09b72255c8a83094cbc34892911a61ff, type: 3}
-  m_Name: Milestone_1
+  m_Name: Milestone_3
   m_EditorClassIdentifier: 
-  id: challenge_map_voidmetro_milestone_1
-  title: Milestone 1 [Void Metro]
+  id: challenge_map_voidmetro_milestone_3
+  title: Milestone 3 [Void Metro]
   description: 
   lockdescription: 
   hideFromUI: 0
   allowedMapIds: []
   confirmSelectedMapIds:
   - autoSelectedMapID: map_voidmetro
-    selectOnLevel: 1
+    selectOnLevel: 3
   flatScoreBonusPercent: 0
   statMode: 0
   playerSetMods: []
   playerMods: []
   disableAutoCalculate: 0
-  enemyGroups: []
+  enemyGroups:
+  - groupName: 1
+    enemyIds:
+    - '*'
+    enemyNotincluded:
+    - Boss_Twin
+    stats:
+      maxHP: 100
+      damage: 20
+      moveSpeed: 0
+      spawnChance: 0
