@@ -1,3 +1,4 @@
+using Challenge;
 using Coffee.UIEffects;
 using Demo;
 using Player;
@@ -25,10 +26,18 @@ namespace UI.Milestone
         [Title("Lock Display")] 
         public Color lockColor;
         
-        public void UpdateViewholder()
+        public void UpdateViewholder(int index, ChallengeDataSO content, MapStat mapStat)
         {
-
-            
+            if (mapStat.MaxLevelUnlockMilestone >= index) //Unlock
+            {
+                if (imageVh != null) imageVh.color = unlockColor;
+                if (levelVh != null) levelVh.text = "LV."+index;
+            }
+            else
+            {
+                if (imageVh != null) imageVh.color = lockColor;
+                if (levelVh != null) levelVh.text = "LOCKED";
+            }
         }
         
         public void SetClickedColor(bool isClicked)
@@ -37,13 +46,25 @@ namespace UI.Milestone
             if (isClicked)
             {
                 uiEffect.shadowMode = ShadowMode.Outline;
-                uiEffect.gradationMode = GradationMode.AngleGradient;
+                ApplyGradient(uiEffect, selectGradient);
             }
             else
             {
-                uiEffect.edgeMode = EdgeMode.None;
+                uiEffect.shadowMode = ShadowMode.None;
                 uiEffect.gradationMode = GradationMode.None;
             }
+        }
+        
+        private void ApplyGradient(UIEffect effect, Gradient gradient)
+        {
+            if (!effect || gradient == null) return;
+            effect.gradationMode = GradationMode.AngleGradient;
+            effect.gradationIntensity = 1f;
+            effect.SetGradientKeys(
+                gradient.colorKeys,
+                gradient.alphaKeys,
+                gradient.mode
+            );
         }
     }
 }

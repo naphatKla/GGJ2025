@@ -10,20 +10,13 @@ namespace UI.Milestone
     [Serializable]
     public class MapMilestoneCatagory
     {
-        [FoldoutGroup("$catagoryName")]
-        public string catagoryName;
-        [FoldoutGroup("$catagoryName")]
-        public List<MilestoneEntry> storageEntries;
+        [FoldoutGroup("$mapID")]
+        public string mapID;
+        [FoldoutGroup("$mapID")]
+        public List<ChallengeDataSO> milestoneEntries;
     }
-    
-    [Serializable]
-    public struct MilestoneEntry
-    {
-        public int level;
-        public ChallengeDataSO challenge;
-    }
-    
-    [CreateAssetMenu(fileName = "MilestoneContainer", menuName = "Map Selection")]
+
+    [CreateAssetMenu(fileName = "MilestoneContainer", menuName = "MilestoneUIContainer")]
     public class MilestoneDataContainer : ScriptableObject
     {
         public List<MapMilestoneCatagory> milestoneList;

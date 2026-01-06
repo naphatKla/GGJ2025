@@ -11,6 +11,7 @@ using UI.Challenge;
 using UI.DotNotify;
 using UI.Manager;
 using UI.MapSelection;
+using UI.Milestone;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -30,6 +31,9 @@ namespace UI.MapSelectionRework
         [Space,Title("Challenge")]
         [SerializeField] public GameObject challengeObjectList;
         [SerializeField] public ChallengeInitOnStart challengeScript;
+        
+        [Space,Title("Milestone")]
+        [SerializeField] public MilestoneInitOnStart milestoneScript;
 
         [Space, Title("Display Status")] 
         public Button mapButton;
@@ -187,6 +191,7 @@ namespace UI.MapSelectionRework
                     MapSelectionSender.Instance.currentMapSelectionIndex = index;
                     MapSelectionSender.Instance.currentMapSelection = map;
                     challengeScript.RefreshUI();
+                    milestoneScript.RefreshUI();
                 });
             }
             return go;
