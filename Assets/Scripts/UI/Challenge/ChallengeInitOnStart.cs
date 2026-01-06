@@ -117,7 +117,7 @@ namespace UI.Challenge
                 var ch = _items[i];
                 if (ch == null || string.IsNullOrEmpty(ch.id)) continue;
                 if (IsLockedByPlayer(ch)) continue;
-                if (ch.IsConfirmSelectedForMap(mapId, mapState.CurrentLevelMilestone))
+                if (ch.IsConfirmSelectedForMap(mapId, mapState.MaxLevelUnlockMilestone))
                     selectedIds.Add(ch.id);
             }
 
@@ -199,7 +199,7 @@ namespace UI.Challenge
 
             if (set.Contains(challenge.id))
             {
-                if (challenge.IsConfirmSelectedForMap(mapId, mapState.CurrentLevelMilestone))
+                if (challenge.IsConfirmSelectedForMap(mapId, mapState.MaxLevelUnlockMilestone))
                     return;
                 
                 // Unselect

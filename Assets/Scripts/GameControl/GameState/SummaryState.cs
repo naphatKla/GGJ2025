@@ -92,12 +92,17 @@ namespace GameControl.GameState
 
             bool isWin = controller.gameResult == EndResult.Completed;
             var mapStats = profile.GetOrCreateMapStat(GameStateController.Instance.CurrentMap.mapId);
-            int currentLevelMilestone = mapStats.CurrentLevelMilestone;
-            int calculatedLevelMilestone =
-                GameStateController.Instance.CurrentMap.EvaluateLevelMilestoneOption(dataStatus, currentLevelMilestone, isWin);
 
+            int maxLevelUnlockMilestone = mapStats.MaxLevelUnlockMilestone;
+            int calculatedNextLevelMilestone = maxLevelUnlockMilestone;
+            
+            if (mapStats.SelectedLevelMilestone == mapStats.MaxLevelUnlockMilestone)
+            {
+                calculatedNextLevelMilestone = GameStateController.Instance.CurrentMap.EvaluateLevelMilestoneOption(dataStatus, maxLevelUnlockMilestone, isWin);
+            }
+            
             profile.RegisterRun(GameStateController.Instance.CurrentMap.mapId, newScore, isWin,
-                calculatedLevelMilestone);
+                calculatedNextLevelMilestone);
 
             bool isNewHigh = newScore > profile.HighestScore;
             if (isNewHigh)

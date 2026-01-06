@@ -133,7 +133,8 @@ namespace Player
         public int WinAmount;
         public int HighestScore;
         public int LastScore;
-        public int CurrentLevelMilestone;
+        public int MaxLevelUnlockMilestone;
+        public int SelectedLevelMilestone;
     }
     
     public static class PlayerDataExtensions
@@ -155,7 +156,7 @@ namespace Player
             var stat = p.GetOrCreateMapStat(mapId);
             if (stat == null) return;
 
-            stat.CurrentLevelMilestone = calculatedLevelMilestone;
+            stat.MaxLevelUnlockMilestone = calculatedLevelMilestone;
             stat.TimesPlayed++;
             stat.LastScore = score;
             stat.WinAmount = isWin ? stat.WinAmount + 1 : stat.WinAmount;
