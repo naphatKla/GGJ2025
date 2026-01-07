@@ -23,6 +23,8 @@ namespace UI.Milestone
 
         [Space, Title("Display")] 
         public TMP_Text textDisplay;
+        public TMP_Text textCurrentSelect;
+        public CanvasGroup canvasGroup;
         
         [Space,Title("Container")]
         [SerializeField] public MilestoneDataContainer milestoneDataContainer;
@@ -68,11 +70,11 @@ namespace UI.Milestone
 
             if (match == null || match.milestoneEntries == null)
             {
-                textDisplay.gameObject.SetActive(false);
+                canvasGroup.alpha = 0;
                 return;
             }
             
-            textDisplay.gameObject.SetActive(true);
+            canvasGroup.alpha = 1;
             _items = new List<ChallengeDataSO>(match.milestoneEntries);
             totalCount = _items.Count;
         }
@@ -134,7 +136,7 @@ namespace UI.Milestone
                     m_SelectedObject = milestone;
                     GetComponent<LoopScrollRect>().RefreshCells();
                     mapState.SelectedLevelMilestone = index;
-                    UpdateMilestoneObjective(milestone);
+                    UpdateMilestoneObjective(milestone, mapState);
                     challengeScript.RefreshUI();
                     //challengeScript.RefreshUI();
                 });
@@ -171,10 +173,11 @@ namespace UI.Milestone
             }
         }
 
-        public void UpdateMilestoneObjective(ChallengeDataSO challengeDataSo)
+        public void UpdateMilestoneObjective(ChallengeDataSO challengeDataSo, MapStat mapStat)
         {
             if (challengeDataSo == null) return;
             if (textDisplay != null) textDisplay.text = challengeDataSo.description;
+            if (textCurrentSelect != null) textCurrentSelect.text = "Level " + mapStat.SelectedLevelMilestone;
         }
 
         public bool SelectIndex(int index, MapStat mapState)
@@ -196,7 +199,7 @@ namespace UI.Milestone
             mapState.SelectedLevelMilestone = index;
             var ls = GetComponent<LoopScrollRect>();
             ls.RefreshCells();
-            UpdateMilestoneObjective(milestone); 
+            UpdateMilestoneObjective(milestone, mapState);
             challengeScript.RefreshUI();
             return true;
         }

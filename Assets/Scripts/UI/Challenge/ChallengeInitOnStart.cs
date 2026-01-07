@@ -117,7 +117,7 @@ namespace UI.Challenge
                 var ch = _items[i];
                 if (ch == null || string.IsNullOrEmpty(ch.id)) continue;
                 if (IsLockedByPlayer(ch)) continue;
-                if (ch.IsConfirmSelectedForMap(mapId, mapState.MaxLevelUnlockMilestone))
+                if (ch.IsConfirmSelectedForMap(mapId, mapState.SelectedLevelMilestone))
                     selectedIds.Add(ch.id);
             }
 
