@@ -36,6 +36,8 @@ namespace UI.Milestone
         [ShowInInspector] public int m_SelectedIndex = -1;
         [ShowInInspector] public ChallengeDataSO m_SelectedObject;
         
+        private int LevelToIndex(int level) => Mathf.Max(0, level - 1);
+        private int IndexToLevel(int index) => index + 1;
         Stack<Transform> pool = new Stack<Transform>();
         private List<ChallengeDataSO> _items = new();
         private PlayerData Current => ActiveProfileService.Instance != null ? ActiveProfileService.Instance.CurrentProfile : null;
@@ -104,11 +106,18 @@ namespace UI.Milestone
                 ApplyToScrollRect();
                 return;
             }
-            var mapState = Current.GetOrCreateMapStat(mapId);
-            SelectIndex(mapState.SelectedLevelMilestone, mapState);
+
             LoadItems();
             ApplyToScrollRect();
+
+            var mapState = Current.GetOrCreateMapStat(mapId);
+
+            int idx = LevelToIndex(mapState.SelectedLevelMilestone);
+            idx = Mathf.Clamp(idx, 0, Mathf.Max(0, _items.Count - 1));
+
+            SelectIndex(idx, mapState, notifyChallenge:true);
         }
+
         
         private bool IsLockedByPlayer(int index, MapStat mapStat)
         {
@@ -135,10 +144,9 @@ namespace UI.Milestone
                     m_SelectedIndex = index;
                     m_SelectedObject = milestone;
                     GetComponent<LoopScrollRect>().RefreshCells();
-                    mapState.SelectedLevelMilestone = index;
+                    mapState.SelectedLevelMilestone = index + 1;
                     UpdateMilestoneObjective(milestone, mapState);
                     challengeScript.RefreshUI();
-                    //challengeScript.RefreshUI();
                 });
             }
             return go;
@@ -180,13 +188,10 @@ namespace UI.Milestone
             if (textCurrentSelect != null) textCurrentSelect.text = "Level " + mapStat.SelectedLevelMilestone;
         }
 
-        public bool SelectIndex(int index, MapStat mapState)
+        public bool SelectIndex(int index, MapStat mapState, bool notifyChallenge = true)
         {
             if (_items == null || _items.Count == 0) return false;
             if (index < 0 || index >= _items.Count) return false;
-
-            var mapId = CurrentMapId;
-            if (string.IsNullOrEmpty(mapId)) return false;
             if (IsLockedByPlayer(index, mapState)) return false;
 
             var milestone = _items[index];
@@ -196,13 +201,16 @@ namespace UI.Milestone
 
             m_SelectedIndex = index;
             m_SelectedObject = milestone;
-            mapState.SelectedLevelMilestone = index;
-            var ls = GetComponent<LoopScrollRect>();
-            ls.RefreshCells();
+
+            mapState.SelectedLevelMilestone = IndexToLevel(index);
+
+            GetComponent<LoopScrollRect>().RefreshCells();
             UpdateMilestoneObjective(milestone, mapState);
-            challengeScript.RefreshUI();
+
+            if (notifyChallenge) challengeScript.RefreshUI();
             return true;
         }
+
     }
 }
 

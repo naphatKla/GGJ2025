@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Player;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -108,6 +109,10 @@ namespace Challenge
         [Tooltip("ถ้าว่าง = แสดงทุกแมพ, ถ้ามีค่า = แสดงเฉพาะแมพที่อยู่ในลิสต์นี้ เช่น map_voidmetro")]
         public List<string> allowedMapIds = new(); // "map_voidmetro"
         
+        [Header("Auto Unlock")]
+        [Tooltip("ถ้าเปิด จะปลดอัตโนมัติเมื่อเรียก AutoUnlock(...)")]
+        public bool allowAutoUnlock = false;
+        
         [Header("Auto Selected")]
         [Tooltip("ถ้าใส่แปลว่าแมพนั้นถูกเลือกแน่นอน เช่น map_voidmetro และตามด้วย Milestone")]
         public List<AutoSelectedChallenge> confirmSelectedMapIds = new(); // "map_voidmetro"
@@ -124,6 +129,19 @@ namespace Challenge
             if (string.IsNullOrEmpty(mapId)) return false;
             if (confirmSelectedMapIds == null || confirmSelectedMapIds.Count == 0) return false;
             return confirmSelectedMapIds.Any(x => x.autoSelectedMapID == mapId && x.selectOnLevel == milestoneLevel);
+        }
+        
+        public bool AutoUnlock(PlayerData player)
+        {
+            if (!allowAutoUnlock) return false;
+            if (player == null) return false;
+            if (string.IsNullOrEmpty(id)) return false;
+
+            player.UnlockedChallenges ??= new HashSet<string>();
+            if (player.UnlockedChallenges.Contains(id)) return false;
+
+            player.UnlockedChallenges.Add(id);
+            return true;
         }
 
         [Header("Score Bonus (Flat)")] [Tooltip("เช่น ให้ +100% ก็ใส่ 100")]

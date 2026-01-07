@@ -99,7 +99,7 @@ namespace UI.Challenge
             var p = Current;
             if (p == null || p.SelectedChallengesPerMap == null) return;
             string mapId = CurrentMapId;
-            MapStat mapState = PlayerDataExtensions.GetOrCreateMapStat( p, mapId);
+            MapStat mapState = PlayerDataExtensions.GetOrCreateMapStat(p, mapId);
 
             c_SelectedIndices.Clear();
             c_SelectedObjects.Clear();
@@ -112,13 +112,20 @@ namespace UI.Challenge
             }
             
             //Force confirm-selected challenges
-            for (int i = 0; i < _items.Count; i++)
+            for (int i = 0; i < _allItems.Count; i++)
             {
-                var ch = _items[i];
+                var ch = _allItems[i];
+                if (ch.allowAutoUnlock) ch.AutoUnlock(p);
                 if (ch == null || string.IsNullOrEmpty(ch.id)) continue;
                 if (IsLockedByPlayer(ch)) continue;
                 if (ch.IsConfirmSelectedForMap(mapId, mapState.SelectedLevelMilestone))
+                {
                     selectedIds.Add(ch.id);
+                }
+                else
+                {
+                    selectedIds.Remove(ch.id);
+                }
             }
 
             //Build UI selection caches
@@ -133,6 +140,14 @@ namespace UI.Challenge
                     c_SelectedObjects.Add(ch);
                     ChallengeManager.Instance?.SelectChallenge(ch);
                 }
+            }
+            for (int i = 0; i < _allItems.Count; i++)
+            {
+                var ch = _allItems[i];
+                if (ch == null || string.IsNullOrEmpty(ch.id)) continue;
+
+                if (selectedIds.Contains(ch.id))
+                    ChallengeManager.Instance?.SelectChallenge(ch);
             }
             
             if (selectedIds.Count == 0) p.SelectedChallengesPerMap.Remove(mapId);
