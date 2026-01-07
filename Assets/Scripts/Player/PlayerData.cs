@@ -133,6 +133,8 @@ namespace Player
         public int WinAmount;
         public int HighestScore;
         public int LastScore;
+        public int MaxLevelUnlockMilestone;
+        public int SelectedLevelMilestone;
     }
     
     public static class PlayerDataExtensions
@@ -149,11 +151,12 @@ namespace Player
         }
 
         /// <summary>อัปเดตสถิติเมื่อเล่นจบ 1 รอบในแผนที่ที่กำหนด</summary>
-        public static void RegisterRun(this PlayerData p, string mapId, int score, bool isWin)
+        public static void RegisterRun(this PlayerData p, string mapId, int score, bool isWin, int calculatedLevelMilestone)
         {
             var stat = p.GetOrCreateMapStat(mapId);
             if (stat == null) return;
 
+            stat.MaxLevelUnlockMilestone = calculatedLevelMilestone;
             stat.TimesPlayed++;
             stat.LastScore = score;
             stat.WinAmount = isWin ? stat.WinAmount + 1 : stat.WinAmount;
