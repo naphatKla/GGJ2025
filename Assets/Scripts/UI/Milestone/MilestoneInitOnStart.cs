@@ -28,6 +28,7 @@ namespace UI.Milestone
         
         [Space,Title("Container")]
         [SerializeField] public MilestoneDataContainer milestoneDataContainer;
+        [SerializeField] private MilestonePathRenderer pathRenderer;
         
         [Space,Title("Challenge")]
         [SerializeField] public ChallengeInitOnStart challengeScript;
@@ -110,7 +111,7 @@ namespace UI.Milestone
 
             var mapState = Current.GetOrCreateMapStat(mapId);
 
-            int idx = mapState.SelectedLevelMilestone;
+            int idx = mapState.MaxLevelUnlockMilestone;
             idx = Mathf.Clamp(idx, 0, Mathf.Max(0, _items.Count - 1));
 
             SelectIndex(idx, mapState, notifyChallenge:true);
@@ -144,6 +145,7 @@ namespace UI.Milestone
                     GetComponent<LoopScrollRect>().RefreshCells();
                     mapState.SelectedLevelMilestone = index + 1;
                     UpdateMilestoneObjective(milestone, mapState);
+                    pathRenderer.SetSelectedIndex(m_SelectedIndex);
                     challengeScript.RefreshUI();
                 });
             }
@@ -172,6 +174,8 @@ namespace UI.Milestone
                 vh.ScrollCellIndex(idx, content);
                 vh.SetClickedColor(idx == m_SelectedIndex);
                 vh.UpdateViewholder(idx,_items[idx], mapState);
+                vh.BindPath(pathRenderer, idx);
+                pathRenderer.SetSelectedIndex(m_SelectedIndex);
             }
             else
             {
@@ -204,7 +208,7 @@ namespace UI.Milestone
 
             GetComponent<LoopScrollRect>().RefreshCells();
             UpdateMilestoneObjective(milestone, mapState);
-
+            pathRenderer.SetSelectedIndex(m_SelectedIndex);
             if (notifyChallenge) challengeScript.RefreshUI();
             return true;
         }
