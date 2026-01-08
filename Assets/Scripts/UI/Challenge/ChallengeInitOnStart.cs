@@ -6,6 +6,7 @@ using Interface;
 using Player;
 using Sirenix.OdinInspector;
 using TMPro;
+using UI.DotNotify;
 using UI.MapSelection;
 using UnityEngine;
 using UnityEngine.UI;
@@ -31,16 +32,21 @@ namespace UI.Challenge
         [ShowInInspector] public List<ChallengeDataSO> c_SelectedObjects = new();
         
         Stack<Transform> pool = new Stack<Transform>();
+        private List<ChallengeDataSO> _allItems = new();
         private List<ChallengeDataSO> _items = new();
         
         public event Action<int, ChallengeDataSO> OnSelected;
         public IReadOnlyCollection<int> GetSelectedIndices() => c_SelectedIndices;
         public IReadOnlyList<ChallengeDataSO> GetSelectedChallenges() => c_SelectedObjects;
         private PlayerData Current => ActiveProfileService.Instance != null ? ActiveProfileService.Instance.CurrentProfile : null;
+        private string CurrentMapId => MapSelectionSender.Instance != null && MapSelectionSender.Instance.currentMapSelection != null
+                ? MapSelectionSender.Instance.currentMapSelection.mapId
+                : null;
         
         void Awake()
         {
-            _items = LoadItems() ?? new List<ChallengeDataSO>();
+            _allItems = new List<ChallengeDataSO>(challengeDataContainer.challengeList);
+            RebuildVisibleItems(); 
             totalCount = _items.Count;
         }
         
@@ -66,64 +72,108 @@ namespace UI.Challenge
 
         public void RefreshUI()
         {
+            RebuildVisibleItems();
             LoadSelectionFromPlayerData();
             var ls = GetComponent<LoopScrollRect>();
             ls.RefreshCells();
+        }
+        
+        private void RebuildVisibleItems()
+        {
+            _items.Clear();
+            var mapId = CurrentMapId;
+
+            foreach (var ch in _allItems)
+            {
+                if (ch == null) continue;
+                if (ch.hideFromUI) continue;
+                if (!ch.IsAvailableForMap(mapId)) continue;
+                _items.Add(ch);
+            }
+
+            SortItems();
         }
 
         private void LoadSelectionFromPlayerData()
         {
             var p = Current;
-            if (p == null || p.SelectedChallenges == null) return;
+            if (p == null || p.SelectedChallengesPerMap == null) return;
+            string mapId = CurrentMapId;
+            MapStat mapState = PlayerDataExtensions.GetOrCreateMapStat(p, mapId);
 
             c_SelectedIndices.Clear();
             c_SelectedObjects.Clear();
-            if (ChallengeManager.Instance != null) 
-                ChallengeManager.Instance.ResetAllSelectedChallenge();
+            ChallengeManager.Instance?.ResetAllSelectedChallenge();
 
-            for (var i = 0; i < _items.Count; i++)
+            if (!p.SelectedChallengesPerMap.TryGetValue(mapId, out var selectedIds) || selectedIds == null)
+            {
+                selectedIds = new HashSet<string>();
+                p.SelectedChallengesPerMap[mapId] = selectedIds;
+            }
+            
+            //Force confirm-selected challenges
+            for (int i = 0; i < _allItems.Count; i++)
+            {
+                var ch = _allItems[i];
+                if (ch.allowAutoUnlock) ch.AutoUnlock(p);
+                if (ch == null || string.IsNullOrEmpty(ch.id)) continue;
+                if (IsLockedByPlayer(ch)) continue;
+                if (ch.IsConfirmSelectedForMap(mapId, mapState.SelectedLevelMilestone))
+                {
+                    selectedIds.Add(ch.id);
+                }
+                else
+                {
+                    selectedIds.Remove(ch.id);
+                }
+            }
+
+            //Build UI selection caches
+            for (int i = 0; i < _items.Count; i++)
             {
                 var ch = _items[i];
                 if (ch == null || string.IsNullOrEmpty(ch.id)) continue;
 
-                if (p.SelectedChallenges.Contains(ch.id))
+                if (selectedIds.Contains(ch.id))
                 {
                     c_SelectedIndices.Add(i);
                     c_SelectedObjects.Add(ch);
-                    if (ChallengeManager.Instance != null)
-                        ChallengeManager.Instance.SelectChallenge(ch);
+                    ChallengeManager.Instance?.SelectChallenge(ch);
                 }
             }
+            for (int i = 0; i < _allItems.Count; i++)
+            {
+                var ch = _allItems[i];
+                if (ch == null || string.IsNullOrEmpty(ch.id)) continue;
+
+                if (selectedIds.Contains(ch.id))
+                    ChallengeManager.Instance?.SelectChallenge(ch);
+            }
             
+            if (selectedIds.Count == 0) p.SelectedChallengesPerMap.Remove(mapId);
             var sender = MapSelectionSender.Instance.challengeData;
             if (scoreMultiply) scoreMultiply.text = "+" + sender.TotalPercent + "%";
+            ActiveProfileService.Instance?.SaveNow();
         }
         
-        private List<ChallengeDataSO> LoadItems()
+        private void SortItems()
         {
-            // copy list จาก database กัน side-effect
-            var list = new List<ChallengeDataSO>(challengeDataContainer.challengeList);
+            if (Current == null || _items == null) return;
 
-            if (Current != null)
+            _items.Sort((a, b) =>
             {
-                list.Sort((a, b) =>
-                {
-                    bool aUnlocked = Current.UnlockedChallenges.Contains(a.id);
-                    bool bUnlocked = Current.UnlockedChallenges.Contains(b.id);
+                if (a == null && b == null) return 0;
+                if (a == null) return 1;
+                if (b == null) return -1;
 
-                    // ถ้าสถานะเหมือนกัน (ทั้งคู่ปลดล็อกแล้ว หรือทั้งคู่ยัง)
-                    if (aUnlocked == bUnlocked)
-                    {
-                        // จัดต่อด้วย id (หรือตัวอื่นถ้าอยากเปลี่ยน)
-                        return string.Compare(a.id, b.id, StringComparison.Ordinal);
-                    }
+                bool aUnlocked = Current.UnlockedChallenges.Contains(a.id);
+                bool bUnlocked = Current.UnlockedChallenges.Contains(b.id);
 
-                    // true ก่อน false  -> ปลดล็อกแล้วอยู่บน, ยังไม่ปลดล็อกอยู่ล่าง
+                if (aUnlocked != bUnlocked)
                     return aUnlocked ? -1 : 1;
-                });
-            }
 
-            return list;
+                return string.Compare(a.id, b.id, StringComparison.Ordinal);
+            });
         }
         
         public GameObject GetObject(int index)
@@ -145,41 +195,50 @@ namespace UI.Challenge
 
         private void OnItemClicked(int index)
         {
-            if (index < 0 || index >= _items.Count)
-                return;
-            
+            if (index < 0 || index >= _items.Count) return;
             var challenge = _items[index];
             var player = Current;
-
             if (challenge == null || string.IsNullOrEmpty(challenge.id)) return;
-            
             if (IsLockedByPlayer(challenge)) return;
-            
-            if (c_SelectedIndices.Contains(index))
+            string mapId = CurrentMapId;
+            MapStat mapState = PlayerDataExtensions.GetOrCreateMapStat( player, mapId);
+
+
+            RedDotService.Instance.Remove("Challenge:" + challenge.id);
+
+            if (!player.SelectedChallengesPerMap.TryGetValue(mapId, out var set))
             {
+                set = new HashSet<string>();
+                player.SelectedChallengesPerMap[mapId] = set;
+            }
+
+            if (set.Contains(challenge.id))
+            {
+                if (challenge.IsConfirmSelectedForMap(mapId, mapState.MaxLevelUnlockMilestone))
+                    return;
+                
+                // Unselect
+                set.Remove(challenge.id);
                 c_SelectedIndices.Remove(index);
                 c_SelectedObjects.Remove(challenge);
-                if (player?.SelectedChallenges != null)
-                    player.SelectedChallenges.Remove(challenge.id);
-                
-                if (ChallengeManager.Instance != null)
-                    ChallengeManager.Instance.DeselectChallenge(challenge);
+                ChallengeManager.Instance?.DeselectChallenge(challenge);
             }
             else
             {
+                // Select
+                set.Add(challenge.id);
                 c_SelectedIndices.Add(index);
                 if (!c_SelectedObjects.Contains(challenge))
                     c_SelectedObjects.Add(challenge);
-                
-                if (player?.SelectedChallenges != null)
-                    player.SelectedChallenges.Add(challenge.id);
-                
-                if (ChallengeManager.Instance != null)
-                    ChallengeManager.Instance.SelectChallenge(challenge);
+                ChallengeManager.Instance?.SelectChallenge(challenge);
             }
+
+            if (set.Count == 0)
+                player.SelectedChallengesPerMap.Remove(mapId);
 
             var sender = MapSelectionSender.Instance.challengeData;
             if (scoreMultiply) scoreMultiply.text = "+" + sender.TotalPercent + "%";
+
             OnSelected?.Invoke(index, challenge);
             ActiveProfileService.Instance?.SaveNow();
             GetComponent<LoopScrollRect>().RefreshCells();

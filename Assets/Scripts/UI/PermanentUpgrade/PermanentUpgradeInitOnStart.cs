@@ -6,6 +6,7 @@ using PermanentUpgrade;
 using Player;
 using Sirenix.OdinInspector;
 using TMPro;
+using UI.DotNotify;
 using UI.Manager;
 using UnityEngine;
 using UnityEngine.UI;
@@ -92,7 +93,7 @@ namespace UI.PermanentUpgrade
                 {
                     var pEntry = _items[index];
                     if (IsLockedByPlayer(pEntry)) return;
-
+                    RedDotService.Instance.Remove("Permanent:"+pEntry.type);
                     p_SelectedIndex = index;
                     p_SelectedObject = pEntry;
                     GetComponent<LoopScrollRect>().RefreshCells();

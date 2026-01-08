@@ -145,7 +145,7 @@ namespace Characters.UIDisplay
         private System.Action<float> _onHealthChangeUpdateUIHandler;
         private System.Action<float> _onHealthChangeTextHandler;
 
-        private void Start()
+        public void InitDependencies()
         {
             PlayerController.Instance.OnResetAllBehavior += UpdateAllUI;
             if (solfUpgradeSelectButton != null)
@@ -202,8 +202,6 @@ namespace Characters.UIDisplay
 
             PoolingManager.Instance.Create<TextMeshProUGUI>(worldTextUIParryFeedbackPrefab.name, PoolingGroupName.UI,
                 CreateParryFeedbackText, prewarmCount: 3);
-            
-            UpdateAllUI();
         }
 
         private void OnDestroy()
@@ -248,7 +246,7 @@ namespace Characters.UIDisplay
             PoolingManager.Current?.ClearPool(worldTextUIPrefab.name);
         }
 
-        private void UpdateAllUI()
+        public void UpdateAllUI()
         {
             if (rankPointBar != null)
                 rankPointBar.CurrentValue = 0f;

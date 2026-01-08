@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Characters.Controllers;
 using Characters.SO.CharacterDataSO;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace Characters.ComboSystems
@@ -55,6 +56,7 @@ namespace Characters.ComboSystems
             _highestRecordedRankId = _rankDatas[0].rankId;
         }
 
+        [Button]
         private void AddRankPoints(int amount)
         {
             if (amount == 0)

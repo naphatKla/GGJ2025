@@ -713,3 +713,27 @@ MonoBehaviour:
   maxEnemyPoint: 1000
   rushData: {fileID: 11400000, guid: e2b1d3052964e77449e76a9e319858b4, type: 2}
   rushTime: 60
+  milestoneOptions:
+  - winRequired: 1
+    logic: 0
+    conditionConfigs: []
+  - winRequired: 1
+    logic: 0
+    conditionConfigs:
+    - conditionType: 1
+      scoreAtLeast: 100
+  - winRequired: 1
+    logic: 0
+    conditionConfigs:
+    - conditionType: 1
+      scoreAtLeast: 1000
+  - winRequired: 1
+    logic: 0
+    conditionConfigs:
+    - conditionType: 1
+      scoreAtLeast: 10000
+  - winRequired: 1
+    logic: 0
+    conditionConfigs:
+    - conditionType: 1
+      scoreAtLeast: 100000

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Challenge;
 using Coffee.UIEffects;
 using Demo;
+using DotNotify;
 using Sirenix.OdinInspector;
 using TMPro;
 using UnityEngine;
@@ -15,6 +16,7 @@ namespace UI.Challenge
         [Title("Viewholder")] 
         public TMP_Text nameVh;
         public TMP_Text descriptionVh;
+        public RedDotView reddotNoti;
 
         [Title("Display")] 
         public UIEffect selectedUIEffect;
@@ -28,6 +30,7 @@ namespace UI.Challenge
         
         public void UpdateViewholder(ChallengeDataSO challengeData)
         {
+            UpdateDotNotify(challengeData.id);
             if (!IsLocked)
             {
                 if (nameVh != null) nameVh.text = challengeData.title;
@@ -44,6 +47,11 @@ namespace UI.Challenge
                 m_Button.interactable = false;
                 m_Button.image.color = lockColorBg;
             }
+        }
+        
+        public void UpdateDotNotify(string id)
+        {
+            reddotNoti.KeyDot = "Challenge:" + id;
         }
         
         public void ApplyLockGradient()

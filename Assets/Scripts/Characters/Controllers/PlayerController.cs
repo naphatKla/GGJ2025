@@ -81,6 +81,7 @@ namespace Characters.Controllers
             }
             
             base.AssignCharacterData(data);
+            playerDisplay.UpdateAllUI();
         }
 
         protected override void SubscribeDependency()
@@ -106,6 +107,8 @@ namespace Characters.Controllers
 
             UIManager.Instance.OnAnyPanelOpen += OnAnyUIOpen;
             UIManager.Instance.OnAllPanelClosed += OnAllUIClosed;
+            
+            playerDisplay.InitDependencies();
             
             base.SubscribeDependency();
         }
