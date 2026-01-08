@@ -36,8 +36,6 @@ namespace UI.Milestone
         [ShowInInspector] public int m_SelectedIndex = -1;
         [ShowInInspector] public ChallengeDataSO m_SelectedObject;
         
-        private int LevelToIndex(int level) => Mathf.Max(0, level - 1);
-        private int IndexToLevel(int index) => index + 1;
         Stack<Transform> pool = new Stack<Transform>();
         private List<ChallengeDataSO> _items = new();
         private PlayerData Current => ActiveProfileService.Instance != null ? ActiveProfileService.Instance.CurrentProfile : null;
@@ -112,7 +110,7 @@ namespace UI.Milestone
 
             var mapState = Current.GetOrCreateMapStat(mapId);
 
-            int idx = LevelToIndex(mapState.SelectedLevelMilestone);
+            int idx = mapState.SelectedLevelMilestone;
             idx = Mathf.Clamp(idx, 0, Mathf.Max(0, _items.Count - 1));
 
             SelectIndex(idx, mapState, notifyChallenge:true);
@@ -202,7 +200,7 @@ namespace UI.Milestone
             m_SelectedIndex = index;
             m_SelectedObject = milestone;
 
-            mapState.SelectedLevelMilestone = IndexToLevel(index);
+            mapState.SelectedLevelMilestone = index;
 
             GetComponent<LoopScrollRect>().RefreshCells();
             UpdateMilestoneObjective(milestone, mapState);

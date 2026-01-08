@@ -12,15 +12,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 09b72255c8a83094cbc34892911a61ff, type: 3}
   m_Name: Milestone_1
   m_EditorClassIdentifier: 
-  id: challenge_map_voidmetro_milestone_1
-  title: Milestone 1 [Void Metro]
+  id: challenge_map_voidmetro_milestone_2
+  title: Milestone 2 [Void Metro]
   description: 'Task
 
-    - None
+    - Reach (n) scores
 
     Difficulty
 
-    - None'
+    - Enemy Max HP
+    +50%
+
+    - Enemy Damage +10%'
   lockdescription: 
   hideFromUI: 1
   allowedMapIds: []
@@ -33,4 +36,14 @@ MonoBehaviour:
   playerSetMods: []
   playerMods: []
   disableAutoCalculate: 0
-  enemyGroups: []
+  enemyGroups:
+  - groupName: 1
+    enemyIds:
+    - '*'
+    enemyNotincluded:
+    - Boss_Twin
+    stats:
+      maxHP: 50
+      damage: 10
+      moveSpeed: 0
+      spawnChance: 0
