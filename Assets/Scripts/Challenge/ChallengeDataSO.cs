@@ -162,7 +162,7 @@ namespace Challenge
         [FoldoutGroup("Enemy Modify")]
         public List<EnemyGroupMod> enemyGroups = new();
         
-        [FoldoutGroup("Stage Modify")] [Tooltip("เช่น 10 ก็จะบวกเวลเพิ่มไป 10 วิ ถ้าใส่ -10 ก็จะลดลง 10 วิ")]
+        [FoldoutGroup("Stage Modify")] [Tooltip("เช่น 10 ก็จะบวกเวลาเพิ่มไป 10 วิ ถ้าใส่ -10 ก็จะลดลง 10 วิ")]
         public float timeModify;
         
         // -------- Debug fields (show-only) --------
