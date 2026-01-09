@@ -136,28 +136,34 @@ namespace Challenge
             if (!allowAutoUnlock) return false;
             if (player == null) return false;
             if (string.IsNullOrEmpty(id)) return false;
-
             player.UnlockedChallenges ??= new HashSet<string>();
             if (player.UnlockedChallenges.Contains(id)) return false;
-
+            
             player.UnlockedChallenges.Add(id);
             return true;
         }
 
+        [FoldoutGroup("Score Modify")]
         [Header("Score Bonus (Flat)")] [Tooltip("เช่น ให้ +100% ก็ใส่ 100")]
         public float flatScoreBonusPercent;
-        
+        [FoldoutGroup("Score Modify")]
         public StatMode statMode;
         
+        [FoldoutGroup("Player Modify")]
         [ShowIf("@statMode == StatMode.Set")] [Header("Player Set Stats")]
         public List<PlayerSetStatMod> playerSetMods = new();
 
+        [FoldoutGroup("Player Modify")]
         [ShowIf("@statMode == StatMode.Additive")] [Header("Player Additive Debuffs (negative is harder)")]
         public List<PlayerStatMod> playerMods = new();
         
-        [Header("Enemy Groups (edit per group once)")]
+        [FoldoutGroup("Enemy Modify")]
         public bool disableAutoCalculate = false;
+        [FoldoutGroup("Enemy Modify")]
         public List<EnemyGroupMod> enemyGroups = new();
+        
+        [FoldoutGroup("Stage Modify")] [Tooltip("เช่น 10 ก็จะบวกเวลเพิ่มไป 10 วิ ถ้าใส่ -10 ก็จะลดลง 10 วิ")]
+        public float timeModify;
         
         // -------- Debug fields (show-only) --------
         [FoldoutGroup("Debug Score"), ReadOnly, ShowInInspector]

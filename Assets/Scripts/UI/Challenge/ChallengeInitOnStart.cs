@@ -115,7 +115,7 @@ namespace UI.Challenge
             for (int i = 0; i < _allItems.Count; i++)
             {
                 var ch = _allItems[i];
-                if (ch.allowAutoUnlock) ch.AutoUnlock(p);
+                if (ch.allowAutoUnlock) { ch.AutoUnlock(p); }
                 if (ch == null || string.IsNullOrEmpty(ch.id)) continue;
                 if (IsLockedByPlayer(ch)) continue;
                 if (ch.IsConfirmSelectedForMap(mapId, mapState.SelectedLevelMilestone))
