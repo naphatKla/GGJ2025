@@ -162,6 +162,9 @@ namespace GameControl.Controller
             if (mapData == null || mapData.EnemyOptions == null || Sender == null) return;
             var snap = Sender.challengeData;
             
+            //Stage Modify
+            mapData.mapGlobalTime += snap.TimeModify;
+            
             //Player Modify
             var playerDataSo = mapData.playerData.CopyInstance(); // Create Player DataSO
             var player = PlayerController.Instance;
