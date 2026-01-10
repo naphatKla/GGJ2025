@@ -35,12 +35,18 @@ MonoBehaviour:
   disableAutoCalculate: 0
   enemyGroups:
   - groupName: 1
-    enemyIds: []
-    enemyNotincluded:
+    enemyIds:
+    - Enemy_Soldier
+    - Enemy_Javelin
+    - Enemy_Absolute
+    - Enemy_Comet
+    - Enemy_Bomber
+    - Enemy_Absorption
     - Boss_Twin
+    enemyNotincluded: []
     stats:
       maxHP: 0
       damage: 0
       moveSpeed: 0
-      spawnChance: 0
+      spawnChance: -100
   timeModify: -300

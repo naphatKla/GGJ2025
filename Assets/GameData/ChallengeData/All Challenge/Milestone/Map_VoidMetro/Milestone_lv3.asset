@@ -49,4 +49,14 @@ MonoBehaviour:
       damage: 30
       moveSpeed: 0
       spawnChance: 0
-  timeModify: 60
+  - groupName: 2
+    enemyIds:
+    - Enemy_Bomber
+    - Enemy_Absorption
+    enemyNotincluded: []
+    stats:
+      maxHP: 0
+      damage: 0
+      moveSpeed: 0
+      spawnChance: -100
+  timeModify: -120
