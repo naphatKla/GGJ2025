@@ -33,4 +33,14 @@ MonoBehaviour:
   playerSetMods: []
   playerMods: []
   disableAutoCalculate: 0
-  enemyGroups: []
+  enemyGroups:
+  - groupName: 1
+    enemyIds: []
+    enemyNotincluded:
+    - Boss_Twin
+    stats:
+      maxHP: 0
+      damage: 0
+      moveSpeed: 0
+      spawnChance: 0
+  timeModify: -300
