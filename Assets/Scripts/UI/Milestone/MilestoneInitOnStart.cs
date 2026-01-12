@@ -143,7 +143,7 @@ namespace UI.Milestone
                     m_SelectedIndex = index;
                     m_SelectedObject = milestone;
                     GetComponent<LoopScrollRect>().RefreshCells();
-                    mapState.SelectedLevelMilestone = index + 1;
+                    mapState.SelectedLevelMilestone = index;
                     UpdateMilestoneObjective(milestone, mapState);
                     pathRenderer.SetSelectedIndex(m_SelectedIndex);
                     challengeScript.RefreshUI();
