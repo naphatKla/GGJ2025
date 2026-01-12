@@ -221,7 +221,7 @@ namespace GameControl.Controller
             foreach (var opt in mapData.EnemyOptions)
             {
                 var e = snap.GetEnemy((opt.id ?? "").Trim()); 
-                ApplyEnemyOption(opt, e);
+                ApplyEnemyOption(opt, e, false);
             }
         }
         
@@ -234,11 +234,11 @@ namespace GameControl.Controller
             foreach (var opt in rushData.enemyOptions)
             {
                 var e = snap.GetEnemy((opt.id ?? "").Trim()); 
-                ApplyEnemyOption(opt, e);
+                ApplyEnemyOption(opt, e, true);
             }
         }
         
-        private static void ApplyEnemyOption(MapDataSO.EnemyOption opt, in Challenge.Challenge.EnemySnapshot eSnap)
+        private static void ApplyEnemyOption(MapDataSO.EnemyOption opt, in Challenge.Challenge.EnemySnapshot eSnap, bool rushStage)
         {
             float hp      = eSnap.Get(EnemyStat.MaxHP);
             float dmg     = eSnap.Get(EnemyStat.Damage);
@@ -246,8 +246,15 @@ namespace GameControl.Controller
             float chanceP = eSnap.Get(EnemyStat.SpawnChance);
             if (float.IsFinite(chanceP))
             {
-                var newGrowthChance = opt.enemyChanceGrowthRate * (1f + (chanceP / 100f));
-                opt.enemyChanceGrowthRate  = Mathf.Max(0f, newGrowthChance);
+                if (rushStage)
+                {
+                    opt.chance = chanceP;
+                }
+                else
+                {
+                    var newGrowthChance = opt.enemyChanceGrowthRate * (1f + (chanceP / 100f));
+                    opt.enemyChanceGrowthRate  = Mathf.Max(0f, newGrowthChance);
+                }
             }
 
             if (opt.enemyData != null)
