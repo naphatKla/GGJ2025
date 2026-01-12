@@ -4,8 +4,10 @@ using System.Diagnostics;
 using ProjectExtensions;
 using UnityEngine;
 using System.IO;
+using System.Linq;
 using Challenge;
 using PermanentUpgrade;
+using UI.MapSelection;
 using Debug = UnityEngine.Debug;
 using Input = UnityEngine.Input;
 #if UNITY_EDITOR
@@ -228,6 +230,8 @@ namespace Player
             DrawKV("HighestParryUseOnRun", current.HighestParryUseOnRun.ToString());
             DrawKV("LastPlayed (unix)", current.LastPlayedUnix.ToString());
             DrawKV("LastPlayed (local)", UnixToLocalString(current.LastPlayedUnix));
+            var mapId = current.selectedMapIds == null ? "NULL" : current.selectedMapIds;
+            DrawKV("Selected Map", mapId);
 
             GUILayout.Space(8);
             GUILayout.Label("UnlockedMaps", _hdrStyle);
@@ -243,14 +247,31 @@ namespace Player
                     GUILayout.Label($"• {m}", _kvStyle);
             else
                 GUILayout.Label("(empty)", _kvStyle);
-            
-            GUILayout.Label("Selected Challenge", _hdrStyle);
-            if (current.SelectedChallenges is { Count: > 0 })
-                foreach (var m in current.SelectedChallenges)
-                    GUILayout.Label($"• {m}", _kvStyle);
+
+            GUILayout.Label("Selected Challenges (Per Map)", _hdrStyle);
+
+            var dict = current.SelectedChallengesPerMap;
+            if (dict != null && dict.Count > 0)
+                foreach (var kv in dict.OrderBy(k => k.Key))
+                {
+                    GUILayout.BeginVertical("box");
+
+                    // Map ID
+                    GUILayout.Label(kv.Key, _kvStyle);
+
+                    var list = kv.Value;
+                    if (list != null && list.Count > 0)
+                        foreach (var chId in list)
+                            GUILayout.Label($"  • {chId}", _kvStyle);
+                    else
+                        GUILayout.Label("  (no challenge)", _kvStyle);
+
+                    GUILayout.EndVertical();
+                }
             else
                 GUILayout.Label("(empty)", _kvStyle);
-            
+
+
             GUILayout.Label("Unlocked Achievement", _hdrStyle);
             if (current.UnlockedAchievements is { Count: > 0 })
                 foreach (var m in current.UnlockedAchievements)
@@ -379,6 +400,7 @@ namespace Player
             }
             GUILayout.EndHorizontal();
             GUILayout.Space(10);
+            
             GUILayout.Label("Unlock Section", _hdrStyle);
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("Unlock All Challenge"))
@@ -387,6 +409,38 @@ namespace Player
                 {
                     current.UnlockedChallenges.Add(challenge.id);
                 }
+                SaveNow();
+            }
+            GUILayout.EndHorizontal();
+            
+            GUILayout.Label("Unlock Section", _hdrStyle);
+            GUILayout.BeginHorizontal();
+            if (GUILayout.Button("Unlock All Challenge"))
+            {
+                foreach (var challenge in ChallengeManager.Instance.allChallenges.challengeList)
+                {
+                    current.UnlockedChallenges.Add(challenge.id);
+                }
+                SaveNow();
+            }
+            GUILayout.EndHorizontal();
+            
+            GUILayout.Label("Map Milestone", _hdrStyle);
+            DrawKV("Selected Map", mapId);
+            DrawKV("Milestone Level", current.MapStats[mapId].MaxLevelUnlockMilestone.ToString());
+            
+            GUILayout.BeginHorizontal();
+            var mapStat = current.MapStats[mapId];
+            
+            if (GUILayout.Button("Unlock Milestone"))
+            {
+                mapStat.MaxLevelUnlockMilestone++;
+                SaveNow();
+            }
+            
+            if (GUILayout.Button("Reset Milestone"))
+            {
+                mapStat.MaxLevelUnlockMilestone = 0;
                 SaveNow();
             }
             GUILayout.EndHorizontal();

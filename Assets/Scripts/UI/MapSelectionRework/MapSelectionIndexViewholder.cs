@@ -1,5 +1,6 @@
 using Coffee.UIEffects;
 using Demo;
+using DotNotify;
 using GameControl.SO;
 using Sirenix.OdinInspector;
 using TMPro;
@@ -15,6 +16,7 @@ namespace UI.MapSelectionRework
         public TMP_Text descriptionVh;
         public Image imageVh;
         public UIEffect uieffect;
+        public RedDotView reddotNoti;
 
         [Title("Lock Display")] 
         public bool IsLocked;
@@ -22,6 +24,7 @@ namespace UI.MapSelectionRework
 
         public void UpdateViewholder(MapDataSO mapData)
         {
+            UpdateDotNotify(mapData.mapId);
             if (!IsLocked)
             {
                 if (nameVh != null) nameVh.text = mapData.mapName.ToUpper();
@@ -35,6 +38,12 @@ namespace UI.MapSelectionRework
                 if (imageVh != null) imageVh.sprite = lockimageVh;
             }
         }
+        
+        public void UpdateDotNotify(string id)
+        {
+            reddotNoti.KeyDot = "Map:" + id;
+        }
+        
         public void SetClickedColor(bool isClicked)
         {
             if (m_Button == null || m_Button.image == null) return;

@@ -29,6 +29,7 @@ namespace UI.IngameViewholder
             public Color colorFill;
             public bool alwayShowflame;
             public bool showthunder;
+            public GameObject gradeVFXPrefab;
         }
         
         public List<GradeCombo> gradeComboList;
@@ -37,8 +38,9 @@ namespace UI.IngameViewholder
         {
             string rankId = newRank.rankId;
             gradeImage.gameObject.SetActive(rankId != null);
-            gradeFlame.gameObject.SetActive(rankId != null);
+            //gradeFlame.gameObject.SetActive(rankId != null);
             gradeText.gameObject.SetActive(rankId != null);
+            
             foreach (var g in gradeComboList)
                 if (g.gradeId == rankId)
                 {
@@ -46,6 +48,7 @@ namespace UI.IngameViewholder
                     GradeFeedback(gradeImage, g.gradeImage, g.alwayShowflame);
                     ThunderFeedback(g.colorFill, g.showthunder);
                     GradeTextFeedBack(gradeText, g.supText);
+                    UIVFXCanvas.Instance.GradeVFXUpdate(g.gradeVFXPrefab);
                     break;
                 }
         }

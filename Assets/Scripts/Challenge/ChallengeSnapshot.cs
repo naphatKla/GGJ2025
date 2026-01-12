@@ -70,11 +70,16 @@ namespace Challenge
             [BoxGroup("Enemy")]
             public readonly IReadOnlyDictionary<string, EnemySnapshot> Enemies;
             public readonly IReadOnlyCollection<string> GlobalExcludedIds;
+            
+            [BoxGroup("Stage")]
+            public readonly float TimeModify;
 
             public ChallengeSnapshot(PlayerSnapshot player, IReadOnlyDictionary<string, EnemySnapshot> enemies,
                 float overallScoreMultiplier,float totalBonus, float flatBonusPercent, float playerPercent
                 , float enemiesPercent
-                ,IReadOnlyCollection<string> globalExcludedIds)
+                ,IReadOnlyCollection<string> globalExcludedIds
+                , float timeModify)
+                
             {
                 Player = player;
                 Enemies = enemies;
@@ -84,6 +89,7 @@ namespace Challenge
                 PlayerPercent = playerPercent;
                 EnemiesPercent = enemiesPercent;
                 GlobalExcludedIds = globalExcludedIds;
+                TimeModify = timeModify;
             }
             
             public EnemySnapshot GetEnemy(string enemyId)

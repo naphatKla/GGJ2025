@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using Player;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -86,6 +88,13 @@ namespace Challenge
         [Header("Stat Bundle (% from base)")]
         public EnemyStatBundle stats;
     }
+    
+    [Serializable]
+    public struct AutoSelectedChallenge
+    {
+        public string autoSelectedMapID;
+        public int selectOnLevel;
+    }
 
     [CreateAssetMenu(menuName = "Challenge/ChallengeData", fileName = "ChallengeData")]
     public class ChallengeDataSO : ScriptableObject
@@ -94,21 +103,67 @@ namespace Challenge
         public string title = "Challenge Title";
         [TextArea(4, 10)] public string description = "Not assign description yet.";
         [TextArea(4, 10)] public string lockdescription = "Not assign description yet.";
+        public bool hideFromUI;
+        
+        [Header("Map Filter")]
+        [Tooltip("ถ้าว่าง = แสดงทุกแมพ, ถ้ามีค่า = แสดงเฉพาะแมพที่อยู่ในลิสต์นี้ เช่น map_voidmetro")]
+        public List<string> allowedMapIds = new(); // "map_voidmetro"
+        
+        [Header("Auto Unlock")]
+        [Tooltip("ถ้าเปิด จะปลดอัตโนมัติเมื่อเรียก AutoUnlock(...)")]
+        public bool allowAutoUnlock = false;
+        
+        [Header("Auto Selected")]
+        [Tooltip("ถ้าใส่แปลว่าแมพนั้นถูกเลือกแน่นอน เช่น map_voidmetro และตามด้วย Milestone")]
+        public List<AutoSelectedChallenge> confirmSelectedMapIds = new(); // "map_voidmetro"
 
+        public bool IsAvailableForMap(string mapId)
+        {
+            if (string.IsNullOrEmpty(mapId)) return true;
+            if (allowedMapIds == null || allowedMapIds.Count == 0) return true;
+            return allowedMapIds.Contains(mapId);
+        }
+        
+        public bool IsConfirmSelectedForMap(string mapId, int milestoneLevel)
+        {
+            if (string.IsNullOrEmpty(mapId)) return false;
+            if (confirmSelectedMapIds == null || confirmSelectedMapIds.Count == 0) return false;
+            return confirmSelectedMapIds.Any(x => x.autoSelectedMapID == mapId && x.selectOnLevel == milestoneLevel);
+        }
+        
+        public bool AutoUnlock(PlayerData player)
+        {
+            if (!allowAutoUnlock) return false;
+            if (player == null) return false;
+            if (string.IsNullOrEmpty(id)) return false;
+            player.UnlockedChallenges ??= new HashSet<string>();
+            if (player.UnlockedChallenges.Contains(id)) return false;
+            
+            player.UnlockedChallenges.Add(id);
+            return true;
+        }
+
+        [FoldoutGroup("Score Modify")]
         [Header("Score Bonus (Flat)")] [Tooltip("เช่น ให้ +100% ก็ใส่ 100")]
         public float flatScoreBonusPercent;
-        
+        [FoldoutGroup("Score Modify")]
         public StatMode statMode;
         
+        [FoldoutGroup("Player Modify")]
         [ShowIf("@statMode == StatMode.Set")] [Header("Player Set Stats")]
         public List<PlayerSetStatMod> playerSetMods = new();
 
+        [FoldoutGroup("Player Modify")]
         [ShowIf("@statMode == StatMode.Additive")] [Header("Player Additive Debuffs (negative is harder)")]
         public List<PlayerStatMod> playerMods = new();
         
-        [Header("Enemy Groups (edit per group once)")]
+        [FoldoutGroup("Enemy Modify")]
         public bool disableAutoCalculate = false;
+        [FoldoutGroup("Enemy Modify")]
         public List<EnemyGroupMod> enemyGroups = new();
+        
+        [FoldoutGroup("Stage Modify")] [Tooltip("เช่น 10 ก็จะบวกเวลาเพิ่มไป 10 วิ ถ้าใส่ -10 ก็จะลดลง 10 วิ")]
+        public float timeModify;
         
         // -------- Debug fields (show-only) --------
         [FoldoutGroup("Debug Score"), ReadOnly, ShowInInspector]
