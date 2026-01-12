@@ -427,7 +427,7 @@ namespace Player
             
             GUILayout.Label("Map Milestone", _hdrStyle);
             DrawKV("Selected Map", mapId);
-            DrawKV("Milestone Level", current.MapStats[mapId].MaxLevelUnlockMilestone.ToString());
+            DrawKV("Unlock Milestone Level", current.MapStats[mapId].MaxLevelUnlockMilestone.ToString());
             
             GUILayout.BeginHorizontal();
             var mapStat = current.MapStats[mapId];
