@@ -34,7 +34,11 @@ namespace Challenge
         MaxHP,
         Damage,
         MoveSpeed,
-        SpawnChance
+        SpawnChance,
+        RushMaxHP,
+        RushDamage,
+        RushMoveSpeed,
+        RushSetChance,
     }
 
     [Serializable]
@@ -54,6 +58,7 @@ namespace Challenge
     [Serializable]
     public struct EnemyStatBundle
     {
+        [Title("Normal Stats")]
         [Tooltip("+1% HP = +0.5%")]
         public float maxHP;
         [Tooltip("+1% DMG = +0.5%")]
@@ -62,11 +67,21 @@ namespace Challenge
         public float moveSpeed;
         [Tooltip("+1% SPAWN CHANCE = +0.5%")]
         public float spawnChance;
+        
+        [Title("Rush Stats")][Space]
+        [Tooltip("+1% HP = +0.5%")]
+        public float rushMaxHP;
+        [Tooltip("+1% DMG = +0.5%")]
+        public float rushDamage;
+        [Tooltip("+1% MSPD = +1%")]
+        public float rushMoveSpeed;
+        [Tooltip("+1% SPAWN CHANCE = +0.5%")]
+        public float rushSetChance;
         public bool IsZero =>
-            Mathf.Approximately(maxHP, 0) &&
-            Mathf.Approximately(damage, 0) &&
-            Mathf.Approximately(moveSpeed, 0) &&
-            Mathf.Approximately(spawnChance, 0);
+            Mathf.Approximately(rushMaxHP, 0) &&
+            Mathf.Approximately(rushDamage, 0) &&
+            Mathf.Approximately(rushMoveSpeed, 0) &&
+            Mathf.Approximately(rushSetChance, 0);
     }
     
     [Serializable]

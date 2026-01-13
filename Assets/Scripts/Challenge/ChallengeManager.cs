@@ -196,6 +196,11 @@ namespace Challenge
                     add(EnemyStat.Damage, grp.stats.damage);
                     add(EnemyStat.MoveSpeed, grp.stats.moveSpeed);
                     add(EnemyStat.SpawnChance, grp.stats.spawnChance);
+                    
+                    add(EnemyStat.RushMaxHP, grp.stats.rushMaxHP);
+                    add(EnemyStat.RushDamage, grp.stats.rushDamage);
+                    add(EnemyStat.RushMoveSpeed, grp.stats.rushMoveSpeed);
+                    add(EnemyStat.RushSetChance, grp.stats.rushSetChance);
 
                     var isGlobal = grp.enemyIds == null || grp.enemyIds.Count == 0;
                     if (!isGlobal && grp.enemyIds != null)
