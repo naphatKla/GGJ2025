@@ -29,21 +29,27 @@ namespace UI.Milestone
         [Title("Node")]
         [SerializeField] private RectTransform nodePoint;
         private MilestonePathRenderer _path;
-        private int _index;
+        private int _index = -1;
 
         public void BindPath(MilestonePathRenderer path, int idx)
         {
-            if (_path != null && nodePoint != null) _path.UnregisterNode(_index, nodePoint);
+            if (_path != null && nodePoint != null && _index >= 0)
+                _path.UnregisterNode(_index, nodePoint);
 
             _path = path;
             _index = idx;
 
-            if (_path != null && nodePoint != null) _path.RegisterNode(_index, nodePoint);
+            if (_path != null && nodePoint != null && _index >= 0)
+                _path.RegisterNode(_index, nodePoint);
         }
 
         private void OnDisable()
         {
-            if (_path != null && nodePoint != null) _path.UnregisterNode(_index, nodePoint);
+            if (_path != null && nodePoint != null && _index >= 0)
+                _path.UnregisterNode(_index, nodePoint);
+
+            _path = null;
+            _index = -1;
         }
         
         public void UpdateViewholder(int index, ChallengeDataSO content, MapStat mapStat)
