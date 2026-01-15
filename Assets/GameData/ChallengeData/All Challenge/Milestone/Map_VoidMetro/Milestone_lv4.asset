@@ -27,9 +27,9 @@ MonoBehaviour:
     <size=23><color=#D260FF><b>Difficulty</b></color></size>
 
     -
-    Enemy Max HP +200%
+    Enemy max HP +200%
 
-    - Enemy Damage +40%'
+    - Enemy damage +100%'
   lockdescription: 
   hideFromUI: 1
   allowedMapIds: []
@@ -50,9 +50,13 @@ MonoBehaviour:
     - Boss_Twin
     stats:
       maxHP: 200
-      damage: 400
+      damage: 100
       moveSpeed: 0
       spawnChance: 0
+      rushMaxHP: 0
+      rushDamage: 0
+      rushMoveSpeed: 0
+      rushSetChance: 0
   - groupName: 2
     enemyIds:
     - Enemy_Absorption
@@ -62,4 +66,8 @@ MonoBehaviour:
       damage: 0
       moveSpeed: 0
       spawnChance: -100
+      rushMaxHP: 0
+      rushDamage: 0
+      rushMoveSpeed: 0
+      rushSetChance: 0
   timeModify: 0

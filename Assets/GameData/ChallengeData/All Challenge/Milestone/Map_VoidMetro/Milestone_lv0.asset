@@ -39,6 +39,8 @@ MonoBehaviour:
   enemyGroups:
   - groupName: 1
     enemyIds:
+    - Enemy_Firecracker
+    - Enemy_Tank
     - Enemy_Soldier
     - Enemy_Javelin
     - Enemy_Absolute
@@ -52,4 +54,8 @@ MonoBehaviour:
       damage: 0
       moveSpeed: 0
       spawnChance: -100
-  timeModify: -300
+      rushMaxHP: 0
+      rushDamage: 0
+      rushMoveSpeed: 0
+      rushSetChance: 0
+  timeModify: -420
