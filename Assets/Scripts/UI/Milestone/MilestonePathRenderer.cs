@@ -72,6 +72,14 @@ namespace UI.Milestone
             RectTransformUtility.ScreenPointToLocalPointInRectangle(lineRoot, screen, cam, out var local);
             return local;
         }
+        
+        public void ClearAll()
+        {
+            _nodeByIndex.Clear();
+            _selectedIndex = -1;
+            EnsureSegments(0);
+        }
+
 
         public void Redraw()
         {
