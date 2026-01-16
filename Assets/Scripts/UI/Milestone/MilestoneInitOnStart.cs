@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Challenge;
+using Cysharp.Threading.Tasks;
 using Demo;
 using Interface;
 using Player;
@@ -37,6 +38,7 @@ namespace UI.Milestone
         [ShowInInspector] public int m_SelectedIndex = -1;
         [ShowInInspector] public ChallengeDataSO m_SelectedObject;
         
+        private bool _initialized;
         Stack<Transform> pool = new Stack<Transform>();
         private List<ChallengeDataSO> _items = new();
         private PlayerData Current => ActiveProfileService.Instance != null ? ActiveProfileService.Instance.CurrentProfile : null;
@@ -48,13 +50,20 @@ namespace UI.Milestone
         {
             LoadItems();
         }
-        
+
         void Start()
         {
             var ls = GetComponent<LoopScrollRect>();
             ls.prefabSource = this;
             ls.dataSource = this;
+            _initialized = true;
             RefreshUI();
+        }
+
+        private void OnEnable()
+        {
+            if (!_initialized) return;
+            if (Current != null) RefreshUI();
         }
         
         private void LoadItems()
@@ -92,21 +101,27 @@ namespace UI.Milestone
             ls.RefillCells();
             ls.RefreshCells();
         }
-
-
-        [Button]
+        
         public void RefreshUI()
+        {
+            RefreshUIAsync().Forget();
+        }
+        
+        private async UniTaskVoid RefreshUIAsync()
         {
             var mapId = CurrentMapId;
             if (string.IsNullOrEmpty(mapId))
             {
                 _items.Clear();
                 totalCount = 0;
+                pathRenderer.ClearAll();
                 ApplyToScrollRect();
                 return;
             }
 
             LoadItems();
+            pathRenderer.ClearAll();
+
             ApplyToScrollRect();
 
             var mapState = Current.GetOrCreateMapStat(mapId);
@@ -114,7 +129,9 @@ namespace UI.Milestone
             int idx = mapState.MaxLevelUnlockMilestone;
             idx = Mathf.Clamp(idx, 0, Mathf.Max(0, _items.Count - 1));
 
-            SelectIndex(idx, mapState, notifyChallenge:true);
+            SelectIndex(idx, mapState, notifyChallenge: true);
+            await UniTask.NextFrame();
+            pathRenderer.SetSelectedIndex(m_SelectedIndex);
         }
 
         
@@ -127,30 +144,9 @@ namespace UI.Milestone
         {
             var go = pool.Count == 0 ? Instantiate(item) : pool.Pop().gameObject;
             go.SetActive(true);
-            
-            var cb = go.GetComponent<ScrollIndexCallbackBase>();
-            if (cb != null)
-            {
-                cb.onClick_InitOnStart.RemoveAllListeners();
-                cb.onClick_InitOnStart.AddListener(() =>
-                {
-                    string mapId = CurrentMapId;
-                    MapStat mapState = PlayerDataExtensions.GetOrCreateMapStat(Current , mapId);
-                    
-                    var milestone = _items[index];
-                    if (IsLockedByPlayer(index, mapState)) return;
-                    if (m_SelectedObject == milestone) return;
-                    m_SelectedIndex = index;
-                    m_SelectedObject = milestone;
-                    GetComponent<LoopScrollRect>().RefreshCells();
-                    mapState.SelectedLevelMilestone = index + 1;
-                    UpdateMilestoneObjective(milestone, mapState);
-                    pathRenderer.SetSelectedIndex(m_SelectedIndex);
-                    challengeScript.RefreshUI();
-                });
-            }
             return go;
         }
+
 
         public void ReturnObject(Transform trans)
         {
@@ -164,24 +160,54 @@ namespace UI.Milestone
         public void ProvideData(Transform transform, int idx)
         {
             var vh = transform.GetComponent<MilestoneViewholder>();
+            var cb = transform.GetComponent<ScrollIndexCallbackBase>();
+
             string mapId = CurrentMapId;
-            MapStat mapState = PlayerDataExtensions.GetOrCreateMapStat(Current , mapId);
+            MapStat mapState = PlayerDataExtensions.GetOrCreateMapStat(Current, mapId);
+
+            if (cb != null)
+            {
+                cb.onClick_InitOnStart.RemoveAllListeners();
+
+                int clickIndex = idx;
+                cb.onClick_InitOnStart.AddListener(() =>
+                {
+                    string mid = CurrentMapId;
+                    MapStat state = PlayerDataExtensions.GetOrCreateMapStat(Current, mid);
+
+                    if (_items == null || clickIndex < 0 || clickIndex >= _items.Count) return;
+
+                    var milestone = _items[clickIndex];
+                    if (IsLockedByPlayer(clickIndex, state)) return;
+                    if (m_SelectedObject == milestone) return;
+
+                    m_SelectedIndex = clickIndex;
+                    m_SelectedObject = milestone;
+
+                    state.SelectedLevelMilestone = clickIndex;
+
+                    GetComponent<LoopScrollRect>().RefreshCells();
+                    UpdateMilestoneObjective(milestone, state);
+                    pathRenderer.SetSelectedIndex(m_SelectedIndex);
+                    challengeScript.RefreshUI();
+                });
+            }
             
             if (vh != null)
             {
                 var content = _items[idx];
-                vh.SetPrefabName("Milestone");   
+                vh.SetPrefabName("Milestone");
                 vh.ScrollCellIndex(idx, content);
                 vh.SetClickedColor(idx == m_SelectedIndex);
-                vh.UpdateViewholder(idx,_items[idx], mapState);
+                vh.UpdateViewholder(idx, _items[idx], mapState);
                 vh.BindPath(pathRenderer, idx);
-                pathRenderer.SetSelectedIndex(m_SelectedIndex);
             }
             else
             {
                 transform.SendMessage("ScrollCellIndex", idx, SendMessageOptions.DontRequireReceiver);
             }
         }
+
 
         public void UpdateMilestoneObjective(ChallengeDataSO challengeDataSo, MapStat mapStat)
         {
