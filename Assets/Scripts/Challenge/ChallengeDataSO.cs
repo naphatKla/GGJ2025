@@ -78,6 +78,10 @@ namespace Challenge
         [Tooltip("+1% SPAWN CHANCE = +0.5%")]
         public float rushSetChance;
         public bool IsZero =>
+            Mathf.Approximately(maxHP, 0) &&
+            Mathf.Approximately(damage, 0) &&
+            Mathf.Approximately(moveSpeed, 0) &&
+            Mathf.Approximately(spawnChance, 0) &&
             Mathf.Approximately(rushMaxHP, 0) &&
             Mathf.Approximately(rushDamage, 0) &&
             Mathf.Approximately(rushMoveSpeed, 0) &&
