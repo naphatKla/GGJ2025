@@ -8,6 +8,7 @@ using Manager;
 using Player;
 using UI;
 using UI.Leaderboard;
+using Unity.Mathematics;
 using UnityEngine;
 
 namespace GameControl.GameState
@@ -93,10 +94,10 @@ namespace GameControl.GameState
             bool isWin = controller.gameResult == EndResult.Completed;
             var mapStats = profile.GetOrCreateMapStat(GameStateController.Instance.CurrentMap.mapId);
 
-            int maxLevelUnlockMilestone = mapStats.MaxLevelUnlockMilestone;
+            int maxLevelUnlockMilestone = Mathf.Clamp(mapStats.MaxLevelUnlockMilestone,0, GameStateController.Instance.CurrentMap.MaxMilestoneLevel);
             int calculatedNextLevelMilestone = maxLevelUnlockMilestone;
             
-            if (mapStats.SelectedLevelMilestone == mapStats.MaxLevelUnlockMilestone)
+            if (mapStats.SelectedLevelMilestone == maxLevelUnlockMilestone)
             {
                 calculatedNextLevelMilestone = GameStateController.Instance.CurrentMap.EvaluateLevelMilestoneOption(dataStatus, maxLevelUnlockMilestone, isWin);
             }

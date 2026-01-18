@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using Challenge;
 using PermanentUpgrade;
+using UI.MapSelection;
 using Debug = UnityEngine.Debug;
 using Input = UnityEngine.Input;
 #if UNITY_EDITOR
@@ -399,6 +400,7 @@ namespace Player
             }
             GUILayout.EndHorizontal();
             GUILayout.Space(10);
+            
             GUILayout.Label("Unlock Section", _hdrStyle);
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("Unlock All Challenge"))
@@ -407,6 +409,38 @@ namespace Player
                 {
                     current.UnlockedChallenges.Add(challenge.id);
                 }
+                SaveNow();
+            }
+            GUILayout.EndHorizontal();
+            
+            GUILayout.Label("Unlock Section", _hdrStyle);
+            GUILayout.BeginHorizontal();
+            if (GUILayout.Button("Unlock All Challenge"))
+            {
+                foreach (var challenge in ChallengeManager.Instance.allChallenges.challengeList)
+                {
+                    current.UnlockedChallenges.Add(challenge.id);
+                }
+                SaveNow();
+            }
+            GUILayout.EndHorizontal();
+            
+            GUILayout.Label("Map Milestone", _hdrStyle);
+            DrawKV("Selected Map", mapId);
+            DrawKV("Unlock Milestone Level", current.MapStats[mapId].MaxLevelUnlockMilestone.ToString());
+            
+            GUILayout.BeginHorizontal();
+            var mapStat = current.MapStats[mapId];
+            
+            if (GUILayout.Button("Unlock Milestone"))
+            {
+                mapStat.MaxLevelUnlockMilestone++;
+                SaveNow();
+            }
+            
+            if (GUILayout.Button("Reset Milestone"))
+            {
+                mapStat.MaxLevelUnlockMilestone = 0;
                 SaveNow();
             }
             GUILayout.EndHorizontal();

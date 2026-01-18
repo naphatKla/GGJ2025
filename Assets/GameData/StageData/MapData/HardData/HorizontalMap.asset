@@ -714,17 +714,26 @@ MonoBehaviour:
   rushData: {fileID: 11400000, guid: e2b1d3052964e77449e76a9e319858b4, type: 2}
   rushTime: 60
   milestoneOptions:
-  - logic: 0
+  - winRequired: 1
+    logic: 0
     conditionConfigs: []
-  - logic: 0
+  - winRequired: 1
+    logic: 0
     conditionConfigs:
     - conditionType: 1
-      scoreAtLeast: 100
-  - logic: 0
+      scoreAtLeast: 360000
+  - winRequired: 1
+    logic: 0
     conditionConfigs:
     - conditionType: 1
-      scoreAtLeast: 1000
-  - logic: 0
+      scoreAtLeast: 720000
+  - winRequired: 1
+    logic: 0
     conditionConfigs:
     - conditionType: 1
-      scoreAtLeast: 10000
+      scoreAtLeast: 1200000
+  - winRequired: 1
+    logic: 0
+    conditionConfigs:
+    - conditionType: 1
+      scoreAtLeast: 2000000

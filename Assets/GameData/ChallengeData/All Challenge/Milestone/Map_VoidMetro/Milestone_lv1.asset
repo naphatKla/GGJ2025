@@ -1,0 +1,76 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 09b72255c8a83094cbc34892911a61ff, type: 3}
+  m_Name: Milestone_lv1
+  m_EditorClassIdentifier: 
+  id: challenge_map_voidmetro_milestone_1
+  title: Milestone 2 [Void Metro]
+  description: '<size=23><color=#58E6FF><b>Task</b></color></size>
+
+    - Survive
+    6 minutes
+
+    - Score 360,000
+
+
+    <size=23><color=#D260FF><b>Difficulty</b></color></size>
+
+    -
+    Enemy max HP +100%
+
+    - Enemy damage +50%'
+  lockdescription: 
+  hideFromUI: 1
+  allowedMapIds: []
+  allowAutoUnlock: 1
+  confirmSelectedMapIds:
+  - autoSelectedMapID: map_voidmetro
+    selectOnLevel: 1
+  flatScoreBonusPercent: 0
+  statMode: 0
+  playerSetMods: []
+  playerMods: []
+  disableAutoCalculate: 0
+  enemyGroups:
+  - groupName: 1
+    enemyIds:
+    - '*'
+    enemyNotincluded:
+    - Boss_Twin
+    stats:
+      maxHP: 100
+      damage: 50
+      moveSpeed: 0
+      spawnChance: 0
+      rushMaxHP: 100
+      rushDamage: 50
+      rushMoveSpeed: 0
+      rushSetChance: 0
+  - groupName: 2
+    enemyIds:
+    - Enemy_Javelin
+    - Enemy_Absolute
+    - Enemy_Comet
+    - Enemy_Bomber
+    - Enemy_Absorption
+    - Boss_Twin
+    enemyNotincluded: []
+    stats:
+      maxHP: 0
+      damage: 0
+      moveSpeed: 0
+      spawnChance: -100
+      rushMaxHP: 0
+      rushDamage: 0
+      rushMoveSpeed: 0
+      rushSetChance: 0
+  timeModify: -300

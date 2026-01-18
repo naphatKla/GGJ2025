@@ -27,6 +27,8 @@ namespace Challenge
         private float _flatBonus = 0f;
         private float _playerPercent = 0f;
         private float _enemiesPercent = 0f;
+        private float _timeModify = 0f;
+
 
 
         private const string GLOBAL_ID = "*";
@@ -45,6 +47,9 @@ namespace Challenge
 
         [ShowInInspector, ReadOnly, FoldoutGroup("Debug Inspector")]
         private float EnemiesPercent => _enemiesPercent;
+        
+        [ShowInInspector, ReadOnly, FoldoutGroup("Debug Inspector")]
+        private float TimeModify => _timeModify;
         
         [ShowInInspector, ReadOnly, FoldoutGroup("Debug Inspector/SnapShot")]
         public ChallengeSnapshot Snapshot { get; private set; }
@@ -147,11 +152,15 @@ namespace Challenge
             _flatBonus = 0f;
             _playerPercent = 0f;
             _enemiesPercent = 0f;
+            _timeModify = 0f;
 
             foreach (var ch in selected)
             {
                 if (ch == null) continue;
 
+                // Time Modify
+                _timeModify += ch.timeModify;
+                
                 // Flat
                 _flatBonus += ch.flatScoreBonusPercent;
 
@@ -187,6 +196,11 @@ namespace Challenge
                     add(EnemyStat.Damage, grp.stats.damage);
                     add(EnemyStat.MoveSpeed, grp.stats.moveSpeed);
                     add(EnemyStat.SpawnChance, grp.stats.spawnChance);
+                    
+                    add(EnemyStat.RushMaxHP, grp.stats.rushMaxHP);
+                    add(EnemyStat.RushDamage, grp.stats.rushDamage);
+                    add(EnemyStat.RushMoveSpeed, grp.stats.rushMoveSpeed);
+                    add(EnemyStat.RushSetChance, grp.stats.rushSetChance);
 
                     var isGlobal = grp.enemyIds == null || grp.enemyIds.Count == 0;
                     if (!isGlobal && grp.enemyIds != null)
@@ -271,7 +285,8 @@ namespace Challenge
                 _flatBonus,
                 _playerPercent,
                 _enemiesPercent,
-                _globalExcludedIds
+                _globalExcludedIds,
+                _timeModify
             );
         }
 

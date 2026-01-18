@@ -633,7 +633,7 @@ namespace GameControl.SO
         [FoldoutGroup("Level Milestone")] [SerializeField]
         [ListDrawerSettings(ShowIndexLabels = true)]
         private List<LevelMilestoneOption> milestoneOptions;
-        public int MaxMilestoneLevel => milestoneOptions.Count;
+        public int MaxMilestoneLevel => milestoneOptions.Count - 1;
         
         public int EvaluateLevelMilestoneOption(PlayerSummaryStats playerStatsThisRun, int currentMaxMilestoneLevel, bool isWin)
         {
@@ -654,7 +654,7 @@ namespace GameControl.SO
             bool isCompleteMilestone;
 
             if (currentMilestoneOption.logic == LevelMilestoneOption.LevelMilestoneConditionLogic.And)
-                isCompleteMilestone = conditionPassCount >= milestoneOptions.Count;
+                isCompleteMilestone = conditionPassCount >= currentMilestoneOption.conditionConfigs.Count;
             else
                 isCompleteMilestone = conditionPassCount > 0;
 

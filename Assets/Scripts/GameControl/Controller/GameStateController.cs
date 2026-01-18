@@ -162,6 +162,9 @@ namespace GameControl.Controller
             if (mapData == null || mapData.EnemyOptions == null || Sender == null) return;
             var snap = Sender.challengeData;
             
+            //Stage Modify
+            mapData.mapGlobalTime += snap.TimeModify;
+            
             //Player Modify
             var playerDataSo = mapData.playerData.CopyInstance(); // Create Player DataSO
             var player = PlayerController.Instance;
@@ -231,7 +234,7 @@ namespace GameControl.Controller
             foreach (var opt in rushData.enemyOptions)
             {
                 var e = snap.GetEnemy((opt.id ?? "").Trim()); 
-                ApplyEnemyOption(opt, e);
+                ApplyRushEnemyOption(opt, e);
             }
         }
         
@@ -245,6 +248,25 @@ namespace GameControl.Controller
             {
                 var newGrowthChance = opt.enemyChanceGrowthRate * (1f + (chanceP / 100f));
                 opt.enemyChanceGrowthRate  = Mathf.Max(0f, newGrowthChance);
+            }
+
+            if (opt.enemyData != null)
+            {
+                var modified = opt.enemyData.CopyInstance(hp, dmg, mspd);
+                opt.enemyData = modified;
+                opt.modifyNewData = true;
+            }
+        }
+        
+        private static void ApplyRushEnemyOption(MapDataSO.EnemyOption opt, in Challenge.Challenge.EnemySnapshot eSnap)
+        {
+            float hp      = eSnap.Get(EnemyStat.RushMaxHP);
+            float dmg     = eSnap.Get(EnemyStat.RushDamage);
+            float mspd    = eSnap.Get(EnemyStat.RushMoveSpeed);
+            float chanceP = eSnap.Get(EnemyStat.RushSetChance);
+            if (float.IsFinite(chanceP))
+            {
+                opt.chance = chanceP;
             }
 
             if (opt.enemyData != null)
