@@ -16,10 +16,10 @@ MonoBehaviour:
   title: Milestone 3 [Void Metro]
   description: '<size=23><color=#58E6FF><b>Task</b></color></size>
 
-    - Survive
-    8 minutes
+    - 8 minutes
 
-    - Score 1,200,000
+    -
+    Score 1,200,000
 
     - Select atlest 2 challenge
 
@@ -27,9 +27,9 @@ MonoBehaviour:
     <size=23><color=#D260FF><b>Difficulty</b></color></size>
 
     -
-    Enemy max HP +100%
+    Enemy max HP +200%
 
-    - Enemy damage +50%
+    - Enemy damage +100%
 
     - Bomb types spawn chance +200%
 
@@ -46,7 +46,7 @@ MonoBehaviour:
   statMode: 0
   playerSetMods: []
   playerMods: []
-  disableAutoCalculate: 0
+  disableAutoCalculate: 1
   enemyGroups:
   - groupName: 1
     enemyIds:
@@ -54,12 +54,12 @@ MonoBehaviour:
     enemyNotincluded:
     - Boss_Twin
     stats:
-      maxHP: 100
-      damage: 50
+      maxHP: 200
+      damage: 100
       moveSpeed: 0
       spawnChance: 0
-      rushMaxHP: 0
-      rushDamage: 0
+      rushMaxHP: 200
+      rushDamage: 100
       rushMoveSpeed: 0
       rushSetChance: 0
   - groupName: 2
@@ -73,9 +73,9 @@ MonoBehaviour:
       moveSpeed: 0
       spawnChance: 200
       rushMaxHP: 0
-      rushDamage: 0
+      rushDamage: 100
       rushMoveSpeed: 0
-      rushSetChance: 0
+      rushSetChance: 200
   - groupName: 3
     enemyIds:
     - Enemy_Bomber

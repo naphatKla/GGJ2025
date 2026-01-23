@@ -16,18 +16,18 @@ MonoBehaviour:
   title: Milestone 2 [Void Metro]
   description: '<size=23><color=#58E6FF><b>Task</b></color></size>
 
-    - Survive
-    6 minutes
+    - 5 minutes
 
-    - Score 360,000
+    -
+    Score 360,000
 
 
     <size=23><color=#D260FF><b>Difficulty</b></color></size>
 
     -
-    Enemy max HP +50%
+    Enemy max HP +100%
 
-    - Enemy damage +25%'
+    - Enemy damage +50%'
   lockdescription: 
   hideFromUI: 1
   allowedMapIds: []
@@ -39,7 +39,7 @@ MonoBehaviour:
   statMode: 0
   playerSetMods: []
   playerMods: []
-  disableAutoCalculate: 0
+  disableAutoCalculate: 1
   enemyGroups:
   - groupName: 1
     enemyIds:
@@ -47,12 +47,12 @@ MonoBehaviour:
     enemyNotincluded:
     - Boss_Twin
     stats:
-      maxHP: 50
-      damage: 25
+      maxHP: 100
+      damage: 50
       moveSpeed: 0
       spawnChance: 0
-      rushMaxHP: 0
-      rushDamage: 0
+      rushMaxHP: 100
+      rushDamage: 50
       rushMoveSpeed: 0
       rushSetChance: 0
   - groupName: 2
