@@ -66,7 +66,7 @@ namespace GameControl.EventMap
         {
             if (!IsPerforming) return;
             //Pull
-            PullPlayer();
+            PullObject();
             //Dmg on touch Center
             DamageOnTouch();
         }
@@ -94,7 +94,7 @@ namespace GameControl.EventMap
             }
         }
 
-        private void PullPlayer()
+        private void PullObject()
         {
             Vector2 center = firePoint ? firePoint.TransformPoint(sphereOffset) : (Vector2)transform.TransformPoint(sphereOffset);
             var count = Physics2D.OverlapCircleNonAlloc(center, sphereRadius, _hits, hitLayer);
