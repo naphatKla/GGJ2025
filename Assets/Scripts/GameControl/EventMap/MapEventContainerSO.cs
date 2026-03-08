@@ -8,6 +8,18 @@ using UnityEditor;
 
 namespace GameControl.EventMap
 {
+    public enum DestinationDirection
+    {
+        Left,
+        Right,
+        Up,
+        Down,
+        UpLeft,
+        UpRight,
+        DownLeft,
+        DownRight
+    }
+    
     public enum DelayMode
     {
         Fixed,
@@ -35,6 +47,29 @@ namespace GameControl.EventMap
         delayPerform,
         delaybetweenEvent,
         chance
+    }
+    
+    [Serializable]
+    public class DestinationNode
+    {
+        [HorizontalGroup("Row", Width = 110)]
+        [LabelWidth(55)]
+        public DestinationDirection direction;
+
+        [HorizontalGroup("Row")]
+        [LabelWidth(60)]
+        [MinValue(0f)]
+        public float distance = 1f;
+
+        [HorizontalGroup("Row")]
+        [LabelWidth(45)]
+        [MinValue(0f)]
+        public float speed = 5f;
+
+        [HorizontalGroup("Row")]
+        [LabelWidth(45)]
+        [MinValue(0f)]
+        public float delayAfterNode = 0f;
     }
     
     [Serializable]
@@ -94,8 +129,40 @@ namespace GameControl.EventMap
         [FoldoutGroup("$GroupName")] [BoxGroup("$GroupName/Map Setting")] [ShowIf("enableChance")] [Range(0, 1f)] [LabelText("Chance (0 - 1)")]
         public float chance = 0.5f;
 
+        [FoldoutGroup("$GroupName")] [BoxGroup("$GroupName/Destination Setting")] [LabelText("Enable Destination")]
+        public bool enableDestination;
+        [FoldoutGroup("$GroupName")] [BoxGroup("$GroupName/Destination Setting")] [ShowIf("enableDestination")] [LabelText("Move Follow Destination")]
+        public bool moveFollowDestination = true;
+
+        [FoldoutGroup("$GroupName")] [BoxGroup("$GroupName/Destination Setting")] [ShowIf("enableDestination")]
+        public List<DestinationNode> destinationList;
+
+
         public string GroupName => eventPrefab != null ? eventPrefab.name : "Ungrouped";
-        public MapEventStorageEntry Clone() => (MapEventStorageEntry)MemberwiseClone();
+
+        public MapEventStorageEntry Clone()
+        {
+            var clone = (MapEventStorageEntry)MemberwiseClone();
+
+            if (destinationList != null)
+            {
+                clone.destinationList = new List<DestinationNode>(destinationList.Count);
+                foreach (var node in destinationList)
+                    clone.destinationList.Add(new DestinationNode
+                    {
+                        direction = node.direction,
+                        distance = node.distance,
+                        speed = node.speed,
+                        delayAfterNode = node.delayAfterNode
+                    });
+            }
+            else
+            {
+                clone.destinationList = null;
+            }
+
+            return clone;
+        }
     }
 
     [CreateAssetMenu(menuName = "EventMap/Container")]

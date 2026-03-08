@@ -27,6 +27,7 @@ namespace GameControl.EventMap
         private IObjectPool<BaseMapEvent> _pool;
         private CancellationTokenSource _cts;
         public string MapEventId => mapEventId;
+        protected MapEventStorageEntry currentEntry;
 
         private void OnValidate()
         {
@@ -46,6 +47,7 @@ namespace GameControl.EventMap
         
         public void ApplyEffect(MapEventStorageEntry entry)
         {
+            currentEntry      = entry;
             deletetime       = entry.deleteTime;
             damage           = entry.damage;
             previewDuration  = entry.delayPerform;
@@ -54,6 +56,7 @@ namespace GameControl.EventMap
             {
                 var main = previewEffect.main;
                 float originalDuration = main.duration;
+                main.simulationSpace = ParticleSystemSimulationSpace.Local;
                 main.simulationSpeed = originalDuration / Mathf.Max(entry.delayPerform, 0.0001f);
 
                 switch (entry.hitboxType)
@@ -94,28 +97,20 @@ namespace GameControl.EventMap
                 
                 playFeedback?.PlayFeedbacks();
                 Perform();
-               
+                
+                var moveTask = ShouldMoveByDestination()
+                    ? MoveByDestinationNodes(token)
+                    : UniTask.CompletedTask;
 
                 if (debug) Debug.Log("Deleting");
-                ReleaseAfterPlay(token).Forget();
+                var releaseTask = UniTask.Delay(TimeSpan.FromSeconds(deletetime), cancellationToken: token);
+                await UniTask.WhenAll(moveTask, releaseTask);
+
+                _pool?.Release(this);
             }
             catch (OperationCanceledException)
             {
                 if (debug) Debug.Log("Play Cancelled");
-            }
-        }
-
-        private async UniTask ReleaseAfterPlay(CancellationToken token)
-        {
-            try
-            {
-                await UniTask.Delay(TimeSpan.FromSeconds(deletetime), cancellationToken: token);
-                _pool?.Release(this);
-                if (debug) Debug.Log("Deleted");
-            }
-            catch (OperationCanceledException)
-            {
-                if (debug) Debug.Log("Release Cancelled");
             }
         }
 
@@ -181,6 +176,7 @@ namespace GameControl.EventMap
                 {
                     var main = previewEffect.main;
                     main.simulationSpeed = 1f;
+                    main.simulationSpace = ParticleSystemSimulationSpace.World;
                     previewEffect.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
                     previewEffect.Clear(true);
                     var em = previewEffect.emission;
@@ -192,5 +188,48 @@ namespace GameControl.EventMap
             }
         }
 
+        protected virtual Vector3 GetDirectionVector(DestinationDirection direction)
+        {
+            return direction switch
+            {
+                DestinationDirection.Left      => Vector3.left,
+                DestinationDirection.Right     => Vector3.right,
+                DestinationDirection.Up        => Vector3.up,
+                DestinationDirection.Down      => Vector3.down,
+                DestinationDirection.UpLeft    => (Vector3.left + Vector3.up).normalized,
+                DestinationDirection.UpRight   => (Vector3.right + Vector3.up).normalized,
+                DestinationDirection.DownLeft  => (Vector3.left + Vector3.down).normalized,
+                DestinationDirection.DownRight => (Vector3.right + Vector3.down).normalized,
+                _ => Vector3.zero
+            };
+        }
+        
+        protected virtual bool ShouldMoveByDestination()
+        {
+            return currentEntry != null
+                   && currentEntry.enableDestination
+                   && currentEntry.moveFollowDestination
+                   && currentEntry.destinationList != null
+                   && currentEntry.destinationList.Count > 0;
+        }
+
+        private async UniTask MoveByDestinationNodes(CancellationToken token)
+        {
+            for (int i = 0; i < currentEntry.destinationList.Count; i++)
+            {
+                var node = currentEntry.destinationList[i];
+                var dir = GetDirectionVector(node.direction);
+                if (dir == Vector3.zero || node.distance <= 0f) continue;
+                var startPos = transform.position;
+                var targetPos = startPos + (dir * node.distance);
+                while (Vector3.Distance(transform.position, targetPos) > 0.05f)
+                {
+                    token.ThrowIfCancellationRequested();
+                    transform.position = Vector3.MoveTowards(
+                        transform.position, targetPos, node.speed * Time.deltaTime);
+                    await UniTask.Yield(PlayerLoopTiming.Update, token);
+                }
+            }
+        }
     }
 }
