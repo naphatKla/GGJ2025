@@ -31,6 +31,17 @@ MonoBehaviour:
     delayBetweenEvents: 0.3
     enableChance: 0
     chance: 0.5
+    enableDestination: 1
+    moveFollowDestination: 1
+    destinationList:
+    - direction: 2
+      distance: 40
+      speed: 20
+      delayAfterNode: 0.1
+    - direction: 0
+      distance: 30
+      speed: 20
+      delayAfterNode: 0
   delayMode: 0
   defaultDelay: 0.3
   additiveStep: 0.1
