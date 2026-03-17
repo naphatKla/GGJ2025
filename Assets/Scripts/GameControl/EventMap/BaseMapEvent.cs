@@ -28,6 +28,7 @@ namespace GameControl.EventMap
         private CancellationTokenSource _cts;
         public string MapEventId => mapEventId;
         protected MapEventStorageEntry currentEntry;
+        protected CancellationToken _playToken;
 
         private void OnValidate()
         {
@@ -74,7 +75,6 @@ namespace GameControl.EventMap
             }
         }
 
-
         public async UniTask Play(CancellationToken externalToken = default)
         {
             _cts?.Cancel();
@@ -95,6 +95,7 @@ namespace GameControl.EventMap
                 
                 if (debug) Debug.Log("Perform & Feedback");
                 
+                _playToken = token;
                 playFeedback?.PlayFeedbacks();
                 Perform();
                 
@@ -119,9 +120,7 @@ namespace GameControl.EventMap
             _cts?.Cancel();
         }
 
-        //Particle
         public abstract UniTask PlayPreview();
-        //Projectile or Circle
         protected abstract void Perform();
 
         public void ApplyHitbox(MapEventStorageEntry entry)
