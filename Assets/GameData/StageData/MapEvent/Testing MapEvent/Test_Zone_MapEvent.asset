@@ -10,25 +10,25 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4aaf6a8330a886641bd3bfc63f51a980, type: 3}
-  m_Name: Border_NormalEnemy_MapEvent
+  m_Name: Test_Zone_MapEvent
   m_EditorClassIdentifier: 
   entries:
   - spawnPointRef: {fileID: 0}
-    damage: 0
-    deleteTime: 20
+    damage: 2
+    deleteTime: 5
     delayPerform: 1
     spawnPosition: {x: 0, y: 0, z: -0.22697783}
     spawnEulerAngles: {x: -0, y: 0, z: 0}
-    hitboxType: 0
+    hitboxType: 2
     boxSize: {x: 0, y: 0, z: 0}
     boxOffset: {x: 0, y: 0, z: 0}
-    sphereRadius: 0
+    sphereRadius: 28
     sphereOffset: {x: 0, y: 0, z: 0}
     capsuleRadius: 0
     capsuleHeight: 0
     capsuleOffset: {x: 0, y: 0, z: 0}
-    eventPrefab: {fileID: 2059498863191081392, guid: ab8c599d28debd540bfebcbdfb53cb01, type: 3}
-    delayBetweenEvents: 0.125
+    eventPrefab: {fileID: 2330876491933133761, guid: 71e95e5cc5b48094db4838f20e48c184, type: 3}
+    delayBetweenEvents: 0.3
     enableChance: 0
     chance: 0.5
     enableDestination: 0
@@ -37,14 +37,14 @@ MonoBehaviour:
   delayMode: 0
   defaultDelay: 0.3
   additiveStep: 0.1
-  defaultPrefabAsset: {fileID: 2059498863191081392, guid: ab8c599d28debd540bfebcbdfb53cb01, type: 3}
-  enableMinMax: 0
-  minPlay: 0
-  maxPlay: 0
+  defaultPrefabAsset: {fileID: 2330876491933133761, guid: 71e95e5cc5b48094db4838f20e48c184, type: 3}
+  enableMinMax: 1
+  minPlay: 1
+  maxPlay: 1
   eventMode: 0
-  enableRandomMode: 0
-  playBySortChance: 0.5
-  randomAndPlayChance: 0.5
+  enableRandomMode: 1
+  playBySortChance: 0
+  randomAndPlayChance: 1
   enableIndexFilter: 0
   indexList: 
   editType: 0
