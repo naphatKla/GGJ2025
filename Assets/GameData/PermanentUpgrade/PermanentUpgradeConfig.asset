@@ -21,16 +21,20 @@ MonoBehaviour:
     lockDescriptionUpgrade: 
     mode: 0
     levels:
-    - nanoCost: 200
-      value: 5
     - nanoCost: 500
-      value: 8
-    - nanoCost: 1100
-      value: 11
-    - nanoCost: 2100
-      value: 13
-    - nanoCost: 3500
-      value: 15
+      value: 5
+    - nanoCost: 1000
+      value: 5
+    - nanoCost: 2000
+      value: 5
+    - nanoCost: 4000
+      value: 5
+    - nanoCost: 8000
+      value: 5
+    - nanoCost: 16000
+      value: 10
+    - nanoCost: 32000
+      value: 10
   - type: 1
     nameUpgrade: Speed
     iconUpgrade: {fileID: 21300000, guid: 2d452d4e3e393d148a61d2ce75f98bad, type: 3}
@@ -39,11 +43,15 @@ MonoBehaviour:
     lockDescriptionUpgrade: 
     mode: 0
     levels:
-    - nanoCost: 300
+    - nanoCost: 1000
       value: 1
-    - nanoCost: 700
+    - nanoCost: 2000
       value: 1
-    - nanoCost: 1750
+    - nanoCost: 4000
+      value: 1
+    - nanoCost: 8000
+      value: 2
+    - nanoCost: 16000
       value: 2
   - type: 2
     nameUpgrade: Damage
@@ -53,16 +61,22 @@ MonoBehaviour:
     lockDescriptionUpgrade: 
     mode: 0
     levels:
-    - nanoCost: 500
-      value: 1
     - nanoCost: 1000
       value: 1
     - nanoCost: 2000
+      value: 1
+    - nanoCost: 4000
       value: 2
-    - nanoCost: 3500
+    - nanoCost: 8000
       value: 2
-    - nanoCost: 5000
+    - nanoCost: 16000
       value: 3
+    - nanoCost: 32000
+      value: 4
+    - nanoCost: 64000
+      value: 5
+    - nanoCost: 128000
+      value: 7
   - type: 3
     nameUpgrade: Critical Rate
     iconUpgrade: {fileID: 21300000, guid: 5b5f30b1fe8e29e4a950a2126982e7ca, type: 3}
