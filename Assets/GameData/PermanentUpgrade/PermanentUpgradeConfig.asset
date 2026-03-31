@@ -34,7 +34,11 @@ MonoBehaviour:
     - nanoCost: 16000
       value: 10
     - nanoCost: 32000
-      value: 10
+      value: 15
+    - nanoCost: 64000
+      value: 20
+    - nanoCost: 128000
+      value: 30
   - type: 1
     nameUpgrade: Speed
     iconUpgrade: {fileID: 21300000, guid: 2d452d4e3e393d148a61d2ce75f98bad, type: 3}
@@ -53,6 +57,8 @@ MonoBehaviour:
       value: 2
     - nanoCost: 16000
       value: 2
+    - nanoCost: 32000
+      value: 3
   - type: 2
     nameUpgrade: Damage
     iconUpgrade: {fileID: 21300000, guid: 6fb7d5ba6eb8b134f921a279385c4786, type: 3}
@@ -64,89 +70,109 @@ MonoBehaviour:
     - nanoCost: 1000
       value: 1
     - nanoCost: 2000
-      value: 1
+      value: 2
     - nanoCost: 4000
-      value: 2
-    - nanoCost: 8000
-      value: 2
-    - nanoCost: 16000
       value: 3
-    - nanoCost: 32000
+    - nanoCost: 8000
       value: 4
-    - nanoCost: 64000
+    - nanoCost: 16000
       value: 5
-    - nanoCost: 128000
+    - nanoCost: 32000
       value: 7
+    - nanoCost: 64000
+      value: 10
+    - nanoCost: 128000
+      value: 15
   - type: 3
     nameUpgrade: Critical Rate
     iconUpgrade: {fileID: 21300000, guid: 5b5f30b1fe8e29e4a950a2126982e7ca, type: 3}
     descriptionUpgrade: critical chance
     unit: '%'
     lockDescriptionUpgrade: 
-    mode: 0
+    mode: 1
     levels:
-    - nanoCost: 1500
-      value: 1
-    - nanoCost: 3000
-      value: 2
-    - nanoCost: 5000
-      value: 3
-    - nanoCost: 8000
-      value: 4
-    - nanoCost: 11000
+    - nanoCost: 2000
       value: 5
+    - nanoCost: 4000
+      value: 5
+    - nanoCost: 8000
+      value: 5
+    - nanoCost: 16000
+      value: 5
+    - nanoCost: 32000
+      value: 10
+    - nanoCost: 64000
+      value: 10
+    - nanoCost: 128000
+      value: 10
+    - nanoCost: 256000
+      value: 15
   - type: 4
     nameUpgrade: Critical Damage
     iconUpgrade: {fileID: 21300000, guid: ee954a87ce6315b489375a00aa0961ae, type: 3}
     descriptionUpgrade: critical damage
     unit: '%'
     lockDescriptionUpgrade: 
-    mode: 0
+    mode: 1
     levels:
+    - nanoCost: 1000
+      value: 25
     - nanoCost: 2000
-      value: 20
-    - nanoCost: 5000
-      value: 30
+      value: 25
+    - nanoCost: 4000
+      value: 25
     - nanoCost: 8000
       value: 50
-    - nanoCost: 12000
+    - nanoCost: 16000
       value: 50
+    - nanoCost: 32000
+      value: 75
+    - nanoCost: 64000
+      value: 100
   - type: 5
     nameUpgrade: Life Steal Chance
     iconUpgrade: {fileID: 21300000, guid: 0713461787bde37499473f76ba2c7698, type: 3}
     descriptionUpgrade: life steal chance
     unit: '%'
     lockDescriptionUpgrade: 
-    mode: 0
+    mode: 1
     levels:
-    - nanoCost: 10000
+    - nanoCost: 4000
       value: 1
-    - nanoCost: 10000
+    - nanoCost: 8000
       value: 1
-    - nanoCost: 15000
+    - nanoCost: 16000
       value: 1
-    - nanoCost: 15000
+    - nanoCost: 32000
       value: 1
-    - nanoCost: 20000
+    - nanoCost: 64000
       value: 1
+    - nanoCost: 128000
+      value: 2
+    - nanoCost: 256000
+      value: 3
   - type: 6
     nameUpgrade: Life Steal Effective
     iconUpgrade: {fileID: 21300000, guid: 509684c53b6d43e4dbbe070632f0abb1, type: 3}
     descriptionUpgrade: life steal effective
     unit: '%'
     lockDescriptionUpgrade: 
-    mode: 0
+    mode: 1
     levels:
-    - nanoCost: 3500
-      value: 1
-    - nanoCost: 5500
-      value: 1
-    - nanoCost: 7200
-      value: 2
-    - nanoCost: 10000
-      value: 2
-    - nanoCost: 15000
-      value: 4
+    - nanoCost: 3000
+      value: 5
+    - nanoCost: 6000
+      value: 5
+    - nanoCost: 12000
+      value: 10
+    - nanoCost: 24000
+      value: 10
+    - nanoCost: 48000
+      value: 20
+    - nanoCost: 96000
+      value: 25
+    - nanoCost: 192000
+      value: 25
   - type: 7
     nameUpgrade: Exp Multiply
     iconUpgrade: {fileID: 21300000, guid: 402c8eb1ade30ac49b4d86937d63e6c7, type: 3}
@@ -155,16 +181,20 @@ MonoBehaviour:
     lockDescriptionUpgrade: 
     mode: 1
     levels:
-    - nanoCost: 1000
-      value: 5
-    - nanoCost: 1600
+    - nanoCost: 1500
       value: 10
-    - nanoCost: 3200
+    - nanoCost: 3000
       value: 10
     - nanoCost: 6000
-      value: 10
-    - nanoCost: 11000
-      value: 15
+      value: 20
+    - nanoCost: 12000
+      value: 20
+    - nanoCost: 24000
+      value: 40
+    - nanoCost: 48000
+      value: 50
+    - nanoCost: 96000
+      value: 50
   - type: 8
     nameUpgrade: ' Pick Up Range'
     iconUpgrade: {fileID: 21300000, guid: a3b75a011a256274e833655764834aa5, type: 3}
@@ -173,16 +203,20 @@ MonoBehaviour:
     lockDescriptionUpgrade: 
     mode: 0
     levels:
-    - nanoCost: 1111
+    - nanoCost: 300
       value: 1
-    - nanoCost: 2222
-      value: 1
-    - nanoCost: 3333
+    - nanoCost: 600
       value: 2
-    - nanoCost: 4444
+    - nanoCost: 1200
       value: 2
-    - nanoCost: 5555
+    - nanoCost: 2400
       value: 3
+    - nanoCost: 4800
+      value: 4
+    - nanoCost: 9600
+      value: 5
+    - nanoCost: 19200
+      value: 5
   - type: 9
     nameUpgrade: Invincible Time
     iconUpgrade: {fileID: 21300000, guid: 03020b41ee2be3148bdf17165c8225c8, type: 3}
@@ -191,13 +225,13 @@ MonoBehaviour:
     lockDescriptionUpgrade: 
     mode: 0
     levels:
-    - nanoCost: 5000
+    - nanoCost: 2000
       value: 0.1
-    - nanoCost: 5000
+    - nanoCost: 4000
       value: 0.1
-    - nanoCost: 5000
+    - nanoCost: 8000
       value: 0.1
-    - nanoCost: 5000
+    - nanoCost: 16000
       value: 0.1
-    - nanoCost: 5000
+    - nanoCost: 32000
       value: 0.1
