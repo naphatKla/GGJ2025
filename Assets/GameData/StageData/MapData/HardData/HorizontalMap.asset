@@ -82,7 +82,7 @@ MonoBehaviour:
     enemyPointGrowthRate: 12.5
     chance: 0
     enemyChanceCanGrowth: 1
-    enemyChanceGrowthRate: 1
+    enemyChanceGrowthRate: 1.25
     disableNormalize: 0
     useCustomInterval: 0
     customInterval: 0
@@ -107,7 +107,7 @@ MonoBehaviour:
     enemyPointGrowthRate: 12.5
     chance: 0
     enemyChanceCanGrowth: 1
-    enemyChanceGrowthRate: 1.5
+    enemyChanceGrowthRate: 1.25
     disableNormalize: 0
     useCustomInterval: 0
     customInterval: 2
@@ -132,7 +132,7 @@ MonoBehaviour:
     enemyPointGrowthRate: 12.5
     chance: 0
     enemyChanceCanGrowth: 1
-    enemyChanceGrowthRate: 1
+    enemyChanceGrowthRate: 0.75
     disableNormalize: 0
     useCustomInterval: 0
     customInterval: 0
@@ -152,12 +152,12 @@ MonoBehaviour:
     displayName: ABSORPTION
     enemyController: {fileID: 1371981663885322251, guid: fd4d927248ba7894fab69bd0611e5dd6, type: 3}
     prewarmCount: 50
-    spawnPoint: 2.8
+    spawnPoint: 2.7
     enemyPointCanGrowth: 0
     enemyPointGrowthRate: 12.5
     chance: 0
     enemyChanceCanGrowth: 1
-    enemyChanceGrowthRate: 0.2
+    enemyChanceGrowthRate: 0.5
     disableNormalize: 0
     useCustomInterval: 0
     customInterval: 0
@@ -177,12 +177,12 @@ MonoBehaviour:
     displayName: PIERCER
     enemyController: {fileID: 5352284219382747297, guid: c31b489d153b0634585086d777023f54, type: 3}
     prewarmCount: 50
-    spawnPoint: 1.2
+    spawnPoint: 1.1
     enemyPointCanGrowth: 0
     enemyPointGrowthRate: 12.5
     chance: 0
     enemyChanceCanGrowth: 1
-    enemyChanceGrowthRate: 1
+    enemyChanceGrowthRate: 1.5
     disableNormalize: 0
     useCustomInterval: 0
     customInterval: 0
@@ -202,7 +202,7 @@ MonoBehaviour:
     displayName: JAVELIN
     enemyController: {fileID: 5352284219382747297, guid: 9b50d372f60f2b44e8902b9700c8ff75, type: 3}
     prewarmCount: 50
-    spawnPoint: 2.1
+    spawnPoint: 1.7
     enemyPointCanGrowth: 0
     enemyPointGrowthRate: 12.5
     chance: 0
@@ -227,12 +227,12 @@ MonoBehaviour:
     displayName: COMET
     enemyController: {fileID: 5352284219382747297, guid: f393a17767905ac4ca15da0af7bc1668, type: 3}
     prewarmCount: 50
-    spawnPoint: 2.8
+    spawnPoint: 2.2
     enemyPointCanGrowth: 0
     enemyPointGrowthRate: 12.5
     chance: 0
     enemyChanceCanGrowth: 1
-    enemyChanceGrowthRate: 1
+    enemyChanceGrowthRate: 0.75
     disableNormalize: 0
     useCustomInterval: 0
     customInterval: 0
@@ -257,7 +257,7 @@ MonoBehaviour:
     enemyPointGrowthRate: 12.5
     chance: 0
     enemyChanceCanGrowth: 1
-    enemyChanceGrowthRate: 1
+    enemyChanceGrowthRate: 1.1
     disableNormalize: 0
     useCustomInterval: 0
     customInterval: 0
@@ -282,7 +282,7 @@ MonoBehaviour:
     enemyPointGrowthRate: 12.5
     chance: 0
     enemyChanceCanGrowth: 1
-    enemyChanceGrowthRate: 1
+    enemyChanceGrowthRate: 1.25
     disableNormalize: 0
     useCustomInterval: 0
     customInterval: 1.995
@@ -307,7 +307,7 @@ MonoBehaviour:
     enemyPointGrowthRate: 12.5
     chance: 0
     enemyChanceCanGrowth: 1
-    enemyChanceGrowthRate: 0.3
+    enemyChanceGrowthRate: 0.5
     disableNormalize: 0
     useCustomInterval: 0
     customInterval: 0
@@ -721,19 +721,19 @@ MonoBehaviour:
     logic: 0
     conditionConfigs:
     - conditionType: 1
-      scoreAtLeast: 320000
+      scoreAtLeast: 80000
   - winRequired: 1
     logic: 0
     conditionConfigs:
     - conditionType: 1
-      scoreAtLeast: 720000
+      scoreAtLeast: 120000
   - winRequired: 1
     logic: 0
     conditionConfigs:
     - conditionType: 1
-      scoreAtLeast: 1200000
+      scoreAtLeast: 170000
   - winRequired: 1
     logic: 0
     conditionConfigs:
     - conditionType: 1
-      scoreAtLeast: 2000000
+      scoreAtLeast: 220000
