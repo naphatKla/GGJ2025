@@ -12,12 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a9ef52318f4d36147bac0bf0637b499b, type: 3}
   m_Name: CometEnemy
   m_EditorClassIdentifier: 
-  maxHealth: 200
+  characterId: 
+  maxHealth: 125
   invincibleTimePerHit: 0
-  baseSpeed: 20
+  stunResistancePercentage: 0
+  baseSpeed: 8
   moveAccelerationRate: 10
   turnAccelerationRate: 4
-  baseDamage: 9
+  baseDamage: 10
   baseCriRate: 0
   baseCriDamage: 0
   baseLifeStealPercent: 0
@@ -27,6 +29,7 @@ MonoBehaviour:
   autoSkillSlot: 0
   autoSkillDataList: []
   expDrop: 240
-  stopDistance: 20
-  performSkillDistance: 20
+  scoreDrop: 0
   delayBeforePerformSkill: 0.5
+  defaultState: {fileID: 0}
+  stateList: []
