@@ -78,6 +78,12 @@ namespace Characters.FeedbackSystems
             public const string OverloopLv4 = "Skill/Overloop_Lv4";
             public const string OverloopLv5 = "Skill/Overloop_Lv5";
             public const string OverloopLv6 = "Skill/Overloop_Lv6";
+            public const string ReplusionWaveLv1 = "Skill/ReplusionWave_Lv1";
+            public const string ReplusionWaveLv2 = "Skill/ReplusionWave_Lv2";
+            public const string ReplusionWaveLv3 = "Skill/ReplusionWave_Lv3";
+            public const string ReplusionWaveLv4 = "Skill/ReplusionWave_Lv4";
+            public const string ReplusionWaveLv5 = "Skill/ReplusionWave_Lv5";
+            public const string ReplusionWaveLv6 = "Skill/ReplusionWave_Lv6";
             public const string PiercerDashChargeLv1 = "Skill/PiercerDashCharge_Lv1";
             public const string PiercerDashLv1 = "Skill/PiercerDash_Lv1";
             public const string ChargeBombLv1 = "Skill/ChargeBomb_Lv1";
