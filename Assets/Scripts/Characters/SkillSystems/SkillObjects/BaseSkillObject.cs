@@ -13,7 +13,7 @@ namespace Characters.SkillSystems.SkillObjects
         public BaseMovementSystem MovementSystem => _movementSystem;
         public DamageOnTouch DamageOnTouch => _damageOnTouch;
         
-        protected void Awake()
+        protected virtual void Awake()
         {
             _movementSystem = GetComponent<BaseMovementSystem>();
             _damageOnTouch = GetComponent<DamageOnTouch>();
