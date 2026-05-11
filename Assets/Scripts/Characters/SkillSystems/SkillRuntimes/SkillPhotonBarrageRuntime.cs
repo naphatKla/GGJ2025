@@ -44,6 +44,7 @@ namespace Characters.SkillSystems.SkillRuntimes
                     skillData.DamageMultiplier);
 
                 missile.OnHitEnemy += HandleMissileHit;
+                missile.ResetTrail();
                 missile.gameObject.SetActive(true);
                 _missiles.Add(missile);
             }
