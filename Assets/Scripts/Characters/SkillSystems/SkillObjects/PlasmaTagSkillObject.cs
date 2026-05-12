@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Characters.SkillSystems.SkillObjects
 {
-    public class SpaceMineSkillObject : BaseSkillObject
+    public class PlasmaTagSkillObject : BaseSkillObject
     {
         [SerializeField] private TextMeshPro countDownText;
 
@@ -69,7 +69,7 @@ namespace Characters.SkillSystems.SkillObjects
         public void ResetForPool()
         {
             StopFollow();
-            DamageOnTouch.DisableDamage(null);
+            DamageOnTouch.DisableDamage(this);
             if (countDownText) countDownText.text = "";
         }
     }

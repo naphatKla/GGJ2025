@@ -1,15 +1,17 @@
 using Characters.SkillSystems.SkillObjects;
 using Sirenix.OdinInspector;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Characters.SO.SkillDataSo
 {
-    [CreateAssetMenu(fileName = "SkillSpaceMineData", menuName = "GameData/SkillData/SkillSpaceMineData")]
-    public class SkillSpaceMineDataSo : BaseSkillDataSo
+    [CreateAssetMenu(fileName = "SkillPlasmaTagData", menuName = "GameData/SkillData/SkillPlasmaTagData")]
+    public class SkillPlasmaTagDataSo : BaseSkillDataSo
     {
+        [FormerlySerializedAs("plasmaTagSkillObject")]
         [FoldoutGroup("Skill Object")]
         [SerializeField] [Required]
-        private SpaceMineSkillObject spaceMineSkillObject;
+        private PlasmaTagSkillObject plasmaTagSkillObject;
 
         [FoldoutGroup("Skill Object")]
         [LabelText("Max Active Bombs")]
@@ -47,7 +49,7 @@ namespace Characters.SO.SkillDataSo
         [Unit(Units.Percent)]
         [SerializeField] private float damageMultiplier = 100f;
 
-        public SpaceMineSkillObject SpaceMineSkillObject => spaceMineSkillObject;
+        public PlasmaTagSkillObject PlasmaTagSkillObject => plasmaTagSkillObject;
         public int MaxActiveBombs => maxActiveBombs;
         public float TagDuration => tagDuration;
         public float BombCountdown => bombCountdown;

@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9b821ba40228eac42a581771762dbfa5, type: 3}
-  m_Name: LV6_Player_SpaceMine
+  m_Name: LV5_Player_PlasmaTag
   m_EditorClassIdentifier: 
   serializationData:
     SerializedFormat: 2
@@ -26,16 +26,16 @@ MonoBehaviour:
       Data: 0|System.RuntimeType, mscorlib
     - Name: 
       Entry: 1
-      Data: Characters.SkillSystems.SkillRuntimes.SkillSpaceMineRuntime, Assembly-CSharp
+      Data: Characters.SkillSystems.SkillRuntimes.SkillPlasmaTagRuntime, Assembly-CSharp
     - Name: 
       Entry: 8
       Data: 
   skillIcon: {fileID: 0}
-  skillName: Space mine
+  skillName: Plasma Tag
   skillDescription: 
-  previousSkillData: {fileID: 11400000, guid: 8e2e1b83f59a25e44839d568979e8668, type: 2}
-  nextSkillDataUpgrade: {fileID: 0}
-  level: 6
+  previousSkillData: {fileID: 11400000, guid: 0ef5a1cf167048042a78fd06cda9887f, type: 2}
+  nextSkillDataUpgrade: {fileID: 11400000, guid: f9e40453c00f64344981bc67c12d9d05, type: 2}
+  level: 5
   cooldown: 10
   globalCooldown: 1
   maxStack: 1
@@ -43,11 +43,11 @@ MonoBehaviour:
   exitFeedback: 
   clearBuffOnSkillExit: 0
   statusEffectOnSkillStart: []
-  spaceMineSkillObject: {fileID: 5191444538013982635, guid: 62e27a20c6265444087656ab91089a07, type: 3}
+  plasmaTagSkillObject: {fileID: 5191444538013982635, guid: 9c2dbe499f121a148983d141f72271e1, type: 3}
   maxActiveBombs: 5
   tagDuration: 3
   bombCountdown: 3
-  damageActiveDuration: 0.5
+  damageActiveDuration: 0.35
   cleanupDelay: 0.1
-  baseDamage: 350
+  baseDamage: 300
   damageMultiplier: 100
