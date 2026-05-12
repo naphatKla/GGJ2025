@@ -32,7 +32,25 @@ MonoBehaviour:
       Data: 
   skillIcon: {fileID: 0}
   skillName: Photon Barrage
-  skillDescription: 
+  skillDescription: '<color=#FF3131><b>[Attack]</b></color>
+
+    <size=3.5><color=#adadad><i>[Single],
+    [Multi-Shot], [Homing]</i></color>
+
+    <color=#5CE5FF><b>[UPGRADE]</b></color>
+
+    <color=#FFE02E><b>[++]</b></color>
+    Photon
+
+    <color=#FFE02E><b>[+]</b></color> Damage
+
+    
+
+    Cooldown: <b>3s</b>
+
+
+    -
+    Creates Photons around the ship that deal damage to the nearest enemy'
   previousSkillData: {fileID: 11400000, guid: e589a75f84f53fb4bacd9ee496980df4, type: 2}
   nextSkillDataUpgrade: {fileID: 11400000, guid: f21f5f12a4cc63745bf632538487dee1, type: 2}
   level: 5
@@ -43,11 +61,11 @@ MonoBehaviour:
   exitFeedback: 
   clearBuffOnSkillExit: 0
   statusEffectOnSkillStart: []
-  missileCount: 8
+  missileCount: 12
   missilePrefab: {fileID: -5918660753670732098, guid: 1c91ee432ab06b84692a55139f88d72d, type: 3}
-  damageHitPerSec: 5
-  baseDamagePerHit: 8
-  damageMultiplier: 100
+  damageHitPerSec: 1
+  baseDamagePerHit: 20
+  damageMultiplier: 50
   spreadDistance: 8
   spreadEntireDuration: 0.4
   spreadStaggerDuration: 0.2
@@ -125,7 +143,7 @@ MonoBehaviour:
     m_RotationOrder: 4
   homingDetectionRadius: 15
   homingSpeed: 30
-  homingMaxLifetime: 3
+  homingMaxLifetime: 2
   homingTurnSpeed: 360
   homingArcStrength: 2
   homingArcDecayCurve:
