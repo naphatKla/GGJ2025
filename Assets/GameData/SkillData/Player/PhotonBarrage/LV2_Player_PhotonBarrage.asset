@@ -32,7 +32,10 @@ MonoBehaviour:
       Data: 
   skillIcon: {fileID: 0}
   skillName: Photon Barrage
-  skillDescription: 
+  skillDescription: "<color=#FF3131><b>[Attack]</b></color>\r\n<size=3.5><color=#adadad><i>[Single],
+    [Multi-Shot], [Homing]</i></color>\r\n<color=#5CE5FF><b>[UPGRADE]</b></color>
+    \r\n<color=#FFE02E><b>[+]</b></color> Photon\n\r\nCooldown: <b>3s</b>\r\n\n-
+    Creates Photons around the ship that deal damage to the nearest enemy"
   previousSkillData: {fileID: 11400000, guid: 2f40246c67228e840a4b127a856ae95d, type: 2}
   nextSkillDataUpgrade: {fileID: 11400000, guid: 5f05a732acbc11644a2acae005232639, type: 2}
   level: 2
@@ -43,10 +46,10 @@ MonoBehaviour:
   exitFeedback: 
   clearBuffOnSkillExit: 0
   statusEffectOnSkillStart: []
-  missileCount: 8
+  missileCount: 5
   missilePrefab: {fileID: -5918660753670732098, guid: 1c91ee432ab06b84692a55139f88d72d, type: 3}
-  damageHitPerSec: 5
-  baseDamagePerHit: 8
+  damageHitPerSec: 1
+  baseDamagePerHit: 5
   damageMultiplier: 100
   spreadDistance: 8
   spreadEntireDuration: 0.4
