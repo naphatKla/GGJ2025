@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using Characters.Controllers;
 using Cysharp.Threading.Tasks;
 using TMPro;
@@ -9,9 +10,14 @@ namespace Characters.SkillSystems.SkillObjects
     public class SpaceMineSkillObject : BaseSkillObject
     {
         [SerializeField] private TextMeshPro countDownText;
-        [SerializeField] private float countDownDuration = 5f;
-        private bool _isTimer = false;
+
         private BaseController _target;
+
+        /// <summary>
+        /// The controller this bomb is currently attached to. 
+        /// Null if not following anyone.
+        /// </summary>
+        public BaseController Target => _target;
 
         private void Update()
         {
@@ -22,9 +28,9 @@ namespace Characters.SkillSystems.SkillObjects
         public void FollowTarget(BaseController target)
         {
             StopFollow();
-            if (!target) return;
             _target = target;
-            _target.HealthSystem.OnDead += StopFollow;
+            if (_target != null)
+                _target.HealthSystem.OnDead += StopFollow;
         }
 
         public void StopFollow()
@@ -33,24 +39,38 @@ namespace Characters.SkillSystems.SkillObjects
             _target.HealthSystem.OnDead -= StopFollow;
             _target = null;
         }
-        
-        public async UniTask WaitPlaceBombAsync()
+
+        /// <summary>
+        /// Countdown timer. Updates the text display each frame.
+        /// Returns when countdown reaches zero.
+        /// </summary>
+        public async UniTask WaitCountdownAsync(float duration, CancellationToken ct)
         {
-            Debug.Log("call?");
-            if (_isTimer) return;
-            
-            _isTimer = true;
-            float countDownTimer = countDownDuration;
-            
-            while (countDownTimer > 0)
+            float remaining = duration;
+
+            while (remaining > 0f)
             {
-                countDownTimer -= Time.deltaTime;
-                countDownText.text = countDownTimer.ToString("F1");
-                Debug.Log(countDownTimer);
-                await UniTask.Yield(PlayerLoopTiming.Update);
+                if (ct.IsCancellationRequested) return;
+
+                remaining -= Time.deltaTime;
+                if (countDownText)
+                    countDownText.text = Mathf.Max(0f, remaining).ToString("F1");
+
+                await UniTask.Yield(PlayerLoopTiming.Update, ct);
             }
 
-            _isTimer = false;    
+            if (countDownText)
+                countDownText.text = "";
+        }
+
+        /// <summary>
+        /// Full reset before returning to pool.
+        /// </summary>
+        public void ResetForPool()
+        {
+            StopFollow();
+            DamageOnTouch.DisableDamage(null);
+            if (countDownText) countDownText.text = "";
         }
     }
 }
