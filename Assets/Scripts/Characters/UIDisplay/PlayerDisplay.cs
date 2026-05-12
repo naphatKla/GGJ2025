@@ -740,14 +740,14 @@ namespace Characters.UIDisplay
             }
 
             // ─── New skill text ───
-            var textInstance = PoolingManager.Instance.Get<TextMeshProUGUI>(worldTextUISkillFeedbackPrefab.name);
+            //var textInstance = PoolingManager.Instance.Get<TextMeshProUGUI>(worldTextUISkillFeedbackPrefab.name);
 
             NotificationManager.Instance.PlayNotification("notify_skilluse", skillName, 4.0f, NotificationType.Normal);
             PopupUIManager.Instance.ShowPopup("SkillTopPullup", 3f);
             PopupUIManager.Instance.ShowPopup("SkillBottomPullup", 3f);
             feedbackSkill?.PlayFeedbacks();
 
-            Transform tf = textInstance.transform;
+            /*Transform tf = textInstance.transform;
             tf.position = PlayerController.Instance.transform.position;
             tf.localScale = Vector3.zero;
             textInstance.text = skillName;
@@ -774,7 +774,7 @@ namespace Characters.UIDisplay
             _activeStack.Add(entry);
 
             entry.Sequence = BuildFeedbackSequence(entry);
-            _activeSkillTexts[skillName] = entry;
+            _activeSkillTexts[skillName] = entry;*/
 
             SoundManager.Instance.PlayUI(SoundName.UI.Gameplay_SkillNotify);
         }
