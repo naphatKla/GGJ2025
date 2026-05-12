@@ -250,7 +250,7 @@ MonoBehaviour:
   vfxPrefab: {fileID: 7487812072298567463, guid: a2303837935e63045807b560ba0b77a4, type: 3}
   overrideOwner: {fileID: 0}
   stopOnDisable: 1
-  followMode: 1
+  followMode: 0
   rotationMode: 1
 --- !u!114 &1220084201536006365
 MonoBehaviour:
@@ -302,9 +302,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2671910010313609379}
-  - component: {fileID: 3491493882686894968}
+  - component: {fileID: 2330876491933133761}
   m_Layer: 0
-  m_Name: Push_MapEvent
+  m_Name: Test_Zone_Event
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -330,7 +330,7 @@ Transform:
   - {fileID: 6877237258585552963}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3491493882686894968
+--- !u!114 &2330876491933133761
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -339,27 +339,25 @@ MonoBehaviour:
   m_GameObject: {fileID: 2197901931329160530}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c8335e13adf7ad346ba28373dd415cd4, type: 3}
+  m_Script: {fileID: 11500000, guid: bcbc01ad1d8e3cc44b4883c04fa8c1de, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mapEventId: mapevent_push
+  mapEventId: zone_event
   prewarmCount: 3
-  deletetime: 3
+  deletetime: 5
   previewDuration: 1
   delayBeforePerformAfterPreview: 0.25
-  damage: 15
+  damage: 2
   previewEffect: {fileID: 3432823130978613660}
   debug: 0
   notifyFeedback: {fileID: 137818649791452312}
   playFeedback: {fileID: 99597935775533807}
   firePoint: {fileID: 2671910010313609379}
-  sphereRadius: 37
+  sphereRadius: 28
   sphereOffset: {x: 0, y: 0}
   hitLayer:
     serializedVersion: 2
-    m_Bits: 128
-  pushDistance: 20
-  pushDuration: 0.1
+    m_Bits: 192
 --- !u!1 &4169652363207399140
 GameObject:
   m_ObjectHideFlags: 0

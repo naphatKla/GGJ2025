@@ -250,7 +250,7 @@ MonoBehaviour:
   vfxPrefab: {fileID: 7487812072298567463, guid: a2303837935e63045807b560ba0b77a4, type: 3}
   overrideOwner: {fileID: 0}
   stopOnDisable: 1
-  followMode: 1
+  followMode: 0
   rotationMode: 1
 --- !u!114 &1220084201536006365
 MonoBehaviour:
@@ -302,9 +302,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2671910010313609379}
-  - component: {fileID: 3491493882686894968}
+  - component: {fileID: 2059498863191081392}
   m_Layer: 0
-  m_Name: Push_MapEvent
+  m_Name: Border_Enemy_Event
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -328,9 +328,10 @@ Transform:
   - {fileID: 5463354790103231963}
   - {fileID: 179391007959105188}
   - {fileID: 6877237258585552963}
+  - {fileID: 2868951450870155138}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3491493882686894968
+--- !u!114 &2059498863191081392
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -339,27 +340,65 @@ MonoBehaviour:
   m_GameObject: {fileID: 2197901931329160530}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c8335e13adf7ad346ba28373dd415cd4, type: 3}
+  m_Script: {fileID: 11500000, guid: 75c350a189ea2ea419ed3ce8bf17de8e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mapEventId: mapevent_push
-  prewarmCount: 3
-  deletetime: 3
+  mapEventId: normalenemy_border
+  prewarmCount: 5
+  deletetime: 10
   previewDuration: 1
   delayBeforePerformAfterPreview: 0.25
-  damage: 15
+  damage: 0
   previewEffect: {fileID: 3432823130978613660}
   debug: 0
-  notifyFeedback: {fileID: 137818649791452312}
-  playFeedback: {fileID: 99597935775533807}
-  firePoint: {fileID: 2671910010313609379}
-  sphereRadius: 37
-  sphereOffset: {x: 0, y: 0}
-  hitLayer:
-    serializedVersion: 2
-    m_Bits: 128
-  pushDistance: 20
-  pushDuration: 0.1
+  notifyFeedback: {fileID: 0}
+  playFeedback: {fileID: 0}
+  enemyPrefab: {fileID: 1371981663885322251, guid: fd4d927248ba7894fab69bd0611e5dd6, type: 3}
+  patternType: {fileID: 11400000, guid: 2bc8bc7d72e130d4382d64794bbc160c, type: 2}
+  spawnParent: {fileID: 2868951450870155138}
+  enemyAmount: 30
+  statModifier:
+    overrideHp: 1
+    maxHealth: 99999
+    overrideDamage: 0
+    damage: 0
+    overrideSpeed: 0
+    moveSpeed: 0
+  godMode: 0
+  walkToCenter: 1
+  walkSpeed: 1
+  walkStopRadius: 10
+--- !u!1 &2390562842147356512
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2868951450870155138}
+  m_Layer: 0
+  m_Name: Parent
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2868951450870155138
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2390562842147356512}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -16.693474, y: -3.221609, z: -0.5328096}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2671910010313609379}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4169652363207399140
 GameObject:
   m_ObjectHideFlags: 0
