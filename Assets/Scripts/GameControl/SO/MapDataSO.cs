@@ -471,6 +471,10 @@ namespace GameControl.SO
         public float mapGlobalTime;
         
         [FoldoutGroup("Map Setting")]
+        [Tooltip("Map Environment")]
+        public GameObject mapEnvironment;
+        
+        [FoldoutGroup("Map Setting")]
         [Tooltip("Change to Endless Mode the time will not affect this mode the time will increase instend of decrease (Time will start from 0)")]
         public bool endlessMode = false;
         #endregion
