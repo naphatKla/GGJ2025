@@ -47,6 +47,8 @@ namespace GameControl.Controller
         private SummaryState _summaryState;
         private MapState _mapstate;
         public CancellationTokenSource sceneCts;
+        
+        private GameObject _mapEnvironment;
 
         [BoxGroup("Debug")]
         [ShowInInspector, ReadOnly]
@@ -155,6 +157,9 @@ namespace GameControl.Controller
             {
                 MapState = MapState.Normal;
             }
+            
+            //Map Environment
+            _mapEnvironment = Instantiate(copyMapData.mapEnvironment);
         }
 
         private void ModifyAllDataBeforeStart(MapDataSO mapData)
