@@ -36,7 +36,7 @@ MonoBehaviour:
   previousSkillData: {fileID: 11400000, guid: 97556429471dc364c829889cccefdd49, type: 2}
   nextSkillDataUpgrade: {fileID: 11400000, guid: 0ef5a1cf167048042a78fd06cda9887f, type: 2}
   level: 3
-  cooldown: 10
+  cooldown: 30
   globalCooldown: 1
   maxStack: 1
   startFeedback: 
@@ -44,10 +44,10 @@ MonoBehaviour:
   clearBuffOnSkillExit: 0
   statusEffectOnSkillStart: []
   plasmaTagSkillObject: {fileID: 5191444538013982635, guid: df23c38b921c95d4680b06ae3a7465d9, type: 3}
-  maxActiveBombs: 5
-  tagDuration: 3
+  maxActiveBombs: 999
+  tagDuration: 5
   bombCountdown: 3
   damageActiveDuration: 0.35
   cleanupDelay: 0.1
-  baseDamage: 200
+  baseDamage: 50
   damageMultiplier: 100
