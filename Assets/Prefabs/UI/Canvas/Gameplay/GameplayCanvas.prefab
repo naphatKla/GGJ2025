@@ -11815,11 +11815,11 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5302248693922567663}
-  m_Father: {fileID: 3765083552534759281}
+  m_Father: {fileID: 348083302612907093}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: -162}
+  m_AnchoredPosition: {x: -0.000061035156, y: -162}
   m_SizeDelta: {x: 400, y: 120}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1699326141117612344
@@ -13441,7 +13441,6 @@ RectTransform:
   m_Children:
   - {fileID: 8736413962196013551}
   - {fileID: 728767571720271763}
-  - {fileID: 8733755930916233038}
   m_Father: {fileID: 7118840710429179456}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
@@ -13979,6 +13978,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6608412950116654759}
+  - {fileID: 8733755930916233038}
   - {fileID: 8858073573385501274}
   - {fileID: 7504746259384275987}
   m_Father: {fileID: 7118840710429179456}
@@ -14581,6 +14581,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 8229935096311963654}
     m_Modifications:
+    - target: {fileID: 2356501193410245876, guid: 86fa69766464c464b98f961a96cabe9c, type: 3}
+      propertyPath: m_SortingLayer
+      value: 14
+      objectReference: {fileID: 0}
     - target: {fileID: 3228952998107535858, guid: 86fa69766464c464b98f961a96cabe9c, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -14661,6 +14665,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3626094670698952128, guid: 86fa69766464c464b98f961a96cabe9c, type: 3}
+      propertyPath: m_SortingLayer
+      value: 14
+      objectReference: {fileID: 0}
     - target: {fileID: 4740928478935641851, guid: 86fa69766464c464b98f961a96cabe9c, type: 3}
       propertyPath: m_Name
       value: SolfSkillSlot
@@ -14685,9 +14693,21 @@ PrefabInstance:
       propertyPath: serializationData.PrefabModificationsReferencedUnityObjects.Array.data[0]
       value: 
       objectReference: {fileID: 6839066090561721535, guid: 2de71a7c7c270164eb26cfa40f52913d, type: 3}
+    - target: {fileID: 6745464556021974055, guid: 86fa69766464c464b98f961a96cabe9c, type: 3}
+      propertyPath: m_SortingLayer
+      value: 14
+      objectReference: {fileID: 0}
     - target: {fileID: 6992976390685567958, guid: 86fa69766464c464b98f961a96cabe9c, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: -0.4000001
+      objectReference: {fileID: 0}
+    - target: {fileID: 7900179823632661182, guid: 86fa69766464c464b98f961a96cabe9c, type: 3}
+      propertyPath: m_SortingLayer
+      value: 14
+      objectReference: {fileID: 0}
+    - target: {fileID: 8037640438720621042, guid: 86fa69766464c464b98f961a96cabe9c, type: 3}
+      propertyPath: m_SortingLayer
+      value: 14
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -15531,6 +15551,22 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 7456319829921247707}
     m_Modifications:
+    - target: {fileID: 1840517943383128453, guid: eeda42604b78c854b80814aa32ef8230, type: 3}
+      propertyPath: m_SortingLayer
+      value: 14
+      objectReference: {fileID: 0}
+    - target: {fileID: 1991340373762484937, guid: eeda42604b78c854b80814aa32ef8230, type: 3}
+      propertyPath: m_SortingLayer
+      value: 14
+      objectReference: {fileID: 0}
+    - target: {fileID: 3005434385407002396, guid: eeda42604b78c854b80814aa32ef8230, type: 3}
+      propertyPath: m_SortingLayer
+      value: 14
+      objectReference: {fileID: 0}
+    - target: {fileID: 5078863029155854075, guid: eeda42604b78c854b80814aa32ef8230, type: 3}
+      propertyPath: m_SortingLayer
+      value: 14
+      objectReference: {fileID: 0}
     - target: {fileID: 5145216768316944237, guid: eeda42604b78c854b80814aa32ef8230, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -15615,6 +15651,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -0.4000001
       objectReference: {fileID: 0}
+    - target: {fileID: 6096255111972009935, guid: eeda42604b78c854b80814aa32ef8230, type: 3}
+      propertyPath: m_SortingLayer
+      value: 14
+      objectReference: {fileID: 0}
     - target: {fileID: 7179827816872458728, guid: eeda42604b78c854b80814aa32ef8230, type: 3}
       propertyPath: m_Name
       value: PrimarySkillSlot
@@ -15641,6 +15681,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 8229935096311963654}
     m_Modifications:
+    - target: {fileID: 2356501193410245876, guid: 86fa69766464c464b98f961a96cabe9c, type: 3}
+      propertyPath: m_SortingLayer
+      value: 14
+      objectReference: {fileID: 0}
     - target: {fileID: 3228952998107535858, guid: 86fa69766464c464b98f961a96cabe9c, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -15721,6 +15765,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3626094670698952128, guid: 86fa69766464c464b98f961a96cabe9c, type: 3}
+      propertyPath: m_SortingLayer
+      value: 14
+      objectReference: {fileID: 0}
     - target: {fileID: 4740928478935641851, guid: 86fa69766464c464b98f961a96cabe9c, type: 3}
       propertyPath: m_Name
       value: SolfSkillSlot
@@ -15729,9 +15777,21 @@ PrefabInstance:
       propertyPath: serializationData.Prefab
       value: 
       objectReference: {fileID: 4759027338843093616, guid: 86fa69766464c464b98f961a96cabe9c, type: 3}
+    - target: {fileID: 6745464556021974055, guid: 86fa69766464c464b98f961a96cabe9c, type: 3}
+      propertyPath: m_SortingLayer
+      value: 14
+      objectReference: {fileID: 0}
     - target: {fileID: 6992976390685567958, guid: 86fa69766464c464b98f961a96cabe9c, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: -0.4000001
+      objectReference: {fileID: 0}
+    - target: {fileID: 7900179823632661182, guid: 86fa69766464c464b98f961a96cabe9c, type: 3}
+      propertyPath: m_SortingLayer
+      value: 14
+      objectReference: {fileID: 0}
+    - target: {fileID: 8037640438720621042, guid: 86fa69766464c464b98f961a96cabe9c, type: 3}
+      propertyPath: m_SortingLayer
+      value: 14
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -15751,6 +15811,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 8229935096311963654}
     m_Modifications:
+    - target: {fileID: 2356501193410245876, guid: 86fa69766464c464b98f961a96cabe9c, type: 3}
+      propertyPath: m_SortingLayer
+      value: 14
+      objectReference: {fileID: 0}
     - target: {fileID: 3228952998107535858, guid: 86fa69766464c464b98f961a96cabe9c, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -15831,6 +15895,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3626094670698952128, guid: 86fa69766464c464b98f961a96cabe9c, type: 3}
+      propertyPath: m_SortingLayer
+      value: 14
+      objectReference: {fileID: 0}
     - target: {fileID: 4740928478935641851, guid: 86fa69766464c464b98f961a96cabe9c, type: 3}
       propertyPath: m_Name
       value: SolfSkillSlot
@@ -15839,9 +15907,21 @@ PrefabInstance:
       propertyPath: serializationData.Prefab
       value: 
       objectReference: {fileID: 4759027338843093616, guid: 86fa69766464c464b98f961a96cabe9c, type: 3}
+    - target: {fileID: 6745464556021974055, guid: 86fa69766464c464b98f961a96cabe9c, type: 3}
+      propertyPath: m_SortingLayer
+      value: 14
+      objectReference: {fileID: 0}
     - target: {fileID: 6992976390685567958, guid: 86fa69766464c464b98f961a96cabe9c, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: -0.4000001
+      objectReference: {fileID: 0}
+    - target: {fileID: 7900179823632661182, guid: 86fa69766464c464b98f961a96cabe9c, type: 3}
+      propertyPath: m_SortingLayer
+      value: 14
+      objectReference: {fileID: 0}
+    - target: {fileID: 8037640438720621042, guid: 86fa69766464c464b98f961a96cabe9c, type: 3}
+      propertyPath: m_SortingLayer
+      value: 14
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -16067,6 +16147,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 719657575303174770, guid: fc1640f52ca7cb449bdc16ee8cd426de, type: 3}
+      propertyPath: m_SortingLayer
+      value: 14
+      objectReference: {fileID: 0}
     - target: {fileID: 958910129761563984, guid: fc1640f52ca7cb449bdc16ee8cd426de, type: 3}
       propertyPath: m_Name
       value: Player_SelectSolfSkillConfirm
@@ -16074,6 +16158,14 @@ PrefabInstance:
     - target: {fileID: 1007963735344560674, guid: fc1640f52ca7cb449bdc16ee8cd426de, type: 3}
       propertyPath: playOnAwake
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1457452248767823090, guid: fc1640f52ca7cb449bdc16ee8cd426de, type: 3}
+      propertyPath: m_SortingLayer
+      value: 14
+      objectReference: {fileID: 0}
+    - target: {fileID: 3756962235780130790, guid: fc1640f52ca7cb449bdc16ee8cd426de, type: 3}
+      propertyPath: m_SortingLayer
+      value: 14
       objectReference: {fileID: 0}
     - target: {fileID: 3875025413622661943, guid: fc1640f52ca7cb449bdc16ee8cd426de, type: 3}
       propertyPath: playOnAwake
@@ -16227,6 +16319,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 8229935096311963654}
     m_Modifications:
+    - target: {fileID: 2356501193410245876, guid: 86fa69766464c464b98f961a96cabe9c, type: 3}
+      propertyPath: m_SortingLayer
+      value: 14
+      objectReference: {fileID: 0}
     - target: {fileID: 3228952998107535858, guid: 86fa69766464c464b98f961a96cabe9c, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -16307,6 +16403,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3626094670698952128, guid: 86fa69766464c464b98f961a96cabe9c, type: 3}
+      propertyPath: m_SortingLayer
+      value: 14
+      objectReference: {fileID: 0}
     - target: {fileID: 4740928478935641851, guid: 86fa69766464c464b98f961a96cabe9c, type: 3}
       propertyPath: m_Name
       value: SolfSkillSlot
@@ -16331,9 +16431,21 @@ PrefabInstance:
       propertyPath: serializationData.PrefabModificationsReferencedUnityObjects.Array.data[0]
       value: 
       objectReference: {fileID: 6912412287909035504, guid: 8c8c6c22f75ea60448e30fa4c1769df6, type: 3}
+    - target: {fileID: 6745464556021974055, guid: 86fa69766464c464b98f961a96cabe9c, type: 3}
+      propertyPath: m_SortingLayer
+      value: 14
+      objectReference: {fileID: 0}
     - target: {fileID: 6992976390685567958, guid: 86fa69766464c464b98f961a96cabe9c, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: -0.4000001
+      objectReference: {fileID: 0}
+    - target: {fileID: 7900179823632661182, guid: 86fa69766464c464b98f961a96cabe9c, type: 3}
+      propertyPath: m_SortingLayer
+      value: 14
+      objectReference: {fileID: 0}
+    - target: {fileID: 8037640438720621042, guid: 86fa69766464c464b98f961a96cabe9c, type: 3}
+      propertyPath: m_SortingLayer
+      value: 14
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -17043,6 +17155,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 5886005823168340588}
     m_Modifications:
+    - target: {fileID: 708081116211919403, guid: a087658cdfa80ae41bfabae6ef229f18, type: 3}
+      propertyPath: m_SortingLayer
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1547605723076382616, guid: a087658cdfa80ae41bfabae6ef229f18, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -17149,6 +17265,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 8811630216224624869}
     m_Modifications:
+    - target: {fileID: 144588832341102308, guid: da6496cd033fb6d4c88a9f78dd7b122c, type: 3}
+      propertyPath: m_SortingLayer
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5978560406167429897, guid: da6496cd033fb6d4c88a9f78dd7b122c, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -17251,6 +17371,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 8229935096311963654}
     m_Modifications:
+    - target: {fileID: 2356501193410245876, guid: 86fa69766464c464b98f961a96cabe9c, type: 3}
+      propertyPath: m_SortingLayer
+      value: 14
+      objectReference: {fileID: 0}
     - target: {fileID: 3228952998107535858, guid: 86fa69766464c464b98f961a96cabe9c, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -17331,6 +17455,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3626094670698952128, guid: 86fa69766464c464b98f961a96cabe9c, type: 3}
+      propertyPath: m_SortingLayer
+      value: 14
+      objectReference: {fileID: 0}
     - target: {fileID: 4740928478935641851, guid: 86fa69766464c464b98f961a96cabe9c, type: 3}
       propertyPath: m_Name
       value: SolfSkillSlot
@@ -17355,9 +17483,21 @@ PrefabInstance:
       propertyPath: serializationData.PrefabModificationsReferencedUnityObjects.Array.data[0]
       value: 
       objectReference: {fileID: 6839066090561721535, guid: 2de71a7c7c270164eb26cfa40f52913d, type: 3}
+    - target: {fileID: 6745464556021974055, guid: 86fa69766464c464b98f961a96cabe9c, type: 3}
+      propertyPath: m_SortingLayer
+      value: 14
+      objectReference: {fileID: 0}
     - target: {fileID: 6992976390685567958, guid: 86fa69766464c464b98f961a96cabe9c, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: -0.4000001
+      objectReference: {fileID: 0}
+    - target: {fileID: 7900179823632661182, guid: 86fa69766464c464b98f961a96cabe9c, type: 3}
+      propertyPath: m_SortingLayer
+      value: 14
+      objectReference: {fileID: 0}
+    - target: {fileID: 8037640438720621042, guid: 86fa69766464c464b98f961a96cabe9c, type: 3}
+      propertyPath: m_SortingLayer
+      value: 14
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -17377,6 +17517,22 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 7456319829921247707}
     m_Modifications:
+    - target: {fileID: 1840517943383128453, guid: eeda42604b78c854b80814aa32ef8230, type: 3}
+      propertyPath: m_SortingLayer
+      value: 14
+      objectReference: {fileID: 0}
+    - target: {fileID: 1991340373762484937, guid: eeda42604b78c854b80814aa32ef8230, type: 3}
+      propertyPath: m_SortingLayer
+      value: 14
+      objectReference: {fileID: 0}
+    - target: {fileID: 3005434385407002396, guid: eeda42604b78c854b80814aa32ef8230, type: 3}
+      propertyPath: m_SortingLayer
+      value: 14
+      objectReference: {fileID: 0}
+    - target: {fileID: 5078863029155854075, guid: eeda42604b78c854b80814aa32ef8230, type: 3}
+      propertyPath: m_SortingLayer
+      value: 14
+      objectReference: {fileID: 0}
     - target: {fileID: 5145216768316944237, guid: eeda42604b78c854b80814aa32ef8230, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -17468,6 +17624,10 @@ PrefabInstance:
     - target: {fileID: 5367820738167453113, guid: eeda42604b78c854b80814aa32ef8230, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: -0.4000001
+      objectReference: {fileID: 0}
+    - target: {fileID: 6096255111972009935, guid: eeda42604b78c854b80814aa32ef8230, type: 3}
+      propertyPath: m_SortingLayer
+      value: 14
       objectReference: {fileID: 0}
     - target: {fileID: 7179827816872458728, guid: eeda42604b78c854b80814aa32ef8230, type: 3}
       propertyPath: m_Name
@@ -17860,6 +18020,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 8229935096311963654}
     m_Modifications:
+    - target: {fileID: 2356501193410245876, guid: 86fa69766464c464b98f961a96cabe9c, type: 3}
+      propertyPath: m_SortingLayer
+      value: 14
+      objectReference: {fileID: 0}
     - target: {fileID: 3228952998107535858, guid: 86fa69766464c464b98f961a96cabe9c, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -17940,6 +18104,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3626094670698952128, guid: 86fa69766464c464b98f961a96cabe9c, type: 3}
+      propertyPath: m_SortingLayer
+      value: 14
+      objectReference: {fileID: 0}
     - target: {fileID: 4740928478935641851, guid: 86fa69766464c464b98f961a96cabe9c, type: 3}
       propertyPath: m_Name
       value: SolfSkillSlot
@@ -17964,9 +18132,21 @@ PrefabInstance:
       propertyPath: serializationData.PrefabModificationsReferencedUnityObjects.Array.data[0]
       value: 
       objectReference: {fileID: 6912412287909035504, guid: 8c8c6c22f75ea60448e30fa4c1769df6, type: 3}
+    - target: {fileID: 6745464556021974055, guid: 86fa69766464c464b98f961a96cabe9c, type: 3}
+      propertyPath: m_SortingLayer
+      value: 14
+      objectReference: {fileID: 0}
     - target: {fileID: 6992976390685567958, guid: 86fa69766464c464b98f961a96cabe9c, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: -0.4000001
+      objectReference: {fileID: 0}
+    - target: {fileID: 7900179823632661182, guid: 86fa69766464c464b98f961a96cabe9c, type: 3}
+      propertyPath: m_SortingLayer
+      value: 14
+      objectReference: {fileID: 0}
+    - target: {fileID: 8037640438720621042, guid: 86fa69766464c464b98f961a96cabe9c, type: 3}
+      propertyPath: m_SortingLayer
+      value: 14
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
