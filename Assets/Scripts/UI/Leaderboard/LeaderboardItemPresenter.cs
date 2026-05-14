@@ -1,11 +1,9 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
-using Dan.Main;
-using Dan.Models;
 using Player;
 
 namespace UI.Leaderboard
@@ -19,6 +17,11 @@ namespace UI.Leaderboard
         {
             foreach (var p in s_instances)
                 if (p != null && p.isActiveAndEnabled) p.RefreshNow();
+        }
+
+        public static void RefreshAllDelayed(int delayMilliseconds)
+        {
+            RefreshAllDelayedAsync(delayMilliseconds).Forget();
         }
 
         // ---------- Inspector ----------
@@ -52,7 +55,7 @@ namespace UI.Leaderboard
 
         private LoopScrollRect _ls;
         private bool _isFetching;
-        private Coroutine refresh;
+        private bool _refreshQueued;
         private bool _scrollToTopPending;
 
 
@@ -87,91 +90,77 @@ namespace UI.Leaderboard
 
         public void RefreshNow()
         {
-            if (_isFetching) return;
-            Debug.Log("Refreshing");
-            if (refresh != null) StopCoroutine(refresh);
-            refresh = StartCoroutine(FetchEntriesRoutine());
+            if (_isFetching)
+            {
+                _refreshQueued = true;
+                return;
+            }
+
+            Debug.Log("[Leaderboard] Refreshing");
+            FetchEntriesAsync().Forget();
         }
 
-        private static string BuildSubmitName()
+        private static async UniTaskVoid RefreshAllDelayedAsync(int delayMilliseconds)
         {
-            var profile = ActiveProfileService.Instance?.CurrentProfile;
-            return profile?.DisplayName;
+            await UniTask.Delay(Mathf.Max(0, delayMilliseconds));
+            RefreshAll();
         }
 
-        private IEnumerator FetchEntriesRoutine()
+        private async UniTaskVoid FetchEntriesAsync()
         {
             _isFetching = true;
             SetStatus("Loading leaderboard...");
 
-            bool done = false;
-            bool success = false;
-            string error = null;
-
-            Leaderboards.ThailandGameShow.GetEntries(entries =>
+            try
             {
-                try
+                var profileService = ActiveProfileService.Instance;
+                var profile = profileService?.CurrentProfile ?? profileService?.LoadCurrent();
+                var snapshot = await PlayFabLeaderboardService.GetTopScoresAsync(profile, maxEntries);
+
+                if (snapshot.Entries.Count == 0 && profile != null && profile.HighestScore > 0)
                 {
-                    Array.Sort(entries, (a, b) => sortDescending
-                        ? b.Score.CompareTo(a.Score)
-                        : a.Score.CompareTo(b.Score));
-
-                    int length = Mathf.Min(maxEntries, entries.Length);
-                    var list = new List<LeaderboardItemModel>(length);
-                    for (int i = 0; i < length; i++)
-                        list.Add(new LeaderboardItemModel(entries[i].Username, entries[i].Score));
-
-                    ResetItems(list, refill: true);
-
-                    int myRank = -1;
-                    
-                    foreach (Entry entry in entries)
-                    {
-                        if (entry.IsMine())
-                        {
-                            myRank = entry.Rank;
-                        }
-                    }
-                    
-                    if (currentRankText)
-                        currentRankText.text = (myRank > 0) ? $"YOUR RANK #{myRank}" : $"NOT IN TOP {maxEntries}";
-                    success = true;
+                    Debug.Log($"[Leaderboard] No PlayFab rows found. Backfilling local highest score: {profile.HighestScore}");
+                    await PlayFabLeaderboardService.SubmitHighestScoreAsync(profile, profile.HighestScore);
+                    snapshot = await PlayFabLeaderboardService.GetTopScoresAsync(profile, maxEntries);
                 }
-                catch (Exception ex)
+
+                Debug.Log($"[Leaderboard] PlayFab fetch success: {snapshot.Entries.Count}/{snapshot.EntryCount} rows");
+                var list = new List<LeaderboardItemModel>(snapshot.Entries.Count);
+
+                foreach (var entry in snapshot.Entries)
+                    list.Add(new LeaderboardItemModel(entry.DisplayName, entry.Score));
+
+                if (!sortDescending)
+                    list.Reverse();
+
+                ResetItems(list, refill: true);
+
+                if (currentRankText)
                 {
-                    error = ex.Message;
+                    var maxShown = Mathf.Clamp(maxEntries, 1, 100);
+                    currentRankText.text = snapshot.CurrentPlayerRank > 0
+                        ? $"YOUR RANK #{snapshot.CurrentPlayerRank}"
+                        : $"NOT IN TOP {maxShown}";
                 }
-                finally { done = true; }
-            },
-            err =>
-            {
-                error = err;
-                done = true;
-            });
 
-            float timeout = Mathf.Max(1f, requestTimeoutSeconds);
-            while (!done && timeout > 0f)
-            {
-                timeout -= Time.unscaledDeltaTime;
-                yield return null;
-            }
-            if (!done) error = "Timeout";
-
-            if (success)
-            {
                 SetStatus("");
             }
-            else
+            catch (Exception ex)
             {
-                Debug.LogError($"[Leaderboard] fetch failed: {error}");
+                Debug.LogError($"[Leaderboard] PlayFab fetch failed: {ex.Message}");
                 SetStatus("Failed to load leaderboard");
                 ResetItems(new List<LeaderboardItemModel>(), refill: true);
-                StopCoroutine(refresh);
-                _isFetching = false;
-                yield break;
             }
+            finally
+            {
+                _isFetching = false;
 
-            _isFetching = false;
+                if (_refreshQueued && isActiveAndEnabled)
+                {
+                    _refreshQueued = false;
+                    RefreshNow();
+                }
+            }
         }
 
         private void SetStatus(string msg)

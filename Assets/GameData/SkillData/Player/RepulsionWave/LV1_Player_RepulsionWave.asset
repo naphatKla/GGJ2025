@@ -30,9 +30,12 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
-  skillIcon: {fileID: 0}
+  skillIcon: {fileID: 21300000, guid: 7476defb9dc1c8241807d1060fcfceae, type: 3}
   skillName: Repulsion Wave
-  skillDescription: Blank...
+  skillDescription: "<color=#FF3131><b>[Attack]</b></color>\r\n<size=3.5><color=#adadad><i>[AOE],
+    [Knockback]</i></color>\r\n- Releases a shockwave that deals damage and knocks
+    back enemies\n\n<color=#FFE02E><b>[NEW!]</b></color> \r\n<color=#FFE02E><b>[+]</b></color>
+    Repulsion Wave skill\r\n\nCooldown: <b>0.5s</b>"
   previousSkillData: {fileID: 0}
   nextSkillDataUpgrade: {fileID: 11400000, guid: d32bb3a7b70b58448a6cb772a1bcade9, type: 2}
   level: 1
@@ -44,7 +47,7 @@ MonoBehaviour:
   clearBuffOnSkillExit: 0
   statusEffectOnSkillStart: []
   explosionBaseDamage: 5
-  explosionDamageMultiplier: 100
+  explosionDamageMultiplier: 10
   explosionRadius: 6
-  knockBackDistance: 6
-  knockBackDuration: 0.25
+  knockBackDistance: 2
+  knockBackDuration: 0.1

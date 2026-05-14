@@ -6,6 +6,7 @@ using UnityEngine;
 using System.IO;
 using System.Linq;
 using Challenge;
+using Manager;
 using PermanentUpgrade;
 using UI.MapSelection;
 using Debug = UnityEngine.Debug;
@@ -363,7 +364,6 @@ namespace Player
 
             GUILayout.EndHorizontal();
 
-
             GUILayout.Space(10);
             GUILayout.Label("Actions", _hdrStyle);
 
@@ -413,15 +413,14 @@ namespace Player
             }
             GUILayout.EndHorizontal();
             
-            GUILayout.Label("Unlock Section", _hdrStyle);
+            GUILayout.Label("Unlock Map", _hdrStyle);
             GUILayout.BeginHorizontal();
-            if (GUILayout.Button("Unlock All Challenge"))
+            if (GUILayout.Button("Galactic Core"))
             {
-                foreach (var challenge in ChallengeManager.Instance.allChallenges.challengeList)
+                ProgressionManager.Instance.UnlockMaps(new[]
                 {
-                    current.UnlockedChallenges.Add(challenge.id);
-                }
-                SaveNow();
+                    "map_galacticcore"
+                });
             }
             GUILayout.EndHorizontal();
             

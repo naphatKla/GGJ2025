@@ -28,12 +28,6 @@ using UnityEngine.UI;
 using Button = UnityEngine.UI.Button;
 using Random = UnityEngine.Random;
 
-// ====== เพิ่มเติม ======
-
-// ComboStreakDataSo
-// ถ้า ComboStreakSystem อยู่ในเนมสเปซอื่น ให้แก้ using ให้ตรง
-// using Characters.ComboSystem;
-
 namespace Characters.UIDisplay
 {
     public class PlayerDisplay : MonoBehaviour
@@ -48,12 +42,11 @@ namespace Characters.UIDisplay
         public GameObject rankUI;
 
         [FoldoutGroup("Rank Display")] public TMP_Text killStrikeText;
-        [FoldoutGroup("Rank Display")] public TMP_Text scoreMultiplyText; // แสดงตัวคูณ Boost (xN)
+        [FoldoutGroup("Rank Display")] public TMP_Text scoreMultiplyText;
         [FoldoutGroup("Rank Display")] public GameObject lightningEffect;
         [FormerlySerializedAs("comboStreakBar")] [FoldoutGroup("Rank Display")] public ValueBar rankPointBar;
         [FoldoutGroup("Rank Display")] public float tweenDuration = 0.1f;
         [FoldoutGroup("Rank Display")] public float scaleAmount = 1.2f;
-
 
         [FormerlySerializedAs("combatRankViewholder")] [FormerlySerializedAs("gradeComboViewholder")] [Title("Grade Rank")] [FoldoutGroup("Rank Display")]
         public CombatRankViewHolder combatRankViewHolder;
@@ -77,6 +70,10 @@ namespace Characters.UIDisplay
 
         [FoldoutGroup("Feedback UI Display"), SerializeField]
         private MMF_Player feedbackSkill;
+        
+        [FoldoutGroup("Feedback UI Display"), SerializeField]
+        [PropertyTooltip("Vertical gap between stacked skill feedback texts.")]
+        private float skillFeedbackStackOffset = 0.5f;
 
         // ========= Level =========
         [FoldoutGroup("Level Display"), Title("Ref"), SerializeField]
@@ -144,6 +141,20 @@ namespace Characters.UIDisplay
 
         private System.Action<float> _onHealthChangeUpdateUIHandler;
         private System.Action<float> _onHealthChangeTextHandler;
+        
+        // ========= Skill Feedback Anti-Overlap =========
+        
+        private struct ActiveSkillFeedback
+        {
+            public string SkillName;
+            public TextMeshProUGUI Text;
+            public Transform Transform;
+            public CanvasGroup CanvasGroup;
+            public Sequence Sequence;
+        }
+        
+        private readonly Dictionary<string, ActiveSkillFeedback> _activeSkillTexts = new();
+        private readonly List<ActiveSkillFeedback> _activeStack = new();
 
         public void InitDependencies()
         {
@@ -160,11 +171,6 @@ namespace Characters.UIDisplay
                 combatRankSystem.OnRankChanged += combatRankViewHolder.UpdateGradeCombo;
                 combatRankSystem.OnUpdateRankPointProgression += UpdateRankPointBar;
                 combatRankSystem.OnKillStrikeChanged += UpdateKillStrikeText;
-
-                //combatRankSystem.OnRankChanged   update combatRankViewHolder.UpdateGradeCombo;
-                //combatRankSystem.OnRankPointChanged  update ComboValueBarUpdate
-                // strike changed
-                // score multiplier
             }
 
             if (flowStateController != null)
@@ -244,6 +250,12 @@ namespace Characters.UIDisplay
             statusEffectSystem.OnStatusUIUpdate -= UpdateStatusUI;
 
             PoolingManager.Current?.ClearPool(worldTextUIPrefab.name);
+            
+            // Clean up any active skill feedback sequences
+            foreach (var entry in _activeSkillTexts.Values)
+                entry.Sequence?.Kill();
+            _activeSkillTexts.Clear();
+            _activeStack.Clear();
         }
 
         public void UpdateAllUI()
@@ -263,9 +275,15 @@ namespace Characters.UIDisplay
             UpdateHealthUI();
             scoreText.text = "0";
             cooldownIsNotReadyText.alpha = 0;
+            
+            // Clear any lingering skill feedback
+            foreach (var entry in _activeSkillTexts.Values)
+                entry.Sequence?.Kill();
+            _activeSkillTexts.Clear();
+            _activeStack.Clear();
         }
 
-        #region Rank UI (ใหม่)
+        #region Rank UI
 
         private void UpdateRankPointBar(int currentRankPointThreshold, int currentRankPoint, int nextRankPointThreshold)
         {
@@ -286,7 +304,6 @@ namespace Characters.UIDisplay
             if (killStrikeText != null)
                 killStrikeText.text = $"{streak} STRIKE!";
 
-            // pop tween
             rankUI.transform
                 .DOScale(new Vector3(scaleAmount, scaleAmount, 1), tweenDuration)
                 .SetEase(Ease.OutBack)
@@ -316,7 +333,6 @@ namespace Characters.UIDisplay
         {
             var textInstance = PoolingManager.Instance.Get<TextMeshProUGUI>(worldTextUIPrefab.name);
 
-            // Reset & Prepare
             Transform tf = textInstance.transform;
             Vector3 p = damageData.HitPosition;
             Vector2 off = Random.insideUnitCircle * 1f;
@@ -325,7 +341,6 @@ namespace Characters.UIDisplay
             textInstance.text = damageData.Damage.ToString();
             textInstance.color = Color.white;
 
-            // CanvasGroup for fade
             var canvasGroup = _worldTextDictCaches[textInstance.gameObject];
             canvasGroup.alpha = 1;
 
@@ -340,7 +355,6 @@ namespace Characters.UIDisplay
 
             textInstance.gameObject.SetActive(true);
 
-            // === Animation Settings ===
             float floatDuration = 0.25f;
             float fadeOutDuration = 0.25f;
             float delayBeforeFade = floatDuration - fadeOutDuration;
@@ -454,7 +468,6 @@ namespace Characters.UIDisplay
             Debug.Log(skillList);
             if (!isChoosingSkill)
                 ShowNextSkillPopup();
-            
         }
 
         private void ShowNextSkillPopup()
@@ -609,27 +622,24 @@ namespace Characters.UIDisplay
             var textInstance = PoolingManager.Instance.Get<TextMeshProUGUI>(worldTextUIParryFeedbackPrefab.name);
             NotificationManager.Instance.PlayNotification("notify_skilluse", "Parry Success!", 4.0f, NotificationType.Normal);
 
-            // Reset & Prepare
             Transform tf = textInstance.transform;
             tf.position = PlayerController.Instance.transform.position;
             tf.localScale = Vector3.zero;
             textInstance.text = text;
             textInstance.color = Color.white;
 
-            // CanvasGroup for fade
             var canvasGroup = _worldTextDictCaches[textInstance.gameObject];
             canvasGroup.alpha = 1;
             tf.SetAsLastSibling();
 
             textInstance.gameObject.SetActive(true);
 
-            // === Animation Settings ===
             float floatDuration = 1f;
             float fadeOutDuration = 0.25f;
             float delayBeforeFade = floatDuration - fadeOutDuration;
 
             float riseAmount = 1.4f;
-            float scaleIn =1.4f;
+            float scaleIn = 1.4f;
             float settleScale = 1.0f;
             float popDuration = 0.15f;
             float settleDuration = 0.15f;
@@ -663,7 +673,7 @@ namespace Characters.UIDisplay
             ResetSkillSlot(skillIndex);
         }
 
-        private void SkillPerfrom(BaseSkillDataSo skilldata,int skillIndex)
+        private void SkillPerfrom(BaseSkillDataSo skilldata, int skillIndex)
         {
             if (skillIndex < 0 || skillIndex >= skillSlotModel.Count) return;
             if (skillSlotModel[skillIndex] == null) return;
@@ -690,13 +700,13 @@ namespace Characters.UIDisplay
             SkillResetFeedback(skillSlotModel[skillIndex].transform, skillSlotModel[skillIndex].skillframe);
             skillSlotModel[skillIndex].ResetSkillSlot();
 
-            if (skillIndex == 0) return; // ignore primary
+            if (skillIndex == 0) return;
             skillSlotModel[skillIndex].PlayCooldownFinishFeedback();
             if (skillIndex == 1)
                 SoundManager.Instance.PlayUI(SoundName.UI.Gameplay_MainSkillCooldownReady);
         }
 
-        private void SkillPlayFeedback(BaseSkillDataSo skillDataSo, int skillIndex )
+        private void SkillPlayFeedback(BaseSkillDataSo skillDataSo, int skillIndex)
         {
             if (skillIndex > 1)
             {
@@ -710,36 +720,76 @@ namespace Characters.UIDisplay
             _worldTextDictCaches.TryAdd(obj.gameObject, obj.gameObject.AddComponent<CanvasGroup>());
             return obj;
         }
-        
+
         private void UpdateFeedbackText(BaseSkillDataSo skillDataSo)
         {
-            var textInstance = PoolingManager.Instance.Get<TextMeshProUGUI>(worldTextUISkillFeedbackPrefab.name);
-            NotificationManager.Instance.PlayNotification("notify_skilluse", skillDataSo.SkillName, 4.0f, NotificationType.Normal);
+            string skillName = skillDataSo.SkillName;
+
+            // ─── Same skill still active? Just restart its animation ───
+            if (_activeSkillTexts.TryGetValue(skillName, out var existing) 
+                && existing.Text && existing.Text.gameObject.activeSelf)
+            {
+                RestartFeedback(existing);
+
+                NotificationManager.Instance.PlayNotification("notify_skilluse", skillName, 4.0f, NotificationType.Normal);
+                PopupUIManager.Instance.ShowPopup("SkillTopPullup", 3f);
+                PopupUIManager.Instance.ShowPopup("SkillBottomPullup", 3f);
+                feedbackSkill?.PlayFeedbacks();
+                SoundManager.Instance.PlayUI(SoundName.UI.Gameplay_SkillNotify);
+                return;
+            }
+
+            // ─── New skill text ───
+            //var textInstance = PoolingManager.Instance.Get<TextMeshProUGUI>(worldTextUISkillFeedbackPrefab.name);
+
+            NotificationManager.Instance.PlayNotification("notify_skilluse", skillName, 4.0f, NotificationType.Normal);
             PopupUIManager.Instance.ShowPopup("SkillTopPullup", 3f);
             PopupUIManager.Instance.ShowPopup("SkillBottomPullup", 3f);
             feedbackSkill?.PlayFeedbacks();
 
-            // Reset & Prepare
-            Transform tf = textInstance.transform;
+            /*Transform tf = textInstance.transform;
             tf.position = PlayerController.Instance.transform.position;
             tf.localScale = Vector3.zero;
-            textInstance.text = skillDataSo.SkillName;
+            textInstance.text = skillName;
             textInstance.color = Color.white;
 
-            // CanvasGroup for fade
             var canvasGroup = _worldTextDictCaches[textInstance.gameObject];
             canvasGroup.alpha = 1;
             tf.SetAsLastSibling();
-
             textInstance.gameObject.SetActive(true);
 
-            // === Animation Settings ===
+            // ─── Offset so it doesn't overlap other active texts ───
+            tf.position += Vector3.up * (_activeStack.Count * skillFeedbackStackOffset);
+
+            var entry = new ActiveSkillFeedback
+            {
+                SkillName = skillName,
+                Text = textInstance,
+                Transform = tf,
+                CanvasGroup = canvasGroup,
+                Sequence = null
+            };
+
+            _activeSkillTexts[skillName] = entry;
+            _activeStack.Add(entry);
+
+            entry.Sequence = BuildFeedbackSequence(entry);
+            _activeSkillTexts[skillName] = entry;*/
+
+            SoundManager.Instance.PlayUI(SoundName.UI.Gameplay_SkillNotify);
+        }
+
+        private Sequence BuildFeedbackSequence(ActiveSkillFeedback entry)
+        {
+            Transform tf = entry.Transform;
+            CanvasGroup canvasGroup = entry.CanvasGroup;
+            string skillName = entry.SkillName;
+
             float floatDuration = 1f;
             float fadeOutDuration = 0.25f;
             float delayBeforeFade = floatDuration - fadeOutDuration;
-
             float riseAmount = 1.4f;
-            float scaleIn =1.4f;
+            float scaleIn = 1.4f;
             float settleScale = 1.0f;
             float popDuration = 0.15f;
             float settleDuration = 0.15f;
@@ -753,13 +803,38 @@ namespace Characters.UIDisplay
                 .Join(tf.DOMoveY(tf.position.y + riseAmount, floatDuration).SetEase(Ease.OutQuad))
                 .AppendInterval(delayBeforeFade)
                 .Append(canvasGroup.DOFade(0, fadeOutDuration))
-                .AppendCallback(() =>
-                {
-                    textInstance.gameObject.SetActive(false);
-                    PoolingManager.Current?.Release(worldTextUISkillFeedbackPrefab.name, textInstance);
-                });
+                .AppendCallback(() => ReleaseFeedback(skillName, entry.Text));
 
-            SoundManager.Instance.PlayUI(SoundName.UI.Gameplay_SkillNotify);
+            return seq;
+        }
+
+        private void RestartFeedback(ActiveSkillFeedback existing)
+        {
+            existing.Sequence?.Kill();
+
+            Transform tf = existing.Transform;
+            tf.position = PlayerController.Instance.transform.position;
+
+            int index = _activeStack.FindIndex(e => e.SkillName == existing.SkillName);
+            if (index >= 0)
+                tf.position += Vector3.up * (index * skillFeedbackStackOffset);
+
+            tf.localScale = Vector3.zero;
+            existing.CanvasGroup.alpha = 1;
+            tf.SetAsLastSibling();
+
+            var newSeq = BuildFeedbackSequence(existing);
+            existing.Sequence = newSeq;
+            _activeSkillTexts[existing.SkillName] = existing;
+        }
+
+        private void ReleaseFeedback(string skillName, TextMeshProUGUI textInstance)
+        {
+            textInstance.gameObject.SetActive(false);
+            PoolingManager.Current?.Release(worldTextUISkillFeedbackPrefab.name, textInstance);
+
+            _activeSkillTexts.Remove(skillName);
+            _activeStack.RemoveAll(e => e.SkillName == skillName);
         }
 
         private Sequence _skillResetSequence;
@@ -779,7 +854,6 @@ namespace Characters.UIDisplay
             
             skillSlotModel[skillIndex].OverloopFeedback(multiply);
         }
-
 
         private Sequence _skillPerformFailSequence;
         private void NotifySkillPerformFail(string contextReason)
@@ -820,8 +894,6 @@ namespace Characters.UIDisplay
             seq.Append(scoreText.transform.DOScale(1f, 0.2f).SetEase(Ease.InBack));
             seq.SetUpdate(true);
         }
-
-
 
         #endregion
 
