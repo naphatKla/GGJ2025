@@ -1,14 +1,13 @@
 using System;
 using Achievements;
 using Characters.Controllers;
-using Dan.Main;
+using Cysharp.Threading.Tasks;
 using GameControl.Controller;
 using GameControl.Interface;
 using Manager;
 using Player;
 using UI;
 using UI.Leaderboard;
-using Unity.Mathematics;
 using UnityEngine;
 
 namespace GameControl.GameState
@@ -119,21 +118,30 @@ namespace GameControl.GameState
             // Leaderboard
             if (isNewHigh)
             {
-                LeaderboardCreator.SetUserGuid(profile.ProfileId);
-                string name = $"{profile.DisplayName}";
-                Leaderboards.ThailandGameShow.UploadNewEntry(
-                    name, newScore,
-                    e =>
-                    {
-                        Debug.Log($"[Leaderboard] Upload success: {name} -> {newScore}");
-                        LeaderboardItemPresenter.RefreshAll();
-                    },
-                    error =>
-                    {
-                        Debug.LogError($"[Leaderboard] Upload failed: {error}");
-                        LeaderboardItemPresenter.RefreshAll();
-                    }
-                );
+                UploadHighScoreAsync(profile, newScore).Forget();
+            }
+            else if (newScore > 0)
+            {
+                Debug.Log($"[Leaderboard] Upload skipped: {newScore} is not higher than local high score {profile.HighestScore}");
+            }
+        }
+
+        private async UniTaskVoid UploadHighScoreAsync(PlayerData profile, int score)
+        {
+            try
+            {
+                await PlayFabLeaderboardService.SubmitHighestScoreAsync(profile, score);
+                Debug.Log($"[Leaderboard] PlayFab upload success: {profile.DisplayName} -> {score}");
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"[Leaderboard] PlayFab upload failed: {ex.Message}");
+            }
+            finally
+            {
+                LeaderboardItemPresenter.RefreshAll();
+                LeaderboardItemPresenter.RefreshAllDelayed(1000);
+                LeaderboardItemPresenter.RefreshAllDelayed(2500);
             }
         }
     }
