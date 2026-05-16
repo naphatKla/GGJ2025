@@ -38,7 +38,6 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -2619,12 +2618,12 @@ MonoBehaviour:
   m_RequiresColorTexture: 0
   m_Version: 2
   m_TaaSettings:
-    quality: 3
-    frameInfluence: 0.1
-    jitterScale: 1
-    mipBias: 0
-    varianceClampScale: 0.9
-    contrastAdaptiveSharpening: 0
+    m_Quality: 3
+    m_FrameInfluence: 0.1
+    m_JitterScale: 1
+    m_MipBias: 0
+    m_VarianceClampScale: 0.9
+    m_ContrastAdaptiveSharpening: 0
 --- !u!81 &267057003
 AudioListener:
   m_ObjectHideFlags: 0
@@ -4798,12 +4797,12 @@ MonoBehaviour:
   m_RequiresColorTexture: 0
   m_Version: 2
   m_TaaSettings:
-    quality: 3
-    frameInfluence: 0.1
-    jitterScale: 1
-    mipBias: 0
-    varianceClampScale: 0.9
-    contrastAdaptiveSharpening: 0
+    m_Quality: 3
+    m_FrameInfluence: 0.1
+    m_JitterScale: 1
+    m_MipBias: 0
+    m_VarianceClampScale: 0.9
+    m_ContrastAdaptiveSharpening: 0
 --- !u!4 &465075028
 Transform:
   m_ObjectHideFlags: 0
@@ -8379,6 +8378,7 @@ MonoBehaviour:
     - id: TestPulling
       storage: {fileID: 11400000, guid: b38d5d517c5fb42449b39f6ab8425c59, type: 2}
   eventMapParent: {fileID: 476519538}
+  autoPrewarmOnAwake: 1
   _testId: TestPulling
   _testdmg: 1
 --- !u!1 &965496757
@@ -9013,6 +9013,7 @@ MonoBehaviour:
   m_BoundingShape2D: {fileID: 1817968779}
   m_Damping: 1.5
   m_MaxWindowSize: -1
+  m_Padding: 0
 --- !u!114 &1035592853
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9199,6 +9200,8 @@ MonoBehaviour:
     allowOverlayStack: 1
     timeScale: 0
   popupContainer: {fileID: 1821467392}
+  preloadOnAwake: 1
+  deactivateAfterPreload: 1
 --- !u!1001 &1072374230
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -11384,7 +11387,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4505558567591135070, guid: 269d66a18656a9b4b81ea0fe0cb26bae, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6568367693383643963, guid: 269d66a18656a9b4b81ea0fe0cb26bae, type: 3}
       propertyPath: serializationData.Prefab
@@ -12668,6 +12671,7 @@ MonoBehaviour:
   m_DeselectOnBackgroundClick: 1
   m_PointerBehavior: 0
   m_CursorLockBehavior: 0
+  m_ScrollDeltaPerTick: 6
 --- !u!114 &1506197448 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4759027338843093616, guid: 86fa69766464c464b98f961a96cabe9c, type: 3}
@@ -16018,6 +16022,7 @@ MonoBehaviour:
   middleText: {fileID: 892629892}
   scoreText: {fileID: 662457491}
   summaryText: {fileID: 498336385}
+  newRecordText: {fileID: 0}
   gradeImage: {fileID: 1494566754}
   gradeComboResult:
   - gradeId: F
@@ -16889,9 +16894,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f95dcc8c23824f4d82cf0df133b1a17, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  menuScene: MainMenu
-  gamePlayScene: 
-  endCreditsScene: 
+  menuSceneLoader: {fileID: 0}
+  gameplaySceneLoader: {fileID: 0}
+  endCreditSceneLoader: {fileID: 0}
+  inGamePanelCanvasGroup: {fileID: 0}
   panelEntries:
   - type: 2
     stackType: 0
