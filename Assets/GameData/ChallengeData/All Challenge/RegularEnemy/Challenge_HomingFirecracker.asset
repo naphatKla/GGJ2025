@@ -17,7 +17,11 @@ MonoBehaviour:
   description: 'Firecracker Move Speed +60%
 
     <b><color=yellow>+15% score multiply'
-  lockdescription: Unlock from <color=yellow>Achievement.
+  lockdescription: Win anymode mode with "Thirsty" challenge enable.
+  hideFromUI: 0
+  allowedMapIds: []
+  allowAutoUnlock: 0
+  confirmSelectedMapIds: []
   flatScoreBonusPercent: 15
   statMode: 0
   playerSetMods: []
@@ -33,3 +37,8 @@ MonoBehaviour:
       damage: 0
       moveSpeed: 60
       spawnChance: 0
+      rushMaxHP: 0
+      rushDamage: 0
+      rushMoveSpeed: 0
+      rushSetChance: 0
+  timeModify: 0

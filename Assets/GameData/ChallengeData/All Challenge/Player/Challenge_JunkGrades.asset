@@ -15,7 +15,11 @@ MonoBehaviour:
   id: challenge_junkgrades
   title: Junk Grades
   description: "Max HP = 1\r\n<b><color=yellow>+300% score multiply\r"
-  lockdescription: Unlock from <color=yellow>Achievement.
+  lockdescription: Win anymode mode with "Cheap materials" challenge enable.
+  hideFromUI: 0
+  allowedMapIds: []
+  allowAutoUnlock: 0
+  confirmSelectedMapIds: []
   flatScoreBonusPercent: 300
   statMode: 1
   playerSetMods:
@@ -26,3 +30,4 @@ MonoBehaviour:
     percentDelta: -50
   disableAutoCalculate: 0
   enemyGroups: []
+  timeModify: 0

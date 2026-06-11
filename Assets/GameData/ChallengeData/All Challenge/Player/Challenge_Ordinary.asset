@@ -15,7 +15,11 @@ MonoBehaviour:
   id: challenge_ordinary
   title: Ordinary
   description: "EXP multiply -40%\n<b><color=yellow>+120% score multiple\r"
-  lockdescription: Unlock from <color=yellow>Achievement.
+  lockdescription: Win one game in survival mode.
+  hideFromUI: 0
+  allowedMapIds: []
+  allowAutoUnlock: 0
+  confirmSelectedMapIds: []
   flatScoreBonusPercent: 0
   statMode: 0
   playerSetMods: []
@@ -24,3 +28,4 @@ MonoBehaviour:
     percentDelta: -40
   disableAutoCalculate: 0
   enemyGroups: []
+  timeModify: 0

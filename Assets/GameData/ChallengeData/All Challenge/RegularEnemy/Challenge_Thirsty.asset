@@ -19,7 +19,11 @@ MonoBehaviour:
     <b><color=yellow>+30% score multiply
 
 '
-  lockdescription: Unlock from <color=yellow>Achievement.
+  lockdescription: Win one game in survival mode.
+  hideFromUI: 0
+  allowedMapIds: []
+  allowAutoUnlock: 0
+  confirmSelectedMapIds: []
   flatScoreBonusPercent: 30
   statMode: 0
   playerSetMods: []
@@ -36,3 +40,8 @@ MonoBehaviour:
       damage: 0
       moveSpeed: 30
       spawnChance: 0
+      rushMaxHP: 0
+      rushDamage: 0
+      rushMoveSpeed: 0
+      rushSetChance: 0
+  timeModify: 0

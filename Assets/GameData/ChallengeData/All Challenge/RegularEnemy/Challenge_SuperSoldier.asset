@@ -16,7 +16,11 @@ MonoBehaviour:
   title: Super Soldier
   description: "Soldier DMG+80%\r\nSoldier Max HP +200%\r\nSoldier Move Speed +60%\r\n<b><color=yellow>+75%
     score multiply\r"
-  lockdescription: Unlock from <color=yellow>Achievement.
+  lockdescription: Kill 1000 Soldier in total.
+  hideFromUI: 0
+  allowedMapIds: []
+  allowAutoUnlock: 0
+  confirmSelectedMapIds: []
   flatScoreBonusPercent: 75
   statMode: 0
   playerSetMods: []
@@ -32,3 +36,8 @@ MonoBehaviour:
       damage: 200
       moveSpeed: 60
       spawnChance: 0
+      rushMaxHP: 0
+      rushDamage: 0
+      rushMoveSpeed: 0
+      rushSetChance: 0
+  timeModify: 0

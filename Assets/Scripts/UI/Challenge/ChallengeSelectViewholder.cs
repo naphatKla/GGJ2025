@@ -33,7 +33,11 @@ namespace UI.Challenge
             UpdateDotNotify(challengeData.id);
             if (!IsLocked)
             {
-                if (nameVh != null) nameVh.text = challengeData.title;
+                if (nameVh != null)
+                {
+                    nameVh.text = challengeData.title;
+                    nameVh.alignment = TextAlignmentOptions.TopLeft;
+                }
                 if (uiEffect != null) ApplyUnlockGradient();
                 if (descriptionVh != null) descriptionVh.text = challengeData.description;
                 m_Button.interactable = true;
@@ -41,9 +45,13 @@ namespace UI.Challenge
             }
             else
             {
-                if (nameVh != null) nameVh.text = "LOCKED";
+                if (nameVh != null)
+                {
+                    nameVh.text = "LOCKED";
+                    nameVh.alignment = TextAlignmentOptions.Center;
+                }
                 if (uiEffect != null) ApplyLockGradient();
-                if (descriptionVh != null) descriptionVh.text = challengeData.lockdescription;
+                if (descriptionVh != null) descriptionVh.text = "";
                 m_Button.interactable = false;
                 m_Button.image.color = lockColorBg;
             }
