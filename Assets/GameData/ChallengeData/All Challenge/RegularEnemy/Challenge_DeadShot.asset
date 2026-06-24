@@ -16,7 +16,16 @@ MonoBehaviour:
   title: Dead Shot
   description: "Charge DMG from charge Enemy +50%\r\n<b><color=yellow>+25% score
     multiply\r"
-  lockdescription: Unlock from <color=yellow>Achievement.
+  lockdescription: 'Kill 300 Piercer in total.
+
+    Kill 300 Javilin in total.
+
+    Kill
+    300 Comet in total.'
+  hideFromUI: 0
+  allowedMapIds: []
+  allowAutoUnlock: 0
+  confirmSelectedMapIds: []
   flatScoreBonusPercent: 0
   statMode: 0
   playerSetMods: []
@@ -34,3 +43,8 @@ MonoBehaviour:
       damage: 50
       moveSpeed: 0
       spawnChance: 0
+      rushMaxHP: 0
+      rushDamage: 0
+      rushMoveSpeed: 0
+      rushSetChance: 0
+  timeModify: 0

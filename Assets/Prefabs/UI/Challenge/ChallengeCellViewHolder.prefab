@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: 6782287838030790234}
   - component: {fileID: 2569465491680671758}
   - component: {fileID: 4609005999420954900}
+  - component: {fileID: 9109854492068270754}
   m_Layer: 5
   m_Name: ChallengeCellViewHolder
   m_TagString: Untagged
@@ -271,7 +272,7 @@ MonoBehaviour:
   m_SamplingWidth: 1
   m_SamplingScale: 1
   m_TransitionFilter: 8
-  m_TransitionRate: 0.69589794
+  m_TransitionRate: 0.052552003
   m_TransitionReverse: 0
   m_TransitionTex: {fileID: 2800000, guid: cc44bd7903939479d884303309530771, type: 3}
   m_TransitionTexScale: {x: 1, y: 1}
@@ -372,7 +373,7 @@ MonoBehaviour:
     m_ColorSpace: 0
     m_NumColorKeys: 2
     m_NumAlphaKeys: 2
-  m_GradationOffset: 0.39179587
+  m_GradationOffset: -0.894896
   m_GradationScale: 1
   m_GradationRotation: 0
   m_GradationWrapMode: 2
@@ -383,7 +384,7 @@ MonoBehaviour:
   m_EdgeColorFilter: 4
   m_EdgeColor: {r: 0.05724919, g: 1, b: 0, a: 1}
   m_EdgeColorGlow: 0
-  m_EdgeShinyRate: 0.69589794
+  m_EdgeShinyRate: 0.052552003
   m_EdgeShinyWidth: 0.5
   m_EdgeShinyAutoPlaySpeed: -0.5
   m_PatternArea: 1
@@ -516,6 +517,18 @@ MonoBehaviour:
   useTransformPosition: 1
   positionSource: {fileID: 0}
   customWorldPosition: {x: 0, y: 0, z: 0}
+--- !u!114 &9109854492068270754
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 183744}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b278ba80aea5e964f92d5336af2bef11, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7734837454757358940
 GameObject:
   m_ObjectHideFlags: 0
@@ -910,7 +923,7 @@ MonoBehaviour:
     m_ColorSpace: 0
     m_NumColorKeys: 2
     m_NumAlphaKeys: 2
-  m_GradationOffset: -0.95042884
+  m_GradationOffset: -0.97372484
   m_GradationScale: 1
   m_GradationRotation: 0
   m_GradationWrapMode: 2
@@ -1021,6 +1034,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 22418634}
     m_Modifications:
+    - target: {fileID: 2688803174082478601, guid: 39c70c1eae103a541a67a5ddf2044a68, type: 3}
+      propertyPath: m_TransitionRate
+      value: 0.052552003
+      objectReference: {fileID: 0}
+    - target: {fileID: 2688803174082478601, guid: 39c70c1eae103a541a67a5ddf2044a68, type: 3}
+      propertyPath: m_GradationOffset
+      value: -0.894896
+      objectReference: {fileID: 0}
     - target: {fileID: 3764947370852519955, guid: 39c70c1eae103a541a67a5ddf2044a68, type: 3}
       propertyPath: m_Name
       value: RedDotNotify
@@ -1112,6 +1133,14 @@ PrefabInstance:
     - target: {fileID: 7383338957523153184, guid: 39c70c1eae103a541a67a5ddf2044a68, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8736655724325411212, guid: 39c70c1eae103a541a67a5ddf2044a68, type: 3}
+      propertyPath: m_TransitionRate
+      value: 0.052552003
+      objectReference: {fileID: 0}
+    - target: {fileID: 8736655724325411212, guid: 39c70c1eae103a541a67a5ddf2044a68, type: 3}
+      propertyPath: m_GradationOffset
+      value: -0.894896
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

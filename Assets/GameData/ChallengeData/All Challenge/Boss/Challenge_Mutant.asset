@@ -16,7 +16,11 @@ MonoBehaviour:
   title: Mutant
   description: "Boss / Mini Boss DMG +50%\r\nBoss / Mini Boss Max HP +100%\r\nBoss
     / Mini Boss Move Speed +25%\r\n<b><color=yellow>+100% score multiply\r"
-  lockdescription: Unlock from <color=yellow>Achievement.
+  lockdescription: Win a total of 5 times in Survivor Mode.
+  hideFromUI: 0
+  allowedMapIds: []
+  allowAutoUnlock: 0
+  confirmSelectedMapIds: []
   flatScoreBonusPercent: 100
   statMode: 0
   playerSetMods: []
@@ -32,3 +36,8 @@ MonoBehaviour:
       damage: 50
       moveSpeed: 25
       spawnChance: 0
+      rushMaxHP: 0
+      rushDamage: 0
+      rushMoveSpeed: 0
+      rushSetChance: 0
+  timeModify: 0

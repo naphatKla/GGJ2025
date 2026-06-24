@@ -16,7 +16,11 @@ MonoBehaviour:
   title: Show Stopper
   description: "Absorption spawn chance +100% from base chance\r\n<b><color=yellow>+50%
     score multiply\r"
-  lockdescription: Unlock from <color=yellow>Achievement.
+  lockdescription: Kill 200 Absorption in total.
+  hideFromUI: 0
+  allowedMapIds: []
+  allowAutoUnlock: 0
+  confirmSelectedMapIds: []
   flatScoreBonusPercent: 0
   statMode: 0
   playerSetMods: []
@@ -32,3 +36,8 @@ MonoBehaviour:
       damage: 0
       moveSpeed: 0
       spawnChance: 100
+      rushMaxHP: 0
+      rushDamage: 0
+      rushMoveSpeed: 0
+      rushSetChance: 0
+  timeModify: 0

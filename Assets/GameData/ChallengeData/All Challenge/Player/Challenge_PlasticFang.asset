@@ -15,7 +15,11 @@ MonoBehaviour:
   id: challenge_plasticfang
   title: Plastic Fang
   description: "Base DMG -50%\n<b><color=yellow>+50% score multiply\r"
-  lockdescription: Unlock from <color=yellow>Achievement.
+  lockdescription: Deal 1,000,000 total damage.
+  hideFromUI: 0
+  allowedMapIds: []
+  allowAutoUnlock: 0
+  confirmSelectedMapIds: []
   flatScoreBonusPercent: 0
   statMode: 0
   playerSetMods: []
@@ -24,3 +28,4 @@ MonoBehaviour:
     percentDelta: -50
   disableAutoCalculate: 0
   enemyGroups: []
+  timeModify: 0

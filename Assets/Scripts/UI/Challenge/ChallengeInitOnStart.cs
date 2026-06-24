@@ -271,6 +271,8 @@ namespace UI.Challenge
                 vh.UpdateViewholder(content);
                 bool isSelected = c_SelectedIndices.Contains(idx);
                 vh.SetClickedColor(isSelected);
+                
+                transform.GetComponent<LockTooltipTrigger>()?.SetLock(vh.IsLocked, content.lockdescription);
             }
             else
             {
