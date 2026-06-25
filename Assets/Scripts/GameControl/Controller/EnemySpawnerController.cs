@@ -27,6 +27,7 @@ namespace GameControl.Controller
         private bool _debug;
         private Camera _mainCamera;
         private float _anergyDropMultiplier = 1;
+        private SpawnOverride? _nextSpawnOverride;
         
         public event Action<EnemyController, MapDataSO.EnemyOption> OnFirstSpawned;
         private readonly HashSet<string> _firstSpawnedTypeIds = new();
@@ -41,6 +42,12 @@ namespace GameControl.Controller
 
 
         private CancellationToken _externalCt = CancellationToken.None;
+
+        private struct SpawnOverride
+        {
+            public Vector2 Position;
+            public bool ShowTrail;
+        }
         
         public void BindCancellationToken(CancellationToken ct)
         {
@@ -77,7 +84,11 @@ namespace GameControl.Controller
                     _state.ItemSpawnerController.SpawnExpItem(totalExp, obj.transform.position);
                     obj.transform.position = SpawnUtility.RandomSpawnAroundPlayerCamera(_mainCamera, 10f);
                 }
-                SpawnerStateController.Instance.CurrentEnemyPoint += option.EnemyPoint;
+
+                if (controller.CountedByMax)
+                    SpawnerStateController.Instance.CurrentEnemyPoint += option.EnemyPoint;
+
+                controller.CountedByMax = false;
             };
             
             return controller;
@@ -97,7 +108,7 @@ namespace GameControl.Controller
             {
                 option.activeCount = Mathf.Max(0, option.activeCount - 1);
             }
-            
+
             obj.gameObject.SetActive(false);
             obj.FeedbackSystem.ShowTrail(false);
             _activeEnemy.Remove(obj);
@@ -125,9 +136,13 @@ namespace GameControl.Controller
             {
                 OnFirstEnemySpawn(obj, option);
             }
-            obj.transform.position = SpawnUtility.RandomBetweenMouseAndCamera(_mainCamera);
-            obj.FeedbackSystem.ShowTrail(true);
+
+            var spawnOverride = _nextSpawnOverride;
+            obj.transform.position = spawnOverride.HasValue
+                ? spawnOverride.Value.Position
+                : SpawnUtility.RandomBetweenMouseAndCamera(_mainCamera);
             obj.ResetAllDependentBehavior();
+            obj.FeedbackSystem.ShowTrail(spawnOverride.HasValue ? spawnOverride.Value.ShowTrail : true);
             obj.gameObject.SetActive(true);
             _activeEnemy.Add(obj);
         }
@@ -209,6 +224,56 @@ namespace GameControl.Controller
             if (!_enemyPools.TryGetValue(randomEnemy.id, out var pool)) return;
             var inst = pool.Get();
             inst.CountedByMax = true;
+        }
+
+        public bool TrySpawnEnemyFromPool(string enemyId, Vector2 position, out EnemyController enemy,
+            bool countTowardPerEnemyMax = false, bool showTrail = true, bool requirePrewarmedInactive = true)
+        {
+            enemy = null;
+            if (!CanSpawnEnemyFromPool(enemyId, countTowardPerEnemyMax, requirePrewarmedInactive))
+                return false;
+
+            var option = _enemyOptionsList.First(e => e.id == enemyId);
+            var pool = _enemyPools[option.id];
+
+            if (countTowardPerEnemyMax)
+            {
+                option.activeCount++;
+            }
+
+            _nextSpawnOverride = new SpawnOverride
+            {
+                Position = position,
+                ShowTrail = showTrail
+            };
+
+            try
+            {
+                enemy = pool.Get();
+            }
+            finally
+            {
+                _nextSpawnOverride = null;
+            }
+
+            enemy.CountedByMax = countTowardPerEnemyMax;
+            enemy.transform.position = position;
+            enemy.FeedbackSystem.ShowTrail(showTrail);
+            return true;
+        }
+
+        public bool CanSpawnEnemyFromPool(string enemyId, bool countTowardPerEnemyMax = false,
+            bool requirePrewarmedInactive = true)
+        {
+            if (string.IsNullOrWhiteSpace(enemyId)) return false;
+            if (_enemyOptionsList == null || _enemyPools == null) return false;
+
+            var option = _enemyOptionsList.FirstOrDefault(e => e.id == enemyId);
+            if (option == null) return false;
+            if (!_enemyPools.TryGetValue(option.id, out var pool)) return false;
+            if (requirePrewarmedInactive && pool.CountInactive <= 0) return false;
+
+            return !countTowardPerEnemyMax || ConditionCheck(option);
         }
         
         #endregion
