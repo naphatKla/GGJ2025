@@ -105,8 +105,7 @@ namespace Characters.InputSystems
 
         public void PerformSkill(SkillType type)
         {
-            OnSkillPerform?.Invoke(SkillType.PrimarySkill);
-            OnSkillPerform?.Invoke(SkillType.SecondarySkill);
+            OnSkillPerform?.Invoke(type);
         }
         
         public void ResetInputSystem()

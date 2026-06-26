@@ -1,0 +1,77 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ab2f63bc7f0d4ee0b6c12a55182d4aba, type: 3}
+  m_Name: SkillShotgunProjectileData
+  m_EditorClassIdentifier: 
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes:
+    - Name: _skillRuntime
+      Entry: 7
+      Data: 0|System.RuntimeType, mscorlib
+    - Name: 
+      Entry: 1
+      Data: Characters.SkillSystems.SkillRuntimes.SkillEnemyProjectileRuntime, Assembly-CSharp
+    - Name: 
+      Entry: 8
+      Data: 
+  skillIcon: {fileID: 0}
+  skillName: 
+  skillDescription: 
+  previousSkillData: {fileID: 0}
+  nextSkillDataUpgrade: {fileID: 0}
+  level: 1
+  cooldown: 1
+  globalCooldown: 0.25
+  maxStack: 1
+  startFeedback: PiercerDashCharge_Lv1
+  exitFeedback: 
+  clearBuffOnSkillExit: 0
+  statusEffectOnSkillStart: []
+  projectilePrefab: {fileID: 4553208590618034124, guid: 2def9904c23ba69408ff807da9af34fa, type: 3}
+  prewarmCount: 40
+  projectileSpeed: 3
+  projectileLifetime: 2
+  rotateProjectileToDirection: 1
+  projectileRotationOffsetDegrees: 0
+  firePattern: 1
+  aimMode: 0
+  fixedDirection: {x: 1, y: 0}
+  spawnLocalOffset: {x: 0, y: 0}
+  angleOffsetDegrees: 0
+  projectileCount: 5
+  spreadAngleDegrees: 45
+  ringArcDegrees: 360
+  spiralStepDegrees: 15
+  resetSpiralOnCast: 1
+  burstCount: 1
+  burstInterval: 0.1
+  projectileInterval: 0
+  damageHitPerSecond: 30
+  baseDamagePerHit: 0
+  damageMultiplier: 100
+  releaseOnHit: 1
+  maxHits: 1
+  canHitWithDamageOnTouch: 0
+  hitShape: 1
+  hitboxSize: {x: 1, y: 1}
+  hitboxRadius: 0.25
+  overrideTargetLayer: 0
+  targetLayer:
+    serializedVersion: 2
+    m_Bits: 0
