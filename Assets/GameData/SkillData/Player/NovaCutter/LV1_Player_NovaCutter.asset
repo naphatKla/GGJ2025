@@ -36,7 +36,7 @@ MonoBehaviour:
   previousSkillData: {fileID: 0}
   nextSkillDataUpgrade: {fileID: 11400000, guid: b79a097c8d3ea36468ff4732656a30a4, type: 2}
   level: 1
-  cooldown: 5
+  cooldown: 30
   globalCooldown: 0.25
   maxStack: 1
   startFeedback: 
@@ -44,8 +44,8 @@ MonoBehaviour:
   clearBuffOnSkillExit: 0
   statusEffectOnSkillStart: []
   cutterObj: {fileID: 7236179608084672065, guid: 8d08a68890fc5b9458658acb9a3ff317, type: 3}
-  cutterOffset: {x: 0, y: 1.5}
-  duration: 3
-  damageHitPerSec: 20
-  baseDamagePerHit: 0
-  damageMultiplier: 10
+  cutterOffset: {x: 0, y: 2.5}
+  duration: 5
+  damageHitPerSec: 5
+  baseDamagePerHit: 25
+  damageMultiplier: 70
