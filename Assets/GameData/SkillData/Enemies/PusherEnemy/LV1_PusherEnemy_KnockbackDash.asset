@@ -1,0 +1,124 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c3c452226dc04a278f3fb19ee41d370b, type: 3}
+  m_Name: LV1_PusherEnemy_KnockbackDash
+  m_EditorClassIdentifier: 
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes:
+    - Name: _skillRuntime
+      Entry: 7
+      Data: 0|System.RuntimeType, mscorlib
+    - Name: 
+      Entry: 1
+      Data: Characters.SkillSystems.SkillRuntimes.SkillEnemyDashKnockbackRuntime,
+        Assembly-CSharp
+    - Name: 
+      Entry: 8
+      Data: 
+  skillIcon: {fileID: 0}
+  skillName: Knockback Dash
+  skillDescription: 
+  previousSkillData: {fileID: 0}
+  nextSkillDataUpgrade: {fileID: 0}
+  level: 1
+  cooldown: 1
+  globalCooldown: 0.25
+  maxStack: 1
+  startFeedback: PiercerDashCharge_Lv1
+  exitFeedback: PiercerDash_Lv1
+  clearBuffOnSkillExit: 0
+  statusEffectOnSkillStart: []
+  dashBaseDamage: 0
+  damageMultiplier: 100
+  damageEnableDuration: 0.25
+  dashChargeTime: 2
+  dashPrepareDuration: 0.75
+  dashDuration: 0.375
+  dashDistance: 25
+  dashEaseCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0.073488235
+      outSlope: 0.073488235
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.28600982
+    - serializedVersion: 3
+      time: 0.48358378
+      value: 0.37195766
+      inSlope: 2.3460052
+      outSlope: 2.3460052
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.35683227
+    - serializedVersion: 3
+      time: 0.6652451
+      value: 0.81098986
+      inSlope: 1.703014
+      outSlope: 1.703014
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.30538765
+      outWeight: 0.15243578
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  dashMoveCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  knockBackDistance: 5
+  knockBackDuration: 0.25
+  knockBackOnlyOncePerSkill: 1
+  dashFeedback: 
+  effectsToTarget: []

@@ -10,26 +10,26 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a9ef52318f4d36147bac0bf0637b499b, type: 3}
-  m_Name: PiercerEnemy
+  m_Name: ShooterEnemyData
   m_EditorClassIdentifier: 
   characterId: 
-  maxHealth: 50
+  maxHealth: 70
   invincibleTimePerHit: 0
   stunResistancePercentage: 0
-  baseSpeed: 7
+  baseSpeed: 5
   moveAccelerationRate: 8
-  turnAccelerationRate: 4
-  baseDamage: 4
+  turnAccelerationRate: 120
+  baseDamage: 7
   baseCriRate: 0
-  baseCriDamage: 0
+  baseCriDamage: 50
   baseLifeStealPercent: 0
   baseLifeStealEffective: 0
-  primarySkillData: {fileID: 11400000, guid: 9e4a6f4be8546ac438420c3cf146899d, type: 2}
+  primarySkillData: {fileID: 11400000, guid: da3fe8a8cb30b35449b195294b0b0084, type: 2}
   secondarySkillData: {fileID: 0}
   autoSkillSlot: 0
   autoSkillDataList: []
-  expDrop: 50
-  scoreDrop: 0
-  delayBeforePerformSkill: 0.75
-  defaultState: {fileID: 11400000, guid: e5a2b1f9a21d07c4ca51c1e423e69ca6, type: 2}
+  expDrop: 32
+  scoreDrop: 56
+  delayBeforePerformSkill: 0.5
+  defaultState: {fileID: 11400000, guid: 5911885cab4b4132a473f77947725fb9, type: 2}
   stateList: []

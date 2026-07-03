@@ -412,6 +412,7 @@ namespace Characters.SkillSystems
         public virtual void CancelAllSkill()
         {
             GetSkillRuntimeOrDefault(primarySkillData)?.CancelSkill();
+            GetSkillRuntimeOrDefault(secondarySkillData)?.CancelSkill();
             foreach (var data in _autoSkillDatas)
                 GetSkillRuntimeOrDefault(data)?.CancelSkill();
         }
