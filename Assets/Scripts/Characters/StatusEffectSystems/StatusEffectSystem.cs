@@ -51,6 +51,7 @@ namespace Characters.StatusEffectSystems
         Stun = 2,
         FlowState = 3,
         IronBody = 4,
+        GravityPulled = 5,
     }
 
     public class StatusEffectSystem : MonoBehaviour, IFixedUpdateable
