@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c3c452226dc04a278f3fb19ee41d370b, type: 3}
-  m_Name: LV1_PusherEnemy_KnockbackDash
+  m_Name: LV1_ImpulseEnemy_KnockbackDash
   m_EditorClassIdentifier: 
   serializationData:
     SerializedFormat: 2
@@ -37,7 +37,7 @@ MonoBehaviour:
   previousSkillData: {fileID: 0}
   nextSkillDataUpgrade: {fileID: 0}
   level: 1
-  cooldown: 4
+  cooldown: 3
   globalCooldown: 0.25
   maxStack: 1
   startFeedback: PiercerDashCharge_Lv1
@@ -46,11 +46,11 @@ MonoBehaviour:
   statusEffectOnSkillStart: []
   dashBaseDamage: 0
   damageMultiplier: 100
-  damageEnableDuration: 0.175
-  dashChargeTime: 1
-  dashPrepareDuration: 0.5
-  dashDuration: 0.2
-  dashDistance: 20
+  damageEnableDuration: 0.25
+  dashChargeTime: 1.5
+  dashPrepareDuration: 0.3
+  dashDuration: 0.3
+  dashDistance: 30
   dashEaseCurve:
     serializedVersion: 2
     m_Curve:
@@ -117,11 +117,11 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  knockBackDistance: 8
+  knockBackDistance: 22
   knockBackDuration: 0.25
   knockBackOnlyOncePerSkill: 1
   dashFeedback: 
   effectsToTarget:
   - effectData: {fileID: 11400000, guid: e5ae6010e3c4a7b43bc80da0bf5a9ef5, type: 2}
     isOverrideDuration: 1
-    overrideDuration: 0.6
+    overrideDuration: 1.25
