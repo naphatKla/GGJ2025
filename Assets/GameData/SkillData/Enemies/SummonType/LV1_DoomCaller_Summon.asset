@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 70c84d3d50b7466294fc1a86bf10c84b, type: 3}
-  m_Name: LV1_Divider_Summon
+  m_Name: LV1_DoomCaller_Summon
   m_EditorClassIdentifier: 
   serializationData:
     SerializedFormat: 2
@@ -31,7 +31,7 @@ MonoBehaviour:
       Entry: 8
       Data: 
   skillIcon: {fileID: 0}
-  skillName: Divider Summon
+  skillName: Doom Caller Summon
   skillDescription: Summons nearby enemies while keeping distance from the player.
   previousSkillData: {fileID: 0}
   nextSkillDataUpgrade: {fileID: 0}
@@ -43,9 +43,9 @@ MonoBehaviour:
   exitFeedback: 
   clearBuffOnSkillExit: 0
   statusEffectOnSkillStart: []
-  minTotalSummonCount: 2
-  maxTotalSummonCount: 2
-  maxAliveSummons: 6
+  minTotalSummonCount: 3
+  maxTotalSummonCount: 3
+  maxAliveSummons: 9
   useSpawnerPool: 1
   requirePrewarmedPoolInstance: 1
   countTowardMapPerEnemyMax: 0
@@ -67,7 +67,15 @@ MonoBehaviour:
     m_Bits: 64
   summonOptions:
   - enabled: 1
-    id: Enemy_Soldier
+    id: Enemy_Absorption
+    enemyPrefab: {fileID: 0}
+    overrideCharacterData: 0
+    characterDataOverride: {fileID: 0}
+    minAmount: 0
+    maxAmount: 1
+    weight: 100
+  - enabled: 1
+    id: Enemy_Bomber
     enemyPrefab: {fileID: 0}
     overrideCharacterData: 0
     characterDataOverride: {fileID: 0}
