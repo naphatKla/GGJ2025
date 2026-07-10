@@ -199,6 +199,8 @@ namespace GameControl.Controller
                 , profileData.ApplyPermanentUpgrade(PermanentUpgradeType.PickupRadius, permanentConfig, playerDataSo.PullItemRadius));
             playerDataSo.AddPlayerStats(PlayerDataStats.HurtIFrame
                 , profileData.ApplyPermanentUpgrade(PermanentUpgradeType.HurtIFrame, permanentConfig, playerDataSo.InvincibleTimePerHit));
+            playerDataSo.AddPlayerStats(PlayerDataStats.AutoSkillSlot
+                , profileData.GetPermanentUpgradeBonus(PermanentUpgradeType.AutoSkillSlot, permanentConfig));
             
             //Modify Challenge
             

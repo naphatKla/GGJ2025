@@ -10,7 +10,7 @@ namespace Player
     [Serializable]
     public class PlayerData
     {
-        public const int CURRENT_SCHEMA_VERSION = 2;
+        public const int CURRENT_SCHEMA_VERSION = 3;
         
         public int SchemaVersion;
         
@@ -70,6 +70,11 @@ namespace Player
             //migration
             if (SchemaVersion < 2)
             {
+            }
+
+            if (SchemaVersion < 3)
+            {
+                UnlockedPermanentUpgrade.Add(PermanentUpgradeType.AutoSkillSlot);
             }
             
             if (SchemaVersion < targetSchemaVersion)

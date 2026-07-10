@@ -23,6 +23,7 @@ namespace Characters.SO.CharacterDataSO
         ExpMultiply,
         PickupRadius,
         HurtIFrame,
+        AutoSkillSlot,
     }
     
     [CreateAssetMenu(fileName = "PlayerData", menuName = "GameData/CharacterData/PlayerData")]
@@ -171,6 +172,9 @@ namespace Characters.SO.CharacterDataSO
                     break;
                 case PlayerDataStats.HurtIFrame:
                     invincibleTimePerHit += value;
+                    break;
+                case PlayerDataStats.AutoSkillSlot:
+                    autoSkillSlot = Mathf.Max(0, Mathf.RoundToInt(autoSkillSlot + value));
                     break;
             }
         }

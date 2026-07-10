@@ -540,7 +540,8 @@ namespace UI
                 PermanentUpgradeType.Speed,
                 PermanentUpgradeType.MaxHealth,
                 PermanentUpgradeType.CritRate,
-                PermanentUpgradeType.CritDamage
+                PermanentUpgradeType.CritDamage,
+                PermanentUpgradeType.AutoSkillSlot
             });
             LeaderboardItemPresenter.RefreshAll();
             OpenGameModePanel();
