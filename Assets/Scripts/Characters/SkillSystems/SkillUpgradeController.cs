@@ -94,9 +94,14 @@ namespace Characters.SkillSystems
             if (skillSystem == null) return options;
 
             var slotData = skillSystem.GetAllCurrentSkillDatas();
-            var currentRoots = slotData.All.Select(s => s.RootNode).ToHashSet();
+            var hasOpenSkillSlot = skillSystem.CurrentActiveSlots < skillSystem.TotalSlots;
+            var currentRoots = slotData.All
+                .Where(s => s != null)
+                .Select(s => s.RootNode)
+                .ToHashSet();
 
-            options.AddRange(_skillPool.Where(s => !currentRoots.Contains(s)));
+            if (hasOpenSkillSlot)
+                options.AddRange(_skillPool.Where(s => s != null && !currentRoots.Contains(s.RootNode)));
 
             foreach (var skill in slotData.All)
             {
@@ -203,6 +208,7 @@ namespace Characters.SkillSystems
             if (skillSystem == null) return list;
 
             var slotData = skillSystem.GetAllCurrentSkillDatas();
+            var hasOpenSkillSlot = skillSystem.CurrentActiveSlots < skillSystem.TotalSlots;
 
             // รากสกิลที่ยังไม่มี
             var currentRoots = slotData.All
@@ -210,7 +216,8 @@ namespace Characters.SkillSystems
                 .Select(s => s.RootNode)
                 .ToHashSet();
 
-            list.AddRange(_skillPool.Where(root => root != null && !currentRoots.Contains(root)));
+            if (hasOpenSkillSlot)
+                list.AddRange(_skillPool.Where(root => root != null && !currentRoots.Contains(root.RootNode)));
 
             // next upgrade ของสกิลที่มี
             foreach (var skill in slotData.All)
