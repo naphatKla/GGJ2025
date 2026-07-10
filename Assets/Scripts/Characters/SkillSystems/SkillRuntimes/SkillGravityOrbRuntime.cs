@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using Cameras;
 using Characters.Controllers;
 using Characters.SkillSystems.SkillObjects;
 using Characters.SO.SkillDataSo;
@@ -14,11 +15,11 @@ namespace Characters.SkillSystems.SkillRuntimes
     /// <summary>
     /// Runtime for the Gravity Orb auto skill.
     /// On cast: picks up to <c>OrbCount</c> distinct enemies (farthest-first, within
-    /// <c>TargetSearchRadius</c>) and fires one orb at each. Each orb flies to its target's
-    /// position and stops there (it does not keep homing), then pulls any enemy that wanders
-    /// into <c>OrbEffectRadius</c> toward its center for <c>OrbLifeTime</c> seconds while those
-    /// enemies are locked out of their Primary/Secondary skills, and finally explodes for AOE
-    /// damage in that same radius.
+    /// <c>TargetSearchRadius</c>) and fires one orb toward each one's direction. Every orb then flies in
+    /// a straight line at <c>OrbSpeed</c> for its whole <c>OrbLifeTime</c> - it locks in its direction at
+    /// launch and does not keep homing afterward. While alive it pulls any enemy that wanders into
+    /// <c>OrbEffectRadius</c> toward its center, locking those enemies out of their Primary/Secondary
+    /// skills, and finally explodes wherever it ends up for AOE damage in that same radius.
     /// </summary>
     public class SkillGravityOrbRuntime : BaseSkillRuntime<SkillGravityOrbDataSo>
     {
@@ -79,7 +80,7 @@ namespace Characters.SkillSystems.SkillRuntimes
 
         /// <summary>
         /// Finds up to <paramref name="count"/> distinct enemies within <paramref name="radius"/>,
-        /// preferring the farthest ones first, so each orb gets a unique target.
+        /// preferring the farthest ones first, so each orb gets a unique launch direction.
         /// </summary>
         private List<Transform> FindFarthestUniqueEnemies(Vector2 origin, float radius, int count)
         {
@@ -120,34 +121,34 @@ namespace Characters.SkillSystems.SkillRuntimes
         {
             if (!target) return;
 
-            var orb = PoolingManager.Instance.Get<GravityOrbSkillObject>(skillData.OrbPrefab.name);
-            orb.transform.position = owner.transform.position;
-            orb.gameObject.SetActive(true);
-            _activeOrbs.Add(orb);
+            Vector2 launchOrigin = owner.transform.position;
+            Vector2 toTarget = (Vector2)target.position - launchOrigin;
+            Vector2 direction = toTarget.sqrMagnitude > 0.0001f ? toTarget.normalized : (Vector2)owner.transform.up;
 
-            Vector2 destination = target.position; // Snapshot - the orb stops here, it doesn't keep homing.
+            // Never let the orb fly past the camera confiner - anything it kills out there would drop
+            // EXP the player can't reach.
+            Collider2D confinerBounds = Cinemachine2DCameraController.Instance
+                ? Cinemachine2DCameraController.Instance.ConfinerBounds
+                : null;
+
+            var orb = PoolingManager.Instance.Get<GravityOrbSkillObject>(skillData.OrbPrefab.name);
+            orb.transform.position = launchOrigin;
+            orb.gameObject.SetActive(true);
+            orb.ConfigureRanges(skillData.OrbEffectRadius, skillData.PullStopDistance);
+            _activeOrbs.Add(orb);
 
             try
             {
-                // Phase 1: travel to the target's position and stop.
-                var travelTween = orb.MovementSystem.TryMoveToPositionBySpeed(
-                    destination, skillData.TravelSpeed, skillData.TravelEaseCurve, skillData.TravelMoveCurve);
-
-                if (travelTween != null)
-                    await travelTween.ToUniTask(cancellationToken: ct);
-                else
-                    orb.transform.position = destination;
-
-                if (ct.IsCancellationRequested || !orb) return;
-
-                // Phase 2: sit still, pulling nearby enemies for the orb's lifetime.
+                // Fly straight and pull for the orb's whole lifetime - direction is locked in at launch,
+                // it does not keep homing afterward.
                 orb.SetPullFieldVisible(true);
-                await PullPhase(orb, skillData.OrbLifeTime, ct);
+                await FlyAndPullPhase(orb, direction, skillData.OrbLifeTime, confinerBounds, ct);
                 orb.SetPullFieldVisible(false);
 
                 if (ct.IsCancellationRequested || !orb) return;
 
-                // Phase 3: explode.
+                // Explode wherever the orb ended up.
+                orb.MarkExploding(true);
                 Explode(orb.transform.position);
             }
             catch (OperationCanceledException)
@@ -160,14 +161,19 @@ namespace Characters.SkillSystems.SkillRuntimes
         }
 
         /// <summary>
-        /// Runs the continuous gravity-pull field for <paramref name="duration"/> seconds,
-        /// applying/removing the CC status on enemies as they enter/leave the field, and
-        /// guaranteeing everyone still held gets released when the phase ends for any reason.
+        /// Moves the orb in a straight line at <c>OrbSpeed</c> while running the continuous gravity-pull
+        /// field, for <paramref name="duration"/> seconds. Applies/removes the CC status on enemies as
+        /// they enter/leave the field, and guarantees everyone still held gets released when the phase
+        /// ends for any reason (natural timeout or cancellation). If <paramref name="confinerBounds"/> is
+        /// set, the orb's position is clamped inside it every tick - once it reaches the edge it just
+        /// keeps pulling/riding along the boundary instead of flying out of the playable area.
         /// </summary>
-        private async UniTask PullPhase(GravityOrbSkillObject orb, float duration, CancellationToken ct)
+        private async UniTask FlyAndPullPhase(GravityOrbSkillObject orb, Vector2 direction, float duration,
+            Collider2D confinerBounds, CancellationToken ct)
         {
             var pulledTargets = new HashSet<BaseController>();
             LayerMask damageLayer = CharacterGlobalSettings.Instance.EnemyLayerDictionary[owner.tag];
+            float speed = skillData.OrbSpeed;
 
             try
             {
@@ -179,7 +185,12 @@ namespace Characters.SkillSystems.SkillRuntimes
                     float dt = Time.fixedDeltaTime;
                     elapsed += dt;
 
-                    UpdatePull(orb.transform.position, damageLayer, pulledTargets, dt);
+                    Vector2 nextPos = (Vector2)orb.transform.position + direction * (speed * dt);
+                    if (confinerBounds)
+                        nextPos = confinerBounds.ClosestPoint(nextPos);
+
+                    orb.transform.position = nextPos;
+                    UpdatePull(nextPos, damageLayer, pulledTargets, dt);
 
                     await UniTask.Yield(PlayerLoopTiming.FixedUpdate, ct);
                 }
@@ -300,7 +311,6 @@ namespace Characters.SkillSystems.SkillRuntimes
             if (!orb || !orb.gameObject.activeSelf) return;
 
             _activeOrbs.Remove(orb);
-            orb.MovementSystem.StopTween();
             orb.ResetForPool();
             orb.gameObject.SetActive(false);
             orb.transform.position = owner.transform.position;

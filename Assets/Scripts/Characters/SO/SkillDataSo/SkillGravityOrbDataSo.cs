@@ -9,11 +9,13 @@ namespace Characters.SO.SkillDataSo
 {
     /// <summary>
     /// Data for the Gravity Orb auto skill.
-    /// Fires several orbs that each fly to the farthest-in-range enemy that hasn't already been
-    /// targeted by another orb this cast, and stop there. While alive, an orb continuously pulls
+    /// Fires several orbs, each launched toward the direction of a different farthest-in-range enemy
+    /// (no two orbs share a target). Every orb then flies in a straight line at a constant speed for its
+    /// whole lifetime (fire-and-forget, it does not keep homing) - while alive it continuously pulls
     /// nearby enemies toward itself and locks their Primary/Secondary skills (see
     /// <see cref="Characters.StatusEffectSystems.StatusEffects.GravityPulledEffect"/>). When its
-    /// lifetime ends it explodes, dealing AOE damage in the same radius it was pulling from.
+    /// lifetime ends it explodes wherever it currently is, dealing AOE damage in the same radius it was
+    /// pulling from.
     /// </summary>
     [CreateAssetMenu(fileName = "SkillGravityOrbData", menuName = "GameData/SkillData/SkillGravityOrbData")]
     public class SkillGravityOrbDataSo : BaseSkillDataSo
@@ -27,7 +29,7 @@ namespace Characters.SO.SkillDataSo
 
         [FoldoutGroup("Skill Object")]
         [LabelText("Orb Count (N)")]
-        [PropertyTooltip("Number of orbs fired per cast. Each orb targets a different enemy - if fewer valid enemies exist than this, fewer orbs are fired.")]
+        [PropertyTooltip("Number of orbs fired per cast. Each orb is launched toward a different enemy's direction - if fewer valid enemies exist than this, fewer orbs are fired.")]
         [MinValue(1)]
         [SerializeField] private int orbCount = 3;
 
@@ -35,34 +37,25 @@ namespace Characters.SO.SkillDataSo
 
         [FoldoutGroup("Targeting")]
         [LabelText("Target Search Radius")]
-        [PropertyTooltip("Range (from the caster) to search for enemies. Each orb is assigned to the farthest still-unclaimed enemy within this range.")]
+        [PropertyTooltip("Range (from the caster) to search for enemies. Each orb is launched toward the direction of the farthest still-unclaimed enemy within this range.")]
         [SerializeField] private float targetSearchRadius = 8f;
 
         [FoldoutGroup("Targeting")]
-        [LabelText("Travel Speed")]
-        [PropertyTooltip("How fast an orb flies from the caster to its assigned enemy's position.")]
-        [SerializeField] private float travelSpeed = 14f;
-
-        [FoldoutGroup("Targeting")]
-        [LabelText("Travel Ease Curve")]
-        [SerializeField] private AnimationCurve travelEaseCurve;
-
-        [FoldoutGroup("Targeting")]
-        [LabelText("Travel Move Curve")]
-        [PropertyTooltip("Optional lateral offset curve applied while the orb travels to its stop position.")]
-        [SerializeField] private AnimationCurve travelMoveCurve;
+        [LabelText("Orb Speed")]
+        [PropertyTooltip("Constant speed the orb flies at, in a straight line, for its entire lifetime. The direction is locked in at launch (toward its assigned target) and does not keep homing afterward.")]
+        [SerializeField] private float orbSpeed = 14f;
 
         // ─────────────── Gravity Field ───────────────
 
         [FoldoutGroup("Gravity Field")]
         [LabelText("Orb Effect Radius (N)")]
-        [PropertyTooltip("Radius around the orb's stop position. Used both for the continuous pull field while alive and for the explosion damage radius on death.")]
+        [PropertyTooltip("Radius around the orb's current position. Used both for the continuous pull field while it flies and for the explosion damage radius when its lifetime ends.")]
         [SerializeField] private float orbEffectRadius = 3.5f;
 
         [FoldoutGroup("Gravity Field")]
         [LabelText("Orb Lifetime (sec)")]
         [Unit(Units.Second)]
-        [PropertyTooltip("How long the orb sits and pulls enemies before it explodes.")]
+        [PropertyTooltip("How long the orb flies and pulls enemies before it explodes.")]
         [SerializeField] private float orbLifeTime = 3f;
 
         [FoldoutGroup("Gravity Field")]
@@ -108,9 +101,7 @@ namespace Characters.SO.SkillDataSo
         public int OrbCount => orbCount;
 
         public float TargetSearchRadius => targetSearchRadius;
-        public float TravelSpeed => travelSpeed;
-        public AnimationCurve TravelEaseCurve => travelEaseCurve;
-        public AnimationCurve TravelMoveCurve => travelMoveCurve;
+        public float OrbSpeed => orbSpeed;
 
         public float OrbEffectRadius => orbEffectRadius;
         public float OrbLifeTime => orbLifeTime;

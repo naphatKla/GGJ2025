@@ -58,6 +58,15 @@ namespace Cameras
         private float defaultBlendTime = 0.25f;
 
         private CinemachineVirtualCamera currentCam;
+        private CinemachineConfiner2D _confiner;
+
+        /// <summary>
+        /// The bounding shape of the active camera's Confiner2D extension, if any (null if the current
+        /// virtual camera has no confiner). Useful for gameplay systems (e.g. skills) that shouldn't be
+        /// able to travel outside the playable/camera area - loot dropped past this bound would be
+        /// unreachable by the player.
+        /// </summary>
+        public Collider2D ConfinerBounds => _confiner ? _confiner.m_BoundingShape2D : null;
 
         // defaults
         public float startOrthoSize;
@@ -157,6 +166,8 @@ namespace Cameras
             _transposer = currentCam.GetCinemachineComponent<CinemachineFramingTransposer>();
             if (_transposer != null)
                 defaultFollowDamping = _transposer.m_XDamping;
+
+            _confiner = currentCam.GetComponent<CinemachineConfiner2D>();
         }
 
         private void Update()
