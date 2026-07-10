@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c301c9d357dd7784a93dd4c254214045, type: 3}
-  m_Name: LV1_Player_GravityOrb
-  m_EditorClassIdentifier: 
+  m_Name: LV5_Player_GravityOrb
+  m_EditorClassIdentifier:
   serializationData:
     SerializedFormat: 2
-    SerializedBytes: 
+    SerializedBytes:
     ReferencedUnityObjects: []
-    SerializedBytesString: 
+    SerializedBytesString:
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
@@ -24,23 +24,23 @@ MonoBehaviour:
     - Name: _skillRuntime
       Entry: 7
       Data: 0|System.RuntimeType, mscorlib
-    - Name: 
+    - Name:
       Entry: 1
       Data: Characters.SkillSystems.SkillRuntimes.SkillGravityOrbRuntime, Assembly-CSharp
-    - Name: 
+    - Name:
       Entry: 8
-      Data: 
+      Data:
   skillIcon: {fileID: 0}
   skillName: Gravity Orb
-  skillDescription: 
-  previousSkillData: {fileID: 0}
-  nextSkillDataUpgrade: {fileID: 11400000, guid: e229c3371a5e4cac9e0483d3750d7eec, type: 2}
-  level: 1
+  skillDescription:
+  previousSkillData: {fileID: 11400000, guid: b6fd25964b3a4677bc4e8533e1537765, type: 2}
+  nextSkillDataUpgrade: {fileID: 11400000, guid: bb47e7300e5d4d63b826d698ea50e875, type: 2}
+  level: 5
   cooldown: 1
   globalCooldown: 0.25
   maxStack: 1
-  startFeedback: 
-  exitFeedback: 
+  startFeedback:
+  exitFeedback:
   clearBuffOnSkillExit: 0
   statusEffectOnSkillStart: []
   orbPrefab: {fileID: -6941865135320188750, guid: 04350e9b4460bb847bb2a2c56d890d34, type: 3}
@@ -83,4 +83,4 @@ MonoBehaviour:
   explosionRadius: 5
   explosionBaseDamage: 15
   explosionDamageMultiplier: 100
-  explodeFeedback: 
+  explodeFeedback:

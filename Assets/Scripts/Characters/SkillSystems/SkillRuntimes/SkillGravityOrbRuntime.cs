@@ -18,8 +18,9 @@ namespace Characters.SkillSystems.SkillRuntimes
     /// <c>TargetSearchRadius</c>) and fires one orb toward each one's direction. Every orb then flies in
     /// a straight line at <c>OrbSpeed</c> for its whole <c>OrbLifeTime</c> - it locks in its direction at
     /// launch and does not keep homing afterward. While alive it pulls any enemy that wanders into
-    /// <c>OrbEffectRadius</c> toward its center, locking those enemies out of their Primary/Secondary
-    /// skills, and finally explodes wherever it ends up for AOE damage in that same radius.
+    /// <c>PullRadius</c> toward its center, locking those enemies out of their Primary/Secondary skills,
+    /// and finally explodes wherever it ends up for AOE damage within <c>ExplosionRadius</c> (a separate,
+    /// independently-tunable value from the pull radius).
     /// </summary>
     public class SkillGravityOrbRuntime : BaseSkillRuntime<SkillGravityOrbDataSo>
     {
@@ -134,7 +135,7 @@ namespace Characters.SkillSystems.SkillRuntimes
             var orb = PoolingManager.Instance.Get<GravityOrbSkillObject>(skillData.OrbPrefab.name);
             orb.transform.position = launchOrigin;
             orb.gameObject.SetActive(true);
-            orb.ConfigureRanges(skillData.OrbEffectRadius, skillData.PullStopDistance);
+            orb.ConfigureRanges(skillData.PullRadius, skillData.ExplosionRadius, skillData.PullStopDistance);
             _activeOrbs.Add(orb);
 
             try
@@ -204,7 +205,7 @@ namespace Characters.SkillSystems.SkillRuntimes
 
         private void UpdatePull(Vector2 center, LayerMask damageLayer, HashSet<BaseController> pulledTargets, float dt)
         {
-            int found = Physics2D.OverlapCircleNonAlloc(center, skillData.OrbEffectRadius, _pullBuffer, damageLayer);
+            int found = Physics2D.OverlapCircleNonAlloc(center, skillData.PullRadius, _pullBuffer, damageLayer);
 
             _frameSeen.Clear();
 
@@ -228,7 +229,7 @@ namespace Characters.SkillSystems.SkillRuntimes
                 float dist = toCenter.magnitude;
                 if (dist <= skillData.PullStopDistance) continue;
 
-                float proximity = Mathf.InverseLerp(skillData.OrbEffectRadius, 0f, dist);
+                float proximity = Mathf.InverseLerp(skillData.PullRadius, 0f, dist);
                 float curveMul = Mathf.Max(0f, skillData.PullCurve.Evaluate(proximity));
                 float strength = skillData.PullStrength * curveMul;
 
@@ -280,7 +281,7 @@ namespace Characters.SkillSystems.SkillRuntimes
         private void Explode(Vector2 center)
         {
             LayerMask damageLayer = CharacterGlobalSettings.Instance.EnemyLayerDictionary[owner.tag];
-            var targets = Physics2D.OverlapCircleAll(center, skillData.OrbEffectRadius, damageLayer);
+            var targets = Physics2D.OverlapCircleAll(center, skillData.ExplosionRadius, damageLayer);
             if (targets.Length == 0) return;
 
             owner.TryPlayFeedback(skillData.ExplodeFeedback);

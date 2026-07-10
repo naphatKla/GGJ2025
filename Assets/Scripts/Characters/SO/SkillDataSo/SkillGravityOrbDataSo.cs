@@ -12,10 +12,10 @@ namespace Characters.SO.SkillDataSo
     /// Fires several orbs, each launched toward the direction of a different farthest-in-range enemy
     /// (no two orbs share a target). Every orb then flies in a straight line at a constant speed for its
     /// whole lifetime (fire-and-forget, it does not keep homing) - while alive it continuously pulls
-    /// nearby enemies toward itself and locks their Primary/Secondary skills (see
-    /// <see cref="Characters.StatusEffectSystems.StatusEffects.GravityPulledEffect"/>). When its
-    /// lifetime ends it explodes wherever it currently is, dealing AOE damage in the same radius it was
-    /// pulling from.
+    /// nearby enemies within <c>PullRadius</c> toward itself and locks their Primary/Secondary skills
+    /// (see <see cref="Characters.StatusEffectSystems.StatusEffects.GravityPulledEffect"/>). When its
+    /// lifetime ends it explodes wherever it currently is, dealing AOE damage within <c>ExplosionRadius</c>
+    /// - a separate value from the pull radius, so the two can be tuned independently.
     /// </summary>
     [CreateAssetMenu(fileName = "SkillGravityOrbData", menuName = "GameData/SkillData/SkillGravityOrbData")]
     public class SkillGravityOrbDataSo : BaseSkillDataSo
@@ -48,9 +48,9 @@ namespace Characters.SO.SkillDataSo
         // ─────────────── Gravity Field ───────────────
 
         [FoldoutGroup("Gravity Field")]
-        [LabelText("Orb Effect Radius (N)")]
-        [PropertyTooltip("Radius around the orb's current position. Used both for the continuous pull field while it flies and for the explosion damage radius when its lifetime ends.")]
-        [SerializeField] private float orbEffectRadius = 3.5f;
+        [LabelText("Pull Radius")]
+        [PropertyTooltip("Radius around the orb's current position that continuously pulls enemies in while it flies. Independent from Explosion Radius.")]
+        [SerializeField] private float pullRadius = 3.5f;
 
         [FoldoutGroup("Gravity Field")]
         [LabelText("Orb Lifetime (sec)")]
@@ -69,7 +69,7 @@ namespace Characters.SO.SkillDataSo
 
         [FoldoutGroup("Gravity Field")]
         [LabelText("Pull Falloff Curve")]
-        [PropertyTooltip("Pull strength multiplier based on proximity to the orb (0 = at Orb Effect Radius edge, 1 = at center).")]
+        [PropertyTooltip("Pull strength multiplier based on proximity to the orb (0 = at Pull Radius edge, 1 = at center).")]
         [SerializeField] private AnimationCurve pullCurve = AnimationCurve.EaseInOut(0f, 0f, 1f, 1f);
 
         [FoldoutGroup("Gravity Field")]
@@ -83,6 +83,11 @@ namespace Characters.SO.SkillDataSo
         [SerializeField] private List<StatusEffectDataPayload> pulledStatusEffects;
 
         // ─────────────── Explosion Damage ───────────────
+
+        [FoldoutGroup("Explosion Damage")]
+        [LabelText("Explosion Radius")]
+        [PropertyTooltip("AOE radius around the orb's final position when its lifetime ends. Independent from Pull Radius.")]
+        [SerializeField] private float explosionRadius = 3.5f;
 
         [FoldoutGroup("Explosion Damage")]
         [SerializeField] private float explosionBaseDamage = 15f;
@@ -103,7 +108,7 @@ namespace Characters.SO.SkillDataSo
         public float TargetSearchRadius => targetSearchRadius;
         public float OrbSpeed => orbSpeed;
 
-        public float OrbEffectRadius => orbEffectRadius;
+        public float PullRadius => pullRadius;
         public float OrbLifeTime => orbLifeTime;
         public float PullStrength => pullStrength;
         public float PullStopDistance => pullStopDistance;
@@ -112,6 +117,7 @@ namespace Characters.SO.SkillDataSo
 
         public List<StatusEffectDataPayload> PulledStatusEffects => pulledStatusEffects;
 
+        public float ExplosionRadius => explosionRadius;
         public float ExplosionBaseDamage => explosionBaseDamage;
         public float ExplosionDamageMultiplier => explosionDamageMultiplier;
 
