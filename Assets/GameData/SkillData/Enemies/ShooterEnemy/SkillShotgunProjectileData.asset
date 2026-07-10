@@ -45,7 +45,7 @@ MonoBehaviour:
   statusEffectOnSkillStart: []
   projectilePrefab: {fileID: 4553208590618034124, guid: 2def9904c23ba69408ff807da9af34fa, type: 3}
   prewarmCount: 40
-  projectileSpeed: 3
+  projectileSpeed: 10
   projectileLifetime: 2
   rotateProjectileToDirection: 1
   projectileRotationOffsetDegrees: 0
@@ -54,8 +54,8 @@ MonoBehaviour:
   fixedDirection: {x: 1, y: 0}
   spawnLocalOffset: {x: 0, y: 0}
   angleOffsetDegrees: 0
-  projectileCount: 5
-  spreadAngleDegrees: 45
+  projectileCount: 3
+  spreadAngleDegrees: 30
   ringArcDegrees: 360
   spiralStepDegrees: 15
   resetSpiralOnCast: 1
@@ -69,8 +69,8 @@ MonoBehaviour:
   maxHits: 1
   canHitWithDamageOnTouch: 0
   hitShape: 1
-  hitboxSize: {x: 1, y: 1}
-  hitboxRadius: 0.25
+  hitboxSize: {x: 3, y: 3}
+  hitboxRadius: 2.5
   overrideTargetLayer: 0
   targetLayer:
     serializedVersion: 2
