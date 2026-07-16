@@ -271,6 +271,7 @@ namespace Characters.UIDisplay
             foreach (var statusSlotModel in statusSlots)
                 statusSlotModel.gameObject.SetActive(false);
 
+            RefreshSkillSlotVisibility();
             UpdateLevelUI();
             UpdateHealthUI();
             scoreText.text = "0";
@@ -663,6 +664,17 @@ namespace Characters.UIDisplay
         #endregion
 
         #region Skill Slot
+
+        private void RefreshSkillSlotVisibility()
+        {
+            if (skillSlotModel == null) return;
+
+            for (int i = 0; i < skillSlotModel.Count; i++)
+            {
+                if (skillSlotModel[i] == null) continue;
+                skillSlotModel[i].gameObject.SetActive(true);
+            }
+        }
 
         private void AssignSkillSlot(BaseSkillDataSo skill, int skillIndex)
         {

@@ -17,6 +17,7 @@ namespace PermanentUpgrade
         ExpMultiply,
         PickupRadius,
         HurtIFrame,
+        AutoSkillSlot,
     }
     
     public enum PermanentUpgradeValueMode

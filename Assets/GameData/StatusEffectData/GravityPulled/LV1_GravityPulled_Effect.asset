@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3137d1fde6d0b4f4b9f1a160b1cca9b4, type: 3}
+  m_Name: LV1_GravityPulled_Effect
+  m_EditorClassIdentifier:
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes:
+    ReferencedUnityObjects: []
+    SerializedBytesString:
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes:
+    - Name: _effectType
+      Entry: 7
+      Data: 0|System.RuntimeType, mscorlib
+    - Name:
+      Entry: 1
+      Data: Characters.StatusEffectSystems.StatusEffects.GravityPulledEffect, Assembly-CSharp
+    - Name:
+      Entry: 8
+      Data:
+  icon: {fileID: 0}
+  effectName: 5
+  description: Locks out Primary/Secondary skill usage while the target is being
+    pulled by a Gravity Orb. Applied/removed automatically by the orb based on whether
+    the target is currently inside its pull field - Default Duration below is only
+    a safety-net fallback and is overridden by the skill's own payload.
+  level: 1
+  defaultDuration: 5
+  isDebuff: 1
