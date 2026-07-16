@@ -11,12 +11,12 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c301c9d357dd7784a93dd4c254214045, type: 3}
   m_Name: LV4_Player_GravityOrb
-  m_EditorClassIdentifier:
+  m_EditorClassIdentifier: 
   serializationData:
     SerializedFormat: 2
-    SerializedBytes:
+    SerializedBytes: 
     ReferencedUnityObjects: []
-    SerializedBytesString:
+    SerializedBytesString: 
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
@@ -24,33 +24,33 @@ MonoBehaviour:
     - Name: _skillRuntime
       Entry: 7
       Data: 0|System.RuntimeType, mscorlib
-    - Name:
+    - Name: 
       Entry: 1
       Data: Characters.SkillSystems.SkillRuntimes.SkillGravityOrbRuntime, Assembly-CSharp
-    - Name:
+    - Name: 
       Entry: 8
-      Data:
+      Data: 
   skillIcon: {fileID: 0}
   skillName: Gravity Orb
-  skillDescription:
+  skillDescription: 
   previousSkillData: {fileID: 11400000, guid: d953d716b4774932b7305df007b01043, type: 2}
   nextSkillDataUpgrade: {fileID: 11400000, guid: 7ec2ef9f5d724f0ea8f946d2b9c6e3a3, type: 2}
   level: 4
-  cooldown: 1
+  cooldown: 12
   globalCooldown: 0.25
   maxStack: 1
-  startFeedback:
-  exitFeedback:
+  startFeedback: 
+  exitFeedback: 
   clearBuffOnSkillExit: 0
   statusEffectOnSkillStart: []
-  orbPrefab: {fileID: -6941865135320188750, guid: 04350e9b4460bb847bb2a2c56d890d34, type: 3}
-  orbCount: 3
-  targetSearchRadius: 8
+  orbPrefab: {fileID: -6941865135320188750, guid: 2708bebd3572b054d8d65bc147cf4527, type: 3}
+  orbCount: 2
+  targetSearchRadius: 14
   orbSpeed: 14
-  pullRadius: 5
+  pullRadius: 6.25
   orbLifeTime: 2
   pullStrength: 10
-  pullStopDistance: 0.2
+  pullStopDistance: 0.1
   pullCurve:
     serializedVersion: 2
     m_Curve:
@@ -62,7 +62,25 @@ MonoBehaviour:
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
-      outWeight: 0
+      outWeight: 0.55872834
+    - serializedVersion: 3
+      time: 0.25
+      value: 0.45
+      inSlope: 2.109233
+      outSlope: 2.109233
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.2351315
+    - serializedVersion: 3
+      time: 0.6
+      value: 0.95
+      inSlope: 0.40500665
+      outSlope: 0.40500665
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.20913565
+      outWeight: 0.17531426
     - serializedVersion: 3
       time: 1
       value: 1
@@ -70,7 +88,7 @@ MonoBehaviour:
       outSlope: 0
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0
+      inWeight: 0.33333334
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
@@ -80,7 +98,7 @@ MonoBehaviour:
   - effectData: {fileID: 11400000, guid: d13cb78c75424189a91a44cffbda34bf, type: 2}
     isOverrideDuration: 1
     overrideDuration: 9999
-  explosionRadius: 5
-  explosionBaseDamage: 15
-  explosionDamageMultiplier: 100
-  explodeFeedback:
+  explosionRadius: 7.25
+  explosionBaseDamage: 50
+  explosionDamageMultiplier: 50
+  explodeFeedback: 
