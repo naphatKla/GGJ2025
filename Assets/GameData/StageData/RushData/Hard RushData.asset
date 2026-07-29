@@ -314,6 +314,37 @@ MonoBehaviour:
     - {fileID: 11400000, guid: a36d2c81a79161946beeda253129118b, type: 2}
     useSpawnEffect: 0
     spawnEffect: []
+  - id: Boss_Twin
+    displayName: The Twin
+    enemyController: {fileID: 3283012694853145645, guid: 269d66a18656a9b4b81ea0fe0cb26bae, type: 3}
+    prewarmCount: 1
+    spawnPoint: 0
+    enemyPointCanGrowth: 0
+    enemyPointGrowthRate: 12.5
+    chance: 100
+    enemyChanceCanGrowth: 0
+    enemyChanceGrowthRate: 0
+    disableNormalize: 1
+    useCustomInterval: 0
+    customInterval: 0
+    useMaxperEnemy: 1
+    maximumPerEnemy: 1
+    modifyNewData: 1
+    enemyData: {fileID: 11400000, guid: e6c6c7909f3a39e46b88ab032c41992a, type: 2}
+    disableInPattern: 1
+    disableEnemyDetect: 1
+    useSpawnConditions: 1
+    conditionLogic: 0
+    spawnConditions:
+    - {fileID: 11400000, guid: da1d3b0ff5fb92f4680487d0938ff0fd, type: 2}
+    useSpawnEffect: 1
+    spawnEffect:
+    - effectType: 0
+      effectString: BossWarning
+      effectint: 0
+    - effectType: 3
+      effectString: 
+      effectint: 5
   intervalEnemyChanceUpgrade: 30
   intervalEnemyPointRatioUpgrade: 30
   defaultEnemySpawnTimer: 0.75
@@ -325,7 +356,7 @@ MonoBehaviour:
     pattern: {fileID: 11400000, guid: 098e856c71484744d95d27a8654a8433, type: 2}
     delayBetweenEnemy: 0.01
     delayBetweenRows: 1
-    patternPoint: 30
+    patternPoint: 10
     enableMovementAfter: 1
     enablePatternCenter: 0
     patternCenter: {x: 0, y: 0}
@@ -341,7 +372,7 @@ MonoBehaviour:
     pattern: {fileID: 11400000, guid: 1e63f424b276e28409899624010d5aaf, type: 2}
     delayBetweenEnemy: 0.01
     delayBetweenRows: 1
-    patternPoint: 30
+    patternPoint: 10
     enableMovementAfter: 1
     enablePatternCenter: 0
     patternCenter: {x: 0, y: 0}
@@ -353,19 +384,6 @@ MonoBehaviour:
   - enableThisPattern: 1
     bypassSpawnCondition: 0
     enableSpecificEnemy: 0
-    specificEnemyList: []
-    pattern: {fileID: 11400000, guid: 24b5084f31b90d44090398f20fd2166b, type: 2}
-    delayBetweenEnemy: 0.01
-    delayBetweenRows: 1
-    patternPoint: 70
-    enableMovementAfter: 1
-    enablePatternCenter: 0
-    patternCenter: {x: 0, y: 0}
-    useCondition: 0
-    patternCondition: []
-  - enableThisPattern: 1
-    bypassSpawnCondition: 0
-    enableSpecificEnemy: 0
     specificEnemyList:
     - enemyID: Enemy_Normal
       chance: 50
@@ -374,25 +392,15 @@ MonoBehaviour:
     pattern: {fileID: 11400000, guid: 1152772dc8e0f114e824dddd694be66b, type: 2}
     delayBetweenEnemy: 0.01
     delayBetweenRows: 1
-    patternPoint: 70
+    patternPoint: 22
     enableMovementAfter: 1
     enablePatternCenter: 0
     patternCenter: {x: 0, y: 0}
-    useCondition: 0
-    patternCondition: []
-  - enableThisPattern: 1
-    bypassSpawnCondition: 0
-    enableSpecificEnemy: 0
-    specificEnemyList: []
-    pattern: {fileID: 11400000, guid: 2bc8bc7d72e130d4382d64794bbc160c, type: 2}
-    delayBetweenEnemy: 0.01
-    delayBetweenRows: 1
-    patternPoint: 50
-    enableMovementAfter: 1
-    enablePatternCenter: 0
-    patternCenter: {x: 0, y: 0}
-    useCondition: 0
-    patternCondition: []
+    useCondition: 1
+    patternCondition:
+    - conditionType: 0
+      startAfter: 120
+      endAt: -1
   - enableThisPattern: 1
     bypassSpawnCondition: 0
     enableSpecificEnemy: 0
@@ -400,12 +408,15 @@ MonoBehaviour:
     pattern: {fileID: 11400000, guid: 3c5159e5638c81a4b9a6d6e9d8853011, type: 2}
     delayBetweenEnemy: 0.01
     delayBetweenRows: 1
-    patternPoint: 50
+    patternPoint: 20
     enableMovementAfter: 1
     enablePatternCenter: 0
     patternCenter: {x: 0, y: 0}
-    useCondition: 0
-    patternCondition: []
+    useCondition: 1
+    patternCondition:
+    - conditionType: 0
+      startAfter: 120
+      endAt: -1
   - enableThisPattern: 1
     bypassSpawnCondition: 0
     enableSpecificEnemy: 0
@@ -413,12 +424,47 @@ MonoBehaviour:
     pattern: {fileID: 11400000, guid: 288500a21d61a4540b39a6463d3f4af9, type: 2}
     delayBetweenEnemy: 0.01
     delayBetweenRows: 1
-    patternPoint: 50
+    patternPoint: 20
     enableMovementAfter: 1
     enablePatternCenter: 0
     patternCenter: {x: 0, y: 0}
-    useCondition: 0
-    patternCondition: []
+    useCondition: 1
+    patternCondition:
+    - conditionType: 0
+      startAfter: 120
+      endAt: -1
+  - enableThisPattern: 1
+    bypassSpawnCondition: 0
+    enableSpecificEnemy: 0
+    specificEnemyList: []
+    pattern: {fileID: 11400000, guid: 2bc8bc7d72e130d4382d64794bbc160c, type: 2}
+    delayBetweenEnemy: 0.01
+    delayBetweenRows: 1
+    patternPoint: 30
+    enableMovementAfter: 1
+    enablePatternCenter: 0
+    patternCenter: {x: 0, y: 0}
+    useCondition: 1
+    patternCondition:
+    - conditionType: 0
+      startAfter: 180
+      endAt: -1
+  - enableThisPattern: 1
+    bypassSpawnCondition: 0
+    enableSpecificEnemy: 0
+    specificEnemyList: []
+    pattern: {fileID: 11400000, guid: 24b5084f31b90d44090398f20fd2166b, type: 2}
+    delayBetweenEnemy: 0.01
+    delayBetweenRows: 1
+    patternPoint: 30
+    enableMovementAfter: 1
+    enablePatternCenter: 0
+    patternCenter: {x: 0, y: 0}
+    useCondition: 1
+    patternCondition:
+    - conditionType: 0
+      startAfter: 240
+      endAt: -1
   - enableThisPattern: 1
     bypassSpawnCondition: 0
     enableSpecificEnemy: 0
@@ -426,12 +472,31 @@ MonoBehaviour:
     pattern: {fileID: 11400000, guid: 22206c817f2991344955d785a5ad4457, type: 2}
     delayBetweenEnemy: 0.01
     delayBetweenRows: 1
-    patternPoint: 70
+    patternPoint: 30
     enableMovementAfter: 1
     enablePatternCenter: 0
     patternCenter: {x: 0, y: 0}
-    useCondition: 0
-    patternCondition: []
+    useCondition: 1
+    patternCondition:
+    - conditionType: 0
+      startAfter: 300
+      endAt: -1
+  - enableThisPattern: 1
+    bypassSpawnCondition: 0
+    enableSpecificEnemy: 0
+    specificEnemyList: []
+    pattern: {fileID: 11400000, guid: 22e03ec9ec2fdf04098f3710989ebe77, type: 2}
+    delayBetweenEnemy: 0.01
+    delayBetweenRows: 1
+    patternPoint: 30
+    enableMovementAfter: 1
+    enablePatternCenter: 0
+    patternCenter: {x: 0, y: 0}
+    useCondition: 1
+    patternCondition:
+    - conditionType: 0
+      startAfter: 300
+      endAt: -1
   - enableThisPattern: 1
     bypassSpawnCondition: 0
     enableSpecificEnemy: 0
@@ -439,21 +504,56 @@ MonoBehaviour:
     pattern: {fileID: 11400000, guid: 40fb65c3276e22343affa5a5a2d61545, type: 2}
     delayBetweenEnemy: 0.01
     delayBetweenRows: 1
+    patternPoint: 30
+    enableMovementAfter: 1
+    enablePatternCenter: 0
+    patternCenter: {x: 0, y: 0}
+    useCondition: 1
+    patternCondition:
+    - conditionType: 0
+      startAfter: 300
+      endAt: -1
+  - enableThisPattern: 1
+    bypassSpawnCondition: 0
+    enableSpecificEnemy: 0
+    specificEnemyList: []
+    pattern: {fileID: 11400000, guid: 139acb1578345ba43b51ad8bdfc0430c, type: 2}
+    delayBetweenEnemy: 0.1
+    delayBetweenRows: 1
+    patternPoint: 50
+    enableMovementAfter: 1
+    enablePatternCenter: 0
+    patternCenter: {x: 0, y: 0}
+    useCondition: 1
+    patternCondition:
+    - conditionType: 0
+      startAfter: 420
+      endAt: -1
+  - enableThisPattern: 1
+    bypassSpawnCondition: 0
+    enableSpecificEnemy: 0
+    specificEnemyList: []
+    pattern: {fileID: 11400000, guid: 89597e4458fb6564da47e4d33a37163c, type: 2}
+    delayBetweenEnemy: 0.1
+    delayBetweenRows: 1
     patternPoint: 100
     enableMovementAfter: 1
     enablePatternCenter: 0
     patternCenter: {x: 0, y: 0}
-    useCondition: 0
-    patternCondition: []
-  playAllPatternIn: 60
-  triggerAllPatternIn: 60
+    useCondition: 1
+    patternCondition:
+    - conditionType: 0
+      startAfter: 480
+      endAt: -1
+  playAllPatternIn: 10
+  triggerAllPatternIn: 10
   triggerTimeCanDecrease: 0
   patternDecreaseInterval: 25
   patternDecreaseRate: 1
   patternDecreaseMinimum: 18
-  addPatternInterval: 60
+  addPatternInterval: 9
   amountToAdd: 1
-  patternMax: 15
+  patternMax: 1
   canDuplicateAfterHaveAllPattern: 1
   eventmapOptions:
   - enableThisMapEvent: 1
