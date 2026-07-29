@@ -485,15 +485,15 @@ MonoBehaviour:
     patternCenter: {x: 0, y: 0}
     useCondition: 0
     patternCondition: []
-  playAllPatternIn: 60
-  triggerAllPatternIn: 55
-  triggerTimeCanDecrease: 0
-  patternDecreaseInterval: 25
+  playAllPatternIn: 10
+  triggerAllPatternIn: 10
+  triggerTimeCanDecrease: 1
+  patternDecreaseInterval: 96
   patternDecreaseRate: 1
-  patternDecreaseMinimum: 18
-  addPatternInterval: 60
+  patternDecreaseMinimum: 30
+  addPatternInterval: 5
   amountToAdd: 1
-  patternMax: 10
+  patternMax: 1
   canDuplicateAfterHaveAllPattern: 1
   ItemOptions:
   - id: Red_Anergy
@@ -511,19 +511,6 @@ MonoBehaviour:
     spawnConditions: []
   - id: Yellow_Anergy
     itemObj: {fileID: 8589778046636973207, guid: bcd6f0236a2272d4fb026da93e3cf62f, type: 3}
-    prewarmCount: 50
-    chance: 0
-    useCustomInterval: 0
-    customInterval: 0
-    useMaxperItem: 0
-    maximumPerItem: 0
-    useLifetimeInterval: 1
-    lifetimeInterval: 20
-    useSpawnConditions: 0
-    conditionLogic: 0
-    spawnConditions: []
-  - id: Green_Anergy
-    itemObj: {fileID: 8589778046636973207, guid: 12751c5192bb6d94889f43fd00e7ac25, type: 3}
     prewarmCount: 50
     chance: 0
     useCustomInterval: 0
@@ -677,15 +664,15 @@ MonoBehaviour:
     rateModify: -5
     intervalModify: 60
     minPlayInterval: 30
-  defaultEnemySpawnTimer: 1.5
+  defaultEnemySpawnTimer: 5
   canGrowth: 1
-  decreaseAmount: 0.25
-  decreaseInterval: 20
-  decreaseMinimum: 0.5
+  decreaseAmount: 0.5
+  decreaseInterval: 60
+  decreaseMinimum: 3
   intervalIncreaseEnemyPoint: 30
   rateIncreaseEnemyPoint: 50
   startEnemyPoint: 60
-  maxEnemyPoint: 1000
+  maxEnemyPoint: 700
   rushData: {fileID: 11400000, guid: e2b1d3052964e77449e76a9e319858b4, type: 2}
   rushTime: 60
   milestoneOptions:
