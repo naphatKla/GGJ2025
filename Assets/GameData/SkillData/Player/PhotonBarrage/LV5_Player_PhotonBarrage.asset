@@ -45,28 +45,27 @@ MonoBehaviour:
     <color=#FFE02E><b>[+]</b></color> Damage
 
 
-
     Cooldown: <b>3s</b>
 
 
     -
-    Creates Photons around the ship that deal damage to the nearest enemy'
+    Creates Photons around the ship that launch at the nearest enemy.'
   previousSkillData: {fileID: 11400000, guid: e589a75f84f53fb4bacd9ee496980df4, type: 2}
   nextSkillDataUpgrade: {fileID: 11400000, guid: f21f5f12a4cc63745bf632538487dee1, type: 2}
   level: 5
   cooldown: 3
   globalCooldown: 0.1
-  maxStack: 2
+  maxStack: 1
   startFeedback: 
   exitFeedback: 
   clearBuffOnSkillExit: 0
   statusEffectOnSkillStart: []
-  missileCount: 12
+  missileCount: 13
   missilePrefab: {fileID: 8354010792598055506, guid: b411007f75da0644d9fe48e030184a92, type: 3}
   damageHitPerSec: 1
-  baseDamagePerHit: 22.25
+  baseDamagePerHit: 30
   damageMultiplier: 50
-  spreadDistance: 8
+  spreadDistance: 6
   spreadEntireDuration: 0.4
   spreadStaggerDuration: 0.2
   spreadStaggerCurve:

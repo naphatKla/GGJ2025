@@ -33,8 +33,8 @@ MonoBehaviour:
   skillIcon: {fileID: 21300000, guid: 5c07d093086ef0241af8c07202a2192f, type: 3}
   skillName: Photon Barrage
   skillDescription: "<color=#FF3131><b>[Attack]</b></color>\r\n<size=3.5><color=#adadad><i>[AOE],
-    [Knockback], [Homing]</i></color>\r\n- Creates Photons around the ship that deal
-    damage to the nearest enemy\n\n<color=#FFE02E><b>[NEW!]</b></color> \r\n<color=#FFE02E><b>[+]</b></color>
+    [Knockback], [Homing]</i></color>\r\n- Creates Photons around the ship that launch
+    at the nearest enemy.\n\n<color=#FFE02E><b>[NEW!]</b></color> \r\n<color=#FFE02E><b>[+]</b></color>
     Photon Barrage skill\r\n\nCooldown: <b>3s</b>"
   previousSkillData: {fileID: 0}
   nextSkillDataUpgrade: {fileID: 11400000, guid: 5bb00ddc1b7164c4d92d0bb3cfb37658, type: 2}
@@ -46,12 +46,12 @@ MonoBehaviour:
   exitFeedback: 
   clearBuffOnSkillExit: 0
   statusEffectOnSkillStart: []
-  missileCount: 3
+  missileCount: 5
   missilePrefab: {fileID: -5918660753670732098, guid: 1c91ee432ab06b84692a55139f88d72d, type: 3}
   damageHitPerSec: 1
   baseDamagePerHit: 15
   damageMultiplier: 50
-  spreadDistance: 8
+  spreadDistance: 6
   spreadEntireDuration: 0.4
   spreadStaggerDuration: 0.2
   spreadStaggerCurve:
