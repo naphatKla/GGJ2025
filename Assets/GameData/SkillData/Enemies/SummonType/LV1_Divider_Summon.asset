@@ -43,9 +43,9 @@ MonoBehaviour:
   exitFeedback: 
   clearBuffOnSkillExit: 0
   statusEffectOnSkillStart: []
-  minTotalSummonCount: 3
-  maxTotalSummonCount: 3
-  maxAliveSummons: 3
+  minTotalSummonCount: 2
+  maxTotalSummonCount: 2
+  maxAliveSummons: 6
   useSpawnerPool: 1
   requirePrewarmedPoolInstance: 1
   countTowardMapPerEnemyMax: 0
@@ -54,23 +54,23 @@ MonoBehaviour:
   delayBeforeFirstSummon: 0.5
   delayBetweenSummons: 0.1
   spawnOrigin: 0
-  minSpawnRadius: 2
-  maxSpawnRadius: 4
+  minSpawnRadius: 3
+  maxSpawnRadius: 5
   useForwardCone: 0
   coneAngle: 120
   facePlayerOnSpawn: 1
   positionAttempts: 8
-  avoidOverlap: 0
+  avoidOverlap: 1
   overlapRadius: 0.5
   overlapLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 64
   summonOptions:
   - enabled: 1
-    id: Enemy_Normal
+    id: Enemy_Soldier
     enemyPrefab: {fileID: 0}
     overrideCharacterData: 0
     characterDataOverride: {fileID: 0}
     minAmount: 0
-    maxAmount: 3
+    maxAmount: 2
     weight: 100
