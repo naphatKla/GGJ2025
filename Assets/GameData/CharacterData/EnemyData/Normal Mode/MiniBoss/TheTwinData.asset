@@ -12,8 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a9ef52318f4d36147bac0bf0637b499b, type: 3}
   m_Name: TheTwinData
   m_EditorClassIdentifier: 
-  maxHealth: 5500
+  characterId: 
+  maxHealth: 10000
   invincibleTimePerHit: 0
+  stunResistancePercentage: 0
   baseSpeed: 15
   moveAccelerationRate: 12
   turnAccelerationRate: 4
@@ -26,7 +28,8 @@ MonoBehaviour:
   secondarySkillData: {fileID: 11400000, guid: 01b73e373ee3a1d468772af1594896c8, type: 2}
   autoSkillSlot: 0
   autoSkillDataList: []
-  expDrop: 4500
+  expDrop: 2000
+  scoreDrop: 0
   delayBeforePerformSkill: 0.5
   defaultState: {fileID: 11400000, guid: 6446b416c5420ee478142584a22ac11e, type: 2}
   stateList: []

@@ -32,15 +32,15 @@ MonoBehaviour:
       Data: 
   skillIcon: {fileID: 21300000, guid: ba379ec65ec57be428a1ce6b52b9f3a4, type: 3}
   skillName: Overloop
-  skillDescription: "<color=#24f269><b>[Support]</b></color>\r\n<size=3.5><color=#adadad><i>[Cooldown
-    Reduction]</i></color>\r\n<color=#5CE5FF><b>[UPGRADE]</b></color> \r\n<color=#FFE02E><b>[--]</b></color>
+  skillDescription: "<color=#24f269><b>[Support]</b></color>\r\n<size=3.5><color=#adadad><i>[Cooldown],
+    [Duration]</i></color>\r\n<color=#5CE5FF><b>[UPGRADE]</b></color> \r\n<color=#FFE02E><b>[--]</b></color>
     Cooldown\r\n\r\nCooldown: <b>15s</b>\r\n\n- Randomly select a skill to <color=#FFE02E>accelerate
     their cooldown timer</color> for a period of time.\r\n<color=#E6E6FA>! <i>Only
     activate if there are other skills available</i> !</color>\n\n\n"
   previousSkillData: {fileID: 11400000, guid: 881668291e471b44f87218e770d07421, type: 2}
   nextSkillDataUpgrade: {fileID: 11400000, guid: c848ac3c8f2e23b4e8e771239f2ac79d, type: 2}
   level: 4
-  cooldown: 15
+  cooldown: 20
   globalCooldown: 0.25
   maxStack: 1
   startFeedback: Overloop_Lv4
@@ -50,4 +50,4 @@ MonoBehaviour:
   overloopDuration: 4.125
   targetSkillAmount: 1
   canTargetSelf: 0
-  cooldownSpeedUpMultiplier: 150
+  cooldownSpeedUpMultiplier: 200

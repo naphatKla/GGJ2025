@@ -48,11 +48,11 @@ MonoBehaviour:
   statusEffectOnSkillStart: []
   skillObjectAmount: 6
   reflectionSkillObject: {fileID: -5084912477967523391, guid: 77ab01583acdb514f86262907fd33d07, type: 3}
-  damageHitPerSec: 3
+  damageHitPerSec: 2
   baseDamagePerHit: 3
-  damageMultiplier: 200
-  explosionDistance: 6
-  explosionEntireDuration: 1
+  damageMultiplier: 150
+  explosionDistance: 11
+  explosionEntireDuration: 1.5
   explosionStartDuration: 0.1
   explosionStartCurve:
     serializedVersion: 2
@@ -199,30 +199,21 @@ MonoBehaviour:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0
-      inSlope: 6
-      outSlope: 6
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 0.5
-      value: 3
+      value: 0.5
       inSlope: 0
       outSlope: 0
       tangentMode: 34
       weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
+      inWeight: 0
+      outWeight: 0
     - serializedVersion: 3
       time: 1
-      value: 0
-      inSlope: -6
-      outSlope: -6
+      value: 0.5
+      inSlope: 0
+      outSlope: 0
       tangentMode: 34
       weightedMode: 0
-      inWeight: 0.33333334
+      inWeight: 0
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2

@@ -32,17 +32,37 @@ MonoBehaviour:
       Data: 
   skillIcon: {fileID: 21300000, guid: 5d23a0eb041e0924aa46cf972371865d, type: 3}
   skillName: Nova Cutter
-  skillDescription: 'I face kak need to write this '
+  skillDescription: '<color=#FF3131><b>[Attack]</b></color>
+
+    <size=3.5><color=#adadad><i>[AOE],
+    [Melee], [Duration]</i></color>
+
+    <color=#5CE5FF><b>[UPGRADE]</b></color>
+
+    <color=#FFE02E><b>[++]</b></color>
+    Damage
+
+    <color=#FFE02E><b>[+]</b></color> Hit/s
+
+
+    Cooldown: <b>20s</b>
+
+
+    -
+    Creates an arrow-shaped blade that deals continuous damage to enemies in front.'
   previousSkillData: {fileID: 11400000, guid: 35d15a9883da26142abafa1ef3b1895b, type: 2}
   nextSkillDataUpgrade: {fileID: 11400000, guid: 407641732823a5b458d8b63df6e7df7f, type: 2}
   level: 5
-  cooldown: 30
+  cooldown: 20
   globalCooldown: 0.25
   maxStack: 1
   startFeedback: 
   exitFeedback: 
   clearBuffOnSkillExit: 0
-  statusEffectOnSkillStart: []
+  statusEffectOnSkillStart:
+  - effectData: {fileID: 11400000, guid: 9840aea9b298f3f4685698b672fb15d1, type: 2}
+    isOverrideDuration: 1
+    overrideDuration: 6.25
   cutterObj: {fileID: 7236179608084672065, guid: 7d9d866f092e0fc4b8410c1dca13c410, type: 3}
   cutterOffset: {x: 0, y: 2.5}
   duration: 6.25
