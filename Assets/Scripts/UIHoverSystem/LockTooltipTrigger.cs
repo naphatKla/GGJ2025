@@ -17,7 +17,7 @@ public class LockTooltipTrigger : MonoBehaviour,
     {
         if (!_isLocked) return;
         LockTooltipManager.Instance.HideImmediate();
-        LockTooltipManager.Instance.ShowAtRect(GetComponent<RectTransform>(), _hint);
+        LockTooltipManager.Instance.ShowAtMouse(eventData.position, _hint);
     }
 
     public void OnPointerExit(PointerEventData eventData)
