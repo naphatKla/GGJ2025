@@ -89,7 +89,7 @@ namespace Characters.CombatSystems
         /// <returns>The final damage value to be applied to a target.</returns>
         public DamageData CalculateSkillDamageDeal(GameObject target, Vector2 hitPos, float baseSkillDamage,
             float multiplier, float additionalCriRate, float additionCriDamage, float additionalLifeStealPercent,
-            float additionalLifeStealEffective)
+            float additionalLifeStealEffective, float baseSkillHeavyDamage = 0)
         {
             var calculatedCriRate = baseCriRate + additionalCriRate;
             var calculatedCriDamage = baseCriDamage + additionCriDamage;
@@ -104,10 +104,15 @@ namespace Characters.CombatSystems
             bool isLifeSteal = Random.Range(0, 100) < calculatedLifeStealPercent;
             float lifeSteal = isLifeSteal ? damageDeal * (calculatedLifeStealEffective/100) : 0;
 
+            // Heavy damage uses its own separate base value (Bright2 Break Point mechanic),
+            // only benefiting from crit like an actual hit.
+            float heavyDamageDeal = isCritical ? baseSkillHeavyDamage + (baseSkillHeavyDamage * calculatedCriDamage / 100) : baseSkillHeavyDamage;
+            heavyDamageDeal = Mathf.Ceil(heavyDamageDeal);
+
             damageDeal = Mathf.Ceil(damageDeal);
             lifeSteal = Mathf.Ceil(lifeSteal);
             
-            var damageData = new DamageData(gameObject, target, hitPos, damageDeal, isCritical, lifeSteal);
+            var damageData = new DamageData(gameObject, target, hitPos, damageDeal, isCritical, lifeSteal, heavyDamageDeal);
             return damageData;
         }
         

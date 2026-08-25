@@ -16,8 +16,11 @@ namespace Manager
         public float LifeSteal { get; }
         public bool IsCritical { get; }
 
+        /// <summary>Separate heavy damage value — reduces target's Break Point instead of HP.</summary>
+        public float HeavyDamage { get; }
+
         public DamageData(GameObject attacker, GameObject targetHit, Vector2 hitPos, float damage, bool isCritical,
-            float lifeSteal)
+            float lifeSteal, float heavyDamage = 0)
         {
             Attacker = attacker;
             TargetHit = targetHit;
@@ -25,6 +28,7 @@ namespace Manager
             Damage = damage;
             IsCritical = isCritical;
             LifeSteal = lifeSteal;
+            HeavyDamage = heavyDamage;
         }
     }
 
@@ -49,22 +53,30 @@ namespace Manager
         /// <param name="multiplier">A multiplier applied to the attacker's damage (default is 100%).</param>
         public static void ApplyCalculatedDamageTo(GameObject target, GameObject attacker, string attackerId, GameObject realObjectAttack, Vector2 hitPosition,
             float baseSkillDamage, float multiplier, float additionalCriRate, float additionCriDamge,
-            float lifeStealPercent, float lifeStealEffective)
+            float lifeStealPercent, float lifeStealEffective, float baseSkillHeavyDamage = 0)
         {
             TryGetCharacterFromCache(target, out var targetController);
             TryGetCharacterFromCache(attacker, out var attackerController);
             
             var damageData = attackerController.CombatSystem.CalculateSkillDamageDeal(target, hitPosition,
-                baseSkillDamage, multiplier, additionalCriRate, additionCriDamge, lifeStealPercent, lifeStealEffective);
+                baseSkillDamage, multiplier, additionalCriRate, additionCriDamge, lifeStealPercent, lifeStealEffective,
+                baseSkillHeavyDamage);
             
             // Apply Damage To Target ==========================================
             var hitInfo = new HealthSystem.HitInfo
             {
                 attackerId       = attackerId,
                 damage           = damageData.Damage,
+                heavyDamage      = damageData.HeavyDamage,
                 attacker         = attackerController,
                 realObjectAttack = realObjectAttack
             };
+            
+            if (TryTakeHeavyDamage(targetController, hitInfo))
+            {
+                attackerController.CombatSystem.OnDealDamageHandler(damageData);
+                return;
+            }
             
             if (!targetController.HealthSystem.TakeDamage(hitInfo)) return;
             attackerController.CombatSystem.OnDealDamageHandler(damageData);
@@ -73,7 +85,8 @@ namespace Manager
                 attackerController.HealthSystem.Heal(damageData.LifeSteal);
         }
 
-        public static void ApplyRawDamageTo(GameObject target, GameObject objectAttacker, string attackerId, float damage)
+        public static void ApplyRawDamageTo(GameObject target, GameObject objectAttacker, string attackerId, float damage,
+            float heavyDamage = 0)
         {
             TryGetCharacterFromCache(target, out var targetController);
             
@@ -81,11 +94,28 @@ namespace Manager
             {
                 attackerId       = attackerId,
                 damage           = damage,
+                heavyDamage      = heavyDamage,
                 attacker         = null,
                 realObjectAttack = objectAttacker
             };
             
+            if (TryTakeHeavyDamage(targetController, hitInfo)) return;
+            
             targetController.HealthSystem.TakeDamage(hitInfo);
+        }
+
+        /// <summary>
+        /// Routes a heavy hit to the target's <see cref="BreakPointSystem"/> when present.
+        /// Heavy hits only reduce Break Point — they never reduce HP.
+        /// Returns true if the hit was consumed as a heavy hit.
+        /// </summary>
+        private static bool TryTakeHeavyDamage(BaseController targetController, HealthSystem.HitInfo hitInfo)
+        {
+            if (hitInfo.heavyDamage <= 0) return false;
+            if (!targetController.TryGetComponent(out BreakPointSystem breakPointSystem)) return false;
+            
+            breakPointSystem.TakeHeavyDamage(hitInfo);
+            return true;
         }
 
         public static bool TryGetCharacterFromCache(GameObject target, out BaseController controller)

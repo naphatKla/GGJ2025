@@ -107,6 +107,13 @@ namespace Characters.HeathSystems
         {
             public string attackerId;
             public float damage;
+
+            /// <summary>
+            /// Separate heavy attack value. When &gt; 0 and the target owns a
+            /// <see cref="BreakPointSystem"/>, this hit reduces Break Point instead of HP.
+            /// </summary>
+            public float heavyDamage;
+
             public BaseController attacker;
             public GameObject realObjectAttack;
         }
