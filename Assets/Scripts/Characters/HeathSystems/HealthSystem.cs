@@ -208,9 +208,27 @@ namespace Characters.HeathSystems
 
         protected virtual void TakeDamageAction(HitInfo hitInfo)
         {
-            ModifyHealth(-hitInfo.damage);
-            TotalDamageTaken += (int)hitInfo.damage;
+            float damage = ApplyDamageResistance(hitInfo.damage);
+
+            ModifyHealth(-damage);
+            TotalDamageTaken += (int)damage;
             OnTakeDamage?.Invoke();
+        }
+
+        /// <summary>
+        /// Reduces incoming HP damage by the owner's active damage resistance (Bright2's Perfect shape
+        /// grants 100%). Heavy damage is deliberately not routed through here - it drains Break Point
+        /// instead of HP, so a fully damage-resistant target can still be broken.
+        /// </summary>
+        private float ApplyDamageResistance(float damage)
+        {
+            if (damage <= 0f) return damage;
+            if (owner == null || owner.StatusEffectSystem == null) return damage;
+
+            float resistance = owner.StatusEffectSystem.DamageResistancePercentage;
+            if (resistance <= 0f) return damage;
+
+            return damage * (1f - Mathf.Clamp01(resistance / 100f));
         }
 
         public void ForceDead()

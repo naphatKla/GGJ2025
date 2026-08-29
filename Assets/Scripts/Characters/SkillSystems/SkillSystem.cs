@@ -362,18 +362,30 @@ namespace Characters.SkillSystems
             {
                 case SkillType.PrimarySkill:
                     if (!canUsePrimary) return;
+                    if (!CanPerformSkillNow(primarySkillData)) return;
                     GetSkillRuntimeOrDefault(primarySkillData)?.PerformSkill();
                     break;
                 case SkillType.SecondarySkill:
                     if (!canUseSecondary) return;
+                    if (!CanPerformSkillNow(secondarySkillData)) return;
                     GetSkillRuntimeOrDefault(secondarySkillData)?.PerformSkill();
                     break;
                 case SkillType.AutoSkill:
                     foreach (var data in _autoSkillDatas)
+                    {
+                        if (!CanPerformSkillNow(data)) continue;
                         GetSkillRuntimeOrDefault(data)?.PerformSkill();
+                    }
                     break;
             }
         }
+
+        /// <summary>
+        /// Last gate before a skill actually fires, checked per skill so auto-skill slots are judged
+        /// individually. Always true here - the player has no situational restrictions;
+        /// <see cref="EnemySkillSystem"/> overrides it to enforce each skill's Activate Radius.
+        /// </summary>
+        protected virtual bool CanPerformSkillNow(BaseSkillDataSo skillData) => true;
 
         protected virtual void UpdateCooldown()
         {

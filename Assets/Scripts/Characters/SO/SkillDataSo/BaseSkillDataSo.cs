@@ -58,6 +58,16 @@ namespace Characters.SO.SkillDataSo
         [PropertySpace(SpaceAfter = 10, SpaceBefore = 0)]
         private int maxStack = 1;
 
+        [SerializeField, MinValue(0),
+         PropertyTooltip("Range from the owner within which this skill may be triggered. Enemies only - "
+                         + "enforced by EnemySkillSystem, which refuses to cast while the player is farther "
+                         + "away than this. 0 = no range requirement (every player skill).")]
+        [PropertySpace(SpaceAfter = 10, SpaceBefore = 0)]
+        private float activateRadius;
+
+        /// <summary>Max distance to the player at which an enemy may trigger this skill (0 = unlimited).</summary>
+        public float ActivateRadius => activateRadius;
+
         [Title("Heavy Attack (Break Point)")]
         [SerializeField, MinValue(0),
          PropertyTooltip("Heavy attack damage of this skill - drains the target's Break Point ON TOP of "

@@ -6,6 +6,7 @@ using UnityEngine;
 using Characters.Controllers;
 using Characters.MovementSystems;
 using Characters.SO.StatusEffectSO;
+using Characters.StatusEffectSystems;
 using Characters.StatusEffectSystems.StatusEffects;
 using Manager;
 
@@ -64,6 +65,13 @@ namespace GameControl.EventMap
 
             [Tooltip("Stun effect data applied to everything caught in the explosion.")]
             public StunEffectDataSo stunEffectData;
+
+            [Tooltip("Buffs stripped from everything the explosion catches, applied BEFORE the stun. "
+                     + "Bright2 parks Iron Body on itself with The Immovable, and Iron Body makes a target "
+                     + "immune to stun - without cancelling it here the explosion's stun is swallowed and "
+                     + "the boss can never be broken. Doc: some special interaction (Devourer) can cancel "
+                     + "out this buff.")]
+            public List<StatusEffectName> cancelledEffects = new() { StatusEffectName.IronBody };
         }
 
         private bool _specialInteractionTriggered;
@@ -253,11 +261,22 @@ namespace GameControl.EventMap
                 CombatManager.ApplyRawDamageTo(target.gameObject, gameObject, mapEventId,
                     specialInteraction.explodeDamage, specialInteraction.heavyDamage);
 
+                // Strip first: a target still holding Iron Body would shrug the stun off entirely.
+                CancelBuffs(target);
                 ApplyKnockback(target, center);
                 ApplyStun(target);
             }
 
             _explosionTargets.Clear();
+        }
+
+        private void CancelBuffs(BaseController target)
+        {
+            var cancelled = specialInteraction.cancelledEffects;
+            if (cancelled == null) return;
+
+            for (int i = 0; i < cancelled.Count; i++)
+                StatusEffectManager.RemoveEffectAt(target.gameObject, cancelled[i]);
         }
 
         private void ApplyKnockback(BaseController target, Vector2 center)

@@ -52,6 +52,7 @@ namespace Characters.StatusEffectSystems
         FlowState = 3,
         IronBody = 4,
         GravityPulled = 5,
+        DamageResistance = 6,
     }
 
     public class StatusEffectSystem : MonoBehaviour, IFixedUpdateable
@@ -75,12 +76,22 @@ namespace Characters.StatusEffectSystems
         public event Action<IReadOnlyList<StatusEffectUIData>> OnStatusUIUpdate;
         public float StunResistancePercentage => _stunResistancePercentage;
 
+        private float _damageResistancePercentage;
+
+        /// <summary>
+        /// Percentage of incoming HP damage ignored, summed over every active effect that grants it
+        /// (Bright2's Perfect shape). Heavy damage is untouched: it drains Break Point, not HP, and Break
+        /// Point is the intended way through this buff.
+        /// </summary>
+        public float DamageResistancePercentage => _damageResistancePercentage;
+
         private readonly List<StatusEffectUIData> _uiBuffer = new(8);
 
         public virtual void AssignData(BaseController owner)
         {
             _owner = owner;
             _stunResistancePercentage = owner.CharacterData.StunResistancePercentage;
+            _damageResistancePercentage = 0f;
         } 
 
         private void OnEnable() => FixedUpdateManager.Instance.Register(this);
@@ -310,6 +321,12 @@ namespace Characters.StatusEffectSystems
         public void AddStunResistancePercentage(float amount)
         {
             _stunResistancePercentage += amount;
+        }
+
+        /// <summary>Effects granting damage resistance add on start and subtract the same amount on exit.</summary>
+        public void AddDamageResistancePercentage(float amount)
+        {
+            _damageResistancePercentage = Mathf.Max(0f, _damageResistancePercentage + amount);
         }
     }
 
