@@ -1,0 +1,91 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 363a1478b0925e74a8cc8ea18b3860cc, type: 3}
+  m_Name: LV1_TheBright2_Devourer
+  m_EditorClassIdentifier: 
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes:
+    - Name: _skillRuntime
+      Entry: 7
+      Data: 0|System.RuntimeType, mscorlib
+    - Name: 
+      Entry: 1
+      Data: Characters.SkillSystems.SkillRuntimes.SkillDevourerRuntime, Assembly-CSharp
+    - Name: 
+      Entry: 8
+      Data: 
+  skillIcon: {fileID: 0}
+  skillName: Devourer
+  skillDescription: 'Pulling everything around and dealing damage over time for a set
+    duration.'
+  previousSkillData: {fileID: 0}
+  nextSkillDataUpgrade: {fileID: 0}
+  level: 1
+  cooldown: 15
+  globalCooldown: 0.25
+  maxStack: 1
+  baseHeavyDamage: 0
+  startFeedback: 
+  exitFeedback: 
+  clearBuffOnSkillExit: 0
+  statusEffectOnSkillStart: []
+  pullDuration: 5
+  pullRadius: 90
+  pullStrength: 30
+  pullStopDistance: 0.2
+  pullCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  useExponentialPull: 1
+  maxPullSpeed: 12
+  ignoreDashingTargets: 1
+  immuneToExternalPull: 1
+  damageRadius: 35
+  hitPerSecond: 1
+  baseDamagePerHit: 0
+  damageMultiplier: 300
+  pulledStatusEffects: []
+  enableFleeAndExplode: 0
+  fleeDuration: 1
+  fleeDistance: 30
+  explodeRadius: 60
+  explodeBaseDamage: 0
+  explodeDamageMultiplier: 800
+  explodeFeedback: 

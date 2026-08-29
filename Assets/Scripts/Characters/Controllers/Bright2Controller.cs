@@ -50,6 +50,13 @@ namespace Characters.Controllers
         [Title("Break Point (Bright2 = 100 ตาม spec)")]
         [SerializeField] private float maxBreakPoint = 100f;
 
+        [Title("Movement")]
+        [PropertyTooltip("Bright2 is the heaviest mass in the game - nothing drags it around. "
+                         + "Turn this off and a Black Hole map event pulls the boss toward itself far "
+                         + "faster than Devourer pulls the Black Hole in, because map event pulls have "
+                         + "no speed cap.")]
+        [SerializeField] private bool immuneToExternalPull = true;
+
         /// <summary>Phase ปัจจุบัน (1-based). Phase ไม่มีทางย้อนกลับ แม้จะถูก heal</summary>
         [ShowInInspector, ReadOnly]
         public int CurrentPhase { get; private set; } = 1;
@@ -71,6 +78,8 @@ namespace Characters.Controllers
             // (ใช้ OnTakeDamage เพราะ OnHealthChange ส่งแค่ delta ไม่รู้ % ปัจจุบันที่แท้จริง)
             if (HealthSystem != null)
                 HealthSystem.OnTakeDamage += EvaluatePhase;
+
+            ApplyPullImmunity();
         }
 
         protected override void OnDisable()
@@ -92,6 +101,16 @@ namespace Characters.Controllers
         }
 
         #endregion
+
+        /// <summary>
+        /// Bright2 is the heaviest mass in the game - external gravity effects don't move it. Re-applied on
+        /// enable and on reset because the flag lives on the runtime movement system, not in the prefab.
+        /// </summary>
+        private void ApplyPullImmunity()
+        {
+            if (MovementSystem)
+                MovementSystem.IgnoreExternalPull = immuneToExternalPull;
+        }
 
         #region Phase System
 
@@ -177,6 +196,7 @@ namespace Characters.Controllers
             base.ResetAllDependentBehavior();
 
             // Respawn/reset → กลับ phase 1 และเคลียร์ Break Point
+            ApplyPullImmunity();
             _breakPointSystem?.ResetBreakPointSystem();
             CurrentPhase = 1;
             ApplySkillsForPhase(1);

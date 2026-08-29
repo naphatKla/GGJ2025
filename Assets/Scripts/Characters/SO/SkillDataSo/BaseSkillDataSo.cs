@@ -60,12 +60,12 @@ namespace Characters.SO.SkillDataSo
 
         [Title("Heavy Attack (Break Point)")]
         [SerializeField, MinValue(0),
-         PropertyTooltip("Heavy attack damage of this skill — reduces target's Break Point instead of HP "
-                         + "(only affects targets owning a BreakPointSystem, e.g. boss Bright2). "
-                         + "0 = this skill deals no heavy damage.")]
+         PropertyTooltip("Heavy attack damage of this skill - drains the target's Break Point ON TOP of "
+                         + "the normal damage it deals to HP (only affects targets owning a "
+                         + "BreakPointSystem, e.g. boss Bright2). 0 = this skill deals no heavy damage.")]
         private float baseHeavyDamage;
 
-        /// <summary>Separate heavy damage value routed to the target's Break Point (0 = disabled).</summary>
+        /// <summary>Separate heavy damage value drained from the target's Break Point (0 = disabled).</summary>
         public float BaseHeavyDamage => baseHeavyDamage;
 
         [FoldoutGroup("Feedback", Order = 99)]

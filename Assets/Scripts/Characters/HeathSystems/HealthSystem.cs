@@ -110,7 +110,8 @@ namespace Characters.HeathSystems
 
             /// <summary>
             /// Separate heavy attack value. When &gt; 0 and the target owns a
-            /// <see cref="BreakPointSystem"/>, this hit reduces Break Point instead of HP.
+            /// <see cref="BreakPointSystem"/>, this hit ALSO drains Break Point on top of the
+            /// normal <see cref="damage"/> applied to HP (it never replaces HP damage).
             /// </summary>
             public float heavyDamage;
 

@@ -3274,12 +3274,16 @@ MonoBehaviour:
   autoAssignDataOnEnable: 0
   phaseConfigs:
   - hpThresholdPercentage: 100
-    allowedSkills: []
+    allowedSkills:
+    - {fileID: 11400000, guid: 66727e07a0bd3584bb603d7af315a441, type: 2}
   - hpThresholdPercentage: 66
-    allowedSkills: []
+    allowedSkills:
+    - {fileID: 11400000, guid: 66727e07a0bd3584bb603d7af315a441, type: 2}
   - hpThresholdPercentage: 33
-    allowedSkills: []
+    allowedSkills:
+    - {fileID: 11400000, guid: 271bd60c088e4173b22405ee99a0e7d0, type: 2}
   maxBreakPoint: 100
+  immuneToExternalPull: 1
 --- !u!61 &8205873605262566071
 BoxCollider2D:
   m_ObjectHideFlags: 0

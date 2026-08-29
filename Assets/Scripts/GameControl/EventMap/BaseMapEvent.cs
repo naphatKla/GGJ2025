@@ -26,6 +26,7 @@ namespace GameControl.EventMap
 
         private IObjectPool<BaseMapEvent> _pool;
         private CancellationTokenSource _cts;
+        private bool _isReleased;
         public string MapEventId => mapEventId;
         protected MapEventStorageEntry currentEntry;
         protected CancellationToken _playToken;
@@ -81,6 +82,7 @@ namespace GameControl.EventMap
             _cts?.Dispose();
 
             _cts = new CancellationTokenSource();
+            _isReleased = false;
             
             using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(_cts.Token, externalToken);
             var token = linkedCts.Token;
@@ -107,7 +109,11 @@ namespace GameControl.EventMap
                 var releaseTask = UniTask.Delay(TimeSpan.FromSeconds(deletetime), cancellationToken: token);
                 await UniTask.WhenAll(moveTask, releaseTask);
 
-                _pool?.Release(this);
+                if (!_isReleased)
+                {
+                    _isReleased = true;
+                    _pool?.Release(this);
+                }
             }
             catch (OperationCanceledException)
             {
@@ -118,6 +124,20 @@ namespace GameControl.EventMap
         public void CancelPlay()
         {
             _cts?.Cancel();
+        }
+
+        /// <summary>
+        /// Ends this event right now and hands it straight back to its pool, instead of letting it run
+        /// out its delete timer. Used when something removes the event early - e.g. a Devourer
+        /// Special Interaction consuming a Black Hole. Safe to call twice.
+        /// </summary>
+        public void EndAndRelease()
+        {
+            if (_isReleased) return;
+            _isReleased = true;
+
+            CancelPlay();
+            _pool?.Release(this);
         }
 
         public abstract UniTask PlayPreview();

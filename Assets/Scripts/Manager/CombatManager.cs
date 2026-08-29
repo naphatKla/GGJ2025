@@ -72,13 +72,12 @@ namespace Manager
                 realObjectAttack = realObjectAttack
             };
             
-            if (TryTakeHeavyDamage(targetController, hitInfo))
-            {
-                attackerController.CombatSystem.OnDealDamageHandler(damageData);
-                return;
-            }
-            
+            // Actual damage ALWAYS applies to HP. Heavy damage is an additional effect that
+            // drains the target's Break Point - it never replaces the HP damage.
             if (!targetController.HealthSystem.TakeDamage(hitInfo)) return;
+            
+            TryTakeHeavyDamage(targetController, hitInfo);
+            
             attackerController.CombatSystem.OnDealDamageHandler(damageData);
 
             if (damageData.LifeSteal > 0)
@@ -99,15 +98,16 @@ namespace Manager
                 realObjectAttack = objectAttacker
             };
             
-            if (TryTakeHeavyDamage(targetController, hitInfo)) return;
+            if (!targetController.HealthSystem.TakeDamage(hitInfo)) return;
             
-            targetController.HealthSystem.TakeDamage(hitInfo);
+            TryTakeHeavyDamage(targetController, hitInfo);
         }
 
         /// <summary>
-        /// Routes a heavy hit to the target's <see cref="BreakPointSystem"/> when present.
-        /// Heavy hits only reduce Break Point — they never reduce HP.
-        /// Returns true if the hit was consumed as a heavy hit.
+        /// Additionally routes the heavy portion of a committed hit to the target's
+        /// <see cref="BreakPointSystem"/> when present. The HP damage of the same hit has already
+        /// been applied by the caller - heavy damage only drains Break Point on top of it.
+        /// Returns true if the target consumed heavy damage.
         /// </summary>
         private static bool TryTakeHeavyDamage(BaseController targetController, HealthSystem.HitInfo hitInfo)
         {

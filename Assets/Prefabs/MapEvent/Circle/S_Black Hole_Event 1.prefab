@@ -250,7 +250,7 @@ MonoBehaviour:
   vfxPrefab: {fileID: 4977103591623287719, guid: e5c582a529554de4a829699992106229, type: 3}
   overrideOwner: {fileID: 0}
   stopOnDisable: 1
-  followMode: 0
+  followMode: 1
   rotationMode: 1
 --- !u!114 &1220084201536006365
 MonoBehaviour:
@@ -404,6 +404,18 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   useExponential: 1
+  enableSpecialInteraction: 1
+  specialInteraction:
+    explodeRadius: 20
+    explodeDamage: 50
+    heavyDamage: 10
+    stunDuration: 5
+    knockbackDistance: 12
+    knockbackDuration: 0.5
+    affectedLayer:
+      serializedVersion: 2
+      m_Bits: 0
+    stunEffectData: {fileID: 11400000, guid: e5ae6010e3c4a7b43bc80da0bf5a9ef5, type: 2}
 --- !u!1 &4169652363207399140
 GameObject:
   m_ObjectHideFlags: 0

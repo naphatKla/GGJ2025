@@ -8,18 +8,20 @@ using Cysharp.Threading.Tasks;
 using Manager;
 using Sirenix.OdinInspector;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Characters.HeathSystems
 {
     /// <summary>
     /// Break Point system (Bright2 spec — Design Ver 0.0.20).
     /// <para/>
-    /// Heavy attacks reduce Break Point instead of HP (routing handled by <see cref="CombatManager"/>).
+    /// Heavy damage is a value carried alongside a hit's normal damage: the normal damage still goes to
+    /// HP, while the heavy portion drains Break Point on top of it (routing handled by <see cref="CombatManager"/>).
     /// When Break Point reaches 0 the owner enters the <b>Breaking</b> state:
     /// <list type="bullet">
     /// <item>Cancels all performing skills completely.</item>
     /// <item>Stuns the owner (default 7s) — respects Iron Body like normal stun.</item>
-    /// <item>Takes the last committed ACTUAL hit damage x N more (default x10).</item>
+    /// <item>The attack that broke it deals x N its actual damage (default x10).</item>
     /// <item>Restores Break Point back to full when the Breaking state ends.</item>
     /// </list>
     /// Attach this component next to a <see cref="HealthSystem"/> on bosses that support Break Point.
@@ -36,7 +38,11 @@ namespace Characters.HeathSystems
         private float breakingStunDuration = 7f;
 
         [FoldoutGroup("Breaking Configs"), SerializeField]
-        private int breakingDamageRepeatMultiplier = 10;
+        [LabelText("Breaking Damage Multiplier")]
+        [PropertyTooltip("The attack that breaks the Break Point deals its actual damage multiplied by this "
+                         + "value (spec: x10) - it is amplified in place, not dealt again on top.")]
+        [FormerlySerializedAs("breakingDamageRepeatMultiplier")]
+        private int breakingDamageMultiplier = 10;
 
         [Title("Dependents")]
         [PropertyTooltip("Stun effect data applied when entering the Breaking state.")]
@@ -125,10 +131,15 @@ namespace Characters.HeathSystems
 
         #region Internals
 
-        /// <summary>Records the last committed ACTUAL (non-heavy) hit for the x N repeat damage.</summary>
+        /// <summary>
+        /// Records the ACTUAL damage of the last committed hit (fallback base for the x N breaking damage).
+        /// Every hit counts - a hit that also carries heavy damage still deals its actual damage to HP.
+        /// Hits landed while already Breaking are ignored so the amplified damage can't feed itself.
+        /// </summary>
         private void HandleOnHit(HealthSystem.HitInfo hitInfo)
         {
-            if (hitInfo.heavyDamage > 0) return;
+            if (_isBreaking) return;
+            if (hitInfo.damage <= 0) return;
             _lastActualHitDamage = hitInfo.damage;
         }
 
@@ -149,8 +160,8 @@ namespace Characters.HeathSystems
             // 2) Apply stun (respects Iron Body / invincibility rules inside StunEffect.OnStart).
             ApplyBreakingStun();
 
-            // 3) Take the last actual hit damage x N more (actual damage -> HP, never heavy).
-            ApplyBreakingRepeatDamage(triggerHit).Forget();
+            // 3) Amplify the hit that broke it to x N (actual damage -> HP, never heavy).
+            ApplyBreakingAmplifiedDamage(triggerHit);
 
             // 4) Restore Break Point fully when the stun duration ends.
             _breakingCts = CancellationTokenSource.CreateLinkedTokenSource(destroyCancellationToken);
@@ -171,38 +182,32 @@ namespace Characters.HeathSystems
         }
 
         /// <summary>
-        /// Applies the x N repeated actual damage. Retries across frames because the previous
-        /// committed hit may still be inside the HealthSystem hit-cooldown window.
+        /// Amplifies the hit that broke the Break Point to x N its actual damage.
+        /// <para/>
+        /// That hit is still sitting in <see cref="HealthSystem"/>'s pending-hit slot at this point
+        /// (damage commits only after beforeHitDelay), so it is consumed and re-sent with the
+        /// multiplied value - the target takes ONE hit worth x N, not the original hit plus an extra one.
         /// </summary>
-        private async UniTaskVoid ApplyBreakingRepeatDamage(HealthSystem.HitInfo sourceHit)
+        private void ApplyBreakingAmplifiedDamage(HealthSystem.HitInfo triggerHit)
         {
-            if (_lastActualHitDamage <= 0 || _healthSystem == null) return;
+            if (_healthSystem == null) return;
 
-            var repeatHit = new HealthSystem.HitInfo
+            // Fall back to the last committed hit only when the breaking hit carried no actual damage
+            // (e.g. a heavy-only source).
+            float baseDamage = triggerHit.damage > 0 ? triggerHit.damage : _lastActualHitDamage;
+            if (baseDamage <= 0) return;
+
+            // Free the pending slot so the amplified hit can replace it instead of being rejected.
+            _healthSystem.ConsumePendingHit();
+
+            _healthSystem.TakeDamage(new HealthSystem.HitInfo
             {
-                attackerId       = sourceHit.attackerId,
-                damage           = _lastActualHitDamage * breakingDamageRepeatMultiplier,
-                attacker         = sourceHit.attacker,
-                realObjectAttack = sourceHit.realObjectAttack
-            };
-
-            const int maxRetryFrames = 240; // ~4s @60fps safety bound
-            for (int i = 0; i < maxRetryFrames; i++)
-            {
-                if (this == null || _healthSystem == null) return;
-
-                if (_healthSystem.TakeDamage(repeatHit))
-                    return;
-
-                try
-                {
-                    await UniTask.NextFrame(destroyCancellationToken);
-                }
-                catch (OperationCanceledException)
-                {
-                    return;
-                }
-            }
+                attackerId       = triggerHit.attackerId,
+                damage           = baseDamage * breakingDamageMultiplier,
+                heavyDamage      = 0,
+                attacker         = triggerHit.attacker,
+                realObjectAttack = triggerHit.realObjectAttack
+            });
         }
 
         private async UniTaskVoid BreakingRecoverLoop(CancellationToken token)
