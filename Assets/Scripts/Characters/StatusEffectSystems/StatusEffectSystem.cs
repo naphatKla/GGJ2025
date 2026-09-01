@@ -53,6 +53,7 @@ namespace Characters.StatusEffectSystems
         IronBody = 4,
         GravityPulled = 5,
         DamageResistance = 6,
+        MovementSpeed = 7,
     }
 
     public class StatusEffectSystem : MonoBehaviour, IFixedUpdateable

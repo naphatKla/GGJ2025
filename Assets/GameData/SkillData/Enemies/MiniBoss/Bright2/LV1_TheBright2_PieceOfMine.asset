@@ -1,0 +1,84 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2200bc5a27476164f90ce240312f1372, type: 3}
+  m_Name: LV1_TheBright2_PieceOfMine
+  m_EditorClassIdentifier: 
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes:
+    - Name: _skillRuntime
+      Entry: 7
+      Data: 0|System.RuntimeType, mscorlib
+    - Name: 
+      Entry: 1
+      Data: Characters.SkillSystems.SkillRuntimes.SkillPieceOfMineRuntime, Assembly-CSharp
+    - Name: 
+      Entry: 8
+      Data: 
+  skillIcon: {fileID: 0}
+  skillName: Piece of Mine
+  skillDescription: 'Shoot out pieces of itself that chase the player down, deal damage
+    and slow them on contact, then disappear.'
+  previousSkillData: {fileID: 0}
+  nextSkillDataUpgrade: {fileID: 0}
+  level: 1
+  cooldown: 20
+  globalCooldown: 0.25
+  maxStack: 1
+  activateRadius: 70
+  baseHeavyDamage: 0
+  startFeedback: 
+  exitFeedback: 
+  clearBuffOnSkillExit: 0
+  statusEffectOnSkillStart: []
+  minTotalSummonCount: 3
+  maxTotalSummonCount: 3
+  maxAliveSummons: 9
+  useSpawnerPool: 0
+  requirePrewarmedPoolInstance: 0
+  countTowardMapPerEnemyMax: 0
+  allowInstantiateFallback: 1
+  showTrailOnSpawn: 1
+  delayBeforeFirstSummon: 0
+  delayBetweenSummons: 0.1
+  spawnOrigin: 0
+  minSpawnRadius: 3
+  maxSpawnRadius: 6
+  useForwardCone: 0
+  coneAngle: 120
+  facePlayerOnSpawn: 1
+  positionAttempts: 8
+  avoidOverlap: 1
+  overlapRadius: 0.5
+  overlapLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  summonOptions:
+  - enabled: 1
+    id: Bright2_Fragment
+    enemyPrefab: {fileID: 8145196360709479149, guid: 612b64ec63774123ad4f30224ea1a5d9, type: 3}
+    overrideCharacterData: 0
+    characterDataOverride: {fileID: 0}
+    minAmount: 3
+    maxAmount: 3
+    weight: 100
+  contactStatusEffects:
+  - effectData: {fileID: 11400000, guid: d9a0cdb040c14477a742d28f629fa163, type: 2}
+    isOverrideDuration: 1
+    overrideDuration: 5
+  despawnOnContact: 1

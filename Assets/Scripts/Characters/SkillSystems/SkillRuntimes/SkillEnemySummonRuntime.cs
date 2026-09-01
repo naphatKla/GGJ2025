@@ -220,6 +220,17 @@ namespace Characters.SkillSystems.SkillRuntimes
 
             if (destroyOnDeath)
                 summon.HealthSystem.OnDeadAnimationFinish += () => DestroySummon(summon);
+
+            OnSummonSpawned(summon);
+        }
+
+        /// <summary>
+        /// Called once for every summon that comes out, whether it was pooled or instantiated. Override to
+        /// give the summon behaviour that only makes sense for this skill - Piece of Mine uses it to attach
+        /// its on-contact slow-and-vanish.
+        /// </summary>
+        protected virtual void OnSummonSpawned(EnemyController summon)
+        {
         }
 
         private void FacePlayer(EnemyController summon)

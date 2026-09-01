@@ -58,6 +58,7 @@ namespace Characters.SkillSystems
         /// </summary>
         protected override bool CanPerformSkillNow(BaseSkillDataSo skillData)
         {
+            if (!base.CanPerformSkillNow(skillData)) return false;
             if (!skillData || skillData.ActivateRadius <= 0f) return true;
             if (!owner) return false;
 

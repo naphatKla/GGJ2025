@@ -227,6 +227,11 @@ namespace GameControl.EventMap
             _specialInteractionTriggered = true;
             SpecialInteractionRegistry.Unregister(this);
 
+            if (debug)
+                Debug.Log($"[BlackHole SI] '{mapEventId}' devoured by '{context.InstigatorId}' - exploding "
+                          + $"r={specialInteraction.explodeRadius} dmg={specialInteraction.explodeDamage} "
+                          + $"heavy={specialInteraction.heavyDamage} stun={specialInteraction.stunDuration}s", this);
+
             // Stop pulling the moment it is consumed, so it can't keep dragging things for the frames
             // between here and the pool release.
             IsPerforming = false;

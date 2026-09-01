@@ -22,6 +22,12 @@ namespace Characters.HeathSystems
         [SerializeField] private bool blockTakeDamageFeedbackOnFinalHit;
         [SerializeField] private bool changeColorOnIframe;
 
+        [Title("Debug")]
+        [PropertyTooltip("Testing only: this character takes no damage at all. Unlike SetInvincible this is "
+                         + "not touched by iframes, hit cooldown or ResetHealthSystem, so it stays on until "
+                         + "you turn it off. Toggleable live in play mode.")]
+        [SerializeField] private bool godMode;
+
         /// <summary>
         /// Delay (in seconds) before a valid hit actually commits damage.
         /// If set to 0 or less, it will still buffer at least 1 frame.
@@ -56,6 +62,13 @@ namespace Characters.HeathSystems
         private bool _isDead;
 
         public bool IsDead => _isDead;
+
+        /// <summary>Debug switch: while true every incoming hit is refused outright.</summary>
+        public bool GodMode
+        {
+            get => godMode;
+            set => godMode = value;
+        }
 
         /// <summary>Event triggered when the character takes damage (committed).</summary>
         public Action OnTakeDamage { get; set; }
@@ -164,6 +177,10 @@ namespace Characters.HeathSystems
         {
             // 1) Dead guard
             if (_isDead) return false;
+
+            // 1.5) Debug god mode - refuse before anything is recorded, so parry/consume systems don't
+            // see phantom hit attempts either.
+            if (godMode) return false;
 
             // 2) Record attempt (even during iframe/cooldown/dead)
             BufferHitAttempt(hitInfo);
