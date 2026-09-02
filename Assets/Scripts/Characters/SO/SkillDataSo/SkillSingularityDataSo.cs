@@ -40,11 +40,23 @@ namespace Characters.SO.SkillDataSo
                          + "the gap between pulses, so staying inside means staying held.")]
         [SerializeField] private float stunDuration = 0.6f;
 
-        [FoldoutGroup("Singularity")]
-        [LabelText("Affected Layer")]
-        [PropertyTooltip("Who gets caught. The doc says every character around the boss, so this normally "
-                         + "covers the player AND other enemies. Narrow it to the enemy layer alone if the "
-                         + "skill should not lock the player down.")]
+        [FoldoutGroup("Targets")]
+        [LabelText("Affect Player")]
+        [PropertyTooltip("Stun the player. Off makes Singularity a pressure tool that only freezes the "
+                         + "boss's own side, instead of locking the player down for the full duration.")]
+        [SerializeField] private bool affectPlayer = true;
+
+        [FoldoutGroup("Targets")]
+        [LabelText("Affect Enemies")]
+        [PropertyTooltip("Stun other enemies, including the boss's own summons. The doc says every "
+                         + "character around it, so this is on by default.")]
+        [SerializeField] private bool affectEnemies = true;
+
+        [FoldoutGroup("Targets")]
+        [LabelText("Scan Layer")]
+        [PropertyTooltip("Physics layers searched for targets. Keep this broad (player + enemy) and use the "
+                         + "two switches above to decide who is actually stunned - they are checked per "
+                         + "character, so they work no matter how the layers are set up.")]
         [SerializeField] private LayerMask affectedLayer;
 
         [FoldoutGroup("Singularity")]
@@ -57,6 +69,8 @@ namespace Characters.SO.SkillDataSo
         public float Duration => duration;
         public float TriggerPerSecond => triggerPerSecond;
         public float StunDuration => stunDuration;
+        public bool AffectPlayer => affectPlayer;
+        public bool AffectEnemies => affectEnemies;
         public LayerMask AffectedLayer => affectedLayer;
         public StunEffectDataSo StunEffectData => stunEffectData;
     }

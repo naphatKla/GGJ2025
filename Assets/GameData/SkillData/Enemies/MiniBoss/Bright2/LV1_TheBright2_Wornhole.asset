@@ -1,0 +1,77 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80cf55f9a35b4c3eb4f37d4d1b43977d, type: 3}
+  m_Name: LV1_TheBright2_Wornhole
+  m_EditorClassIdentifier: 
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes:
+    - Name: _skillRuntime
+      Entry: 7
+      Data: 0|System.RuntimeType, mscorlib
+    - Name: 
+      Entry: 1
+      Data: Characters.SkillSystems.SkillRuntimes.SkillWornholeRuntime, Assembly-CSharp
+    - Name: 
+      Entry: 8
+      Data: 
+  skillIcon: {fileID: 0}
+  skillName: Wornhole
+  skillDescription: 'Choose between EnemyPattern or MapEvent then spawn 3 to 8 patterns
+    of those on the map.'
+  previousSkillData: {fileID: 0}
+  nextSkillDataUpgrade: {fileID: 0}
+  level: 1
+  cooldown: 30
+  globalCooldown: 0.25
+  maxStack: 1
+  activateRadius: 90
+  baseHeavyDamage: 0
+  startFeedback: 
+  exitFeedback: 
+  clearBuffOnSkillExit: 0
+  statusEffectOnSkillStart: []
+  minSpawnCount: 3
+  maxSpawnCount: 8
+  delayBeforeFirstSpawn: 0
+  intervalBetweenSpawns: 1
+  mapEventChance: 50
+  enemyPatternFilter:
+  - {fileID: 11400000, guid: 89597e4458fb6564da47e4d33a37163c, type: 2}
+  - {fileID: 11400000, guid: 1152772dc8e0f114e824dddd694be66b, type: 2}
+  - {fileID: 11400000, guid: 139acb1578345ba43b51ad8bdfc0430c, type: 2}
+  - {fileID: 11400000, guid: 24b5084f31b90d44090398f20fd2166b, type: 2}
+  - {fileID: 11400000, guid: 098e856c71484744d95d27a8654a8433, type: 2}
+  - {fileID: 11400000, guid: 288500a21d61a4540b39a6463d3f4af9, type: 2}
+  - {fileID: 11400000, guid: 2bc8bc7d72e130d4382d64794bbc160c, type: 2}
+  - {fileID: 11400000, guid: 3c5159e5638c81a4b9a6d6e9d8853011, type: 2}
+  - {fileID: 11400000, guid: 1e63f424b276e28409899624010d5aaf, type: 2}
+  - {fileID: 11400000, guid: 22206c817f2991344955d785a5ad4457, type: 2}
+  - {fileID: 11400000, guid: 22e03ec9ec2fdf04098f3710989ebe77, type: 2}
+  - {fileID: 11400000, guid: 40fb65c3276e22343affa5a5a2d61545, type: 2}
+  mapEventIdFilter:
+  - 2Giant
+  - Horizontal
+  - Vertical
+  - Basket
+  - Firework_TopL_BottomR
+  - Firework_TopR_BottomL
+  - RightHole
+  - LeftHole
+  - Random_Line
+  - Wave

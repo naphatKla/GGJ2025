@@ -75,10 +75,18 @@ namespace Characters.SkillSystems.SkillRuntimes
                 if (!_pulseTargets.Add(target)) continue; // a character can own several colliders
                 if (target.HealthSystem == null || target.HealthSystem.IsDead) continue;
                 if (target.StatusEffectSystem == null) continue;
+                if (!IsAffected(target)) continue;
 
                 ApplyStun(target);
             }
         }
+
+        /// <summary>
+        /// Decided per character rather than by layer, so the switches keep working regardless of how the
+        /// scan layer is configured.
+        /// </summary>
+        private bool IsAffected(BaseController target)
+            => target is PlayerController ? skillData.AffectPlayer : skillData.AffectEnemies;
 
         /// <summary>
         /// Builds the stun directly so this skill's own duration wins over the one baked into the shared

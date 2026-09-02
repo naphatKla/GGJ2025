@@ -151,6 +151,17 @@ namespace Characters.Controllers
                 MovementSystem.IgnoreExternalPull = immuneToExternalPull;
         }
 
+        private void OnDestroy()
+        {
+            // Subscribed in Start, which never runs again for this instance - but leaving them attached is
+            // the kind of thing that turns into duplicated logs the moment Start moves to OnEnable.
+            if (_breakPointSystem == null) return;
+
+            _breakPointSystem.OnBreakPointChanged -= LogBreakPointChanged;
+            _breakPointSystem.OnBreakingStart -= LogBreakingStart;
+            _breakPointSystem.OnBreakingEnd -= LogBreakingEnd;
+        }
+
         #region Debug
 
         /// <summary>One row of the skill switch list. Plain serialized data, so the Inspector can edit it.</summary>
