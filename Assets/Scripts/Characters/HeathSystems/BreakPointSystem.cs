@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using Characters.Controllers;
 using Characters.FeedbackSystems;
+using Characters.SO.SkillDataSo;
 using Characters.SO.StatusEffectSO;
 using Characters.StatusEffectSystems;
 using Characters.StatusEffectSystems.StatusEffects;
@@ -63,6 +64,33 @@ namespace Characters.HeathSystems
                          + "shakes off the stun).")]
         [LabelText("After Breaking")]
         [SerializeField] private List<StatusEffectDataPayload> effectsAfterBreaking = new();
+
+        [Title("Skill Cooldowns After Breaking")]
+        [Unit(Units.Second), MinValue(0f)]
+        [LabelText("All Skills At Least")]
+        [PropertyTooltip("When Breaking ends, every skill the owner currently has is put on AT LEAST this many "
+                         + "seconds of cooldown. Skills that still have a longer cooldown running keep it. "
+                         + "Without this, anything that finished cooling down during the stun fires the "
+                         + "instant the boss recovers - a full burst as a reward for being broken. 0 = off.")]
+        [SerializeField] private float allSkillsCooldownAfterBreaking;
+
+        [PropertyTooltip("Exact per-skill cooldowns applied when Breaking ends - these win over the value "
+                         + "above. Set a skill to 0 to hand it back READY (e.g. a defensive skill the boss "
+                         + "should be allowed to answer with).")]
+        [LabelText("Per Skill")]
+        [ListDrawerSettings(ShowPaging = false)]
+        [SerializeField] private List<SkillCooldownRule> skillCooldownsAfterBreaking = new();
+
+        /// <summary>One skill and the cooldown it is set to when Breaking ends.</summary>
+        [Serializable]
+        public class SkillCooldownRule
+        {
+            [HorizontalGroup("Row"), HideLabel]
+            public BaseSkillDataSo skill;
+
+            [HorizontalGroup("Row", Width = 90), LabelText("Cooldown"), LabelWidth(60), MinValue(0f)]
+            public float cooldown;
+        }
 
         protected BaseController owner;
         private HealthSystem _healthSystem;
@@ -189,6 +217,39 @@ namespace Characters.HeathSystems
             OnBreakingStart?.Invoke();
         }
 
+        /// <summary>
+        /// Puts the owner's skills on cooldown as it recovers, so Breaking is a punish and not a reset.
+        /// The blanket value only ever EXTENDS a cooldown; the per-skill rules set it exactly.
+        /// </summary>
+        private void ApplyCooldownsAfterBreaking()
+        {
+            var skillSystem = owner ? owner.SkillSystem : null;
+            if (skillSystem == null) return;
+
+            if (allSkillsCooldownAfterBreaking > 0f)
+            {
+                foreach (var skillData in skillSystem.GetAllCurrentSkillDatas().All)
+                {
+                    var runtime = skillSystem.GetSkillRuntimeOrDefault(skillData);
+                    if (!runtime) continue;
+
+                    runtime.SetCurrentCooldown(Mathf.Max(runtime.CurrentCooldown, allSkillsCooldownAfterBreaking));
+                }
+            }
+
+            if (skillCooldownsAfterBreaking == null) return;
+
+            foreach (var rule in skillCooldownsAfterBreaking)
+            {
+                if (rule == null || !rule.skill) continue;
+
+                var runtime = skillSystem.GetSkillRuntimeOrDefault(rule.skill);
+                if (!runtime) continue; // not part of the current phase - nothing to set
+
+                runtime.SetCurrentCooldown(rule.cooldown);
+            }
+        }
+
         private void ApplyEffects(List<StatusEffectDataPayload> effects)
         {
             if (owner == null || effects == null || effects.Count == 0) return;
@@ -264,6 +325,7 @@ namespace Characters.HeathSystems
             SetBreakPoint(maxBreakPoint);
             RemoveEffects(effectsWhileBreaking);
             ApplyEffects(effectsAfterBreaking);
+            ApplyCooldownsAfterBreaking();
 
             OnBreakingEnd?.Invoke();
         }
