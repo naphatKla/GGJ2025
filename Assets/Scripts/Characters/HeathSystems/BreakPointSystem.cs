@@ -1,8 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using Characters.Controllers;
 using Characters.FeedbackSystems;
 using Characters.SO.StatusEffectSO;
+using Characters.StatusEffectSystems;
 using Characters.StatusEffectSystems.StatusEffects;
 using Cysharp.Threading.Tasks;
 using Manager;
@@ -47,6 +49,20 @@ namespace Characters.HeathSystems
         [Title("Dependents")]
         [PropertyTooltip("Stun effect data applied when entering the Breaking state.")]
         [SerializeField] private StunEffectDataSo breakingStunEffectData;
+
+        [Title("Breaking Status Effects")]
+        [PropertyTooltip("Applied to the owner the moment it Breaks and REMOVED again when Breaking ends - "
+                         + "use it for states that should last exactly as long as the stun (e.g. a "
+                         + "vulnerability debuff so the x N window hurts even more). Set a large Override "
+                         + "Duration on each payload so nothing expires early.")]
+        [LabelText("While Breaking")]
+        [SerializeField] private List<StatusEffectDataPayload> effectsWhileBreaking = new();
+
+        [PropertyTooltip("Applied to the owner when Breaking ENDS and then left to run on its own duration - "
+                         + "use it for a lingering state after recovery (e.g. a brief speed buff as it "
+                         + "shakes off the stun).")]
+        [LabelText("After Breaking")]
+        [SerializeField] private List<StatusEffectDataPayload> effectsAfterBreaking = new();
 
         protected BaseController owner;
         private HealthSystem _healthSystem;
@@ -121,6 +137,8 @@ namespace Characters.HeathSystems
         /// <summary>Restores Break Point to full and exits any Breaking state.</summary>
         public void ResetBreakPointSystem()
         {
+            if (_isBreaking) RemoveEffects(effectsWhileBreaking);
+
             CancelAndDispose(ref _breakingCts);
             _isBreaking = false;
             _lastActualHitDamage = 0;
@@ -159,6 +177,7 @@ namespace Characters.HeathSystems
 
             // 2) Apply stun (respects Iron Body / invincibility rules inside StunEffect.OnStart).
             ApplyBreakingStun();
+            ApplyEffects(effectsWhileBreaking);
 
             // 3) Amplify the hit that broke it to x N (actual damage -> HP, never heavy).
             ApplyBreakingAmplifiedDamage(triggerHit);
@@ -168,6 +187,18 @@ namespace Characters.HeathSystems
             BreakingRecoverLoop(_breakingCts.Token).Forget();
 
             OnBreakingStart?.Invoke();
+        }
+
+        private void ApplyEffects(List<StatusEffectDataPayload> effects)
+        {
+            if (owner == null || effects == null || effects.Count == 0) return;
+            StatusEffectManager.ApplyEffectTo(owner.gameObject, effects);
+        }
+
+        private void RemoveEffects(List<StatusEffectDataPayload> effects)
+        {
+            if (owner == null || effects == null || effects.Count == 0) return;
+            StatusEffectManager.RemoveEffectAt(owner.gameObject, effects);
         }
 
         private void ApplyBreakingStun()
@@ -231,6 +262,9 @@ namespace Characters.HeathSystems
             CancelAndDispose(ref _breakingCts);
             _isBreaking = false;
             SetBreakPoint(maxBreakPoint);
+            RemoveEffects(effectsWhileBreaking);
+            ApplyEffects(effectsAfterBreaking);
+
             OnBreakingEnd?.Invoke();
         }
 

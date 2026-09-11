@@ -263,7 +263,7 @@ namespace Characters.SkillSystems.SkillRuntimes
                 float distance = Vector2.Distance(position, center);
 
                 // Reached the grinder - consume it and let it run its own reaction.
-                if (distance <= skillData.DamageRadius)
+                if (distance <= skillData.SpecialInteractionRadius)
                 {
                     interaction.TriggerSpecialInteraction(context);
                     continue;
@@ -390,9 +390,13 @@ namespace Characters.SkillSystems.SkillRuntimes
             Gizmos.color = new Color(0.35f, 0.5f, 1f, 0.9f);
             Gizmos.DrawWireSphere(center, skillData.PullRadius);
 
-            // Damage + Special Interaction radius.
+            // Damage radius.
             Gizmos.color = new Color(1f, 0.15f, 0.15f, 0.9f);
             Gizmos.DrawWireSphere(center, skillData.DamageRadius);
+
+            // Where a dragged Black Hole / Border piece is finally consumed.
+            Gizmos.color = new Color(1f, 1f, 0.2f, 0.9f);
+            Gizmos.DrawWireSphere(center, skillData.SpecialInteractionRadius);
 
             if (!skillData.EnableFleeAndExplode) return;
             Gizmos.color = new Color(1f, 0.6f, 0f, 0.9f);

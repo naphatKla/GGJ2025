@@ -89,6 +89,15 @@ namespace Characters.SO.SkillDataSo
         [SerializeField] private float damageRadius = 35f;
 
         [FoldoutGroup("Pull Damage")]
+        [LabelText("Special Interaction Radius")]
+        [MinValue(0f)]
+        [PropertyTooltip("How close a Black Hole / Border piece must be dragged before it is consumed. The doc "
+                         + "ties this to the Damage Radius (35), but Black Holes spawn near the player, who is "
+                         + "usually already inside 35 of the boss - so they vanished the instant they appeared "
+                         + "and the pull was never visible. Keep this small so the drag can be seen.")]
+        [SerializeField] private float specialInteractionRadius = 10f;
+
+        [FoldoutGroup("Pull Damage")]
         [LabelText("Hit / Second")]
         [PropertyTooltip("Spec: 1")]
         [MinValue(0.01f)]
@@ -169,6 +178,7 @@ namespace Characters.SO.SkillDataSo
         public bool ImmuneToExternalPull => immuneToExternalPull;
 
         public float DamageRadius => damageRadius;
+        public float SpecialInteractionRadius => specialInteractionRadius;
         public float HitPerSecond => hitPerSecond;
         public float BaseDamagePerHit => baseDamagePerHit;
         public float DamageMultiplier => damageMultiplier;

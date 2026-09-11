@@ -63,8 +63,19 @@ namespace GameControl.EventMap
                      + "Leave empty to reuse the Black Hole's own Hit Layer.")]
             public LayerMask affectedLayer;
 
-            [Tooltip("Stun effect data applied to everything caught in the explosion.")]
+            [Tooltip("Stun effect data applied by the explosion.")]
             public StunEffectDataSo stunEffectData;
+
+            [Header("Who gets stunned / knocked back (damage always hits everyone caught)")]
+            [Tooltip("The boss that devoured this Black Hole. This is what makes the boss breakable, so keep it on.")]
+            public bool ccAffectsInstigator = true;
+
+            [Tooltip("The player. The doc says the explosion stuns everything surrounding; turn off to make "
+                     + "feeding the boss a Black Hole a pure punish on the boss.")]
+            public bool ccAffectsPlayer = true;
+
+            [Tooltip("Other enemies caught in the blast.")]
+            public bool ccAffectsOtherEnemies = true;
 
             [Tooltip("Buffs stripped from everything the explosion catches, applied BEFORE the stun. "
                      + "Bright2 parks Iron Body on itself with The Immovable, and Iron Body makes a target "
@@ -157,6 +168,10 @@ namespace GameControl.EventMap
 
                 var go = col.gameObject;
                 if (go == gameObject) continue;
+
+                // The boss drags Black Holes into itself; it must not be chewed on by the thing it is eating.
+                if (IsImmuneToPassiveEffects(go)) continue;
+
                 CombatManager.ApplyRawDamageTo(go, gameObject, mapEventId, damage);
                 _lastTimeHit = Time.time;
                 Debug.Log("Black Hole Attack");
@@ -214,8 +229,13 @@ namespace GameControl.EventMap
 
         public Transform Transform => transform;
 
+        /// <summary>
+        /// Only a Black Hole that has actually formed can be devoured. During the telegraph (preview +
+        /// delay before Perform) it is just a warning on the floor - Devourer's registry query filters on
+        /// this, so it neither drags nor consumes the event until it is live.
+        /// </summary>
         public bool CanTriggerSpecialInteraction =>
-            enableSpecialInteraction && !_specialInteractionTriggered && isActiveAndEnabled;
+            enableSpecialInteraction && !_specialInteractionTriggered && isActiveAndEnabled && IsPerforming;
 
         /// <summary>
         /// Devourer pulled this Black Hole into its damage radius: the Black Hole disappears and leaves
@@ -236,14 +256,14 @@ namespace GameControl.EventMap
             // between here and the pool release.
             IsPerforming = false;
 
-            Explode(GetCenter());
+            Explode(GetCenter(), context);
             EndAndRelease();
         }
 
         private Vector2 GetCenter() =>
             firePoint ? firePoint.TransformPoint(sphereOffset) : (Vector2)transform.TransformPoint(sphereOffset);
 
-        private void Explode(Vector2 center)
+        private void Explode(Vector2 center, SpecialInteractionContext context)
         {
             // Unset explosion layer falls back to the layer this Black Hole already pulls and damages,
             // so a prefab that only fills in the numbers still explodes at the right things.
@@ -268,11 +288,21 @@ namespace GameControl.EventMap
 
                 // Strip first: a target still holding Iron Body would shrug the stun off entirely.
                 CancelBuffs(target);
+
+                if (!IsCrowdControlled(target, context)) continue;
                 ApplyKnockback(target, center);
                 ApplyStun(target);
             }
 
             _explosionTargets.Clear();
+        }
+
+        /// <summary>Damage is for everyone; stun and knockback follow the three switches on the data.</summary>
+        private bool IsCrowdControlled(BaseController target, SpecialInteractionContext context)
+        {
+            if (target == context.Instigator) return specialInteraction.ccAffectsInstigator;
+            if (target is PlayerController) return specialInteraction.ccAffectsPlayer;
+            return specialInteraction.ccAffectsOtherEnemies;
         }
 
         private void CancelBuffs(BaseController target)
@@ -284,10 +314,25 @@ namespace GameControl.EventMap
                 StatusEffectManager.RemoveEffectAt(target.gameObject, cancelled[i]);
         }
 
+        /// <summary>
+        /// A character flagged IgnoreExternalPull (Bright2, "the heaviest mass in the game") is not moved
+        /// or ground down by a Black Hole's passive field. It still takes the explosion's damage, heavy
+        /// damage and stun - that Special Interaction is the whole point of feeding one to the boss.
+        /// </summary>
+        private static bool IsImmuneToPassiveEffects(GameObject go)
+        {
+            return CombatManager.TryGetCharacterFromCache(go, out var controller)
+                   && controller.MovementSystem
+                   && controller.MovementSystem.IgnoreExternalPull;
+        }
+
         private void ApplyKnockback(BaseController target, Vector2 center)
         {
             if (specialInteraction.knockbackDistance <= 0f) return;
             if (!target.MovementSystem) return;
+
+            // Knockback is displacement too - the immovable boss stays put, everything else flies.
+            if (target.MovementSystem.IgnoreExternalPull) return;
 
             Vector2 position = target.transform.position;
             Vector2 direction = position - center;
