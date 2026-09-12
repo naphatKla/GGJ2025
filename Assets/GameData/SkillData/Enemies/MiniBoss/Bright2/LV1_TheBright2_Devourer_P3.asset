@@ -32,23 +32,23 @@ MonoBehaviour:
       Data: 
   skillIcon: {fileID: 0}
   skillName: Devourer
-  skillDescription: 'Pulling everything around and dealing damage over time for a set
-    duration.'
+  skillDescription: Pulling everything around and dealing damage over time for a
+    set duration.
   previousSkillData: {fileID: 0}
   nextSkillDataUpgrade: {fileID: 0}
   level: 1
   cooldown: 15
   globalCooldown: 0.25
   maxStack: 1
-  activateRadius: 80
+  activateRadius: 35
   baseHeavyDamage: 0
   startFeedback: 
   exitFeedback: 
   clearBuffOnSkillExit: 0
   statusEffectOnSkillStart: []
   pullDuration: 5
-  pullRadius: 90
-  pullStrength: 30
+  pullRadius: 45
+  pullStrength: 7
   pullStopDistance: 0.2
   pullCurve:
     serializedVersion: 2
@@ -56,12 +56,30 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 0
       value: 0
-      inSlope: 0
-      outSlope: 0
+      inSlope: 0.21594705
+      outSlope: 0.21594705
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
-      outWeight: 0.33333334
+      outWeight: 1
+    - serializedVersion: 3
+      time: 0.55
+      value: 0.45
+      inSlope: 2.109233
+      outSlope: 2.109233
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.2351315
+    - serializedVersion: 3
+      time: 0.7995851
+      value: 0.95
+      inSlope: 0.5611339
+      outSlope: 0.5611339
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.35915175
     - serializedVersion: 3
       time: 1
       value: 1
@@ -75,11 +93,11 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   useExponentialPull: 1
-  maxPullSpeed: 12
+  maxPullSpeed: 0
   ignoreDashingTargets: 1
   immuneToExternalPull: 1
-  damageRadius: 35
-  specialInteractionRadius: 10
+  damageRadius: 12
+  specialInteractionRadius: 11
   hitPerSecond: 1
   baseDamagePerHit: 0
   damageMultiplier: 300
@@ -87,7 +105,7 @@ MonoBehaviour:
   enableFleeAndExplode: 1
   fleeDuration: 1
   fleeDistance: 30
-  explodeRadius: 60
+  explodeRadius: 45
   explodeBaseDamage: 0
   explodeDamageMultiplier: 800
   explodeFeedback: 

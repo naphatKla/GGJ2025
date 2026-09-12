@@ -128,7 +128,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &7694380525791749133
 Transform:
   m_ObjectHideFlags: 0
@@ -1390,7 +1390,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.41, y: 0.41, z: 0.41}
+  m_LocalScale: {x: 10, y: 10, z: 10}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 8549111801382523464}
@@ -1438,7 +1438,7 @@ SpriteRenderer:
   m_SortingLayerID: -1451114625
   m_SortingLayer: 7
   m_SortingOrder: 10
-  m_Sprite: {fileID: 21300000, guid: 2a3e1f68a6d8c604f92d59c09981d98d, type: 3}
+  m_Sprite: {fileID: 21300000, guid: c13973841dc45e84d88205ff1bc97e4a, type: 3}
   m_Color: {r: 0.34901962, g: 0.19792679, b: 0, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -2153,7 +2153,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &4749331755618463853
 Transform:
   m_ObjectHideFlags: 0
@@ -3185,7 +3185,7 @@ PrefabInstance:
       objectReference: {fileID: 6283012694853145645}
     - target: {fileID: 8858836943072646866, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
       propertyPath: shape
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8858836943072646866, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
       propertyPath: boxSize.x
@@ -3194,6 +3194,10 @@ PrefabInstance:
     - target: {fileID: 8858836943072646866, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
       propertyPath: boxSize.y
       value: 4.25
+      objectReference: {fileID: 0}
+    - target: {fileID: 8858836943072646866, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
+      propertyPath: circleRadius
+      value: 12.5
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 5150462012273811514, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
@@ -3224,7 +3228,7 @@ PrefabInstance:
       addedObject: {fileID: 3283012694853145645}
     - targetCorrespondingSourceObject: {fileID: 3040175372062831934, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
       insertIndex: 11
-      addedObject: {fileID: 8205873605262566071}
+      addedObject: {fileID: 9130781056136927352}
     - targetCorrespondingSourceObject: {fileID: 3040175372062831934, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
       insertIndex: -1
       addedObject: {fileID: 6283012694853145645}
@@ -3295,8 +3299,25 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 9a13128eae814cae9273df5c88a206ec, type: 2}
   maxBreakPoint: 100
   immuneToExternalPull: 1
---- !u!61 &8205873605262566071
-BoxCollider2D:
+  debugLog: 1
+  debugStartPhase: 0
+  skillSwitches:
+  - skill: {fileID: 11400000, guid: 66727e07a0bd3584bb603d7af315a441, type: 2}
+    enabled: 1
+  - skill: {fileID: 11400000, guid: 9c62429659c64792afa61194aa3a02ba, type: 2}
+    enabled: 1
+  - skill: {fileID: 11400000, guid: 42fa71fe25804eba8d5c8305c33eb4e6, type: 2}
+    enabled: 1
+  - skill: {fileID: 11400000, guid: 40d3cf3f556f4bfc8f6afc9c21a36d2d, type: 2}
+    enabled: 1
+  - skill: {fileID: 11400000, guid: 3204db4930ed41b983ef93d97f876e32, type: 2}
+    enabled: 1
+  - skill: {fileID: 11400000, guid: 271bd60c088e4173b22405ee99a0e7d0, type: 2}
+    enabled: 1
+  - skill: {fileID: 11400000, guid: 9a13128eae814cae9273df5c88a206ec, type: 2}
+    enabled: 1
+--- !u!58 &9130781056136927352
+CircleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -3328,18 +3349,8 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0, y: 0}
-    oldSize: {x: 0, y: 0}
-    newSize: {x: 0, y: 0}
-    adaptiveTilingThreshold: 0
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 8.6, y: 4.25}
-  m_EdgeRadius: 0
+  m_Radius: 12.5
 --- !u!114 &6283012694853145645
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3354,7 +3365,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxBreakPoint: 100
   breakingStunDuration: 7
-  breakingDamageRepeatMultiplier: 10
+  breakingDamageMultiplier: 10
   breakingStunEffectData: {fileID: 11400000, guid: e5ae6010e3c4a7b43bc80da0bf5a9ef5, type: 2}
   effectsWhileBreaking: []
   effectsAfterBreaking: []
