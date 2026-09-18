@@ -37,18 +37,18 @@ MonoBehaviour:
   previousSkillData: {fileID: 0}
   nextSkillDataUpgrade: {fileID: 0}
   level: 1
-  cooldown: 15
+  cooldown: 30
   globalCooldown: 0.25
   maxStack: 1
-  activateRadius: 35
+  activateRadius: 75
   baseHeavyDamage: 0
   startFeedback: 
   exitFeedback: 
   clearBuffOnSkillExit: 0
   statusEffectOnSkillStart: []
   pullDuration: 5
-  pullRadius: 45
-  pullStrength: 7
+  pullRadius: 70
+  pullStrength: 3
   pullStopDistance: 0.2
   pullCurve:
     serializedVersion: 2
@@ -63,7 +63,7 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 1
     - serializedVersion: 3
-      time: 0.55
+      time: 0.65
       value: 0.45
       inSlope: 2.109233
       outSlope: 2.109233
@@ -72,8 +72,8 @@ MonoBehaviour:
       inWeight: 0.33333334
       outWeight: 0.2351315
     - serializedVersion: 3
-      time: 0.7995851
-      value: 0.95
+      time: 0.86044264
+      value: 0.9594251
       inSlope: 0.5611339
       outSlope: 0.5611339
       tangentMode: 0
@@ -93,11 +93,11 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   useExponentialPull: 1
-  maxPullSpeed: 0
+  maxPullSpeed: 25
   ignoreDashingTargets: 1
   immuneToExternalPull: 1
-  damageRadius: 12
-  specialInteractionRadius: 11
+  damageRadius: 20
+  specialInteractionRadius: 20.5
   hitPerSecond: 1
   baseDamagePerHit: 0
   damageMultiplier: 300
@@ -105,7 +105,7 @@ MonoBehaviour:
   enableFleeAndExplode: 1
   fleeDuration: 1
   fleeDistance: 30
-  explodeRadius: 45
+  explodeRadius: 50
   explodeBaseDamage: 0
   explodeDamageMultiplier: 800
   explodeFeedback: 
