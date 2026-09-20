@@ -406,7 +406,7 @@ MonoBehaviour:
   useExponential: 1
   enableSpecialInteraction: 1
   specialInteraction:
-    explodeRadius: 40
+    explodeRadius: 15
     explodeDamage: 150
     heavyDamage: 30
     stunDuration: 9
@@ -417,11 +417,9 @@ MonoBehaviour:
       m_Bits: 0
     stunEffectData: {fileID: 11400000, guid: e5ae6010e3c4a7b43bc80da0bf5a9ef5, type: 2}
     ccAffectsInstigator: 1
-    ccAffectsPlayer: 1
+    ccAffectsPlayer: 0
     ccAffectsOtherEnemies: 1
-    cancelledEffects:
-    - 4
-    - 6
+    cancelledEffects: 0400000006000000
 --- !u!1 &4169652363207399140
 GameObject:
   m_ObjectHideFlags: 0
