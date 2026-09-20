@@ -3013,7 +3013,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6291427219438848774, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.06
+      value: -8.21
       objectReference: {fileID: 0}
     - target: {fileID: 6893798603404414412, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
       propertyPath: m_Name
@@ -3285,15 +3285,19 @@ MonoBehaviour:
     allowedSkills:
     - {fileID: 11400000, guid: 66727e07a0bd3584bb603d7af315a441, type: 2}
     - {fileID: 11400000, guid: 9c62429659c64792afa61194aa3a02ba, type: 2}
+  - hpThresholdPercentage: 85
+    allowedSkills:
+    - {fileID: 11400000, guid: 66727e07a0bd3584bb603d7af315a441, type: 2}
+    - {fileID: 11400000, guid: 9c62429659c64792afa61194aa3a02ba, type: 2}
     - {fileID: 11400000, guid: 42fa71fe25804eba8d5c8305c33eb4e6, type: 2}
-  - hpThresholdPercentage: 66
+  - hpThresholdPercentage: 65
     allowedSkills:
     - {fileID: 11400000, guid: 66727e07a0bd3584bb603d7af315a441, type: 2}
     - {fileID: 11400000, guid: 9c62429659c64792afa61194aa3a02ba, type: 2}
     - {fileID: 11400000, guid: 42fa71fe25804eba8d5c8305c33eb4e6, type: 2}
     - {fileID: 11400000, guid: 40d3cf3f556f4bfc8f6afc9c21a36d2d, type: 2}
     - {fileID: 11400000, guid: 3204db4930ed41b983ef93d97f876e32, type: 2}
-  - hpThresholdPercentage: 33
+  - hpThresholdPercentage: 35
     allowedSkills:
     - {fileID: 11400000, guid: 271bd60c088e4173b22405ee99a0e7d0, type: 2}
     - {fileID: 11400000, guid: 9c62429659c64792afa61194aa3a02ba, type: 2}
@@ -3371,10 +3375,21 @@ MonoBehaviour:
   breakingStunDuration: 7
   breakingDamageMultiplier: 10
   breakingStunEffectData: {fileID: 11400000, guid: e5ae6010e3c4a7b43bc80da0bf5a9ef5, type: 2}
-  effectsWhileBreaking: []
+  effectsWhileBreaking:
+  - effectData: {fileID: 11400000, guid: 2bb1df345b8c3ff4bbff4f8af06b3616, type: 2}
+    isOverrideDuration: 1
+    overrideDuration: 0
+  - effectData: {fileID: 11400000, guid: 81aef72348c84bfcad85764ede85167e, type: 2}
+    isOverrideDuration: 1
+    overrideDuration: 0
+  - effectData: {fileID: 11400000, guid: e5ae6010e3c4a7b43bc80da0bf5a9ef5, type: 2}
+    isOverrideDuration: 1
+    overrideDuration: 7
   effectsAfterBreaking: []
   allSkillsCooldownAfterBreaking: 3
-  skillCooldownsAfterBreaking: []
+  skillCooldownsAfterBreaking:
+  - skill: {fileID: 11400000, guid: 40d3cf3f556f4bfc8f6afc9c21a36d2d, type: 2}
+    cooldown: 10
 --- !u!114 &4575952971515989924 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3113999699197328836, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
