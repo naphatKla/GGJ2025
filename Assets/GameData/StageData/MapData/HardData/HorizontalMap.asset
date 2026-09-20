@@ -355,6 +355,37 @@ MonoBehaviour:
     - effectType: 3
       effectString: 
       effectint: 5
+  - id: bright2
+    displayName: Bright2
+    enemyController: {fileID: 3283012694853145645, guid: 2ad5bd503bfd413ab61111cfb9d94a60, type: 3}
+    prewarmCount: 1
+    spawnPoint: 0
+    enemyPointCanGrowth: 0
+    enemyPointGrowthRate: 12.5
+    chance: 100
+    enemyChanceCanGrowth: 0
+    enemyChanceGrowthRate: 0
+    disableNormalize: 1
+    useCustomInterval: 0
+    customInterval: 0
+    useMaxperEnemy: 1
+    maximumPerEnemy: 1
+    modifyNewData: 1
+    enemyData: {fileID: 11400000, guid: 8f6397ea3c724414a2e2729429071514, type: 2}
+    disableInPattern: 1
+    disableEnemyDetect: 1
+    useSpawnConditions: 1
+    conditionLogic: 0
+    spawnConditions:
+    - {fileID: 11400000, guid: 543f73756490a004387cb83436e0b706, type: 2}
+    useSpawnEffect: 1
+    spawnEffect:
+    - effectType: 0
+      effectString: BossWarning
+      effectint: 0
+    - effectType: 3
+      effectString: 
+      effectint: 5
   intervalEnemyChanceUpgrade: 30
   intervalEnemyPointRatioUpgrade: 30
   PatternOptions:

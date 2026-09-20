@@ -1390,7 +1390,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 10, y: 10, z: 10}
+  m_LocalScale: {x: 8, y: 8, z: 8}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 8549111801382523464}
@@ -2538,7 +2538,7 @@ PrefabInstance:
     - target: {fileID: 5733554412123996507, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
       propertyPath: serializationData.Prefab
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 5733554412123996507, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
     - target: {fileID: 5733554412123996507, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
       propertyPath: skillEntries.Array.data[0].Key
       value: Skill/TwrilUse_Lv1
@@ -2773,7 +2773,7 @@ PrefabInstance:
       objectReference: {fileID: 7473285019374174091}
     - target: {fileID: 5733554412123996507, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
       propertyPath: serializationData.SerializedFormat
-      value: 0
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5733554412123996507, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
       propertyPath: skillEntries.Array.data[0].GroupFilter
@@ -3201,7 +3201,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8858836943072646866, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
       propertyPath: circleRadius
-      value: 12.5
+      value: 10
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 5150462012273811514, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
@@ -3354,7 +3354,7 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
-  m_Radius: 12.5
+  m_Radius: 10
 --- !u!114 &6283012694853145645
 MonoBehaviour:
   m_ObjectHideFlags: 0
