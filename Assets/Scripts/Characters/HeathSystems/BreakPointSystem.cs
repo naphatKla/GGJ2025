@@ -34,27 +34,33 @@ namespace Characters.HeathSystems
     {
         #region Inspector & Variables
 
+        [InfoBox("เมื่อ Break Point ลดถึง 0 (จากดาเมจแบบ Heavy) บอสจะเข้าสถานะ Breaking ตามลำดับ:\n"
+                 + "1) ยกเลิกสกิลที่กำลังร่ายทั้งหมด  2) ลบบัฟใน Remove On Break  3) ใส่ effect ใน While Breaking (สตัน)\n"
+                 + "4) hit ที่ทำให้ Break คูณดาเมจ ×Breaking Damage Multiplier  5) ครบ Breaking Duration → BP เต็ม, ใส่ After Breaking, ตั้งคูลดาวน์สกิล")]
         [Title("Break Point Configs")]
+        [Tooltip("ค่า Break Point สูงสุด\nบน Bright2 ค่านี้ถูกตั้งจาก Bright2Controller > Max Break Point ตอนเริ่มเกม")]
         [SerializeField] private float maxBreakPoint = 100f;
 
         [Unit(Units.Second)]
         [FoldoutGroup("Breaking Configs"), SerializeField]
         [LabelText("Breaking Duration")]
-        [PropertyTooltip("How long the Breaking state lasts before Break Point is restored. The stun itself is "
-                         + "a payload in While Breaking - give it the same Override Duration.")]
+        [PropertyTooltip("สถานะ Breaking อยู่นานกี่วินาที ก่อน Break Point จะเต็มกลับมา\n"
+                         + "สตันอยู่ในลิสต์ While Breaking: ตั้ง Override Duration ของสตันให้เท่าค่านี้ด้วย")]
         private float breakingStunDuration = 7f;
 
         [FoldoutGroup("Breaking Configs"), SerializeField]
         [LabelText("Breaking Damage Multiplier")]
-        [PropertyTooltip("The attack that breaks the Break Point deals its actual damage multiplied by this "
-                         + "value (spec: x10) - it is amplified in place, not dealt again on top.")]
+        [PropertyTooltip("hit ที่ทำให้ Break จะทำดาเมจจริง × ค่านี้ (GDD: ×10)\n"
+                         + "เป็นการคูณ hit เดิม ไม่ได้ตีเพิ่มอีกครั้ง และคิดหลังลบ Damage Resistance แล้ว")]
         [FormerlySerializedAs("breakingDamageRepeatMultiplier")]
         private int breakingDamageMultiplier = 10;
 
         [Title("Breaking Status Effects")]
-        [PropertyTooltip("Removed from the owner FIRST, the moment it Breaks - before the stun and the x N hit. "
-                         + "Iron Body would swallow the stun and Damage Resistance would zero the x N damage, "
-                         + "so a buffed boss could never be broken without this.")]
+        [InfoBox("While Breaking ยังไม่มีสตัน บอสจะไม่หยุดนิ่งตอน Break", InfoMessageType.Warning,
+            "@this.effectsWhileBreaking == null || this.effectsWhileBreaking.Count == 0")]
+        [PropertyTooltip("บัฟที่ถูกลบออกจากบอสทันทีที่ Break (ก่อนสตันและก่อนคูณดาเมจ)\n"
+                         + "IronBody กันสตัน และ DamageResistance ทำให้ดาเมจ ×10 เป็น 0 ถ้าไม่ลบ บอสที่ติดบัฟจะ Break ไม่ได้\n"
+                         + "เอาออกจากลิสต์ได้ถ้าอยากให้บัฟตัวนั้นยังอยู่ตอน Break")]
         [LabelText("Remove On Break")]
         [SerializeField] private List<StatusEffectName> removeOnBreak = new()
         {
@@ -62,35 +68,30 @@ namespace Characters.HeathSystems
             StatusEffectName.DamageResistance
         };
 
-        [PropertyTooltip("Applied to the owner the moment it Breaks (after Remove On Break) and REMOVED again "
-                         + "when Breaking ends - the stun goes here (Override Duration = Breaking Duration), "
-                         + "plus anything that should last exactly as long as Breaking (e.g. a vulnerability "
-                         + "debuff so the x N window hurts even more).")]
+        [PropertyTooltip("ใส่ให้บอสตอน Break (หลังลบบัฟแล้ว) และถูกลบออกเมื่อ Breaking จบ\n"
+                         + "สตันอยู่ที่นี่ (Override Duration = Breaking Duration)\n"
+                         + "ใส่อย่างอื่นที่อยากให้อยู่ตลอดช่วง Break ได้ เช่น ดีบัฟรับดาเมจเพิ่ม")]
         [LabelText("While Breaking")]
         [SerializeField] private List<StatusEffectDataPayload> effectsWhileBreaking = new();
 
-        [PropertyTooltip("Applied to the owner when Breaking ENDS and then left to run on its own duration - "
-                         + "use it for a lingering state after recovery (e.g. a brief speed buff as it "
-                         + "shakes off the stun).")]
+        [PropertyTooltip("ใส่ให้บอสตอน Breaking จบ แล้วปล่อยให้หมดเวลาเอง\n"
+                         + "เช่น บัฟความเร็วช่วงสั้นๆ ตอนบอสฟื้นจากสตัน")]
         [LabelText("After Breaking")]
         [SerializeField] private List<StatusEffectDataPayload> effectsAfterBreaking = new();
 
         [Title("Skill Cooldowns After Breaking")]
         [Unit(Units.Second), MinValue(0f)]
         [LabelText("All Skills At Least")]
-        [PropertyTooltip("When Breaking ends, every skill the owner currently has is put on AT LEAST this many "
-                         + "seconds of cooldown. Skills that still have a longer cooldown running keep it. "
-                         + "Without this, anything that finished cooling down during the stun fires the "
-                         + "instant the boss recovers - a full burst as a reward for being broken. 0 = off.")]
+        [PropertyTooltip("ตอน Breaking จบ ทุกสกิลของบอสจะติดคูลดาวน์อย่างน้อยเท่านี้\n"
+                         + "สกิลที่เหลือคูลดาวน์นานกว่านี้อยู่แล้วจะคงไว้ตามเดิม\n"
+                         + "ถ้าไม่ตั้ง สกิลที่คูลดาวน์หมดระหว่างสตันจะยิงออกมาพร้อมกันทันทีที่บอสฟื้น\n0 = ปิด")]
         [SerializeField] private float allSkillsCooldownAfterBreaking;
 
-        [PropertyTooltip("Exact per-skill cooldowns applied when Breaking ends - these win over the value "
-                         + "above. Set a skill to 0 to hand it back READY (e.g. a defensive skill the boss "
-                         + "should be allowed to answer with).")]
+        [PropertyTooltip("ตั้งคูลดาวน์เฉพาะสกิลตอน Breaking จบ (ชนะค่า All Skills At Least)\n"
+                         + "ใส่ 0 = สกิลนั้นพร้อมใช้ทันที เช่น สกิลป้องกันที่อยากให้บอสใช้ตอบโต้ได้")]
         [LabelText("Per Skill")]
         [ListDrawerSettings(ShowPaging = false)]
         [SerializeField] private List<SkillCooldownRule> skillCooldownsAfterBreaking = new();
-
         /// <summary>One skill and the cooldown it is set to when Breaking ends.</summary>
         [Serializable]
         public class SkillCooldownRule

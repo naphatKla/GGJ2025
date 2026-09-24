@@ -502,41 +502,47 @@ namespace GameControl.SO
 
         #region Enemy Spawn Mode
         [FoldoutGroup("Enemy Spawn Mode")]
-        [InfoBox("Conditions = ระบบเดิมทุกอย่าง (ค่าเริ่มต้น แมพเก่าไม่เปลี่ยน)\n"
-                 + "Sequential = ไล่ลิสต์ตามลำดับ ทีละ Step วินาที\n"
-                 + "Milestone ที่เปิด Override Map Spawn (ใน ChallengeDataSO) จะแทนที่โหมดนี้ในรอบที่เล่น milestone นั้น\n"
-                 + "ช่วง Rush: ตารางหยุด ระบบ Rush คุมแทนเสมอ | ถ้าตารางว่าง -> กลับไปใช้ Conditions")]
+        [InfoBox("เลือกว่าแมพนี้จะเกิดศัตรูแบบไหน\n"
+                 + "• Conditions = ระบบเดิมทุกอย่าง (ค่าเริ่มต้น แมพเก่าทุกแมพเป็นแบบนี้)\n"
+                 + "• Sequential = ไล่ลิสต์ศัตรูตามลำดับเวลา ทีละ Step วินาที\n"
+                 + "Milestone ที่เปิด Override Map Spawn (ใน ChallengeDataSO) จะแทนที่ / ต่อจาก / เล่นพร้อมโหมดนี้ได้ ดูที่ Milestone Overrides ด้านล่าง\n"
+                 + "ช่วง Rush ระบบ Rush คุมเสมอ | Pattern และ MapEvent ทำงานปกติทุกโหมด")]
         [EnumToggleButtons, LabelText("Mode")]
-        [Tooltip("How this map picks which enemies spawn and when (unless the selected milestone overrides it).")]
+        [Tooltip("Conditions = ตัวสุ่มเดิม (Chance / Enemy Point / Spawn Conditions)\n"
+                 + "Sequential = ไล่ลิสต์ศัตรูตามลำดับเวลา\n"
+                 + "(ถ้า milestone ที่ผู้เล่นเลือกเปิด Override ค่านี้อาจถูกแทนที่)")]
         public EnemySpawnMode enemySpawnMode = EnemySpawnMode.Conditions;
 
         [FoldoutGroup("Enemy Spawn Mode")]
         [HideIf(nameof(enemySpawnMode), EnemySpawnMode.Conditions)]
         [GUIColor("@this.mixWithConditions ? Color.green : Color.red")]
         [LabelText("Mix With Conditions")]
-        [Tooltip("Keep the old random spawner running alongside the schedule (e.g. random filler enemies while "
-                 + "the schedule places the special ones). Off = only the schedule spawns.")]
+        [Tooltip("เปิด = ให้ตัวสุ่มเดิมทำงานคู่กับ Sequential ด้วย (เช่น ตัวสุ่มเติมศัตรูทั่วไป ส่วน Sequential วางตัวพิเศษ)\n"
+                 + "ปิด = เกิดจาก Sequential อย่างเดียว")]
         public bool mixWithConditions;
 
         [FoldoutGroup("Enemy Spawn Mode")]
         [ShowIf("@this.enemySpawnMode != EnemySpawnMode.Conditions && this.mixWithConditions")]
         [LabelText("Random Spawner Pool")]
-        [Tooltip("Which enemies the random spawner may still pick while mixing.")]
+        [Tooltip("ตอนเปิด Mix: ตัวสุ่มเดิมหยิบศัตรูตัวไหนได้บ้าง\n"
+                 + "All Map Enemies = ทุกตัว\nOnly Scheduled Enemies = เฉพาะตัวที่อยู่ในลิสต์\n"
+                 + "Exclude Scheduled Enemies = ยกเว้นตัวที่อยู่ในลิสต์ (ให้ลิสต์คุมตัวพวกนั้นเอง)")]
         public RandomSpawnerPool randomSpawnerPool = RandomSpawnerPool.AllMapEnemies;
 
         [FoldoutGroup("Enemy Spawn Mode")]
         [ShowIf(nameof(enemySpawnMode), EnemySpawnMode.Sequential)]
-        [Title("Sequential")]
+        [Title("Sequential", "ลิสต์ศัตรูตามลำดับเวลา")]
         [InlineProperty, HideLabel]
         public SequentialSpawnSettings sequentialSpawn = new();
 
         [FoldoutGroup("Enemy Spawn Mode")]
-        [Title("Preview", "What the map's own mode spawns and when (read-only)")]
+        [Title("Preview", "โหมดของแมพนี้เกิดศัตรูอะไร ช่วงไหน (อ่านอย่างเดียว)")]
         [ShowInInspector, ReadOnly, HideLabel, MultiLineProperty(10)]
+        [PropertyTooltip("ไทม์ไลน์คำนวณจากค่าด้านบน: ช่วงวินาที | ศัตรู xจำนวนต่อคลื่น (ระยะห่าง)\nมีคำเตือนถ้าใส่ศัตรูที่ไม่มีในแมพ")]
         private string SchedulePreview => EnemySpawnScheduleResolver.BuildMapPreview(this);
-
         [FoldoutGroup("Enemy Spawn Mode")]
-        [Title("Milestone Overrides", "Milestones (MilestoneContainer, this map's mapId) that replace the mode above")]
+        [Title("Milestone Overrides", "milestone ของแมพนี้ตัวไหนเปลี่ยนโหมดด้านบน (อ่านอย่างเดียว)")]
+        [PropertyTooltip("หาจาก MilestoneContainer ตาม mapId ของแมพนี้\n[เลข] = ลำดับ milestone (0 = milestone แรก)\nuses map mode = ใช้โหมดของแมพตามปกติ")]
         [ShowInInspector, ReadOnly, HideLabel, MultiLineProperty(6)]
         private string MilestoneOverrides
         {
@@ -556,7 +562,10 @@ namespace GameControl.SO
                             if (r != null && r.IsUsable) rules++;
                     string state = !m.overrideMapSpawn ? "uses map mode"
                         : rules == 0 ? "OVERRIDE ON but no usable rules -> uses map mode"
-                        : $"OVERRIDE ({rules} rule(s), mix {(m.spawnMixWithConditions ? "on" : "off")})";
+                        : m.spawnFlow == MilestoneSpawnFlow.ThenMapMode
+                            ? $"OVERRIDE ({rules} rule(s)) then map mode "
+                              + (m.spawnHandOver == MilestoneHandOver.AtTime ? $"at {m.spawnHandOverAt:0.#}s" : "when rules finish")
+                        : $"OVERRIDE {m.spawnFlow} ({rules} rule(s), mix {(m.spawnMixWithConditions ? "on" : "off")})";
                     lines.Add($"[{i}] {m.name}: {state}");
                 }
                 return string.Join("\n", lines);
@@ -566,7 +575,7 @@ namespace GameControl.SO
         [FoldoutGroup("Enemy Spawn Mode")]
         [ShowInInspector, ReadOnly, LabelText("Open Milestone Assets")]
         [ListDrawerSettings(ShowIndexLabels = true, ShowPaging = false, IsReadOnly = true)]
-        [PropertyTooltip("Editor only - click an entry to open that milestone's ChallengeDataSO > Enemy Spawn (Milestone).")]
+        [PropertyTooltip("คลิกชื่อไฟล์เพื่อเปิด milestone นั้นไปแก้ที่ Enemy Spawn (Milestone)")]
         private List<Challenge.ChallengeDataSO> MilestoneAssets => EnemySpawnEditorLookup.MilestonesForMap(this);
         #endregion
         

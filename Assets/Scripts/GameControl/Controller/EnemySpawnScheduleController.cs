@@ -10,11 +10,12 @@ using UnityEngine;
 namespace GameControl.Controller
 {
     /// <summary>
-    /// Runtime side of Enemy Spawn Mode (a map's Sequential list, or a milestone's Override rules). Ticked by
-    /// <see cref="SpawnerState.SpawningState"/> next to the old random spawner.
+    /// Runtime side of Enemy Spawn Mode: a map's Sequential list and/or a milestone's Override rules, run as up to
+    /// two phases (<see cref="SpawnSchedulePlan"/>). Ticked by <see cref="SpawnerState.SpawningState"/> next to
+    /// the old random spawner.
     /// <para/>
-    /// In Conditions mode - or when the schedule resolves to nothing, the agreed fallback - it stays inactive,
-    /// never spawns and never touches the random spawner, so existing maps behave exactly as before.
+    /// With nothing scheduled (Conditions map, no milestone override - every existing map) it stays inactive,
+    /// never spawns and never touches the random spawner, so the game behaves exactly as before.
     /// </summary>
     public class EnemySpawnScheduleController
     {
@@ -29,75 +30,160 @@ namespace GameControl.Controller
                 NextWaveAt = -1f;
                 SpawnedTotal = 0;
             }
+
+            /// <summary>Done for good: past its Expire or out of Max Total.</summary>
+            public bool IsFinished(float t) =>
+                (Resolved.Expire >= 0f && t >= Resolved.Expire)
+                || (Resolved.Rule.maxTotal > 0 && SpawnedTotal >= Resolved.Rule.maxTotal);
+        }
+
+        private class Phase
+        {
+            public SpawnScheduleSource Source;
+            public readonly List<RuleRuntime> Rules = new();
+            public readonly HashSet<string> Ids = new();
+            public int CycleIndex;
+
+            public void Reset()
+            {
+                CycleIndex = 0;
+                foreach (var rt in Rules) rt.Reset();
+            }
         }
 
         private readonly MapDataSO _map;
-        private readonly SpawnScheduleSource _source;
+        private readonly SpawnSchedulePlan _plan;
         private readonly EnemySpawnerController _spawner;
         private readonly SpawnerStateController _state;
         private readonly bool _debug;
-        private readonly List<RuleRuntime> _rules = new();
-        private readonly HashSet<string> _scheduledIds = new();
+        private readonly Phase _first;
+        private readonly Phase _second; // null = single phase
 
-        private int _cycleIndex;
         private float _lastElapsed = -1f;
+        private float _handedOverAt = -1f; // Then Map Mode: elapsed time of the hand-over, -1 = not yet
+        private HashSet<string> _togetherIds; // Together: ids of both phases, built on first use
 
-        /// <summary>True when a schedule is actually running (not Conditions / not fallen back).</summary>
+        /// <summary>True when anything is scheduled at all (otherwise the random spawner runs as before).</summary>
         public bool IsScheduleActive { get; }
 
         public int MilestoneIndex { get; }
 
-        /// <summary>Where the running rules came from (map mode or a milestone override).</summary>
-        public string SourceLabel => _source?.Label;
+        public string SourceLabel => _plan?.Label;
 
-        /// <summary>Whether the old random spawner may run (outside Rush - Rush always allows it).</summary>
-        public bool AllowsRandomSpawner => !IsScheduleActive || _source.MixWithConditions;
+        private bool IsThenMapMode => _second != null && _plan.Flow == MilestoneSpawnFlow.ThenMapMode;
+        private bool IsTogether => _second != null && _plan.Flow == MilestoneSpawnFlow.Together;
+        private bool HandedOver => _handedOverAt >= 0f;
 
-        /// <param name="source">From <see cref="EnemySpawnScheduleResolver.ResolveForRun"/> - map mode or milestone override.</param>
+        /// <summary>Whether the old random spawner may run right now (outside Rush - Rush always allows it).</summary>
+        public bool AllowsRandomSpawner
+        {
+            get
+            {
+                if (!IsScheduleActive) return true;
+                if (IsTogether) return _first.Source.RandomSpawnerOn || _second.Source.RandomSpawnerOn;
+                return CurrentPhase.Source.RandomSpawnerOn;
+            }
+        }
+
+        private Phase CurrentPhase => IsThenMapMode && HandedOver ? _second : _first;
+
+        /// <param name="plan">From <see cref="EnemySpawnScheduleResolver.ResolveForRun"/>.</param>
         public EnemySpawnScheduleController(MapDataSO map, EnemySpawnerController spawner,
-            SpawnerStateController state, SpawnScheduleSource source, int milestoneIndex, bool debug)
+            SpawnerStateController state, SpawnSchedulePlan plan, int milestoneIndex, bool debug)
         {
             _map = map;
-            _source = source ?? new SpawnScheduleSource { Label = "none" };
+            _plan = plan ?? new SpawnSchedulePlan { First = new SpawnScheduleSource { Label = "none" }, Label = "none" };
             _spawner = spawner;
             _state = state;
             _debug = debug;
             MilestoneIndex = milestoneIndex;
 
-            if (map == null || spawner == null || _source.IsEmpty) return;
+            _first = BuildPhase(_plan.First);
+            if (_plan.Second != null) _second = BuildPhase(_plan.Second);
 
-            foreach (var r in _source.Rules)
+            IsScheduleActive = map != null && spawner != null
+                               && (_first.Rules.Count > 0 || (_second != null && _second.Rules.Count > 0));
+
+            if (map == null) return;
+            if (!IsScheduleActive)
             {
-                if (!spawner.HasEnemyOption(r.Rule.enemyId))
+                if (_plan.HasAnyRules)
+                    Debug.Log($"[SpawnSchedule] {map.name}: {_plan.Label} has no usable rules - falling back to Conditions.");
+            }
+            else if (_debug)
+            {
+                Debug.Log($"[SpawnSchedule] {map.name}: {_plan.Label} ({_plan.Flow}), "
+                          + $"{_first.Rules.Count}+{_second?.Rules.Count ?? 0} rule(s)");
+            }
+        }
+
+        private Phase BuildPhase(SpawnScheduleSource source)
+        {
+            var phase = new Phase { Source = source ?? new SpawnScheduleSource { Label = "none" } };
+            if (_spawner == null) return phase;
+
+            foreach (var r in phase.Source.Rules)
+            {
+                if (!_spawner.HasEnemyOption(r.Rule.enemyId))
                 {
-                    Debug.LogWarning($"[SpawnSchedule] '{r.Rule.enemyId}' is not in {map.name}'s Enemy Options - skipped.");
+                    Debug.LogWarning($"[SpawnSchedule] '{r.Rule.enemyId}' is not in {_map?.name}'s Enemy Options - skipped.");
                     continue;
                 }
 
-                _rules.Add(new RuleRuntime { Resolved = r });
-                _scheduledIds.Add(r.Rule.enemyId);
+                phase.Rules.Add(new RuleRuntime { Resolved = r });
+                phase.Ids.Add(r.Rule.enemyId);
             }
 
-            IsScheduleActive = _rules.Count > 0;
-
-            if (!IsScheduleActive)
-                Debug.Log($"[SpawnSchedule] {map.name}: {_source.Label} has no usable rules - falling back to Conditions.");
-            else if (_debug)
-                Debug.Log($"[SpawnSchedule] {map.name}: {_source.Label}, {_rules.Count} rule(s), mix={_source.MixWithConditions}");
+            return phase;
         }
 
-        /// <summary>Filter for the random spawner while mixing, or null when it should not be filtered at all.</summary>
+        /// <summary>
+        /// Filter for the random spawner. It follows whichever phase is active, so it is installed once and
+        /// stays valid across the hand-over. Null = the random spawner is never filtered by this plan.
+        /// </summary>
         public Func<MapDataSO.EnemyOption, bool> BuildRandomPoolFilter()
         {
-            if (!IsScheduleActive || !_source.MixWithConditions) return null;
+            if (!IsScheduleActive) return null;
 
-            return _source.RandomPool switch
+            bool NeedsFilter(Phase p) => p != null && !p.Source.IsEmpty && p.Source.MixWithConditions
+                                         && p.Source.RandomPool != RandomSpawnerPool.AllMapEnemies;
+            if (!NeedsFilter(_first) && !NeedsFilter(_second)) return null;
+
+            return opt => InRush() || RandomPoolAllows(opt.id);
+        }
+
+        private bool RandomPoolAllows(string id)
+        {
+            SpawnScheduleSource source;
+            HashSet<string> ids;
+
+            if (IsTogether)
             {
-                RandomSpawnerPool.OnlyScheduledEnemies => opt => InRush() || _scheduledIds.Contains(opt.id),
-                RandomSpawnerPool.ExcludeScheduledEnemies => opt => InRush() || !_scheduledIds.Contains(opt.id),
-                _ => null
+                // The milestone's pool wins while it mixes; otherwise the map's.
+                bool useFirst = _first.Source.MixWithConditions;
+                source = useFirst ? _first.Source : _second.Source;
+                if (_togetherIds == null)
+                {
+                    _togetherIds = new HashSet<string>(_first.Ids);
+                    _togetherIds.UnionWith(_second.Ids);
+                }
+                ids = _togetherIds;
+            }
+            else
+            {
+                source = CurrentPhase.Source;
+                ids = CurrentPhase.Ids;
+            }
+
+            if (source.IsEmpty || !source.MixWithConditions) return true;
+            return source.RandomPool switch
+            {
+                RandomSpawnerPool.OnlyScheduledEnemies => ids.Contains(id),
+                RandomSpawnerPool.ExcludeScheduledEnemies => !ids.Contains(id),
+                _ => true
             };
         }
+
         /// <summary>Called every frame while the spawner is in its Spawning state and the map is NOT in Rush.</summary>
         public void Tick()
         {
@@ -105,18 +191,51 @@ namespace GameControl.Controller
 
             float elapsed = GetElapsed();
 
-            // Timer went backwards = a new run on the same map (retry). Start the schedule over.
+            // Timer went backwards = a new run on the same map (retry). Start everything over.
             if (_lastElapsed >= 0f && elapsed + 0.5f < _lastElapsed)
             {
-                _cycleIndex = 0;
-                foreach (var rt in _rules) rt.Reset();
+                _first.Reset();
+                _second?.Reset();
+                _handedOverAt = -1f;
             }
             _lastElapsed = elapsed;
 
-            float localElapsed = ToCycleTime(elapsed);
+            if (IsTogether)
+            {
+                TickPhase(_first, elapsed);
+                TickPhase(_second, elapsed);
+                return;
+            }
 
-            foreach (var rt in _rules)
-                TickRule(rt, localElapsed);
+            if (IsThenMapMode && !HandedOver && ShouldHandOver(elapsed))
+            {
+                _handedOverAt = elapsed;
+                if (_debug) Debug.Log($"[SpawnSchedule] Hand-over at {elapsed:0.0}s -> {_second.Source.Label}");
+            }
+
+            if (IsThenMapMode && HandedOver)
+            {
+                float t = _plan.SecondStartsAtHandOver ? elapsed - _handedOverAt : elapsed;
+                TickPhase(_second, t);
+            }
+            else
+            {
+                TickPhase(_first, elapsed);
+            }
+        }
+
+        private bool ShouldHandOver(float elapsed)
+        {
+            if (_plan.HandOver == MilestoneHandOver.AtTime) return elapsed >= _plan.HandOverAt;
+            return _first.Rules.Count == 0 || _first.Rules.All(rt => rt.IsFinished(elapsed));
+        }
+
+        private void TickPhase(Phase phase, float elapsed)
+        {
+            if (phase == null || phase.Rules.Count == 0) return;
+            float t = ToCycleTime(phase, elapsed);
+            foreach (var rt in phase.Rules)
+                TickRule(rt, t);
         }
 
         private void TickRule(RuleRuntime rt, float t)
@@ -125,8 +244,7 @@ namespace GameControl.Controller
             var rule = r.Rule;
 
             if (t < r.Start) return;
-            if (r.Expire >= 0f && t >= r.Expire) return;
-            if (rule.maxTotal > 0 && rt.SpawnedTotal >= rule.maxTotal) return;
+            if (rt.IsFinished(t)) return;
 
             if (rt.NextWaveAt < 0f)
                 rt.NextWaveAt = rule.spawnOnStart ? r.Start : r.Start + rule.RollInterval(_state.EnemySpawnTimer);
@@ -193,22 +311,23 @@ namespace GameControl.Controller
                 rt.SpawnedTotal++;
         }
 
-        /// <summary>Sequential + Loop: map elapsed time into one pass of the list, resetting counters per pass.</summary>
-        private float ToCycleTime(float elapsed)
+        /// <summary>Sequential + Loop: map a phase's time into one pass of its list, resetting counters per pass.</summary>
+        private static float ToCycleTime(Phase phase, float elapsed)
         {
-            if (_source.CycleLength <= 0f) return elapsed;
+            float cycleLength = phase.Source.CycleLength;
+            if (cycleLength <= 0f) return elapsed;
 
-            float offset = _source.CycleOffset;
+            float offset = phase.Source.CycleOffset;
             if (elapsed < offset) return elapsed;
 
-            int cycle = Mathf.FloorToInt((elapsed - offset) / _source.CycleLength);
-            if (cycle != _cycleIndex)
+            int cycle = Mathf.FloorToInt((elapsed - offset) / cycleLength);
+            if (cycle != phase.CycleIndex)
             {
-                _cycleIndex = cycle;
-                foreach (var rt in _rules) rt.Reset();
+                phase.CycleIndex = cycle;
+                foreach (var rt in phase.Rules) rt.Reset();
             }
 
-            return offset + (elapsed - offset) - cycle * _source.CycleLength;
+            return offset + (elapsed - offset) - cycle * cycleLength;
         }
 
         /// <summary>Seconds since the run started - same formula as TimeWindowEnemySpawnCondition (endless-aware).</summary>
@@ -227,10 +346,30 @@ namespace GameControl.Controller
         public string DebugSummary()
         {
             if (!IsScheduleActive)
-                return $"inactive = Conditions ({_source.Label}, milestone {MilestoneIndex})";
-            return $"{_source.Label} | mix {(_source.MixWithConditions ? "on" : "off")}\n" + string.Join("\n", _rules.Select(rt =>
-                $"{rt.Resolved.Rule.enemyId}: {rt.Resolved.Start:0.#}s-{(rt.Resolved.Expire < 0 ? "end" : rt.Resolved.Expire.ToString("0.#") + "s")} "
-                + $"spawned {rt.SpawnedTotal}, next {(rt.NextWaveAt < 0 ? "-" : rt.NextWaveAt.ToString("0.0"))}"));
+                return $"inactive = Conditions ({_plan.Label}, milestone {MilestoneIndex})";
+
+            string header = $"{_plan.Label} | {_plan.Flow}";
+            if (IsThenMapMode) header += HandedOver ? $" | handed over at {_handedOverAt:0.0}s" : " | before hand-over";
+            header += $" | random {(AllowsRandomSpawner ? "on" : "off")}";
+
+            var lines = new List<string> { header };
+            AddLines(lines, _first, IsThenMapMode ? "1)" : "");
+            if (_second != null) AddLines(lines, _second, IsThenMapMode ? "2)" : "+");
+            return string.Join("\n", lines);
+        }
+
+        private static void AddLines(List<string> lines, Phase phase, string prefix)
+        {
+            if (phase.Rules.Count == 0)
+            {
+                lines.Add($"{prefix} {phase.Source.Label}: random spawner (Conditions)".Trim());
+                return;
+            }
+
+            foreach (var rt in phase.Rules)
+                lines.Add($"{prefix} {rt.Resolved.Rule.enemyId}: {rt.Resolved.Start:0.#}s-"
+                          + $"{(rt.Resolved.Expire < 0 ? "end" : rt.Resolved.Expire.ToString("0.#") + "s")} "
+                          + $"spawned {rt.SpawnedTotal}, next {(rt.NextWaveAt < 0 ? "-" : rt.NextWaveAt.ToString("0.0"))}".Trim());
         }
     }
 }

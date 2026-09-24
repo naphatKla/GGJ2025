@@ -15,23 +15,23 @@ namespace GameControl.SO
     /// </summary>
     public enum EnemySpawnMode
     {
-        [Tooltip("Old behaviour: weighted random from the Enemy Options, gated by each enemy's Spawn Conditions.")]
+        [Tooltip("ระบบเดิม: สุ่มศัตรูตาม Chance / Enemy Point / Spawn Conditions")]
         Conditions = 0,
 
-        [Tooltip("An ordered list: each entry takes over after the previous one's step.")]
+        [Tooltip("ไล่ลิสต์ศัตรูตามลำดับ ทีละ Step วินาที")]
         Sequential = 1,
     }
 
     /// <summary>Which enemies the old random spawner may still pick while a schedule is running (Mix With Conditions).</summary>
     public enum RandomSpawnerPool
     {
-        [Tooltip("Random spawner behaves exactly as in Conditions mode.")]
+        [Tooltip("ตัวสุ่มเดิมหยิบได้ทุกตัวเหมือนปกติ")]
         AllMapEnemies = 0,
 
-        [Tooltip("Random spawner only picks enemies that appear in the active schedule.")]
+        [Tooltip("ตัวสุ่มเดิมหยิบเฉพาะศัตรูที่อยู่ในตาราง")]
         OnlyScheduledEnemies = 1,
 
-        [Tooltip("Random spawner never picks enemies the schedule handles - the schedule fully owns those.")]
+        [Tooltip("ตัวสุ่มเดิมไม่หยิบศัตรูที่อยู่ในตาราง (ตารางคุมตัวพวกนั้นเอง)")]
         ExcludeScheduledEnemies = 2,
     }
 
@@ -68,25 +68,29 @@ namespace GameControl.SO
 
         #region Enemy
 
-        [FoldoutGroup(G), PropertyOrder(0)]
+        [FoldoutGroup(G), PropertyOrder(-1)]
+        [InfoBox("กฎนี้ยังไม่ได้เลือกศัตรู จะถูกข้ามตอนเล่น", InfoMessageType.Warning,
+            "@this.enabled && this.HasNoEnemy")]
+        [InfoBox("กฎนี้ปิดอยู่ (Enabled = ปิด) จะไม่ถูกใช้ทั้งตอนเล่นและใน Preview", InfoMessageType.None, "@!this.enabled")]
         [GUIColor("@this.enabled ? Color.green : Color.red")]
         [LabelText("Enabled")]
-        [Tooltip("Untick to keep the entry but skip it at runtime (and in the preview).")]
+        [Tooltip("เปิด = ใช้กฎนี้\nปิด = เก็บกฎไว้แต่ไม่ใช้ (ไม่เกิดตอนเล่น และไม่แสดงใน Preview)")]
         public bool enabled = true;
 
         [FoldoutGroup(G), PropertyOrder(1)]
         // Unity's own popup, not Odin's ValueDropdown: Odin's popup window calls a Unity internal
         // (ContainerWindow.FitWindowRectToScreen) that this Unity version no longer has, so it throws on click.
         [CustomValueDrawer(nameof(DrawEnemyIdField))]
-        [ValidateInput(nameof(ValidateEnemyId), "Pick an enemy id that exists in this map's Enemy Setting > Enemy Options.")]
+        [ValidateInput(nameof(ValidateEnemyId), "ศัตรูตัวนี้ไม่มีใน Enemy Options ของแมพ จะถูกข้ามตอนเล่น")]
         [LabelText("Enemy")]
-        [Tooltip("Id from this map's Enemy Options. Pools, per-enemy max, spawn effects and enemy data all come "
-                 + "from that option.")]
+        [Tooltip("ศัตรูที่จะให้เกิด เลือกจาก Enemy Setting > Enemy Options ของแมพ\n"
+                 + "ค่าอื่นของศัตรู (pool, Per-Enemy Max, Spawn Effects, Enemy Data) ใช้จากตัวเลือกนั้นทั้งหมด\n"
+                 + "ถ้าขึ้นว่า (not in map) แปลว่า id นี้ไม่มีในแมพ")]
         public string enemyId;
 
         [FoldoutGroup(G), PropertyOrder(2)]
         [LabelText("Note")]
-        [Tooltip("Free text for designers - shows in the foldout title. Not used by the game.")]
+        [Tooltip("โน้ตสำหรับ designer จะแสดงที่หัว foldout ไม่มีผลกับเกม\nเช่น \"บอสกลางเกม\" หรือ \"คลื่นเปิดฉาก\"")]
         public string note;
 
         #endregion
@@ -94,34 +98,38 @@ namespace GameControl.SO
         #region Interval
 
         [FoldoutGroup(G), PropertyOrder(20)]
-        [Title("Interval", "Time between waves")]
+        [Title("Interval", "ระยะห่างระหว่างแต่ละคลื่น")]
         [EnumToggleButtons, HideLabel]
+        [Tooltip("Map Spawn Timer = ใช้ตัวจับเวลาเดียวกับตัวสุ่มเดิมของแมพ (เร็วขึ้นเรื่อยๆ ตาม growth ของแมพ)\n"
+                 + "Custom = ทุกๆ กี่วินาที ค่าคงที่\n"
+                 + "Random Range = สุ่มระหว่าง Min–Max ใหม่ทุกคลื่น")]
         public SpawnIntervalMode intervalMode = SpawnIntervalMode.MapSpawnTimer;
 
         [FoldoutGroup(G), PropertyOrder(21)]
         [ShowIf(nameof(intervalMode), SpawnIntervalMode.Custom)]
         [Unit(Units.Second), MinValue(0.05f)]
         [LabelText("Every")]
-        [Tooltip("Seconds between waves.")]
+        [Tooltip("เกิด 1 คลื่นทุกกี่วินาที เช่น 20 = ทุก 20 วินาที")]
         public float customInterval = 10f;
 
         [FoldoutGroup(G), PropertyOrder(22)]
         [ShowIf(nameof(intervalMode), SpawnIntervalMode.RandomRange)]
+        [InfoBox("Min มากกว่า Max ระบบจะสลับให้เองตอนเล่น", InfoMessageType.Warning, "@this.intervalMin > this.intervalMax")]
         [Unit(Units.Second), MinValue(0.05f)]
         [LabelText("Min")]
-        [Tooltip("Shortest possible gap between waves.")]
+        [Tooltip("ระยะห่างสั้นที่สุดระหว่างคลื่น (วินาที)")]
         public float intervalMin = 5f;
 
         [FoldoutGroup(G), PropertyOrder(23)]
         [ShowIf(nameof(intervalMode), SpawnIntervalMode.RandomRange)]
         [Unit(Units.Second), MinValue(0.05f)]
         [LabelText("Max")]
-        [Tooltip("Longest possible gap between waves.")]
+        [Tooltip("ระยะห่างยาวที่สุดระหว่างคลื่น (วินาที)")]
         public float intervalMax = 15f;
 
         [FoldoutGroup(G), PropertyOrder(24)]
         [LabelText("First Wave At Start")]
-        [Tooltip("On: the first wave comes the moment this entry starts. Off: it waits one interval first.")]
+        [Tooltip("เปิด = คลื่นแรกออกทันทีที่กฎนี้เริ่ม\nปิด = รอให้ครบหนึ่ง interval ก่อนแล้วค่อยออกคลื่นแรก")]
         public bool spawnOnStart = true;
 
         #endregion
@@ -129,36 +137,38 @@ namespace GameControl.SO
         #region Amount
 
         [FoldoutGroup(G), PropertyOrder(30)]
-        [Title("Amount")]
+        [Title("Amount", "จำนวนศัตรูต่อคลื่น และจำกัดทั้งเกม")]
+        [InfoBox("Per Wave (Min) มากกว่า (Max) ระบบจะใช้ค่า Min", InfoMessageType.Warning, "@this.amountMin > this.amountMax")]
         [MinValue(1)]
         [LabelText("Per Wave (Min)")]
-        [Tooltip("Enemies per wave - a random count between Min and Max.")]
+        [Tooltip("จำนวนศัตรูต่อคลื่น (ค่าต่ำสุด)\nแต่ละคลื่นสุ่มจำนวนระหว่าง Min–Max ถ้าอยากได้จำนวนคงที่ให้ใส่เท่ากัน")]
         public int amountMin = 1;
 
         [FoldoutGroup(G), PropertyOrder(31)]
         [MinValue(1)]
         [LabelText("Per Wave (Max)")]
-        [Tooltip("Enemies per wave - a random count between Min and Max.")]
+        [Tooltip("จำนวนศัตรูต่อคลื่น (ค่าสูงสุด)\nแต่ละคลื่นสุ่มจำนวนระหว่าง Min–Max")]
         public int amountMax = 1;
 
         [FoldoutGroup(G), PropertyOrder(32)]
         [ShowIf("@this.amountMax > 1")]
         [Unit(Units.Second), MinValue(0f)]
         [LabelText("Delay Inside Wave")]
-        [Tooltip("Gap between enemies of the same wave. 0 = all at once.")]
+        [Tooltip("เว้นระยะระหว่างศัตรูแต่ละตัวในคลื่นเดียวกัน\n0 = ออกมาพร้อมกันทั้งคลื่น\n0.3 = ทยอยออกทีละตัวห่างกัน 0.3 วินาที")]
         public float burstDelay;
 
         [FoldoutGroup(G), PropertyOrder(33)]
+        [InfoBox("Max Total = 1: ศัตรูตัวนี้จะเกิดแค่ครั้งเดียวต่อรอบเกม (เหมาะกับบอส)", InfoMessageType.Info, "@this.maxTotal == 1")]
         [MinValue(0)]
         [LabelText("Max Total")]
-        [Tooltip("Stop after this many enemies from this entry in one run. 0 = unlimited, 1 = a one-off (e.g. a "
-                 + "boss that must appear exactly once).")]
+        [Tooltip("กฎนี้เกิดศัตรูรวมได้สูงสุดกี่ตัวต่อรอบเกม\n0 = ไม่จำกัด\n1 = เกิดครั้งเดียว (เช่น บอส)\n"
+                 + "ครบแล้วกฎนี้หยุดเอง (ใน Sequential ที่เปิด Loop จะนับใหม่ทุกรอบ)")]
         public int maxTotal;
 
         [FoldoutGroup(G), PropertyOrder(34)]
         [Range(0f, 100f)]
         [LabelText("Wave Chance %")]
-        [Tooltip("Chance each wave actually happens. A skipped wave still waits a full interval.")]
+        [Tooltip("โอกาสที่แต่ละคลื่นจะเกิดจริง (%)\n100 = เกิดทุกคลื่น\n50 = ครึ่งหนึ่ง\nคลื่นที่ไม่เกิดจะรอ interval ถัดไปตามปกติ")]
         public float chance = 100f;
 
         #endregion
@@ -166,46 +176,50 @@ namespace GameControl.SO
         #region Rules
 
         [FoldoutGroup(G), PropertyOrder(40)]
-        [Title("Rules")]
+        [Title("Conditions & Position", "เงื่อนไขเพิ่มเติมและตำแหน่งเกิด")]
         [LabelText("Respect Per-Enemy Max")]
-        [Tooltip("Obey the enemy option's Per-Enemy Max (max alive at once). Scheduled enemies always count "
-                 + "toward it, so the random spawner still sees them.")]
+        [Tooltip("เปิด = เคารพ Per-Enemy Max ของศัตรูตัวนั้น (จำนวนสูงสุดที่มีชีวิตพร้อมกัน) ถ้าเต็มจะข้ามไป\n"
+                 + "ปิด = เกิดได้แม้จะเกิน\nศัตรูจากตารางนับรวมใน Per-Enemy Max เสมอ ตัวสุ่มเดิมจึงเห็นจำนวนที่ถูกต้อง")]
         public bool respectPerEnemyMax = true;
 
         [FoldoutGroup(G), PropertyOrder(41)]
         [LabelText("Check Spawn Conditions")]
-        [Tooltip("Also require the enemy option's own Spawn Conditions to pass. Off = the schedule decides alone.")]
+        [Tooltip("เปิด = ต้องผ่าน Spawn Conditions เดิมของศัตรูตัวนั้นด้วย (เช่น Time Window)\n"
+                 + "ปิด = ตารางตัดสินเองทั้งหมด ไม่สน Spawn Conditions")]
         public bool checkSpawnConditions;
 
         [FoldoutGroup(G), PropertyOrder(42)]
         [LabelText("Play Spawn Effects")]
-        [Tooltip("Run the enemy option's Spawn Effects (popup, delay, ...) like a random spawn would.")]
+        [Tooltip("เปิด = เล่น Spawn Effects ของศัตรูตัวนั้น (popup, หน่วงเวลา ฯลฯ) เหมือนตอนตัวสุ่มเดิมเกิด\nปิด = เกิดทันทีเงียบๆ")]
         public bool playSpawnEffects = true;
 
         [FoldoutGroup(G), PropertyOrder(43)]
         [EnumToggleButtons]
         [LabelText("Position")]
+        [Tooltip("Default = ตำแหน่งเดียวกับตัวสุ่มเดิม (นอกกล้อง)\nAround Player = วงแหวนรอบตัว player ตาม Radius Min–Max")]
         public ScheduledSpawnPosition spawnPosition = ScheduledSpawnPosition.Default;
 
         [FoldoutGroup(G), PropertyOrder(44)]
         [ShowIf(nameof(spawnPosition), ScheduledSpawnPosition.AroundPlayer)]
+        [InfoBox("Radius Min มากกว่า Max ระบบจะสลับให้เองตอนเล่น", InfoMessageType.Warning, "@this.radiusMin > this.radiusMax")]
         [MinValue(0f)]
         [LabelText("Radius Min")]
-        [Tooltip("Units from the player.")]
+        [Tooltip("ระยะใกล้สุดจาก player (หน่วย Unity)\nกล้องเห็นประมาณ 22 หน่วยจากตัว player ถ้าอยากให้เกิดนอกจอใช้ค่ามากกว่านั้น")]
         public float radiusMin = 20f;
 
         [FoldoutGroup(G), PropertyOrder(45)]
         [ShowIf(nameof(spawnPosition), ScheduledSpawnPosition.AroundPlayer)]
         [MinValue(0f)]
         [LabelText("Radius Max")]
-        [Tooltip("Units from the player.")]
+        [Tooltip("ระยะไกลสุดจาก player (หน่วย Unity)")]
         public float radiusMax = 25f;
 
         #endregion
-
         #region Helpers
 
         public bool IsUsable => enabled && !string.IsNullOrWhiteSpace(enemyId);
+
+        private bool HasNoEnemy => string.IsNullOrWhiteSpace(enemyId);
 
         public int RollAmount() => UnityEngine.Random.Range(Mathf.Max(1, amountMin), Mathf.Max(1, amountMin, amountMax) + 1);
 
@@ -300,23 +314,25 @@ namespace GameControl.SO
         private const string G = "$" + nameof(FoldoutTitle);
 
         [FoldoutGroup(G), PropertyOrder(10)]
-        [Title("Timing", "Seconds since the run started")]
+        [Title("Timing", "นับเป็นวินาทีตั้งแต่เริ่มรอบเกม")]
         [Unit(Units.Second), MinValue(0f)]
         [LabelText("Start At")]
-        [Tooltip("First moment this rule may spawn. 0 = from the start of the game.")]
+        [Tooltip("กฎนี้เริ่มเกิดได้ตั้งแต่วินาทีที่เท่าไหร่\n0 = ตั้งแต่เกมเริ่ม\n300 = หลังผ่านไป 5 นาที")]
         public float startAt;
 
         [FoldoutGroup(G), PropertyOrder(11)]
         [GUIColor("@this.useExpire ? Color.green : Color.red")]
         [LabelText("Use Expire")]
-        [Tooltip("Stop spawning after a set time. Off = keeps spawning until the run ends (or Rush takes over).")]
+        [Tooltip("เปิด = หยุดเกิดหลังเวลาที่กำหนด (Expire At)\nปิด = เกิดไปเรื่อยๆ จนจบเกม หรือจนระบบ Rush เข้ามาคุม")]
         public bool useExpire;
 
         [FoldoutGroup(G), PropertyOrder(12)]
         [ShowIf(nameof(useExpire))]
+        [InfoBox("Expire At ต้องมากกว่า Start At ไม่งั้นกฎนี้จะไม่เกิดเลย", InfoMessageType.Error,
+            "@this.useExpire && this.expireAt <= this.startAt")]
         [Unit(Units.Second), MinValue(0f)]
         [LabelText("Expire At")]
-        [Tooltip("No new spawns after this time. Enemies already alive stay.")]
+        [Tooltip("หลังวินาทีนี้จะไม่เกิดใหม่อีก ศัตรูที่เกิดไปแล้วยังอยู่ตามปกติ\nเช่น Start At 60 + Expire At 180 = เกิดเฉพาะนาทีที่ 1–3")]
         public float expireAt = 120f;
 
         protected override string TimingSummary =>
@@ -330,16 +346,17 @@ namespace GameControl.SO
         private const string G = "$" + nameof(FoldoutTitle);
 
         [FoldoutGroup(G), PropertyOrder(10)]
-        [Title("Timing", "Position in the list sets the start time")]
+        [Title("Timing", "เวลาเริ่มมาจากลำดับในลิสต์ (ดู Preview)")]
         [GUIColor("@this.useCustomDuration ? Color.green : Color.red")]
         [LabelText("Custom Duration")]
-        [Tooltip("Off = this entry lasts the list's Step. On = its own length, pushing later entries back.")]
+        [Tooltip("ปิด = entry นี้ยาวเท่า Step ของลิสต์\nเปิด = ตั้งความยาวของ entry นี้เอง entry ถัดไปจะเลื่อนตามไปด้วย")]
         public bool useCustomDuration;
 
         [FoldoutGroup(G), PropertyOrder(11)]
         [ShowIf(nameof(useCustomDuration))]
         [Unit(Units.Second), MinValue(1f)]
         [LabelText("Duration")]
+        [Tooltip("entry นี้ยาวกี่วินาทีก่อนถึง entry ถัดไป")]
         public float customDuration = 30f;
 
         protected override string TimingSummary => useCustomDuration ? $"{customDuration:0.##}s slot" : "step slot";
@@ -348,33 +365,37 @@ namespace GameControl.SO
     [Serializable]
     public class SequentialSpawnSettings
     {
+        [InfoBox("ไล่ศัตรูตามลำดับในลิสต์: entry แรกเริ่มที่ Start Offset แล้วเปลี่ยนเป็นตัวถัดไปทุก Step วินาที\n"
+                 + "ตัวอย่าง Step 30: entry 0 = 0–30 วิ, entry 1 = 30–60 วิ, entry 2 = 60–90 วิ ...\n"
+                 + "ดูช่วงเวลาจริงได้ที่ Preview ด้านล่าง")]
         [Unit(Units.Second), MinValue(1f)]
         [LabelText("Step")]
-        [Tooltip("How long each entry lasts before the next one starts (entries can override it).")]
+        [Tooltip("แต่ละ entry อยู่นานกี่วินาทีก่อนถึงตัวถัดไป\nentry ที่เปิด Custom Duration ใช้ค่าของตัวเองแทน")]
         public float step = 30f;
 
         [Unit(Units.Second), MinValue(0f)]
         [LabelText("Start Offset")]
-        [Tooltip("When the first entry starts. 0 = right at the start of the game.")]
+        [Tooltip("entry แรกเริ่มที่วินาทีเท่าไหร่\n0 = ตั้งแต่เกมเริ่ม")]
         public float startOffset;
 
         [LabelText("Stop Previous")]
-        [Tooltip("On: when the next entry starts, the previous one stops spawning (a hand-over). "
-                 + "Off: entries stack up - everything that has started keeps spawning.")]
+        [Tooltip("เปิด = พอถึงตัวถัดไป ตัวก่อนหน้าหยุดเกิด (ส่งไม้ต่อกัน)\n"
+                 + "ปิด = สะสม: ตัวที่เริ่มไปแล้วเกิดต่อไปเรื่อยๆ ศัตรูจะเพิ่มชนิดขึ้นตามเวลา")]
         public bool stopPrevious = true;
 
         [ShowIf("@this.stopPrevious && !this.loop")]
         [LabelText("Last Entry Runs Forever")]
-        [Tooltip("Keep the last entry spawning after its slot instead of the map going quiet.")]
+        [Tooltip("เปิด = entry สุดท้ายเกิดต่อไปจนจบเกม\nปิด = entry สุดท้ายหยุดเมื่อหมดเวลา แล้วแมพจะเงียบ (ไม่มีศัตรูจากตาราง)")]
         public bool lastEntryRunsForever = true;
 
         [LabelText("Loop")]
-        [Tooltip("Start again from the first entry after the last one (good for Endless maps). Max Total "
-                 + "counts reset every loop.")]
+        [Tooltip("เปิด = เล่นจบลิสต์แล้ววนกลับไป entry แรก (เหมาะกับแมพ Endless)\nMax Total ของแต่ละ entry นับใหม่ทุกรอบ")]
         public bool loop;
 
+        [InfoBox("ยังไม่มี entry แมพนี้จะกลับไปใช้ Conditions (ตัวสุ่มเดิม)", InfoMessageType.Warning, "@this.entries == null || this.entries.Count == 0")]
         [ListDrawerSettings(ShowIndexLabels = true, ShowPaging = false)]
         [LabelText("Entries (in order)")]
+        [Tooltip("ลิสต์ศัตรูเรียงตามลำดับเวลา กด + เพื่อเพิ่ม ลากเพื่อเปลี่ยนลำดับ")]
         public List<SequentialSpawnEntry> entries = new();
     }
 
@@ -418,6 +439,49 @@ namespace GameControl.SO
         public RandomSpawnerPool RandomPool;
 
         public bool IsEmpty => Rules.Count == 0;
+
+        /// <summary>Random spawner runs while this phase is active: nothing scheduled (= Conditions) or Mix is on.</summary>
+        public bool RandomSpawnerOn => IsEmpty || MixWithConditions;
+    }
+
+    /// <summary>What a milestone with Override Map Spawn does with the map's own mode.</summary>
+    public enum MilestoneSpawnFlow
+    {
+        [Tooltip("ใช้กฎของ milestone อย่างเดียวทั้งเกม (ไม่สนโหมดของแมพ)")]
+        Replace = 0,
+
+        [Tooltip("ใช้กฎของ milestone ก่อน แล้วส่งต่อให้โหมดของแมพ")]
+        ThenMapMode = 1,
+
+        [Tooltip("ใช้กฎของ milestone และโหมดของแมพพร้อมกัน")]
+        Together = 2,
+    }
+
+    public enum MilestoneHandOver
+    {
+        [Tooltip("ส่งต่อที่วินาทีที่กำหนด (Hand Over At)")]
+        AtTime = 0,
+
+        [Tooltip("ส่งต่อเมื่อกฎของ milestone จบครบทุกข้อ (ถึง Expire At หรือครบ Max Total)\nกฎที่ไม่มีทั้งสองอย่างจะไม่มีวันจบ")]
+        WhenRulesFinish = 1,
+    }
+
+    /// <summary>
+    /// The full plan for one run: <see cref="First"/> always runs from the start; <see cref="Second"/> (the map's
+    /// mode) either takes over at the hand-over (Then Map Mode) or runs alongside (Together).
+    /// </summary>
+    public class SpawnSchedulePlan
+    {
+        public string Label;
+        public SpawnScheduleSource First;
+        /// <summary>Null = no second phase (map mode alone, or a milestone that Replaces it).</summary>
+        public SpawnScheduleSource Second;
+        public MilestoneSpawnFlow Flow;
+        public MilestoneHandOver HandOver;
+        public float HandOverAt;
+        public bool SecondStartsAtHandOver = true;
+
+        public bool HasAnyRules => (First != null && !First.IsEmpty) || (Second != null && !Second.IsEmpty);
     }
 
     /// <summary>Turns spawn settings into a flat list of timed rules. Shared by runtime and previews.</summary>
@@ -426,19 +490,62 @@ namespace GameControl.SO
         public const string FallbackText = "FALLS BACK TO CONDITIONS (random spawner as before).";
 
         /// <summary>
-        /// Picks what runs this run: the selected milestone's rules when it has Override Map Spawn ON and at
-        /// least one usable rule, otherwise the map's own mode. An empty result = behave as Conditions.
+        /// Picks what runs this run. The selected milestone takes part only when it has Override Map Spawn ON and
+        /// at least one usable rule - then its After Milestone flow decides how the map's own mode joins in.
+        /// Otherwise it is the map's own mode alone. A plan with no rules anywhere = behave as Conditions.
         /// </summary>
-        public static SpawnScheduleSource ResolveForRun(MapDataSO map, ChallengeDataSO milestone, int milestoneIndex)
+        public static SpawnSchedulePlan ResolveForRun(MapDataSO map, ChallengeDataSO milestone, int milestoneIndex)
         {
+            var mapSource = ResolveMap(map);
+
             if (milestone != null && milestone.overrideMapSpawn)
             {
                 var fromMilestone = ResolveMilestone(milestone);
-                fromMilestone.Label = $"milestone {milestoneIndex} override ({milestone.name})";
-                if (!fromMilestone.IsEmpty) return fromMilestone;
+                fromMilestone.Label = $"milestone {milestoneIndex} ({milestone.name})";
+
+                if (!fromMilestone.IsEmpty)
+                {
+                    var plan = new SpawnSchedulePlan
+                    {
+                        First = fromMilestone,
+                        Flow = milestone.spawnFlow,
+                        HandOver = milestone.spawnHandOver,
+                        HandOverAt = Mathf.Max(0f, milestone.spawnHandOverAt),
+                        SecondStartsAtHandOver = milestone.spawnMapTimelineStartsAtHandOver
+                    };
+                    if (plan.Flow != MilestoneSpawnFlow.Replace) plan.Second = mapSource;
+
+                    plan.Label = plan.Flow switch
+                    {
+                        MilestoneSpawnFlow.ThenMapMode => $"{fromMilestone.Label} then {mapSource.Label}",
+                        MilestoneSpawnFlow.Together => $"{fromMilestone.Label} + {mapSource.Label}",
+                        _ => $"{fromMilestone.Label} replaces {mapSource.Label}"
+                    };
+                    return plan;
+                }
             }
 
-            return ResolveMap(map);
+            return new SpawnSchedulePlan { First = mapSource, Label = mapSource.Label };
+        }
+
+        /// <summary>
+        /// Latest Expire among the rules when every rule can finish; -1 when some rule never finishes
+        /// (no Expire and no Max Total); float.NaN when the finish depends on Max Total (unknown time).
+        /// </summary>
+        public static float EstimateRulesFinish(SpawnScheduleSource source)
+        {
+            if (source == null || source.IsEmpty) return 0f;
+            float latest = 0f;
+            bool unknown = false;
+            foreach (var r in source.Rules)
+            {
+                bool hasExpire = r.Expire >= 0f;
+                bool hasMax = r.Rule.maxTotal > 0;
+                if (!hasExpire && !hasMax) return -1f;
+                if (hasExpire) latest = Mathf.Max(latest, r.Expire);
+                else unknown = true;
+            }
+            return unknown ? float.NaN : latest;
         }
 
         public static SpawnScheduleSource ResolveMap(MapDataSO map)
@@ -523,9 +630,10 @@ namespace GameControl.SO
             return BuildSourcePreview(source, KnownIds(map));
         }
 
-        /// <summary>Readable timeline of a milestone ChallengeDataSO's own Spawn Rules.</summary>
+        /// <summary>Readable timeline of a milestone ChallengeDataSO's Spawn Rules and how the map's mode joins in.</summary>
         /// <param name="knownIds">Enemy ids that exist on the milestone's map(s); null/empty = don't warn.</param>
-        public static string BuildMilestonePreview(ChallengeDataSO milestone, ICollection<string> knownIds)
+        /// <param name="map">The milestone's map, to preview the map-mode part (null = unknown).</param>
+        public static string BuildMilestonePreview(ChallengeDataSO milestone, ICollection<string> knownIds, MapDataSO map)
         {
             if (milestone == null) return "";
             if (!milestone.overrideMapSpawn)
@@ -534,7 +642,51 @@ namespace GameControl.SO
             var source = ResolveMilestone(milestone);
             if (source.IsEmpty)
                 return "Override is ON but there are no usable rules -> this milestone uses the map's own Enemy Spawn Mode.";
-            return BuildSourcePreview(source, knownIds);
+
+            var sb = new StringBuilder();
+            switch (milestone.spawnFlow)
+            {
+                case MilestoneSpawnFlow.Replace:
+                    sb.AppendLine("Flow: Replace - only these rules for the whole run.");
+                    sb.AppendLine();
+                    sb.Append(BuildSourcePreview(source, knownIds));
+                    break;
+
+                case MilestoneSpawnFlow.ThenMapMode:
+                    string handOver;
+                    if (milestone.spawnHandOver == MilestoneHandOver.AtTime)
+                        handOver = $"at {Mathf.Max(0f, milestone.spawnHandOverAt):0.#}s";
+                    else
+                    {
+                        float finish = EstimateRulesFinish(source);
+                        handOver = finish < 0f ? "NEVER - WARNING: a rule has no Expire At and no Max Total"
+                            : float.IsNaN(finish) ? "when every rule is done (depends on Max Total)"
+                            : $"when every rule is done (about {finish:0.#}s)";
+                    }
+
+                    sb.AppendLine($"Flow: Then Map Mode - hand over {handOver}.");
+                    sb.AppendLine();
+                    sb.AppendLine("== 1) Milestone rules (until hand-over) ==");
+                    sb.AppendLine(BuildSourcePreview(source, knownIds));
+                    sb.AppendLine();
+                    sb.AppendLine(milestone.spawnMapTimelineStartsAtHandOver
+                        ? "== 2) Map mode (its timeline starts at 0 at the hand-over) =="
+                        : "== 2) Map mode (real game time - earlier parts are skipped) ==");
+                    sb.Append(map != null ? BuildMapPreview(map) : "Map unknown (not in MilestoneContainer).");
+                    break;
+
+                case MilestoneSpawnFlow.Together:
+                    sb.AppendLine("Flow: Together - these rules AND the map's mode at the same time.");
+                    sb.AppendLine();
+                    sb.AppendLine("== Milestone rules ==");
+                    sb.AppendLine(BuildSourcePreview(source, knownIds));
+                    sb.AppendLine();
+                    sb.AppendLine("== Map mode (alongside) ==");
+                    sb.Append(map != null ? BuildMapPreview(map) : "Map unknown (not in MilestoneContainer).");
+                    break;
+            }
+
+            return sb.ToString().TrimEnd();
         }
 
         private static string BuildSourcePreview(SpawnScheduleSource source, ICollection<string> knownIds)
@@ -667,6 +819,18 @@ namespace GameControl.SO
                     result.UnionWith(IdsOf(map));
 #endif
             return result;
+        }
+
+        /// <summary>First MapDataSO whose mapId this milestone belongs to (for previews), or null.</summary>
+        public static MapDataSO FirstMapForMilestone(ChallengeDataSO challenge)
+        {
+#if UNITY_EDITOR
+            var mapIds = MapIdsForMilestone(challenge);
+            if (mapIds.Count == 0) return null;
+            foreach (var map in LoadAll<MapDataSO>())
+                if (map != null && mapIds.Contains(map.mapId)) return map;
+#endif
+            return null;
         }
 
         /// <summary>The milestone ChallengeDataSO a map would use at this index (first MilestoneDataContainer that lists the map).</summary>

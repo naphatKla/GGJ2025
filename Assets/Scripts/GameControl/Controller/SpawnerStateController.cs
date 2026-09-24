@@ -56,20 +56,17 @@ namespace GameControl.Controller
         [BoxGroup("Setting")] [SerializeField] private Vector2 regionSize = Vector2.zero;
         [BoxGroup("Setting")] [SerializeField] private Vector2 itemdropRegionSize = Vector2.zero;
         [BoxGroup("Setting")] [SerializeField]
-        [Tooltip("Same MilestoneContainer the milestone menu uses. Used to find the selected milestone's "
-                 + "ChallengeDataSO - if it has Override Map Spawn ON, its Spawn Rules replace the map's mode. "
-                 + "Empty = milestone overrides are ignored.")]
+        [Tooltip("MilestoneContainer ตัวเดียวกับที่หน้าเมนู milestone ใช้\nใช้หา milestone ที่ผู้เล่นเลือก ถ้า milestone นั้นเปิด Override Map Spawn จะใช้ Spawn Rules ของมัน\nว่าง = ไม่สน Override ของ milestone")]
         private MilestoneDataContainer milestoneDataContainer;
         
         [BoxGroup("Debug Zone")] [SerializeField] private bool debugPattern;
         [BoxGroup("Debug Zone")] [SerializeField] private bool debugEnemy;
         [BoxGroup("Debug Zone")] [SerializeField] private bool debugMapEvent;
         [BoxGroup("Debug Zone")] [SerializeField]
-        [Tooltip("Logs every scheduled wave (map Sequential mode or a milestone Override).")]
+        [Tooltip("เปิด = Console ขึ้น log ทุกคลื่นที่ตารางสั่งเกิด และตอนส่งต่อจาก milestone ไปแมพ")]
         private bool debugSpawnSchedule;
         [BoxGroup("Debug Zone")] [SerializeField]
-        [Tooltip("Testing only: force this milestone index (for milestone Override Map Spawn). -1 = use the player's "
-                 + "selected milestone.")]
+        [Tooltip("ใช้ทดสอบเท่านั้น: บังคับใช้ milestone ลำดับนี้ (0 = milestone แรก)\n-1 = ใช้ milestone ที่ผู้เล่นเลือกตามปกติ")]
         private int debugMilestoneOverride = -1;
 
         private EnemySpawnScheduleController _spawnSchedule;

@@ -21,29 +21,29 @@ namespace Characters.CombatSystems
     {
         #region Inspector & Variables
 
+        [InfoBox("ศัตรูที่มี component นี้จะทำดาเมจเมื่อชนได้ตลอดเวลา ไม่ต้องมีสกิลพุ่งชนมาเปิดให้\n"
+                 + "ดาเมจต่อ hit = Base Damage + (Damage Multiplier% × ค่า Damage ของศัตรูตัวนี้)\n"
+                 + "ใช้กับ Bright2 Fragment (Piece of Mine): ชน → ดาเมจ + สโลว์ → หายไป")]
         [Title("Damage")]
-        [PropertyTooltip("Flat damage added on top of the multiplier part (same formula as skills: "
-                         + "Base + Multiplier% x character damage).")]
+        [Tooltip("ดาเมจคงที่ บวกเพิ่มจากส่วนที่คิดเป็น %\n0 = ใช้แค่ส่วน %")]
         [SerializeField] private float baseDamage;
 
         [Unit(Units.Percent)]
-        [PropertyTooltip("Percent of the character's own damage stat dealt per hit.")]
+        [Tooltip("% ของค่า Damage ของศัตรูตัวนี้ (จาก Character Data)\n100 = เท่ากับค่า Damage พอดี")]
         [SerializeField] private float damageMultiplier = 100f;
 
         [MinValue(0.01f)]
-        [PropertyTooltip("Hits per second against the same target while it stays in contact.")]
+        [Tooltip("ถ้ายังชนค้างอยู่ จะโดนซ้ำได้กี่ครั้งต่อวินาที (ต่อเป้าหมาย)\n1 = โดน 1 ครั้งต่อวินาที")]
         [SerializeField] private float hitPerSec = 1f;
 
         [Title("On Contact")]
-        [PropertyTooltip("Applied to the target every time a contact hit lands.")]
+        [Tooltip("Status effect ที่ใส่ให้เป้าหมายทุกครั้งที่ชนโดน\nเช่น LV1_MovementSlow_Effect + Override Duration 5 = สโลว์ 5 วินาที")]
         [SerializeField] private List<StatusEffectDataPayload> contactStatusEffects = new();
 
-        [PropertyTooltip("Only players trigger the status effects and the despawn. Damage itself still goes "
-                         + "to anything on the DamageOnTouch target layer.")]
+        [Tooltip("เปิด = effect และการหายไปเกิดเฉพาะตอนชน player\n(ดาเมจยังโดนทุกอย่างที่อยู่ใน Target Layer ของ DamageOnTouch)")]
         [SerializeField] private bool playerOnly = true;
 
-        [PropertyTooltip("Dies right after the first contact hit (through the normal death path, so pools and "
-                         + "summon bookkeeping still run).")]
+        [Tooltip("เปิด = ชนโดนครั้งแรกแล้วตายทันที (ผ่านระบบตายปกติ pool / summon จึงนับถูก)\nปิด = ชนแล้วยังไล่ต่อได้")]
         [SerializeField] private bool despawnOnContact = true;
 
         private BaseController _owner;
