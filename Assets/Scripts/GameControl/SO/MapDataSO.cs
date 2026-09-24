@@ -499,6 +499,76 @@ namespace GameControl.SO
         [Tooltip("interval of enemy point ratio to upgrade (Default 30)")]
         public float intervalEnemyPointRatioUpgrade;
         #endregion
+
+        #region Enemy Spawn Mode
+        [FoldoutGroup("Enemy Spawn Mode")]
+        [InfoBox("Conditions = ระบบเดิมทุกอย่าง (ค่าเริ่มต้น แมพเก่าไม่เปลี่ยน)\n"
+                 + "Sequential = ไล่ลิสต์ตามลำดับ ทีละ Step วินาที\n"
+                 + "Milestone ที่เปิด Override Map Spawn (ใน ChallengeDataSO) จะแทนที่โหมดนี้ในรอบที่เล่น milestone นั้น\n"
+                 + "ช่วง Rush: ตารางหยุด ระบบ Rush คุมแทนเสมอ | ถ้าตารางว่าง -> กลับไปใช้ Conditions")]
+        [EnumToggleButtons, LabelText("Mode")]
+        [Tooltip("How this map picks which enemies spawn and when (unless the selected milestone overrides it).")]
+        public EnemySpawnMode enemySpawnMode = EnemySpawnMode.Conditions;
+
+        [FoldoutGroup("Enemy Spawn Mode")]
+        [HideIf(nameof(enemySpawnMode), EnemySpawnMode.Conditions)]
+        [GUIColor("@this.mixWithConditions ? Color.green : Color.red")]
+        [LabelText("Mix With Conditions")]
+        [Tooltip("Keep the old random spawner running alongside the schedule (e.g. random filler enemies while "
+                 + "the schedule places the special ones). Off = only the schedule spawns.")]
+        public bool mixWithConditions;
+
+        [FoldoutGroup("Enemy Spawn Mode")]
+        [ShowIf("@this.enemySpawnMode != EnemySpawnMode.Conditions && this.mixWithConditions")]
+        [LabelText("Random Spawner Pool")]
+        [Tooltip("Which enemies the random spawner may still pick while mixing.")]
+        public RandomSpawnerPool randomSpawnerPool = RandomSpawnerPool.AllMapEnemies;
+
+        [FoldoutGroup("Enemy Spawn Mode")]
+        [ShowIf(nameof(enemySpawnMode), EnemySpawnMode.Sequential)]
+        [Title("Sequential")]
+        [InlineProperty, HideLabel]
+        public SequentialSpawnSettings sequentialSpawn = new();
+
+        [FoldoutGroup("Enemy Spawn Mode")]
+        [Title("Preview", "What the map's own mode spawns and when (read-only)")]
+        [ShowInInspector, ReadOnly, HideLabel, MultiLineProperty(10)]
+        private string SchedulePreview => EnemySpawnScheduleResolver.BuildMapPreview(this);
+
+        [FoldoutGroup("Enemy Spawn Mode")]
+        [Title("Milestone Overrides", "Milestones (MilestoneContainer, this map's mapId) that replace the mode above")]
+        [ShowInInspector, ReadOnly, HideLabel, MultiLineProperty(6)]
+        private string MilestoneOverrides
+        {
+            get
+            {
+                var milestones = EnemySpawnEditorLookup.MilestonesForMap(this);
+                if (milestones.Count == 0) return $"No milestones found for mapId '{mapId}'.";
+
+                var lines = new List<string>();
+                for (int i = 0; i < milestones.Count; i++)
+                {
+                    var m = milestones[i];
+                    if (m == null) { lines.Add($"[{i}] <missing>"); continue; }
+                    int rules = 0;
+                    if (m.spawnRules != null)
+                        foreach (var r in m.spawnRules)
+                            if (r != null && r.IsUsable) rules++;
+                    string state = !m.overrideMapSpawn ? "uses map mode"
+                        : rules == 0 ? "OVERRIDE ON but no usable rules -> uses map mode"
+                        : $"OVERRIDE ({rules} rule(s), mix {(m.spawnMixWithConditions ? "on" : "off")})";
+                    lines.Add($"[{i}] {m.name}: {state}");
+                }
+                return string.Join("\n", lines);
+            }
+        }
+
+        [FoldoutGroup("Enemy Spawn Mode")]
+        [ShowInInspector, ReadOnly, LabelText("Open Milestone Assets")]
+        [ListDrawerSettings(ShowIndexLabels = true, ShowPaging = false, IsReadOnly = true)]
+        [PropertyTooltip("Editor only - click an entry to open that milestone's ChallengeDataSO > Enemy Spawn (Milestone).")]
+        private List<Challenge.ChallengeDataSO> MilestoneAssets => EnemySpawnEditorLookup.MilestonesForMap(this);
+        #endregion
         
         #region Pattern Setting
         [FoldoutGroup("Pattern Setting")]

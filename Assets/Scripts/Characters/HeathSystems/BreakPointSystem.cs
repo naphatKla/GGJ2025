@@ -23,7 +23,8 @@ namespace Characters.HeathSystems
     /// When Break Point reaches 0 the owner enters the <b>Breaking</b> state:
     /// <list type="bullet">
     /// <item>Cancels all performing skills completely.</item>
-    /// <item>Stuns the owner (default 7s) — respects Iron Body like normal stun.</item>
+    /// <item>Strips the "Remove On Break" buffs (Iron Body, Damage Resistance) so nothing can block the break.</item>
+    /// <item>Applies the "While Breaking" effects (the 7s stun lives there).</item>
     /// <item>The attack that broke it deals x N its actual damage (default x10).</item>
     /// <item>Restores Break Point back to full when the Breaking state ends.</item>
     /// </list>
@@ -38,6 +39,9 @@ namespace Characters.HeathSystems
 
         [Unit(Units.Second)]
         [FoldoutGroup("Breaking Configs"), SerializeField]
+        [LabelText("Breaking Duration")]
+        [PropertyTooltip("How long the Breaking state lasts before Break Point is restored. The stun itself is "
+                         + "a payload in While Breaking - give it the same Override Duration.")]
         private float breakingStunDuration = 7f;
 
         [FoldoutGroup("Breaking Configs"), SerializeField]
@@ -47,15 +51,21 @@ namespace Characters.HeathSystems
         [FormerlySerializedAs("breakingDamageRepeatMultiplier")]
         private int breakingDamageMultiplier = 10;
 
-        [Title("Dependents")]
-        [PropertyTooltip("Stun effect data applied when entering the Breaking state.")]
-        [SerializeField] private StunEffectDataSo breakingStunEffectData;
-
         [Title("Breaking Status Effects")]
-        [PropertyTooltip("Applied to the owner the moment it Breaks and REMOVED again when Breaking ends - "
-                         + "use it for states that should last exactly as long as the stun (e.g. a "
-                         + "vulnerability debuff so the x N window hurts even more). Set a large Override "
-                         + "Duration on each payload so nothing expires early.")]
+        [PropertyTooltip("Removed from the owner FIRST, the moment it Breaks - before the stun and the x N hit. "
+                         + "Iron Body would swallow the stun and Damage Resistance would zero the x N damage, "
+                         + "so a buffed boss could never be broken without this.")]
+        [LabelText("Remove On Break")]
+        [SerializeField] private List<StatusEffectName> removeOnBreak = new()
+        {
+            StatusEffectName.IronBody,
+            StatusEffectName.DamageResistance
+        };
+
+        [PropertyTooltip("Applied to the owner the moment it Breaks (after Remove On Break) and REMOVED again "
+                         + "when Breaking ends - the stun goes here (Override Duration = Breaking Duration), "
+                         + "plus anything that should last exactly as long as Breaking (e.g. a vulnerability "
+                         + "debuff so the x N window hurts even more).")]
         [LabelText("While Breaking")]
         [SerializeField] private List<StatusEffectDataPayload> effectsWhileBreaking = new();
 
@@ -203,11 +213,13 @@ namespace Characters.HeathSystems
             // 1) Cancels all performing skills completely.
             owner?.SkillSystem?.CancelAllSkill();
 
-            // 2) Apply stun (respects Iron Body / invincibility rules inside StunEffect.OnStart).
-            ApplyBreakingStun();
+            // 2) Strip the buffs that would block the break, THEN apply the breaking payload (stun etc.).
+            //    Order matters: StunEffect.OnStart bails out while Iron Body is still on.
+            StripEffectsOnBreak();
             ApplyEffects(effectsWhileBreaking);
 
-            // 3) Amplify the hit that broke it to x N (actual damage -> HP, never heavy).
+            // 3) Amplify the hit that broke it to x N (actual damage -> HP, never heavy). Runs after the strip
+            //    so Damage Resistance can't zero it.
             ApplyBreakingAmplifiedDamage(triggerHit);
 
             // 4) Restore Break Point fully when the stun duration ends.
@@ -262,15 +274,12 @@ namespace Characters.HeathSystems
             StatusEffectManager.RemoveEffectAt(owner.gameObject, effects);
         }
 
-        private void ApplyBreakingStun()
+        private void StripEffectsOnBreak()
         {
-            if (!breakingStunEffectData || owner == null) return;
+            if (owner == null || removeOnBreak == null) return;
 
-            // Mirror StatusEffectManager.ApplyEffectTo but force our own duration.
-            BaseStatusEffect newEffect =
-                (BaseStatusEffect)Activator.CreateInstance(breakingStunEffectData.EffectType);
-            newEffect.AssignEffectData(breakingStunEffectData, breakingStunDuration);
-            owner.StatusEffectSystem.AddEffect(newEffect);
+            foreach (var effectName in removeOnBreak)
+                StatusEffectManager.RemoveEffectAt(owner.gameObject, effectName);
         }
 
         /// <summary>

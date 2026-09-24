@@ -31,6 +31,18 @@ namespace GameControl.Controller
         
         public event Action<EnemyController, MapDataSO.EnemyOption> OnFirstSpawned;
         private readonly HashSet<string> _firstSpawnedTypeIds = new();
+
+        /// <summary>
+        /// Enemies spawned by the spawn schedule. They never cost Enemy Point, so they must not refund it on
+        /// death either - otherwise every scheduled kill would inflate the random spawner's budget.
+        /// </summary>
+        private readonly HashSet<EnemyController> _noPointRefund = new();
+
+        /// <summary>
+        /// Extra filter for the RANDOM spawner only (<see cref="SpawnEnemy"/>), set by the spawn schedule's
+        /// Random Spawner Pool. Null = no filter (Conditions mode - behaviour unchanged). Patterns never use it.
+        /// </summary>
+        public Func<MapDataSO.EnemyOption, bool> RandomPoolFilter { get; set; }
         public int EnemyAmount
         {
             get
@@ -85,7 +97,8 @@ namespace GameControl.Controller
                     obj.transform.position = SpawnUtility.RandomSpawnAroundPlayerCamera(_mainCamera, 10f);
                 }
 
-                if (controller.CountedByMax)
+                bool noRefund = _noPointRefund.Remove(controller);
+                if (controller.CountedByMax && !noRefund)
                     SpawnerStateController.Instance.CurrentEnemyPoint += option.EnemyPoint;
 
                 controller.CountedByMax = false;
@@ -130,6 +143,7 @@ namespace GameControl.Controller
         private void ActionOnGet(EnemyController obj, MapDataSO.EnemyOption option)
         {
             DOTween.Kill(obj.transform, complete: true);
+            _noPointRefund.Remove(obj); // pooled instance may have been a scheduled spawn last time
             
             bool firstOfType = _firstSpawnedTypeIds.Add(option.id);
             if (firstOfType)
@@ -207,7 +221,14 @@ namespace GameControl.Controller
         
         public MapDataSO.EnemyOption SpawnEnemy()
         {
-            var randomEnemy = RandomUtility.GetWeightedRandom(PickEnemy(false));
+            var candidates = PickEnemy(false);
+            if (RandomPoolFilter != null && candidates != null)
+            {
+                candidates = candidates.Where(RandomPoolFilter).ToList();
+                if (candidates.Count == 0) candidates = null;
+            }
+
+            var randomEnemy = RandomUtility.GetWeightedRandom(candidates);
             if (randomEnemy == null) return null;
             SpawnerStateController.Instance.CurrentEnemyPoint -= randomEnemy.EnemyPoint;
             SpawnDelayAsync(randomEnemy).Forget();
@@ -275,7 +296,70 @@ namespace GameControl.Controller
 
             return !countTowardPerEnemyMax || ConditionCheck(option);
         }
-        
+
+        public bool HasEnemyOption(string enemyId) =>
+            !string.IsNullOrWhiteSpace(enemyId) && _enemyOptionsList != null && _enemyOptionsList.Any(e => e.id == enemyId);
+
+        /// <summary>
+        /// Spawns one enemy for the spawn schedule. Same pool / ActionOnGet path as a random spawn and it
+        /// counts toward Per-Enemy Max, but costs no Enemy Point (and refunds none when it dies).
+        /// </summary>
+        /// <param name="position">Null = the random spawner's usual position.</param>
+        public bool TrySpawnScheduled(string enemyId, bool respectPerEnemyMax, bool checkSpawnConditions,
+            bool playSpawnEffects, Vector2? position)
+        {
+            if (!HasEnemyOption(enemyId)) return false;
+            var option = _enemyOptionsList.First(e => e.id == enemyId);
+            if (!_enemyPools.TryGetValue(option.id, out var pool)) return false;
+
+            if (respectPerEnemyMax && !ConditionCheck(option)) return false;
+            if (checkSpawnConditions && !option.IsSpawnable(_state, _mapdata)) return false;
+
+            option.activeCount++;
+
+            if (playSpawnEffects && option.useSpawnEffect && option.spawnEffect != null && option.spawnEffect.Count > 0)
+                SpawnScheduledAfterEffectsAsync(option, pool, position).Forget();
+            else
+                GetScheduled(pool, position);
+
+            return true;
+        }
+
+        private async UniTaskVoid SpawnScheduledAfterEffectsAsync(MapDataSO.EnemyOption option,
+            ObjectPool<EnemyController> pool, Vector2? position)
+        {
+            try
+            {
+                await SpawnEffect(option);
+            }
+            catch (OperationCanceledException)
+            {
+                option.activeCount = Mathf.Max(0, option.activeCount - 1);
+                return;
+            }
+
+            GetScheduled(pool, position);
+        }
+
+        private void GetScheduled(ObjectPool<EnemyController> pool, Vector2? position)
+        {
+            if (position.HasValue)
+                _nextSpawnOverride = new SpawnOverride { Position = position.Value, ShowTrail = true };
+
+            EnemyController inst;
+            try
+            {
+                inst = pool.Get();
+            }
+            finally
+            {
+                _nextSpawnOverride = null;
+            }
+
+            inst.CountedByMax = true; // so Release decrements activeCount like a random spawn
+            _noPointRefund.Add(inst);
+        }
+
         #endregion
         
         #region Public Method

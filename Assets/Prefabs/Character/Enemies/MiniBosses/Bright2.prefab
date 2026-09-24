@@ -3295,6 +3295,23 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 9a13128eae814cae9273df5c88a206ec, type: 2}
   maxBreakPoint: 100
   immuneToExternalPull: 1
+  debugLog: 1
+  debugStartPhase: 0
+  skillSwitches:
+  - skill: {fileID: 11400000, guid: 66727e07a0bd3584bb603d7af315a441, type: 2}
+    enabled: 1
+  - skill: {fileID: 11400000, guid: 9c62429659c64792afa61194aa3a02ba, type: 2}
+    enabled: 1
+  - skill: {fileID: 11400000, guid: 42fa71fe25804eba8d5c8305c33eb4e6, type: 2}
+    enabled: 1
+  - skill: {fileID: 11400000, guid: 40d3cf3f556f4bfc8f6afc9c21a36d2d, type: 2}
+    enabled: 1
+  - skill: {fileID: 11400000, guid: 3204db4930ed41b983ef93d97f876e32, type: 2}
+    enabled: 1
+  - skill: {fileID: 11400000, guid: 271bd60c088e4173b22405ee99a0e7d0, type: 2}
+    enabled: 1
+  - skill: {fileID: 11400000, guid: 9a13128eae814cae9273df5c88a206ec, type: 2}
+    enabled: 1
 --- !u!61 &8205873605262566071
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -3354,9 +3371,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxBreakPoint: 100
   breakingStunDuration: 7
-  breakingDamageRepeatMultiplier: 10
-  breakingStunEffectData: {fileID: 11400000, guid: e5ae6010e3c4a7b43bc80da0bf5a9ef5, type: 2}
-  effectsWhileBreaking: []
+  breakingDamageMultiplier: 10
+  removeOnBreak: 0400000006000000
+  effectsWhileBreaking:
+  - effectData: {fileID: 11400000, guid: e5ae6010e3c4a7b43bc80da0bf5a9ef5, type: 2}
+    isOverrideDuration: 1
+    overrideDuration: 7
   effectsAfterBreaking: []
   allSkillsCooldownAfterBreaking: 3
   skillCooldownsAfterBreaking: []

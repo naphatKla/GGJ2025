@@ -183,7 +183,50 @@ namespace Challenge
         
         [FoldoutGroup("Stage Modify")] [Tooltip("เช่น 10 ก็จะบวกเวลาเพิ่มไป 10 วิ ถ้าใส่ -10 ก็จะลดลง 10 วิ")]
         public float timeModify;
-        
+
+        [FoldoutGroup("Enemy Spawn (Milestone)")]
+        [InfoBox("ใช้เมื่อ ChallengeDataSO นี้เป็น milestone ใน MilestoneContainer\n"
+                 + "เปิด Override = ตารางนี้แทนที่ Enemy Spawn Mode ของแมพ ในรอบที่เล่น milestone นี้\n"
+                 + "ปิด หรือไม่มีกฎที่ใช้ได้ = ใช้โหมดของแมพตามปกติ | ช่วง Rush ระบบ Rush คุมเสมอ")]
+        [GUIColor("@this.overrideMapSpawn ? Color.green : Color.red")]
+        [LabelText("Override Map Spawn")]
+        [Tooltip("ON: while this milestone is selected, its Spawn Rules replace the map's Enemy Spawn Mode. "
+                 + "OFF (default): the map decides, exactly as before.")]
+        public bool overrideMapSpawn;
+
+        [FoldoutGroup("Enemy Spawn (Milestone)")]
+        [ShowIf(nameof(overrideMapSpawn))]
+        [GUIColor("@this.spawnMixWithConditions ? Color.green : Color.red")]
+        [LabelText("Mix With Conditions")]
+        [Tooltip("Keep the old random spawner running alongside these rules. Off = only these rules spawn "
+                 + "(patterns and map events still run).")]
+        public bool spawnMixWithConditions;
+
+        [FoldoutGroup("Enemy Spawn (Milestone)")]
+        [ShowIf("@this.overrideMapSpawn && this.spawnMixWithConditions")]
+        [LabelText("Random Spawner Pool")]
+        [Tooltip("Which enemies the random spawner may still pick while mixing.")]
+        public GameControl.SO.RandomSpawnerPool spawnRandomSpawnerPool;
+
+        [FoldoutGroup("Enemy Spawn (Milestone)")]
+        [ShowIf(nameof(overrideMapSpawn))]
+        [LabelText("Spawn Rules")]
+        [ListDrawerSettings(ShowPaging = false)]
+        [Tooltip("Every rule runs on its own clock from the start of the run. Enemy ids come from this milestone's "
+                 + "map (found through MilestoneContainer). Enemies not listed are not spawned by the schedule.")]
+        public List<GameControl.SO.EnemySpawnRule> spawnRules = new();
+
+        [FoldoutGroup("Enemy Spawn (Milestone)")]
+        [ShowInInspector, ReadOnly, LabelText("Used By Map(s)")]
+        [PropertyTooltip("Editor only - mapIDs this milestone belongs to (MilestoneContainer, else Auto Selected / Map Filter).")]
+        private string SpawnMapIds => string.Join(", ", GameControl.SO.EnemySpawnEditorLookup.MapIdsForMilestone(this));
+
+        [FoldoutGroup("Enemy Spawn (Milestone)")]
+        [Title("Preview", "What these rules spawn and when (read-only)")]
+        [ShowInInspector, ReadOnly, HideLabel, MultiLineProperty(10)]
+        private string SpawnPreview => GameControl.SO.EnemySpawnScheduleResolver.BuildMilestonePreview(this,
+            GameControl.SO.EnemySpawnEditorLookup.EnemyIdsForMapIds(GameControl.SO.EnemySpawnEditorLookup.MapIdsForMilestone(this)));
+
         // -------- Debug fields (show-only) --------
         [FoldoutGroup("Debug Score"), ReadOnly, ShowInInspector]
         private float TotalScore => _debug.totalPercent;
