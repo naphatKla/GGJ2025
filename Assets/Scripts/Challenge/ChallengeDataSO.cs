@@ -262,9 +262,10 @@ namespace Challenge
         [Title("Preview", "milestone นี้เกิดศัตรูอะไร ช่วงไหน (อ่านอย่างเดียว)")]
         [ShowInInspector, ReadOnly, HideLabel, MultiLineProperty(12)]
         [PropertyTooltip("ไทม์ไลน์คำนวณจากค่าด้านบน รวมจุดส่งต่อและโหมดของแมพ\nช่วงวินาที | ศัตรู xจำนวนต่อคลื่น (ระยะห่าง)")]
-        private string SpawnPreview => GameControl.SO.EnemySpawnScheduleResolver.BuildMilestonePreview(this,
+        private string SpawnPreview => GameControl.SO.EnemySpawnEditorLookup.Throttled(this, "spawnPreview", () => GameControl.SO.EnemySpawnScheduleResolver.BuildMilestonePreview(this,
             GameControl.SO.EnemySpawnEditorLookup.EnemyIdsForMapIds(GameControl.SO.EnemySpawnEditorLookup.MapIdsForMilestone(this)),
-            GameControl.SO.EnemySpawnEditorLookup.FirstMapForMilestone(this));
+            GameControl.SO.EnemySpawnEditorLookup.FirstMapForMilestone(this)));
+
         private bool HasUsableSpawnRules => spawnRules != null && spawnRules.Any(r => r != null && r.IsUsable);
 
         // -------- Debug fields (show-only) --------
