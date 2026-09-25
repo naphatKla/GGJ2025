@@ -67,10 +67,10 @@ MonoBehaviour:
     intervalMax: 15
     spawnOnStart: 1
     amountMin: 1
-    amountMax: 1
+    amountMax: 50
     burstDelay: 0
     maxTotal: 0
-    chance: 100
+    chance: 1.5
     respectPerEnemyMax: 1
     checkSpawnConditions: 0
     playSpawnEffects: 1
@@ -278,3 +278,47 @@ MonoBehaviour:
     startAt: 405
     useExpire: 0
     expireAt: 120
+  - enabled: 1
+    enemyId: Boss_Twin
+    note: 
+    intervalMode: 0
+    customInterval: 10
+    intervalMin: 5
+    intervalMax: 15
+    spawnOnStart: 1
+    amountMin: 1
+    amountMax: 1
+    burstDelay: 0
+    maxTotal: 1
+    chance: 100
+    respectPerEnemyMax: 1
+    checkSpawnConditions: 0
+    playSpawnEffects: 1
+    spawnPosition: 0
+    radiusMin: 20
+    radiusMax: 25
+    startAt: 300
+    useExpire: 1
+    expireAt: 310
+  - enabled: 1
+    enemyId: bright2
+    note: 
+    intervalMode: 0
+    customInterval: 10
+    intervalMin: 5
+    intervalMax: 15
+    spawnOnStart: 1
+    amountMin: 1
+    amountMax: 1
+    burstDelay: 0
+    maxTotal: 1
+    chance: 100
+    respectPerEnemyMax: 1
+    checkSpawnConditions: 0
+    playSpawnEffects: 1
+    spawnPosition: 0
+    radiusMin: 20
+    radiusMax: 25
+    startAt: 590
+    useExpire: 1
+    expireAt: 600
