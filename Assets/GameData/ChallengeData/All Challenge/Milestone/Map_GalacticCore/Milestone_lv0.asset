@@ -28,7 +28,7 @@ MonoBehaviour:
   allowedMapIds: []
   allowAutoUnlock: 1
   confirmSelectedMapIds:
-  - autoSelectedMapID: map_galacticcore_St1
+  - autoSelectedMapID: map_galacticcore
     selectOnLevel: 0
   flatScoreBonusPercent: 0
   statMode: 0
@@ -49,4 +49,100 @@ MonoBehaviour:
       rushDamage: 0
       rushMoveSpeed: 0
       rushSetChance: 0
-  timeModify: -420
+  timeModify: 0
+  overrideMapSpawn: 1
+  spawnFlow: 0
+  spawnHandOver: 0
+  spawnHandOverAt: 120
+  spawnMapTimelineStartsAtHandOver: 1
+  spawnMixWithConditions: 0
+  spawnRandomSpawnerPool: 0
+  spawnRules:
+  - enabled: 1
+    enemyId: Enemy_Normal
+    note: 
+    intervalMode: 0
+    customInterval: 10
+    intervalMin: 5
+    intervalMax: 15
+    spawnOnStart: 1
+    amountMin: 1
+    amountMax: 1
+    burstDelay: 0
+    maxTotal: 0
+    chance: 100
+    respectPerEnemyMax: 1
+    checkSpawnConditions: 0
+    playSpawnEffects: 1
+    spawnPosition: 0
+    radiusMin: 20
+    radiusMax: 25
+    startAt: 0
+    useExpire: 1
+    expireAt: 450
+  - enabled: 1
+    enemyId: Enemy_Worker
+    note: 
+    intervalMode: 0
+    customInterval: 10
+    intervalMin: 5
+    intervalMax: 15
+    spawnOnStart: 1
+    amountMin: 1
+    amountMax: 1
+    burstDelay: 0
+    maxTotal: 0
+    chance: 100
+    respectPerEnemyMax: 1
+    checkSpawnConditions: 0
+    playSpawnEffects: 1
+    spawnPosition: 0
+    radiusMin: 20
+    radiusMax: 25
+    startAt: 45
+    useExpire: 1
+    expireAt: 480
+  - enabled: 1
+    enemyId: Enemy_Pusher
+    note: 
+    intervalMode: 0
+    customInterval: 10
+    intervalMin: 5
+    intervalMax: 15
+    spawnOnStart: 1
+    amountMin: 1
+    amountMax: 1
+    burstDelay: 0
+    maxTotal: 0
+    chance: 100
+    respectPerEnemyMax: 1
+    checkSpawnConditions: 0
+    playSpawnEffects: 1
+    spawnPosition: 0
+    radiusMin: 20
+    radiusMax: 25
+    startAt: 90
+    useExpire: 0
+    expireAt: 120
+  - enabled: 1
+    enemyId: 
+    note: 
+    intervalMode: 0
+    customInterval: 10
+    intervalMin: 5
+    intervalMax: 15
+    spawnOnStart: 1
+    amountMin: 1
+    amountMax: 1
+    burstDelay: 0
+    maxTotal: 0
+    chance: 100
+    respectPerEnemyMax: 1
+    checkSpawnConditions: 0
+    playSpawnEffects: 1
+    spawnPosition: 0
+    radiusMin: 20
+    radiusMax: 25
+    startAt: 0
+    useExpire: 0
+    expireAt: 120
