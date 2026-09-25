@@ -744,18 +744,79 @@ namespace GameControl.SO
             map?.EnemyOptions?.Where(o => o != null && !string.IsNullOrWhiteSpace(o.id)).Select(o => o.id).ToHashSet()
             ?? new HashSet<string>();
     }
+
     /// <summary>
     /// Editor-only helpers for the Inspector: which enemy ids a rule may use (from the selected map, or from the
     /// map(s) a selected milestone ChallengeDataSO belongs to) and which milestone asset a map previews.
     /// Everything returns empty in a build.
+    /// <para/>
+    /// Odin redraws the Inspector many times a second, so nothing here may scan the AssetDatabase per repaint:
+    /// the asset lists and every derived answer are cached, refreshed every <see cref="CacheSeconds"/> or right
+    /// away when project files change. Previews go through <see cref="Throttled"/>.
     /// </summary>
     public static class EnemySpawnEditorLookup
     {
 #if UNITY_EDITOR
-        private static int _cacheKey;
-        private static double _cacheTime;
-        private static List<string> _cacheIds = new();
+        private const double CacheSeconds = 3.0;
+        private const double PreviewSeconds = 0.5;
+
+        private static double _cacheTime = double.NegativeInfinity;
+        private static List<MilestoneDataContainer> _containers = new();
+        private static List<MapDataSO> _maps = new();
+        private static readonly Dictionary<string, object> _results = new();
+        private static readonly Dictionary<string, (double time, string value)> _throttled = new();
+
+        [UnityEditor.InitializeOnLoadMethod]
+        private static void HookInvalidation()
+        {
+            UnityEditor.EditorApplication.projectChanged += Invalidate;
+            UnityEditor.Undo.undoRedoPerformed += Invalidate;
+        }
+
+        private static void Invalidate() => _cacheTime = double.NegativeInfinity;
+
+        /// <summary>Reloads the asset lists when stale and drops every derived answer with them.</summary>
+        private static void EnsureCache()
+        {
+            double now = UnityEditor.EditorApplication.timeSinceStartup;
+            if (now - _cacheTime < CacheSeconds) return;
+
+            _containers = LoadAll<MilestoneDataContainer>().ToList();
+            _maps = LoadAll<MapDataSO>().ToList();
+            _results.Clear();
+            _throttled.Clear();
+            _cacheTime = now;
+        }
+
+        private static T Cached<T>(string key, Func<T> build)
+        {
+            EnsureCache();
+            if (_results.TryGetValue(key, out var value) && value is T typed) return typed;
+            var result = build();
+            _results[key] = result;
+            return result;
+        }
 #endif
+
+        /// <summary>
+        /// Rebuilds a read-only Inspector text (a preview) at most twice a second instead of on every repaint.
+        /// Outside the editor it simply builds it.
+        /// </summary>
+        public static string Throttled(UnityEngine.Object owner, string key, Func<string> build)
+        {
+#if UNITY_EDITOR
+            if (owner == null) return build();
+            EnsureCache();
+            string id = owner.GetInstanceID() + ":" + key;
+            double now = UnityEditor.EditorApplication.timeSinceStartup;
+            if (_throttled.TryGetValue(id, out var entry) && now - entry.time < PreviewSeconds) return entry.value;
+            string value = build();
+            _throttled[id] = (now, value);
+            return value;
+#else
+            return build();
+#endif
+        }
 
         /// <summary>Enemy ids for whatever is open in the Inspector (MapDataSO or milestone ChallengeDataSO).</summary>
         public static List<string> EnemyIdsForSelection()
@@ -764,20 +825,12 @@ namespace GameControl.SO
             var sel = UnityEditor.Selection.activeObject;
             if (sel == null) return new List<string>();
 
-            // Odin redraws often; the asset scan below is not free.
-            double now = UnityEditor.EditorApplication.timeSinceStartup;
-            if (sel.GetInstanceID() == _cacheKey && now - _cacheTime < 2.0) return _cacheIds;
-
-            var ids = new List<string>();
-            if (sel is MapDataSO map)
-                ids = IdsOf(map).ToList();
-            else if (sel is ChallengeDataSO challenge)
-                ids = EnemyIdsForMapIds(MapIdsForMilestone(challenge)).ToList();
-
-            _cacheKey = sel.GetInstanceID();
-            _cacheTime = now;
-            _cacheIds = ids;
-            return ids;
+            return Cached("sel:" + sel.GetInstanceID(), () =>
+            {
+                if (sel is MapDataSO map) return IdsOf(map).ToList();
+                if (sel is ChallengeDataSO challenge) return EnemyIdsForMapIds(MapIdsForMilestone(challenge)).ToList();
+                return new List<string>();
+            });
 #else
             return new List<string>();
 #endif
@@ -786,51 +839,64 @@ namespace GameControl.SO
         /// <summary>Map ids this milestone belongs to: MilestoneContainer first, then its Auto Selected / Map Filter lists.</summary>
         public static HashSet<string> MapIdsForMilestone(ChallengeDataSO challenge)
         {
-            var result = new HashSet<string>();
 #if UNITY_EDITOR
-            if (challenge == null) return result;
-            foreach (var container in LoadAll<MilestoneDataContainer>())
+            if (challenge == null) return new HashSet<string>();
+            return Cached("mapIds:" + challenge.GetInstanceID(), () =>
             {
-                if (container.milestoneList == null) continue;
-                foreach (var cat in container.milestoneList)
-                    if (cat?.milestoneEntries != null && cat.milestoneEntries.Contains(challenge) && !string.IsNullOrEmpty(cat.mapID))
-                        result.Add(cat.mapID);
-            }
-            if (result.Count > 0) return result;
+                var result = new HashSet<string>();
+                foreach (var container in _containers)
+                {
+                    if (container == null || container.milestoneList == null) continue;
+                    foreach (var cat in container.milestoneList)
+                        if (cat?.milestoneEntries != null && cat.milestoneEntries.Contains(challenge) && !string.IsNullOrEmpty(cat.mapID))
+                            result.Add(cat.mapID);
+                }
+                if (result.Count > 0) return result;
 
-            if (challenge.confirmSelectedMapIds != null)
-                foreach (var a in challenge.confirmSelectedMapIds)
-                    if (!string.IsNullOrEmpty(a.autoSelectedMapID)) result.Add(a.autoSelectedMapID);
-            if (challenge.allowedMapIds != null)
-                foreach (var id in challenge.allowedMapIds)
-                    if (!string.IsNullOrEmpty(id)) result.Add(id);
+                if (challenge.confirmSelectedMapIds != null)
+                    foreach (var a in challenge.confirmSelectedMapIds)
+                        if (!string.IsNullOrEmpty(a.autoSelectedMapID)) result.Add(a.autoSelectedMapID);
+                if (challenge.allowedMapIds != null)
+                    foreach (var id in challenge.allowedMapIds)
+                        if (!string.IsNullOrEmpty(id)) result.Add(id);
+                return result;
+            });
+#else
+            return new HashSet<string>();
 #endif
-            return result;
         }
 
         /// <summary>Union of Enemy Option ids of every MapDataSO whose mapId is in the set.</summary>
         public static HashSet<string> EnemyIdsForMapIds(ICollection<string> mapIds)
         {
-            var result = new HashSet<string>();
 #if UNITY_EDITOR
-            if (mapIds == null || mapIds.Count == 0) return result;
-            foreach (var map in LoadAll<MapDataSO>())
-                if (map != null && mapIds.Contains(map.mapId))
-                    result.UnionWith(IdsOf(map));
+            if (mapIds == null || mapIds.Count == 0) return new HashSet<string>();
+            return Cached("ids:" + string.Join("|", mapIds.OrderBy(x => x)), () =>
+            {
+                var result = new HashSet<string>();
+                foreach (var map in _maps)
+                    if (map != null && mapIds.Contains(map.mapId))
+                        result.UnionWith(IdsOf(map));
+                return result;
+            });
+#else
+            return new HashSet<string>();
 #endif
-            return result;
         }
 
         /// <summary>First MapDataSO whose mapId this milestone belongs to (for previews), or null.</summary>
         public static MapDataSO FirstMapForMilestone(ChallengeDataSO challenge)
         {
 #if UNITY_EDITOR
-            var mapIds = MapIdsForMilestone(challenge);
-            if (mapIds.Count == 0) return null;
-            foreach (var map in LoadAll<MapDataSO>())
-                if (map != null && mapIds.Contains(map.mapId)) return map;
-#endif
+            if (challenge == null) return null;
+            return Cached("firstMap:" + challenge.GetInstanceID(), () =>
+            {
+                var mapIds = MapIdsForMilestone(challenge);
+                return mapIds.Count == 0 ? null : _maps.FirstOrDefault(m => m != null && mapIds.Contains(m.mapId));
+            });
+#else
             return null;
+#endif
         }
 
         /// <summary>The milestone ChallengeDataSO a map would use at this index (first MilestoneDataContainer that lists the map).</summary>
@@ -838,30 +904,30 @@ namespace GameControl.SO
         {
 #if UNITY_EDITOR
             if (map == null) return null;
-            foreach (var container in LoadAll<MilestoneDataContainer>())
-            {
-                var found = MilestoneSpawnLookup.FindMilestone(container, map.mapId, milestoneIndex);
-                if (found != null) return found;
-            }
-#endif
+            var milestones = MilestonesForMap(map);
+            return milestoneIndex >= 0 && milestoneIndex < milestones.Count ? milestones[milestoneIndex] : null;
+#else
             return null;
+#endif
         }
 
         /// <summary>All milestone ChallengeDataSOs listed for this map, in order.</summary>
         public static List<ChallengeDataSO> MilestonesForMap(MapDataSO map)
         {
-            var result = new List<ChallengeDataSO>();
 #if UNITY_EDITOR
-            if (map == null) return result;
-            foreach (var container in LoadAll<MilestoneDataContainer>())
+            if (map == null) return new List<ChallengeDataSO>();
+            return Cached("milestones:" + map.GetInstanceID() + ":" + map.mapId, () =>
             {
-                var cat = container.milestoneList?.Find(c => c != null && c.mapID == map.mapId);
-                if (cat?.milestoneEntries == null) continue;
-                result.AddRange(cat.milestoneEntries);
-                break;
-            }
+                foreach (var container in _containers)
+                {
+                    var cat = container != null ? container.milestoneList?.Find(c => c != null && c.mapID == map.mapId) : null;
+                    if (cat?.milestoneEntries != null) return new List<ChallengeDataSO>(cat.milestoneEntries);
+                }
+                return new List<ChallengeDataSO>();
+            });
+#else
+            return new List<ChallengeDataSO>();
 #endif
-            return result;
         }
 
         private static IEnumerable<string> IdsOf(MapDataSO map) =>

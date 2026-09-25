@@ -539,37 +539,38 @@ namespace GameControl.SO
         [Title("Preview", "โหมดของแมพนี้เกิดศัตรูอะไร ช่วงไหน (อ่านอย่างเดียว)")]
         [ShowInInspector, ReadOnly, HideLabel, MultiLineProperty(10)]
         [PropertyTooltip("ไทม์ไลน์คำนวณจากค่าด้านบน: ช่วงวินาที | ศัตรู xจำนวนต่อคลื่น (ระยะห่าง)\nมีคำเตือนถ้าใส่ศัตรูที่ไม่มีในแมพ")]
-        private string SchedulePreview => EnemySpawnScheduleResolver.BuildMapPreview(this);
+        private string SchedulePreview => EnemySpawnEditorLookup.Throttled(this, "mapPreview", () => EnemySpawnScheduleResolver.BuildMapPreview(this));
+
         [FoldoutGroup("Enemy Spawn Mode")]
         [Title("Milestone Overrides", "milestone ของแมพนี้ตัวไหนเปลี่ยนโหมดด้านบน (อ่านอย่างเดียว)")]
         [PropertyTooltip("หาจาก MilestoneContainer ตาม mapId ของแมพนี้\n[เลข] = ลำดับ milestone (0 = milestone แรก)\nuses map mode = ใช้โหมดของแมพตามปกติ")]
         [ShowInInspector, ReadOnly, HideLabel, MultiLineProperty(6)]
-        private string MilestoneOverrides
-        {
-            get
-            {
-                var milestones = EnemySpawnEditorLookup.MilestonesForMap(this);
-                if (milestones.Count == 0) return $"No milestones found for mapId '{mapId}'.";
+        private string MilestoneOverrides =>
+            EnemySpawnEditorLookup.Throttled(this, "milestoneOverrides", BuildMilestoneOverrides);
 
-                var lines = new List<string>();
-                for (int i = 0; i < milestones.Count; i++)
-                {
-                    var m = milestones[i];
-                    if (m == null) { lines.Add($"[{i}] <missing>"); continue; }
-                    int rules = 0;
-                    if (m.spawnRules != null)
-                        foreach (var r in m.spawnRules)
-                            if (r != null && r.IsUsable) rules++;
-                    string state = !m.overrideMapSpawn ? "uses map mode"
-                        : rules == 0 ? "OVERRIDE ON but no usable rules -> uses map mode"
-                        : m.spawnFlow == MilestoneSpawnFlow.ThenMapMode
-                            ? $"OVERRIDE ({rules} rule(s)) then map mode "
-                              + (m.spawnHandOver == MilestoneHandOver.AtTime ? $"at {m.spawnHandOverAt:0.#}s" : "when rules finish")
-                        : $"OVERRIDE {m.spawnFlow} ({rules} rule(s), mix {(m.spawnMixWithConditions ? "on" : "off")})";
-                    lines.Add($"[{i}] {m.name}: {state}");
-                }
-                return string.Join("\n", lines);
+        private string BuildMilestoneOverrides()
+        {
+            var milestones = EnemySpawnEditorLookup.MilestonesForMap(this);
+            if (milestones.Count == 0) return $"No milestones found for mapId '{mapId}'.";
+
+            var lines = new List<string>();
+            for (int i = 0; i < milestones.Count; i++)
+            {
+                var m = milestones[i];
+                if (m == null) { lines.Add($"[{i}] <missing>"); continue; }
+                int rules = 0;
+                if (m.spawnRules != null)
+                    foreach (var r in m.spawnRules)
+                        if (r != null && r.IsUsable) rules++;
+                string state = !m.overrideMapSpawn ? "uses map mode"
+                    : rules == 0 ? "OVERRIDE ON but no usable rules -> uses map mode"
+                    : m.spawnFlow == MilestoneSpawnFlow.ThenMapMode
+                        ? $"OVERRIDE ({rules} rule(s)) then map mode "
+                          + (m.spawnHandOver == MilestoneHandOver.AtTime ? $"at {m.spawnHandOverAt:0.#}s" : "when rules finish")
+                    : $"OVERRIDE {m.spawnFlow} ({rules} rule(s), mix {(m.spawnMixWithConditions ? "on" : "off")})";
+                lines.Add($"[{i}] {m.name}: {state}");
             }
+            return string.Join("\n", lines);
         }
 
         [FoldoutGroup("Enemy Spawn Mode")]
