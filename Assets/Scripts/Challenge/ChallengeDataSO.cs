@@ -183,7 +183,90 @@ namespace Challenge
         
         [FoldoutGroup("Stage Modify")] [Tooltip("เช่น 10 ก็จะบวกเวลาเพิ่มไป 10 วิ ถ้าใส่ -10 ก็จะลดลง 10 วิ")]
         public float timeModify;
-        
+
+        [FoldoutGroup("Enemy Spawn (Milestone)")]
+        [InfoBox("ตารางเกิดศัตรูเฉพาะ milestone นี้ (ใช้เมื่อไฟล์นี้อยู่ใน MilestoneContainer)\n"
+                 + "• ปิด Override (ค่าเริ่มต้น) = ใช้ Enemy Spawn Mode ของแมพตามปกติ\n"
+                 + "• เปิด Override + มีกฎ = กฎด้านล่างทำงาน แล้วเลือกได้ว่าจะแทนที่ / ต่อจาก / เล่นพร้อมโหมดของแมพ\n"
+                 + "ช่วง Rush ระบบ Rush คุมเสมอ | Pattern และ MapEvent ทำงานปกติ")]
+        [GUIColor("@this.overrideMapSpawn ? Color.green : Color.red")]
+        [LabelText("Override Map Spawn")]
+        [Tooltip("เปิด = ตอนเล่น milestone นี้ ใช้ Spawn Rules ด้านล่าง (ร่วมกับโหมดแมพตาม After Milestone)\n"
+                 + "ปิด = ใช้ Enemy Spawn Mode ของแมพเหมือนเดิม")]
+        public bool overrideMapSpawn;
+
+        [FoldoutGroup("Enemy Spawn (Milestone)")]
+        [ShowIf(nameof(overrideMapSpawn))]
+        [InfoBox("Override เปิดอยู่แต่ยังไม่มีกฎที่ใช้ได้ milestone นี้จะใช้โหมดของแมพไปก่อน", InfoMessageType.Warning,
+            "@this.overrideMapSpawn && !this.HasUsableSpawnRules")]
+        [EnumToggleButtons, LabelText("After Milestone")]
+        [Tooltip("Replace = ใช้กฎของ milestone อย่างเดียวทั้งเกม\n"
+                 + "Then Map Mode = ใช้กฎของ milestone ก่อน แล้วส่งต่อให้โหมดของแมพ (ตั้งจุดส่งต่อที่ Hand Over)\n"
+                 + "Together = ใช้กฎของ milestone และโหมดของแมพพร้อมกัน (เช่น เพิ่มบอสทับลงบนแมพปกติ)")]
+        public GameControl.SO.MilestoneSpawnFlow spawnFlow = GameControl.SO.MilestoneSpawnFlow.Replace;
+
+        [FoldoutGroup("Enemy Spawn (Milestone)")]
+        [ShowIf("@this.overrideMapSpawn && this.spawnFlow == GameControl.SO.MilestoneSpawnFlow.ThenMapMode")]
+        [EnumToggleButtons, LabelText("Hand Over")]
+        [Tooltip("เมื่อไหร่จะเปลี่ยนจากกฎของ milestone ไปเป็นโหมดของแมพ\n"
+                 + "At Time = ที่วินาทีที่กำหนด\n"
+                 + "When Rules Finish = เมื่อกฎทุกข้อจบ (ถึง Expire At หรือครบ Max Total)")]
+        public GameControl.SO.MilestoneHandOver spawnHandOver = GameControl.SO.MilestoneHandOver.AtTime;
+
+        [FoldoutGroup("Enemy Spawn (Milestone)")]
+        [ShowIf("@this.overrideMapSpawn && this.spawnFlow == GameControl.SO.MilestoneSpawnFlow.ThenMapMode && this.spawnHandOver == GameControl.SO.MilestoneHandOver.AtTime")]
+        [Unit(Units.Second), MinValue(0f)]
+        [LabelText("Hand Over At")]
+        [Tooltip("วินาทีที่ส่งต่อ (นับจากเริ่มรอบเกม)\nกฎของ milestone หยุด แล้วโหมดของแมพเริ่มทำงาน\nเช่น 120 = ช่วง milestone 2 นาทีแรก")]
+        public float spawnHandOverAt = 120f;
+
+        [FoldoutGroup("Enemy Spawn (Milestone)")]
+        [ShowIf("@this.overrideMapSpawn && this.spawnFlow == GameControl.SO.MilestoneSpawnFlow.ThenMapMode")]
+        [LabelText("Map Timeline Starts At Hand-Over")]
+        [Tooltip("เปิด (แนะนำ) = นาฬิกาของแมพเริ่มนับ 0 ตอนส่งต่อ Sequential ของแมพจะเล่นครบตั้งแต่ entry แรก\n"
+                 + "ปิด = ใช้เวลาจริงของเกม ส่วนของแมพที่ควรเกิดก่อนส่งต่อจะถูกข้ามไป")]
+        public bool spawnMapTimelineStartsAtHandOver = true;
+
+        [FoldoutGroup("Enemy Spawn (Milestone)")]
+        [ShowIf(nameof(overrideMapSpawn))]
+        [GUIColor("@this.spawnMixWithConditions ? Color.green : Color.red")]
+        [LabelText("Mix With Conditions")]
+        [Tooltip("เปิด = ตอนกฎของ milestone ทำงาน ให้ตัวสุ่มเดิมทำงานคู่ไปด้วย\nปิด = เกิดจากกฎของ milestone อย่างเดียว\n"
+                 + "(ใช้เฉพาะช่วงของ milestone หลังส่งต่อจะใช้ค่า Mix ของแมพ)")]
+        public bool spawnMixWithConditions;
+
+        [FoldoutGroup("Enemy Spawn (Milestone)")]
+        [ShowIf("@this.overrideMapSpawn && this.spawnMixWithConditions")]
+        [LabelText("Random Spawner Pool")]
+        [Tooltip("ตอนเปิด Mix: ตัวสุ่มเดิมหยิบศัตรูตัวไหนได้บ้าง\n"
+                 + "All Map Enemies = ทุกตัว\nOnly Scheduled Enemies = เฉพาะตัวที่อยู่ในกฎ\n"
+                 + "Exclude Scheduled Enemies = ยกเว้นตัวที่อยู่ในกฎ (ให้กฎคุมตัวพวกนั้นเอง)")]
+        public GameControl.SO.RandomSpawnerPool spawnRandomSpawnerPool;
+
+        [FoldoutGroup("Enemy Spawn (Milestone)")]
+        [ShowIf(nameof(overrideMapSpawn))]
+        [LabelText("Spawn Rules")]
+        [ListDrawerSettings(ShowPaging = false)]
+        [Tooltip("กฎการเกิด 1 ข้อ = ศัตรู 1 ชนิด แต่ละข้อมีนาฬิกาของตัวเองนับจากเริ่มรอบเกม\n"
+                 + "ศัตรูเลือกจากแมพของ milestone นี้ ศัตรูที่ไม่อยู่ในลิสต์จะไม่ถูกกฎสั่งเกิด\n"
+                 + "กด + เพื่อเพิ่มกฎ แล้วเปิด foldout เพื่อตั้งค่า")]
+        public List<GameControl.SO.EnemySpawnRule> spawnRules = new();
+
+        [FoldoutGroup("Enemy Spawn (Milestone)")]
+        [ShowInInspector, ReadOnly, LabelText("Used By Map(s)")]
+        [PropertyTooltip("milestone นี้เป็นของแมพไหน (mapID) หาจาก MilestoneContainer ก่อน ถ้าไม่เจอใช้ Auto Selected / Map Filter\n"
+                         + "รายชื่อศัตรูใน dropdown มาจากแมพเหล่านี้")]
+        private string SpawnMapIds => string.Join(", ", GameControl.SO.EnemySpawnEditorLookup.MapIdsForMilestone(this));
+
+        [FoldoutGroup("Enemy Spawn (Milestone)")]
+        [Title("Preview", "milestone นี้เกิดศัตรูอะไร ช่วงไหน (อ่านอย่างเดียว)")]
+        [ShowInInspector, ReadOnly, HideLabel, MultiLineProperty(12)]
+        [PropertyTooltip("ไทม์ไลน์คำนวณจากค่าด้านบน รวมจุดส่งต่อและโหมดของแมพ\nช่วงวินาที | ศัตรู xจำนวนต่อคลื่น (ระยะห่าง)")]
+        private string SpawnPreview => GameControl.SO.EnemySpawnScheduleResolver.BuildMilestonePreview(this,
+            GameControl.SO.EnemySpawnEditorLookup.EnemyIdsForMapIds(GameControl.SO.EnemySpawnEditorLookup.MapIdsForMilestone(this)),
+            GameControl.SO.EnemySpawnEditorLookup.FirstMapForMilestone(this));
+        private bool HasUsableSpawnRules => spawnRules != null && spawnRules.Any(r => r != null && r.IsUsable);
+
         // -------- Debug fields (show-only) --------
         [FoldoutGroup("Debug Score"), ReadOnly, ShowInInspector]
         private float TotalScore => _debug.totalPercent;

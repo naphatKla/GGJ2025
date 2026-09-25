@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2200bc5a27476164f90ce240312f1372, type: 3}
+  m_Script: {fileID: 11500000, guid: 70c84d3d50b7466294fc1a86bf10c84b, type: 3}
   m_Name: LV1_TheBright2_PieceOfMine
   m_EditorClassIdentifier: 
   serializationData:
@@ -26,7 +26,7 @@ MonoBehaviour:
       Data: 0|System.RuntimeType, mscorlib
     - Name: 
       Entry: 1
-      Data: Characters.SkillSystems.SkillRuntimes.SkillPieceOfMineRuntime, Assembly-CSharp
+      Data: Characters.SkillSystems.SkillRuntimes.SkillEnemySummonRuntime, Assembly-CSharp
     - Name: 
       Entry: 8
       Data: 
@@ -77,8 +77,3 @@ MonoBehaviour:
     minAmount: 3
     maxAmount: 3
     weight: 100
-  contactStatusEffects:
-  - effectData: {fileID: 11400000, guid: d9a0cdb040c14477a742d28f629fa163, type: 2}
-    isOverrideDuration: 1
-    overrideDuration: 5
-  despawnOnContact: 1

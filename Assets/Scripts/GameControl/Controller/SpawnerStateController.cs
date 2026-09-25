@@ -1,9 +1,11 @@
+using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using GameControl.Interface;
 using GameControl.SO;
 using MoreMountains.Tools;
 using Sirenix.OdinInspector;
 using UI;
+using UI.Milestone;
 using UnityEngine;
 
 namespace GameControl.Controller
@@ -53,11 +55,27 @@ namespace GameControl.Controller
         [BoxGroup("Setting")] [Required] [SerializeField] private Transform itemParent;
         [BoxGroup("Setting")] [SerializeField] private Vector2 regionSize = Vector2.zero;
         [BoxGroup("Setting")] [SerializeField] private Vector2 itemdropRegionSize = Vector2.zero;
+        [BoxGroup("Setting")] [SerializeField]
+        [Tooltip("MilestoneContainer ตัวเดียวกับที่หน้าเมนู milestone ใช้\nใช้หา milestone ที่ผู้เล่นเลือก ถ้า milestone นั้นเปิด Override Map Spawn จะใช้ Spawn Rules ของมัน\nว่าง = ไม่สน Override ของ milestone")]
+        private MilestoneDataContainer milestoneDataContainer;
         
         [BoxGroup("Debug Zone")] [SerializeField] private bool debugPattern;
         [BoxGroup("Debug Zone")] [SerializeField] private bool debugEnemy;
         [BoxGroup("Debug Zone")] [SerializeField] private bool debugMapEvent;
-        
+        [BoxGroup("Debug Zone")] [SerializeField]
+        [Tooltip("เปิด = Console ขึ้น log ทุกคลื่นที่ตารางสั่งเกิด และตอนส่งต่อจาก milestone ไปแมพ")]
+        private bool debugSpawnSchedule;
+        [BoxGroup("Debug Zone")] [SerializeField]
+        [Tooltip("ใช้ทดสอบเท่านั้น: บังคับใช้ milestone ลำดับนี้ (0 = milestone แรก)\n-1 = ใช้ milestone ที่ผู้เล่นเลือกตามปกติ")]
+        private int debugMilestoneOverride = -1;
+
+        private EnemySpawnScheduleController _spawnSchedule;
+        public EnemySpawnScheduleController SpawnSchedule => _spawnSchedule;
+
+        [BoxGroup("Debug")]
+        [ShowInInspector, ReadOnly, MultiLineProperty(4), LabelText("Spawn Schedule")]
+        private string SpawnScheduleDebug => _spawnSchedule?.DebugSummary() ?? "-";
+
         [BoxGroup("Enable")] [SerializeField] private bool notSpawnEnemyOnStart = false;
         
         public MapEventController MapEventController => _mapEventController;
@@ -155,11 +173,49 @@ namespace GameControl.Controller
             _increaseRateEnemyPoint = CurrentMap.rateIncreaseEnemyPoint;
             _enemyPatternController.SetEnemySpawner(_enemySpawnerController);
             _enemyPatternController.AddRandomPattern();
-            
+            BuildSpawnSchedule();
+
             GameTimer.Instance.ScheduleOnceAtRemaining(62, () => PopupUIManager.Instance.ShowPopup("Warning", 2.0f, bypassStack: true));
             GameStateController.Instance.ScheduleRush();
         }
         
+        /// <summary>
+        /// Builds the Enemy Spawn Mode schedule for the current map. Conditions mode (every existing map)
+        /// produces an inactive schedule and no random-spawner filter, i.e. nothing changes.
+        /// </summary>
+        [FoldoutGroup("Spawner Control")]
+        [Button("Rebuild Spawn Schedule", ButtonSizes.Large), GUIColor(0, 1, 1)]
+        public void BuildSpawnSchedule()
+        {
+            if (CurrentMap == null || _enemySpawnerController == null) return;
+
+            int milestone = debugMilestoneOverride >= 0 ? debugMilestoneOverride : ReadSelectedMilestone(CurrentMap);
+
+            // The selected milestone may override the map's mode (ChallengeDataSO > Override Map Spawn).
+            var milestoneAsset = MilestoneSpawnLookup.FindMilestone(milestoneDataContainer, CurrentMap.mapId, milestone);
+            if (debugSpawnSchedule && milestoneAsset == null)
+                Debug.Log(milestoneDataContainer == null
+                    ? "[SpawnSchedule] Milestone Data Container not assigned - milestone overrides are ignored."
+                    : $"[SpawnSchedule] No milestone {milestone} for mapId '{CurrentMap.mapId}' - using the map's mode.");
+
+            var source = EnemySpawnScheduleResolver.ResolveForRun(CurrentMap, milestoneAsset, milestone);
+            _spawnSchedule = new EnemySpawnScheduleController(CurrentMap, _enemySpawnerController, this, source,
+                milestone, debugSpawnSchedule);
+            _enemySpawnerController.RandomPoolFilter = _spawnSchedule.BuildRandomPoolFilter();
+        }
+
+        /// <summary>Read-only lookup - never creates a MapStat entry in the save.</summary>
+        private static int ReadSelectedMilestone(MapDataSO map)
+        {
+            var profile = Player.ActiveProfileService.Instance != null
+                ? Player.ActiveProfileService.Instance.CurrentProfile
+                : null;
+            if (profile?.MapStats == null || string.IsNullOrEmpty(map.mapId)) return 0;
+            return profile.MapStats.TryGetValue(map.mapId, out var stat) && stat != null
+                ? Mathf.Max(0, stat.SelectedLevelMilestone)
+                : 0;
+        }
+
         public void OnMapModified()
         {
             var map = CurrentMap;
