@@ -47,14 +47,14 @@ MonoBehaviour:
     enemyIds:
     - '*'
     enemyNotincluded:
-    - Boss_Twin
+    - bright2
     stats:
-      maxHP: 125
-      damage: 70
+      maxHP: 50
+      damage: 50
       moveSpeed: 0
       spawnChance: 0
-      rushMaxHP: 125
-      rushDamage: 70
+      rushMaxHP: 0
+      rushDamage: 0
       rushMoveSpeed: 0
       rushSetChance: 0
   - groupName: 2
@@ -71,3 +71,12 @@ MonoBehaviour:
       rushMoveSpeed: 0
       rushSetChance: -100
   timeModify: 0
+  overrideMapSpawn: 0
+  spawnFlow: 0
+  spawnHandOver: 0
+  spawnHandOverAt: 120
+  spawnMapTimelineStartsAtHandOver: 1
+  spawnMixWithConditions: 0
+  spawnRandomSpawnerPool: 0
+  spawnPatternEnemyPool: 0
+  spawnRules: []
