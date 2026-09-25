@@ -207,6 +207,12 @@ namespace GameControl.Controller
             }
 
             var candidates = _enemySpawner.PickEnemy(patternOption != null && patternOption.bypassSpawnCondition);
+
+            // Enemy Spawn Mode's Pattern Enemy Pool (null = unchanged behaviour).
+            var patternFilter = _enemySpawner.PatternPoolFilter;
+            if (patternFilter != null && candidates != null)
+                candidates = candidates.Where(patternFilter).ToList();
+
             if (candidates == null || candidates.Count == 0)
             {
                 if (_isDebug) Debug.Log("[EnemyPatternController] No candidates after ConditionEnemy()");

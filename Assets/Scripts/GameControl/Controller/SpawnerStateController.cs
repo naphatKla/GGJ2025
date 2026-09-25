@@ -73,7 +73,8 @@ namespace GameControl.Controller
         public EnemySpawnScheduleController SpawnSchedule => _spawnSchedule;
 
         [BoxGroup("Debug")]
-        [ShowInInspector, ReadOnly, MultiLineProperty(4), LabelText("Spawn Schedule")]
+        [ShowInInspector, ReadOnly, MultiLineProperty(12), LabelText("Spawn Schedule")]
+        [PropertyTooltip("สถานะตารางเกิดศัตรูขณะเล่น: แต่ละกฎเกิดไปกี่ตัว, กี่คลื่น, ถูกข้ามเพราะ Wave Chance กี่ครั้ง, ถูกบล็อกกี่ครั้ง และตอนนี้รออะไรอยู่\n(เลื่อนเมาส์บน Inspector เพื่อให้อัปเดต)")]
         private string SpawnScheduleDebug => _spawnSchedule?.DebugSummary() ?? "-";
 
         [BoxGroup("Enable")] [SerializeField] private bool notSpawnEnemyOnStart = false;
@@ -184,6 +185,15 @@ namespace GameControl.Controller
         /// produces an inactive schedule and no random-spawner filter, i.e. nothing changes.
         /// </summary>
         [FoldoutGroup("Spawner Control")]
+        [Button("Log Spawn Schedule Report", ButtonSizes.Large), GUIColor(0, 1, 1)]
+        [PropertyTooltip("พิมพ์สถานะของทุกกฎลง Console (เหมือนช่อง Spawn Schedule แต่ copy ได้)")]
+        private void LogSpawnScheduleReport()
+        {
+            if (_spawnSchedule == null) Debug.Log("[SpawnSchedule] No schedule built yet (press Play and start a run).");
+            else _spawnSchedule.LogReport();
+        }
+
+        [FoldoutGroup("Spawner Control")]
         [Button("Rebuild Spawn Schedule", ButtonSizes.Large), GUIColor(0, 1, 1)]
         public void BuildSpawnSchedule()
         {
@@ -193,15 +203,19 @@ namespace GameControl.Controller
 
             // The selected milestone may override the map's mode (ChallengeDataSO > Override Map Spawn).
             var milestoneAsset = MilestoneSpawnLookup.FindMilestone(milestoneDataContainer, CurrentMap.mapId, milestone);
-            if (debugSpawnSchedule && milestoneAsset == null)
-                Debug.Log(milestoneDataContainer == null
-                    ? "[SpawnSchedule] Milestone Data Container not assigned - milestone overrides are ignored."
-                    : $"[SpawnSchedule] No milestone {milestone} for mapId '{CurrentMap.mapId}' - using the map's mode.");
+            // Always warn: without the container every milestone Override is silently ignored (this happened
+            // once when a scene merge dropped the reference).
+            if (milestoneDataContainer == null)
+                Debug.LogWarning("[SpawnSchedule] Milestone Data Container is not assigned on SpawnerStateController "
+                                 + "(GameplayScene prefab) - milestone Override Map Spawn is ignored, using the map's mode.", this);
+            else if (debugSpawnSchedule && milestoneAsset == null)
+                Debug.Log($"[SpawnSchedule] No milestone {milestone} for mapId '{CurrentMap.mapId}' - using the map's mode.");
 
             var source = EnemySpawnScheduleResolver.ResolveForRun(CurrentMap, milestoneAsset, milestone);
             _spawnSchedule = new EnemySpawnScheduleController(CurrentMap, _enemySpawnerController, this, source,
                 milestone, debugSpawnSchedule);
             _enemySpawnerController.RandomPoolFilter = _spawnSchedule.BuildRandomPoolFilter();
+            _enemySpawnerController.PatternPoolFilter = _spawnSchedule.BuildPatternPoolFilter();
         }
 
         /// <summary>Read-only lookup - never creates a MapStat entry in the save.</summary>

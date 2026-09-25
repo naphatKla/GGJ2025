@@ -35,6 +35,19 @@ namespace GameControl.SO
         ExcludeScheduledEnemies = 2,
     }
 
+    /// <summary>Which enemies Enemy Patterns (incl. Bright2's Wornhole) may pick while a schedule is running.</summary>
+    public enum PatternEnemyPool
+    {
+        [Tooltip("Pattern หยิบศัตรูได้ทุกตัวในแมพเหมือนเดิม")]
+        AllMapEnemies = 0,
+
+        [Tooltip("Pattern หยิบเฉพาะศัตรูที่อยู่ในตาราง/กฎ")]
+        OnlyScheduledEnemies = 1,
+
+        [Tooltip("Pattern ไม่เกิดศัตรูเลย")]
+        NoEnemies = 2,
+    }
+
     public enum SpawnIntervalMode
     {
         [Tooltip("Same timer the random spawner uses (Default Enemy Spawn Timer, shrinking with the map's growth).")]
@@ -73,7 +86,7 @@ namespace GameControl.SO
             "@this.enabled && this.HasNoEnemy")]
         [InfoBox("กฎนี้ปิดอยู่ (Enabled = ปิด) จะไม่ถูกใช้ทั้งตอนเล่นและใน Preview", InfoMessageType.None, "@!this.enabled")]
         [GUIColor("@this.enabled ? Color.green : Color.red")]
-        [LabelText("Enabled")]
+        [LabelText("Enabled"), LabelWidth(175)]
         [Tooltip("เปิด = ใช้กฎนี้\nปิด = เก็บกฎไว้แต่ไม่ใช้ (ไม่เกิดตอนเล่น และไม่แสดงใน Preview)")]
         public bool enabled = true;
 
@@ -82,14 +95,14 @@ namespace GameControl.SO
         // (ContainerWindow.FitWindowRectToScreen) that this Unity version no longer has, so it throws on click.
         [CustomValueDrawer(nameof(DrawEnemyIdField))]
         [ValidateInput(nameof(ValidateEnemyId), "ศัตรูตัวนี้ไม่มีใน Enemy Options ของแมพ จะถูกข้ามตอนเล่น")]
-        [LabelText("Enemy")]
+        [LabelText("Enemy"), LabelWidth(175)]
         [Tooltip("ศัตรูที่จะให้เกิด เลือกจาก Enemy Setting > Enemy Options ของแมพ\n"
                  + "ค่าอื่นของศัตรู (pool, Per-Enemy Max, Spawn Effects, Enemy Data) ใช้จากตัวเลือกนั้นทั้งหมด\n"
                  + "ถ้าขึ้นว่า (not in map) แปลว่า id นี้ไม่มีในแมพ")]
         public string enemyId;
 
         [FoldoutGroup(G), PropertyOrder(2)]
-        [LabelText("Note")]
+        [LabelText("Note"), LabelWidth(175)]
         [Tooltip("โน้ตสำหรับ designer จะแสดงที่หัว foldout ไม่มีผลกับเกม\nเช่น \"บอสกลางเกม\" หรือ \"คลื่นเปิดฉาก\"")]
         public string note;
 
@@ -98,7 +111,11 @@ namespace GameControl.SO
         #region Interval
 
         [FoldoutGroup(G), PropertyOrder(20)]
-        [Title("Interval", "ระยะห่างระหว่างแต่ละคลื่น")]
+        [Title("Interval (Spawn Cooldown)", "คูลดาวน์การเกิด: ระยะห่างระหว่างแต่ละคลื่น")]
+        [InfoBox("คูลดาวน์เท่ากับ Default Enemy Spawn Timer ของแมพ และเร็วขึ้นเรื่อยๆ ตาม growth ของแมพ", InfoMessageType.None,
+            "@this.intervalMode == SpawnIntervalMode.MapSpawnTimer")]
+        [InfoBox("เกิด 1 คลื่นทุกๆ Every วินาที (คงที่)", InfoMessageType.None, "@this.intervalMode == SpawnIntervalMode.Custom")]
+        [InfoBox("หลังแต่ละคลื่น สุ่มคูลดาวน์ใหม่ระหว่าง Min–Max วินาที", InfoMessageType.None, "@this.intervalMode == SpawnIntervalMode.RandomRange")]
         [EnumToggleButtons, HideLabel]
         [Tooltip("Map Spawn Timer = ใช้ตัวจับเวลาเดียวกับตัวสุ่มเดิมของแมพ (เร็วขึ้นเรื่อยๆ ตาม growth ของแมพ)\n"
                  + "Custom = ทุกๆ กี่วินาที ค่าคงที่\n"
@@ -108,27 +125,27 @@ namespace GameControl.SO
         [FoldoutGroup(G), PropertyOrder(21)]
         [ShowIf(nameof(intervalMode), SpawnIntervalMode.Custom)]
         [Unit(Units.Second), MinValue(0.05f)]
-        [LabelText("Every")]
-        [Tooltip("เกิด 1 คลื่นทุกกี่วินาที เช่น 20 = ทุก 20 วินาที")]
+        [LabelText("Every"), LabelWidth(175)]
+        [Tooltip("คูลดาวน์การเกิด: เกิด 1 คลื่นทุกกี่วินาที เช่น 20 = ทุก 20 วินาที")]
         public float customInterval = 10f;
 
         [FoldoutGroup(G), PropertyOrder(22)]
         [ShowIf(nameof(intervalMode), SpawnIntervalMode.RandomRange)]
         [InfoBox("Min มากกว่า Max ระบบจะสลับให้เองตอนเล่น", InfoMessageType.Warning, "@this.intervalMin > this.intervalMax")]
         [Unit(Units.Second), MinValue(0.05f)]
-        [LabelText("Min")]
+        [LabelText("Min"), LabelWidth(175)]
         [Tooltip("ระยะห่างสั้นที่สุดระหว่างคลื่น (วินาที)")]
         public float intervalMin = 5f;
 
         [FoldoutGroup(G), PropertyOrder(23)]
         [ShowIf(nameof(intervalMode), SpawnIntervalMode.RandomRange)]
         [Unit(Units.Second), MinValue(0.05f)]
-        [LabelText("Max")]
+        [LabelText("Max"), LabelWidth(175)]
         [Tooltip("ระยะห่างยาวที่สุดระหว่างคลื่น (วินาที)")]
         public float intervalMax = 15f;
 
         [FoldoutGroup(G), PropertyOrder(24)]
-        [LabelText("First Wave At Start")]
+        [LabelText("First Wave At Start"), LabelWidth(175)]
         [Tooltip("เปิด = คลื่นแรกออกทันทีที่กฎนี้เริ่ม\nปิด = รอให้ครบหนึ่ง interval ก่อนแล้วค่อยออกคลื่นแรก")]
         public bool spawnOnStart = true;
 
@@ -140,36 +157,66 @@ namespace GameControl.SO
         [Title("Amount", "จำนวนศัตรูต่อคลื่น และจำกัดทั้งเกม")]
         [InfoBox("Per Wave (Min) มากกว่า (Max) ระบบจะใช้ค่า Min", InfoMessageType.Warning, "@this.amountMin > this.amountMax")]
         [MinValue(1)]
-        [LabelText("Per Wave (Min)")]
+        [LabelText("Per Wave (Min)"), LabelWidth(175)]
         [Tooltip("จำนวนศัตรูต่อคลื่น (ค่าต่ำสุด)\nแต่ละคลื่นสุ่มจำนวนระหว่าง Min–Max ถ้าอยากได้จำนวนคงที่ให้ใส่เท่ากัน")]
         public int amountMin = 1;
 
         [FoldoutGroup(G), PropertyOrder(31)]
         [MinValue(1)]
-        [LabelText("Per Wave (Max)")]
+        [LabelText("Per Wave (Max)"), LabelWidth(175)]
         [Tooltip("จำนวนศัตรูต่อคลื่น (ค่าสูงสุด)\nแต่ละคลื่นสุ่มจำนวนระหว่าง Min–Max")]
         public int amountMax = 1;
 
         [FoldoutGroup(G), PropertyOrder(32)]
         [ShowIf("@this.amountMax > 1")]
         [Unit(Units.Second), MinValue(0f)]
-        [LabelText("Delay Inside Wave")]
+        [LabelText("Delay Inside Wave"), LabelWidth(175)]
         [Tooltip("เว้นระยะระหว่างศัตรูแต่ละตัวในคลื่นเดียวกัน\n0 = ออกมาพร้อมกันทั้งคลื่น\n0.3 = ทยอยออกทีละตัวห่างกัน 0.3 วินาที")]
         public float burstDelay;
 
         [FoldoutGroup(G), PropertyOrder(33)]
         [InfoBox("Max Total = 1: ศัตรูตัวนี้จะเกิดแค่ครั้งเดียวต่อรอบเกม (เหมาะกับบอส)", InfoMessageType.Info, "@this.maxTotal == 1")]
         [MinValue(0)]
-        [LabelText("Max Total")]
+        [LabelText("Max Total"), LabelWidth(175)]
         [Tooltip("กฎนี้เกิดศัตรูรวมได้สูงสุดกี่ตัวต่อรอบเกม\n0 = ไม่จำกัด\n1 = เกิดครั้งเดียว (เช่น บอส)\n"
                  + "ครบแล้วกฎนี้หยุดเอง (ใน Sequential ที่เปิด Loop จะนับใหม่ทุกรอบ)")]
         public int maxTotal;
 
+        [FoldoutGroup(G), PropertyOrder(33.1f)]
+        [InfoBox("Max Alive: กฎนี้จะมีศัตรูมีชีวิตพร้อมกันไม่เกินค่านี้ ตัวไหนตาย คลื่นถัดไปจะเติมกลับ (Respawn)\n"
+                 + "อยากให้เติมไวขึ้น ให้ลด Interval ลง เช่น Custom 1 วินาที", InfoMessageType.Info, "@this.maxAlive > 0")]
+        [InfoBox("Max Alive = 0: ไม่จำกัดจำนวนที่มีชีวิตพร้อมกัน ใส่ตัวเลขถ้าอยากให้ศัตรูคงจำนวนไว้และเกิดใหม่เมื่อตาย", InfoMessageType.None,
+            "@this.maxAlive <= 0")]
+        [MinValue(0)]
+        [LabelText("Max Alive"), LabelWidth(175)]
+        [Tooltip("ศัตรูจากกฎนี้มีชีวิตพร้อมกันได้สูงสุดกี่ตัว\n0 = ไม่จำกัด\n"
+                 + "ถ้าเต็มแล้ว คลื่นนั้นจะไม่เกิดเพิ่ม พอมีตัวตายคลื่นถัดไปจะเติมกลับให้ (ต่างจาก Max Total ที่นับรวมทั้งเกม)")]
+        public int maxAlive;
+
+        [FoldoutGroup(G), PropertyOrder(33.2f)]
+        [ShowIf("@this.maxAlive > 0")]
+        [LabelText("Fill To Max Each Wave"), LabelWidth(175)]
+        [Tooltip("เปิด = ทุกคลื่นเติมให้ครบ Max Alive พอดี (ไม่สน Per Wave Min/Max)\n"
+                 + "ปิด = แต่ละคลื่นเกิดตาม Per Wave แต่ไม่เกิน Max Alive")]
+        public bool fillToMaxEachWave;
+
         [FoldoutGroup(G), PropertyOrder(34)]
+        [InfoBox("Use Wave Chance ปิด: ทุกคลื่นเกิดแน่นอน", InfoMessageType.None, "@!this.useWaveChance")]
+        [GUIColor("@this.useWaveChance ? Color.green : Color.red")]
+        [LabelText("Use Wave Chance"), LabelWidth(175)]
+        [Tooltip("ปิด (ค่าเริ่มต้น) = ทุกคลื่นเกิดแน่นอน\nเปิด = แต่ละคลื่นมีโอกาสเกิดตาม Wave Chance % ด้านล่าง")]
+        public bool useWaveChance;
+
+        [FoldoutGroup(G), PropertyOrder(35)]
+        [ShowIf(nameof(useWaveChance))]
+        [InfoBox("Wave Chance ต่ำมาก: คลื่นส่วนใหญ่จะถูกข้าม ศัตรูตัวนี้แทบจะไม่เกิด (ค่านี้คือ % ต่อคลื่น ไม่ใช่น้ำหนักแบบ Chance ของ Enemy Options)", InfoMessageType.Warning, "@this.useWaveChance && this.chance < 10")]
         [Range(0f, 100f)]
-        [LabelText("Wave Chance %")]
-        [Tooltip("โอกาสที่แต่ละคลื่นจะเกิดจริง (%)\n100 = เกิดทุกคลื่น\n50 = ครึ่งหนึ่ง\nคลื่นที่ไม่เกิดจะรอ interval ถัดไปตามปกติ")]
+        [LabelText("Wave Chance %"), LabelWidth(175)]
+        [Tooltip("โอกาสที่แต่ละคลื่นจะเกิดจริง (%)\n100 = เกิดทุกคลื่น\n50 = ครึ่งหนึ่ง\nคลื่นที่ไม่เกิดจะรอ interval ถัดไปตามปกติ\nใช้เฉพาะตอนเปิด Use Wave Chance")]
         public float chance = 100f;
+
+        /// <summary>Chance actually applied to each wave (100 when Use Wave Chance is off).</summary>
+        public float EffectiveChance => useWaveChance ? Mathf.Clamp(chance, 0f, 100f) : 100f;
 
         #endregion
 
@@ -177,25 +224,25 @@ namespace GameControl.SO
 
         [FoldoutGroup(G), PropertyOrder(40)]
         [Title("Conditions & Position", "เงื่อนไขเพิ่มเติมและตำแหน่งเกิด")]
-        [LabelText("Respect Per-Enemy Max")]
+        [LabelText("Respect Per-Enemy Max"), LabelWidth(175)]
         [Tooltip("เปิด = เคารพ Per-Enemy Max ของศัตรูตัวนั้น (จำนวนสูงสุดที่มีชีวิตพร้อมกัน) ถ้าเต็มจะข้ามไป\n"
                  + "ปิด = เกิดได้แม้จะเกิน\nศัตรูจากตารางนับรวมใน Per-Enemy Max เสมอ ตัวสุ่มเดิมจึงเห็นจำนวนที่ถูกต้อง")]
         public bool respectPerEnemyMax = true;
 
         [FoldoutGroup(G), PropertyOrder(41)]
-        [LabelText("Check Spawn Conditions")]
+        [LabelText("Check Spawn Conditions"), LabelWidth(175)]
         [Tooltip("เปิด = ต้องผ่าน Spawn Conditions เดิมของศัตรูตัวนั้นด้วย (เช่น Time Window)\n"
                  + "ปิด = ตารางตัดสินเองทั้งหมด ไม่สน Spawn Conditions")]
         public bool checkSpawnConditions;
 
         [FoldoutGroup(G), PropertyOrder(42)]
-        [LabelText("Play Spawn Effects")]
+        [LabelText("Play Spawn Effects"), LabelWidth(175)]
         [Tooltip("เปิด = เล่น Spawn Effects ของศัตรูตัวนั้น (popup, หน่วงเวลา ฯลฯ) เหมือนตอนตัวสุ่มเดิมเกิด\nปิด = เกิดทันทีเงียบๆ")]
         public bool playSpawnEffects = true;
 
         [FoldoutGroup(G), PropertyOrder(43)]
         [EnumToggleButtons]
-        [LabelText("Position")]
+        [LabelText("Position"), LabelWidth(175)]
         [Tooltip("Default = ตำแหน่งเดียวกับตัวสุ่มเดิม (นอกกล้อง)\nAround Player = วงแหวนรอบตัว player ตาม Radius Min–Max")]
         public ScheduledSpawnPosition spawnPosition = ScheduledSpawnPosition.Default;
 
@@ -203,14 +250,14 @@ namespace GameControl.SO
         [ShowIf(nameof(spawnPosition), ScheduledSpawnPosition.AroundPlayer)]
         [InfoBox("Radius Min มากกว่า Max ระบบจะสลับให้เองตอนเล่น", InfoMessageType.Warning, "@this.radiusMin > this.radiusMax")]
         [MinValue(0f)]
-        [LabelText("Radius Min")]
+        [LabelText("Radius Min"), LabelWidth(175)]
         [Tooltip("ระยะใกล้สุดจาก player (หน่วย Unity)\nกล้องเห็นประมาณ 22 หน่วยจากตัว player ถ้าอยากให้เกิดนอกจอใช้ค่ามากกว่านั้น")]
         public float radiusMin = 20f;
 
         [FoldoutGroup(G), PropertyOrder(45)]
         [ShowIf(nameof(spawnPosition), ScheduledSpawnPosition.AroundPlayer)]
         [MinValue(0f)]
-        [LabelText("Radius Max")]
+        [LabelText("Radius Max"), LabelWidth(175)]
         [Tooltip("ระยะไกลสุดจาก player (หน่วย Unity)")]
         public float radiusMax = 25f;
 
@@ -251,8 +298,9 @@ namespace GameControl.SO
             get
             {
                 string amount = amountMax > amountMin ? $"x{amountMin}-{amountMax}" : $"x{Mathf.Max(1, amountMin)}";
+                if (maxAlive > 0) amount = fillToMaxEachWave ? $"keep {maxAlive} alive" : amount + $" (alive <= {maxAlive})";
                 if (maxTotal > 0) amount += $" (max {maxTotal})";
-                if (chance < 100f) amount += $" {chance:0.#}%";
+                if (EffectiveChance < 100f) amount += $" {EffectiveChance:0.#}%";
                 return amount;
             }
         }
@@ -316,13 +364,13 @@ namespace GameControl.SO
         [FoldoutGroup(G), PropertyOrder(10)]
         [Title("Timing", "นับเป็นวินาทีตั้งแต่เริ่มรอบเกม")]
         [Unit(Units.Second), MinValue(0f)]
-        [LabelText("Start At")]
+        [LabelText("Start At"), LabelWidth(175)]
         [Tooltip("กฎนี้เริ่มเกิดได้ตั้งแต่วินาทีที่เท่าไหร่\n0 = ตั้งแต่เกมเริ่ม\n300 = หลังผ่านไป 5 นาที")]
         public float startAt;
 
         [FoldoutGroup(G), PropertyOrder(11)]
         [GUIColor("@this.useExpire ? Color.green : Color.red")]
-        [LabelText("Use Expire")]
+        [LabelText("Use Expire"), LabelWidth(175)]
         [Tooltip("เปิด = หยุดเกิดหลังเวลาที่กำหนด (Expire At)\nปิด = เกิดไปเรื่อยๆ จนจบเกม หรือจนระบบ Rush เข้ามาคุม")]
         public bool useExpire;
 
@@ -331,7 +379,7 @@ namespace GameControl.SO
         [InfoBox("Expire At ต้องมากกว่า Start At ไม่งั้นกฎนี้จะไม่เกิดเลย", InfoMessageType.Error,
             "@this.useExpire && this.expireAt <= this.startAt")]
         [Unit(Units.Second), MinValue(0f)]
-        [LabelText("Expire At")]
+        [LabelText("Expire At"), LabelWidth(175)]
         [Tooltip("หลังวินาทีนี้จะไม่เกิดใหม่อีก ศัตรูที่เกิดไปแล้วยังอยู่ตามปกติ\nเช่น Start At 60 + Expire At 180 = เกิดเฉพาะนาทีที่ 1–3")]
         public float expireAt = 120f;
 
@@ -348,14 +396,14 @@ namespace GameControl.SO
         [FoldoutGroup(G), PropertyOrder(10)]
         [Title("Timing", "เวลาเริ่มมาจากลำดับในลิสต์ (ดู Preview)")]
         [GUIColor("@this.useCustomDuration ? Color.green : Color.red")]
-        [LabelText("Custom Duration")]
+        [LabelText("Custom Duration"), LabelWidth(175)]
         [Tooltip("ปิด = entry นี้ยาวเท่า Step ของลิสต์\nเปิด = ตั้งความยาวของ entry นี้เอง entry ถัดไปจะเลื่อนตามไปด้วย")]
         public bool useCustomDuration;
 
         [FoldoutGroup(G), PropertyOrder(11)]
         [ShowIf(nameof(useCustomDuration))]
         [Unit(Units.Second), MinValue(1f)]
-        [LabelText("Duration")]
+        [LabelText("Duration"), LabelWidth(175)]
         [Tooltip("entry นี้ยาวกี่วินาทีก่อนถึง entry ถัดไป")]
         public float customDuration = 30f;
 
@@ -369,26 +417,26 @@ namespace GameControl.SO
                  + "ตัวอย่าง Step 30: entry 0 = 0–30 วิ, entry 1 = 30–60 วิ, entry 2 = 60–90 วิ ...\n"
                  + "ดูช่วงเวลาจริงได้ที่ Preview ด้านล่าง")]
         [Unit(Units.Second), MinValue(1f)]
-        [LabelText("Step")]
+        [LabelText("Step"), LabelWidth(175)]
         [Tooltip("แต่ละ entry อยู่นานกี่วินาทีก่อนถึงตัวถัดไป\nentry ที่เปิด Custom Duration ใช้ค่าของตัวเองแทน")]
         public float step = 30f;
 
         [Unit(Units.Second), MinValue(0f)]
-        [LabelText("Start Offset")]
+        [LabelText("Start Offset"), LabelWidth(175)]
         [Tooltip("entry แรกเริ่มที่วินาทีเท่าไหร่\n0 = ตั้งแต่เกมเริ่ม")]
         public float startOffset;
 
-        [LabelText("Stop Previous")]
+        [LabelText("Stop Previous"), LabelWidth(175)]
         [Tooltip("เปิด = พอถึงตัวถัดไป ตัวก่อนหน้าหยุดเกิด (ส่งไม้ต่อกัน)\n"
                  + "ปิด = สะสม: ตัวที่เริ่มไปแล้วเกิดต่อไปเรื่อยๆ ศัตรูจะเพิ่มชนิดขึ้นตามเวลา")]
         public bool stopPrevious = true;
 
         [ShowIf("@this.stopPrevious && !this.loop")]
-        [LabelText("Last Entry Runs Forever")]
+        [LabelText("Last Entry Runs Forever"), LabelWidth(175)]
         [Tooltip("เปิด = entry สุดท้ายเกิดต่อไปจนจบเกม\nปิด = entry สุดท้ายหยุดเมื่อหมดเวลา แล้วแมพจะเงียบ (ไม่มีศัตรูจากตาราง)")]
         public bool lastEntryRunsForever = true;
 
-        [LabelText("Loop")]
+        [LabelText("Loop"), LabelWidth(175)]
         [Tooltip("เปิด = เล่นจบลิสต์แล้ววนกลับไป entry แรก (เหมาะกับแมพ Endless)\nMax Total ของแต่ละ entry นับใหม่ทุกรอบ")]
         public bool loop;
 
@@ -437,6 +485,7 @@ namespace GameControl.SO
         public float CycleOffset;
         public bool MixWithConditions;
         public RandomSpawnerPool RandomPool;
+        public PatternEnemyPool PatternPool;
 
         public bool IsEmpty => Rules.Count == 0;
 
@@ -555,6 +604,7 @@ namespace GameControl.SO
 
             source.MixWithConditions = map.mixWithConditions;
             source.RandomPool = map.randomSpawnerPool;
+            source.PatternPool = map.patternEnemyPool;
 
             if (map.enemySpawnMode == EnemySpawnMode.Sequential && map.sequentialSpawn != null)
             {
@@ -572,6 +622,7 @@ namespace GameControl.SO
 
             source.MixWithConditions = milestone.spawnMixWithConditions;
             source.RandomPool = milestone.spawnRandomSpawnerPool;
+            source.PatternPool = milestone.spawnPatternEnemyPool;
             ResolveTimed(milestone.spawnRules, source.Rules);
             return source;
         }
@@ -695,6 +746,7 @@ namespace GameControl.SO
             sb.AppendLine(source.MixWithConditions
                 ? $"Random spawner: ON too ({source.RandomPool})"
                 : "Random spawner: OFF (schedule only)");
+            sb.AppendLine($"Patterns: {source.PatternPool}");
             sb.AppendLine("Rush: schedule stops, Rush takes over.");
             if (source.CycleLength > 0f) sb.AppendLine($"Loops every {source.CycleLength:0.##}s");
             sb.AppendLine();

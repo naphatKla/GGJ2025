@@ -99,6 +99,7 @@ namespace UI.Challenge
             var p = Current;
             if (p == null || p.SelectedChallengesPerMap == null) return;
             string mapId = CurrentMapId;
+            if (string.IsNullOrEmpty(mapId)) return; // no map selected yet (e.g. every map still locked)
             MapStat mapState = PlayerDataExtensions.GetOrCreateMapStat(p, mapId);
 
             c_SelectedIndices.Clear();
@@ -201,6 +202,7 @@ namespace UI.Challenge
             if (challenge == null || string.IsNullOrEmpty(challenge.id)) return;
             if (IsLockedByPlayer(challenge)) return;
             string mapId = CurrentMapId;
+            if (string.IsNullOrEmpty(mapId)) return; // no map selected yet
             MapStat mapState = PlayerDataExtensions.GetOrCreateMapStat( player, mapId);
 
 

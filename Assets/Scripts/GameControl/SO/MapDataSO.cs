@@ -507,7 +507,7 @@ namespace GameControl.SO
                  + "• Sequential = ไล่ลิสต์ศัตรูตามลำดับเวลา ทีละ Step วินาที\n"
                  + "Milestone ที่เปิด Override Map Spawn (ใน ChallengeDataSO) จะแทนที่ / ต่อจาก / เล่นพร้อมโหมดนี้ได้ ดูที่ Milestone Overrides ด้านล่าง\n"
                  + "ช่วง Rush ระบบ Rush คุมเสมอ | Pattern และ MapEvent ทำงานปกติทุกโหมด")]
-        [EnumToggleButtons, LabelText("Mode")]
+        [EnumToggleButtons, LabelText("Mode"), LabelWidth(175)]
         [Tooltip("Conditions = ตัวสุ่มเดิม (Chance / Enemy Point / Spawn Conditions)\n"
                  + "Sequential = ไล่ลิสต์ศัตรูตามลำดับเวลา\n"
                  + "(ถ้า milestone ที่ผู้เล่นเลือกเปิด Override ค่านี้อาจถูกแทนที่)")]
@@ -516,18 +516,32 @@ namespace GameControl.SO
         [FoldoutGroup("Enemy Spawn Mode")]
         [HideIf(nameof(enemySpawnMode), EnemySpawnMode.Conditions)]
         [GUIColor("@this.mixWithConditions ? Color.green : Color.red")]
-        [LabelText("Mix With Conditions")]
+        [LabelText("Mix With Conditions"), LabelWidth(175)]
         [Tooltip("เปิด = ให้ตัวสุ่มเดิมทำงานคู่กับ Sequential ด้วย (เช่น ตัวสุ่มเติมศัตรูทั่วไป ส่วน Sequential วางตัวพิเศษ)\n"
                  + "ปิด = เกิดจาก Sequential อย่างเดียว")]
         public bool mixWithConditions;
 
         [FoldoutGroup("Enemy Spawn Mode")]
         [ShowIf("@this.enemySpawnMode != EnemySpawnMode.Conditions && this.mixWithConditions")]
-        [LabelText("Random Spawner Pool")]
+        [LabelText("Random Spawner Pool"), LabelWidth(175)]
         [Tooltip("ตอนเปิด Mix: ตัวสุ่มเดิมหยิบศัตรูตัวไหนได้บ้าง\n"
                  + "All Map Enemies = ทุกตัว\nOnly Scheduled Enemies = เฉพาะตัวที่อยู่ในลิสต์\n"
                  + "Exclude Scheduled Enemies = ยกเว้นตัวที่อยู่ในลิสต์ (ให้ลิสต์คุมตัวพวกนั้นเอง)")]
         public RandomSpawnerPool randomSpawnerPool = RandomSpawnerPool.AllMapEnemies;
+
+        [FoldoutGroup("Enemy Spawn Mode")]
+        [HideIf(nameof(enemySpawnMode), EnemySpawnMode.Conditions)]
+        [InfoBox("Pattern (และสกิล Wornhole) สุ่มศัตรูได้ทุกตัวในแมพ ศัตรูที่ไม่อยู่ในลิสต์ก็เกิดได้", InfoMessageType.None,
+            "@this.enemySpawnMode != EnemySpawnMode.Conditions && this.patternEnemyPool == PatternEnemyPool.AllMapEnemies")]
+        [InfoBox("Pattern (และสกิล Wornhole) หยิบได้เฉพาะศัตรูที่อยู่ในลิสต์ Sequential", InfoMessageType.None,
+            "@this.enemySpawnMode != EnemySpawnMode.Conditions && this.patternEnemyPool == PatternEnemyPool.OnlyScheduledEnemies")]
+        [InfoBox("Pattern ไม่เกิดศัตรูเลยตอน Sequential ทำงาน", InfoMessageType.None,
+            "@this.enemySpawnMode != EnemySpawnMode.Conditions && this.patternEnemyPool == PatternEnemyPool.NoEnemies")]
+        [LabelText("Pattern Enemy Pool"), LabelWidth(175)]
+        [Tooltip("ตอน Sequential ทำงาน: Enemy Pattern (รวมถึงสกิล Wornhole ของ Bright2) หยิบศัตรูตัวไหนได้บ้าง\n"
+                 + "All Map Enemies = ทุกตัวในแมพเหมือนเดิม\nOnly Scheduled Enemies = เฉพาะตัวที่อยู่ในลิสต์\n"
+                 + "No Enemies = Pattern ไม่เกิดศัตรูเลย")]
+        public PatternEnemyPool patternEnemyPool = PatternEnemyPool.AllMapEnemies;
 
         [FoldoutGroup("Enemy Spawn Mode")]
         [ShowIf(nameof(enemySpawnMode), EnemySpawnMode.Sequential)]

@@ -43,6 +43,32 @@ namespace GameControl.Controller
         /// Random Spawner Pool. Null = no filter (Conditions mode - behaviour unchanged). Patterns never use it.
         /// </summary>
         public Func<MapDataSO.EnemyOption, bool> RandomPoolFilter { get; set; }
+
+        /// <summary>
+        /// Extra filter for Enemy Patterns (<see cref="EnemyPatternController.RandomType"/>, also used by
+        /// Wornhole), set by the spawn schedule's Pattern Enemy Pool. Null = no filter (behaviour unchanged).
+        /// </summary>
+        public Func<MapDataSO.EnemyOption, bool> PatternPoolFilter { get; set; }
+
+        /// <summary>Which schedule rule spawned each live scheduled enemy - used for a rule's Max Alive.</summary>
+        private readonly Dictionary<EnemyController, object> _scheduledOwner = new();
+
+        /// <summary>Scheduled spawns still waiting on their Spawn Effects (e.g. DelaySpawn), per rule.</summary>
+        private readonly Dictionary<object, int> _pendingScheduled = new();
+
+        /// <summary>Live enemies spawned by this schedule rule, plus ones still waiting on Spawn Effects.</summary>
+        public int CountScheduledAlive(object owner)
+        {
+            if (owner == null) return 0;
+            int count = _pendingScheduled.TryGetValue(owner, out int pending) ? pending : 0;
+            foreach (var kv in _scheduledOwner)
+            {
+                if (kv.Value != owner) continue;
+                var enemy = kv.Key;
+                if (enemy && enemy.gameObject.activeInHierarchy && !enemy.HealthSystem.IsDead) count++;
+            }
+            return count;
+        }
         public int EnemyAmount
         {
             get
@@ -97,6 +123,7 @@ namespace GameControl.Controller
                     obj.transform.position = SpawnUtility.RandomSpawnAroundPlayerCamera(_mainCamera, 10f);
                 }
 
+                _scheduledOwner.Remove(controller);
                 bool noRefund = _noPointRefund.Remove(controller);
                 if (controller.CountedByMax && !noRefund)
                     SpawnerStateController.Instance.CurrentEnemyPoint += option.EnemyPoint;
@@ -144,6 +171,7 @@ namespace GameControl.Controller
         {
             DOTween.Kill(obj.transform, complete: true);
             _noPointRefund.Remove(obj); // pooled instance may have been a scheduled spawn last time
+            _scheduledOwner.Remove(obj);
             
             bool firstOfType = _firstSpawnedTypeIds.Add(option.id);
             if (firstOfType)
@@ -305,29 +333,41 @@ namespace GameControl.Controller
         /// counts toward Per-Enemy Max, but costs no Enemy Point (and refunds none when it dies).
         /// </summary>
         /// <param name="position">Null = the random spawner's usual position.</param>
+        /// <param name="failReason">Why nothing spawned (for the schedule's debug output); null on success.</param>
+        /// <param name="owner">The schedule rule asking - recorded so its Max Alive can be counted.</param>
         public bool TrySpawnScheduled(string enemyId, bool respectPerEnemyMax, bool checkSpawnConditions,
-            bool playSpawnEffects, Vector2? position)
+            bool playSpawnEffects, Vector2? position, object owner, out string failReason)
         {
-            if (!HasEnemyOption(enemyId)) return false;
+            failReason = null;
+            if (!HasEnemyOption(enemyId)) { failReason = "not in Enemy Options"; return false; }
             var option = _enemyOptionsList.First(e => e.id == enemyId);
-            if (!_enemyPools.TryGetValue(option.id, out var pool)) return false;
+            if (!_enemyPools.TryGetValue(option.id, out var pool)) { failReason = "no pool"; return false; }
 
-            if (respectPerEnemyMax && !ConditionCheck(option)) return false;
-            if (checkSpawnConditions && !option.IsSpawnable(_state, _mapdata)) return false;
+            if (respectPerEnemyMax && !ConditionCheck(option))
+            {
+                failReason = $"Per-Enemy Max full ({option.activeCount}/{Mathf.RoundToInt(option.maximumPerEnemy)} alive)";
+                return false;
+            }
+            if (checkSpawnConditions && !option.IsSpawnable(_state, _mapdata))
+            {
+                failReason = "Spawn Conditions not met";
+                return false;
+            }
 
             option.activeCount++;
 
             if (playSpawnEffects && option.useSpawnEffect && option.spawnEffect != null && option.spawnEffect.Count > 0)
-                SpawnScheduledAfterEffectsAsync(option, pool, position).Forget();
+                SpawnScheduledAfterEffectsAsync(option, pool, position, owner).Forget();
             else
-                GetScheduled(pool, position);
+                GetScheduled(pool, position, owner);
 
             return true;
         }
 
         private async UniTaskVoid SpawnScheduledAfterEffectsAsync(MapDataSO.EnemyOption option,
-            ObjectPool<EnemyController> pool, Vector2? position)
+            ObjectPool<EnemyController> pool, Vector2? position, object owner)
         {
+            AddPending(owner, 1);
             try
             {
                 await SpawnEffect(option);
@@ -335,13 +375,24 @@ namespace GameControl.Controller
             catch (OperationCanceledException)
             {
                 option.activeCount = Mathf.Max(0, option.activeCount - 1);
+                AddPending(owner, -1);
                 return;
             }
 
-            GetScheduled(pool, position);
+            AddPending(owner, -1);
+            GetScheduled(pool, position, owner);
         }
 
-        private void GetScheduled(ObjectPool<EnemyController> pool, Vector2? position)
+        private void AddPending(object owner, int delta)
+        {
+            if (owner == null) return;
+            _pendingScheduled.TryGetValue(owner, out int n);
+            n += delta;
+            if (n <= 0) _pendingScheduled.Remove(owner);
+            else _pendingScheduled[owner] = n;
+        }
+
+        private void GetScheduled(ObjectPool<EnemyController> pool, Vector2? position, object owner)
         {
             if (position.HasValue)
                 _nextSpawnOverride = new SpawnOverride { Position = position.Value, ShowTrail = true };
@@ -358,6 +409,7 @@ namespace GameControl.Controller
 
             inst.CountedByMax = true; // so Release decrements activeCount like a random spawn
             _noPointRefund.Add(inst);
+            if (owner != null) _scheduledOwner[inst] = owner;
         }
 
         #endregion

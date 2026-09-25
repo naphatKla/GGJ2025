@@ -190,7 +190,7 @@ namespace Challenge
                  + "• เปิด Override + มีกฎ = กฎด้านล่างทำงาน แล้วเลือกได้ว่าจะแทนที่ / ต่อจาก / เล่นพร้อมโหมดของแมพ\n"
                  + "ช่วง Rush ระบบ Rush คุมเสมอ | Pattern และ MapEvent ทำงานปกติ")]
         [GUIColor("@this.overrideMapSpawn ? Color.green : Color.red")]
-        [LabelText("Override Map Spawn")]
+        [LabelText("Override Map Spawn"), LabelWidth(175)]
         [Tooltip("เปิด = ตอนเล่น milestone นี้ ใช้ Spawn Rules ด้านล่าง (ร่วมกับโหมดแมพตาม After Milestone)\n"
                  + "ปิด = ใช้ Enemy Spawn Mode ของแมพเหมือนเดิม")]
         public bool overrideMapSpawn;
@@ -199,7 +199,7 @@ namespace Challenge
         [ShowIf(nameof(overrideMapSpawn))]
         [InfoBox("Override เปิดอยู่แต่ยังไม่มีกฎที่ใช้ได้ milestone นี้จะใช้โหมดของแมพไปก่อน", InfoMessageType.Warning,
             "@this.overrideMapSpawn && !this.HasUsableSpawnRules")]
-        [EnumToggleButtons, LabelText("After Milestone")]
+        [EnumToggleButtons, LabelText("After Milestone"), LabelWidth(175)]
         [Tooltip("Replace = ใช้กฎของ milestone อย่างเดียวทั้งเกม\n"
                  + "Then Map Mode = ใช้กฎของ milestone ก่อน แล้วส่งต่อให้โหมดของแมพ (ตั้งจุดส่งต่อที่ Hand Over)\n"
                  + "Together = ใช้กฎของ milestone และโหมดของแมพพร้อมกัน (เช่น เพิ่มบอสทับลงบนแมพปกติ)")]
@@ -207,7 +207,7 @@ namespace Challenge
 
         [FoldoutGroup("Enemy Spawn (Milestone)")]
         [ShowIf("@this.overrideMapSpawn && this.spawnFlow == GameControl.SO.MilestoneSpawnFlow.ThenMapMode")]
-        [EnumToggleButtons, LabelText("Hand Over")]
+        [EnumToggleButtons, LabelText("Hand Over"), LabelWidth(175)]
         [Tooltip("เมื่อไหร่จะเปลี่ยนจากกฎของ milestone ไปเป็นโหมดของแมพ\n"
                  + "At Time = ที่วินาทีที่กำหนด\n"
                  + "When Rules Finish = เมื่อกฎทุกข้อจบ (ถึง Expire At หรือครบ Max Total)")]
@@ -216,13 +216,13 @@ namespace Challenge
         [FoldoutGroup("Enemy Spawn (Milestone)")]
         [ShowIf("@this.overrideMapSpawn && this.spawnFlow == GameControl.SO.MilestoneSpawnFlow.ThenMapMode && this.spawnHandOver == GameControl.SO.MilestoneHandOver.AtTime")]
         [Unit(Units.Second), MinValue(0f)]
-        [LabelText("Hand Over At")]
+        [LabelText("Hand Over At"), LabelWidth(175)]
         [Tooltip("วินาทีที่ส่งต่อ (นับจากเริ่มรอบเกม)\nกฎของ milestone หยุด แล้วโหมดของแมพเริ่มทำงาน\nเช่น 120 = ช่วง milestone 2 นาทีแรก")]
         public float spawnHandOverAt = 120f;
 
         [FoldoutGroup("Enemy Spawn (Milestone)")]
         [ShowIf("@this.overrideMapSpawn && this.spawnFlow == GameControl.SO.MilestoneSpawnFlow.ThenMapMode")]
-        [LabelText("Map Timeline Starts At Hand-Over")]
+        [LabelText("Map Timeline Starts At Hand-Over"), LabelWidth(235)]
         [Tooltip("เปิด (แนะนำ) = นาฬิกาของแมพเริ่มนับ 0 ตอนส่งต่อ Sequential ของแมพจะเล่นครบตั้งแต่ entry แรก\n"
                  + "ปิด = ใช้เวลาจริงของเกม ส่วนของแมพที่ควรเกิดก่อนส่งต่อจะถูกข้ามไป")]
         public bool spawnMapTimelineStartsAtHandOver = true;
@@ -230,18 +230,32 @@ namespace Challenge
         [FoldoutGroup("Enemy Spawn (Milestone)")]
         [ShowIf(nameof(overrideMapSpawn))]
         [GUIColor("@this.spawnMixWithConditions ? Color.green : Color.red")]
-        [LabelText("Mix With Conditions")]
+        [LabelText("Mix With Conditions"), LabelWidth(175)]
         [Tooltip("เปิด = ตอนกฎของ milestone ทำงาน ให้ตัวสุ่มเดิมทำงานคู่ไปด้วย\nปิด = เกิดจากกฎของ milestone อย่างเดียว\n"
                  + "(ใช้เฉพาะช่วงของ milestone หลังส่งต่อจะใช้ค่า Mix ของแมพ)")]
         public bool spawnMixWithConditions;
 
         [FoldoutGroup("Enemy Spawn (Milestone)")]
         [ShowIf("@this.overrideMapSpawn && this.spawnMixWithConditions")]
-        [LabelText("Random Spawner Pool")]
+        [LabelText("Random Spawner Pool"), LabelWidth(175)]
         [Tooltip("ตอนเปิด Mix: ตัวสุ่มเดิมหยิบศัตรูตัวไหนได้บ้าง\n"
                  + "All Map Enemies = ทุกตัว\nOnly Scheduled Enemies = เฉพาะตัวที่อยู่ในกฎ\n"
                  + "Exclude Scheduled Enemies = ยกเว้นตัวที่อยู่ในกฎ (ให้กฎคุมตัวพวกนั้นเอง)")]
         public GameControl.SO.RandomSpawnerPool spawnRandomSpawnerPool;
+
+        [FoldoutGroup("Enemy Spawn (Milestone)")]
+        [ShowIf(nameof(overrideMapSpawn))]
+        [InfoBox("Pattern (และสกิล Wornhole) สุ่มศัตรูได้ทุกตัวในแมพ ศัตรูที่ไม่อยู่ใน Spawn Rules ก็เกิดได้ (เช่น Shooter)", InfoMessageType.None,
+            "@this.overrideMapSpawn && this.spawnPatternEnemyPool == GameControl.SO.PatternEnemyPool.AllMapEnemies")]
+        [InfoBox("Pattern (และสกิล Wornhole) หยิบได้เฉพาะศัตรูที่อยู่ใน Spawn Rules", InfoMessageType.None,
+            "@this.overrideMapSpawn && this.spawnPatternEnemyPool == GameControl.SO.PatternEnemyPool.OnlyScheduledEnemies")]
+        [InfoBox("Pattern ไม่เกิดศัตรูเลยตอนกฎของ milestone ทำงาน", InfoMessageType.None,
+            "@this.overrideMapSpawn && this.spawnPatternEnemyPool == GameControl.SO.PatternEnemyPool.NoEnemies")]
+        [LabelText("Pattern Enemy Pool"), LabelWidth(175)]
+        [Tooltip("ตอนกฎของ milestone ทำงาน: Enemy Pattern (รวมถึงสกิล Wornhole ของ Bright2) หยิบศัตรูตัวไหนได้บ้าง\n"
+                 + "All Map Enemies = ทุกตัวในแมพเหมือนเดิม\nOnly Scheduled Enemies = เฉพาะตัวที่อยู่ใน Spawn Rules\n"
+                 + "No Enemies = Pattern ไม่เกิดศัตรูเลย\n(หลังส่งต่อให้แมพ จะใช้ค่าของแมพ)")]
+        public GameControl.SO.PatternEnemyPool spawnPatternEnemyPool;
 
         [FoldoutGroup("Enemy Spawn (Milestone)")]
         [ShowIf(nameof(overrideMapSpawn))]

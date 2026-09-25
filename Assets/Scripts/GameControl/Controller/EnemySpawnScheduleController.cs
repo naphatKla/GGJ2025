@@ -25,10 +25,22 @@ namespace GameControl.Controller
             public float NextWaveAt = -1f; // -1 = not started yet
             public int SpawnedTotal;
 
+            // ---- debug counters (shown by DebugSummary / the Spawn Schedule box on SpawnerStateController) ----
+            public int Waves;
+            public int WavesSkippedByChance;
+            public int Blocked;
+            public string Status = "not ticked yet";
+            public string LastBlockReason;
+
             public void Reset()
             {
                 NextWaveAt = -1f;
                 SpawnedTotal = 0;
+                Waves = 0;
+                WavesSkippedByChance = 0;
+                Blocked = 0;
+                Status = "reset";
+                LastBlockReason = null;
             }
 
             /// <summary>Done for good: past its Expire or out of Max Total.</summary>
@@ -152,6 +164,41 @@ namespace GameControl.Controller
             return opt => InRush() || RandomPoolAllows(opt.id);
         }
 
+        /// <summary>
+        /// Filter for Enemy Patterns (and Wornhole) following the active phase's Pattern Enemy Pool, or null
+        /// when no phase restricts patterns. Rush always lifts it.
+        /// </summary>
+        public Func<MapDataSO.EnemyOption, bool> BuildPatternPoolFilter()
+        {
+            if (!IsScheduleActive) return null;
+
+            bool Restricts(Phase p) => p != null && !p.Source.IsEmpty && p.Source.PatternPool != PatternEnemyPool.AllMapEnemies;
+            if (!Restricts(_first) && !Restricts(_second)) return null;
+
+            return opt => InRush() || PatternPoolAllows(opt.id);
+        }
+
+        private bool PatternPoolAllows(string id)
+        {
+            Phase phase = IsTogether ? _first : CurrentPhase;
+            if (phase == null || phase.Source.IsEmpty) return true;
+
+            switch (phase.Source.PatternPool)
+            {
+                case PatternEnemyPool.NoEnemies:
+                    return false;
+                case PatternEnemyPool.OnlyScheduledEnemies:
+                    if (IsTogether)
+                    {
+                        _togetherIds ??= new HashSet<string>(_first.Ids.Concat(_second.Ids));
+                        return _togetherIds.Contains(id);
+                    }
+                    return phase.Ids.Contains(id);
+                default:
+                    return true;
+            }
+        }
+
         private bool RandomPoolAllows(string id)
         {
             SpawnScheduleSource source;
@@ -243,34 +290,62 @@ namespace GameControl.Controller
             var r = rt.Resolved;
             var rule = r.Rule;
 
-            if (t < r.Start) return;
-            if (rt.IsFinished(t)) return;
+            if (t < r.Start)
+            {
+                rt.Status = $"waiting for Start At ({r.Start - t:0.0}s left)";
+                return;
+            }
+            if (rt.IsFinished(t))
+            {
+                rt.Status = r.Expire >= 0f && t >= r.Expire ? "done (Expire At passed)" : "done (Max Total reached)";
+                return;
+            }
 
             if (rt.NextWaveAt < 0f)
                 rt.NextWaveAt = rule.spawnOnStart ? r.Start : r.Start + rule.RollInterval(_state.EnemySpawnTimer);
 
-            if (t < rt.NextWaveAt) return;
+            if (t < rt.NextWaveAt)
+            {
+                if (!rt.Status.StartsWith("wave skipped") && !rt.Status.StartsWith("BLOCKED"))
+                    rt.Status = $"waiting next wave ({rt.NextWaveAt - t:0.0}s)";
+                return;
+            }
 
             rt.NextWaveAt = t + rule.RollInterval(_state.EnemySpawnTimer);
+            rt.Waves++;
 
-            if (rule.chance < 100f && UnityEngine.Random.Range(0f, 100f) >= rule.chance)
+            float waveChance = rule.EffectiveChance;
+            if (waveChance < 100f && UnityEngine.Random.Range(0f, 100f) >= waveChance)
             {
-                if (_debug) Debug.Log($"[SpawnSchedule] {rule.enemyId}: wave skipped by chance at {t:0.0}s");
+                rt.WavesSkippedByChance++;
+                rt.Status = $"wave skipped by Wave Chance {waveChance:0.##}% ({rt.WavesSkippedByChance}/{rt.Waves} skipped)";
+                if (_debug) Debug.Log($"[SpawnSchedule] {rule.enemyId}: wave skipped by chance ({waveChance:0.##}%) at {t:0.0}s");
                 return;
             }
 
             int amount = rule.RollAmount();
+            if (rule.maxAlive > 0)
+            {
+                int room = rule.maxAlive - _spawner.CountScheduledAlive(rt);
+                amount = rule.fillToMaxEachWave ? room : Mathf.Min(amount, room);
+                if (amount <= 0)
+                {
+                    rt.Status = $"Max Alive full ({rule.maxAlive}/{rule.maxAlive}) - refills when one dies";
+                    return;
+                }
+            }
             if (rule.maxTotal > 0) amount = Mathf.Min(amount, rule.maxTotal - rt.SpawnedTotal);
             if (amount <= 0) return;
 
+            rt.Status = $"spawning wave x{amount}";
             if (rule.burstDelay > 0f && amount > 1)
                 SpawnBurstAsync(rt, amount).Forget();
             else
                 for (int i = 0; i < amount; i++) SpawnOne(rt);
 
-            if (_debug) Debug.Log($"[SpawnSchedule] {rule.enemyId}: wave x{amount} at {t:0.0}s (total {rt.SpawnedTotal})");
+            if (_debug) Debug.Log($"[SpawnSchedule] {rule.enemyId}: wave x{amount} at {t:0.0}s (total {rt.SpawnedTotal})"
+                                  + (rt.LastBlockReason != null && rt.Status.StartsWith("BLOCKED") ? $" - {rt.Status}" : ""));
         }
-
         private async UniTaskVoid SpawnBurstAsync(RuleRuntime rt, int amount)
         {
             var token = GameStateController.Instance?.sceneCts?.Token ?? CancellationToken.None;
@@ -307,10 +382,17 @@ namespace GameControl.Controller
             }
 
             if (_spawner.TrySpawnScheduled(rule.enemyId, rule.respectPerEnemyMax, rule.checkSpawnConditions,
-                    rule.playSpawnEffects, position))
+                    rule.playSpawnEffects, position, rt, out string failReason))
+            {
                 rt.SpawnedTotal++;
-        }
+                rt.Status = $"spawned (total {rt.SpawnedTotal})";
+                return;
+            }
 
+            rt.Blocked++;
+            rt.LastBlockReason = failReason;
+            rt.Status = $"BLOCKED: {failReason}";
+        }
         /// <summary>Sequential + Loop: map a phase's time into one pass of its list, resetting counters per pass.</summary>
         private static float ToCycleTime(Phase phase, float elapsed)
         {
@@ -348,17 +430,24 @@ namespace GameControl.Controller
             if (!IsScheduleActive)
                 return $"inactive = Conditions ({_plan.Label}, milestone {MilestoneIndex})";
 
-            string header = $"{_plan.Label} | {_plan.Flow}";
+            string header = $"t={_lastElapsed:0.0}s | {_plan.Label} | {_plan.Flow}";
             if (IsThenMapMode) header += HandedOver ? $" | handed over at {_handedOverAt:0.0}s" : " | before hand-over";
-            header += $" | random {(AllowsRandomSpawner ? "on" : "off")}";
+            header += $" | random spawner {(AllowsRandomSpawner ? "ON" : "OFF")}";
+            var patternPhase = IsTogether ? _first : CurrentPhase;
+            header += $" | patterns {(patternPhase == null || patternPhase.Source.IsEmpty ? PatternEnemyPool.AllMapEnemies : patternPhase.Source.PatternPool)}";
 
             var lines = new List<string> { header };
-            AddLines(lines, _first, IsThenMapMode ? "1)" : "");
-            if (_second != null) AddLines(lines, _second, IsThenMapMode ? "2)" : "+");
+            string firstNote = IsThenMapMode && HandedOver ? "stopped (handed over)" : null;
+            string secondNote = IsThenMapMode && !HandedOver ? "waiting for hand-over" : null;
+            AddLines(lines, _first, IsThenMapMode ? "1)" : "", firstNote);
+            if (_second != null) AddLines(lines, _second, IsThenMapMode ? "2)" : "+", secondNote);
             return string.Join("\n", lines);
         }
 
-        private static void AddLines(List<string> lines, Phase phase, string prefix)
+        /// <summary>Writes the full per-rule report to the Console (button on SpawnerStateController).</summary>
+        public void LogReport() => Debug.Log("[SpawnSchedule] Report\n" + DebugSummary());
+
+        private void AddLines(List<string> lines, Phase phase, string prefix, string phaseNote)
         {
             if (phase.Rules.Count == 0)
             {
@@ -367,9 +456,14 @@ namespace GameControl.Controller
             }
 
             foreach (var rt in phase.Rules)
-                lines.Add($"{prefix} {rt.Resolved.Rule.enemyId}: {rt.Resolved.Start:0.#}s-"
-                          + $"{(rt.Resolved.Expire < 0 ? "end" : rt.Resolved.Expire.ToString("0.#") + "s")} "
-                          + $"spawned {rt.SpawnedTotal}, next {(rt.NextWaveAt < 0 ? "-" : rt.NextWaveAt.ToString("0.0"))}".Trim());
+            {
+                var rule = rt.Resolved.Rule;
+                string window = $"{rt.Resolved.Start:0.#}s-{(rt.Resolved.Expire < 0 ? "end" : rt.Resolved.Expire.ToString("0.#") + "s")}";
+                string alive = $"alive {_spawner.CountScheduledAlive(rt)}{(rule.maxAlive > 0 ? "/" + rule.maxAlive : "")}, ";
+                string counts = alive + $"spawned {rt.SpawnedTotal}{(rule.maxTotal > 0 ? "/" + rule.maxTotal : "")}, "
+                                + $"waves {rt.Waves} (chance-skipped {rt.WavesSkippedByChance}), blocked {rt.Blocked}";
+                lines.Add($"{prefix} {rule.enemyId} [{window}] {counts} | {phaseNote ?? rt.Status}".Trim());
+            }
         }
     }
 }
