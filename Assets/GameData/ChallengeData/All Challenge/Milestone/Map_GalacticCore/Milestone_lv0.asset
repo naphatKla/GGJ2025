@@ -16,13 +16,15 @@ MonoBehaviour:
   title: Milestone 0 [Galactic Core]
   description: '<size=23><color=#58E6FF><b>Task</b></color></size>
 
-    - 3 minutes
+    - 10 minutes
 
 
     <size=23><color=#D260FF><b>Difficulty</b></color></size>
 
     -
-    None'
+    Enemy max HP +50%
+
+    - Enemy damage +50%'
   lockdescription: 
   hideFromUI: 1
   allowedMapIds: []
@@ -30,7 +32,7 @@ MonoBehaviour:
   confirmSelectedMapIds:
   - autoSelectedMapID: map_galacticcore
     selectOnLevel: 0
-  flatScoreBonusPercent: 0
+  flatScoreBonusPercent: 50
   statMode: 0
   playerSetMods: []
   playerMods: []
@@ -46,8 +48,8 @@ MonoBehaviour:
       damage: 50
       moveSpeed: 0
       spawnChance: 0
-      rushMaxHP: 0
-      rushDamage: 0
+      rushMaxHP: 50
+      rushDamage: 50
       rushMoveSpeed: 0
       rushSetChance: 0
   timeModify: 0

@@ -16,25 +16,18 @@ MonoBehaviour:
   title: Milestone 2 [Galactic Core]
   description: '<size=23><color=#58E6FF><b>Task</b></color></size>
 
-    - 7 minutes
+    - 10 minutes
 
     -
-    Score 170,000
-
-    - Select atlest 1 challenge
+    Score 300,000
 
 
     <size=23><color=#D260FF><b>Difficulty</b></color></size>
 
     -
-    Enemy max HP +50%
+    Enemy max HP +150%
 
-    - Enemy damage +30%
-
-    - Charge Dash types spawn chance
-    +100%
-
-    - Charge Dash types damage +25%'
+    - Enemy damage +150%'
   lockdescription: 
   hideFromUI: 1
   allowedMapIds: []
@@ -42,7 +35,7 @@ MonoBehaviour:
   confirmSelectedMapIds:
   - autoSelectedMapID: map_galacticcore
     selectOnLevel: 2
-  flatScoreBonusPercent: 0
+  flatScoreBonusPercent: 50
   statMode: 0
   playerSetMods: []
   playerMods: []
@@ -54,12 +47,12 @@ MonoBehaviour:
     enemyNotincluded:
     - bright2
     stats:
-      maxHP: 50
-      damage: 50
+      maxHP: 150
+      damage: 150
       moveSpeed: 0
       spawnChance: 0
-      rushMaxHP: 0
-      rushDamage: 0
+      rushMaxHP: 150
+      rushDamage: 150
       rushMoveSpeed: 0
       rushSetChance: 0
   timeModify: 0
