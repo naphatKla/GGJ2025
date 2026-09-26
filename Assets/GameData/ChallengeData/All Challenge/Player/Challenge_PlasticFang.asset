@@ -13,23 +13,34 @@ MonoBehaviour:
   m_Name: Challenge_PlasticFang
   m_EditorClassIdentifier: 
   id: challenge_plasticfang
-  title: Plastic Fang
+  title: Heavy Fang
   description: '<size=25><color=yellow><b>+50%</b></size> <size=23>score</size></color>
 
 
-    -50%
-    base DMG '
+    +50%
+    base DMG, -50% movement speed'
   lockdescription: Deal 1,000,000 total damage.
   hideFromUI: 0
   allowedMapIds: []
   allowAutoUnlock: 0
   confirmSelectedMapIds: []
-  flatScoreBonusPercent: 0
+  flatScoreBonusPercent: 50
   statMode: 0
   playerSetMods: []
   playerMods:
   - stat: 2
+    percentDelta: 50
+  - stat: 3
     percentDelta: -50
-  disableAutoCalculate: 0
+  disableAutoCalculate: 1
   enemyGroups: []
   timeModify: 0
+  overrideMapSpawn: 0
+  spawnFlow: 0
+  spawnHandOver: 0
+  spawnHandOverAt: 120
+  spawnMapTimelineStartsAtHandOver: 1
+  spawnMixWithConditions: 0
+  spawnRandomSpawnerPool: 0
+  spawnPatternEnemyPool: 0
+  spawnRules: []

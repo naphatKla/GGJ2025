@@ -21,17 +21,20 @@ MonoBehaviour:
   allowedMapIds: []
   allowAutoUnlock: 0
   confirmSelectedMapIds: []
-  flatScoreBonusPercent: 0
+  flatScoreBonusPercent: 25
   statMode: 0
   playerSetMods: []
   playerMods: []
-  disableAutoCalculate: 0
+  disableAutoCalculate: 1
   enemyGroups:
   - groupName: 1
     enemyIds:
     - Enemy_Piercer
     - Enemy_Javilin
     - Enemy_Comet
+    - Enemy_Pusher
+    - Enemy_Shove
+    - Enemy_Impulse
     enemyNotincluded: []
     stats:
       maxHP: 0
@@ -43,3 +46,12 @@ MonoBehaviour:
       rushMoveSpeed: 0
       rushSetChance: 0
   timeModify: 0
+  overrideMapSpawn: 0
+  spawnFlow: 0
+  spawnHandOver: 0
+  spawnHandOverAt: 120
+  spawnMapTimelineStartsAtHandOver: 1
+  spawnMixWithConditions: 0
+  spawnRandomSpawnerPool: 0
+  spawnPatternEnemyPool: 0
+  spawnRules: []

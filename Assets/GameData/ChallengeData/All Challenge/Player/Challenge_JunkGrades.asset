@@ -14,21 +14,37 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: challenge_junkgrades
   title: Junk Grades
-  description: "<size=25><color=yellow><b>+300%</b></size> <size=23>score</size></color>\n\nMax
-    HP = 1\r"
+  description: '<size=25><color=yellow><b>+100%</b></size> <size=23>score</size></color>
+
+
+    -95%
+    max HP, +200% DMG'
   lockdescription: Win anymode mode with "Cheap materials" challenge enable.
   hideFromUI: 0
   allowedMapIds: []
   allowAutoUnlock: 0
   confirmSelectedMapIds: []
-  flatScoreBonusPercent: 300
-  statMode: 1
+  flatScoreBonusPercent: 100
+  statMode: 0
   playerSetMods:
   - stat: 0
     setDelta: 1
+  - stat: 0
+    setDelta: 0
   playerMods:
   - stat: 0
-    percentDelta: -50
-  disableAutoCalculate: 0
+    percentDelta: -95
+  - stat: 2
+    percentDelta: 200
+  disableAutoCalculate: 1
   enemyGroups: []
   timeModify: 0
+  overrideMapSpawn: 0
+  spawnFlow: 0
+  spawnHandOver: 0
+  spawnHandOverAt: 120
+  spawnMapTimelineStartsAtHandOver: 1
+  spawnMixWithConditions: 0
+  spawnRandomSpawnerPool: 0
+  spawnPatternEnemyPool: 0
+  spawnRules: []

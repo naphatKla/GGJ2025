@@ -14,22 +14,35 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: challenge_ordinary
   title: Ordinary
-  description: '<size=25><color=yellow><b>+120%</b></size> <size=23>score</size></color>
+  description: '<size=25><color=yellow><b>-100%</b></size> <size=23>score</size></color>
 
 
-    -40%
-    EXP multiply '
+    +20%
+    EXP multiply, +20% DMD, +20% max HP '
   lockdescription: Win one game in survival mode.
   hideFromUI: 0
   allowedMapIds: []
   allowAutoUnlock: 0
   confirmSelectedMapIds: []
-  flatScoreBonusPercent: 0
+  flatScoreBonusPercent: -100
   statMode: 0
   playerSetMods: []
   playerMods:
   - stat: 1
-    percentDelta: -40
-  disableAutoCalculate: 0
+    percentDelta: 20
+  - stat: 0
+    percentDelta: 20
+  - stat: 2
+    percentDelta: 20
+  disableAutoCalculate: 1
   enemyGroups: []
   timeModify: 0
+  overrideMapSpawn: 0
+  spawnFlow: 0
+  spawnHandOver: 0
+  spawnHandOverAt: 120
+  spawnMapTimelineStartsAtHandOver: 1
+  spawnMixWithConditions: 0
+  spawnRandomSpawnerPool: 0
+  spawnPatternEnemyPool: 0
+  spawnRules: []
