@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: challenge_newtype
   title: New Type
-  description: "<size=25><color=yellow><b>+350%</b></size> <size=23>score</size></color>\n\nBoss
-    / Mini Boss \nDMG +500%\r, Max HP +200%\r"
+  description: "<size=25><color=yellow><b>+350%</b></size> <size=23>score</size></color>\r\n\r\nBoss
+    / Mini Boss \r\nDMG +500%, Max HP +200%"
   lockdescription: Win survivor mode without getting hit by The Twin.
   hideFromUI: 0
   allowedMapIds: []
@@ -30,6 +30,7 @@ MonoBehaviour:
   - groupName: 1
     enemyIds:
     - Boss_Twin
+    - bright2
     enemyNotincluded: []
     stats:
       maxHP: 200
@@ -41,3 +42,12 @@ MonoBehaviour:
       rushMoveSpeed: 0
       rushSetChance: 0
   timeModify: 0
+  overrideMapSpawn: 0
+  spawnFlow: 0
+  spawnHandOver: 0
+  spawnHandOverAt: 120
+  spawnMapTimelineStartsAtHandOver: 1
+  spawnMixWithConditions: 0
+  spawnRandomSpawnerPool: 0
+  spawnPatternEnemyPool: 0
+  spawnRules: []
