@@ -71,12 +71,337 @@ MonoBehaviour:
       rushMoveSpeed: 0
       rushSetChance: -100
   timeModify: 0
-  overrideMapSpawn: 0
+  overrideMapSpawn: 1
   spawnFlow: 0
   spawnHandOver: 0
   spawnHandOverAt: 120
   spawnMapTimelineStartsAtHandOver: 1
   spawnMixWithConditions: 0
   spawnRandomSpawnerPool: 0
-  spawnPatternEnemyPool: 0
-  spawnRules: []
+  spawnPatternEnemyPool: 1
+  spawnRules:
+  - enabled: 1
+    enemyId: Enemy_Pusher
+    note: 
+    intervalMode: 0
+    customInterval: 10
+    intervalMin: 5
+    intervalMax: 15
+    spawnOnStart: 1
+    amountMin: 1
+    amountMax: 50
+    burstDelay: 0
+    maxTotal: 0
+    maxAlive: 999
+    fillToMaxEachWave: 0
+    useWaveChance: 0
+    chance: 1.5
+    respectPerEnemyMax: 1
+    checkSpawnConditions: 0
+    playSpawnEffects: 1
+    spawnPosition: 0
+    radiusMin: 20
+    radiusMax: 25
+    startAt: 0
+    useExpire: 1
+    expireAt: 450
+  - enabled: 1
+    enemyId: Enemy_Shooter
+    note: 
+    intervalMode: 0
+    customInterval: 10
+    intervalMin: 5
+    intervalMax: 15
+    spawnOnStart: 1
+    amountMin: 1
+    amountMax: 1
+    burstDelay: 0
+    maxTotal: 0
+    maxAlive: 999
+    fillToMaxEachWave: 0
+    useWaveChance: 0
+    chance: 100
+    respectPerEnemyMax: 1
+    checkSpawnConditions: 0
+    playSpawnEffects: 1
+    spawnPosition: 0
+    radiusMin: 20
+    radiusMax: 25
+    startAt: 30
+    useExpire: 0
+    expireAt: 120
+  - enabled: 1
+    enemyId: Divider
+    note: 
+    intervalMode: 0
+    customInterval: 10
+    intervalMin: 5
+    intervalMax: 15
+    spawnOnStart: 1
+    amountMin: 1
+    amountMax: 1
+    burstDelay: 0
+    maxTotal: 0
+    maxAlive: 999
+    fillToMaxEachWave: 0
+    useWaveChance: 0
+    chance: 100
+    respectPerEnemyMax: 1
+    checkSpawnConditions: 0
+    playSpawnEffects: 1
+    spawnPosition: 0
+    radiusMin: 20
+    radiusMax: 25
+    startAt: 60
+    useExpire: 0
+    expireAt: 120
+  - enabled: 1
+    enemyId: Enemy_Shove
+    note: 
+    intervalMode: 0
+    customInterval: 10
+    intervalMin: 5
+    intervalMax: 15
+    spawnOnStart: 1
+    amountMin: 1
+    amountMax: 1
+    burstDelay: 0
+    maxTotal: 0
+    maxAlive: 999
+    fillToMaxEachWave: 0
+    useWaveChance: 0
+    chance: 100
+    respectPerEnemyMax: 1
+    checkSpawnConditions: 0
+    playSpawnEffects: 1
+    spawnPosition: 0
+    radiusMin: 20
+    radiusMax: 25
+    startAt: 90
+    useExpire: 0
+    expireAt: 120
+  - enabled: 1
+    enemyId: Enemy_Shotgun
+    note: 
+    intervalMode: 0
+    customInterval: 10
+    intervalMin: 5
+    intervalMax: 15
+    spawnOnStart: 1
+    amountMin: 1
+    amountMax: 1
+    burstDelay: 0
+    maxTotal: 0
+    maxAlive: 999
+    fillToMaxEachWave: 0
+    useWaveChance: 0
+    chance: 100
+    respectPerEnemyMax: 1
+    checkSpawnConditions: 0
+    playSpawnEffects: 1
+    spawnPosition: 0
+    radiusMin: 20
+    radiusMax: 25
+    startAt: 120
+    useExpire: 0
+    expireAt: 120
+  - enabled: 1
+    enemyId: Enemy_Bomber
+    note: 
+    intervalMode: 0
+    customInterval: 10
+    intervalMin: 5
+    intervalMax: 15
+    spawnOnStart: 1
+    amountMin: 1
+    amountMax: 1
+    burstDelay: 0
+    maxTotal: 0
+    maxAlive: 999
+    fillToMaxEachWave: 0
+    useWaveChance: 0
+    chance: 100
+    respectPerEnemyMax: 1
+    checkSpawnConditions: 0
+    playSpawnEffects: 1
+    spawnPosition: 0
+    radiusMin: 20
+    radiusMax: 25
+    startAt: 150
+    useExpire: 0
+    expireAt: 120
+  - enabled: 1
+    enemyId: BombCaller
+    note: 
+    intervalMode: 0
+    customInterval: 10
+    intervalMin: 5
+    intervalMax: 15
+    spawnOnStart: 1
+    amountMin: 1
+    amountMax: 1
+    burstDelay: 0
+    maxTotal: 0
+    maxAlive: 999
+    fillToMaxEachWave: 0
+    useWaveChance: 0
+    chance: 100
+    respectPerEnemyMax: 1
+    checkSpawnConditions: 0
+    playSpawnEffects: 1
+    spawnPosition: 0
+    radiusMin: 20
+    radiusMax: 25
+    startAt: 180
+    useExpire: 0
+    expireAt: 120
+  - enabled: 1
+    enemyId: Enemy_Absorption
+    note: 
+    intervalMode: 0
+    customInterval: 10
+    intervalMin: 5
+    intervalMax: 15
+    spawnOnStart: 1
+    amountMin: 1
+    amountMax: 1
+    burstDelay: 0
+    maxTotal: 0
+    maxAlive: 999
+    fillToMaxEachWave: 0
+    useWaveChance: 0
+    chance: 100
+    respectPerEnemyMax: 1
+    checkSpawnConditions: 0
+    playSpawnEffects: 1
+    spawnPosition: 0
+    radiusMin: 20
+    radiusMax: 25
+    startAt: 210
+    useExpire: 0
+    expireAt: 120
+  - enabled: 1
+    enemyId: Enemy_Impulse
+    note: 
+    intervalMode: 0
+    customInterval: 10
+    intervalMin: 5
+    intervalMax: 15
+    spawnOnStart: 1
+    amountMin: 1
+    amountMax: 1
+    burstDelay: 0
+    maxTotal: 0
+    maxAlive: 999
+    fillToMaxEachWave: 0
+    useWaveChance: 0
+    chance: 100
+    respectPerEnemyMax: 1
+    checkSpawnConditions: 0
+    playSpawnEffects: 1
+    spawnPosition: 0
+    radiusMin: 20
+    radiusMax: 25
+    startAt: 240
+    useExpire: 0
+    expireAt: 120
+  - enabled: 1
+    enemyId: DoomCaller
+    note: 
+    intervalMode: 0
+    customInterval: 10
+    intervalMin: 5
+    intervalMax: 15
+    spawnOnStart: 1
+    amountMin: 1
+    amountMax: 1
+    burstDelay: 0
+    maxTotal: 0
+    maxAlive: 999
+    fillToMaxEachWave: 0
+    useWaveChance: 0
+    chance: 100
+    respectPerEnemyMax: 1
+    checkSpawnConditions: 0
+    playSpawnEffects: 1
+    spawnPosition: 0
+    radiusMin: 20
+    radiusMax: 25
+    startAt: 270
+    useExpire: 0
+    expireAt: 120
+  - enabled: 1
+    enemyId: Enemy_AllAround
+    note: 
+    intervalMode: 0
+    customInterval: 10
+    intervalMin: 5
+    intervalMax: 15
+    spawnOnStart: 1
+    amountMin: 1
+    amountMax: 1
+    burstDelay: 0
+    maxTotal: 0
+    maxAlive: 999
+    fillToMaxEachWave: 0
+    useWaveChance: 0
+    chance: 100
+    respectPerEnemyMax: 1
+    checkSpawnConditions: 0
+    playSpawnEffects: 1
+    spawnPosition: 0
+    radiusMin: 20
+    radiusMax: 25
+    startAt: 300
+    useExpire: 0
+    expireAt: 120
+  - enabled: 1
+    enemyId: Boss_Twin
+    note: 
+    intervalMode: 0
+    customInterval: 10
+    intervalMin: 5
+    intervalMax: 15
+    spawnOnStart: 1
+    amountMin: 1
+    amountMax: 1
+    burstDelay: 0
+    maxTotal: 1
+    maxAlive: 0
+    fillToMaxEachWave: 0
+    useWaveChance: 0
+    chance: 100
+    respectPerEnemyMax: 1
+    checkSpawnConditions: 0
+    playSpawnEffects: 1
+    spawnPosition: 0
+    radiusMin: 20
+    radiusMax: 25
+    startAt: 300
+    useExpire: 1
+    expireAt: 310
+  - enabled: 1
+    enemyId: bright2
+    note: 
+    intervalMode: 0
+    customInterval: 10
+    intervalMin: 5
+    intervalMax: 15
+    spawnOnStart: 1
+    amountMin: 1
+    amountMax: 1
+    burstDelay: 0
+    maxTotal: 1
+    maxAlive: 0
+    fillToMaxEachWave: 0
+    useWaveChance: 0
+    chance: 100
+    respectPerEnemyMax: 1
+    checkSpawnConditions: 0
+    playSpawnEffects: 1
+    spawnPosition: 0
+    radiusMin: 20
+    radiusMax: 25
+    startAt: 590
+    useExpire: 1
+    expireAt: 600
