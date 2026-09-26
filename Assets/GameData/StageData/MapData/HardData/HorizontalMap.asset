@@ -388,6 +388,17 @@ MonoBehaviour:
       effectint: 5
   intervalEnemyChanceUpgrade: 30
   intervalEnemyPointRatioUpgrade: 30
+  enemySpawnMode: 0
+  mixWithConditions: 0
+  randomSpawnerPool: 0
+  patternEnemyPool: 0
+  sequentialSpawn:
+    step: 30
+    startOffset: 0
+    stopPrevious: 1
+    lastEntryRunsForever: 1
+    loop: 0
+    entries: []
   PatternOptions:
   - enableThisPattern: 1
     bypassSpawnCondition: 0
@@ -740,9 +751,9 @@ MonoBehaviour:
   decreaseInterval: 60
   decreaseMinimum: 3
   intervalIncreaseEnemyPoint: 30
-  rateIncreaseEnemyPoint: 50
-  startEnemyPoint: 60
-  maxEnemyPoint: 700
+  rateIncreaseEnemyPoint: 20
+  startEnemyPoint: 30
+  maxEnemyPoint: 500
   rushData: {fileID: 11400000, guid: e2b1d3052964e77449e76a9e319858b4, type: 2}
   rushTime: 60
   milestoneOptions:
