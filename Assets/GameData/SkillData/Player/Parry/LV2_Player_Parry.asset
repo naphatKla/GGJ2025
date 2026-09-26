@@ -57,9 +57,9 @@ MonoBehaviour:
   explosionRadius: 12
   stopWhileParry: 0
   parryColliderSizeMultiplier: 2
-  parryDuration: 0.75
+  parryDuration: 0.7
   perfectParryDurationPercentage: 30
-  cooldownReduceOnPerfectParry: 70
+  cooldownReduceOnPerfectParry: 50
   normalParrySuccess:
     knockBackDistance: 8
     knockBackDuration: 0.25
@@ -72,7 +72,7 @@ MonoBehaviour:
   selfEffectsOnParrySuccess:
   - effectData: {fileID: 11400000, guid: aa4dff95f38494c4e876f8f95511ecf0, type: 2}
     isOverrideDuration: 1
-    overrideDuration: 0.5
+    overrideDuration: 0.2
   explosionEffectsToTarget:
   - effectData: {fileID: 11400000, guid: e5ae6010e3c4a7b43bc80da0bf5a9ef5, type: 2}
     isOverrideDuration: 1
