@@ -34,7 +34,7 @@ MonoBehaviour:
   skillName: Reflection
   skillDescription: "<color=#FF3131><b>[Attack]</b></color>\r\n<size=3.5><color=#adadad><i>[Multi-Hit],
     [AOE]</i></color>\r\n<color=#5CE5FF><b>[UPGRADE]</b></color> \r\n<color=#FFE02E><b>[+]</b></color>
-    Blade\r\n<color=#FFE02E><b>[-]</b></color> Cooldown\r\n\r\nCooldown: <b>5.25s</b>\r\n\n-
+    Damage\n<color=#FFE02E><b>[-]</b></color> Cooldown\r\n\r\nCooldown: <b>5.25s</b>\r\n\n-
     Shoot out a <color=#FFE02E>spinning blade</color> around ship before pulling
     it back.\n\n"
   previousSkillData: {fileID: 11400000, guid: b434804c8b6fbda4ba5c40ef58bec2e7, type: 2}
@@ -49,10 +49,10 @@ MonoBehaviour:
   exitFeedback: 
   clearBuffOnSkillExit: 0
   statusEffectOnSkillStart: []
-  skillObjectAmount: 9
+  skillObjectAmount: 5
   reflectionSkillObject: {fileID: -5084912477967523391, guid: be1b7b9f44f403e4e969540195a77d3b, type: 3}
   damageHitPerSec: 2
-  baseDamagePerHit: 3
+  baseDamagePerHit: 5.25
   damageMultiplier: 150
   explosionDistance: 11
   explosionEntireDuration: 1.5
