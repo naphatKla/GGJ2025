@@ -552,15 +552,15 @@ MonoBehaviour:
   patternDecreaseRate: 1
   patternDecreaseMinimum: 18
   addPatternInterval: 9
-  amountToAdd: 1
-  patternMax: 1
+  amountToAdd: 3
+  patternMax: 3
   canDuplicateAfterHaveAllPattern: 1
   eventmapOptions:
   - enableThisMapEvent: 1
     catagolyMapEvent: Main
     allMapEventID:
     - mapEventID: 2Giant
-      chance: 7.6
+      chance: 10
       useWeightRandom: 1
       overrideData: 0
       damageMap: 2
@@ -570,7 +570,7 @@ MonoBehaviour:
         startAfter: 0
         endAt: 240
     - mapEventID: Horizontal
-      chance: 7.6
+      chance: 10
       useWeightRandom: 1
       overrideData: 0
       damageMap: 2
@@ -580,7 +580,7 @@ MonoBehaviour:
         startAfter: 0
         endAt: 180
     - mapEventID: Vertical
-      chance: 7.6
+      chance: 10
       useWeightRandom: 1
       overrideData: 0
       damageMap: 2
@@ -590,7 +590,7 @@ MonoBehaviour:
         startAfter: 0
         endAt: 180
     - mapEventID: Basket
-      chance: 7.6
+      chance: 10
       useWeightRandom: 1
       overrideData: 0
       damageMap: 2
@@ -600,7 +600,7 @@ MonoBehaviour:
         startAfter: 120
         endAt: -1
     - mapEventID: Firework_TopL_BottomR
-      chance: 7.6
+      chance: 10
       useWeightRandom: 1
       overrideData: 0
       damageMap: 2
@@ -610,7 +610,7 @@ MonoBehaviour:
         startAfter: 60
         endAt: 300
     - mapEventID: Firework_TopR_BottomL
-      chance: 7.6
+      chance: 10
       useWeightRandom: 1
       overrideData: 0
       damageMap: 2
@@ -620,7 +620,7 @@ MonoBehaviour:
         startAfter: 60
         endAt: 300
     - mapEventID: RightHole
-      chance: 7.6
+      chance: 10
       useWeightRandom: 1
       overrideData: 0
       damageMap: 5
@@ -630,7 +630,7 @@ MonoBehaviour:
         startAfter: 180
         endAt: -1
     - mapEventID: LeftHole
-      chance: 7.6
+      chance: 10
       useWeightRandom: 1
       overrideData: 0
       damageMap: 5
@@ -640,7 +640,7 @@ MonoBehaviour:
         startAfter: 180
         endAt: -1
     - mapEventID: Random_Line
-      chance: 7.6
+      chance: 10
       useWeightRandom: 1
       overrideData: 0
       damageMap: 2
@@ -650,7 +650,7 @@ MonoBehaviour:
         startAfter: 180
         endAt: -1
     - mapEventID: Wave
-      chance: 7.6
+      chance: 10
       useWeightRandom: 1
       overrideData: 0
       damageMap: 2
@@ -658,36 +658,6 @@ MonoBehaviour:
       mapEventCondition:
       - conditionType: 0
         startAfter: 120
-        endAt: -1
-    - mapEventID: SBlackHole
-      chance: 7.7
-      useWeightRandom: 1
-      overrideData: 0
-      damageMap: 2
-      useCondition: 1
-      mapEventCondition:
-      - conditionType: 0
-        startAfter: 300
-        endAt: -1
-    - mapEventID: MBlackHole
-      chance: 7.7
-      useWeightRandom: 1
-      overrideData: 0
-      damageMap: 5
-      useCondition: 1
-      mapEventCondition:
-      - conditionType: 0
-        startAfter: 240
-        endAt: -1
-    - mapEventID: BBlackHole
-      chance: 7.7
-      useWeightRandom: 1
-      overrideData: 0
-      damageMap: 7
-      useCondition: 1
-      mapEventCondition:
-      - conditionType: 0
-        startAfter: 300
         endAt: -1
     eventMapChance: 100
     playInterval: 7
