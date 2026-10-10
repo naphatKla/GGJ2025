@@ -39,6 +39,9 @@ namespace Characters.ScoreSystems
             OnScoreChange?.Invoke(CurrentScore);
         }
 
+        /// <summary>Testing only (ActiveProfile F1 panel): adds score as-is, ignoring the multiplier.</summary>
+        public void DebugAddScore(int score) => AddScore(score, useMultiplier: false);
+
         public void AddScoreMultiplyer(float multiplyer)
         {
             ScoreMultiplier += multiplyer;

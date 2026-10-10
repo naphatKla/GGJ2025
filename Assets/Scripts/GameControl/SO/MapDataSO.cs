@@ -735,10 +735,28 @@ namespace GameControl.SO
         
         public int EvaluateLevelMilestoneOption(PlayerSummaryStats playerStatsThisRun, int currentMaxMilestoneLevel, bool isWin)
         {
-            var currentMilestoneOption = milestoneOptions[currentMaxMilestoneLevel];
+            bool isCompleteMilestone = IsLevelMilestoneComplete(playerStatsThisRun, currentMaxMilestoneLevel, isWin);
+
+            currentMaxMilestoneLevel = isCompleteMilestone ? currentMaxMilestoneLevel + 1 : currentMaxMilestoneLevel;
+            currentMaxMilestoneLevel = Mathf.Clamp(currentMaxMilestoneLevel, 0, MaxMilestoneLevel);
+
+            return currentMaxMilestoneLevel;
+        }
+
+        /// <summary>
+        /// Did this run clear milestone <paramref name="level"/> (its Win Required + score conditions)?
+        /// Unlike <see cref="EvaluateLevelMilestoneOption"/> this also answers for the LAST milestone, where
+        /// clearing it unlocks nothing new.
+        /// </summary>
+        public bool IsLevelMilestoneComplete(PlayerSummaryStats playerStatsThisRun, int level, bool isWin)
+        {
+            if (milestoneOptions == null || level < 0 || level >= milestoneOptions.Count) return false;
+
+            var milestoneOption = milestoneOptions[level];
+            var configs = milestoneOption.conditionConfigs ?? new List<LevelMilestoneOption.LevelMilestoneConfig>();
             int conditionPassCount = 0;
-            
-            foreach (var config in currentMilestoneOption.conditionConfigs)
+
+            foreach (var config in configs)
             {
                 switch (config.conditionType)
                 {
@@ -749,20 +767,17 @@ namespace GameControl.SO
                 }
             }
 
-            bool isCompleteMilestone;
+            bool isComplete;
 
-            if (currentMilestoneOption.logic == LevelMilestoneOption.LevelMilestoneConditionLogic.And)
-                isCompleteMilestone = conditionPassCount >= currentMilestoneOption.conditionConfigs.Count;
+            if (milestoneOption.logic == LevelMilestoneOption.LevelMilestoneConditionLogic.And)
+                isComplete = conditionPassCount >= configs.Count;
             else
-                isCompleteMilestone = conditionPassCount > 0;
+                isComplete = conditionPassCount > 0;
 
-            if (currentMilestoneOption.winRequired && !isWin)
-                isCompleteMilestone = false;
+            if (milestoneOption.winRequired && !isWin)
+                isComplete = false;
 
-            currentMaxMilestoneLevel = isCompleteMilestone ? currentMaxMilestoneLevel + 1 : currentMaxMilestoneLevel;
-            currentMaxMilestoneLevel = Mathf.Clamp(currentMaxMilestoneLevel, 0, MaxMilestoneLevel);
-
-            return currentMaxMilestoneLevel;
+            return isComplete;
         }
 
         #endregion

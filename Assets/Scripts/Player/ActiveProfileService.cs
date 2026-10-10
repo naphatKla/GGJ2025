@@ -444,12 +444,75 @@ namespace Player
             }
             GUILayout.EndHorizontal();
 
-            
+            DrawRunDebug(current, mapId, mapStat);
+
             GUILayout.EndScrollView();
             GUILayout.EndVertical();
             GUI.DragWindow(new Rect(0, 0, 10000, 18));
         }
         
+        /// <summary>
+        /// Testing tools for the run in progress: force a win (straight to the summary, which records stats,
+        /// milestones and achievements like a real win), add score, and re-lock Galactic Core to test its unlock.
+        /// </summary>
+        private void DrawRunDebug(PlayerData current, string mapId, MapStat mapStat)
+        {
+            GUILayout.Space(6);
+            GUILayout.Label("Run Debug (test win / unlock)", _hdrStyle);
+            DrawKV("Selected Milestone Lv", mapStat.SelectedLevelMilestone.ToString());
+            DrawKV("Highest Milestone Cleared", mapStat.HighestMilestoneCleared < 0 ? "none" : "Lv." + mapStat.HighestMilestoneCleared);
+            DrawKV("Win Amount", mapStat.WinAmount.ToString());
+            DrawKV("Galactic Core", current.UnlockedMaps.Contains("map_galacticcore") ? "UNLOCKED" : "locked");
+
+            var gsc = GameControl.Controller.GameStateController.Instance;
+            var player = Characters.Controllers.PlayerController.Instance;
+            bool inRun = gsc != null && player != null && gsc.CurrentMap != null &&
+                         (gsc.CurrentState is GameControl.GameState.StartState ||
+                          gsc.CurrentState is GameControl.GameState.PrestartState ||
+                          gsc.CurrentState is GameControl.GameState.EndState);
+
+            if (!inRun)
+            {
+                GUILayout.Label("(Force Win / Add Score: start a run in the Gameplay scene first)", _kvStyle);
+            }
+            else
+            {
+                DrawKV("Run Score", player.ScoreSystem.CurrentScore.ToString());
+
+                GUILayout.BeginHorizontal();
+                if (GUILayout.Button("+10,000 Score")) player.ScoreSystem.DebugAddScore(10000);
+                if (GUILayout.Button("+100,000 Score")) player.ScoreSystem.DebugAddScore(100000);
+                GUILayout.EndHorizontal();
+
+                GUILayout.BeginHorizontal();
+                if (GUILayout.Button("Force Win")) DebugForceWin(gsc);
+                if (GUILayout.Button("Force Win + 100,000 Score"))
+                {
+                    player.ScoreSystem.DebugAddScore(100000);
+                    DebugForceWin(gsc);
+                }
+                GUILayout.EndHorizontal();
+            }
+
+            GUILayout.BeginHorizontal();
+            if (GUILayout.Button("Lock Galactic Core"))
+                ProgressionManager.Instance.LockMap("map_galacticcore");
+            if (GUILayout.Button("Reset Milestone Cleared"))
+            {
+                mapStat.HighestMilestoneCleared = -1;
+                SaveNow();
+            }
+            GUILayout.EndHorizontal();
+        }
+
+        /// <summary>Ends the current run as a win and goes straight to the summary (skips "kill all enemies").</summary>
+        private static void DebugForceWin(GameControl.Controller.GameStateController gsc)
+        {
+            gsc.gameResult = GameControl.Controller.EndResult.Completed;
+            gsc.SetState(new GameControl.GameState.SummaryState());
+            Debug.Log("[ActiveProfileService] Debug: forced a WIN -> SummaryState");
+        }
+
         private static void OpenFolderWindows(string path)
         {
             try

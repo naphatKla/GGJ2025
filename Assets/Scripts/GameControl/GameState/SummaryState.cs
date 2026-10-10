@@ -104,6 +104,13 @@ namespace GameControl.GameState
             profile.RegisterRun(GameStateController.Instance.CurrentMap.mapId, newScore, isWin,
                 calculatedNextLevelMilestone);
 
+            // Remember the highest milestone ever cleared (achievements such as "beat Void Metro milestone 5"
+            // need it - clearing the last milestone changes nothing else in the save).
+            int playedMilestone = mapStats.SelectedLevelMilestone;
+            if (playedMilestone > mapStats.HighestMilestoneCleared &&
+                GameStateController.Instance.CurrentMap.IsLevelMilestoneComplete(dataStatus, playedMilestone, isWin))
+                mapStats.HighestMilestoneCleared = playedMilestone;
+
             bool isNewHigh = newScore > profile.HighestScore;
             if (isNewHigh)
             {

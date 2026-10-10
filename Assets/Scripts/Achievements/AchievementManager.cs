@@ -70,7 +70,9 @@ namespace Achievements
         private bool EvaluateCondition(AchievementConditionConfig c, AchievementContext ctx)
         {
             var p = ctx.Player;
-            p.SelectedChallengesPerMap.TryGetValue(p.selectedMapIds, out var challenge);
+            HashSet<string> challenge = null;
+            if (p?.SelectedChallengesPerMap != null && !string.IsNullOrEmpty(p.selectedMapIds))
+                p.SelectedChallengesPerMap.TryGetValue(p.selectedMapIds, out challenge);
             
             switch (c.type)
             {
@@ -122,6 +124,12 @@ namespace Achievements
                         p.totalDiedDictionary.TryGetValue(c.diedFromId, out diedCount);
 
                     return diedCount >= c.diedAtLeast;
+
+                case AchievementConditionType.MapWinAtLeast:
+                    return AchievementConditionConfig.MapWins(p, c.mapId) >= c.winAtLeast;
+
+                case AchievementConditionType.MapMilestoneClearedAtLeast:
+                    return AchievementConditionConfig.HighestMilestoneCleared(p, c.mapId) >= Mathf.Max(0, c.milestoneAtLeast);
             }
 
             return false;
