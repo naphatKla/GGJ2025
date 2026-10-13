@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using Characters.Controllers;
@@ -12,14 +13,24 @@ namespace Characters.SkillSystems.SkillRuntimes
 {
     public class SkillPlasmaTagRuntime : BaseSkillRuntime<SkillPlasmaTagDataSo>
     {
+        private const float InitialTargetRange = 5f;
+
         private readonly Collider2D[] _candidates = new Collider2D[64];
+
+        // Targets that currently carry a bomb (entries are removed when that bomb finishes).
         private readonly HashSet<BaseController> _taggedTargets = new();
 
-        private System.Action<GameObject> _onOwnerHitHandler;
+        // Bombs currently alive (counting down or exploding).
+        private readonly List<PlasmaTagSkillObject> _activeBombs = new();
+
+        private Action<GameObject> _onOwnerHitHandler;
+
+        // ======================== SKILL LIFECYCLE ========================
 
         public override void AssignSkillData(BaseSkillDataSo skillData, BaseController owner)
         {
             base.AssignSkillData(skillData, owner);
+
             PoolingManager.Instance.Create<PlasmaTagSkillObject>(
                 this.skillData.PlasmaTagSkillObject.name,
                 PoolingGroupName.SkillObject,
@@ -36,8 +47,8 @@ namespace Characters.SkillSystems.SkillRuntimes
 
         protected override void OnSkillStart()
         {
-            _taggedTargets.Clear();
-
+            // _taggedTargets is NOT cleared here: each entry removes itself when its bomb
+            // finishes, so clearing would let old and new bombs fight over the same entry.
             Transform firstTarget = FindClosestEnemy(owner.transform.position);
             if (firstTarget != null)
                 PlaceBombOnTarget(firstTarget.gameObject).Forget();
@@ -52,71 +63,98 @@ namespace Characters.SkillSystems.SkillRuntimes
 
         private void OnDestroy()
         {
-            if (owner != null)
-            {
-                owner.DamageOnTouch.OnHit -= _onOwnerHitHandler;
-                PoolingManager.Current?.ClearPool(this.skillData.PlasmaTagSkillObject.name);
-            }
+            if (owner == null) return;
+
+            owner.DamageOnTouch.OnHit -= _onOwnerHitHandler;
+
+            // Detonate everything first, clear the pool only after the explosions finish.
+            // Static + captured args: this runtime is gone by the time the task completes.
+            DetonateAllThenClearPool(
+                skillData.PlasmaTagSkillObject.name,
+                _activeBombs.ToArray()).Forget();
+        }
+
+        private static async UniTaskVoid DetonateAllThenClearPool(string poolName, PlasmaTagSkillObject[] bombs)
+        {
+            foreach (var bomb in bombs)
+                if (bomb) bomb.ForceDetonate();
+
+            // A bomb is done once it is idle again (reset by PlaceBombOnTarget's finally) or destroyed.
+            await UniTask.WaitUntil(() => AllBombsFinished(bombs));
+
+            PoolingManager.Current?.ClearPool(poolName);
+        }
+
+        private static bool AllBombsFinished(PlasmaTagSkillObject[] bombs)
+        {
+            foreach (var bomb in bombs)
+                if (bomb && bomb.IsBusy) return false;
+            return true;
         }
 
         // ======================== PLACE BOMB ========================
 
         private async UniTaskVoid PlaceBombOnTarget(GameObject targetGameObject)
         {
+            // --- Validate ---
             if (!CombatManager.TryGetCharacterFromCache(targetGameObject, out var target)) return;
             if (target.HealthSystem == null || !target.HealthSystem.CanAim) return;
+            if (_activeBombs.Count >= skillData.MaxActiveBombs) return;
             if (!_taggedTargets.Add(target)) return;
 
-            // Capture ทุกอย่างเป็น local ก่อน async
-            string poolName    = skillData.PlasmaTagSkillObject.name;
-            float countdownDur = skillData.BombCountdown;
-            float dmgActiveDur = skillData.DamageActiveDuration;
-            float cleanupDel   = skillData.CleanupDelay;
-            float baseDmg      = skillData.BaseDamage;
-            float dmgMult      = skillData.DamageMultiplier;
-            GameObject ownerGo = owner.gameObject;
-            string ownerId     = owner.CharacterData.CharacterId;
+            // --- Capture everything before the async part (runtime may be destroyed meanwhile) ---
+            string poolName = skillData.PlasmaTagSkillObject.name;
+            PlasmaBombConfig config = BuildBombConfig();
+            var tagged = _taggedTargets;
+            var active = _activeBombs;
 
-            var bomb = PoolingManager.Instance.Get<PlasmaTagSkillObject>(poolName);
-            bomb.transform.position = target.transform.position;
-            bomb.ResetForPool();
-            bomb.gameObject.SetActive(true);
-            bomb.FollowTarget(target);
+            // --- Spawn ---
+            var bomb = SpawnBomb(poolName, target.transform.position);
+            active.Add(bomb);
 
-            var ct = bomb.destroyCancellationToken;
-
+            // --- Run: countdown -> explosion -> cleanup (or earlier detonation if the target dies) ---
             try
             {
-                // Phase 1: Countdown
-                await bomb.WaitCountdownAsync(countdownDur, ct);
-
-                if (!bomb || !bomb.gameObject.activeSelf) return;
-
-                // Phase 2: Damage — ใช้ bomb เป็น source key
-                bomb.DamageOnTouch.EnableDamage(ownerGo, ownerId, bomb, 1, baseDmg, dmgMult);
-
-                await UniTask.WaitForSeconds(dmgActiveDur, cancellationToken: ct);
-
-                if (!bomb || !bomb.gameObject.activeSelf) return;
-
-                bomb.DamageOnTouch.DisableDamage(bomb);
-
-                // Phase 3: VFX delay
-                if (cleanupDel > 0f)
-                    await UniTask.WaitForSeconds(cleanupDel, cancellationToken: ct);
+                await bomb.RunAsync(target, config);
             }
-            catch (System.OperationCanceledException) { }
+            catch (OperationCanceledException) { }
             finally
             {
-                _taggedTargets.Remove(target);
-
-                if (bomb)
-                {
-                    bomb.ResetForPool();
-                    bomb.gameObject.SetActive(false);
-                    PoolingManager.Current?.Release(poolName, bomb);
-                }
+                tagged.Remove(target);
+                active.Remove(bomb);
+                ReleaseBomb(poolName, bomb);
             }
+        }
+
+        private PlasmaBombConfig BuildBombConfig()
+        {
+            return new PlasmaBombConfig(
+                ownerGo: owner.gameObject,
+                ownerId: owner.CharacterData.CharacterId,
+                countdown: skillData.BombCountdown,
+                damageDuration: skillData.DamageActiveDuration,
+                cleanupDelay: skillData.CleanupDelay,
+                baseDamage: skillData.BaseDamage,
+                damageMultiplier: skillData.DamageMultiplier,
+                explodeOnTargetDead: skillData.ExplodeOnDead);
+        }
+
+        private static PlasmaTagSkillObject SpawnBomb(string poolName, Vector3 position)
+        {
+            var bomb = PoolingManager.Instance.Get<PlasmaTagSkillObject>(poolName);
+            bomb.transform.position = position;
+            bomb.ResetForPool();
+            bomb.gameObject.SetActive(true);
+            return bomb;
+        }
+
+        private static void ReleaseBomb(string poolName, PlasmaTagSkillObject bomb)
+        {
+            if (!bomb) return;
+
+            bomb.ResetForPool();
+            bomb.gameObject.SetActive(false);
+            PoolingManager.Current?.Release(poolName, bomb);
         }
 
         // ======================== TARGETING ========================
@@ -124,7 +162,7 @@ namespace Characters.SkillSystems.SkillRuntimes
         private Transform FindClosestEnemy(Vector2 origin)
         {
             LayerMask damageLayer = CharacterGlobalSettings.Instance.EnemyLayerDictionary[owner.tag];
-            int found = Physics2D.OverlapCircleNonAlloc(origin, 5f, _candidates, damageLayer);
+            int found = Physics2D.OverlapCircleNonAlloc(origin, InitialTargetRange, _candidates, damageLayer);
 
             if (found <= 0) return null;
 
