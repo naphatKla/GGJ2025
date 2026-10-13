@@ -113,7 +113,10 @@ namespace GameControl.Controller
         {
             if (_mapdata.triggerTimeCanDecrease && _currentTriggertime > _mapdata.patternDecreaseMinimum)
             {
-                _currentTriggertime -= _mapdata.patternDecreaseInterval;
+                // Decrease by the Rate (seconds per step), never below the Minimum.
+                // (patternDecreaseInterval is how OFTEN this runs, not how much.)
+                _currentTriggertime = Mathf.Max(_mapdata.patternDecreaseMinimum,
+                    _currentTriggertime - _mapdata.patternDecreaseRate);
                 if (_isDebug) Debug.Log($"[EnemyPatternController] Trigger time decreased to {_currentTriggertime}");
             }
         }
@@ -206,12 +209,22 @@ namespace GameControl.Controller
                 return null;
             }
 
-            var candidates = _enemySpawner.PickEnemy(patternOption != null && patternOption.bypassSpawnCondition);
+            // Disable In Pattern enemies have no pattern pool: picking one spawned nothing but still spent points.
+            var candidates = _enemySpawner.PickEnemy(patternOption != null && patternOption.bypassSpawnCondition)
+                ?.Where(o => !o.disableInPattern).ToList();
 
             // Enemy Spawn Mode's Pattern Enemy Pool (null = unchanged behaviour).
             var patternFilter = _enemySpawner.PatternPoolFilter;
-            if (patternFilter != null && candidates != null)
-                candidates = candidates.Where(patternFilter).ToList();
+            if (patternFilter != null)
+            {
+                candidates = candidates?.Where(patternFilter).ToList();
+
+                // Only Scheduled Enemies: the pattern must still play. If none of the scheduled enemies
+                // pass the map's Spawn Conditions right now, ignore those conditions instead of skipping.
+                if (candidates == null || candidates.Count == 0)
+                    candidates = _enemySpawner.PickEnemy(true)
+                        ?.Where(o => !o.disableInPattern).Where(patternFilter).ToList();
+            }
 
             if (candidates == null || candidates.Count == 0)
             {
@@ -377,6 +390,7 @@ namespace GameControl.Controller
             var enemyObj = pool.Get();
             enemyObj.transform.position = pos;
             enemyObj.CountedByMax = false;
+            _enemySpawner.RegisterPatternRefund(enemyObj, enemyType.EnemyPoint); // refunded on death like a random spawn
             enemyObj.transform.SetParent(_state.EnemyParent);
             StopEnemyMovement(enemyObj, patternData.enableMovementAfter, _ct).Forget();
         }
@@ -445,8 +459,8 @@ namespace GameControl.Controller
                     var successCount = 0;
                     var work = new List<MapDataSO.PatternOption>(batch);
 
-                    var perPatternTime = _currentTriggertime / Mathf.Max(1, targetSuccess);
-                    var nextAt = Time.deltaTime;
+                    // Spread the batch evenly over Trigger All Pattern In: one pattern every perPatternTime.
+                    var perPatternTime = Mathf.Max(0f, _currentTriggertime) / Mathf.Max(1, targetSuccess);
 
                     var maxAttempts = targetSuccess + 8;
                     for (var i = 0; successCount < targetSuccess && i < work.Count && i < maxAttempts; i++)
@@ -466,8 +480,9 @@ namespace GameControl.Controller
                             if (replacement != null) work.Add(replacement);
                         }
 
-                        nextAt += perPatternTime;
-                        var wait = Mathf.Max(0f, nextAt - Time.deltaTime);
+                        // No wait after the last pattern, and none after a Skipped one (nothing spawned).
+                        if (successCount >= targetSuccess || outcome == TriggerOutcomeKind.Skipped) continue;
+                        var wait = perPatternTime;
                         if (_isDebug) Debug.Log($"[EnemyPatternController] Waiting {wait:0.00}s");
                         if (wait > 0f)
                             await UniTask.Delay((int)(wait * 1000),

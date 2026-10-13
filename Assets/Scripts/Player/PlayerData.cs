@@ -140,6 +140,12 @@ namespace Player
         public int LastScore;
         public int MaxLevelUnlockMilestone;
         public int SelectedLevelMilestone;
+
+        /// <summary>
+        /// Highest milestone index (0 = first) ever cleared on this map, -1 = none yet. Recorded at the end
+        /// of a run; older saves start at -1 because the field did not exist.
+        /// </summary>
+        public int HighestMilestoneCleared = -1;
     }
     
     public static class PlayerDataExtensions

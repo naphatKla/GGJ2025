@@ -533,7 +533,7 @@ namespace GameControl.SO
         [HideIf(nameof(enemySpawnMode), EnemySpawnMode.Conditions)]
         [InfoBox("Pattern (และสกิล Wornhole) สุ่มศัตรูได้ทุกตัวในแมพ ศัตรูที่ไม่อยู่ในลิสต์ก็เกิดได้", InfoMessageType.None,
             "@this.enemySpawnMode != EnemySpawnMode.Conditions && this.patternEnemyPool == PatternEnemyPool.AllMapEnemies")]
-        [InfoBox("Pattern (และสกิล Wornhole) หยิบได้เฉพาะศัตรูที่อยู่ในลิสต์ Sequential", InfoMessageType.None,
+        [InfoBox("Pattern (และสกิล Wornhole) หยิบได้เฉพาะศัตรูที่อยู่ในลิสต์ Sequential\nPattern เล่นทุกครั้ง: ถ้าตัวในลิสต์ยังไม่ผ่าน Spawn Condition ของแมพ จะข้าม Condition ให้ (ไม่ข้าม Pattern)", InfoMessageType.None,
             "@this.enemySpawnMode != EnemySpawnMode.Conditions && this.patternEnemyPool == PatternEnemyPool.OnlyScheduledEnemies")]
         [InfoBox("Pattern ไม่เกิดศัตรูเลยตอน Sequential ทำงาน", InfoMessageType.None,
             "@this.enemySpawnMode != EnemySpawnMode.Conditions && this.patternEnemyPool == PatternEnemyPool.NoEnemies")]
@@ -593,6 +593,52 @@ namespace GameControl.SO
         [PropertyTooltip("คลิกชื่อไฟล์เพื่อเปิด milestone นั้นไปแก้ที่ Enemy Spawn (Milestone)")]
         private List<Challenge.ChallengeDataSO> MilestoneAssets => EnemySpawnEditorLookup.MilestonesForMap(this);
         #endregion
+
+        #region Balance Preview
+#if UNITY_EDITOR // editor-only: nothing of the preview is compiled into a build
+        [FoldoutGroup("Balance Preview")]
+        [InfoBox("จำลอง 1 รอบเกมไว้ปรับบาลานซ์ (อ่านอย่างเดียว ไม่แก้ข้อมูลใดๆ)\n"
+                 + "รวมค่าจากไฟล์นี้ + Rush Data + milestone ที่เลือก ตามลำดับที่โค้ดจริงทำงาน\n"
+                 + "แบ่งเป็นช่วงๆ ตรงที่มีอะไรเปลี่ยน (ศัตรู/Pattern/Map Event เริ่มหรือหยุด, Rush, ส่งต่อ milestone)\n"
+                 + "แต่ละช่วงบอก: ตัวสุ่มเกิดทุกกี่วิ, % ของแต่ละตัว (แถบเขียว = ต้นช่วง, ขีดเหลือง = ปลายช่วง), "
+                 + "ตารางเกิด, Enemy Point, Pattern เล่นกี่โมง กี่อัน ได้ศัตรูกี่ตัว, Map Event ทอยกี่โมง สุ่มได้อะไร\n"
+                 + "กล่องแดง = Rush | กล่องฟ้า = หลังส่งต่อให้โหมดแมพ | กล่องเหลือง = ค่าที่น่าจะตั้งผิด\n"
+                 + "ผลการสุ่มและการฆ่าศัตรูรู้ได้ตอนเล่นเท่านั้น จึงแสดงเป็นโอกาส/กฎแทน")]
+        [NonSerialized, ShowInInspector, InlineProperty, HideLabel]
+        private MapBalancePreview.Options _balanceOptions = new();
+
+        [ButtonGroup("Balance Preview/Buttons")]
+        [Button("Copy as Text")]
+        [PropertyTooltip("คัดลอกทั้งหมดเป็นข้อความ ไปวางใน Notepad / Google Sheet / Discord")]
+        private void CopyBalancePreview() => GUIUtility.systemCopyBuffer = MapBalancePreview.ToText(MapBalancePreview.Build(this, _balanceOptions));
+
+        [ButtonGroup("Balance Preview/Buttons")]
+        [Button("Log to Console")]
+        [PropertyTooltip("พิมพ์ทั้งหมดลง Console")]
+        private void LogBalancePreview() => Debug.Log(MapBalancePreview.ToText(MapBalancePreview.Build(this, _balanceOptions)), this);
+
+        [FoldoutGroup("Balance Preview")]
+        [OnInspectorGUI]
+        private void DrawBalancePreview()
+        {
+            // Rebuilt at most twice a second (the Inspector repaints far more often than that).
+            double now = UnityEditor.EditorApplication.timeSinceStartup;
+            string key = _balanceOptions.Key;
+            if (_balanceReport == null || key != _balanceKey || now - _balanceTime > 0.5)
+            {
+                _balanceReport = MapBalancePreview.Build(this, _balanceOptions);
+                _balanceKey = key;
+                _balanceTime = now;
+            }
+            MapBalancePreview.DrawGUI(_balanceReport, _balanceUi);
+        }
+
+        [NonSerialized] private MapBalancePreview.Report _balanceReport;
+        [NonSerialized] private string _balanceKey;
+        [NonSerialized] private double _balanceTime;
+        [NonSerialized] private MapBalancePreview.UiState _balanceUi = new();
+#endif
+        #endregion
         
         #region Pattern Setting
         [FoldoutGroup("Pattern Setting")]
@@ -603,7 +649,57 @@ namespace GameControl.SO
         [InfoBox("Pattern จะถูกเล่นทุกค่านี้ ตามเวลาเกม เช่นเล่น Pattern ทั้งหมดทุกๆ 180 วิ")]
         [Tooltip("The time of the pattern to play in trigger time (default player all pattern in 3 minute / 180 seconds)")]
         public float playAllPatternIn = 180f;
-        
+
+        [FoldoutGroup("Pattern Setting")]
+        [GUIColor("@this.playAllCanDecrease ? Color.green : Color.red")]
+        [Tooltip("เปิด = Play All Pattern In ลดลงเรื่อยๆ ระหว่างเกม (Pattern ชุดใหม่มาถี่ขึ้น)\nปิด = เล่นทุก Play All Pattern In วินาทีเท่าเดิมทั้งเกม (แบบเดิม)")]
+        public bool playAllCanDecrease;
+
+        [FoldoutGroup("Pattern Setting")]
+        [InfoBox("ลด Play All Pattern In ทุกๆ กี่วินาที เช่น 60 = ทุก 1 นาที")]
+        [ShowIf("$playAllCanDecrease"), MinValue(0)]
+        [Tooltip("ทุกๆ กี่วินาทีจะลด Play All Pattern In (0 = ไม่ลด)")]
+        public float playAllDecreaseInterval = 60f;
+
+        [FoldoutGroup("Pattern Setting")]
+        [InfoBox("ลดครั้งละกี่วินาที เช่น 15 วิ ลด 1 = รอบถัดไปเล่นทุก 14 วิ")]
+        [ShowIf("$playAllCanDecrease"), MinValue(0)]
+        [Tooltip("แต่ละครั้งลด Play All Pattern In ลงกี่วินาที")]
+        public float playAllDecreaseRate = 1f;
+
+        [FoldoutGroup("Pattern Setting")]
+        [InfoBox("Play All Pattern In ต่ำสุดได้แค่นี้")]
+        [ShowIf("$playAllCanDecrease"), MinValue(0.5f)]
+        [Tooltip("ค่าต่ำสุดของ Play All Pattern In (ลดไม่ต่ำกว่านี้)")]
+        public float playAllDecreaseMinimum = 5f;
+
+        /// <summary>The Play All Pattern In decrease settings in effect.</summary>
+        public readonly struct PlayAllDecreaseSettings
+        {
+            public readonly bool Enabled;
+            public readonly float Interval, Rate, Minimum;
+
+            public PlayAllDecreaseSettings(bool enabled, float interval, float rate, float minimum)
+            {
+                Enabled = enabled && interval > 0f && rate > 0f;
+                Interval = interval;
+                Rate = rate;
+                Minimum = Mathf.Max(0.5f, minimum);
+            }
+        }
+
+        /// <summary>
+        /// This map's Play All Pattern In decrease, or the milestone's when it has Override Play All Decrease on.
+        /// Pass a null milestone for Rush (Rush Data's values are already applied into the map then).
+        /// </summary>
+        public PlayAllDecreaseSettings ResolvePlayAllDecrease(Challenge.ChallengeDataSO milestone)
+        {
+            if (milestone != null && milestone.overridePlayAllDecrease)
+                return new PlayAllDecreaseSettings(milestone.playAllCanDecrease, milestone.playAllDecreaseInterval,
+                    milestone.playAllDecreaseRate, milestone.playAllDecreaseMinimum);
+            return new PlayAllDecreaseSettings(playAllCanDecrease, playAllDecreaseInterval, playAllDecreaseRate, playAllDecreaseMinimum);
+        }
+
         [FoldoutGroup("Pattern Setting")] [Title("Pattern Setting")]
         [InfoBox("เช่น มีทั้งหมด 3 Pattern ใน Pool มันจะเล่น 3 Pattern ภายในเวลานี้ (all pattern in 3 minute / 180 seconds)")]
         [Tooltip("interval of event will be trigger (Default 180 seconds)")]
@@ -735,10 +831,28 @@ namespace GameControl.SO
         
         public int EvaluateLevelMilestoneOption(PlayerSummaryStats playerStatsThisRun, int currentMaxMilestoneLevel, bool isWin)
         {
-            var currentMilestoneOption = milestoneOptions[currentMaxMilestoneLevel];
+            bool isCompleteMilestone = IsLevelMilestoneComplete(playerStatsThisRun, currentMaxMilestoneLevel, isWin);
+
+            currentMaxMilestoneLevel = isCompleteMilestone ? currentMaxMilestoneLevel + 1 : currentMaxMilestoneLevel;
+            currentMaxMilestoneLevel = Mathf.Clamp(currentMaxMilestoneLevel, 0, MaxMilestoneLevel);
+
+            return currentMaxMilestoneLevel;
+        }
+
+        /// <summary>
+        /// Did this run clear milestone <paramref name="level"/> (its Win Required + score conditions)?
+        /// Unlike <see cref="EvaluateLevelMilestoneOption"/> this also answers for the LAST milestone, where
+        /// clearing it unlocks nothing new.
+        /// </summary>
+        public bool IsLevelMilestoneComplete(PlayerSummaryStats playerStatsThisRun, int level, bool isWin)
+        {
+            if (milestoneOptions == null || level < 0 || level >= milestoneOptions.Count) return false;
+
+            var milestoneOption = milestoneOptions[level];
+            var configs = milestoneOption.conditionConfigs ?? new List<LevelMilestoneOption.LevelMilestoneConfig>();
             int conditionPassCount = 0;
-            
-            foreach (var config in currentMilestoneOption.conditionConfigs)
+
+            foreach (var config in configs)
             {
                 switch (config.conditionType)
                 {
@@ -749,20 +863,17 @@ namespace GameControl.SO
                 }
             }
 
-            bool isCompleteMilestone;
+            bool isComplete;
 
-            if (currentMilestoneOption.logic == LevelMilestoneOption.LevelMilestoneConditionLogic.And)
-                isCompleteMilestone = conditionPassCount >= currentMilestoneOption.conditionConfigs.Count;
+            if (milestoneOption.logic == LevelMilestoneOption.LevelMilestoneConditionLogic.And)
+                isComplete = conditionPassCount >= configs.Count;
             else
-                isCompleteMilestone = conditionPassCount > 0;
+                isComplete = conditionPassCount > 0;
 
-            if (currentMilestoneOption.winRequired && !isWin)
-                isCompleteMilestone = false;
+            if (milestoneOption.winRequired && !isWin)
+                isComplete = false;
 
-            currentMaxMilestoneLevel = isCompleteMilestone ? currentMaxMilestoneLevel + 1 : currentMaxMilestoneLevel;
-            currentMaxMilestoneLevel = Mathf.Clamp(currentMaxMilestoneLevel, 0, MaxMilestoneLevel);
-
-            return currentMaxMilestoneLevel;
+            return isComplete;
         }
 
         #endregion

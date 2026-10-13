@@ -95,6 +95,23 @@ namespace GameControl.SO
         public float playAllPatternIn = 180f;
 
         [FoldoutGroup("Pattern Setting")]
+        [GUIColor("@this.playAllCanDecrease ? Color.green : Color.red")]
+        [Tooltip("เปิด = ช่วง Rush Play All Pattern In ลดลงเรื่อยๆ (Pattern ชุดใหม่มาถี่ขึ้น)")]
+        public bool playAllCanDecrease;
+
+        [FoldoutGroup("Pattern Setting")] [ShowIf("$playAllCanDecrease"), MinValue(0)]
+        [Tooltip("ทุกๆ กี่วินาทีจะลด Play All Pattern In (0 = ไม่ลด)")]
+        public float playAllDecreaseInterval = 60f;
+
+        [FoldoutGroup("Pattern Setting")] [ShowIf("$playAllCanDecrease"), MinValue(0)]
+        [Tooltip("แต่ละครั้งลด Play All Pattern In ลงกี่วินาที")]
+        public float playAllDecreaseRate = 1f;
+
+        [FoldoutGroup("Pattern Setting")] [ShowIf("$playAllCanDecrease"), MinValue(0.5f)]
+        [Tooltip("ค่าต่ำสุดของ Play All Pattern In")]
+        public float playAllDecreaseMinimum = 5f;
+
+        [FoldoutGroup("Pattern Setting")]
         [Title("Pattern Setting")]
         [InfoBox(
             "เช่น มีทั้งหมด 3 Pattern ใน Pool มันจะเล่น 3 Pattern ภายในเวลานี้ (all pattern in 3 minute / 180 seconds)")]
@@ -135,6 +152,10 @@ namespace GameControl.SO
         {
             if (!src) return;
             playAllPatternIn = src.playAllPatternIn;
+            playAllCanDecrease = src.playAllCanDecrease;
+            playAllDecreaseInterval = src.playAllDecreaseInterval;
+            playAllDecreaseRate = src.playAllDecreaseRate;
+            playAllDecreaseMinimum = src.playAllDecreaseMinimum;
             triggerAllPatternIn = src.triggerAllPatternIn;
             triggerTimeCanDecrease = src.triggerTimeCanDecrease;
             patternDecreaseInterval = src.patternDecreaseInterval;
@@ -245,6 +266,10 @@ namespace GameControl.SO
 
             // Pattern scalars
             target.playAllPatternIn         = playAllPatternIn;
+            target.playAllCanDecrease       = playAllCanDecrease;
+            target.playAllDecreaseInterval  = playAllDecreaseInterval;
+            target.playAllDecreaseRate      = playAllDecreaseRate;
+            target.playAllDecreaseMinimum   = playAllDecreaseMinimum;
             target.triggerAllPatternIn      = triggerAllPatternIn;
             target.triggerTimeCanDecrease   = triggerTimeCanDecrease;
             target.patternDecreaseInterval  = patternDecreaseInterval;

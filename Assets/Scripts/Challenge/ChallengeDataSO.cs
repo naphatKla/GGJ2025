@@ -184,6 +184,40 @@ namespace Challenge
         [FoldoutGroup("Stage Modify")] [Tooltip("เช่น 10 ก็จะบวกเวลาเพิ่มไป 10 วิ ถ้าใส่ -10 ก็จะลดลง 10 วิ")]
         public float timeModify;
 
+        [FoldoutGroup("Pattern (Milestone)")]
+        [InfoBox("ใช้เมื่อไฟล์นี้เป็น milestone ใน MilestoneContainer\n"
+                 + "เปิด Override = ใช้ค่าการลด Play All Pattern In ด้านล่างแทนค่าของแมพ (ช่วงปกติ / ช่วง Rush ใช้ของ Rush Data)\n"
+                 + "ปิด = ใช้ค่าของแมพ (MapDataSO > Pattern Setting)")]
+        [GUIColor("@this.overridePlayAllDecrease ? Color.green : Color.red")]
+        [LabelText("Override Play All Decrease"), LabelWidth(175)]
+        [Tooltip("เปิด = milestone นี้กำหนดเองว่า Pattern ชุดใหม่จะมาถี่ขึ้นแค่ไหน\nปิด = ใช้ค่าของแมพ")]
+        public bool overridePlayAllDecrease;
+
+        [FoldoutGroup("Pattern (Milestone)")]
+        [ShowIf(nameof(overridePlayAllDecrease))]
+        [GUIColor("@this.playAllCanDecrease ? Color.green : Color.red")]
+        [LabelText("Play All Can Decrease"), LabelWidth(175)]
+        [Tooltip("เปิด = Play All Pattern In ลดลงเรื่อยๆ ระหว่างเกม\nปิด = เล่นทุก Play All Pattern In ของแมพเท่าเดิม (ปิดการลดของแมพได้ด้วย)")]
+        public bool playAllCanDecrease = true;
+
+        [FoldoutGroup("Pattern (Milestone)")]
+        [ShowIf("@this.overridePlayAllDecrease && this.playAllCanDecrease"), MinValue(0)]
+        [Unit(Units.Second), LabelText("Decrease Interval"), LabelWidth(175)]
+        [Tooltip("ทุกๆ กี่วินาทีจะลด Play All Pattern In (0 = ไม่ลด)")]
+        public float playAllDecreaseInterval = 60f;
+
+        [FoldoutGroup("Pattern (Milestone)")]
+        [ShowIf("@this.overridePlayAllDecrease && this.playAllCanDecrease"), MinValue(0)]
+        [Unit(Units.Second), LabelText("Decrease Rate"), LabelWidth(175)]
+        [Tooltip("ลดครั้งละกี่วินาที เช่น 15 วิ ลด 1 = รอบถัดไปเล่นทุก 14 วิ")]
+        public float playAllDecreaseRate = 1f;
+
+        [FoldoutGroup("Pattern (Milestone)")]
+        [ShowIf("@this.overridePlayAllDecrease && this.playAllCanDecrease"), MinValue(0.5f)]
+        [Unit(Units.Second), LabelText("Decrease Minimum"), LabelWidth(175)]
+        [Tooltip("Play All Pattern In ต่ำสุดได้แค่นี้")]
+        public float playAllDecreaseMinimum = 5f;
+
         [FoldoutGroup("Enemy Spawn (Milestone)")]
         [InfoBox("ตารางเกิดศัตรูเฉพาะ milestone นี้ (ใช้เมื่อไฟล์นี้อยู่ใน MilestoneContainer)\n"
                  + "• ปิด Override (ค่าเริ่มต้น) = ใช้ Enemy Spawn Mode ของแมพตามปกติ\n"
@@ -247,7 +281,7 @@ namespace Challenge
         [ShowIf(nameof(overrideMapSpawn))]
         [InfoBox("Pattern (และสกิล Wornhole) สุ่มศัตรูได้ทุกตัวในแมพ ศัตรูที่ไม่อยู่ใน Spawn Rules ก็เกิดได้ (เช่น Shooter)", InfoMessageType.None,
             "@this.overrideMapSpawn && this.spawnPatternEnemyPool == GameControl.SO.PatternEnemyPool.AllMapEnemies")]
-        [InfoBox("Pattern (และสกิล Wornhole) หยิบได้เฉพาะศัตรูที่อยู่ใน Spawn Rules", InfoMessageType.None,
+        [InfoBox("Pattern (และสกิล Wornhole) หยิบได้เฉพาะศัตรูที่อยู่ใน Spawn Rules\nPattern เล่นทุกครั้ง: ถ้าตัวใน Spawn Rules ยังไม่ผ่าน Spawn Condition ของแมพ จะข้าม Condition ให้ (ไม่ข้าม Pattern)", InfoMessageType.None,
             "@this.overrideMapSpawn && this.spawnPatternEnemyPool == GameControl.SO.PatternEnemyPool.OnlyScheduledEnemies")]
         [InfoBox("Pattern ไม่เกิดศัตรูเลยตอนกฎของ milestone ทำงาน", InfoMessageType.None,
             "@this.overrideMapSpawn && this.spawnPatternEnemyPool == GameControl.SO.PatternEnemyPool.NoEnemies")]

@@ -30,6 +30,10 @@ namespace Achievements
         TakeHitLessThan = 9,
         HealAtLeast = 10,
         DiedAtLeast = 11,
+        /// <summary>Won the given map at least N times (from the save's MapStats, so earlier wins count too).</summary>
+        MapWinAtLeast = 12,
+        /// <summary>Cleared milestone N (1 = first) or higher on the given map (MapStat.HighestMilestoneCleared).</summary>
+        MapMilestoneClearedAtLeast = 13,
     }
 
     public enum AchievementConditionLogic
@@ -62,8 +66,19 @@ namespace Achievements
     {
         public AchievementConditionType type;
 
-        [ShowIf(nameof(type), AchievementConditionType.MapIdEquals)]
+        [ShowIf("@type == AchievementConditionType.MapIdEquals || type == AchievementConditionType.MapWinAtLeast || type == AchievementConditionType.MapMilestoneClearedAtLeast")]
+        [Tooltip("MapIdEquals: แมพที่ต้องเล่นจบ\nMapWinAtLeast / MapMilestoneClearedAtLeast: แมพที่ต้องชนะ / ผ่าน milestone เช่น map_voidmetro")]
         public string mapId;
+
+        [ShowIf(nameof(type), AchievementConditionType.MapMilestoneClearedAtLeast)]
+        [InfoBox("ผ่าน milestone Lv นี้ (หรือสูงกว่า) ของแมพ Map Id อย่างน้อย 1 ครั้ง\n"
+                 + "Lv นับแบบเดียวกับหน้าเมนู (LV.0 – LV.4) เช่น 4 = LV.4 (Milestone_lv4)\n"
+                 + "\"ผ่าน\" = ตามกติกาของ milestone ในแมพ (Win Required + เงื่อนไข score ใน Level Milestone ของ MapDataSO)\n"
+                 + "นับเฉพาะรอบที่เล่นหลังเพิ่มระบบนี้ (save เก่าไม่มีประวัติ)")]
+        [MinValue(0)]
+        [LabelText("Milestone Lv")]
+        [Tooltip("milestone Lv แบบเดียวกับหน้าเมนู: 0 = LV.0 (แรก), 4 = LV.4")]
+        public int milestoneAtLeast;
 
         [ShowIf(nameof(type), AchievementConditionType.ChallengeIdEquals)]
         public string challengeId;
@@ -86,7 +101,8 @@ namespace Achievements
         [ShowIf(nameof(type), AchievementConditionType.ParryAtLeast)]
         public int minParryAmountOnRun;
 
-        [ShowIf(nameof(type), AchievementConditionType.WinAtLeast)]
+        [ShowIf("@type == AchievementConditionType.WinAtLeast || type == AchievementConditionType.MapWinAtLeast")]
+        [Tooltip("WinAtLeast: ชนะรวมทุกแมพกี่ครั้ง\nMapWinAtLeast: ชนะแมพ Map Id กี่ครั้ง (1 = ผ่านด่านนั้นครั้งแรก)")]
         public int winAtLeast;
 
         [ShowIf(nameof(type), AchievementConditionType.TakeHitLessThan)]
@@ -121,6 +137,8 @@ namespace Achievements
                 AchievementConditionType.TakeHitLessThan => $"TakeHit {takeHitFromId} < {takeHitLessThan}",
                 AchievementConditionType.HealAtLeast => $"Heal >= {healAtLeastOnRun} On Run",
                 AchievementConditionType.DiedAtLeast => $"Died from {diedFromId} >= {diedAtLeast}",
+                AchievementConditionType.MapWinAtLeast => $"Win map {mapId} >= {winAtLeast}",
+                AchievementConditionType.MapMilestoneClearedAtLeast => $"Clear {mapId} milestone Lv.{milestoneAtLeast} (or higher)",
                 _ => ""
             };
 
@@ -175,9 +193,34 @@ namespace Achievements
                     current = Mathf.Min(current, target);
                     return true;
 
+                case AchievementConditionType.MapWinAtLeast:
+                    target = winAtLeast;
+                    current = Mathf.Min(MapWins(p, mapId), target);
+                    return true;
+
+                case AchievementConditionType.MapMilestoneClearedAtLeast:
+                    // shown as "levels cleared": clearing Lv.0..Lv.4 = 5 steps
+                    target = Mathf.Max(0, milestoneAtLeast) + 1;
+                    current = Mathf.Clamp(HighestMilestoneCleared(p, mapId) + 1, 0, target);
+                    return true;
+
                 default:
                     return false;
             }
+        }
+
+        /// <summary>Times the player has won this map (0 when never played or unknown).</summary>
+        public static int MapWins(PlayerData p, string mapId)
+        {
+            if (p?.MapStats == null || string.IsNullOrEmpty(mapId)) return 0;
+            return p.MapStats.TryGetValue(mapId, out var stat) && stat != null ? stat.WinAmount : 0;
+        }
+
+        /// <summary>Highest milestone Lv cleared on this map (0 = LV.0), -1 = none.</summary>
+        public static int HighestMilestoneCleared(PlayerData p, string mapId)
+        {
+            if (p?.MapStats == null || string.IsNullOrEmpty(mapId)) return -1;
+            return p.MapStats.TryGetValue(mapId, out var stat) && stat != null ? stat.HighestMilestoneCleared : -1;
         }
     }
 
