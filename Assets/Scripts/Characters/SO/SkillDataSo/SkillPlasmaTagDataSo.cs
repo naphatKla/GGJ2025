@@ -49,6 +49,8 @@ namespace Characters.SO.SkillDataSo
         [Unit(Units.Percent)]
         [SerializeField] private float damageMultiplier = 100f;
 
+        [SerializeField] private bool explodeOnDead = true;
+
         public PlasmaTagSkillObject PlasmaTagSkillObject => plasmaTagSkillObject;
         public int MaxActiveBombs => maxActiveBombs;
         public float TagDuration => tagDuration;
@@ -57,5 +59,6 @@ namespace Characters.SO.SkillDataSo
         public float CleanupDelay => cleanupDelay;
         public float BaseDamage => baseDamage;
         public float DamageMultiplier => damageMultiplier;
+        public bool ExplodeOnDead => explodeOnDead;
     }
 }
