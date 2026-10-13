@@ -270,8 +270,10 @@ namespace GameControl.Controller
             float hp      = eSnap.Get(EnemyStat.RushMaxHP);
             float dmg     = eSnap.Get(EnemyStat.RushDamage);
             float mspd    = eSnap.Get(EnemyStat.RushMoveSpeed);
-            float chanceP = eSnap.Get(EnemyStat.RushSetChance);
-            if (float.IsFinite(chanceP))
+            // Only when a challenge actually sets it: Get() returns 0 for "not set", which used to zero every
+            // Rush enemy's chance (the spawner then picked uniformly, even 0% enemies).
+            if (eSnap.PercentByStat != null &&
+                eSnap.PercentByStat.TryGetValue(EnemyStat.RushSetChance, out var chanceP) && float.IsFinite(chanceP))
             {
                 opt.chance = chanceP;
             }

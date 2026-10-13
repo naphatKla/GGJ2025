@@ -38,6 +38,15 @@ namespace GameControl.Controller
         /// </summary>
         private readonly HashSet<EnemyController> _noPointRefund = new();
 
+        /// <summary>Pattern spawns (not counted by Per-Enemy Max): the Enemy Point each one cost, refunded on death.</summary>
+        private readonly Dictionary<EnemyController, float> _patternRefund = new();
+
+        /// <summary>Called by EnemyPatternController right after it spawns an enemy it paid <paramref name="cost"/> for.</summary>
+        public void RegisterPatternRefund(EnemyController enemy, float cost)
+        {
+            if (enemy != null && cost > 0f) _patternRefund[enemy] = cost;
+        }
+
         /// <summary>
         /// Extra filter for the RANDOM spawner only (<see cref="SpawnEnemy"/>), set by the spawn schedule's
         /// Random Spawner Pool. Null = no filter (Conditions mode - behaviour unchanged). Patterns never use it.
@@ -127,6 +136,8 @@ namespace GameControl.Controller
                 bool noRefund = _noPointRefund.Remove(controller);
                 if (controller.CountedByMax && !noRefund)
                     SpawnerStateController.Instance.CurrentEnemyPoint += option.EnemyPoint;
+                else if (_patternRefund.Remove(controller, out float paid))
+                    SpawnerStateController.Instance.CurrentEnemyPoint += paid;
 
                 controller.CountedByMax = false;
             };
@@ -171,6 +182,7 @@ namespace GameControl.Controller
         {
             DOTween.Kill(obj.transform, complete: true);
             _noPointRefund.Remove(obj); // pooled instance may have been a scheduled spawn last time
+            _patternRefund.Remove(obj);
             _scheduledOwner.Remove(obj);
             
             bool firstOfType = _firstSpawnedTypeIds.Add(option.id);
@@ -548,6 +560,7 @@ namespace GameControl.Controller
         {
             foreach (var pool in _enemyPools.Values) pool.Clear();
             _activeEnemy.Clear();
+            _patternRefund.Clear();
         }
         public void ReleaseAllEnemies()
         {

@@ -247,7 +247,7 @@ namespace Challenge
         [ShowIf(nameof(overrideMapSpawn))]
         [InfoBox("Pattern (และสกิล Wornhole) สุ่มศัตรูได้ทุกตัวในแมพ ศัตรูที่ไม่อยู่ใน Spawn Rules ก็เกิดได้ (เช่น Shooter)", InfoMessageType.None,
             "@this.overrideMapSpawn && this.spawnPatternEnemyPool == GameControl.SO.PatternEnemyPool.AllMapEnemies")]
-        [InfoBox("Pattern (และสกิล Wornhole) หยิบได้เฉพาะศัตรูที่อยู่ใน Spawn Rules", InfoMessageType.None,
+        [InfoBox("Pattern (และสกิล Wornhole) หยิบได้เฉพาะศัตรูที่อยู่ใน Spawn Rules\nPattern เล่นทุกครั้ง: ถ้าตัวใน Spawn Rules ยังไม่ผ่าน Spawn Condition ของแมพ จะข้าม Condition ให้ (ไม่ข้าม Pattern)", InfoMessageType.None,
             "@this.overrideMapSpawn && this.spawnPatternEnemyPool == GameControl.SO.PatternEnemyPool.OnlyScheduledEnemies")]
         [InfoBox("Pattern ไม่เกิดศัตรูเลยตอนกฎของ milestone ทำงาน", InfoMessageType.None,
             "@this.overrideMapSpawn && this.spawnPatternEnemyPool == GameControl.SO.PatternEnemyPool.NoEnemies")]
