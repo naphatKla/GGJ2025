@@ -53,7 +53,10 @@ namespace Characters.SkillSystems.SkillRuntimes
         private void OnDestroy()
         {
             if (owner != null)
+            {
                 owner.DamageOnTouch.OnHit -= _onOwnerHitHandler;
+                PoolingManager.Current?.ClearPool(this.skillData.PlasmaTagSkillObject.name);
+            }
         }
 
         // ======================== PLACE BOMB ========================
