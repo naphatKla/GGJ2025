@@ -103,6 +103,13 @@ namespace GameControl.EventMap
             _cts = new CancellationTokenSource();
         }
 
+        /// <summary>
+        /// Ids of every map event storage registered on this map right now - the doc's "all available at
+        /// that time" for Bright2's Wornhole. Read-only: callers pick from it, they don't change it.
+        /// </summary>
+        public IReadOnlyCollection<string> AvailableEventIds =>
+            (IReadOnlyCollection<string>)_mapStorageDict?.Keys ?? Array.Empty<string>();
+
         public async UniTask RunEventMapByID(string id, CancellationToken token, EventOverrides overrides)
         {
             if (!_mapStorageDict.TryGetValue(id, out var storage)) return;

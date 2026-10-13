@@ -591,7 +591,7 @@ MonoBehaviour:
   combatSystem: {fileID: 4709890271133192763}
   damageOnTouch: {fileID: 8858836943072646866}
   feedbackSystem: {fileID: 5733554412123996507}
-  characterData: {fileID: 11400000, guid: c1d07ea341b30b24fb5d44940eefa14e, type: 2}
+  characterData: {fileID: 11400000, guid: ce3bec72644051b4db9530731babdcd4, type: 2}
   autoAssignDataOnEnable: 0
 --- !u!114 &8668445959578619110
 MonoBehaviour:
@@ -608,6 +608,8 @@ MonoBehaviour:
   healthSystem: {fileID: 3113999699197328836}
   hpBar: {fileID: 866446103675831024}
   feedbackDelay: 0.3
+  breakPointBar: {fileID: 0}
+  breakPointSystem: {fileID: 0}
 --- !u!114 &7216587496243282883
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -659,6 +661,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   blockTakeDamageFeedbackOnFinalHit: 0
   changeColorOnIframe: 0
+  godMode: 0
   beforeHitDelay: 0
 --- !u!114 &8258911665793886015
 MonoBehaviour:

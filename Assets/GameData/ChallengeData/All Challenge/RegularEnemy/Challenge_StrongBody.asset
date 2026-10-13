@@ -14,7 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: challenge_strongbody
   title: Strong Body
-  description: "All enemy Max HP +100%\r\n<b><color=yellow>+50% score multiply\r"
+  description: '<size=25><color=yellow><b>+50%</b></size> <size=23>score</size></color>
+
+
+    +100%
+    max HP to all enemies'
   lockdescription: Win one game in survival mode.
   hideFromUI: 0
   allowedMapIds: []
@@ -24,7 +28,7 @@ MonoBehaviour:
   statMode: 0
   playerSetMods: []
   playerMods: []
-  disableAutoCalculate: 0
+  disableAutoCalculate: 1
   enemyGroups:
   - groupName: 1
     enemyIds:
@@ -41,3 +45,12 @@ MonoBehaviour:
       rushMoveSpeed: 0
       rushSetChance: 0
   timeModify: 0
+  overrideMapSpawn: 0
+  spawnFlow: 0
+  spawnHandOver: 0
+  spawnHandOverAt: 120
+  spawnMapTimelineStartsAtHandOver: 1
+  spawnMixWithConditions: 0
+  spawnRandomSpawnerPool: 0
+  spawnPatternEnemyPool: 0
+  spawnRules: []

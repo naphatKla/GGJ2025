@@ -55,6 +55,9 @@ namespace Characters.Controllers.EnemyStates
             {
                 enemyInputReader.PerformSkill(SkillType.PrimarySkill);
                 enemyInputReader.PerformSkill(SkillType.SecondarySkill);
+                // No-op for every enemy with an empty auto skill list, which is all of them except Bright2 -
+                // its Skill 1-4 live in the auto slots and would otherwise never be triggered by anything.
+                enemyInputReader.PerformSkill(SkillType.AutoSkill);
             }
         }
 

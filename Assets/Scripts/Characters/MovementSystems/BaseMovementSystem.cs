@@ -101,6 +101,13 @@ namespace Characters.MovementSystems
         public bool IsMoveTweenActive => _moveOverTimeTween.IsActive();
 
         public bool CanInterruptTween { get; set; } = true;
+
+        /// <summary>
+        /// While true, external gravity/pull effects (Black Hole map events, and anything else that drags
+        /// characters around) leave this character alone. Set by whoever is channelling a pull of its own -
+        /// the puller shouldn't lose a tug-of-war against the thing it is trying to swallow.
+        /// </summary>
+        public bool IgnoreExternalPull { get; set; }
         
         #endregion
 

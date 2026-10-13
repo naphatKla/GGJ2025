@@ -47,7 +47,7 @@ namespace Characters.SkillSystems.SkillRuntimes
             
             owner.DamageOnTouch.OnHit -= OnDashHit;
             owner.DamageOnTouch.OnHit += OnDashHit;
-            owner.DamageOnTouch.EnableDamage(owner.gameObject, owner.CharacterData.CharacterId, this, 1, skillData.DashBaseDamage, skillData.DamageMultiplier, canHitWithDamageOnTouch:true);
+            owner.DamageOnTouch.EnableDamage(owner.gameObject, owner.CharacterData.CharacterId, this, 1, skillData.DashBaseDamage, skillData.DamageMultiplier, canHitWithDamageOnTouch:true, baseHeavyDamage: skillData.BaseHeavyDamage);
 
             if (!skillData.IsFlexibleDash) 
                 return;

@@ -133,6 +133,12 @@ namespace GameControl.EventMap
                 ctrl.AssignCharacterData(ctrl.CharacterData);
             }
 
+            // Devourer eats border pieces one by one, so each piece carries its own Special Interaction.
+            var interaction = obj.GetComponent<BorderPieceSpecialInteraction>();
+            if (interaction == null)
+                interaction = obj.AddComponent<BorderPieceSpecialInteraction>();
+            interaction.Bind(this, ctrl);
+
             return ctrl;
         }
 
@@ -272,6 +278,18 @@ namespace GameControl.EventMap
             {
                 ReleaseAllBorderEnemies();
             }
+        }
+
+        /// <summary>
+        /// Removes a single piece from this border and returns it to the pool. Used by
+        /// <see cref="BorderPieceSpecialInteraction"/> when Devourer absorbs that piece.
+        /// </summary>
+        public void RemovePiece(EnemyController enemy)
+        {
+            if (_borderPool == null || enemy == null || enemy.gameObject == null) return;
+            if (!_spawnedEnemies.Remove(enemy)) return;
+
+            _borderPool.Release(enemy);
         }
 
         private void ReleaseAllBorderEnemies()

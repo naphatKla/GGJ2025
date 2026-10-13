@@ -14,29 +14,30 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: challenge_deadshot
   title: Dead Shot
-  description: "Charge DMG from charge Enemy +50%\r\n<b><color=yellow>+25% score
-    multiply\r"
-  lockdescription: 'Kill 300 Piercer in total.
+  description: '<size=25><color=yellow><b>+25%</b></size> <size=23>score</size></color>
 
-    Kill 300 Javilin in total.
 
-    Kill
-    300 Comet in total.'
+    +50%
+    DMG enemies with charge dash type'
+  lockdescription: Kill 300 Piercer, Javilin, Comet in total.
   hideFromUI: 0
   allowedMapIds: []
   allowAutoUnlock: 0
   confirmSelectedMapIds: []
-  flatScoreBonusPercent: 0
+  flatScoreBonusPercent: 25
   statMode: 0
   playerSetMods: []
   playerMods: []
-  disableAutoCalculate: 0
+  disableAutoCalculate: 1
   enemyGroups:
   - groupName: 1
     enemyIds:
     - Enemy_Piercer
     - Enemy_Javilin
     - Enemy_Comet
+    - Enemy_Pusher
+    - Enemy_Shove
+    - Enemy_Impulse
     enemyNotincluded: []
     stats:
       maxHP: 0
@@ -48,3 +49,12 @@ MonoBehaviour:
       rushMoveSpeed: 0
       rushSetChance: 0
   timeModify: 0
+  overrideMapSpawn: 0
+  spawnFlow: 0
+  spawnHandOver: 0
+  spawnHandOverAt: 120
+  spawnMapTimelineStartsAtHandOver: 1
+  spawnMixWithConditions: 0
+  spawnRandomSpawnerPool: 0
+  spawnPatternEnemyPool: 0
+  spawnRules: []

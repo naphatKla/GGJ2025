@@ -65,6 +65,15 @@ namespace Characters.SkillSystems.SkillRuntimes
             cooldownReadyCallback = callback;
         }
 
+        /// <summary>
+        /// Clears the shared global cooldown. Debug/force-cast paths need this: PerformSkill refuses
+        /// silently while it is counting down, which looks exactly like the skill being broken.
+        /// </summary>
+        public void ClearGlobalCooldown()
+        {
+            globalCooldownCounter = 0f;
+        }
+
         public void ClearCooldownReadyCallback()
         {
             cooldownReadyCallback = null;

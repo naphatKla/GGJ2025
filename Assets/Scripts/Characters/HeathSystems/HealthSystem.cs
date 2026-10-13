@@ -22,6 +22,12 @@ namespace Characters.HeathSystems
         [SerializeField] private bool blockTakeDamageFeedbackOnFinalHit;
         [SerializeField] private bool changeColorOnIframe;
 
+        [Title("Debug")]
+        [PropertyTooltip("Testing only: this character takes no damage at all. Unlike SetInvincible this is "
+                         + "not touched by iframes, hit cooldown or ResetHealthSystem, so it stays on until "
+                         + "you turn it off. Toggleable live in play mode.")]
+        [SerializeField] private bool godMode;
+
         /// <summary>
         /// Delay (in seconds) before a valid hit actually commits damage.
         /// If set to 0 or less, it will still buffer at least 1 frame.
@@ -56,6 +62,13 @@ namespace Characters.HeathSystems
         private bool _isDead;
 
         public bool IsDead => _isDead;
+
+        /// <summary>Debug switch: while true every incoming hit is refused outright.</summary>
+        public bool GodMode
+        {
+            get => godMode;
+            set => godMode = value;
+        }
 
         /// <summary>Event triggered when the character takes damage (committed).</summary>
         public Action OnTakeDamage { get; set; }
@@ -107,6 +120,14 @@ namespace Characters.HeathSystems
         {
             public string attackerId;
             public float damage;
+
+            /// <summary>
+            /// Separate heavy attack value. When &gt; 0 and the target owns a
+            /// <see cref="BreakPointSystem"/>, this hit ALSO drains Break Point on top of the
+            /// normal <see cref="damage"/> applied to HP (it never replaces HP damage).
+            /// </summary>
+            public float heavyDamage;
+
             public BaseController attacker;
             public GameObject realObjectAttack;
         }
@@ -157,6 +178,10 @@ namespace Characters.HeathSystems
             // 1) Dead guard
             if (_isDead) return false;
 
+            // 1.5) Debug god mode - refuse before anything is recorded, so parry/consume systems don't
+            // see phantom hit attempts either.
+            if (godMode) return false;
+
             // 2) Record attempt (even during iframe/cooldown/dead)
             BufferHitAttempt(hitInfo);
 
@@ -200,9 +225,27 @@ namespace Characters.HeathSystems
 
         protected virtual void TakeDamageAction(HitInfo hitInfo)
         {
-            ModifyHealth(-hitInfo.damage);
-            TotalDamageTaken += (int)hitInfo.damage;
+            float damage = ApplyDamageResistance(hitInfo.damage);
+
+            ModifyHealth(-damage);
+            TotalDamageTaken += (int)damage;
             OnTakeDamage?.Invoke();
+        }
+
+        /// <summary>
+        /// Reduces incoming HP damage by the owner's active damage resistance (Bright2's Perfect shape
+        /// grants 100%). Heavy damage is deliberately not routed through here - it drains Break Point
+        /// instead of HP, so a fully damage-resistant target can still be broken.
+        /// </summary>
+        private float ApplyDamageResistance(float damage)
+        {
+            if (damage <= 0f) return damage;
+            if (owner == null || owner.StatusEffectSystem == null) return damage;
+
+            float resistance = owner.StatusEffectSystem.DamageResistancePercentage;
+            if (resistance <= 0f) return damage;
+
+            return damage * (1f - Mathf.Clamp01(resistance / 100f));
         }
 
         public void ForceDead()

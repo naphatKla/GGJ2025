@@ -19,6 +19,7 @@ namespace Characters.CombatSystems
             public float AdditionalCriDmg;
             public float LifeStealPercent;
             public float LifeStealEffective;
+            public float BaseHeavyDamage;
 
             // สามารถยิง event ชนกับ DamageOnTouch เป้าหมายได้ไหม
             public bool CanHitWithDamageOnTouch;
@@ -103,7 +104,8 @@ namespace Characters.CombatSystems
             float additionalCriDmg = 0f,
             float lifeStealPercent = 0f,
             float lifeStealEffective = 0f,
-            bool canHitWithDamageOnTouch = false)
+            bool canHitWithDamageOnTouch = false,
+            float baseHeavyDamage = 0f)
         {
             InternalEnableDamage(
                 owner,
@@ -116,7 +118,8 @@ namespace Characters.CombatSystems
                 additionalCriDmg,
                 lifeStealPercent,
                 lifeStealEffective,
-                canHitWithDamageOnTouch);
+                canHitWithDamageOnTouch,
+                baseHeavyDamage);
         }
 
         [Button]
@@ -135,7 +138,8 @@ namespace Characters.CombatSystems
             float additionalCriDmg = 0f,
             float lifeStealPercent = 0f,
             float lifeStealEffective = 0f,
-            bool canHitWithDamageOnTouch = false)
+            bool canHitWithDamageOnTouch = false,
+            float baseHeavyDamage = 0f)
         {
             this.shape = shape;
             if (layerMask.HasValue) targetLayer = layerMask.Value;
@@ -153,7 +157,8 @@ namespace Characters.CombatSystems
                 additionalCriDmg,
                 lifeStealPercent,
                 lifeStealEffective,
-                canHitWithDamageOnTouch);
+                canHitWithDamageOnTouch,
+                baseHeavyDamage);
         }
 
         private void InternalEnableDamage(
@@ -167,7 +172,8 @@ namespace Characters.CombatSystems
             float additionalCriDmg,
             float lifeStealPercent,
             float lifeStealEffective,
-            bool canHitWithDamageOnTouch)
+            bool canHitWithDamageOnTouch,
+            float baseHeavyDamage = 0f)
         {
             _ownerId = ownerId;
             
@@ -194,11 +200,11 @@ namespace Characters.CombatSystems
                 HitPerSec              = Mathf.Max(hitPerSec, 0.01f),
                 BaseSkillDamage        = baseSkillDamage,
                 DamageMultiplier       = damageMultiplier,
-                AdditionalCriRate      = additionalCriRate,
-                AdditionalCriDmg       = additionalCriDmg,
+                AdditionalCriRate      = additionalCriRate,                AdditionalCriDmg         = additionalCriDmg,
                 LifeStealPercent       = lifeStealPercent,
                 LifeStealEffective     = lifeStealEffective,
                 CanHitWithDamageOnTouch = canHitWithDamageOnTouch,
+                BaseHeavyDamage        = baseHeavyDamage,
             });
 
             if (!_isEnableDamage)
@@ -336,7 +342,8 @@ namespace Characters.CombatSystems
                     instance.AdditionalCriRate,
                     instance.AdditionalCriDmg,
                     instance.LifeStealPercent,
-                    instance.LifeStealEffective);
+                    instance.LifeStealEffective,
+                    instance.BaseHeavyDamage);
 
                 float cooldown = 1f / instance.HitPerSec;
                 _cooldownMap[key] = now + cooldown;

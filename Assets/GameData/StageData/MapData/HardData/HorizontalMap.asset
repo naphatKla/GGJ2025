@@ -357,6 +357,17 @@ MonoBehaviour:
       effectint: 5
   intervalEnemyChanceUpgrade: 30
   intervalEnemyPointRatioUpgrade: 30
+  enemySpawnMode: 0
+  mixWithConditions: 0
+  randomSpawnerPool: 0
+  patternEnemyPool: 0
+  sequentialSpawn:
+    step: 30
+    startOffset: 0
+    stopPrevious: 1
+    lastEntryRunsForever: 1
+    loop: 0
+    entries: []
   PatternOptions:
   - enableThisPattern: 1
     bypassSpawnCondition: 0
@@ -554,15 +565,15 @@ MonoBehaviour:
     - conditionType: 0
       startAfter: 480
       endAt: -1
-  playAllPatternIn: 10
+  playAllPatternIn: 15
   triggerAllPatternIn: 10
   triggerTimeCanDecrease: 1
-  patternDecreaseInterval: 96
+  patternDecreaseInterval: 30
   patternDecreaseRate: 1
-  patternDecreaseMinimum: 30
+  patternDecreaseMinimum: 5
   addPatternInterval: 9
-  amountToAdd: 1
-  patternMax: 1
+  amountToAdd: 2
+  patternMax: 2
   canDuplicateAfterHaveAllPattern: 1
   ItemOptions:
   - id: Red_Anergy
@@ -598,7 +609,7 @@ MonoBehaviour:
     catagolyMapEvent: Main
     allMapEventID:
     - mapEventID: 2Giant
-      chance: 7.6
+      chance: 10
       useWeightRandom: 1
       overrideData: 0
       damageMap: 2
@@ -608,7 +619,7 @@ MonoBehaviour:
         startAfter: 0
         endAt: 240
     - mapEventID: Horizontal
-      chance: 7.6
+      chance: 10
       useWeightRandom: 1
       overrideData: 0
       damageMap: 2
@@ -618,7 +629,7 @@ MonoBehaviour:
         startAfter: 0
         endAt: 180
     - mapEventID: Vertical
-      chance: 7.6
+      chance: 10
       useWeightRandom: 1
       overrideData: 0
       damageMap: 2
@@ -628,7 +639,7 @@ MonoBehaviour:
         startAfter: 0
         endAt: 180
     - mapEventID: Basket
-      chance: 7.6
+      chance: 10
       useWeightRandom: 1
       overrideData: 0
       damageMap: 2
@@ -638,7 +649,7 @@ MonoBehaviour:
         startAfter: 120
         endAt: -1
     - mapEventID: Firework_TopL_BottomR
-      chance: 7.6
+      chance: 10
       useWeightRandom: 1
       overrideData: 0
       damageMap: 2
@@ -648,7 +659,7 @@ MonoBehaviour:
         startAfter: 60
         endAt: 300
     - mapEventID: Firework_TopR_BottomL
-      chance: 7.6
+      chance: 10
       useWeightRandom: 1
       overrideData: 0
       damageMap: 2
@@ -658,7 +669,7 @@ MonoBehaviour:
         startAfter: 60
         endAt: 300
     - mapEventID: RightHole
-      chance: 7.6
+      chance: 10
       useWeightRandom: 1
       overrideData: 0
       damageMap: 5
@@ -668,7 +679,7 @@ MonoBehaviour:
         startAfter: 180
         endAt: -1
     - mapEventID: LeftHole
-      chance: 7.6
+      chance: 10
       useWeightRandom: 1
       overrideData: 0
       damageMap: 5
@@ -678,7 +689,7 @@ MonoBehaviour:
         startAfter: 180
         endAt: -1
     - mapEventID: Random_Line
-      chance: 7.6
+      chance: 10
       useWeightRandom: 1
       overrideData: 0
       damageMap: 2
@@ -688,7 +699,7 @@ MonoBehaviour:
         startAfter: 180
         endAt: -1
     - mapEventID: Wave
-      chance: 7.6
+      chance: 10
       useWeightRandom: 1
       overrideData: 0
       damageMap: 2
@@ -696,36 +707,6 @@ MonoBehaviour:
       mapEventCondition:
       - conditionType: 0
         startAfter: 120
-        endAt: -1
-    - mapEventID: SBlackHole
-      chance: 7.7
-      useWeightRandom: 1
-      overrideData: 0
-      damageMap: 2
-      useCondition: 1
-      mapEventCondition:
-      - conditionType: 0
-        startAfter: 300
-        endAt: -1
-    - mapEventID: MBlackHole
-      chance: 7.7
-      useWeightRandom: 1
-      overrideData: 0
-      damageMap: 5
-      useCondition: 1
-      mapEventCondition:
-      - conditionType: 0
-        startAfter: 240
-        endAt: -1
-    - mapEventID: BBlackHole
-      chance: 7.7
-      useWeightRandom: 1
-      overrideData: 0
-      damageMap: 7
-      useCondition: 1
-      mapEventCondition:
-      - conditionType: 0
-        startAfter: 300
         endAt: -1
     eventMapChance: 100
     playInterval: 60
@@ -739,9 +720,9 @@ MonoBehaviour:
   decreaseInterval: 60
   decreaseMinimum: 3
   intervalIncreaseEnemyPoint: 30
-  rateIncreaseEnemyPoint: 50
-  startEnemyPoint: 60
-  maxEnemyPoint: 700
+  rateIncreaseEnemyPoint: 20
+  startEnemyPoint: 50
+  maxEnemyPoint: 500
   rushData: {fileID: 11400000, guid: e2b1d3052964e77449e76a9e319858b4, type: 2}
   rushTime: 60
   milestoneOptions:
@@ -752,19 +733,19 @@ MonoBehaviour:
     logic: 0
     conditionConfigs:
     - conditionType: 1
-      scoreAtLeast: 80000
+      scoreAtLeast: 20000
   - winRequired: 1
     logic: 0
     conditionConfigs:
     - conditionType: 1
-      scoreAtLeast: 120000
+      scoreAtLeast: 50000
   - winRequired: 1
     logic: 0
     conditionConfigs:
     - conditionType: 1
-      scoreAtLeast: 170000
+      scoreAtLeast: 70000
   - winRequired: 1
     logic: 0
     conditionConfigs:
     - conditionType: 1
-      scoreAtLeast: 220000
+      scoreAtLeast: 100000

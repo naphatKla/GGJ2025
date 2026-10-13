@@ -14,7 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: challenge_tuff
   title: Tuff
-  description: "Tank type Max HP +300%\r\n<b><color=yellow>+75% score multiply\r"
+  description: '<size=25><color=yellow><b>+75%</b></size> <size=23>score</size></color>
+
+
+    +300%
+    max HP to Tank'
   lockdescription: Kill 300 Tank in total.
   hideFromUI: 0
   allowedMapIds: []
@@ -40,3 +44,12 @@ MonoBehaviour:
       rushMoveSpeed: 0
       rushSetChance: 0
   timeModify: 0
+  overrideMapSpawn: 0
+  spawnFlow: 0
+  spawnHandOver: 0
+  spawnHandOverAt: 120
+  spawnMapTimelineStartsAtHandOver: 1
+  spawnMixWithConditions: 0
+  spawnRandomSpawnerPool: 0
+  spawnPatternEnemyPool: 0
+  spawnRules: []

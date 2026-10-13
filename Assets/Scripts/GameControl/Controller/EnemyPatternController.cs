@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using Characters.Controllers;
 using Cysharp.Threading.Tasks;
+using GameControl.Pattern;
 using GameControl.SO;
 using UnityEngine;
 using UnityEngine.Pool;
@@ -124,6 +125,34 @@ namespace GameControl.Controller
             if (!_isBatchProcessing) ProcessBatchQueue().Forget();
         }
 
+        /// <summary>
+        /// Queues <paramref name="count"/> random eligible patterns to spawn immediately, WITHOUT adding
+        /// them to the standing rotation. Bright2's Wornhole uses this: it drops patterns onto the map as
+        /// a one-off, and must not permanently change what the map spawns afterwards.
+        /// <para/>
+        /// <paramref name="allowedPatterns"/> narrows the draw to specific patterns; leave it null or empty
+        /// for every pattern the map currently has enabled.
+        /// </summary>
+        public void TriggerRandomPatterns(int count, IReadOnlyList<BaseSpawnPattern> allowedPatterns = null)
+        {
+            if (count <= 0) return;
+
+            var enabled = GetEnabledPatterns();
+
+            // Null or empty filter means "anything this map has enabled".
+            if (allowedPatterns != null && allowedPatterns.Count > 0)
+                enabled = enabled.Where(p => p?.pattern && allowedPatterns.Contains(p.pattern)).ToList();
+
+            if (enabled.Count == 0) return;
+
+            var batch = new List<MapDataSO.PatternOption>(count);
+            for (int i = 0; i < count; i++)
+                batch.Add(enabled[Random.Range(0, enabled.Count)]);
+
+            _batchQueue.Enqueue(batch);
+            if (!_isBatchProcessing) ProcessBatchQueue().Forget();
+        }
+
         public void AddRandomPatterns(int count)
         {
             for (var i = 0; i < count; i++) AddRandomPattern();
@@ -178,6 +207,12 @@ namespace GameControl.Controller
             }
 
             var candidates = _enemySpawner.PickEnemy(patternOption != null && patternOption.bypassSpawnCondition);
+
+            // Enemy Spawn Mode's Pattern Enemy Pool (null = unchanged behaviour).
+            var patternFilter = _enemySpawner.PatternPoolFilter;
+            if (patternFilter != null && candidates != null)
+                candidates = candidates.Where(patternFilter).ToList();
+
             if (candidates == null || candidates.Count == 0)
             {
                 if (_isDebug) Debug.Log("[EnemyPatternController] No candidates after ConditionEnemy()");

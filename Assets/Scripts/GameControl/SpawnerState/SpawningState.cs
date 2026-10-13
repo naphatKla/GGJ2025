@@ -24,8 +24,15 @@ namespace GameControl.SpawnerState
 
         public void Update(SpawnerStateController controller)
         {
+            // Enemy Spawn Mode schedule. Inactive (null-safe no-op) in Conditions mode; Rush always hands
+            // spawning back to the random spawner.
+            var schedule = controller.SpawnSchedule;
+            bool inRush = GameStateController.Instance != null && GameStateController.Instance.MapState == MapState.Rush;
+            if (!inRush) schedule?.Tick();
+            bool randomSpawnerOn = inRush || schedule == null || schedule.AllowsRandomSpawner;
+
             _enemycurrentTimer += Time.deltaTime;
-            if (_enemycurrentTimer >= _enemyCheckTimer && controller.EnemyCanSpawn())
+            if (randomSpawnerOn && _enemycurrentTimer >= _enemyCheckTimer && controller.EnemyCanSpawn())
             {
                 var selectedEnemyOption = controller.EnemySpawnerController.SpawnEnemy();
                 _enemycurrentTimer = 0f;

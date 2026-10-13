@@ -14,11 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: challenge_thirsty
   title: Thirsty
-  description: 'Enemy Move Speed +30%
+  description: '<size=25><color=yellow><b>+30%</b></size> <size=23>score</size></color>
 
-    <b><color=yellow>+30% score multiply
 
-'
+    +30%
+    move speed to all enemies'
   lockdescription: Win one game in survival mode.
   hideFromUI: 0
   allowedMapIds: []
@@ -28,7 +28,7 @@ MonoBehaviour:
   statMode: 0
   playerSetMods: []
   playerMods: []
-  disableAutoCalculate: 0
+  disableAutoCalculate: 1
   enemyGroups:
   - groupName: 1
     enemyIds:
@@ -45,3 +45,12 @@ MonoBehaviour:
       rushMoveSpeed: 0
       rushSetChance: 0
   timeModify: 0
+  overrideMapSpawn: 0
+  spawnFlow: 0
+  spawnHandOver: 0
+  spawnHandOverAt: 120
+  spawnMapTimelineStartsAtHandOver: 1
+  spawnMixWithConditions: 0
+  spawnRandomSpawnerPool: 0
+  spawnPatternEnemyPool: 0
+  spawnRules: []

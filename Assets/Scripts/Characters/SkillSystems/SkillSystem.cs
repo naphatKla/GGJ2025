@@ -286,6 +286,10 @@ namespace Characters.SkillSystems
                     break;
             }
 
+            // Skipped above when the skill has no Runtime Binding - the slot keeps the data (PerformSkill
+            // null-checks the runtime) but there is nothing here to configure.
+            if (!runtime) return;
+
             runtime.SetCurrentCooldown(0);
             int index = GetSkillIndex(newSkillData);
 
@@ -307,6 +311,16 @@ namespace Characters.SkillSystems
         private void InstantiateSkillRuntime(BaseSkillDataSo skillData)
         {
             if (!skillData || !owner || _skillRuntimeDictionary.ContainsKey(skillData)) return;
+
+            // Without this the missing binding surfaces as a bare NullReferenceException from AddComponent,
+            // which says nothing about WHICH asset is misconfigured.
+            if (skillData.SkillRuntime == null)
+            {
+                Debug.LogError($"[SkillSystem] Skill '{skillData.name}' has no Runtime Binding assigned - "
+                               + "set it in the asset's Runtime Binding field. Skill skipped.", skillData);
+                return;
+            }
+
             BaseSkillRuntime skillRuntime = (BaseSkillRuntime)gameObject.AddComponent(skillData.SkillRuntime);
             skillRuntime.AssignSkillData(skillData, owner);
             _skillRuntimeDictionary.Add(skillData, skillRuntime);
@@ -362,18 +376,38 @@ namespace Characters.SkillSystems
             {
                 case SkillType.PrimarySkill:
                     if (!canUsePrimary) return;
+                    if (!CanPerformSkillNow(primarySkillData)) return;
                     GetSkillRuntimeOrDefault(primarySkillData)?.PerformSkill();
                     break;
                 case SkillType.SecondarySkill:
                     if (!canUseSecondary) return;
+                    if (!CanPerformSkillNow(secondarySkillData)) return;
                     GetSkillRuntimeOrDefault(secondarySkillData)?.PerformSkill();
                     break;
                 case SkillType.AutoSkill:
                     foreach (var data in _autoSkillDatas)
+                    {
+                        if (!CanPerformSkillNow(data)) continue;
                         GetSkillRuntimeOrDefault(data)?.PerformSkill();
+                    }
                     break;
             }
         }
+
+        /// <summary>
+        /// Optional veto consulted before any skill fires. Set by whoever owns this character to block
+        /// specific skills at runtime - Bright2Controller uses it for its per-skill debug toggles.
+        /// Return false to block. Null means no veto.
+        /// </summary>
+        public Func<BaseSkillDataSo, bool> ExternalPerformFilter { get; set; }
+
+        /// <summary>
+        /// Last gate before a skill actually fires, checked per skill so auto-skill slots are judged
+        /// individually. Only the external veto applies here - the player has no situational
+        /// restrictions; <see cref="EnemySkillSystem"/> extends it with each skill's Activate Radius.
+        /// </summary>
+        protected virtual bool CanPerformSkillNow(BaseSkillDataSo skillData)
+            => ExternalPerformFilter == null || ExternalPerformFilter(skillData);
 
         protected virtual void UpdateCooldown()
         {

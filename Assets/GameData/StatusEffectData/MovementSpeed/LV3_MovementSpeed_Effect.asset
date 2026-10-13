@@ -9,8 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e1dbca9884b0bc043a675fd1ffef3a9c, type: 3}
-  m_Name: LV4_MovementSpeed
+  m_Script: {fileID: 11500000, guid: 9ed8414468ee1c44497f88552c644b0b, type: 3}
+  m_Name: LV3_MovementSpeed_Effect
   m_EditorClassIdentifier: 
   serializationData:
     SerializedFormat: 2
@@ -26,19 +26,14 @@ MonoBehaviour:
       Data: 0|System.RuntimeType, mscorlib
     - Name: 
       Entry: 1
-      Data: Characters.StatusEffectSystems.StatusEffects.FlowStateEffect, Assembly-CSharp
+      Data: Characters.StatusEffectSystems.StatusEffects.MovementSpeedEffect, Assembly-CSharp
     - Name: 
       Entry: 8
       Data: 
-  icon: {fileID: 21300000, guid: 0ed558f865f419a4ab0d289429c7835c, type: 3}
-  effectName: 3
-  description: 
+  icon: {fileID: 0}
+  effectName: 7
+  description: Increase the target's movement speed.
   level: 1
-  defaultDuration: 99
+  defaultDuration: 5
   isDebuff: 0
-  damageIncrease: 0
-  damagePercentIncrease: 0
-  speedPercentIncrease: 40
-  expandCamera: 0
-  additionalExpandSize: 1.5
-  flowScorePercentageAdded: 0
+  speedPercentChange: 70

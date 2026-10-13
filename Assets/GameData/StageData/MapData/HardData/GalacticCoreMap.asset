@@ -15,9 +15,7 @@ MonoBehaviour:
   mapId: map_galacticcore
   mapName: Galatic Core
   description: The Main Astral Gate that bridges worlds across the galaxy.
-  lockdescription: 'Unlock by XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-
-    XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
+  lockdescription: Beat "Void Metro" to unlock.
   image: {fileID: 21300000, guid: 3c52da8fb149bbc4289b6d620444ec1d, type: 3}
   mapGlobalTime: 600
   mapEnvironment: {fileID: 1016012016258106345, guid: 4fab6331088b2cf4294063d198aa9d6d, type: 3}
@@ -347,6 +345,7 @@ MonoBehaviour:
     conditionLogic: 0
     spawnConditions:
     - {fileID: 11400000, guid: da1d3b0ff5fb92f4680487d0938ff0fd, type: 2}
+    - {fileID: 11400000, guid: da1d3b0ff5fb92f4680487d0938ff0fd, type: 2}
     useSpawnEffect: 1
     spawnEffect:
     - effectType: 0
@@ -355,8 +354,269 @@ MonoBehaviour:
     - effectType: 3
       effectString: 
       effectint: 5
+  - id: Enemy_Pusher
+    displayName: Pusher
+    enemyController: {fileID: 5352284219382747297, guid: 9b295cc90b3534847ad38d4dbd16a050, type: 3}
+    prewarmCount: 50
+    spawnPoint: 1
+    enemyPointCanGrowth: 0
+    enemyPointGrowthRate: 12.5
+    chance: 0.1
+    enemyChanceCanGrowth: 1
+    enemyChanceGrowthRate: 1.5
+    disableNormalize: 0
+    useCustomInterval: 0
+    customInterval: 0
+    useMaxperEnemy: 0
+    maximumPerEnemy: 0
+    modifyNewData: 1
+    enemyData: {fileID: 11400000, guid: ed857f964693b6f4c90e6decc086be9f, type: 2}
+    disableInPattern: 0
+    disableEnemyDetect: 0
+    useSpawnConditions: 1
+    conditionLogic: 0
+    spawnConditions:
+    - {fileID: 11400000, guid: 4f6ad506e1c0a9e48beea52d5beddec2, type: 2}
+    useSpawnEffect: 0
+    spawnEffect: []
+  - id: Enemy_Shove
+    displayName: Shove
+    enemyController: {fileID: 5352284219382747297, guid: 2e43ca1f512ce5241b0bee4452720687, type: 3}
+    prewarmCount: 50
+    spawnPoint: 2.5
+    enemyPointCanGrowth: 0
+    enemyPointGrowthRate: 12.5
+    chance: 0
+    enemyChanceCanGrowth: 1
+    enemyChanceGrowthRate: 1.25
+    disableNormalize: 0
+    useCustomInterval: 0
+    customInterval: 0
+    useMaxperEnemy: 0
+    maximumPerEnemy: 0
+    modifyNewData: 1
+    enemyData: {fileID: 11400000, guid: e1a655e9408ce17408e22634240b3102, type: 2}
+    disableInPattern: 0
+    disableEnemyDetect: 0
+    useSpawnConditions: 1
+    conditionLogic: 0
+    spawnConditions:
+    - {fileID: 11400000, guid: 377b2a086e519114dbd305de4c398076, type: 2}
+    useSpawnEffect: 0
+    spawnEffect: []
+  - id: Enemy_Impulse
+    displayName: Impulse
+    enemyController: {fileID: 5352284219382747297, guid: 5b5b92dd3bf7c1c4b9ffde3593bcff5f, type: 3}
+    prewarmCount: 50
+    spawnPoint: 3.5
+    enemyPointCanGrowth: 0
+    enemyPointGrowthRate: 12.5
+    chance: 0
+    enemyChanceCanGrowth: 1
+    enemyChanceGrowthRate: 0.75
+    disableNormalize: 0
+    useCustomInterval: 0
+    customInterval: 0
+    useMaxperEnemy: 0
+    maximumPerEnemy: 0
+    modifyNewData: 1
+    enemyData: {fileID: 11400000, guid: 7fb32bc2b81be3a4b927bb19a1d23939, type: 2}
+    disableInPattern: 0
+    disableEnemyDetect: 0
+    useSpawnConditions: 1
+    conditionLogic: 0
+    spawnConditions:
+    - {fileID: 11400000, guid: baa9418a9c5056e429fa52188039f222, type: 2}
+    useSpawnEffect: 0
+    spawnEffect: []
+  - id: Divider
+    displayName: Divider
+    enemyController: {fileID: 6978469296619682545, guid: 3a5e7cf9c781af14ab9b0562341f6772, type: 3}
+    prewarmCount: 50
+    spawnPoint: 1.5
+    enemyPointCanGrowth: 0
+    enemyPointGrowthRate: 12.5
+    chance: 0
+    enemyChanceCanGrowth: 1
+    enemyChanceGrowthRate: 1.5
+    disableNormalize: 0
+    useCustomInterval: 0
+    customInterval: 0
+    useMaxperEnemy: 0
+    maximumPerEnemy: 0
+    modifyNewData: 1
+    enemyData: {fileID: 11400000, guid: 1d40a0429b6841aebf7e07fd965b1e21, type: 2}
+    disableInPattern: 0
+    disableEnemyDetect: 0
+    useSpawnConditions: 1
+    conditionLogic: 0
+    spawnConditions:
+    - {fileID: 11400000, guid: 0add1e0e0e7bae947a879f81ee63d40d, type: 2}
+    useSpawnEffect: 0
+    spawnEffect: []
+  - id: BombCaller
+    displayName: BombCaller
+    enemyController: {fileID: 6978469296619682545, guid: 0e2f83a85d0e1fc46b5a784d5e2da506, type: 3}
+    prewarmCount: 50
+    spawnPoint: 2.5
+    enemyPointCanGrowth: 0
+    enemyPointGrowthRate: 12.5
+    chance: 0
+    enemyChanceCanGrowth: 1
+    enemyChanceGrowthRate: 1
+    disableNormalize: 0
+    useCustomInterval: 0
+    customInterval: 0
+    useMaxperEnemy: 0
+    maximumPerEnemy: 0
+    modifyNewData: 1
+    enemyData: {fileID: 11400000, guid: 50325e07db9e5db4aadc7c24a25b53fc, type: 2}
+    disableInPattern: 0
+    disableEnemyDetect: 0
+    useSpawnConditions: 1
+    conditionLogic: 0
+    spawnConditions:
+    - {fileID: 11400000, guid: 1b2897cf04d0e8146978cce91b9949dd, type: 2}
+    useSpawnEffect: 0
+    spawnEffect: []
+  - id: DoomCaller
+    displayName: DoomCaller
+    enemyController: {fileID: 6978469296619682545, guid: cdff02c99825bb04dad4cc17034d6531, type: 3}
+    prewarmCount: 50
+    spawnPoint: 3.5
+    enemyPointCanGrowth: 0
+    enemyPointGrowthRate: 12.5
+    chance: 0
+    enemyChanceCanGrowth: 1
+    enemyChanceGrowthRate: 0.75
+    disableNormalize: 0
+    useCustomInterval: 0
+    customInterval: 0
+    useMaxperEnemy: 0
+    maximumPerEnemy: 0
+    modifyNewData: 1
+    enemyData: {fileID: 11400000, guid: 84240fc3641d8ac4dbb8e15403e8ef53, type: 2}
+    disableInPattern: 0
+    disableEnemyDetect: 0
+    useSpawnConditions: 1
+    conditionLogic: 0
+    spawnConditions:
+    - {fileID: 11400000, guid: 9e27b75a5e6d88744a30be7465e07cca, type: 2}
+    useSpawnEffect: 0
+    spawnEffect: []
+  - id: Enemy_Shooter
+    displayName: Shooter
+    enemyController: {fileID: 8145196360709479149, guid: f8868bc343c986b4584c66195da5e43d, type: 3}
+    prewarmCount: 50
+    spawnPoint: 1.5
+    enemyPointCanGrowth: 0
+    enemyPointGrowthRate: 12.5
+    chance: 0
+    enemyChanceCanGrowth: 1
+    enemyChanceGrowthRate: 1.5
+    disableNormalize: 0
+    useCustomInterval: 0
+    customInterval: 0
+    useMaxperEnemy: 0
+    maximumPerEnemy: 0
+    modifyNewData: 1
+    enemyData: {fileID: 11400000, guid: fe1696186857ab844836be330d6b2731, type: 2}
+    disableInPattern: 0
+    disableEnemyDetect: 0
+    useSpawnConditions: 1
+    conditionLogic: 0
+    spawnConditions:
+    - {fileID: 11400000, guid: ab30dc36e0eceba4ba5bb98a727e991c, type: 2}
+    useSpawnEffect: 0
+    spawnEffect: []
+  - id: Enemy_Shotgun
+    displayName: Shotgun
+    enemyController: {fileID: 8145196360709479149, guid: 2f70b39caed9b6a4a82fc517ac809118, type: 3}
+    prewarmCount: 50
+    spawnPoint: 2.5
+    enemyPointCanGrowth: 0
+    enemyPointGrowthRate: 12.5
+    chance: 0
+    enemyChanceCanGrowth: 1
+    enemyChanceGrowthRate: 1.25
+    disableNormalize: 0
+    useCustomInterval: 0
+    customInterval: 0
+    useMaxperEnemy: 0
+    maximumPerEnemy: 0
+    modifyNewData: 1
+    enemyData: {fileID: 11400000, guid: 4310296e5dd043e29c3ae6a57d5b9335, type: 2}
+    disableInPattern: 0
+    disableEnemyDetect: 0
+    useSpawnConditions: 1
+    conditionLogic: 0
+    spawnConditions:
+    - {fileID: 11400000, guid: 02988ab049c7bb94fbab43224af1a12e, type: 2}
+    useSpawnEffect: 0
+    spawnEffect: []
+  - id: Enemy_AllAround
+    displayName: All Around
+    enemyController: {fileID: 8145196360709479149, guid: 1d94c99c3cb86ab4da19b00ce8e1e173, type: 3}
+    prewarmCount: 50
+    spawnPoint: 3.5
+    enemyPointCanGrowth: 0
+    enemyPointGrowthRate: 12.5
+    chance: 0
+    enemyChanceCanGrowth: 1
+    enemyChanceGrowthRate: 0.5
+    disableNormalize: 0
+    useCustomInterval: 0
+    customInterval: 0
+    useMaxperEnemy: 0
+    maximumPerEnemy: 0
+    modifyNewData: 1
+    enemyData: {fileID: 11400000, guid: 4543c047b249457993518914fb26b115, type: 2}
+    disableInPattern: 0
+    disableEnemyDetect: 0
+    useSpawnConditions: 1
+    conditionLogic: 0
+    spawnConditions:
+    - {fileID: 11400000, guid: ffb292aea692cf74ab3ae4598cb0c72a, type: 2}
+    useSpawnEffect: 0
+    spawnEffect: []
+  - id: bright2
+    displayName: Bright2
+    enemyController: {fileID: 3283012694853145645, guid: 2ad5bd503bfd413ab61111cfb9d94a60, type: 3}
+    prewarmCount: 1
+    spawnPoint: 0
+    enemyPointCanGrowth: 0
+    enemyPointGrowthRate: 12.5
+    chance: 100
+    enemyChanceCanGrowth: 0
+    enemyChanceGrowthRate: 0
+    disableNormalize: 1
+    useCustomInterval: 0
+    customInterval: 0
+    useMaxperEnemy: 0
+    maximumPerEnemy: 0
+    modifyNewData: 1
+    enemyData: {fileID: 11400000, guid: 8f6397ea3c724414a2e2729429071514, type: 2}
+    disableInPattern: 0
+    disableEnemyDetect: 0
+    useSpawnConditions: 1
+    conditionLogic: 0
+    spawnConditions:
+    - {fileID: 11400000, guid: 543f73756490a004387cb83436e0b706, type: 2}
+    useSpawnEffect: 0
+    spawnEffect: []
   intervalEnemyChanceUpgrade: 30
   intervalEnemyPointRatioUpgrade: 30
+  enemySpawnMode: 0
+  mixWithConditions: 0
+  randomSpawnerPool: 0
+  patternEnemyPool: 0
+  sequentialSpawn:
+    step: 30
+    startOffset: 0
+    stopPrevious: 1
+    lastEntryRunsForever: 1
+    loop: 0
+    entries: []
   PatternOptions:
   - enableThisPattern: 1
     bypassSpawnCondition: 0
@@ -554,15 +814,15 @@ MonoBehaviour:
     - conditionType: 0
       startAfter: 480
       endAt: -1
-  playAllPatternIn: 60
-  triggerAllPatternIn: 55
-  triggerTimeCanDecrease: 0
-  patternDecreaseInterval: 25
+  playAllPatternIn: 15
+  triggerAllPatternIn: 10
+  triggerTimeCanDecrease: 1
+  patternDecreaseInterval: 30
   patternDecreaseRate: 1
-  patternDecreaseMinimum: 18
-  addPatternInterval: 60
-  amountToAdd: 1
-  patternMax: 10
+  patternDecreaseMinimum: 5
+  addPatternInterval: 9
+  amountToAdd: 2
+  patternMax: 2
   canDuplicateAfterHaveAllPattern: 1
   ItemOptions:
   - id: Red_Anergy
@@ -597,108 +857,8 @@ MonoBehaviour:
   - enableThisMapEvent: 1
     catagolyMapEvent: Main
     allMapEventID:
-    - mapEventID: 2Giant
-      chance: 7.6
-      useWeightRandom: 1
-      overrideData: 0
-      damageMap: 2
-      useCondition: 1
-      mapEventCondition:
-      - conditionType: 0
-        startAfter: 0
-        endAt: 240
-    - mapEventID: Horizontal
-      chance: 7.6
-      useWeightRandom: 1
-      overrideData: 0
-      damageMap: 2
-      useCondition: 1
-      mapEventCondition:
-      - conditionType: 0
-        startAfter: 0
-        endAt: 180
-    - mapEventID: Vertical
-      chance: 7.6
-      useWeightRandom: 1
-      overrideData: 0
-      damageMap: 2
-      useCondition: 1
-      mapEventCondition:
-      - conditionType: 0
-        startAfter: 0
-        endAt: 180
-    - mapEventID: Basket
-      chance: 7.6
-      useWeightRandom: 1
-      overrideData: 0
-      damageMap: 2
-      useCondition: 1
-      mapEventCondition:
-      - conditionType: 0
-        startAfter: 120
-        endAt: -1
-    - mapEventID: Firework_TopL_BottomR
-      chance: 7.6
-      useWeightRandom: 1
-      overrideData: 0
-      damageMap: 2
-      useCondition: 1
-      mapEventCondition:
-      - conditionType: 0
-        startAfter: 60
-        endAt: 300
-    - mapEventID: Firework_TopR_BottomL
-      chance: 7.6
-      useWeightRandom: 1
-      overrideData: 0
-      damageMap: 2
-      useCondition: 1
-      mapEventCondition:
-      - conditionType: 0
-        startAfter: 60
-        endAt: 300
-    - mapEventID: RightHole
-      chance: 7.6
-      useWeightRandom: 1
-      overrideData: 0
-      damageMap: 5
-      useCondition: 1
-      mapEventCondition:
-      - conditionType: 0
-        startAfter: 180
-        endAt: -1
-    - mapEventID: LeftHole
-      chance: 7.6
-      useWeightRandom: 1
-      overrideData: 0
-      damageMap: 5
-      useCondition: 1
-      mapEventCondition:
-      - conditionType: 0
-        startAfter: 180
-        endAt: -1
-    - mapEventID: Random_Line
-      chance: 7.6
-      useWeightRandom: 1
-      overrideData: 0
-      damageMap: 2
-      useCondition: 1
-      mapEventCondition:
-      - conditionType: 0
-        startAfter: 180
-        endAt: -1
-    - mapEventID: Wave
-      chance: 7.6
-      useWeightRandom: 1
-      overrideData: 0
-      damageMap: 2
-      useCondition: 1
-      mapEventCondition:
-      - conditionType: 0
-        startAfter: 120
-        endAt: -1
     - mapEventID: SBlackHole
-      chance: 7.7
+      chance: 34
       useWeightRandom: 1
       overrideData: 0
       damageMap: 2
@@ -708,7 +868,7 @@ MonoBehaviour:
         startAfter: 300
         endAt: -1
     - mapEventID: MBlackHole
-      chance: 7.7
+      chance: 33
       useWeightRandom: 1
       overrideData: 0
       damageMap: 5
@@ -718,7 +878,7 @@ MonoBehaviour:
         startAfter: 240
         endAt: -1
     - mapEventID: BBlackHole
-      chance: 7.7
+      chance: 33
       useWeightRandom: 1
       overrideData: 0
       damageMap: 7
@@ -733,17 +893,17 @@ MonoBehaviour:
     rateModify: -5
     intervalModify: 60
     minPlayInterval: 30
-  defaultEnemySpawnTimer: 1.5
+  defaultEnemySpawnTimer: 5
   canGrowth: 1
-  decreaseAmount: 0.25
-  decreaseInterval: 20
-  decreaseMinimum: 0.5
+  decreaseAmount: 0.5
+  decreaseInterval: 60
+  decreaseMinimum: 3
   intervalIncreaseEnemyPoint: 30
-  rateIncreaseEnemyPoint: 50
-  startEnemyPoint: 60
-  maxEnemyPoint: 1000
-  rushData: {fileID: 11400000, guid: e2b1d3052964e77449e76a9e319858b4, type: 2}
-  rushTime: 60
+  rateIncreaseEnemyPoint: 30
+  startEnemyPoint: 70
+  maxEnemyPoint: 500
+  rushData: {fileID: 11400000, guid: 6a2122562308168418755c35924c4b3b, type: 2}
+  rushTime: 120
   milestoneOptions:
   - winRequired: 1
     logic: 0
@@ -752,7 +912,7 @@ MonoBehaviour:
     logic: 0
     conditionConfigs:
     - conditionType: 1
-      scoreAtLeast: 80000
+      scoreAtLeast: 110000
   - winRequired: 1
     logic: 0
     conditionConfigs:
@@ -762,9 +922,9 @@ MonoBehaviour:
     logic: 0
     conditionConfigs:
     - conditionType: 1
-      scoreAtLeast: 170000
+      scoreAtLeast: 130000
   - winRequired: 1
     logic: 0
     conditionConfigs:
     - conditionType: 1
-      scoreAtLeast: 220000
+      scoreAtLeast: 1111000001

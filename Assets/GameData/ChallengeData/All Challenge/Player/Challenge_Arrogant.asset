@@ -14,19 +14,32 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: challenge_arrogant
   title: Arrogant
-  description: "EXP multiply -70%\n<b><color=yellow>+210% score multiple\r"
+  description: '<size=25><color=yellow><b>+210%</b></size> <size=23>score</size></color>
+
+
+    -70%
+    EXP multiply '
   lockdescription: Win anymode mode with "<color=#c38fe1><b>Ordinary</b></color>"
     challenge enable
   hideFromUI: 0
   allowedMapIds: []
   allowAutoUnlock: 0
   confirmSelectedMapIds: []
-  flatScoreBonusPercent: 0
+  flatScoreBonusPercent: 210
   statMode: 0
   playerSetMods: []
   playerMods:
   - stat: 1
     percentDelta: -70
-  disableAutoCalculate: 0
+  disableAutoCalculate: 1
   enemyGroups: []
   timeModify: 0
+  overrideMapSpawn: 0
+  spawnFlow: 0
+  spawnHandOver: 0
+  spawnHandOverAt: 120
+  spawnMapTimelineStartsAtHandOver: 1
+  spawnMixWithConditions: 0
+  spawnRandomSpawnerPool: 0
+  spawnPatternEnemyPool: 0
+  spawnRules: []
