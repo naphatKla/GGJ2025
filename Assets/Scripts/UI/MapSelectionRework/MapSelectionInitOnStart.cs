@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using System;
 using System.Collections.Generic;
 using Demo;
@@ -240,9 +241,11 @@ namespace UI.MapSelectionRework
             OnSelected?.Invoke(m_SelectedIndex, m_SelectedObject);
             UpdateDisplayStats(_items[index], Current);
             GetComponent<LoopScrollRect>().RefreshCells();
+            string previousMapId = MapSelectionSender.Instance.currentMapSelection?.mapId;
             MapSelectionSender.Instance.currentMapSelectionIndex = index;
             MapSelectionSender.Instance.currentMapSelection = _items[index];
             Current.selectedMapIds = _items[index].mapId;
+            NotifyMapChanged(previousMapId, _items[index]);
         }
         
         public void SelectFromID(string mapId)
@@ -261,10 +264,29 @@ namespace UI.MapSelectionRework
             UpdateDisplayStats(_items[index], Current);
             GetComponent<LoopScrollRect>().RefreshCells();
 
+            string previousMapId = MapSelectionSender.Instance.currentMapSelection?.mapId;
             MapSelectionSender.Instance.currentMapSelectionIndex = index;
             MapSelectionSender.Instance.currentMapSelection = _items[index];
 
             Current.selectedMapIds = mapId;
+            NotifyMapChanged(previousMapId, _items[index]);
+        }
+
+        /// <summary>
+        /// The challenge panel loads its selection for whatever map the Sender held when it was enabled. When the
+        /// map is set here without a click (menu open / restore), reload it - otherwise the previous map's
+        /// challenges stay selected (e.g. Void Metro Milestone_lv3's -120s Time Modify applied on Galactic Core).
+        /// </summary>
+        private void NotifyMapChanged(string previousMapId, MapDataSO map) =>
+            NotifyMapChangedAsync(previousMapId, map).Forget();
+
+        private async UniTaskVoid NotifyMapChangedAsync(string previousMapId, MapDataSO map)
+        {
+            // Next frame: this often runs from OnEnable, before the challenge / milestone panels have initialized.
+            await UniTask.Yield(PlayerLoopTiming.Update, this.GetCancellationTokenOnDestroy());
+            if (challengeScript != null && challengeScript.isActiveAndEnabled) challengeScript.RefreshUI();
+            if (milestoneScript != null && milestoneScript.isActiveAndEnabled && map != null && previousMapId != map.mapId)
+                milestoneScript.RefreshUI();
         }
 
 

@@ -595,6 +595,7 @@ namespace GameControl.SO
         #endregion
 
         #region Balance Preview
+#if UNITY_EDITOR // editor-only: nothing of the preview is compiled into a build
         [FoldoutGroup("Balance Preview")]
         [InfoBox("จำลอง 1 รอบเกมไว้ปรับบาลานซ์ (อ่านอย่างเดียว ไม่แก้ข้อมูลใดๆ)\n"
                  + "รวมค่าจากไฟล์นี้ + Rush Data + milestone ที่เลือก ตามลำดับที่โค้ดจริงทำงาน\n"
@@ -620,7 +621,6 @@ namespace GameControl.SO
         [OnInspectorGUI]
         private void DrawBalancePreview()
         {
-#if UNITY_EDITOR
             // Rebuilt at most twice a second (the Inspector repaints far more often than that).
             double now = UnityEditor.EditorApplication.timeSinceStartup;
             string key = _balanceOptions.Key;
@@ -631,10 +631,8 @@ namespace GameControl.SO
                 _balanceTime = now;
             }
             MapBalancePreview.DrawGUI(_balanceReport, _balanceUi);
-#endif
         }
 
-#if UNITY_EDITOR
         [NonSerialized] private MapBalancePreview.Report _balanceReport;
         [NonSerialized] private string _balanceKey;
         [NonSerialized] private double _balanceTime;
@@ -651,7 +649,57 @@ namespace GameControl.SO
         [InfoBox("Pattern จะถูกเล่นทุกค่านี้ ตามเวลาเกม เช่นเล่น Pattern ทั้งหมดทุกๆ 180 วิ")]
         [Tooltip("The time of the pattern to play in trigger time (default player all pattern in 3 minute / 180 seconds)")]
         public float playAllPatternIn = 180f;
-        
+
+        [FoldoutGroup("Pattern Setting")]
+        [GUIColor("@this.playAllCanDecrease ? Color.green : Color.red")]
+        [Tooltip("เปิด = Play All Pattern In ลดลงเรื่อยๆ ระหว่างเกม (Pattern ชุดใหม่มาถี่ขึ้น)\nปิด = เล่นทุก Play All Pattern In วินาทีเท่าเดิมทั้งเกม (แบบเดิม)")]
+        public bool playAllCanDecrease;
+
+        [FoldoutGroup("Pattern Setting")]
+        [InfoBox("ลด Play All Pattern In ทุกๆ กี่วินาที เช่น 60 = ทุก 1 นาที")]
+        [ShowIf("$playAllCanDecrease"), MinValue(0)]
+        [Tooltip("ทุกๆ กี่วินาทีจะลด Play All Pattern In (0 = ไม่ลด)")]
+        public float playAllDecreaseInterval = 60f;
+
+        [FoldoutGroup("Pattern Setting")]
+        [InfoBox("ลดครั้งละกี่วินาที เช่น 15 วิ ลด 1 = รอบถัดไปเล่นทุก 14 วิ")]
+        [ShowIf("$playAllCanDecrease"), MinValue(0)]
+        [Tooltip("แต่ละครั้งลด Play All Pattern In ลงกี่วินาที")]
+        public float playAllDecreaseRate = 1f;
+
+        [FoldoutGroup("Pattern Setting")]
+        [InfoBox("Play All Pattern In ต่ำสุดได้แค่นี้")]
+        [ShowIf("$playAllCanDecrease"), MinValue(0.5f)]
+        [Tooltip("ค่าต่ำสุดของ Play All Pattern In (ลดไม่ต่ำกว่านี้)")]
+        public float playAllDecreaseMinimum = 5f;
+
+        /// <summary>The Play All Pattern In decrease settings in effect.</summary>
+        public readonly struct PlayAllDecreaseSettings
+        {
+            public readonly bool Enabled;
+            public readonly float Interval, Rate, Minimum;
+
+            public PlayAllDecreaseSettings(bool enabled, float interval, float rate, float minimum)
+            {
+                Enabled = enabled && interval > 0f && rate > 0f;
+                Interval = interval;
+                Rate = rate;
+                Minimum = Mathf.Max(0.5f, minimum);
+            }
+        }
+
+        /// <summary>
+        /// This map's Play All Pattern In decrease, or the milestone's when it has Override Play All Decrease on.
+        /// Pass a null milestone for Rush (Rush Data's values are already applied into the map then).
+        /// </summary>
+        public PlayAllDecreaseSettings ResolvePlayAllDecrease(Challenge.ChallengeDataSO milestone)
+        {
+            if (milestone != null && milestone.overridePlayAllDecrease)
+                return new PlayAllDecreaseSettings(milestone.playAllCanDecrease, milestone.playAllDecreaseInterval,
+                    milestone.playAllDecreaseRate, milestone.playAllDecreaseMinimum);
+            return new PlayAllDecreaseSettings(playAllCanDecrease, playAllDecreaseInterval, playAllDecreaseRate, playAllDecreaseMinimum);
+        }
+
         [FoldoutGroup("Pattern Setting")] [Title("Pattern Setting")]
         [InfoBox("เช่น มีทั้งหมด 3 Pattern ใน Pool มันจะเล่น 3 Pattern ภายในเวลานี้ (all pattern in 3 minute / 180 seconds)")]
         [Tooltip("interval of event will be trigger (Default 180 seconds)")]

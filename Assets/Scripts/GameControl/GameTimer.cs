@@ -23,6 +23,11 @@ namespace GameControl
         public bool triggered;
         public bool triggerWhenSkip = true;
         public Action callback;
+        /// <summary>
+        /// Runs instead of <see cref="callback"/> when a skip jumps over a trigger with triggerWhenSkip = false.
+        /// Self-rescheduling loops use it to keep the chain alive (schedule the next fire) without doing the action.
+        /// </summary>
+        public Action onSkipped;
 
         public TimerTrigger(float at, Action cb, string id = null, string groupId = null,
             bool triggerWhenSkip = true, GameTimer.TriggerSpace space = GameTimer.TriggerSpace.Remaining)
@@ -428,6 +433,7 @@ namespace GameControl
                     if (!tr.triggerWhenSkip)
                     {
                         tr.triggered = true;
+                        RunSkipped(tr);
                         continue;
                     }
 
@@ -471,6 +477,7 @@ namespace GameControl
                     if (!tr.triggerWhenSkip)
                     {
                         tr.triggered = true;
+                        RunSkipped(tr);
                         continue;
                     }
 
@@ -498,6 +505,12 @@ namespace GameControl
             }
         }
 
+
+        private static void RunSkipped(TimerTrigger tr)
+        {
+            try { tr.onSkipped?.Invoke(); }
+            catch (Exception e) { Debug.LogException(e); }
+        }
 
         // ===== ตัวช่วย: ข้ามแบบระบุ delta เลือกโหมดให้เอง =====
         public void SkipByDeltaSeconds(float secondsFromNow, bool invokeEnd = true)
@@ -626,7 +639,7 @@ namespace GameControl
                     null,
                     groupId,
                     triggerWhenSkip,
-                    TriggerSpace.Elapsed));
+                    TriggerSpace.Elapsed) { onSkipped = () => AddNext(at + intervalSeconds) });
             }
 
             AddNext(next);
@@ -669,7 +682,7 @@ namespace GameControl
                 {
                     callback?.Invoke();
                     AddNext(atElapsed + intervalSeconds);
-                }, null, groupId, triggerWhenSkip, TriggerSpace.Elapsed));
+                }, null, groupId, triggerWhenSkip, TriggerSpace.Elapsed) { onSkipped = () => AddNext(atElapsed + intervalSeconds) });
             }
             AddNext(startElapsed + intervalSeconds);
         }
@@ -680,6 +693,19 @@ namespace GameControl
                 ScheduleLoopingFromNow_Endless(groupId, intervalSeconds, callback, triggerWhenSkip);
             else
                 ScheduleLoopingFromNow_Countdown(groupId, intervalSeconds, callback, triggerWhenSkip);
+        }
+
+        /// <summary>
+        /// One trigger in a group (cancellable with <see cref="CancelGroup"/>) at an absolute point:
+        /// endless = elapsed seconds, countdown = remaining seconds. Building block for loops whose interval
+        /// changes while running (each fire schedules the next one).
+        /// </summary>
+        /// <param name="onSkipped">Runs instead of the callback when a skip jumps over it (triggerWhenSkip = false).</param>
+        public void ScheduleAt(string groupId, bool endless, float at, Action callback, bool triggerWhenSkip = true,
+            Action onSkipped = null)
+        {
+            _timeTriggers.Add(new TimerTrigger(Mathf.Max(0f, at), callback, null, groupId, triggerWhenSkip,
+                endless ? TriggerSpace.Elapsed : TriggerSpace.Remaining) { onSkipped = onSkipped });
         }
 
 

@@ -267,15 +267,24 @@ namespace GameControl.Controller
             if (map.triggerTimeCanDecrease && map.patternDecreaseInterval > 0f)
                 timer.ScheduleLoopingFromNow("PATTERN::DECREASE", CurrentMap.endlessMode , map.patternDecreaseInterval, () => _enemyPatternController.UpdateTriggerTime());
 
+            timer.CancelGroup(PlayAllDecreaseGroup);
+            var playAllDecrease = ResolvePlayAllDecrease(map);
+            _playAllPatternIn = map.playAllPatternIn;
             if (map.playAllPatternIn > 0f)
-                timer.ScheduleLoopingFromNow("PATTERN::TRIGGER", CurrentMap.endlessMode, map.playAllPatternIn, () => _enemyPatternController.TriggerAllPatterns(), triggerWhenSkip:false);
+            {
+                if (playAllDecrease.Enabled)
+                    StartShrinkingPatternTrigger(map, playAllDecrease, timer);
+                else
+                    timer.ScheduleLoopingFromNow("PATTERN::TRIGGER", CurrentMap.endlessMode, map.playAllPatternIn, () => _enemyPatternController.TriggerAllPatterns(), triggerWhenSkip:false);
+            }
 
             if (map.addPatternInterval > 0f)
                 timer.ScheduleLoopingFromNow("PATTERN::ADD", CurrentMap.endlessMode, map.addPatternInterval, () => _enemyPatternController.AddRandomPatterns(map.amountToAdd));
 
             // ---- SPAWNER ----
             if (map.canGrowth && map.decreaseInterval > 0f)
-                timer.ScheduleLoopingFromNow("SPAWNER::INTERVAL", CurrentMap.endlessMode, map.decreaseInterval, () => UpdateDefaultSpawnInterval(), triggerWhenSkip:false);
+                // triggerWhenSkip: a Skip Time must still speed the spawner up, like the time had really passed.
+                timer.ScheduleLoopingFromNow("SPAWNER::INTERVAL", CurrentMap.endlessMode, map.decreaseInterval, () => UpdateDefaultSpawnInterval());
 
             if (map.intervalIncreaseEnemyPoint > 0f)
                 timer.ScheduleLoopingFromNow("SPAWNER::POINT", CurrentMap.endlessMode, map.intervalIncreaseEnemyPoint, () => UpgradeMaxSpawnPoint(_increaseRateEnemyPoint));
@@ -288,6 +297,64 @@ namespace GameControl.Controller
             
             _mapEventController?.ReloadAllEvents();
         }
+
+        #region Play All Pattern In decrease
+
+        private const string PlayAllDecreaseGroup = "PATTERN::PLAYALL_DECREASE";
+        private float _playAllPatternIn;
+        private float _nextPatternTriggerAt;
+
+        /// <summary>Current Play All Pattern In (shrinks when Play All Can Decrease is on).</summary>
+        [BoxGroup("Debug")] [ShowInInspector, ReadOnly]
+        public float PlayAllPatternIn => _playAllPatternIn;
+
+        /// <summary>Map's settings, or the selected milestone's override (never during Rush - Rush Data rules then).</summary>
+        private MapDataSO.PlayAllDecreaseSettings ResolvePlayAllDecrease(MapDataSO map)
+        {
+            bool rush = GameStateController.Instance != null && GameStateController.Instance.MapState == MapState.Rush;
+            return map.ResolvePlayAllDecrease(rush ? null : SelectedMilestoneAsset(map));
+        }
+
+        /// <summary>
+        /// Like ScheduleLoopingFromNow("PATTERN::TRIGGER") (same first fire), but each fire schedules the next one
+        /// with the CURRENT Play All Pattern In, which a second loop keeps lowering to the minimum.
+        /// </summary>
+        private void StartShrinkingPatternTrigger(MapDataSO map, MapDataSO.PlayAllDecreaseSettings settings, GameTimer timer)
+        {
+            bool endless = CurrentMap.endlessMode;
+            _playAllPatternIn = Mathf.Max(0.01f, map.playAllPatternIn);
+            // Same base as GameTimer's looping schedule: countdown starts from remaining + 1.
+            _nextPatternTriggerAt = endless ? timer.Elapsed : timer.GlobalTimer + 1f;
+            ScheduleNextPatternTrigger(timer, endless);
+
+            timer.ScheduleLoopingFromNow(PlayAllDecreaseGroup, endless, settings.Interval, () =>
+            {
+                if (_playAllPatternIn <= settings.Minimum) return;
+                _playAllPatternIn = Mathf.Max(settings.Minimum, _playAllPatternIn - settings.Rate);
+                if (debugPattern) Debug.Log($"[Pattern] Play All Pattern In -> {_playAllPatternIn:0.##}s");
+            });
+        }
+
+        private void ScheduleNextPatternTrigger(GameTimer timer, bool endless)
+        {
+            _nextPatternTriggerAt += endless ? _playAllPatternIn : -_playAllPatternIn;
+            if (!endless && _nextPatternTriggerAt < 0f) return; // past the end of the run
+            timer.ScheduleAt("PATTERN::TRIGGER", endless, _nextPatternTriggerAt, () =>
+            {
+                _enemyPatternController.TriggerAllPatterns();
+                ScheduleNextPatternTrigger(timer, endless);
+            }, triggerWhenSkip: false,
+            // Skipped (Skip Time): don't dump the batch, but keep the chain going.
+            onSkipped: () => ScheduleNextPatternTrigger(timer, endless));
+        }
+
+        private Challenge.ChallengeDataSO SelectedMilestoneAsset(MapDataSO map)
+        {
+            int milestone = debugMilestoneOverride >= 0 ? debugMilestoneOverride : ReadSelectedMilestone(map);
+            return MilestoneSpawnLookup.FindMilestone(milestoneDataContainer, map.mapId, milestone);
+        }
+
+        #endregion
 
         private void UpdateDefaultSpawnInterval()
         {
