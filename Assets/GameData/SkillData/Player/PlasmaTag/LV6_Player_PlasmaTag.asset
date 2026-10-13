@@ -35,7 +35,7 @@ MonoBehaviour:
   skillDescription: "<color=#FF3131><b>[Attack]</b></color>\n<size=3.5><color=#adadad><i>[AOE],
     [Duration]</i></color>\n<color=#5CE5FF><b>[UPGRADE]</b></color>\n<color=#FFE02E><b>[+]</b></color>
     Skill duration\n<color=#FFE02E><b>[+]</b></color> Damage\n<color=#FFE02E><b>[+]</b></color>
-    Bomb radius\n\nCooldown: <b>30s</b>\n\n- Hits apply Plasma Tags that explode
+    Bomb radius\n\nCooldown: <b>24s</b>\n\n- Hits apply Plasma Tags that explode
     after a short delay or detonate instantly if the target dies first. \n"
   previousSkillData: {fileID: 11400000, guid: 8e2e1b83f59a25e44839d568979e8668, type: 2}
   nextSkillDataUpgrade: {fileID: 0}
@@ -57,3 +57,4 @@ MonoBehaviour:
   cleanupDelay: 1
   baseDamage: 95
   damageMultiplier: 100
+  explodeOnDead: 1
