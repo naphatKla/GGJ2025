@@ -1,3 +1,5 @@
+#if UNITY_EDITOR
+// Editor-only: the Balance Preview never exists in a build (no simulation, no strings, no allocations).
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -342,7 +344,8 @@ namespace GameControl.SO
             float normalEnd = hasRush ? R : T;
             AddPhaseLoops(Add, map.triggerTimeCanDecrease, map.patternDecreaseInterval, map.playAllPatternIn,
                 map.addPatternInterval, map.amountToAdd, map.canGrowth ? map.decreaseInterval : 0f, map.intervalIncreaseEnemyPoint,
-                map.intervalEnemyChanceUpgrade, map.intervalEnemyPointRatioUpgrade, map, 0f, normalEnd, T, endless, warnings);
+                map.intervalEnemyChanceUpgrade, map.intervalEnemyPointRatioUpgrade, map, 0f, normalEnd, T, endless, warnings,
+                map.ResolvePlayAllDecrease(milestone));
 
             // Map events: none in Endless (MapEventController schedules from "remaining", which is 0 there).
             bool rushHasEvents = hasRush && rush.eventmapOptions != null && rush.eventmapOptions.Count > 0;
@@ -363,7 +366,9 @@ namespace GameControl.SO
                 Add(R, 0, BatchTag, (s, t) => EnterRush(s, t, map, rush, milestone));
                 AddPhaseLoops(Add, rush.triggerTimeCanDecrease, rush.patternDecreaseInterval, rush.playAllPatternIn,
                     rush.addPatternInterval, rush.amountToAdd, map.canGrowth ? map.decreaseInterval : 0f, map.intervalIncreaseEnemyPoint,
-                    rush.intervalEnemyChanceUpgrade, rush.intervalEnemyPointRatioUpgrade, map, R, T, T, false, warnings);
+                    rush.intervalEnemyChanceUpgrade, rush.intervalEnemyPointRatioUpgrade, map, R, T, T, false, warnings,
+                    new MapDataSO.PlayAllDecreaseSettings(rush.playAllCanDecrease, rush.playAllDecreaseInterval,
+                        rush.playAllDecreaseRate, rush.playAllDecreaseMinimum));
                 if (rushHasEvents) AddMapEventLoops(Add, rush.eventmapOptions, R, T, T, warnings);
             }
 
@@ -407,7 +412,7 @@ namespace GameControl.SO
                 void Run(Ev ev)
                 {
                     string text = ev.Apply(state, ev.T);
-                    if (!string.IsNullOrEmpty(text)) log.Add((ev.T, ev.Kind, text));
+                    if (!string.IsNullOrEmpty(text)) log.Add((ev.T, ev.Kind, Plain(text)));
                     if (ev.Tag == BatchTag) batchTimes.Add(ev.T);
                     else if (ev.Tag is MapDataSO.EventMapOption cat && text != null)
                     {
@@ -422,6 +427,7 @@ namespace GameControl.SO
                 var start = Snap(state, sched, probe);
                 int rotStart = state.Rotation;
                 float triggerStart = state.TriggerTime;
+                float playAllStart = state.PlayAllIn;
                 float pointsStart = state.Granted;
                 var eventCats = state.MapEvents?.Where(e => e != null && e.enableThisMapEvent).ToList()
                                 ?? new List<MapDataSO.EventMapOption>();
@@ -430,6 +436,7 @@ namespace GameControl.SO
 
                 var end = Snap(state, sched, Mathf.Max(b - 0.01f, probe));
                 FillPeriod(p, state, sched, start, end, probe, rotStart, state.Rotation, triggerStart, state.TriggerTime,
+                    playAllStart, state.PlayAllIn,
                     pointsStart, state.Granted, batchTimes, eventCats, eventTimes, T, endless);
                 report.Periods.Add(p);
             }
@@ -518,7 +525,8 @@ namespace GameControl.SO
         private static void AddPhaseLoops(Action<float, int, object, Func<State, float, string>> add,
             bool decCan, float decInterval, float playAllIn, float addInterval, int addAmount,
             float timerInterval, float pointInterval, float chanceInterval, float ratioInterval,
-            MapDataSO map, float start, float end, float T, bool endless, List<string> warnings)
+            MapDataSO map, float start, float end, float T, bool endless, List<string> warnings,
+            MapDataSO.PlayAllDecreaseSettings playDec)
         {
             if (decCan && decInterval > 0f)
                 foreach (float t in LoopTimes(start, decInterval, end, T, endless, warnings, "Pattern Decrease Interval"))
@@ -530,9 +538,42 @@ namespace GameControl.SO
                         return $"Pattern spread {old:0.##}s -> {s.TriggerTime:0.##}s";
                     });
 
-            if (playAllIn > 0f)
+            if (playAllIn > 0f && !playDec.Enabled)
                 foreach (float t in LoopTimes(start, playAllIn, end, T, endless, warnings, "Play All Pattern In"))
                     add(t, 2, BatchTag, PlayBatch);
+
+            if (playAllIn > 0f && playDec.Enabled)
+            {
+                // SpawnerStateController.StartShrinkingPatternTrigger: a decrease loop lowers Play All Pattern In,
+                // and every batch schedules the next one with the value at that moment.
+                var decTimes = LoopTimes(start, playDec.Interval, end, T, endless, warnings, "Play All Decrease Interval").ToList();
+                foreach (float t in decTimes)
+                    add(t, 1, null, (s, now) =>
+                    {
+                        if (s.PlayAllIn <= playDec.Minimum) return null;
+                        float old = s.PlayAllIn;
+                        s.PlayAllIn = Mathf.Max(playDec.Minimum, s.PlayAllIn - playDec.Rate);
+                        return $"Play All Pattern In {old:0.##}s -> {s.PlayAllIn:0.##}s";
+                    });
+
+                float ValueAt(float t)
+                {
+                    float v = Mathf.Max(0.01f, playAllIn);
+                    foreach (float d in decTimes)
+                        if (d <= t && v > playDec.Minimum) v = Mathf.Max(playDec.Minimum, v - playDec.Rate);
+                    return v;
+                }
+
+                float at = endless ? start : start - 1f; // countdown base = remaining + 1
+                float interval = Mathf.Max(0.01f, playAllIn);
+                for (int i = 0; i < MaxLoopFires; i++)
+                {
+                    at += interval;
+                    if (at > end + Eps) break;
+                    add(Mathf.Max(start, at), 2, BatchTag, PlayBatch);
+                    interval = ValueAt(at);
+                }
+            }
 
             if (addInterval > 0f)
                 foreach (float t in LoopTimes(start, addInterval, end, T, endless, warnings, "Add Pattern Interval"))
@@ -770,7 +811,7 @@ namespace GameControl.SO
         }
 
         private static void FillPeriod(Period p, State s, Sched sched, Snapshot a, Snapshot b, float probe,
-            int rotA, int rotB, float trigA, float trigB, float ptsA, float ptsB, List<float> batches,
+            int rotA, int rotB, float trigA, float trigB, float playA, float playB, float ptsA, float ptsB, List<float> batches,
             List<MapDataSO.EventMapOption> cats, Dictionary<MapDataSO.EventMapOption, List<float>> eventTimes,
             float T, bool endless)
         {
@@ -780,17 +821,17 @@ namespace GameControl.SO
             // ---- random spawner ----
             if (!a.RandomOn)
             {
-                p.Spawner = "OFF (schedule only)";
+                p.Spawner = CBad("OFF") + " (schedule only)";
             }
             else
             {
                 string timer = Mathf.Approximately(a.SpawnTimer, b.SpawnTimer)
-                    ? $"{a.SpawnTimer:0.##}s" : $"{a.SpawnTimer:0.##}s -> {b.SpawnTimer:0.##}s";
-                string perMin = a.AvgInterval > 0f ? $" (~{60f / a.AvgInterval:0.#} per minute while points > 0)" : "";
+                    ? CNum($"{a.SpawnTimer:0.##}s") : CNum($"{a.SpawnTimer:0.##}s") + " -> " + CNum($"{b.SpawnTimer:0.##}s");
+                string perMin = a.AvgInterval > 0f ? $" (~{CNum($"{60f / a.AvgInterval:0.#}")} per minute while points > 0)" : "";
                 string pool = a.Pool switch
                 {
-                    RandomSpawnerPool.OnlyScheduledEnemies => " | only scheduled enemies",
-                    RandomSpawnerPool.ExcludeScheduledEnemies => " | excluding scheduled enemies",
+                    RandomSpawnerPool.OnlyScheduledEnemies => " | " + CBad("only scheduled enemies"),
+                    RandomSpawnerPool.ExcludeScheduledEnemies => " | " + CBad("excluding scheduled enemies"),
                     _ => ""
                 };
                 p.Spawner = $"1 enemy every {timer}{perMin}{pool}";
@@ -799,15 +840,15 @@ namespace GameControl.SO
                 {
                     var e = s.Enemies.First(x => x.Id == kv.Key);
                     b.Share.TryGetValue(kv.Key, out float to);
-                    var notes = new List<string> { $"{a.Cost[kv.Key]:0.##} pt" };
-                    if (e.Src.useCustomInterval) notes.Add($"next check {e.Src.customInterval:0.##}s");
-                    if (e.Src.useMaxperEnemy && e.Src.maximumPerEnemy > 0) notes.Add($"max alive {e.Src.maximumPerEnemy:0}");
-                    p.Random.Add(new EnemyLine { Id = kv.Key, From = kv.Value, To = to, Note = string.Join(" · ", notes) });
+                    var notes = new List<string> { CPoint($"{a.Cost[kv.Key]:0.##} pt") };
+                    if (e.Src.useCustomInterval) notes.Add($"next check {CNum($"{e.Src.customInterval:0.##}s")}");
+                    if (e.Src.useMaxperEnemy && e.Src.maximumPerEnemy > 0) notes.Add($"max alive {CNum($"{e.Src.maximumPerEnemy:0}")}");
+                    p.Random.Add(new EnemyLine { Id = kv.Key, From = kv.Value, To = to, Note = string.Join("  ·  ", notes) });
                 }
             }
 
             foreach (var e in s.Enemies.Where(e => !EnemyEligible(e.Src, probe)))
-                p.NotYet.Add($"{e.Id} ({EnemyWindowThai(e.Src, T, endless)})");
+                p.NotYet.Add($"{CEnemy(e.Id)} {CDim("(" + EnemyWindowThai(e.Src, T, endless) + ")")}");
 
             // ---- schedule ----
             p.ScheduleActive = !s.Rush && sched.Active;
@@ -817,30 +858,32 @@ namespace GameControl.SO
 
             // ---- points ----
             p.Points = Mathf.Approximately(ptsA, ptsB)
-                ? $"{ptsA:0.#} granted"
-                : $"{ptsA:0.#} -> {ptsB:0.#} granted (+{s.RefillRate:0.#} per refill)";
+                ? CPoint($"{ptsA:0.#}") + " granted"
+                : CPoint($"{ptsA:0.#}") + " -> " + CPoint($"{ptsB:0.#}") + $" granted (+{CPoint($"{s.RefillRate:0.#}")} per refill)";
 
             // ---- patterns ----
             var pool2 = s.Rush ? PatternEnemyPool.AllMapEnemies : sched.PatternPool(probe, out _);
-            string rot = rotA == rotB ? $"{rotA}" : $"{rotA} -> {rotB}";
+            string rot = rotA == rotB ? CNum($"{rotA}") : CNum($"{rotA}") + " -> " + CNum($"{rotB}");
             float gapA = rotA > 0 ? Mathf.Max(0f, trigA) / rotA : 0f;
             float gapB = rotB > 0 ? Mathf.Max(0f, trigB) / rotB : 0f;
-            string gap = Mathf.Approximately(gapA, gapB) ? $"{gapA:0.##}" : $"{gapA:0.##} -> {gapB:0.##}";
-            string when = batches.Count == 0 ? "no batch in this period"
-                : $"{batches.Count} batch(es) at {TimeList(batches, T, endless)}";
+            string gap = Mathf.Approximately(gapA, gapB) ? CNum($"{gapA:0.##}s") : CNum($"{gapA:0.##}s") + " -> " + CNum($"{gapB:0.##}s");
+            // Trigger All Pattern In (shrinks with Pattern Decrease); Play All Pattern In never changes at runtime.
+            string spread = Mathf.Approximately(trigA, trigB) ? CNum($"{trigA:0.##}s") : CNum($"{trigA:0.##}s") + " -> " + CNum($"{trigB:0.##}s");
+            string when = batches.Count == 0 ? CDim("no batch in this period")
+                : $"{CNum(batches.Count.ToString())} batch(es) at {CNum(TimeList(batches, T, endless))}";
             p.PatternHead = s.PlayAllIn > 0f || batches.Count > 0
-                ? $"every {s.PlayAllIn:0.#}s: {when} | {rot} per batch, {gap}s apart"
-                : "never (Play All Pattern In = 0)";
+                ? $"every {(Mathf.Approximately(playA, playB) ? CNum($"{playA:0.##}s") : CNum($"{playA:0.##}s") + " -> " + CNum($"{playB:0.##}s"))}: {when}  |  {rot} per batch, spread over {spread} -> {gap} apart"
+                : CBad("never") + " (Play All Pattern In = 0)";
 
             var playable = s.Patterns?.Where(x => PatternEligible(x, probe)).ToList() ?? new List<MapDataSO.PatternOption>();
             foreach (var x in playable)
-                p.Patterns.Add($"{PatternName(x)} — {x.patternPoint:0.#} pt{PatternCounts(x, s, sched, probe)}");
+                p.Patterns.Add($"{CPattern(PatternName(x))} — {CPoint($"{x.patternPoint:0.#} pt")}{PatternCounts(x, s, sched, probe)}");
 
             var pe = PatternEnemies(s, sched, probe, false);
-            p.PatternEnemies = pool2 == PatternEnemyPool.NoEnemies ? "none (Pattern Enemy Pool = No Enemies)"
-                : pe.Count == 0 ? "none can spawn"
-                : string.Join(", ", pe.Select(e => e.Id))
-                  + (pool2 == PatternEnemyPool.OnlyScheduledEnemies ? " (scheduled enemies only)" : "");
+            p.PatternEnemies = pool2 == PatternEnemyPool.NoEnemies ? CBad("none") + " (Pattern Enemy Pool = No Enemies)"
+                : pe.Count == 0 ? CBad("none can spawn")
+                : string.Join(", ", pe.Select(e => CEnemy(e.Id)))
+                  + (pool2 == PatternEnemyPool.OnlyScheduledEnemies ? CDim(" (scheduled enemies only)") : "");
 
             // ---- map events ----
             foreach (var c in cats)
@@ -849,8 +892,8 @@ namespace GameControl.SO
                 var line = new EventLine
                 {
                     Name = c.catagolyMapEvent,
-                    Rule = (Mathf.Approximately(iA, iB) ? $"every {iA:0.##}s" : $"every {iA:0.##}s -> {iB:0.##}s")
-                           + $", {c.eventMapChance:0.#}% to play",
+                    Rule = (Mathf.Approximately(iA, iB) ? $"every {CNum($"{iA:0.##}s")}" : $"every {CNum($"{iA:0.##}s")} -> {CNum($"{iB:0.##}s")}")
+                           + $", {CNum($"{c.eventMapChance:0.#}%")} to play",
                     Picks = MapEventPicks(c, probe)
                 };
                 if (eventTimes.TryGetValue(c, out var times)) line.Times.AddRange(times);
@@ -861,17 +904,17 @@ namespace GameControl.SO
         private static string RuleThai(ResolvedSpawnRule r, float timer, Sched sched, float probe, float T, bool endless)
         {
             var rule = r.Rule;
-            string amount = rule.amountMax > rule.amountMin ? $"x{rule.amountMin}-{rule.amountMax}" : $"x{Mathf.Max(1, rule.amountMin)}";
+            string amount = rule.amountMax > rule.amountMin ? CNum($"x{rule.amountMin}-{rule.amountMax}") : CNum($"x{Mathf.Max(1, rule.amountMin)}");
             if (rule.maxAlive > 0)
-                amount = rule.fillToMaxEachWave ? $"keep {rule.maxAlive} alive" : amount + $" (max alive {rule.maxAlive})";
-            if (rule.maxTotal > 0) amount += $" (max {rule.maxTotal} total)";
-            if (rule.EffectiveChance < 100f) amount += $" {rule.EffectiveChance:0.#}% per wave";
+                amount = rule.fillToMaxEachWave ? $"keep {CNum(rule.maxAlive.ToString())} alive" : amount + $" (max alive {CNum(rule.maxAlive.ToString())})";
+            if (rule.maxTotal > 0) amount += $" (max {CNum(rule.maxTotal.ToString())} total)";
+            if (rule.EffectiveChance < 100f) amount += $" {CNum($"{rule.EffectiveChance:0.#}%")} per wave";
 
             string interval = rule.intervalMode switch
             {
-                SpawnIntervalMode.Custom => $"every {rule.customInterval:0.##}s",
-                SpawnIntervalMode.RandomRange => $"every {rule.intervalMin:0.##}-{rule.intervalMax:0.##}s",
-                _ => $"every {timer:0.##}s (Spawn Timer)"
+                SpawnIntervalMode.Custom => $"every {CNum($"{rule.customInterval:0.##}s")}",
+                SpawnIntervalMode.RandomRange => $"every {CNum($"{rule.intervalMin:0.##}-{rule.intervalMax:0.##}s")}",
+                _ => $"every {CNum($"{timer:0.##}s")} {CDim("(Spawn Timer)")}"
             };
 
             string until = "";
@@ -879,9 +922,9 @@ namespace GameControl.SO
             {
                 float abs = r.Expire;
                 if (sched.HandedOver(probe)) abs = r.Expire + (probe - sched.SecondTime(probe));
-                until = $" until {Clock(abs)}";
+                until = $" until {CNum(Clock(abs))}";
             }
-            return $"{rule.enemyId} {amount}, {interval}{until}";
+            return $"{CEnemy(rule.enemyId)} {amount}, {interval}{until}";
         }
 
         private static List<Enemy> PatternEnemies(State s, Sched sched, float t, bool bypass)
@@ -907,11 +950,43 @@ namespace GameControl.SO
                 var specific = enemies.Where(e => ids.Contains(e.Id.Trim().ToLowerInvariant())).ToList();
                 if (specific.Count > 0) enemies = specific;
             }
-            if (enemies.Count == 0) return " -> no enemy";
+            if (enemies.Count == 0) return " -> " + CBad("no enemy");
             return " -> " + string.Join(" or ", enemies.Take(3).Select(e => e.Cost > 0f
-                       ? $"{e.Id} x{Mathf.FloorToInt(p.patternPoint / e.Cost)}" : $"{e.Id} x0 (cost 0)"))
-                   + (enemies.Count > 3 ? " ..." : "");
+                       ? $"{CEnemy(e.Id)} {CNum($"x{Mathf.FloorToInt(p.patternPoint / e.Cost)}")}"
+                       : $"{CEnemy(e.Id)} {CBad("x0 (cost 0)")}"))
+                   + (enemies.Count > 3 ? CDim(" ...") : "");
         }
+
+        #region Colors (rich text for the Inspector; Plain() strips it for Copy / Log)
+
+        private static bool DarkSkin
+        {
+            get
+            {
+#if UNITY_EDITOR
+                return UnityEditor.EditorGUIUtility.isProSkin;
+#else
+                return true;
+#endif
+            }
+        }
+
+        private static string Paint(string text, string dark, string light) => $"<color={(DarkSkin ? dark : light)}>{text}</color>";
+        private static string CEnemy(string s) => Paint(s, "#6FD3FF", "#00639E");
+        private static string CNum(string s) => Paint(s, "#FFD54F", "#8A5A00");
+        private static string CPattern(string s) => Paint(s, "#C792EA", "#6A2C99");
+        private static string CEvent(string s) => Paint(s, "#FFAB40", "#A34B00");
+        private static string CPoint(string s) => Paint(s, "#8BE28B", "#1E7A1E");
+        private static string CBad(string s) => Paint(s, "#FF6B6B", "#B00020");
+        private static string CDim(string s) => Paint(s, "#9E9E9E", "#666666");
+
+        private static readonly System.Text.RegularExpressions.Regex RichTags =
+            new(@"</?(color|b|i|size)(=[^<>]*)?>");
+
+        /// <summary>Removes the color / bold tags (for Copy, Log and the plain-text Event Log).</summary>
+        public static string Plain(string s) => s == null ? null : RichTags.Replace(s, "");
+
+        #endregion
 
         #endregion
 
@@ -991,13 +1066,13 @@ namespace GameControl.SO
             var parts = new List<string>();
             if (weighted.Count > 0)
                 parts.Add(total > 0f
-                    ? "pick 1 of " + string.Join(" / ", weighted.Select(k => $"{k.mapEventID} {k.chance / total * 100f:0.#}%"))
-                    : "weighted entries all 0% - nothing");
+                    ? "pick 1 of " + string.Join(" / ", weighted.Select(k => $"{CEvent(k.mapEventID)} {CNum($"{k.chance / total * 100f:0.#}%")}"))
+                    : CBad("weighted entries all 0% - nothing"));
             var always = kvs.Where(k => !k.useWeightRandom && k.chance >= 100f).Select(k => k.mapEventID).ToList();
-            if (always.Count > 0) parts.Add("+ always " + string.Join(", ", always));
+            if (always.Count > 0) parts.Add("+ always " + string.Join(", ", always.Select(CEvent)));
             var never = kvs.Where(k => !k.useWeightRandom && k.chance < 100f).Select(k => k.mapEventID).ToList();
-            if (never.Count > 0) parts.Add($"(never: {string.Join(", ", never)} - non-weighted needs chance 100)");
-            return parts.Count > 0 ? string.Join(" ", parts) : "nothing eligible now";
+            if (never.Count > 0) parts.Add(CBad($"(never: {string.Join(", ", never)} - non-weighted needs chance 100)"));
+            return parts.Count > 0 ? string.Join(" ", parts) : CDim("nothing eligible now");
         }
 
         #endregion
@@ -1022,6 +1097,14 @@ namespace GameControl.SO
             add("Spawn Timer", map.canGrowth
                 ? $"{map.defaultEnemySpawnTimer:0.###}s, -{map.decreaseAmount:0.###}s every {map.decreaseInterval:0.#}s, min {map.decreaseMinimum:0.###}s"
                 : $"{map.defaultEnemySpawnTimer:0.###}s fixed (Can Growth OFF)");
+
+            var playDec = map.ResolvePlayAllDecrease(milestone);
+            string playSrc = milestone != null && milestone.overridePlayAllDecrease ? " (milestone override)" : "";
+            add("Patterns", map.playAllPatternIn <= 0f ? "never (Play All Pattern In = 0)"
+                : $"batch every {map.playAllPatternIn:0.##}s"
+                  + (playDec.Enabled ? $", -{playDec.Rate:0.##}s every {playDec.Interval:0.#}s, min {playDec.Minimum:0.##}s{playSrc}" : $", fixed{playSrc}")
+                  + $" | spread {map.triggerAllPatternIn:0.##}s"
+                  + (map.triggerTimeCanDecrease ? $", -{map.patternDecreaseRate:0.##}s every {map.patternDecreaseInterval:0.#}s, min {map.patternDecreaseMinimum:0.##}s" : ", fixed"));
 
             if (milestone != null)
             {
@@ -1291,8 +1374,8 @@ namespace GameControl.SO
         {
             string range = $"{Clock(p.From)} - {Clock(p.To)}";
             string clock = r.Endless ? "" : $"   (clock {Clock(r.RunLength - p.From)} - {Clock(r.RunLength - p.To)})";
-            string tag = p.Rush ? "RUSH" : p.AfterHandOver ? "MAP MODE (after hand-over)" : "NORMAL";
-            return $"{range}  [{tag}]{clock}";
+            string tag = p.Rush ? CBad("RUSH") : p.AfterHandOver ? CEnemy("MAP MODE (after hand-over)") : CPoint("NORMAL");
+            return $"{CNum(range)}  [{tag}]{CDim(clock)}";
         }
 
         public static string EnemyPercent(EnemyLine e) =>
@@ -1347,7 +1430,7 @@ namespace GameControl.SO
                 sb.AppendLine("=== Reference ===");
                 sb.AppendLine(r.Reference);
             }
-            return sb.ToString().TrimEnd();
+            return Plain(sb.ToString().TrimEnd());
         }
 
         #endregion
@@ -1414,20 +1497,21 @@ namespace GameControl.SO
             {
                 Section("Random", p.Spawner);
                 foreach (var e in p.Random) DrawEnemyBar(e);
-                if (p.NotYet.Count > 0) Section("Not now", string.Join(", ", p.NotYet), _small);
+                if (p.NotYet.Count > 0) Section("Not now", string.Join(",  ", p.NotYet), _small);
 
                 if (p.ScheduleActive)
-                    Section("Scheduled", p.Scheduled.Count == 0 ? "- (no rule active)" : "• " + string.Join("\n• ", p.Scheduled));
+                    Section("Scheduled", p.Scheduled.Count == 0 ? CDim("- (no rule active)") : "• " + string.Join("\n• ", p.Scheduled));
 
                 Section("Enemy Point", p.Points);
                 Section("Pattern", p.PatternHead
-                                   + (p.Patterns.Count > 0 ? "\n• " + string.Join("\n• ", p.Patterns) : "\n• no pattern can play in this period")
+                                   + (p.Patterns.Count > 0 ? "\n• " + string.Join("\n• ", p.Patterns) : "\n• " + CBad("no pattern can play in this period"))
                                    + $"\nPattern enemies: {p.PatternEnemies}");
 
                 foreach (var ev in p.MapEvents)
                 {
-                    string times = ev.Times.Count == 0 ? "no roll in this period" : $"{ev.Times.Count} roll(s) at {TimeList(ev.Times, r.RunLength, r.Endless)}";
-                    Section("Map Event", $"<b>{ev.Name}</b> — {ev.Rule}\n{times}\n{ev.Picks}");
+                    string times = ev.Times.Count == 0 ? CDim("no roll in this period")
+                        : $"{CNum(ev.Times.Count.ToString())} roll(s) at {CNum(TimeList(ev.Times, r.RunLength, r.Endless))}";
+                    Section("Map Event", $"<b>{CEvent(ev.Name)}</b> — {ev.Rule}\n{times}\n{ev.Picks}");
                 }
             }
 
@@ -1447,7 +1531,7 @@ namespace GameControl.SO
         {
             GUILayout.BeginHorizontal();
             GUILayout.Space(99);
-            GUILayout.Label(e.Id, _rich, GUILayout.Width(130));
+            GUILayout.Label(CEnemy(e.Id), _rich, GUILayout.Width(130));
             var rect = GUILayoutUtility.GetRect(60, 14, GUILayout.Width(110));
             rect.y += 3;
             UnityEditor.EditorGUI.DrawRect(rect, new Color(0f, 0f, 0f, 0.25f));
@@ -1461,7 +1545,7 @@ namespace GameControl.SO
                 mark.width = 2;
                 UnityEditor.EditorGUI.DrawRect(mark, new Color(1f, 0.85f, 0.2f));
             }
-            GUILayout.Label($" {EnemyPercent(e)}", _rich, GUILayout.Width(110));
+            GUILayout.Label(" " + CNum(EnemyPercent(e)), _rich, GUILayout.Width(110));
             GUILayout.Label(e.Note, _small);
             GUILayout.EndHorizontal();
         }
@@ -1481,3 +1565,4 @@ namespace GameControl.SO
         #endregion
     }
 }
+#endif
