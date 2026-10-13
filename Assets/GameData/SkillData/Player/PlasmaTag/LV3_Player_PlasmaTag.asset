@@ -32,11 +32,24 @@ MonoBehaviour:
       Data: 
   skillIcon: {fileID: 0}
   skillName: Plasma Tag
-  skillDescription: "<color=#FF3131><b>[Attack]</b></color>\n<size=3.5><color=#adadad><i>[AOE],
-    [Duration]</i></color>\n<color=#5CE5FF><b>[UPGRADE]</b></color>\n<color=#FFE02E><b>[+]</b></color>
-    Damage\n<color=#FFE02E><b>[+]</b></color> Size\n\nCooldown: <b>30s</b>\n\n- Hits
-    apply Plasma Tags that explode after a short delay or remain on the ground if
-    the target dies first. \n"
+  skillDescription: '<color=#FF3131><b>[Attack]</b></color>
+
+    <size=3.5><color=#adadad><i>[AOE],
+    [Duration]</i></color>
+
+    <color=#5CE5FF><b>[UPGRADE]</b></color>
+
+    <color=#FFE02E><b>[++]</b></color>
+    Damage
+
+
+    Cooldown: <b>30s</b>
+
+
+    - Hits apply Plasma Tags that explode
+    after a short delay or detonate instantly if the target dies first.
+
+'
   previousSkillData: {fileID: 11400000, guid: 97556429471dc364c829889cccefdd49, type: 2}
   nextSkillDataUpgrade: {fileID: 11400000, guid: 0ef5a1cf167048042a78fd06cda9887f, type: 2}
   level: 3
@@ -54,6 +67,6 @@ MonoBehaviour:
   tagDuration: 5
   bombCountdown: 3
   damageActiveDuration: 0.35
-  cleanupDelay: 0.1
+  cleanupDelay: 1
   baseDamage: 50
   damageMultiplier: 100
