@@ -274,7 +274,7 @@ namespace GameControl.Controller
                 timer.ScheduleLoopingFromNow("PATTERN::ADD", CurrentMap.endlessMode, map.addPatternInterval, () => _enemyPatternController.AddRandomPatterns(map.amountToAdd));
 
             // ---- SPAWNER ----
-            if (map.decreaseInterval > 0f)
+            if (map.canGrowth && map.decreaseInterval > 0f)
                 timer.ScheduleLoopingFromNow("SPAWNER::INTERVAL", CurrentMap.endlessMode, map.decreaseInterval, () => UpdateDefaultSpawnInterval(), triggerWhenSkip:false);
 
             if (map.intervalIncreaseEnemyPoint > 0f)

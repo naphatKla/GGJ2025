@@ -533,7 +533,7 @@ namespace GameControl.SO
         [HideIf(nameof(enemySpawnMode), EnemySpawnMode.Conditions)]
         [InfoBox("Pattern (และสกิล Wornhole) สุ่มศัตรูได้ทุกตัวในแมพ ศัตรูที่ไม่อยู่ในลิสต์ก็เกิดได้", InfoMessageType.None,
             "@this.enemySpawnMode != EnemySpawnMode.Conditions && this.patternEnemyPool == PatternEnemyPool.AllMapEnemies")]
-        [InfoBox("Pattern (และสกิล Wornhole) หยิบได้เฉพาะศัตรูที่อยู่ในลิสต์ Sequential", InfoMessageType.None,
+        [InfoBox("Pattern (และสกิล Wornhole) หยิบได้เฉพาะศัตรูที่อยู่ในลิสต์ Sequential\nPattern เล่นทุกครั้ง: ถ้าตัวในลิสต์ยังไม่ผ่าน Spawn Condition ของแมพ จะข้าม Condition ให้ (ไม่ข้าม Pattern)", InfoMessageType.None,
             "@this.enemySpawnMode != EnemySpawnMode.Conditions && this.patternEnemyPool == PatternEnemyPool.OnlyScheduledEnemies")]
         [InfoBox("Pattern ไม่เกิดศัตรูเลยตอน Sequential ทำงาน", InfoMessageType.None,
             "@this.enemySpawnMode != EnemySpawnMode.Conditions && this.patternEnemyPool == PatternEnemyPool.NoEnemies")]
@@ -592,6 +592,54 @@ namespace GameControl.SO
         [ListDrawerSettings(ShowIndexLabels = true, ShowPaging = false, IsReadOnly = true)]
         [PropertyTooltip("คลิกชื่อไฟล์เพื่อเปิด milestone นั้นไปแก้ที่ Enemy Spawn (Milestone)")]
         private List<Challenge.ChallengeDataSO> MilestoneAssets => EnemySpawnEditorLookup.MilestonesForMap(this);
+        #endregion
+
+        #region Balance Preview
+        [FoldoutGroup("Balance Preview")]
+        [InfoBox("จำลอง 1 รอบเกมไว้ปรับบาลานซ์ (อ่านอย่างเดียว ไม่แก้ข้อมูลใดๆ)\n"
+                 + "รวมค่าจากไฟล์นี้ + Rush Data + milestone ที่เลือก ตามลำดับที่โค้ดจริงทำงาน\n"
+                 + "แบ่งเป็นช่วงๆ ตรงที่มีอะไรเปลี่ยน (ศัตรู/Pattern/Map Event เริ่มหรือหยุด, Rush, ส่งต่อ milestone)\n"
+                 + "แต่ละช่วงบอก: ตัวสุ่มเกิดทุกกี่วิ, % ของแต่ละตัว (แถบเขียว = ต้นช่วง, ขีดเหลือง = ปลายช่วง), "
+                 + "ตารางเกิด, Enemy Point, Pattern เล่นกี่โมง กี่อัน ได้ศัตรูกี่ตัว, Map Event ทอยกี่โมง สุ่มได้อะไร\n"
+                 + "กล่องแดง = Rush | กล่องฟ้า = หลังส่งต่อให้โหมดแมพ | กล่องเหลือง = ค่าที่น่าจะตั้งผิด\n"
+                 + "ผลการสุ่มและการฆ่าศัตรูรู้ได้ตอนเล่นเท่านั้น จึงแสดงเป็นโอกาส/กฎแทน")]
+        [NonSerialized, ShowInInspector, InlineProperty, HideLabel]
+        private MapBalancePreview.Options _balanceOptions = new();
+
+        [ButtonGroup("Balance Preview/Buttons")]
+        [Button("Copy as Text")]
+        [PropertyTooltip("คัดลอกทั้งหมดเป็นข้อความ ไปวางใน Notepad / Google Sheet / Discord")]
+        private void CopyBalancePreview() => GUIUtility.systemCopyBuffer = MapBalancePreview.ToText(MapBalancePreview.Build(this, _balanceOptions));
+
+        [ButtonGroup("Balance Preview/Buttons")]
+        [Button("Log to Console")]
+        [PropertyTooltip("พิมพ์ทั้งหมดลง Console")]
+        private void LogBalancePreview() => Debug.Log(MapBalancePreview.ToText(MapBalancePreview.Build(this, _balanceOptions)), this);
+
+        [FoldoutGroup("Balance Preview")]
+        [OnInspectorGUI]
+        private void DrawBalancePreview()
+        {
+#if UNITY_EDITOR
+            // Rebuilt at most twice a second (the Inspector repaints far more often than that).
+            double now = UnityEditor.EditorApplication.timeSinceStartup;
+            string key = _balanceOptions.Key;
+            if (_balanceReport == null || key != _balanceKey || now - _balanceTime > 0.5)
+            {
+                _balanceReport = MapBalancePreview.Build(this, _balanceOptions);
+                _balanceKey = key;
+                _balanceTime = now;
+            }
+            MapBalancePreview.DrawGUI(_balanceReport, _balanceUi);
+#endif
+        }
+
+#if UNITY_EDITOR
+        [NonSerialized] private MapBalancePreview.Report _balanceReport;
+        [NonSerialized] private string _balanceKey;
+        [NonSerialized] private double _balanceTime;
+        [NonSerialized] private MapBalancePreview.UiState _balanceUi = new();
+#endif
         #endregion
         
         #region Pattern Setting
