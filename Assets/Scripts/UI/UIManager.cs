@@ -173,6 +173,7 @@ namespace UI
         {
             await UniTask.Yield(PlayerLoopTiming.LastPostLateUpdate);
             if (!_allLoad) _allLoad = true;
+            OpenPanelsQueuedFromPreviousScene();
         }
         
 
@@ -461,6 +462,31 @@ namespace UI
         {
             CloseAllPanels();
             menuSceneLoader.PlayFeedbacks();
+        }
+
+        /// <summary>
+        /// กลับเมนูแล้วเปิดหน้าเลือกด่านของโหมดที่เพิ่งเล่น (Survival / Endless)
+        /// </summary>
+        public void NextToMapSelection(bool endless)
+        {
+            _openOnNextScene = new[]
+            {
+                UIPanelType.GameMode,
+                endless ? UIPanelType.EndlessMode : UIPanelType.SurvivalMode
+            };
+            BackMenu();
+        }
+
+        // เก็บข้ามซีน เพราะ UIManager ของแต่ละซีนเป็นคนละตัว
+        private static UIPanelType[] _openOnNextScene;
+
+        private void OpenPanelsQueuedFromPreviousScene()
+        {
+            var queued = _openOnNextScene;
+            if (queued == null) return;
+            if (!TryGetPanel(queued[queued.Length - 1], out _)) return; // ยังไม่ใช่ซีนเมนู
+            _openOnNextScene = null;
+            foreach (var type in queued) OpenPanel(type).Forget();
         }
 
         public void LoadToGamePlayScene()

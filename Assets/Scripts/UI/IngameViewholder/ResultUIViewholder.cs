@@ -7,8 +7,10 @@ using Characters.Data;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using GameControl.Controller;
+using GameControl.SO;
 using Player;
 using TMPro;
+using UI.MapSelection;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -25,6 +27,7 @@ namespace UI.IngameViewholder
     {
         [SerializeField] private Button restartButton;
         [SerializeField] private Button backButton;
+        [SerializeField] private Button nextButton;
         [SerializeField] private TMP_Text middleText;
         [SerializeField] private TMP_Text scoreText;
         [SerializeField] private TMP_Text summaryText;
@@ -57,6 +60,63 @@ namespace UI.IngameViewholder
             
             backButton?.onClick.RemoveAllListeners();
             backButton?.onClick.AddListener(BackClick);
+
+            nextButton?.onClick.RemoveAllListeners();
+            nextButton?.onClick.AddListener(NextClick);
+        }
+
+        private void NextClick()
+        {
+            var map = GameStateController.Instance.CurrentMap;
+            var profile = ActiveProfileService.Instance?.CurrentProfile;
+
+            // ไม่มี Milestone ถัดไปให้เล่น -> เลือกด่านถัดไปไว้ให้เลย
+            if (profile != null && !HasNextMilestoneUnlocked(profile, map))
+            {
+                var nextMap = GetNextMapUnlocked(profile, map);
+                if (nextMap != null) profile.selectedMapIds = nextMap.mapId;
+            }
+
+            UIManager.Instance.CloseAllPanels();
+            UIManager.Instance.NextToMapSelection(map != null && map.endlessMode);
+        }
+
+        /// <summary>
+        /// โชว์ Next เมื่อชนะ หรือ (แม้แพ้) Milestone ถัดไปของด่านนี้ปลดแล้ว หรือด่านถัดไปปลดแล้ว.
+        /// รอ 1 เฟรม เพราะ SummaryState เปิดหน้านี้ก่อนจะเซฟผล / ปลด Achievement (ปลดด่าน)
+        /// </summary>
+        private async UniTaskVoid RefreshNextButton()
+        {
+            if (!nextButton) return;
+            nextButton.gameObject.SetActive(false);
+
+            await UniTask.NextFrame(PlayerLoopTiming.Update, this.GetCancellationTokenOnDestroy());
+
+            var map = GameStateController.Instance.CurrentMap;
+            var profile = ActiveProfileService.Instance?.CurrentProfile;
+            bool show = GameStateController.Instance.gameResult == EndResult.Completed ||
+                        (profile != null && map != null &&
+                         (HasNextMilestoneUnlocked(profile, map) || GetNextMapUnlocked(profile, map) != null));
+            if (nextButton) nextButton.gameObject.SetActive(show);
+        }
+
+        private static bool HasNextMilestoneUnlocked(PlayerData profile, MapDataSO map)
+        {
+            if (map == null || !profile.MapStats.TryGetValue(map.mapId, out var stat)) return false;
+            int played = stat.SelectedLevelMilestone;
+            return played < map.MaxMilestoneLevel && stat.MaxLevelUnlockMilestone > played;
+        }
+
+        private static MapDataSO GetNextMapUnlocked(PlayerData profile, MapDataSO map)
+        {
+            var list = MapSelectionSender.Instance.currentmapSelectionDataContainer?.mapSelectionList;
+            if (map == null || list == null) return null;
+
+            int index = list.FindIndex(m => m != null && m.mapId == map.mapId);
+            if (index < 0 || index + 1 >= list.Count) return null;
+
+            var next = list[index + 1];
+            return next != null && profile.UnlockedMaps.Contains(next.mapId) ? next : null;
         }
 
         private void RestartClick()
@@ -93,7 +153,9 @@ namespace UI.IngameViewholder
             summaryText.text = GroupStatus(dataStatus).ToString();
             newRecordText.gameObject.SetActive(false);
             ShowResultFeedback(dataStatus).Forget();
-            
+
+            RefreshNextButton().Forget();
+
             switch (GameStateController.Instance.gameResult)
             {
                 case EndResult.Completed:
@@ -234,4 +296,4 @@ namespace UI.IngameViewholder
         }
 
     }
-}
+}
