@@ -56,6 +56,11 @@ MonoBehaviour:
       rushMoveSpeed: 0
       rushSetChance: 0
   timeModify: 0
+  overridePlayAllDecrease: 0
+  playAllCanDecrease: 1
+  playAllDecreaseInterval: 60
+  playAllDecreaseRate: 1
+  playAllDecreaseMinimum: 5
   overrideMapSpawn: 1
   spawnFlow: 0
   spawnHandOver: 0
@@ -74,10 +79,10 @@ MonoBehaviour:
     intervalMax: 15
     spawnOnStart: 1
     amountMin: 1
-    amountMax: 50
+    amountMax: 1
     burstDelay: 0
     maxTotal: 0
-    maxAlive: 999
+    maxAlive: 50
     fillToMaxEachWave: 0
     useWaveChance: 0
     chance: 1.5
@@ -102,7 +107,7 @@ MonoBehaviour:
     amountMax: 1
     burstDelay: 0
     maxTotal: 0
-    maxAlive: 999
+    maxAlive: 50
     fillToMaxEachWave: 0
     useWaveChance: 0
     chance: 100
@@ -127,7 +132,7 @@ MonoBehaviour:
     amountMax: 1
     burstDelay: 0
     maxTotal: 0
-    maxAlive: 999
+    maxAlive: 50
     fillToMaxEachWave: 0
     useWaveChance: 0
     chance: 100
@@ -152,7 +157,7 @@ MonoBehaviour:
     amountMax: 1
     burstDelay: 0
     maxTotal: 0
-    maxAlive: 999
+    maxAlive: 50
     fillToMaxEachWave: 0
     useWaveChance: 0
     chance: 100
@@ -177,7 +182,7 @@ MonoBehaviour:
     amountMax: 1
     burstDelay: 0
     maxTotal: 0
-    maxAlive: 999
+    maxAlive: 50
     fillToMaxEachWave: 0
     useWaveChance: 0
     chance: 100
