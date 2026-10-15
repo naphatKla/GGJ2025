@@ -8,8 +8,8 @@ using Player;
 
 namespace UI.Leaderboard
 {
-    [RequireComponent(typeof(LoopScrollRect))]
-    public class LeaderboardItemPresenter : MonoBehaviour, LoopScrollPrefabSource, LoopScrollDataSource
+    [RequireComponent(typeof(LoopScrollRectBase))]
+    public class LeaderboardItemPresenter : MonoBehaviour, LoopScrollPrefabSource, LoopScrollMultiDataSource
     {
         private static readonly List<LeaderboardItemPresenter> s_instances = new();
 
@@ -55,17 +55,21 @@ namespace UI.Leaderboard
         private readonly Stack<Transform> _poolTop3    = new();
         private readonly Stack<Transform> _poolDefault = new();
 
-        private LoopScrollRect _ls;
+        private LoopScrollRectBase _ls;
         private bool _isFetching;
         private bool _refreshQueued;
         private bool _scrollToTopPending;
+        private bool _debugFakeActive;
 
 
         void Awake()
         {
-            _ls = GetComponent<LoopScrollRect>();
+            _ls = GetComponent<LoopScrollRectBase>();
             _ls.prefabSource = this;
-            _ls.dataSource   = this;
+            // ต้องเป็น LoopVerticalScrollRectMulti: ตัวธรรมดาเอา Cell จาก Temp Pool มาใช้ซ้ำโดยไม่สนว่าเป็น Prefab ไหน
+            // -> Cell TOP1-3 (มี VFX) ไปโผล่ที่อันดับอื่นตอน Scroll
+            if (_ls is LoopScrollRectMulti multi) multi.dataSource = this;
+            else Debug.LogError("[Leaderboard] Use LoopVerticalScrollRectMulti so Top1-3 cells are not reused for other ranks", this);
             _ls.totalCount   = 0;
             _ls.RefillCells();
             SetupCurrentRankText();
@@ -93,6 +97,7 @@ namespace UI.Leaderboard
 
         public void RefreshNow()
         {
+            _debugFakeActive = false;
             if (_isFetching)
             {
                 _refreshQueued = true;
@@ -128,6 +133,7 @@ namespace UI.Leaderboard
                 }
 
                 Debug.Log($"[Leaderboard] PlayFab fetch success: {snapshot.Entries.Count}/{snapshot.EntryCount} rows");
+                if (_debugFakeActive) { SetStatus(""); return; } // กำลังทดสอบด้วยข้อมูลปลอม - อย่าทับ (กด Refresh เพื่อกลับข้อมูลจริง)
                 var list = new List<LeaderboardItemModel>(snapshot.Entries.Count);
 
                 foreach (var entry in snapshot.Entries)
@@ -304,6 +310,38 @@ namespace UI.Leaderboard
             }
         }
 
+
+#if UNITY_EDITOR
+        // ---------- Debug (Editor only) ----------
+        [Sirenix.OdinInspector.FoldoutGroup("Debug (Editor only)")]
+        [Tooltip("จำนวนแถวปลอมที่จะใส่ (ทดสอบ Scroll / VFX / ชื่อยาว)")]
+        public int debugFakeCount = 60;
+
+        [Sirenix.OdinInspector.FoldoutGroup("Debug (Editor only)")]
+        [Tooltip("อันดับที่จะให้เป็นตัวเอง (0 = ไม่ติดอันดับ)")]
+        public int debugMyRank = 25;
+
+        [Sirenix.OdinInspector.FoldoutGroup("Debug (Editor only)")]
+        [Sirenix.OdinInspector.Button("Fill Fake Entries (Play Mode)")]
+        [Sirenix.OdinInspector.EnableIf("@UnityEngine.Application.isPlaying")]
+        private void DebugFillFakeEntries()
+        {
+            string[] names = { "Nami", "Titanoboa", "faceKak", "Lnwza", "SuperLongPlayerName12345", "kla", "sad", "BigHeart", "NeonRider", "DashKing" };
+            var list = new List<LeaderboardItemModel>(debugFakeCount);
+            float score = 2_400_000f;
+            for (int i = 0; i < debugFakeCount; i++)
+            {
+                bool mine = i + 1 == debugMyRank;
+                var title = mine ? (ActiveProfileService.Instance?.CurrentProfile?.DisplayName ?? "Me") : $"{names[i % names.Length]}{i + 1}";
+                list.Add(new LeaderboardItemModel(title, Mathf.Round(score), mine));
+                score *= UnityEngine.Random.Range(0.8f, 0.97f);
+            }
+            _debugFakeActive = true;
+            ResetItems(list, refill: true);
+            if (currentRankText) currentRankText.text = BuildCurrentRankText(debugMyRank > 0 && debugMyRank <= debugFakeCount ? debugMyRank : -1,
+                ActiveProfileService.Instance?.CurrentProfile?.DisplayName);
+        }
+#endif
 
         // ---------- Helpers ----------
         private ItemPrefabKind GetKindForIndex(int index)

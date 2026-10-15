@@ -240,6 +240,7 @@ Shader "/_Kass_/SH_VFX_SimplePremult"
 				float4 ase_color : COLOR;
 				float4 ase_texcoord4 : TEXCOORD4;
 				float4 ase_texcoord5 : TEXCOORD5;
+				float3 vfxClipWorldPos : TEXCOORD7; // VFX UI Clip
 				UNITY_VERTEX_INPUT_INSTANCE_ID
 				UNITY_VERTEX_OUTPUT_STEREO
 			};
@@ -296,6 +297,10 @@ Shader "/_Kass_/SH_VFX_SimplePremult"
 				float _TessMaxDisp;
 			#endif
 			CBUFFER_END
+			// VFX UI Clip: set per-renderer by ParticleRectClip (MaterialPropertyBlock). 0 = off (default)
+			float _VfxClipEnabled;
+			float4x4 _VfxClipMatrix;
+			float4 _VfxClipRect;
 			sampler2D _ColorTexture;
 			sampler2D _GradientMap;
 			sampler2D _GradientShape;
@@ -359,6 +364,7 @@ Shader "/_Kass_/SH_VFX_SimplePremult"
 
 				float3 positionWS = TransformObjectToWorld( v.vertex.xyz );
 				float4 positionCS = TransformWorldToHClip( positionWS );
+				o.vfxClipWorldPos = positionWS;
 
 				#if defined(ASE_NEEDS_FRAG_WORLD_POSITION)
 				o.worldPos = positionWS;
@@ -544,6 +550,13 @@ Shader "/_Kass_/SH_VFX_SimplePremult"
 				#ifdef ASE_FOG
 					Color = MixFog( Color, IN.fogFactor );
 				#endif
+
+				if ( _VfxClipEnabled > 0.5 )
+				{
+					float2 vfxLocal = mul( _VfxClipMatrix, float4( IN.vfxClipWorldPos, 1 ) ).xy;
+					float2 vfxInside = step( _VfxClipRect.xy, vfxLocal ) * step( vfxLocal, _VfxClipRect.zw );
+					clip( vfxInside.x * vfxInside.y - 0.5 );
+				}
 
 				return half4( Color, Alpha );
 			}

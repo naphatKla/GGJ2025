@@ -33,7 +33,13 @@ namespace UI.Leaderboard
         private void CacheDefaults()
         {
             if (_hasDefaults) return;
-            if (titleText) _titleDefault = titleText.color;
+            if (titleText)
+            {
+                _titleDefault = titleText.color;
+                // ชื่อยาวให้ตัดเป็น "..." ในบรรทัดเดียว ไม่ล้นลงบรรทัดใหม่
+                titleText.enableWordWrapping = false;
+                titleText.overflowMode = TextOverflowModes.Ellipsis;
+            }
             if (scoreText) _scoreDefault = scoreText.color;
             _hasDefaults = true;
         }
