@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1b264ad2925b4bc39fd7b68f2f8c1e4c, type: 3}
-  m_Name: BombCaller-KeepDistanceStateData
+  m_Name: DoomCaller-KeepDistanceStateData
   m_EditorClassIdentifier: 
   serializationData:
     SerializedFormat: 2
@@ -30,10 +30,10 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
-  detectDistance: 20
-  preferredMinDistance: 17
-  preferredMaxDistance: 17
+  detectDistance: 30
+  preferredMinDistance: 27
+  preferredMaxDistance: 30
   fleeDistance: 5
   repositionWhenTooFar: 1
-  strafeWhileInRange: 0
+  strafeWhileInRange: 1
   strafeDirection: 1

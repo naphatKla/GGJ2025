@@ -9,8 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1b264ad2925b4bc39fd7b68f2f8c1e4c, type: 3}
-  m_Name: DoomCaller-KeepDistanceStateData
+  m_Script: {fileID: 11500000, guid: 8c05e0d7863c43d3a111568266ba98aa, type: 3}
+  m_Name: LV9_DamageResistance_Effect
   m_EditorClassIdentifier: 
   serializationData:
     SerializedFormat: 2
@@ -21,19 +21,20 @@ MonoBehaviour:
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
     SerializationNodes:
-    - Name: _skillRuntime
+    - Name: _effectType
       Entry: 7
       Data: 0|System.RuntimeType, mscorlib
     - Name: 
       Entry: 1
-      Data: Characters.Controllers.EnemyStates.SummonerKeepDistanceState, Assembly-CSharp
+      Data: Characters.StatusEffectSystems.StatusEffects.DamageResistanceEffect,
+        Assembly-CSharp
     - Name: 
       Entry: 8
       Data: 
-  detectDistance: 15
-  preferredMinDistance: 12
-  preferredMaxDistance: 15
-  fleeDistance: 5
-  repositionWhenTooFar: 1
-  strafeWhileInRange: 0
-  strafeDirection: 1
+  icon: {fileID: 0}
+  effectName: 6
+  description: Reduce incoming damage. Heavy damage still drains Break Point.
+  level: 1
+  defaultDuration: 1
+  isDebuff: 0
+  resistancePercentage: 90
