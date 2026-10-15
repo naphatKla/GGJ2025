@@ -38,6 +38,9 @@ namespace Characters.SkillSystems
 
         public event Action<BaseSkillDataSo, int> OnSkillPerform;
 
+        /// <summary>แจ้ง UI เมื่อจำนวนสล็อตเปลี่ยน (TotalSlots) เช่นตอน AssignData</summary>
+        public event Action OnSlotCountChanged;
+
         protected BaseSkillDataSo primarySkillData;
         protected BaseSkillDataSo secondarySkillData;
         private int autoSkillSlot;
@@ -150,6 +153,7 @@ namespace Characters.SkillSystems
 
             EnsureMultiplierListSize();
             ResetToDefaultSkill();
+            OnSlotCountChanged?.Invoke();
         }
 
         public virtual void AssignData(BaseController owner, BaseCharacterDataSo dataSO)

@@ -8,10 +8,12 @@ namespace UI.Leaderboard
     {
         public string title;
         public float score;
-        public LeaderboardItemModel(string t,float s)
+        public bool isMine;
+        public LeaderboardItemModel(string t,float s, bool mine = false)
         {
             title = t;
             score = s;
+            isMine = mine;
         }
     }
 

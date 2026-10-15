@@ -35,6 +35,8 @@ namespace UI.Leaderboard
         public TMP_Text statusText;
         public TMP_Text currentRankText;
         public Button refreshButton;
+        [Tooltip("สีอันดับของตัวเอง (#4) ในบรรทัด Current Rank")]
+        public Color myNameColor = new Color(1f, 0.84f, 0f, 1f);
 
         [Header("Options")]
         public int maxEntries = 100;
@@ -66,6 +68,7 @@ namespace UI.Leaderboard
             _ls.dataSource   = this;
             _ls.totalCount   = 0;
             _ls.RefillCells();
+            SetupCurrentRankText();
         }
 
         void OnEnable()
@@ -128,7 +131,7 @@ namespace UI.Leaderboard
                 var list = new List<LeaderboardItemModel>(snapshot.Entries.Count);
 
                 foreach (var entry in snapshot.Entries)
-                    list.Add(new LeaderboardItemModel(entry.DisplayName, entry.Score));
+                    list.Add(new LeaderboardItemModel(entry.DisplayName, entry.Score, entry.IsMine));
 
                 if (!sortDescending)
                     list.Reverse();
@@ -137,10 +140,7 @@ namespace UI.Leaderboard
 
                 if (currentRankText)
                 {
-                    var maxShown = Mathf.Clamp(maxEntries, 1, 100);
-                    currentRankText.text = snapshot.CurrentPlayerRank > 0
-                        ? $"YOUR RANK #{snapshot.CurrentPlayerRank}"
-                        : $"NOT IN TOP {maxShown}";
+                    currentRankText.text = BuildCurrentRankText(snapshot.CurrentPlayerRank, profile?.DisplayName);
                 }
 
                 SetStatus("");
@@ -161,6 +161,34 @@ namespace UI.Leaderboard
                     RefreshNow();
                 }
             }
+        }
+
+        /// <summary>
+        /// บรรทัดเดียว: "#4  asdas" (อันดับสีทอง + ชื่อ) / ไม่ติดอันดับ: "NOT IN TOP 100  asdas" (ตัวเล็กจางๆ ข้างหน้า)
+        /// </summary>
+        private string BuildCurrentRankText(int rank, string displayName)
+        {
+            var maxShown = Mathf.Clamp(maxEntries, 1, 100);
+            var rankColor = ColorUtility.ToHtmlStringRGB(myNameColor);
+
+            if (string.IsNullOrWhiteSpace(displayName))
+                return rank > 0 ? $"YOUR RANK <color=#{rankColor}>#{rank}</color>" : $"NOT IN TOP {maxShown}";
+
+            var nameTag = $"<noparse>{displayName.Trim()}</noparse>";
+            var rankTag = rank > 0
+                ? $"<color=#{rankColor}>#{rank}</color>"
+                : $"<size=60%><alpha=#99>NOT IN TOP {maxShown}</size><alpha=#FF>";
+            return $"{rankTag}  {nameTag}";
+        }
+
+        private void SetupCurrentRankText()
+        {
+            if (!currentRankText) return;
+            // บรรทัดเดียว ชื่อยาวให้หดตัวอักษรลงแทนล้น/ขึ้นบรรทัดใหม่
+            currentRankText.enableWordWrapping = false;
+            currentRankText.fontSizeMax = currentRankText.fontSize;
+            currentRankText.fontSizeMin = Mathf.Min(16f, currentRankText.fontSize);
+            currentRankText.enableAutoSizing = true;
         }
 
         private void SetStatus(string msg)

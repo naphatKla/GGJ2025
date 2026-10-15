@@ -193,6 +193,7 @@ namespace Characters.UIDisplay
             skillSystem.OnSkillPerform += SkillPerfrom;
             skillSystem.OnSlotCooldownSpeedChanged += OverloopFeedback;
             skillSystem.OnSkillPerformFail += NotifySkillPerformFail;
+            skillSystem.OnSlotCountChanged += RefreshSkillSlotVisibility;
 
             combatSystem.OnDealDamage += UpdateDamageText;
             scoreSystem.OnScoreChange += UpdateScoreUI;
@@ -242,6 +243,7 @@ namespace Characters.UIDisplay
             skillSystem.OnSkillCooldownReset -= ResetSkillSlot;
             skillSystem.OnSlotCooldownSpeedChanged -= OverloopFeedback;
             skillSystem.OnSkillPerformFail -= NotifySkillPerformFail;
+            skillSystem.OnSlotCountChanged -= RefreshSkillSlotVisibility;
 
             combatSystem.OnDealDamage -= UpdateDamageText;
             scoreSystem.OnScoreChange -= UpdateScoreUI;
@@ -669,10 +671,13 @@ namespace Characters.UIDisplay
         {
             if (skillSlotModel == null) return;
 
+            // สล็อตที่เกิน TotalSlots = ยังไม่ปลดจาก Permanent Upgrade (Auto Skill Slot) -> ทำให้มืด
+            int unlockedSlots = skillSystem != null ? skillSystem.TotalSlots : skillSlotModel.Count;
             for (int i = 0; i < skillSlotModel.Count; i++)
             {
                 if (skillSlotModel[i] == null) continue;
                 skillSlotModel[i].gameObject.SetActive(true);
+                skillSlotModel[i].SetLocked(i >= unlockedSlots);
             }
         }
 

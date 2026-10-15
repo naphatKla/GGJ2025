@@ -27,9 +27,35 @@ namespace UI.IngameViewholder
         const float epsilon = 0.0001f;
         private float? _currentKey = null;
         
+        [Title("Locked (ยังไม่ปลดจาก Upgrade)")]
+        [Tooltip("สีที่คูณทับทุก Graphic ในสล็อตตอนยังไม่ปลด ยิ่งต่ำยิ่งมืด")]
+        [SerializeField] private Color lockedTint = new Color(0.3f, 0.3f, 0.3f, 1f);
+
+        private Graphic[] _graphics;
+        private Color[] _originalColors;
+        private bool _isLocked;
+
         private void Awake()
         {
             BuildSortedKeys();
+        }
+
+        public void SetLocked(bool locked)
+        {
+            if (_graphics == null)
+            {
+                if (!locked) return; // ยังไม่เคยมืด ไม่ต้องคืนสี
+                _graphics = GetComponentsInChildren<Graphic>(true);
+                _originalColors = _graphics.Select(g => g.color).ToArray();
+            }
+            if (_isLocked == locked) return;
+            _isLocked = locked;
+
+            for (int i = 0; i < _graphics.Length; i++)
+            {
+                if (!_graphics[i]) continue;
+                _graphics[i].color = locked ? _originalColors[i] * lockedTint : _originalColors[i];
+            }
         }
 
         public void UpdateLevelText(float level, BaseSkillDataSo skill)
