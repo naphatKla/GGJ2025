@@ -16,51 +16,51 @@ MonoBehaviour:
   - type: 0
     nameUpgrade: Max Health
     iconUpgrade: {fileID: 21300000, guid: aae83e6ad170a924e99ed7295cca32f5, type: 3}
-    descriptionUpgrade: max health
+    descriptionUpgrade: Increase max health
     unit: 
     lockDescriptionUpgrade: 
     mode: 0
     levels:
-    - nanoCost: 50
-      value: 5
     - nanoCost: 100
       value: 5
-    - nanoCost: 200
+    - nanoCost: 300
+      value: 5
+    - nanoCost: 600
       value: 10
-    - nanoCost: 400
+    - nanoCost: 1200
       value: 10
-    - nanoCost: 800
+    - nanoCost: 2400
       value: 15
-    - nanoCost: 1600
+    - nanoCost: 4800
       value: 15
-    - nanoCost: 3200
+    - nanoCost: 9600
       value: 20
-    - nanoCost: 6400
+    - nanoCost: 19200
       value: 20
   - type: 1
     nameUpgrade: Speed
     iconUpgrade: {fileID: 21300000, guid: 2d452d4e3e393d148a61d2ce75f98bad, type: 3}
-    descriptionUpgrade: move speed
+    descriptionUpgrade: Increase base move speed
     unit: 
     lockDescriptionUpgrade: 
     mode: 0
     levels:
     - nanoCost: 100
       value: 1
-    - nanoCost: 200
-      value: 1
     - nanoCost: 400
       value: 1
     - nanoCost: 800
-      value: 2
+      value: 1
     - nanoCost: 1600
-      value: 2
+      value: 1
     - nanoCost: 3200
-      value: 3
+      value: 1
+    - nanoCost: 6400
+      value: 1
   - type: 2
     nameUpgrade: Damage
     iconUpgrade: {fileID: 21300000, guid: 6fb7d5ba6eb8b134f921a279385c4786, type: 3}
-    descriptionUpgrade: damage
+    descriptionUpgrade: Increase base damage
     unit: 
     lockDescriptionUpgrade: 
     mode: 0
@@ -84,7 +84,7 @@ MonoBehaviour:
   - type: 3
     nameUpgrade: Critical Rate
     iconUpgrade: {fileID: 21300000, guid: 5b5f30b1fe8e29e4a950a2126982e7ca, type: 3}
-    descriptionUpgrade: critical chance
+    descriptionUpgrade: Increase Critical chance
     unit: '%'
     lockDescriptionUpgrade: 
     mode: 1
@@ -108,29 +108,29 @@ MonoBehaviour:
   - type: 4
     nameUpgrade: Critical Damage
     iconUpgrade: {fileID: 21300000, guid: ee954a87ce6315b489375a00aa0961ae, type: 3}
-    descriptionUpgrade: critical damage
+    descriptionUpgrade: Increase Critical damage
     unit: '%'
     lockDescriptionUpgrade: 
     mode: 1
     levels:
     - nanoCost: 100
       value: 25
-    - nanoCost: 200
+    - nanoCost: 300
       value: 25
-    - nanoCost: 400
+    - nanoCost: 600
       value: 25
-    - nanoCost: 800
+    - nanoCost: 1200
+      value: 25
+    - nanoCost: 2400
       value: 50
-    - nanoCost: 1600
+    - nanoCost: 4800
       value: 50
-    - nanoCost: 3200
-      value: 75
-    - nanoCost: 6400
-      value: 100
+    - nanoCost: 9600
+      value: 50
   - type: 5
     nameUpgrade: Life Steal Chance
     iconUpgrade: {fileID: 21300000, guid: 0713461787bde37499473f76ba2c7698, type: 3}
-    descriptionUpgrade: life steal chance
+    descriptionUpgrade: Increase Life steal chance
     unit: '%'
     lockDescriptionUpgrade: 
     mode: 1
@@ -152,7 +152,7 @@ MonoBehaviour:
   - type: 6
     nameUpgrade: Life Steal Effective
     iconUpgrade: {fileID: 21300000, guid: 509684c53b6d43e4dbbe070632f0abb1, type: 3}
-    descriptionUpgrade: life steal effective
+    descriptionUpgrade: Increase Life steal effective
     unit: '%'
     lockDescriptionUpgrade: 
     mode: 1
@@ -174,58 +174,56 @@ MonoBehaviour:
   - type: 7
     nameUpgrade: Exp Multiply
     iconUpgrade: {fileID: 21300000, guid: 402c8eb1ade30ac49b4d86937d63e6c7, type: 3}
-    descriptionUpgrade: "gain more EXP \nfrom the orbs"
+    descriptionUpgrade: Gain more EXP from the orbs
     unit: '%'
     lockDescriptionUpgrade: 
     mode: 1
     levels:
     - nanoCost: 150
-      value: 10
-    - nanoCost: 300
-      value: 10
-    - nanoCost: 600
-      value: 20
-    - nanoCost: 1200
-      value: 20
-    - nanoCost: 2400
-      value: 40
-    - nanoCost: 4800
-      value: 50
-    - nanoCost: 9600
-      value: 50
+      value: 2
+    - nanoCost: 450
+      value: 3
+    - nanoCost: 900
+      value: 3
+    - nanoCost: 1800
+      value: 5
+    - nanoCost: 3600
+      value: 5
+    - nanoCost: 7200
+      value: 5
+    - nanoCost: 14400
+      value: 7
   - type: 8
     nameUpgrade: ' Pick Up Range'
     iconUpgrade: {fileID: 21300000, guid: a3b75a011a256274e833655764834aa5, type: 3}
-    descriptionUpgrade: pickup range
+    descriptionUpgrade: Increase pickup range
     unit: 
     lockDescriptionUpgrade: 
     mode: 0
     levels:
-    - nanoCost: 30
+    - nanoCost: 100
       value: 1
-    - nanoCost: 60
+    - nanoCost: 200
+      value: 1
+    - nanoCost: 400
       value: 2
-    - nanoCost: 120
+    - nanoCost: 800
       value: 2
-    - nanoCost: 240
+    - nanoCost: 1600
       value: 3
-    - nanoCost: 480
+    - nanoCost: 3200
+      value: 3
+    - nanoCost: 6400
       value: 4
-    - nanoCost: 960
-      value: 5
-    - nanoCost: 1920
-      value: 5
   - type: 9
     nameUpgrade: Invincible Time
     iconUpgrade: {fileID: 21300000, guid: 03020b41ee2be3148bdf17165c8225c8, type: 3}
-    descriptionUpgrade: invincibility time on hit
+    descriptionUpgrade: Extends the invincibility time after taking damage
     unit: s
     lockDescriptionUpgrade: 
     mode: 0
     levels:
-    - nanoCost: 200
-      value: 0.1
-    - nanoCost: 400
+    - nanoCost: 300
       value: 0.1
     - nanoCost: 800
       value: 0.1
@@ -233,10 +231,12 @@ MonoBehaviour:
       value: 0.1
     - nanoCost: 3200
       value: 0.1
+    - nanoCost: 6400
+      value: 0.1
   - type: 10
-    nameUpgrade: Auto Skill Slot
+    nameUpgrade: Weapon Slot
     iconUpgrade: {fileID: 21300000, guid: 402c8eb1ade30ac49b4d86937d63e6c7, type: 3}
-    descriptionUpgrade: Auto Skill Slot
+    descriptionUpgrade: Increase Weapons Slot
     unit: 
     lockDescriptionUpgrade: 
     mode: 0
