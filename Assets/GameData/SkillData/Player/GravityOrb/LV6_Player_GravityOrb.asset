@@ -42,17 +42,17 @@ MonoBehaviour:
     <color=#FFE02E><b>[+]</b></color>
     Gravity orb
 
-    <color=#FFE02E><b>[+]</b></color> Damage
+    <color=#FFE02E><b>[-]</b></color> Cooldown
 
     <color=#FFE02E><b>[+]</b></color>
     Radius
 
 
-    Cooldown: <b>12s</b>
+    Cooldown: <b>8s</b>
 
 
-    - Launches a gravity ball that pulls
-    in, disarms, and damages nearby enemies before exploding.'
+    - Launches a gravity ball that pulls in,
+    disarms, and damages nearby enemies before exploding.'
   previousSkillData: {fileID: 11400000, guid: 7ec2ef9f5d724f0ea8f946d2b9c6e3a3, type: 2}
   nextSkillDataUpgrade: {fileID: 0}
   level: 6
@@ -121,6 +121,6 @@ MonoBehaviour:
     isOverrideDuration: 1
     overrideDuration: 9999
   explosionRadius: 9.1
-  explosionBaseDamage: 75
-  explosionDamageMultiplier: 50
+  explosionBaseDamage: 300
+  explosionDamageMultiplier: 100
   explodeFeedback: 
