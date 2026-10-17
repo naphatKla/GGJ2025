@@ -50,6 +50,9 @@ namespace GameControl.Controller
         
         private GameObject _mapEnvironment;
 
+        [Tooltip("Warning (ENEMY RUSHING INCOMING) ขึ้นก่อนเข้า Rush กี่วินาที - เวลาเข้า Rush ตาม Rush Time ของแมพ")]
+        [SerializeField, Min(0f)] private float rushWarningLeadTime = 2f;
+
         [BoxGroup("Debug")]
         [ShowInInspector, ReadOnly]
         private string _currentStateName;
@@ -300,6 +303,9 @@ namespace GameControl.Controller
         {
             var m = CurrentMap;
             if (m?.rushData == null) return;
+            // Warning ขึ้นก่อนเข้า Rush (เดิมฟิกไว้ที่ 1:02 ไม่สน Rush Time ของแมพ)
+            GameTimer.Instance.ScheduleOnceAtRemaining(m.rushTime + rushWarningLeadTime,
+                () => PopupUIManager.Instance.ShowPopup("Warning", 2.0f, bypassStack: true));
             GameTimer.Instance.ScheduleOnceAtRemaining(m.rushTime, EnterRush);
         }
 

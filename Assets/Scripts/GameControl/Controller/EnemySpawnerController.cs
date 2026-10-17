@@ -31,6 +31,7 @@ namespace GameControl.Controller
         
         public event Action<EnemyController, MapDataSO.EnemyOption> OnFirstSpawned;
         private readonly HashSet<string> _firstSpawnedTypeIds = new();
+        private readonly Dictionary<string, MapDataSO.EnemyOption> _retiredOptions = new();
 
         /// <summary>
         /// Enemies spawned by the spawn schedule. They never cost Enemy Point, so they must not refund it on
@@ -135,7 +136,7 @@ namespace GameControl.Controller
                 _scheduledOwner.Remove(controller);
                 bool noRefund = _noPointRefund.Remove(controller);
                 if (controller.CountedByMax && !noRefund)
-                    SpawnerStateController.Instance.CurrentEnemyPoint += option.EnemyPoint;
+                    SpawnerStateController.Instance.CurrentEnemyPoint += (OptionOf(option.id) ?? option).EnemyPoint;
                 else if (_patternRefund.Remove(controller, out float paid))
                     SpawnerStateController.Instance.CurrentEnemyPoint += paid;
 
@@ -195,6 +196,9 @@ namespace GameControl.Controller
             obj.transform.position = spawnOverride.HasValue
                 ? spawnOverride.Value.Position
                 : SpawnUtility.RandomBetweenMouseAndCamera(_mainCamera);
+            // Pool ถูกใช้ต่อข้าม Reload (เช่นเข้า Rush ที่มีค่า HP/DMG ของ Rush) -> ตัวที่สร้างก่อนหน้าต้องได้ Data ใหม่
+            if (option.modifyNewData && option.enemyData != null && obj.CharacterData != option.enemyData)
+                obj.AssignCharacterData(option.enemyData);
             obj.ResetAllDependentBehavior();
             obj.FeedbackSystem.ShowTrail(spawnOverride.HasValue ? spawnOverride.Value.ShowTrail : true);
             obj.gameObject.SetActive(true);
@@ -427,13 +431,24 @@ namespace GameControl.Controller
         #endregion
         
         #region Public Method
+        /// <summary>
+        /// สร้าง Option runtime + Pool ของศัตรูแต่ละชนิด. เรียกซ้ำได้ (เช่นตอนเข้า Rush): Pool ของ id ที่มีอยู่แล้ว
+        /// จะถูกใช้ต่อ (ไม่ Instantiate / Prewarm ใหม่ ไม่ทิ้งศัตรูที่อยู่ในฉาก) - เดิมสร้าง Pool ใหม่หมดทุกครั้ง
+        /// ทำให้ Lag Spike ตอนเข้า Rush และ Pool เก่าค้างอยู่ในหน่วยความจำ
+        /// </summary>
         public void PrewarmEnemy()
         {
-            _firstSpawnedTypeIds.Clear();
-            _activeEnemy = new List<EnemyController>();
+            bool firstBuild = _enemyPools == null;
+            if (firstBuild)
+            {
+                _firstSpawnedTypeIds.Clear();
+                _activeEnemy = new List<EnemyController>();
+                _enemyPools = new Dictionary<string, ObjectPool<EnemyController>>();
+            }
+
+            var previous = _enemyOptionsList;
             _enemyOptionsList = new List<MapDataSO.EnemyOption>();
-            _enemyPools = new Dictionary<string, ObjectPool<EnemyController>>();
-            
+
             foreach (var data in _mapdata.EnemyOptions)
             {
                 var cloned = new MapDataSO.EnemyOption
@@ -464,22 +479,45 @@ namespace GameControl.Controller
                     spawnEffect = data.spawnEffect != null ? new List<MapDataSO.EnemyOption.SpawnEffectStruct>(data.spawnEffect) : null,
                 };
                 cloned.InitRuntime();
+                // ศัตรูชนิดนี้ที่ยังอยู่ในฉากนับต่อ (Max per Enemy)
+                var old = previous?.FirstOrDefault(o => o.id == cloned.id);
+                if (old != null) cloned.activeCount = old.activeCount;
                 _enemyOptionsList.Add(cloned);
 
-                _enemyPools[cloned.id] = new ObjectPool<EnemyController>(
-                    () => CreateFunc(cloned),
-                    obj => ActionOnGet(obj, cloned),
-                    obj => ActionOnRelease(obj, cloned),
-                    obj => ActionOnDestroy(obj, cloned),
+                if (_enemyPools.ContainsKey(cloned.id)) continue; // ใช้ Pool เดิม
+
+                // Callback อ่าน Option ล่าสุดตาม id (หลัง Reload ค่าเปลี่ยน แต่ Pool เดิม)
+                string id = cloned.id;
+                _enemyPools[id] = new ObjectPool<EnemyController>(
+                    () => CreateFunc(OptionOf(id)),
+                    obj => ActionOnGet(obj, OptionOf(id)),
+                    obj => ActionOnRelease(obj, OptionOf(id)),
+                    obj => ActionOnDestroy(obj, OptionOf(id)),
                     false
                 );
 
                 for (int i = 0; i < data.prewarmCount; i++)
                 {
                     var objPrewarm = CreateFunc(cloned);
-                    _enemyPools[cloned.id].Release(objPrewarm);
+                    _enemyPools[id].Release(objPrewarm);
                 }
             }
+
+            // ชนิดที่หายไปจากลิสต์ใหม่ แต่อาจยังมีตัวอยู่ในฉาก -> เก็บ Option ล่าสุดไว้ให้ตอนตาย/คืน Pool
+            if (previous != null)
+                foreach (var o in previous)
+                    if (_enemyOptionsList.All(n => n.id != o.id))
+                        _retiredOptions[o.id] = o;
+        }
+
+        /// <summary>Option runtime ปัจจุบันของ id นี้ (หลัง Reload ศัตรูที่ไม่มีในลิสต์ใหม่ ใช้ค่าล่าสุดที่เคยมี)</summary>
+        private MapDataSO.EnemyOption OptionOf(string id)
+        {
+            var opt = _enemyOptionsList.FirstOrDefault(o => o.id == id);
+            if (opt != null) return opt;
+            if (!_retiredOptions.TryGetValue(id, out opt))
+                Debug.LogWarning($"[EnemySpawner] No option for '{id}'");
+            return opt;
         }
         public void ReloadOptions(List<MapDataSO.EnemyOption> newOptions)
         {

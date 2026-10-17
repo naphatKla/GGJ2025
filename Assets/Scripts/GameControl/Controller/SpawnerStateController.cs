@@ -176,8 +176,7 @@ namespace GameControl.Controller
             _enemyPatternController.AddRandomPattern();
             BuildSpawnSchedule();
 
-            GameTimer.Instance.ScheduleOnceAtRemaining(62, () => PopupUIManager.Instance.ShowPopup("Warning", 2.0f, bypassStack: true));
-            GameStateController.Instance.ScheduleRush();
+            GameStateController.Instance.ScheduleRush(); // ตั้งทั้ง Warning และการเข้า Rush ตาม Rush Time ของแมพ
         }
         
         /// <summary>
