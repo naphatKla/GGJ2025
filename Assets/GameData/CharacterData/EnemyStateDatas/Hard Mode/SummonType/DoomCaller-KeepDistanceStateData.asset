@@ -9,8 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fdbf256a5b330a141a9bea8934e00512, type: 3}
-  m_Name: AllAround-ChasingPlayerStateData
+  m_Script: {fileID: 11500000, guid: 1b264ad2925b4bc39fd7b68f2f8c1e4c, type: 3}
+  m_Name: DoomCaller-KeepDistanceStateData
   m_EditorClassIdentifier: 
   serializationData:
     SerializedFormat: 2
@@ -26,9 +26,14 @@ MonoBehaviour:
       Data: 0|System.RuntimeType, mscorlib
     - Name: 
       Entry: 1
-      Data: Characters.Controllers.EnemyStates.ChasingPlayerState, Assembly-CSharp
+      Data: Characters.Controllers.EnemyStates.SummonerKeepDistanceState, Assembly-CSharp
     - Name: 
       Entry: 8
       Data: 
-  stopDistance: 9
-  performSkillDistance: 10
+  detectDistance: 30
+  preferredMinDistance: 27
+  preferredMaxDistance: 30
+  fleeDistance: 5
+  repositionWhenTooFar: 1
+  strafeWhileInRange: 1
+  strafeDirection: 1

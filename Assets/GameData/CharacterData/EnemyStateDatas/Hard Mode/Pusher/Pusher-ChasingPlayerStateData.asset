@@ -9,8 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9ed8414468ee1c44497f88552c644b0b, type: 3}
-  m_Name: LV3_MovementSpeed_Effect
+  m_Script: {fileID: 11500000, guid: fdbf256a5b330a141a9bea8934e00512, type: 3}
+  m_Name: Pusher-ChasingPlayerStateData
   m_EditorClassIdentifier: 
   serializationData:
     SerializedFormat: 2
@@ -21,19 +21,14 @@ MonoBehaviour:
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
     SerializationNodes:
-    - Name: _effectType
+    - Name: _skillRuntime
       Entry: 7
       Data: 0|System.RuntimeType, mscorlib
     - Name: 
       Entry: 1
-      Data: Characters.StatusEffectSystems.StatusEffects.MovementSpeedEffect, Assembly-CSharp
+      Data: Characters.Controllers.EnemyStates.ChasingPlayerState, Assembly-CSharp
     - Name: 
       Entry: 8
       Data: 
-  icon: {fileID: 0}
-  effectName: 7
-  description: Increase the target's movement speed.
-  level: 1
-  defaultDuration: 5
-  isDebuff: 0
-  speedPercentChange: 70
+  stopDistance: 17
+  performSkillDistance: 18

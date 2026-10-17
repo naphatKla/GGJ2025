@@ -3278,7 +3278,7 @@ MonoBehaviour:
   combatSystem: {fileID: 6190988230787637339}
   damageOnTouch: {fileID: 7946253557932303538}
   feedbackSystem: {fileID: 6568367693383643963}
-  characterData: {fileID: 11400000, guid: 405d0a5afc5d49fe997c5a0aa9a42ca4, type: 2}
+  characterData: {fileID: 11400000, guid: 8f6397ea3c724414a2e2729429071514, type: 2}
   autoAssignDataOnEnable: 0
   phaseConfigs:
   - hpThresholdPercentage: 100
@@ -3327,6 +3327,8 @@ MonoBehaviour:
   - skill: {fileID: 11400000, guid: de0e7b501a740c8428552d3369846a7d, type: 2}
     enabled: 1
   - skill: {fileID: 11400000, guid: 03e645fdb05ac634f9fc08c858fde55f, type: 2}
+    enabled: 1
+  - skill: {fileID: 11400000, guid: 9e4a6f4be8546ac438420c3cf146899d, type: 2}
     enabled: 1
   - skill: {fileID: 11400000, guid: 89a0bcc4dfc49fb4f9cb45dd6a57e7ab, type: 2}
     enabled: 1
@@ -3380,15 +3382,15 @@ MonoBehaviour:
   maxBreakPoint: 100
   breakingStunDuration: 7
   breakingDamageMultiplier: 10
-  breakingStunEffectData: {fileID: 11400000, guid: e5ae6010e3c4a7b43bc80da0bf5a9ef5, type: 2}
+  removeOnBreak: 0400000006000000
   effectsWhileBreaking:
-  - effectData: {fileID: 11400000, guid: 2bb1df345b8c3ff4bbff4f8af06b3616, type: 2}
+  - effectData: {fileID: 11400000, guid: e5ae6010e3c4a7b43bc80da0bf5a9ef5, type: 2}
     isOverrideDuration: 1
-    overrideDuration: 0
-  - effectData: {fileID: 11400000, guid: 81aef72348c84bfcad85764ede85167e, type: 2}
+    overrideDuration: 7
+  effectsAfterBreaking:
+  - effectData: {fileID: 11400000, guid: 9737252eeeeea994f9b9c16bbbf5ca9e, type: 2}
     isOverrideDuration: 1
-    overrideDuration: 0
-  effectsAfterBreaking: []
+    overrideDuration: 2
   allSkillsCooldownAfterBreaking: 3
   skillCooldownsAfterBreaking:
   - skill: {fileID: 11400000, guid: 40d3cf3f556f4bfc8f6afc9c21a36d2d, type: 2}

@@ -9,8 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8c05e0d7863c43d3a111568266ba98aa, type: 3}
-  m_Name: LV1_DamageResistance_Effect
+  m_Script: {fileID: 11500000, guid: 9ed8414468ee1c44497f88552c644b0b, type: 3}
+  m_Name: LV4_SpeedMovement_Effect
   m_EditorClassIdentifier: 
   serializationData:
     SerializedFormat: 2
@@ -26,14 +26,14 @@ MonoBehaviour:
       Data: 0|System.RuntimeType, mscorlib
     - Name: 
       Entry: 1
-      Data: Characters.StatusEffectSystems.StatusEffects.DamageResistanceEffect, Assembly-CSharp
+      Data: Characters.StatusEffectSystems.StatusEffects.MovementSpeedEffect, Assembly-CSharp
     - Name: 
       Entry: 8
       Data: 
   icon: {fileID: 0}
-  effectName: 6
-  description: Ignore incoming HP damage. Heavy damage still drains Break Point.
+  effectName: 7
+  description: Increase the target's movement speed.
   level: 1
-  defaultDuration: 1
+  defaultDuration: 5
   isDebuff: 0
-  resistancePercentage: 100
+  speedPercentChange: 40

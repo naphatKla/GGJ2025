@@ -592,18 +592,24 @@ MonoBehaviour:
     disableNormalize: 1
     useCustomInterval: 0
     customInterval: 0
-    useMaxperEnemy: 0
-    maximumPerEnemy: 0
+    useMaxperEnemy: 1
+    maximumPerEnemy: 1
     modifyNewData: 1
     enemyData: {fileID: 11400000, guid: 8f6397ea3c724414a2e2729429071514, type: 2}
-    disableInPattern: 0
-    disableEnemyDetect: 0
+    disableInPattern: 1
+    disableEnemyDetect: 1
     useSpawnConditions: 1
     conditionLogic: 0
     spawnConditions:
     - {fileID: 11400000, guid: 543f73756490a004387cb83436e0b706, type: 2}
-    useSpawnEffect: 0
-    spawnEffect: []
+    useSpawnEffect: 1
+    spawnEffect:
+    - effectType: 0
+      effectString: BossWarning
+      effectint: 0
+    - effectType: 3
+      effectString: 
+      effectint: 5
   intervalEnemyChanceUpgrade: 30
   intervalEnemyPointRatioUpgrade: 30
   enemySpawnMode: 0
@@ -815,12 +821,12 @@ MonoBehaviour:
       startAfter: 480
       endAt: -1
   playAllPatternIn: 15
-  playAllCanDecrease: 0
-  playAllDecreaseInterval: 60
+  playAllCanDecrease: 1
+  playAllDecreaseInterval: 30
   playAllDecreaseRate: 1
-  playAllDecreaseMinimum: 5
+  playAllDecreaseMinimum: 10
   triggerAllPatternIn: 10
-  triggerTimeCanDecrease: 1
+  triggerTimeCanDecrease: 0
   patternDecreaseInterval: 30
   patternDecreaseRate: 1
   patternDecreaseMinimum: 5
