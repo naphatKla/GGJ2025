@@ -24464,6 +24464,7 @@ GameObject:
   - component: {fileID: 8629954166876812778}
   - component: {fileID: 4977103591623287719}
   - component: {fileID: 3179627002423810786}
+  - component: {fileID: 3135760401947387712}
   m_Layer: 0
   m_Name: BlackHole_S
   m_TagString: Untagged
@@ -29354,6 +29355,29 @@ ParticleSystemRenderer:
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
   m_MaskInteraction: 0
+--- !u!114 &3135760401947387712
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1970288615978475035}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 18767377e98eb48438813a741bc1d31e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  shape: 0
+  showOnlyWhenSelected: 1
+  gizmoColor: {r: 0.2, g: 0.9, b: 1, a: 1}
+  startSpace: 0
+  startPos: {x: 0, y: 0}
+  offsetSpace: 1
+  offset: {x: 0, y: 0}
+  radius: 1
+  segments: 32
+  rectSize: {x: 1, y: 1}
+  wireRect: 1
 --- !u!1 &2713122181744985546
 GameObject:
   m_ObjectHideFlags: 0
