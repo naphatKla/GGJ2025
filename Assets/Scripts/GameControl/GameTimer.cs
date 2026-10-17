@@ -187,6 +187,8 @@ namespace GameControl
             return _isPaused;
         }
 
+        public bool IsRunning => _isRunning;
+
         public void ResetAndStop()
         {
             StopCountdown();

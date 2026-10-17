@@ -426,11 +426,21 @@ namespace Player
             
             GUILayout.Label("Map Milestone", _hdrStyle);
             DrawKV("Selected Map", mapId);
-            DrawKV("Unlock Milestone Level", current.MapStats[mapId].MaxLevelUnlockMilestone.ToString());
-            
+            // โปรไฟล์ที่ยังไม่เคยเล่นแมพนี้จะยังไม่มี MapStat -> สร้างให้ (เดิม MapStats[mapId] โยน KeyNotFound
+            // กลาง OnGUI ทำให้ Begin/End ไม่ครบ -> GUI Error ตามมาทุกเฟรม)
+            var mapStat = string.IsNullOrEmpty(current.selectedMapIds) ? null : current.GetOrCreateMapStat(mapId);
+            if (mapStat == null)
+            {
+                GUILayout.Label("No map selected");
+                GUILayout.EndScrollView();
+                GUILayout.EndVertical();
+                GUI.DragWindow(new Rect(0, 0, 10000, 18));
+                return;
+            }
+            DrawKV("Unlock Milestone Level", mapStat.MaxLevelUnlockMilestone.ToString());
+
             GUILayout.BeginHorizontal();
-            var mapStat = current.MapStats[mapId];
-            
+
             if (GUILayout.Button("Unlock Milestone"))
             {
                 mapStat.MaxLevelUnlockMilestone++;

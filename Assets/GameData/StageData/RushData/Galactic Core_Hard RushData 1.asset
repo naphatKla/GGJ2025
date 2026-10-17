@@ -12,17 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eff9f285ee518294783346c757dcd5ce, type: 3}
   m_Name: Galactic Core_Hard RushData 1
   m_EditorClassIdentifier: 
-  mapData: {fileID: 11400000, guid: e5b64c88641c36b4daf008e9128337bf, type: 2}
+  mapData: {fileID: 11400000, guid: 5213376742ca69d4a99b3f614f7ed187, type: 2}
   enemyOptions:
   - id: Enemy_Normal
     displayName: NORMAL
     enemyController: {fileID: 8145196360709479149, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
-    prewarmCount: 0
-    spawnPoint: 1
+    prewarmCount: 50
+    spawnPoint: 0.7
     enemyPointCanGrowth: 0
     enemyPointGrowthRate: 12.5
     chance: 0.1
-    enemyChanceCanGrowth: 0
+    enemyChanceCanGrowth: 1
     enemyChanceGrowthRate: 1.5
     disableNormalize: 0
     useCustomInterval: 0
@@ -42,12 +42,12 @@ MonoBehaviour:
   - id: Enemy_Worker
     displayName: WORKER
     enemyController: {fileID: 6978469296619682545, guid: 82d6560287672fa4a8c895bc3a10c950, type: 3}
-    prewarmCount: 0
-    spawnPoint: 1.2
+    prewarmCount: 50
+    spawnPoint: 1
     enemyPointCanGrowth: 0
     enemyPointGrowthRate: 12.5
     chance: 0
-    enemyChanceCanGrowth: 0
+    enemyChanceCanGrowth: 1
     enemyChanceGrowthRate: 1.5
     disableNormalize: 0
     useCustomInterval: 0
@@ -67,13 +67,13 @@ MonoBehaviour:
   - id: Enemy_Soldier
     displayName: SOLDIER
     enemyController: {fileID: 6978469296619682545, guid: a0503233dadc52f46bbd80a4952cd4e1, type: 3}
-    prewarmCount: 0
-    spawnPoint: 1.8
+    prewarmCount: 50
+    spawnPoint: 1.5
     enemyPointCanGrowth: 0
     enemyPointGrowthRate: 12.5
-    chance: 20
-    enemyChanceCanGrowth: 0
-    enemyChanceGrowthRate: 1
+    chance: 10
+    enemyChanceCanGrowth: 1
+    enemyChanceGrowthRate: 1.25
     disableNormalize: 0
     useCustomInterval: 0
     customInterval: 0
@@ -92,13 +92,13 @@ MonoBehaviour:
   - id: Enemy_Tank
     displayName: TANK
     enemyController: {fileID: 1371981663885322251, guid: c825ab4cef105ab40aa986fd07615367, type: 3}
-    prewarmCount: 0
-    spawnPoint: 2.3
+    prewarmCount: 50
+    spawnPoint: 1.5
     enemyPointCanGrowth: 0
     enemyPointGrowthRate: 12.5
-    chance: 20
-    enemyChanceCanGrowth: 0
-    enemyChanceGrowthRate: 1.5
+    chance: 10
+    enemyChanceCanGrowth: 1
+    enemyChanceGrowthRate: 1.25
     disableNormalize: 0
     useCustomInterval: 0
     customInterval: 2
@@ -117,13 +117,13 @@ MonoBehaviour:
   - id: Enemy_Absolute
     displayName: ABSOLUTE
     enemyController: {fileID: 1371981663885322251, guid: eec6f0bc923ca8c4e8d1f911f0441879, type: 3}
-    prewarmCount: 0
-    spawnPoint: 3.3
+    prewarmCount: 50
+    spawnPoint: 2
     enemyPointCanGrowth: 0
     enemyPointGrowthRate: 12.5
-    chance: 15
-    enemyChanceCanGrowth: 0
-    enemyChanceGrowthRate: 1
+    chance: 8
+    enemyChanceCanGrowth: 1
+    enemyChanceGrowthRate: 0.75
     disableNormalize: 0
     useCustomInterval: 0
     customInterval: 0
@@ -142,13 +142,13 @@ MonoBehaviour:
   - id: Enemy_Absorption
     displayName: ABSORPTION
     enemyController: {fileID: 1371981663885322251, guid: fd4d927248ba7894fab69bd0611e5dd6, type: 3}
-    prewarmCount: 0
-    spawnPoint: 6.4
+    prewarmCount: 50
+    spawnPoint: 2.7
     enemyPointCanGrowth: 0
     enemyPointGrowthRate: 12.5
-    chance: 7
-    enemyChanceCanGrowth: 0
-    enemyChanceGrowthRate: 0.2
+    chance: 5
+    enemyChanceCanGrowth: 1
+    enemyChanceGrowthRate: 0.5
     disableNormalize: 0
     useCustomInterval: 0
     customInterval: 0
@@ -167,13 +167,13 @@ MonoBehaviour:
   - id: Enemy_Piercer
     displayName: PIERCER
     enemyController: {fileID: 5352284219382747297, guid: c31b489d153b0634585086d777023f54, type: 3}
-    prewarmCount: 0
-    spawnPoint: 1.4
+    prewarmCount: 50
+    spawnPoint: 1.1
     enemyPointCanGrowth: 0
     enemyPointGrowthRate: 12.5
     chance: 0
-    enemyChanceCanGrowth: 0
-    enemyChanceGrowthRate: 1
+    enemyChanceCanGrowth: 1
+    enemyChanceGrowthRate: 1.5
     disableNormalize: 0
     useCustomInterval: 0
     customInterval: 0
@@ -192,12 +192,12 @@ MonoBehaviour:
   - id: Enemy_Javelin
     displayName: JAVELIN
     enemyController: {fileID: 5352284219382747297, guid: 9b50d372f60f2b44e8902b9700c8ff75, type: 3}
-    prewarmCount: 0
-    spawnPoint: 2
+    prewarmCount: 50
+    spawnPoint: 1.7
     enemyPointCanGrowth: 0
     enemyPointGrowthRate: 12.5
     chance: 0
-    enemyChanceCanGrowth: 0
+    enemyChanceCanGrowth: 1
     enemyChanceGrowthRate: 1
     disableNormalize: 0
     useCustomInterval: 0
@@ -217,13 +217,13 @@ MonoBehaviour:
   - id: Enemy_Comet
     displayName: COMET
     enemyController: {fileID: 5352284219382747297, guid: f393a17767905ac4ca15da0af7bc1668, type: 3}
-    prewarmCount: 0
-    spawnPoint: 2.7
+    prewarmCount: 50
+    spawnPoint: 2.2
     enemyPointCanGrowth: 0
     enemyPointGrowthRate: 12.5
-    chance: 10
-    enemyChanceCanGrowth: 0
-    enemyChanceGrowthRate: 1
+    chance: 5
+    enemyChanceCanGrowth: 1
+    enemyChanceGrowthRate: 0.75
     disableNormalize: 0
     useCustomInterval: 0
     customInterval: 0
@@ -242,13 +242,13 @@ MonoBehaviour:
   - id: Enemy_Pressure
     displayName: PRESSURE
     enemyController: {fileID: 241806535288265801, guid: 79dec73735459964a8ca48d4f07d4f9a, type: 3}
-    prewarmCount: 0
-    spawnPoint: 2.3
+    prewarmCount: 50
+    spawnPoint: 1
     enemyPointCanGrowth: 0
     enemyPointGrowthRate: 12.5
     chance: 0
-    enemyChanceCanGrowth: 0
-    enemyChanceGrowthRate: 1
+    enemyChanceCanGrowth: 1
+    enemyChanceGrowthRate: 1.1
     disableNormalize: 0
     useCustomInterval: 0
     customInterval: 0
@@ -267,13 +267,13 @@ MonoBehaviour:
   - id: Enemy_Firecraker
     displayName: FIRECRACKER
     enemyController: {fileID: 241806535288265801, guid: 27b7309a2863d144f92c41ed68909b7a, type: 3}
-    prewarmCount: 0
-    spawnPoint: 3.1
+    prewarmCount: 50
+    spawnPoint: 1.5
     enemyPointCanGrowth: 0
     enemyPointGrowthRate: 12.5
-    chance: 20
-    enemyChanceCanGrowth: 0
-    enemyChanceGrowthRate: 1
+    chance: 10
+    enemyChanceCanGrowth: 1
+    enemyChanceGrowthRate: 1.25
     disableNormalize: 0
     useCustomInterval: 0
     customInterval: 1.995
@@ -292,13 +292,13 @@ MonoBehaviour:
   - id: Enemy_Bomber
     displayName: BOMBER
     enemyController: {fileID: 241806535288265801, guid: e35823daef8ec1d4190c0960c0e7bb8b, type: 3}
-    prewarmCount: 0
-    spawnPoint: 7
+    prewarmCount: 50
+    spawnPoint: 2.5
     enemyPointCanGrowth: 0
     enemyPointGrowthRate: 12.5
-    chance: 8
-    enemyChanceCanGrowth: 0
-    enemyChanceGrowthRate: 0.3
+    chance: 5
+    enemyChanceCanGrowth: 1
+    enemyChanceGrowthRate: 0.5
     disableNormalize: 0
     useCustomInterval: 0
     customInterval: 0
@@ -337,6 +337,7 @@ MonoBehaviour:
     conditionLogic: 0
     spawnConditions:
     - {fileID: 11400000, guid: da1d3b0ff5fb92f4680487d0938ff0fd, type: 2}
+    - {fileID: 11400000, guid: da1d3b0ff5fb92f4680487d0938ff0fd, type: 2}
     useSpawnEffect: 1
     spawnEffect:
     - effectType: 0
@@ -345,6 +346,231 @@ MonoBehaviour:
     - effectType: 3
       effectString: 
       effectint: 5
+  - id: Enemy_Pusher
+    displayName: Pusher
+    enemyController: {fileID: 5352284219382747297, guid: 9b295cc90b3534847ad38d4dbd16a050, type: 3}
+    prewarmCount: 50
+    spawnPoint: 1
+    enemyPointCanGrowth: 0
+    enemyPointGrowthRate: 12.5
+    chance: 15
+    enemyChanceCanGrowth: 1
+    enemyChanceGrowthRate: 1.5
+    disableNormalize: 0
+    useCustomInterval: 0
+    customInterval: 0
+    useMaxperEnemy: 0
+    maximumPerEnemy: 0
+    modifyNewData: 1
+    enemyData: {fileID: 11400000, guid: ed857f964693b6f4c90e6decc086be9f, type: 2}
+    disableInPattern: 0
+    disableEnemyDetect: 0
+    useSpawnConditions: 1
+    conditionLogic: 0
+    spawnConditions:
+    - {fileID: 11400000, guid: 4f6ad506e1c0a9e48beea52d5beddec2, type: 2}
+    useSpawnEffect: 0
+    spawnEffect: []
+  - id: Enemy_Shove
+    displayName: Shove
+    enemyController: {fileID: 5352284219382747297, guid: 2e43ca1f512ce5241b0bee4452720687, type: 3}
+    prewarmCount: 50
+    spawnPoint: 2.5
+    enemyPointCanGrowth: 0
+    enemyPointGrowthRate: 12.5
+    chance: 12
+    enemyChanceCanGrowth: 1
+    enemyChanceGrowthRate: 1.25
+    disableNormalize: 0
+    useCustomInterval: 0
+    customInterval: 0
+    useMaxperEnemy: 0
+    maximumPerEnemy: 0
+    modifyNewData: 1
+    enemyData: {fileID: 11400000, guid: e1a655e9408ce17408e22634240b3102, type: 2}
+    disableInPattern: 0
+    disableEnemyDetect: 0
+    useSpawnConditions: 1
+    conditionLogic: 0
+    spawnConditions:
+    - {fileID: 11400000, guid: 377b2a086e519114dbd305de4c398076, type: 2}
+    useSpawnEffect: 0
+    spawnEffect: []
+  - id: Enemy_Impulse
+    displayName: Impulse
+    enemyController: {fileID: 5352284219382747297, guid: 5b5b92dd3bf7c1c4b9ffde3593bcff5f, type: 3}
+    prewarmCount: 50
+    spawnPoint: 3.5
+    enemyPointCanGrowth: 0
+    enemyPointGrowthRate: 12.5
+    chance: 8
+    enemyChanceCanGrowth: 1
+    enemyChanceGrowthRate: 0.75
+    disableNormalize: 0
+    useCustomInterval: 0
+    customInterval: 0
+    useMaxperEnemy: 0
+    maximumPerEnemy: 0
+    modifyNewData: 1
+    enemyData: {fileID: 11400000, guid: 7fb32bc2b81be3a4b927bb19a1d23939, type: 2}
+    disableInPattern: 0
+    disableEnemyDetect: 0
+    useSpawnConditions: 1
+    conditionLogic: 0
+    spawnConditions:
+    - {fileID: 11400000, guid: baa9418a9c5056e429fa52188039f222, type: 2}
+    useSpawnEffect: 0
+    spawnEffect: []
+  - id: Divider
+    displayName: Divider
+    enemyController: {fileID: 6978469296619682545, guid: 3a5e7cf9c781af14ab9b0562341f6772, type: 3}
+    prewarmCount: 50
+    spawnPoint: 1.5
+    enemyPointCanGrowth: 0
+    enemyPointGrowthRate: 12.5
+    chance: 12
+    enemyChanceCanGrowth: 1
+    enemyChanceGrowthRate: 1.5
+    disableNormalize: 0
+    useCustomInterval: 0
+    customInterval: 0
+    useMaxperEnemy: 0
+    maximumPerEnemy: 0
+    modifyNewData: 1
+    enemyData: {fileID: 11400000, guid: 1d40a0429b6841aebf7e07fd965b1e21, type: 2}
+    disableInPattern: 0
+    disableEnemyDetect: 0
+    useSpawnConditions: 1
+    conditionLogic: 0
+    spawnConditions:
+    - {fileID: 11400000, guid: 0add1e0e0e7bae947a879f81ee63d40d, type: 2}
+    useSpawnEffect: 0
+    spawnEffect: []
+  - id: BombCaller
+    displayName: BombCaller
+    enemyController: {fileID: 6978469296619682545, guid: 0e2f83a85d0e1fc46b5a784d5e2da506, type: 3}
+    prewarmCount: 50
+    spawnPoint: 2.5
+    enemyPointCanGrowth: 0
+    enemyPointGrowthRate: 12.5
+    chance: 10
+    enemyChanceCanGrowth: 1
+    enemyChanceGrowthRate: 1
+    disableNormalize: 0
+    useCustomInterval: 0
+    customInterval: 0
+    useMaxperEnemy: 0
+    maximumPerEnemy: 0
+    modifyNewData: 1
+    enemyData: {fileID: 11400000, guid: 50325e07db9e5db4aadc7c24a25b53fc, type: 2}
+    disableInPattern: 0
+    disableEnemyDetect: 0
+    useSpawnConditions: 1
+    conditionLogic: 0
+    spawnConditions:
+    - {fileID: 11400000, guid: 1b2897cf04d0e8146978cce91b9949dd, type: 2}
+    useSpawnEffect: 0
+    spawnEffect: []
+  - id: DoomCaller
+    displayName: DoomCaller
+    enemyController: {fileID: 6978469296619682545, guid: cdff02c99825bb04dad4cc17034d6531, type: 3}
+    prewarmCount: 50
+    spawnPoint: 3.5
+    enemyPointCanGrowth: 0
+    enemyPointGrowthRate: 12.5
+    chance: 6
+    enemyChanceCanGrowth: 1
+    enemyChanceGrowthRate: 0.75
+    disableNormalize: 0
+    useCustomInterval: 0
+    customInterval: 0
+    useMaxperEnemy: 0
+    maximumPerEnemy: 0
+    modifyNewData: 1
+    enemyData: {fileID: 11400000, guid: 84240fc3641d8ac4dbb8e15403e8ef53, type: 2}
+    disableInPattern: 0
+    disableEnemyDetect: 0
+    useSpawnConditions: 1
+    conditionLogic: 0
+    spawnConditions:
+    - {fileID: 11400000, guid: 9e27b75a5e6d88744a30be7465e07cca, type: 2}
+    useSpawnEffect: 0
+    spawnEffect: []
+  - id: Enemy_Shooter
+    displayName: Shooter
+    enemyController: {fileID: 8145196360709479149, guid: f8868bc343c986b4584c66195da5e43d, type: 3}
+    prewarmCount: 50
+    spawnPoint: 1.5
+    enemyPointCanGrowth: 0
+    enemyPointGrowthRate: 12.5
+    chance: 15
+    enemyChanceCanGrowth: 1
+    enemyChanceGrowthRate: 1.5
+    disableNormalize: 0
+    useCustomInterval: 0
+    customInterval: 0
+    useMaxperEnemy: 0
+    maximumPerEnemy: 0
+    modifyNewData: 1
+    enemyData: {fileID: 11400000, guid: fe1696186857ab844836be330d6b2731, type: 2}
+    disableInPattern: 0
+    disableEnemyDetect: 0
+    useSpawnConditions: 1
+    conditionLogic: 0
+    spawnConditions:
+    - {fileID: 11400000, guid: ab30dc36e0eceba4ba5bb98a727e991c, type: 2}
+    useSpawnEffect: 0
+    spawnEffect: []
+  - id: Enemy_Shotgun
+    displayName: Shotgun
+    enemyController: {fileID: 8145196360709479149, guid: 2f70b39caed9b6a4a82fc517ac809118, type: 3}
+    prewarmCount: 50
+    spawnPoint: 2.5
+    enemyPointCanGrowth: 0
+    enemyPointGrowthRate: 12.5
+    chance: 12
+    enemyChanceCanGrowth: 1
+    enemyChanceGrowthRate: 1.25
+    disableNormalize: 0
+    useCustomInterval: 0
+    customInterval: 0
+    useMaxperEnemy: 0
+    maximumPerEnemy: 0
+    modifyNewData: 1
+    enemyData: {fileID: 11400000, guid: 4310296e5dd043e29c3ae6a57d5b9335, type: 2}
+    disableInPattern: 0
+    disableEnemyDetect: 0
+    useSpawnConditions: 1
+    conditionLogic: 0
+    spawnConditions:
+    - {fileID: 11400000, guid: 02988ab049c7bb94fbab43224af1a12e, type: 2}
+    useSpawnEffect: 0
+    spawnEffect: []
+  - id: Enemy_AllAround
+    displayName: All Around
+    enemyController: {fileID: 8145196360709479149, guid: 1d94c99c3cb86ab4da19b00ce8e1e173, type: 3}
+    prewarmCount: 50
+    spawnPoint: 3.5
+    enemyPointCanGrowth: 0
+    enemyPointGrowthRate: 12.5
+    chance: 8
+    enemyChanceCanGrowth: 1
+    enemyChanceGrowthRate: 0.5
+    disableNormalize: 0
+    useCustomInterval: 0
+    customInterval: 0
+    useMaxperEnemy: 0
+    maximumPerEnemy: 0
+    modifyNewData: 1
+    enemyData: {fileID: 11400000, guid: 4543c047b249457993518914fb26b115, type: 2}
+    disableInPattern: 0
+    disableEnemyDetect: 0
+    useSpawnConditions: 1
+    conditionLogic: 0
+    spawnConditions:
+    - {fileID: 11400000, guid: ffb292aea692cf74ab3ae4598cb0c72a, type: 2}
+    useSpawnEffect: 0
+    spawnEffect: []
   - id: bright2
     displayName: Bright2
     enemyController: {fileID: 3283012694853145645, guid: 2ad5bd503bfd413ab61111cfb9d94a60, type: 3}
@@ -576,19 +802,19 @@ MonoBehaviour:
     - conditionType: 0
       startAfter: 480
       endAt: -1
-  playAllPatternIn: 10
-  playAllCanDecrease: 0
-  playAllDecreaseInterval: 60
+  playAllPatternIn: 15
+  playAllCanDecrease: 1
+  playAllDecreaseInterval: 30
   playAllDecreaseRate: 1
-  playAllDecreaseMinimum: 5
+  playAllDecreaseMinimum: 10
   triggerAllPatternIn: 10
   triggerTimeCanDecrease: 0
-  patternDecreaseInterval: 25
+  patternDecreaseInterval: 30
   patternDecreaseRate: 1
-  patternDecreaseMinimum: 18
-  addPatternInterval: 1
-  amountToAdd: 3
-  patternMax: 3
+  patternDecreaseMinimum: 5
+  addPatternInterval: 9
+  amountToAdd: 2
+  patternMax: 2
   canDuplicateAfterHaveAllPattern: 1
   eventmapOptions:
   - enableThisMapEvent: 1
@@ -625,8 +851,8 @@ MonoBehaviour:
         startAfter: 300
         endAt: -1
     eventMapChance: 100
-    playInterval: 7
-    intervalCanModify: 0
-    rateModify: -27
-    intervalModify: 540
-    minPlayInterval: 3
+    playInterval: 60
+    intervalCanModify: 1
+    rateModify: -5
+    intervalModify: 60
+    minPlayInterval: 30

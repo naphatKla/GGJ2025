@@ -401,9 +401,23 @@ namespace GameControl.Controller
         }
         
         [FoldoutGroup("Map Button"), Button(ButtonSizes.Large), GUIColor(0, 1, 1)]
+        [PropertyTooltip("ข้ามเวลาไปจุดเริ่ม Rush (Remaining = Rush Time เช่น 2 นาทีสุดท้าย) แล้วเข้า Rush - " +
+                         "เหตุการณ์ระหว่างทาง (Map Event, Pattern, Growth ฯลฯ) ถูกไล่ทันเหมือนปุ่ม Skip Time")]
         public void EnterRushState()
         {
-            EnterRush();
+            if (MapState == MapState.Rush) return;
+
+            var m = CurrentMap;
+            var timer = GameTimer.Instance;
+            if (m?.rushData != null && timer != null && timer.IsRunning
+                && timer.Countmode == GameTimer.TimerMode.Countdown && timer.Remaining > m.rushTime)
+            {
+                // Rush trigger (ScheduleRush) ตั้ง triggerWhenSkip = true -> ข้ามเวลาแล้วจะเข้า Rush เอง
+                timer.SkipToRemaining(m.rushTime);
+            }
+
+            // ไม่มี trigger (เช่นยังไม่เริ่มเกม / เวลาเหลือน้อยกว่า Rush Time อยู่แล้ว) -> เข้าเลย
+            if (MapState != MapState.Rush) EnterRush();
         }
         
         #region Internal

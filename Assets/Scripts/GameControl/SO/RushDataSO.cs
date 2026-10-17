@@ -72,7 +72,8 @@ namespace GameControl.SO
                     useMaxperEnemy = e.useMaxperEnemy,
                     maximumPerEnemy = e.maximumPerEnemy,
                     useSpawnEffect = e.useSpawnEffect,
-                    spawnEffect = e.spawnEffect
+                    spawnEffect = e.spawnEffect,
+                    prewarmCount = e.prewarmCount
                 });
 
 #if UNITY_EDITOR
@@ -185,7 +186,17 @@ namespace GameControl.SO
                         patternPoint = p.patternPoint,
                         enableMovementAfter = p.enableMovementAfter,
                         enablePatternCenter = p.enablePatternCenter,
-                        patternCenter = p.patternCenter
+                        patternCenter = p.patternCenter,
+                        // เดิมไม่ได้ copy -> Import แล้ว Pattern ใน Rush เสียเงื่อนไขเวลาไปหมด
+                        useCondition = p.useCondition,
+                        patternCondition = p.patternCondition?.ConvertAll(c => c == null
+                            ? null
+                            : new MapDataSO.PatternOption.PatternConditionStruct
+                            {
+                                conditionType = c.conditionType,
+                                startAfter = c.startAfter,
+                                endAt = c.endAt
+                            })
                     };
                     patternOptions.Add(copy);
                 }
