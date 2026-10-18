@@ -76,6 +76,27 @@ namespace Characters.SO.SkillDataSo
 
         [FoldoutGroup("Flight Phase")] [LabelText("Arc Decay Curve (0→1 ของช่วง seek)")] [SerializeField]
         private AnimationCurve arcDecayCurve = AnimationCurve.EaseInOut(0, 1, 1, 0);
+        
+        // ───────── Split On Hit ─────────
+        [FoldoutGroup("Split On Hit")] [LabelText("Spawn Chance")] [Unit(Units.Percent)]
+        [PropertyTooltip("โอกาสที่กระสุนซึ่งชนศัตรูจะงอกกระสุนใหม่ (0-100)")]
+        [Range(0, 100)] [SerializeField]
+        private float spawnChance = 0f;
+
+        [FoldoutGroup("Split On Hit")] [LabelText("Spawn Amount")]
+        [PropertyTooltip("จำนวนกระสุนที่งอกต่อการ trigger 1 ครั้ง")]
+        [SerializeField]
+        private int spawnAmount = 1;
+
+        [FoldoutGroup("Split On Hit")] [LabelText("Max Spawn Generation")]
+        [PropertyTooltip("ลูกที่งอกออกมาจะงอกต่อได้อีกกี่ชั้น 1 = ลูกที่งอกแล้วไม่งอกต่อ 0 = ปิดฟีเจอร์")]
+        [SerializeField]
+        private int maxSpawnGeneration = 1;
+
+        [FoldoutGroup("Split On Hit")] [LabelText("Spawn Angle Spread (deg)")]
+        [PropertyTooltip("มุมกระจายของลูกที่งอก รอบทิศที่กระสุนเดิมพุ่งมา")]
+        [SerializeField]
+        private float spawnAngleSpread = 120f;
 
         // ───────── Properties ─────────
         public int MissileCount => missileCount;
@@ -99,5 +120,10 @@ namespace Characters.SO.SkillDataSo
         public AnimationCurve TurnRampCurve => turnRampCurve;
         public float ArcStrength => arcStrength;
         public AnimationCurve ArcDecayCurve => arcDecayCurve;
+        
+        public float SpawnChance => spawnChance;
+        public int SpawnAmount => spawnAmount;
+        public int MaxSpawnGeneration => maxSpawnGeneration;
+        public float SpawnAngleSpread => spawnAngleSpread;
     }
 }
