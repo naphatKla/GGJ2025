@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using Characters.Controllers;
 using Characters.SkillSystems.SkillObjects;
@@ -7,7 +8,7 @@ using UnityEngine;
 
 namespace Characters.SkillSystems.SkillRuntimes
 {
-    public class SkillNovaCutter : BaseSkillRuntime<SkillNovaCutterDataSo>
+    public class SkillNovaCutter : BaseSkillRuntime<SkillNovaCutterDataSo>, IAutoSkillTriggerSource
     {
         private NovaCutterSkillObject _cutterObj;
         
@@ -41,5 +42,7 @@ namespace Characters.SkillSystems.SkillRuntimes
             if (!_cutterObj) return;
             Destroy(_cutterObj);
         }
+
+        public event Action OnTriggerAutoSkill;
     }
 }
