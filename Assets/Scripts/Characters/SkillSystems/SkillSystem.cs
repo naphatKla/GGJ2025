@@ -304,6 +304,10 @@ namespace Characters.SkillSystems
             // null-checks the runtime) but there is nothing here to configure.
             if (!runtime) return;
 
+            // ต่อสาย ISkillHitSource -> IHitSourceListener ทุกครั้งที่มีสกิลถูกเพิ่ม/อัพเกรด
+            // (AddHitSource กันซ้ำให้แล้ว เรียกซ้ำได้ปลอดภัย และลำดับสกิลไม่สำคัญ)
+            LinkHitSources();
+
             runtime.SetCurrentCooldown(0);
             int index = GetSkillIndex(newSkillData);
 
@@ -351,6 +355,7 @@ namespace Characters.SkillSystems
             else
             {
                 UnsubscribeAutoTrigger(runtime);
+                UnlinkHitSource(runtime);
                 Destroy(runtime);
                 if (runtime is IAutoSkillTriggerSource autoSkillTriggerSource)
                     autoSkillTriggerSource.OnTriggerAutoSkill -= OnTriggerAutoSkill;
@@ -368,7 +373,12 @@ namespace Characters.SkillSystems
 
                 if (runtime == null || !runtime.IsPerforming)
                 {
-                    if (runtime) UnsubscribeAutoTrigger(runtime);
+                    if (runtime)
+                    {
+                        UnsubscribeAutoTrigger(runtime);
+                        UnlinkHitSource(runtime);
+                    }
+
                     Destroy(runtime);
                     if (runtime is IAutoSkillTriggerSource autoSkillTriggerSource)
                         autoSkillTriggerSource.OnTriggerAutoSkill -= OnTriggerAutoSkill;
@@ -508,6 +518,37 @@ namespace Characters.SkillSystems
             }
         }
 
+        // ---------- Hit source linking ----------
+
+        /// <summary>
+        /// ต่อสาย: ทุก IHitSourceListener (เช่น Plasma Tag) ฟังทุก ISkillHitSource (เช่น Nova Cutter)
+        /// ยกเว้นตัวเอง AddHitSource กันซ้ำให้แล้ว จึงเรียกซ้ำได้ทุกครั้งที่มีสกิลเปลี่ยน
+        /// </summary>
+        private void LinkHitSources()
+        {
+            foreach (var listenerRt in _skillRuntimeDictionary.Values)
+            {
+                if (!listenerRt || listenerRt is not IHitSourceListener listener) continue;
+
+                foreach (var sourceRt in _skillRuntimeDictionary.Values)
+                {
+                    if (!sourceRt || sourceRt == listenerRt) continue;
+                    if (sourceRt is ISkillHitSource source)
+                        listener.AddHitSource(source);
+                }
+            }
+        }
+
+        /// <summary>ถอด source ที่กำลังจะถูก Destroy ออกจากทุก listener</summary>
+        private void UnlinkHitSource(BaseSkillRuntime runtime)
+        {
+            if (runtime is not ISkillHitSource source) return;
+
+            foreach (var rt in _skillRuntimeDictionary.Values)
+                if (rt && rt is IHitSourceListener listener)
+                    listener.RemoveHitSource(source);
+        }
+
         public virtual void CancelAllSkill()
         {
             GetSkillRuntimeOrDefault(primarySkillData)?.CancelSkill();
@@ -540,6 +581,7 @@ namespace Characters.SkillSystems
                 else
                 {
                     UnsubscribeAutoTrigger(runtime);
+                    UnlinkHitSource(runtime);
                     Destroy(runtime);
                     if (runtime is IAutoSkillTriggerSource autoSkillTriggerSource)
                         autoSkillTriggerSource.OnTriggerAutoSkill -= OnTriggerAutoSkill;
