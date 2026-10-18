@@ -54,6 +54,12 @@ namespace Characters.SkillSystems
         private readonly Dictionary<BaseSkillDataSo, BaseSkillRuntime> _skillRuntimeDictionary = new();
         private readonly List<BaseSkillDataSo> _pendingRuntimeRemoval = new();
 
+        // ---------- Auto → Auto trigger ----------
+        // handler ต่อ runtime (ต้องเก็บ reference เดิมไว้ เพราะ unsubscribe ต้องใช้ตัวเดียวกับที่ subscribe)
+        private readonly Dictionary<BaseSkillRuntime, Action> _autoTriggerHandlers = new();
+        private int _autoChainDepth;
+        private const int MaxAutoChainDepth = 2; // A→B→C ได้ แต่ไม่วนต่อ
+
         protected BaseController owner;
         protected bool canUseSkills = true;
         protected bool canUsePrimary = true;
@@ -287,6 +293,10 @@ namespace Characters.SkillSystems
                     _autoSkillDatas.Add(newSkillData);
                     InstantiateSkillRuntime(newSkillData);
                     runtime = GetSkillRuntimeOrDefault(newSkillData);
+
+                    // Optional: auto skill ที่ implement IAutoSkillTriggerSource จะ trigger auto skill ตัวอื่นได้
+                    // (ไม่ throw ถ้าไม่ implement ต่างจาก Primary/Secondary)
+                    if (runtime) SubscribeAutoTrigger(runtime);
                     break;
             }
 
@@ -340,6 +350,7 @@ namespace Characters.SkillSystems
             }
             else
             {
+                UnsubscribeAutoTrigger(runtime);
                 Destroy(runtime);
                 if (runtime is IAutoSkillTriggerSource autoSkillTriggerSource)
                     autoSkillTriggerSource.OnTriggerAutoSkill -= OnTriggerAutoSkill;
@@ -357,6 +368,7 @@ namespace Characters.SkillSystems
 
                 if (runtime == null || !runtime.IsPerforming)
                 {
+                    if (runtime) UnsubscribeAutoTrigger(runtime);
                     Destroy(runtime);
                     if (runtime is IAutoSkillTriggerSource autoSkillTriggerSource)
                         autoSkillTriggerSource.OnTriggerAutoSkill -= OnTriggerAutoSkill;
@@ -441,10 +453,59 @@ namespace Characters.SkillSystems
                 OnSkillCooldownUpdate?.Invoke(runtime.Cooldown, progress, index);
             }
         }
-        
+
+        // ---------- Auto trigger ----------
+
+        /// <summary>จาก Primary/Secondary: trigger auto skill ทั้งหมด</summary>
         private void OnTriggerAutoSkill()
         {
             PerformSkill(SkillType.AutoSkill);
+        }
+
+        private void SubscribeAutoTrigger(BaseSkillRuntime runtime)
+        {
+            if (runtime is not IAutoSkillTriggerSource source) return;
+            if (_autoTriggerHandlers.ContainsKey(runtime)) return;
+
+            Action handler = () => OnAutoSkillTriggeredByAuto(runtime);
+            _autoTriggerHandlers[runtime] = handler;
+            source.OnTriggerAutoSkill += handler;
+        }
+
+        private void UnsubscribeAutoTrigger(BaseSkillRuntime runtime)
+        {
+            if (runtime is not IAutoSkillTriggerSource source) return;
+            if (!_autoTriggerHandlers.TryGetValue(runtime, out var handler)) return;
+
+            source.OnTriggerAutoSkill -= handler;
+            _autoTriggerHandlers.Remove(runtime);
+        }
+
+        /// <summary>
+        /// จาก Auto skill: trigger auto skill ตัวอื่น (ข้ามตัวต้นเหตุ)
+        /// กันวนลูปด้วย IsCooldown/IsPerforming/globalCooldown ใน BaseSkillRuntime.PerformSkill
+        /// และ depth guard นี้เป็นตาข่ายสำรอง
+        /// </summary>
+        private void OnAutoSkillTriggeredByAuto(BaseSkillRuntime sourceRuntime)
+        {
+            if (!owner || !canUseSkills) return;
+            if (_autoChainDepth >= MaxAutoChainDepth) return;
+
+            _autoChainDepth++;
+            try
+            {
+                foreach (var data in _autoSkillDatas.ToList()) // ToList กัน collection เปลี่ยนระหว่างวน
+                {
+                    var rt = GetSkillRuntimeOrDefault(data);
+                    if (!rt || rt == sourceRuntime) continue;
+                    if (!CanPerformSkillNow(data)) continue;
+                    rt.PerformSkill();
+                }
+            }
+            finally
+            {
+                _autoChainDepth--;
+            }
         }
 
         public virtual void CancelAllSkill()
@@ -478,6 +539,7 @@ namespace Characters.SkillSystems
                 }
                 else
                 {
+                    UnsubscribeAutoTrigger(runtime);
                     Destroy(runtime);
                     if (runtime is IAutoSkillTriggerSource autoSkillTriggerSource)
                         autoSkillTriggerSource.OnTriggerAutoSkill -= OnTriggerAutoSkill;

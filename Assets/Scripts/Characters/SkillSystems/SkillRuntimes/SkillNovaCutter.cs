@@ -11,6 +11,7 @@ namespace Characters.SkillSystems.SkillRuntimes
     public class SkillNovaCutter : BaseSkillRuntime<SkillNovaCutterDataSo>, IAutoSkillTriggerSource
     {
         private NovaCutterSkillObject _cutterObj;
+        public event Action OnTriggerAutoSkill;
         
         public override void AssignSkillData(BaseSkillDataSo skillData, BaseController owner)
         {
@@ -18,6 +19,7 @@ namespace Characters.SkillSystems.SkillRuntimes
            _cutterObj = Instantiate(base.skillData.CutterObj, owner.Body.transform);
            _cutterObj.transform.localPosition += (Vector3)base.skillData.CutterOffset;
            _cutterObj.gameObject.SetActive(false);
+           _cutterObj.DamageOnTouch.OnHit += OnCutterHit;
         }
 
         protected override void OnSkillStart()
@@ -40,9 +42,13 @@ namespace Characters.SkillSystems.SkillRuntimes
         protected void OnDestroy()
         {
             if (!_cutterObj) return;
+            _cutterObj.DamageOnTouch.OnHit -= OnCutterHit;
             Destroy(_cutterObj);
         }
 
-        public event Action OnTriggerAutoSkill;
+        private void OnCutterHit(GameObject _)
+        {
+            OnTriggerAutoSkill?.Invoke();
+        }
     }
 }
