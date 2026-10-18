@@ -153,7 +153,11 @@ namespace UI.Challenge
             
             if (selectedIds.Count == 0) p.SelectedChallengesPerMap.Remove(mapId);
             var sender = MapSelectionSender.Instance.challengeData;
-            if (scoreMultiply) scoreMultiply.text = "+" + sender.TotalPercent + "%";
+            if (scoreMultiply)
+            {
+                string sign = sender.TotalPercent > 0 ? "+" : sender.TotalPercent < 0 ? "-" : "";
+                scoreMultiply.text = sign + Mathf.Abs(sender.TotalPercent) + "%";
+            }
             ActiveProfileService.Instance?.SaveNow();
         }
         
@@ -239,7 +243,11 @@ namespace UI.Challenge
                 player.SelectedChallengesPerMap.Remove(mapId);
 
             var sender = MapSelectionSender.Instance.challengeData;
-            if (scoreMultiply) scoreMultiply.text = "+" + sender.TotalPercent + "%";
+            if (scoreMultiply)
+            {
+                string sign = sender.TotalPercent > 0 ? "+" : sender.TotalPercent < 0 ? "-" : "";
+                scoreMultiply.text = sign + Mathf.Abs(sender.TotalPercent) + "%";
+            }
 
             OnSelected?.Invoke(index, challenge);
             ActiveProfileService.Instance?.SaveNow();
