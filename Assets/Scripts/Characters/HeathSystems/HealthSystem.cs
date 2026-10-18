@@ -62,6 +62,7 @@ namespace Characters.HeathSystems
         private bool _isDead;
 
         public bool IsDead => _isDead;
+        public bool IsHitCooldown => _isHitCooldown;
 
         /// <summary>Debug switch: while true every incoming hit is refused outright.</summary>
         public bool GodMode
