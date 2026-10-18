@@ -112,6 +112,7 @@ namespace Characters.SkillSystems.SkillRuntimes
             if (!CombatManager.TryGetCharacterFromCache(target, out var targetController)) return;
             if (targetController is not PlayerController) return;
             if (skillData.KnockBackOnlyOncePerSkill && !_knockedTargets.Add(targetController)) return;
+            if (targetController.HealthSystem.IsInvincible) return;
 
             Vector2 knockBackDirection = targetController.transform.position - owner.transform.position;
             if (knockBackDirection.sqrMagnitude <= 0.0001f)
