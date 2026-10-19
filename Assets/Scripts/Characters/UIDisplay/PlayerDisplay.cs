@@ -156,9 +156,17 @@ namespace Characters.UIDisplay
         private readonly Dictionary<string, ActiveSkillFeedback> _activeSkillTexts = new();
         private readonly List<ActiveSkillFeedback> _activeStack = new();
 
-        public void InitDependencies()
+        private PlayerController _owner;
+
+        /// <summary>
+        /// เรียกจาก PlayerController.OnEnable ทุกครั้ง - ผูกกับตัวที่ส่งมา (ไม่พึ่ง PlayerController.Instance ที่อาจยัง
+        /// เป็นตัวเก่า/null ตอนโหลดซีนใหม่) และถอดของเดิมก่อน กันผูกซ้ำเมื่อ Enable หลายรอบ
+        /// </summary>
+        public void InitDependencies(PlayerController owner)
         {
-            PlayerController.Instance.OnResetAllBehavior += UpdateAllUI;
+            if (_owner != null) _owner.OnResetAllBehavior -= UpdateAllUI;
+            _owner = owner;
+            if (_owner != null) _owner.OnResetAllBehavior += UpdateAllUI;
             if (solfUpgradeSelectButton != null)
             {
                 solfUpgradeSelectButton.transform.DOKill();
@@ -213,7 +221,7 @@ namespace Characters.UIDisplay
 
         private void OnDestroy()
         {
-            PlayerController.Instance.OnResetAllBehavior -= UpdateAllUI;
+            if (_owner != null) _owner.OnResetAllBehavior -= UpdateAllUI;
             if (solfUpgradeSelectButton != null)
                 solfUpgradeSelectButton.transform.DOKill();
 

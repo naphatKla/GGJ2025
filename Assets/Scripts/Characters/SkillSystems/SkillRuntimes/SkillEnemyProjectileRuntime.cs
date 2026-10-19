@@ -38,6 +38,9 @@ namespace Characters.SkillSystems.SkillRuntimes
 
         protected override void OnSkillStart()
         {
+            // กันค่าค้างจาก Cancel ตอนไม่ได้ยิงอยู่ (เช่น Reset ตอนเกิดจาก Pool) -> นัดแรกโดนลบทิ้งทันทีที่ยิงจบ
+            _releaseProjectilesOnExit = false;
+
             if (skillData.ResetSpiralOnCast)
                 _spiralAngle = 0f;
         }
@@ -65,7 +68,8 @@ namespace Characters.SkillSystems.SkillRuntimes
 
         public override void CancelSkill(int milliSecondDelay = 0)
         {
-            _releaseProjectilesOnExit = true;
+            // เฉพาะตอนกำลังยิงอยู่จริง - เดิมตั้งทุกครั้ง แล้วค้างไปลบกระสุนนัดแรกของรอบถัดไป
+            if (IsPerforming) _releaseProjectilesOnExit = true;
             base.CancelSkill(milliSecondDelay);
         }
 

@@ -59,9 +59,15 @@ namespace Characters.Controllers
         /// </summary>
         private void Awake()
         {
-            if (Instance) return;
+            // ตัวล่าสุดเป็น Instance เสมอ: ตอนโหลดซีนใหม่ (Restart / Next) ตัวเก่ายังไม่ถูกทำลายตอน Awake ของตัวใหม่
+            // เดิม "if (Instance) return" ทำให้ Instance ค้างเป็นตัวเก่า แล้วกลายเป็น null เมื่อมันถูกทำลาย
             Instance = this;
             CombatManager.ClearCache();
+        }
+
+        private void OnDestroy()
+        {
+            if (Instance == this) Instance = null;
         }
 
         public override void AssignCharacterData(BaseCharacterDataSo data)
@@ -108,7 +114,7 @@ namespace Characters.Controllers
             UIManager.Instance.OnAnyPanelOpen += OnAnyUIOpen;
             UIManager.Instance.OnAllPanelClosed += OnAllUIClosed;
             
-            playerDisplay.InitDependencies();
+            playerDisplay.InitDependencies(this);
             
             base.SubscribeDependency();
         }

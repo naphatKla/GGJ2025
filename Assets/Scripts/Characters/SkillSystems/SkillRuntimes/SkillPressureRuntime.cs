@@ -40,6 +40,9 @@ namespace Characters.SkillSystems.SkillRuntimes
                 CombatManager.ApplyCalculatedDamageTo(target.gameObject, owner.gameObject,owner.CharacterData.CharacterId , owner.gameObject,
                     target.ClosestPoint(owner.transform.position), skillData.BaseDamage, skillData.DamageMultiplier, 0,
                     0, 0, 0);
+
+                if (skillData.StatusEffectOnHit is { Count: > 0 })
+                    StatusEffectManager.ApplyEffectTo(target.gameObject, skillData.StatusEffectOnHit);
             }
         }
 
