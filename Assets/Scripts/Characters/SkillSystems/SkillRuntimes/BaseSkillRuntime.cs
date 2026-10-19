@@ -19,6 +19,17 @@ namespace Characters.SkillSystems.SkillRuntimes
         event Action OnTriggerAutoSkill;
     }
     
+    public interface ISkillHitSource
+    {
+        event Action<GameObject> OnSkillHit;
+    }
+    
+    public interface IHitSourceListener
+    {
+        void AddHitSource(ISkillHitSource source);
+        void RemoveHitSource(ISkillHitSource source);
+    }
+    
     public abstract class BaseSkillRuntime : MonoBehaviour
     {
         protected float cooldown;

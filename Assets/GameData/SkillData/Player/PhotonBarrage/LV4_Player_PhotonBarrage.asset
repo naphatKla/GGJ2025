@@ -34,12 +34,12 @@ MonoBehaviour:
   skillName: Photon Barrage
   skillDescription: "<color=#FF3131><b>[Attack]</b></color>\r\n<size=3.5><color=#adadad><i>[Single],
     [Multi-Shot], [Homing]</i></color>\r\n<color=#5CE5FF><b>[UPGRADE]</b></color>
-    \r\n<color=#FFE02E><b>[++]</b></color> Photon\n\r\nCooldown: <b>3s</b>\r\n\n-
+    \r\n<color=#FFE02E><b>[++]</b></color> Photon\n\r\nCooldown: <b>7s</b>\r\n\n-
     Creates Photons around the ship that launch at the nearest enemy."
   previousSkillData: {fileID: 11400000, guid: 5f05a732acbc11644a2acae005232639, type: 2}
   nextSkillDataUpgrade: {fileID: 11400000, guid: 95ffffcb8727ae54e8b0921590fce321, type: 2}
   level: 4
-  cooldown: 1
+  cooldown: 10
   globalCooldown: 0.1
   maxStack: 1
   activateRadius: 0
@@ -51,27 +51,26 @@ MonoBehaviour:
   missileCount: 8
   missilePrefab: {fileID: 4348500440254396718, guid: 116f8ed7fb3d1b94a94be583ffdf7955, type: 3}
   damageHitPerSec: 1
-  baseDamagePerHit: 22.5
-  damageMultiplier: 50
-  spreadDistance: 6
-  spreadEntireDuration: 0.4
-  spreadStaggerDuration: 0.2
-  spreadStaggerCurve:
+  baseDamagePerHit: 6
+  damageMultiplier: 40
+  launchDuration: 0.4
+  launchSpeed: 24
+  launchSpeedCurve:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0
+      value: 1
       inSlope: 0
-      outSlope: 1
+      outSlope: -0.8
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
       time: 1
-      value: 1
-      inSlope: 1
+      value: 0.2
+      inSlope: -0.8
       outSlope: 0
       tangentMode: 0
       weightedMode: 0
@@ -80,60 +79,40 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  spreadEaseCurve:
+  launchAngleJitter: 10
+  maxFlightLifetime: 4
+  cruiseSpeed: 44
+  acceleration: 60
+  detectionRadius: 20
+  retargetInterval: 0.15
+  allowSharedTargets: 1
+  turnSpeed: 270
+  turnRampCurve:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 1
       value: 1
       inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  spreadMoveCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 2
       outSlope: 2
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
       outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 3
+      inSlope: 2
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  homingDetectionRadius: 25
-  homingSpeed: 30
-  homingMaxLifetime: 2
-  homingTurnSpeed: 360
-  homingArcStrength: 2
-  homingArcDecayCurve:
+  arcStrength: 2
+  arcDecayCurve:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
@@ -157,29 +136,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  homingStaggerDuration: 0.3
-  homingStaggerCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 1
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 1
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  noTargetFlyDistance: 6
+  spawnChance: 50
+  spawnAmount: 3
+  maxSpawnGeneration: 3
+  spawnAngleSpread: 120

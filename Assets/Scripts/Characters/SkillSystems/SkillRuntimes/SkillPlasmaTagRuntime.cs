@@ -11,7 +11,7 @@ using UnityEngine;
 
 namespace Characters.SkillSystems.SkillRuntimes
 {
-    public class SkillPlasmaTagRuntime : BaseSkillRuntime<SkillPlasmaTagDataSo>
+    public class SkillPlasmaTagRuntime : BaseSkillRuntime<SkillPlasmaTagDataSo>, IHitSourceListener
     {
         private const float InitialTargetRange = 5f;
 
@@ -23,7 +23,11 @@ namespace Characters.SkillSystems.SkillRuntimes
         // Bombs currently alive (counting down or exploding).
         private readonly List<PlasmaTagSkillObject> _activeBombs = new();
 
+        // Hit handler shared by the owner and every extra hit source (needs one stable reference to unsubscribe).
         private Action<GameObject> _onOwnerHitHandler;
+
+        // Extra hit sources (e.g. Nova Cutter) wired in by SkillSystem.
+        private readonly List<ISkillHitSource> _hitSources = new();
 
         // ======================== SKILL LIFECYCLE ========================
 
@@ -63,6 +67,10 @@ namespace Characters.SkillSystems.SkillRuntimes
 
         private void OnDestroy()
         {
+            foreach (var s in _hitSources)
+                if (s != null) s.OnSkillHit -= _onOwnerHitHandler;
+            _hitSources.Clear();
+
             if (owner == null) return;
 
             owner.DamageOnTouch.OnHit -= _onOwnerHitHandler;
@@ -90,6 +98,24 @@ namespace Characters.SkillSystems.SkillRuntimes
             foreach (var bomb in bombs)
                 if (bomb && bomb.IsBusy) return false;
             return true;
+        }
+
+        // ======================== HIT SOURCES (IHitSourceListener) ========================
+
+        public void AddHitSource(ISkillHitSource source)
+        {
+            if (source == null || _onOwnerHitHandler == null) return;
+            if (_hitSources.Contains(source)) return;
+
+            _hitSources.Add(source);
+            source.OnSkillHit += _onOwnerHitHandler; // IsPerforming gate อยู่ใน handler แล้ว
+        }
+
+        public void RemoveHitSource(ISkillHitSource source)
+        {
+            if (source == null) return;
+            if (_hitSources.Remove(source) && _onOwnerHitHandler != null)
+                source.OnSkillHit -= _onOwnerHitHandler;
         }
 
         // ======================== PLACE BOMB ========================

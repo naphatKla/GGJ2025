@@ -140,7 +140,7 @@ namespace Characters.SkillSystems.SkillRuntimes
             // เอฟเฟกต์ใส่ตัวเองตอน parry สำเร็จ
             StatusEffectManager.ApplyEffectTo(gameObject, skillData.SelfEffectsOnParrySuccess);
             owner.HealthSystem.Heal(healAmount);
-
+            
             // ระเบิดศัตรูรอบ ๆ + knockback + ดาเมจ
             foreach (var target in targetsInRange)
             {

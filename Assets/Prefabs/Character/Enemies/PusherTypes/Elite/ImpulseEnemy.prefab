@@ -123,7 +123,7 @@ GameObject:
   - component: {fileID: 6403511043337786645}
   - component: {fileID: 5668491375699070767}
   m_Layer: 0
-  m_Name: PiercerEnemyDash
+  m_Name: ImpulseEnemyDash
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -493,7 +493,7 @@ GameObject:
   - component: {fileID: 5375508461332974695}
   - component: {fileID: 4728684009063820825}
   m_Layer: 0
-  m_Name: PiercerEnemyChargeDash
+  m_Name: ImpulseEnemyChargeDash
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -800,7 +800,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f010f6edecaea2a40adea01bf2111bb8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  vfxPrefab: {fileID: 4837988583817273199, guid: 778fed3bb44bcf749983f211b1018955, type: 3}
+  vfxPrefab: {fileID: 4837988583817273199, guid: 04fc8eb2eabbd664688cc3086493a1c2, type: 3}
   overrideOwner: {fileID: 7588264341463899481}
   stopOnDisable: 1
   followMode: 1
@@ -817,7 +817,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f010f6edecaea2a40adea01bf2111bb8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  vfxPrefab: {fileID: 1572890559719368324, guid: 44f8b0154d114bf42a72b2e494c0610d, type: 3}
+  vfxPrefab: {fileID: 1572890559719368324, guid: bd097cb3938490349a0c216ced0e6bb3, type: 3}
   overrideOwner: {fileID: 7588264341463899481}
   stopOnDisable: 1
   followMode: 1
@@ -833,7 +833,7 @@ PrefabInstance:
     - target: {fileID: 65121292200328503, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
       propertyPath: vfxPrefab
       value: 
-      objectReference: {fileID: 7976832994215977253, guid: d1d4a3ec7a2a2534881ea4d7f0f880da, type: 3}
+      objectReference: {fileID: 7976832994215977253, guid: 9683add5c59083749b34fae9f2724fc6, type: 3}
     - target: {fileID: 1775538760653090302, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0.4347334
@@ -876,12 +876,16 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1943798464071913329, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
       propertyPath: m_Name
-      value: PiercerEnemyNotify
+      value: ImpulseEnemyNotify
+      objectReference: {fileID: 0}
+    - target: {fileID: 1943798464071913329, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2398513818364634764, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
       propertyPath: vfxPrefab
       value: 
-      objectReference: {fileID: 7718178230085614703, guid: ab0079344803b394092ba05e0d40afcd, type: 3}
+      objectReference: {fileID: 7718178230085614703, guid: 660bcf52448cda74dbfc745f89bc6073, type: 3}
     - target: {fileID: 2489850510676935044, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
       propertyPath: shape
       value: 1
@@ -947,24 +951,28 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2944519933285449661, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
+      propertyPath: m_Parameters.colorGradient.key0.b
+      value: 0.9960785
+      objectReference: {fileID: 0}
+    - target: {fileID: 2944519933285449661, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
       propertyPath: m_Parameters.colorGradient.key0.g
-      value: 1
+      value: 0.7058824
       objectReference: {fileID: 0}
     - target: {fileID: 2944519933285449661, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
       propertyPath: m_Parameters.colorGradient.key0.r
-      value: 0.05724919
+      value: 0.9960785
       objectReference: {fileID: 0}
     - target: {fileID: 2944519933285449661, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
       propertyPath: m_Parameters.colorGradient.key1.b
-      value: 0.5495883
+      value: 0.66035616
       objectReference: {fileID: 0}
     - target: {fileID: 2944519933285449661, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
       propertyPath: m_Parameters.colorGradient.key1.g
-      value: 1
+      value: 0.5254902
       objectReference: {fileID: 0}
     - target: {fileID: 2944519933285449661, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
       propertyPath: m_Parameters.colorGradient.key1.r
-      value: 0.5235849
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3040175372062831934, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
       propertyPath: m_Name
@@ -976,11 +984,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4115155700243525769, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
       propertyPath: m_Name
-      value: PiercerEnemyTakeDamage
+      value: ImpulseEnemyTakeDamage
       objectReference: {fileID: 0}
     - target: {fileID: 5500840722233088596, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
       propertyPath: m_Name
-      value: PiercerEnemySpawn
+      value: ImpulseEnemySpawn
       objectReference: {fileID: 0}
     - target: {fileID: 5733554412123996507, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
       propertyPath: skillEntries.Array.size
@@ -1102,7 +1110,7 @@ PrefabInstance:
       objectReference: {fileID: 6667987592460369122, guid: dc8e49cb9d7e87548b234202a11a378a, type: 3}
     - target: {fileID: 6893798603404414412, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
       propertyPath: m_Name
-      value: PiercerEnemyDead
+      value: ImpulseEnemyDead
       objectReference: {fileID: 0}
     - target: {fileID: 6947014090700330803, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
       propertyPath: m_LocalScale.x
@@ -1122,7 +1130,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7115437386439726553, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
       propertyPath: m_Name
-      value: PiercerEnemyStun
+      value: ImpulseEnemyStun
       objectReference: {fileID: 0}
     - target: {fileID: 7312169751311385798, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
       propertyPath: m_Radius
@@ -1155,11 +1163,15 @@ PrefabInstance:
     - target: {fileID: 7993008330672070213, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
       propertyPath: vfxPrefab
       value: 
-      objectReference: {fileID: 3769440209828808165, guid: 2a227dbe30ce74446a94077ce36e990c, type: 3}
+      objectReference: {fileID: 3769440209828808165, guid: d116d54a92717554dba64f637d6c4175, type: 3}
     - target: {fileID: 8145196360709479149, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
       propertyPath: characterData
       value: 
       objectReference: {fileID: 11400000, guid: 7fb32bc2b81be3a4b927bb19a1d23939, type: 2}
+    - target: {fileID: 8664070425611870484, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
+      propertyPath: managedReferences[7334425405478141959].Active
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8858836943072646866, guid: 95cb9b76c2a0e5644b868184b66da0fd, type: 3}
       propertyPath: circleRadius
       value: 2.25

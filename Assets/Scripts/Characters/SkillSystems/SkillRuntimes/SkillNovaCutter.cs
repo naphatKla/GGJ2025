@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using Characters.Controllers;
 using Characters.SkillSystems.SkillObjects;
@@ -7,22 +8,27 @@ using UnityEngine;
 
 namespace Characters.SkillSystems.SkillRuntimes
 {
-    public class SkillNovaCutter : BaseSkillRuntime<SkillNovaCutterDataSo>
+    public class SkillNovaCutter : BaseSkillRuntime<SkillNovaCutterDataSo>, IAutoSkillTriggerSource, ISkillHitSource
     {
         private NovaCutterSkillObject _cutterObj;
-        
+
+        public event Action OnTriggerAutoSkill;
+        public event Action<GameObject> OnSkillHit;
+
         public override void AssignSkillData(BaseSkillDataSo skillData, BaseController owner)
         {
             base.AssignSkillData(skillData, owner);
-           _cutterObj = Instantiate(base.skillData.CutterObj, owner.Body.transform);
-           _cutterObj.transform.localPosition += (Vector3)base.skillData.CutterOffset;
-           _cutterObj.gameObject.SetActive(false);
+            _cutterObj = Instantiate(base.skillData.CutterObj, owner.Body.transform);
+            _cutterObj.transform.localPosition += (Vector3)base.skillData.CutterOffset;
+            _cutterObj.gameObject.SetActive(false);
+            _cutterObj.DamageOnTouch.OnHit += OnCutterHit;
         }
 
         protected override void OnSkillStart()
         {
             _cutterObj.gameObject.SetActive(true);
-            _cutterObj.DamageOnTouch.EnableDamage(owner.gameObject,owner.CharacterData.CharacterId ,this, skillData.DamageHitPerSec, skillData.BaseDamagePerHit, skillData.DamageMultiplier);
+            _cutterObj.DamageOnTouch.EnableDamage(owner.gameObject, owner.CharacterData.CharacterId, this,
+                skillData.DamageHitPerSec, skillData.BaseDamagePerHit, skillData.DamageMultiplier);
         }
 
         protected override UniTask OnSkillUpdate(CancellationToken cancelToken)
@@ -39,7 +45,14 @@ namespace Characters.SkillSystems.SkillRuntimes
         protected void OnDestroy()
         {
             if (!_cutterObj) return;
-            Destroy(_cutterObj);
+            _cutterObj.DamageOnTouch.OnHit -= OnCutterHit;
+            Destroy(_cutterObj.gameObject); // เดิม Destroy(_cutterObj) ลบแค่ component ตัว GameObject ยังค้างอยู่
+        }
+
+        private void OnCutterHit(GameObject target)
+        {
+            OnSkillHit?.Invoke(target);   // ให้ skill อื่น (เช่น Plasma Tag) ได้ target
+            OnTriggerAutoSkill?.Invoke(); // เหมือนเดิม
         }
     }
 }

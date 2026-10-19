@@ -7,19 +7,14 @@ namespace Characters.SO.SkillDataSo
     [CreateAssetMenu(fileName = "SkillPhotonBarrageData", menuName = "GameData/SkillData/SkillPhotonBarrageData")]
     public class SkillPhotonBarrageDataSo : BaseSkillDataSo
     {
-        // ─────────────── Skill Object ───────────────
-
-        [FoldoutGroup("Skill Object")]
-        [LabelText("Missile Count")]
-        [PropertyTooltip("Number of missiles spawned per cast.")]
-        [SerializeField]
+        // ───────── Skill Object ─────────
+        [FoldoutGroup("Skill Object")] [SerializeField]
         private int missileCount = 8;
 
-        [FoldoutGroup("Skill Object")] [LabelText("Missile Prefab")] [SerializeField] [Required]
+        [FoldoutGroup("Skill Object")] [SerializeField] [Required]
         private PhotonBarrageSkillObject missilePrefab;
 
-        // ─────────────── Damage ───────────────
-
+        // ───────── Damage ─────────
         [FoldoutGroup("Damage")] [SerializeField]
         private float damageHitPerSec = 5f;
 
@@ -29,112 +24,106 @@ namespace Characters.SO.SkillDataSo
         [FoldoutGroup("Damage")] [Unit(Units.Percent)] [SerializeField]
         private float damageMultiplier = 100f;
 
-        // ─────────────── Spread Phase ───────────────
-
-        [FoldoutGroup("Photon Barrage")]
-        [LabelText("Spread Distance")]
-        [PropertyTooltip("How far each missile travels outward from the caster.")]
+        // ───────── Launch (ไม่มี damage / ไม่ล็อกเป้า) ─────────
+        [FoldoutGroup("Launch Phase")] [LabelText("Launch Duration (sec)")] [Unit(Units.Second)]
+        [PropertyTooltip("ช่วงที่กระสุนพุ่งออกรอบตัว ยังไม่ทำดาเมจและยังไม่ล็อกเป้า จบช่วงนี้ถึงเปิด damage")]
+        [ValidateInput("@launchDuration < maxFlightLifetime", "ต้องน้อยกว่า Max Flight Lifetime")]
         [SerializeField]
-        private float spreadDistance = 3f;
+        private float launchDuration = 0.4f;
 
-        [FoldoutGroup("Photon Barrage/Spread Phase")]
-        [LabelText("Spread Duration (sec)")]
-        [Unit(Units.Second)]
-        [PropertyTooltip("Total time for all missiles to finish spreading outward.")]
+        [FoldoutGroup("Launch Phase")] [SerializeField]
+        private float launchSpeed = 12f;
+
+        [FoldoutGroup("Launch Phase")] [LabelText("Launch Speed Curve (0→1 ของ launch)")] [SerializeField]
+        private AnimationCurve launchSpeedCurve = AnimationCurve.Linear(0, 1, 1, 0.2f);
+
+        [FoldoutGroup("Launch Phase")] [LabelText("Angle Jitter (deg)")] [SerializeField]
+        private float launchAngleJitter = 10f;
+
+        // ───────── Seek / Rocket flight ─────────
+        [FoldoutGroup("Flight Phase")] [LabelText("Max Flight Lifetime (sec)")] [Unit(Units.Second)]
+        [PropertyTooltip("อายุกระสุนรวมนับตั้งแต่ปล่อย ถ้าไม่โดนอะไรจะหายเอง")]
         [SerializeField]
-        private float spreadEntireDuration = 0.4f;
+        private float maxFlightLifetime = 4f;
 
-        [FoldoutGroup("Photon Barrage/Spread Phase")]
-        [LabelText("Stagger Duration (sec)")]
-        [Unit(Units.Second)]
-        [ValidateInput("@spreadStaggerDuration < spreadEntireDuration",
-            "Stagger must be less than entire spread duration.")]
+        [FoldoutGroup("Flight Phase")] [SerializeField]
+        private float cruiseSpeed = 22f;
+
+        [FoldoutGroup("Flight Phase")] [PropertyTooltip("ความเร่งจากความเร็วท้าย launch ไปถึง cruise speed")] [SerializeField]
+        private float acceleration = 30f;
+
+        [FoldoutGroup("Flight Phase")] [SerializeField]
+        private float detectionRadius = 12f;
+
+        [FoldoutGroup("Flight Phase")] [LabelText("Retarget Interval (sec)")] [SerializeField]
+        private float retargetInterval = 0.15f;
+
+        [FoldoutGroup("Flight Phase")] [LabelText("Allow Shared Targets")]
+        [PropertyTooltip("ถ้าเป้าทุกตัวถูกจองหมดแล้ว ให้กระสุนไปซ้ำเป้าได้ไหม")]
         [SerializeField]
-        private float spreadStaggerDuration = 0.2f;
+        private bool allowSharedTargets = true;
 
-        [FoldoutGroup("Photon Barrage/Spread Phase")] [LabelText("Stagger Curve")] [SerializeField]
-        private AnimationCurve spreadStaggerCurve = AnimationCurve.Linear(0, 0, 1, 1);
+        [FoldoutGroup("Flight Phase")] [LabelText("Turn Speed (deg/sec)")] [SerializeField]
+        private float turnSpeed = 240f;
 
-        [FoldoutGroup("Photon Barrage/Spread Phase")] [LabelText("Ease Curve")] [SerializeField]
-        private AnimationCurve spreadEaseCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
-
-        [FoldoutGroup("Photon Barrage/Spread Phase")] [LabelText("Move Curve (lateral offset)")] [SerializeField]
-        private AnimationCurve spreadMoveCurve;
-
-        // ─────────────── Homing Phase ───────────────
-
-        [FoldoutGroup("Photon Barrage/Homing Phase")] [LabelText("Detection Radius")] [SerializeField]
-        private float homingDetectionRadius = 15f;
-
-        [FoldoutGroup("Photon Barrage/Homing Phase")]
-        [LabelText("Missile Speed")]
-        [PropertyTooltip("Travel speed of each missile during homing.")]
+        [FoldoutGroup("Flight Phase")] [LabelText("Turn Ramp Curve (0→1 ของช่วง seek)")]
+        [PropertyTooltip("ตัวคูณ turn speed ตามเวลา ยิ่งนานยิ่งเลี้ยวแคบ กันกระสุนวนรอบเป้า")]
         [SerializeField]
-        private float homingSpeed = 18f;
+        private AnimationCurve turnRampCurve = AnimationCurve.Linear(0, 1, 1, 3);
 
-        [FoldoutGroup("Photon Barrage/Homing Phase")]
-        [LabelText("Max Homing Lifetime (sec)")]
-        [Unit(Units.Second)]
-        [PropertyTooltip("If a missile hasn't hit anything after this time, it despawns.")]
+        [FoldoutGroup("Flight Phase")] [SerializeField]
+        private float arcStrength = 2f;
+
+        [FoldoutGroup("Flight Phase")] [LabelText("Arc Decay Curve (0→1 ของช่วง seek)")] [SerializeField]
+        private AnimationCurve arcDecayCurve = AnimationCurve.EaseInOut(0, 1, 1, 0);
+        
+        // ───────── Split On Hit ─────────
+        [FoldoutGroup("Split On Hit")] [LabelText("Spawn Chance")] [Unit(Units.Percent)]
+        [PropertyTooltip("โอกาสที่กระสุนซึ่งชนศัตรูจะงอกกระสุนใหม่ (0-100)")]
+        [Range(0, 100)] [SerializeField]
+        private float spawnChance = 0f;
+
+        [FoldoutGroup("Split On Hit")] [LabelText("Spawn Amount")]
+        [PropertyTooltip("จำนวนกระสุนที่งอกต่อการ trigger 1 ครั้ง")]
         [SerializeField]
-        private float homingMaxLifetime = 3f;
+        private int spawnAmount = 1;
 
-        [FoldoutGroup("Photon Barrage/Homing Phase")]
-        [LabelText("Turn Speed (deg/sec)")]
-        [PropertyTooltip("How fast the missile can turn toward its target per second. Higher = tighter tracking.")]
+        [FoldoutGroup("Split On Hit")] [LabelText("Max Spawn Generation")]
+        [PropertyTooltip("ลูกที่งอกออกมาจะงอกต่อได้อีกกี่ชั้น 1 = ลูกที่งอกแล้วไม่งอกต่อ 0 = ปิดฟีเจอร์")]
         [SerializeField]
-        private float homingTurnSpeed = 360f;
+        private int maxSpawnGeneration = 1;
 
-        [FoldoutGroup("Photon Barrage/Homing Phase")]
-        [LabelText("Arc Strength")]
-        [PropertyTooltip(
-            "Perpendicular offset strength for the initial arc curve. Decays over time for a satisfying 'swoop' effect.")]
+        [FoldoutGroup("Split On Hit")] [LabelText("Spawn Angle Spread (deg)")]
+        [PropertyTooltip("มุมกระจายของลูกที่งอก รอบทิศที่กระสุนเดิมพุ่งมา")]
         [SerializeField]
-        private float homingArcStrength = 2f;
+        private float spawnAngleSpread = 120f;
 
-        [FoldoutGroup("Photon Barrage/Homing Phase")]
-        [LabelText("Arc Decay Curve")]
-        [PropertyTooltip(
-            "How the arc offset decays over normalised lifetime (0→1). Typically starts at 1 and drops to 0.")]
-        [SerializeField]
-        private AnimationCurve homingArcDecayCurve = AnimationCurve.EaseInOut(0, 1, 1, 0);
-
-        [FoldoutGroup("Photon Barrage/Homing Phase")]
-        [LabelText("Stagger Duration (sec)")]
-        [Unit(Units.Second)]
-        [SerializeField]
-        private float homingStaggerDuration = 0.3f;
-
-        [FoldoutGroup("Photon Barrage/Homing Phase")] [LabelText("Stagger Curve")] [SerializeField]
-        private AnimationCurve homingStaggerCurve = AnimationCurve.Linear(0, 0, 1, 1);
-
-        [FoldoutGroup("Photon Barrage/Homing Phase")] [LabelText("No-Target Fly Distance")] [SerializeField]
-        private float noTargetFlyDistance = 6f;
-
-        // ─────────────── Properties ───────────────
-
+        // ───────── Properties ─────────
         public int MissileCount => missileCount;
         public PhotonBarrageSkillObject MissilePrefab => missilePrefab;
-
         public float DamageHitPerSec => damageHitPerSec;
         public float BaseDamagePerHit => baseDamagePerHit;
         public float DamageMultiplier => damageMultiplier;
 
-        public float SpreadDistance => spreadDistance;
-        public float SpreadEntireDuration => spreadEntireDuration;
-        public float SpreadStaggerDuration => spreadStaggerDuration;
-        public AnimationCurve SpreadStaggerCurve => spreadStaggerCurve;
-        public AnimationCurve SpreadEaseCurve => spreadEaseCurve;
-        public AnimationCurve SpreadMoveCurve => spreadMoveCurve;
+        public float LaunchDuration => launchDuration;
+        public float LaunchSpeed => launchSpeed;
+        public AnimationCurve LaunchSpeedCurve => launchSpeedCurve;
+        public float LaunchAngleJitter => launchAngleJitter;
 
-        public float HomingDetectionRadius => homingDetectionRadius;
-        public float HomingSpeed => homingSpeed;
-        public float HomingMaxLifetime => homingMaxLifetime;
-        public float HomingTurnSpeed => homingTurnSpeed;
-        public float HomingArcStrength => homingArcStrength;
-        public AnimationCurve HomingArcDecayCurve => homingArcDecayCurve;
-        public float HomingStaggerDuration => homingStaggerDuration;
-        public AnimationCurve HomingStaggerCurve => homingStaggerCurve;
-        public float NoTargetFlyDistance => noTargetFlyDistance;
+        public float MaxFlightLifetime => maxFlightLifetime;
+        public float CruiseSpeed => cruiseSpeed;
+        public float Acceleration => acceleration;
+        public float DetectionRadius => detectionRadius;
+        public float RetargetInterval => retargetInterval;
+        public bool AllowSharedTargets => allowSharedTargets;
+        public float TurnSpeed => turnSpeed;
+        public AnimationCurve TurnRampCurve => turnRampCurve;
+        public float ArcStrength => arcStrength;
+        public AnimationCurve ArcDecayCurve => arcDecayCurve;
+        
+        public float SpawnChance => spawnChance;
+        public int SpawnAmount => spawnAmount;
+        public int MaxSpawnGeneration => maxSpawnGeneration;
+        public float SpawnAngleSpread => spawnAngleSpread;
     }
 }

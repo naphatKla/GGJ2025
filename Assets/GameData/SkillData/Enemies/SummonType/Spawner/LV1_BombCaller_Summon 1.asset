@@ -36,7 +36,7 @@ MonoBehaviour:
   previousSkillData: {fileID: 0}
   nextSkillDataUpgrade: {fileID: 0}
   level: 1
-  cooldown: 5
+  cooldown: 10
   globalCooldown: 0.25
   maxStack: 1
   activateRadius: 0
@@ -45,9 +45,9 @@ MonoBehaviour:
   exitFeedback: 
   clearBuffOnSkillExit: 0
   statusEffectOnSkillStart: []
-  minTotalSummonCount: 5
-  maxTotalSummonCount: 5
-  maxAliveSummons: 15
+  minTotalSummonCount: 3
+  maxTotalSummonCount: 3
+  maxAliveSummons: 9
   useSpawnerPool: 1
   requirePrewarmedPoolInstance: 1
   countTowardMapPerEnemyMax: 0
@@ -74,7 +74,7 @@ MonoBehaviour:
     overrideCharacterData: 0
     characterDataOverride: {fileID: 0}
     minAmount: 0
-    maxAmount: 3
+    maxAmount: 2
     weight: 100
   - enabled: 1
     id: Enemy_Pressure
@@ -82,5 +82,5 @@ MonoBehaviour:
     overrideCharacterData: 0
     characterDataOverride: {fileID: 0}
     minAmount: 0
-    maxAmount: 2
+    maxAmount: 1
     weight: 100
