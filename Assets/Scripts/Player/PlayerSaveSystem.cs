@@ -85,6 +85,8 @@ namespace Player
                 UnlockedChallenges = new HashSet<string>(),
                 UnlockedPermanentUpgrade = new HashSet<PermanentUpgradeType>(),
                 UnlockedAchievements = new HashSet<string>(),
+                UnlockedSkills = new HashSet<string>(),
+                totalSkillUsedDictionary = new Dictionary<string, int>(),
                 RedDotKeys = new(),
                 SelectedChallengesPerMap = new Dictionary<string, HashSet<string>>(),
                 selectedMapIds = "map_voidmetro",

@@ -145,6 +145,33 @@ namespace Manager
         }
 
         #endregion
+
+        #region Skill
+
+        public static event Action<string> OnSkillUnlocked;
+
+        public bool IsSkillUnlocked(string skillKey)
+        {
+            var p = CurrentPlayerData;
+            if (p == null || string.IsNullOrEmpty(skillKey)) return false;
+            p.UnlockedSkills ??= new HashSet<string>();
+            return p.UnlockedSkills.Contains(skillKey);
+        }
+
+        /// <summary>ปลดสกิล (การ์ด Auto Skill) - key = SkillUnlockKey (ชื่อ asset Lv1)</summary>
+        public bool UnlockSkill(string skillKey, bool saveNow = true, bool silent = false)
+        {
+            var p = CurrentPlayerData;
+            if (p == null || string.IsNullOrEmpty(skillKey)) return false;
+            p.UnlockedSkills ??= new HashSet<string>();
+            if (!p.UnlockedSkills.Add(skillKey)) return false;
+
+            if (saveNow) ActiveProfileService.Instance.SaveNow();
+            if (!silent) OnSkillUnlocked?.Invoke(skillKey);
+            return true;
+        }
+
+        #endregion
         
         #region Permanent Upgrade
         

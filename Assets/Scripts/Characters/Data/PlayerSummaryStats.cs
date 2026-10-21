@@ -22,6 +22,7 @@ namespace Characters.Data
         public int totalPrimarySkillUsed;
         public int totalSecondarySkillUsed;
         public int totalAutoSkillUsed;
+        public Dictionary<string, int> skillUsedDictionary; // key = SkillUnlockKey, จำนวนครั้งในรอบนี้
         
         public int totalDamageTaken;
         public int totalHeal;

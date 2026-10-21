@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Characters.SO.SkillDataSo;
 using Manager;
 using Player;
 using ProjectExtensions;
@@ -12,6 +13,7 @@ namespace Achievements
     public class AchievementManager : NonAutoCreatePersistentSingleton<AchievementManager>
     {
         [SerializeField] private AchievementDatabase database;
+        public AchievementDatabase Database => database;
 
         protected override void Awake()
         {
@@ -24,6 +26,18 @@ namespace Achievements
                 Debug.LogWarning("[AchievementManager] Database is not assigned.", this);
 #endif
             }
+        }
+
+        /// <summary>
+        /// สกิลนี้ยังล็อกอยู่ไหม (ไม่ให้สุ่มเป็นการ์ด) = เป็นรางวัล Unlock Skill ของ Achievement สักอัน และยังไม่ได้ปลด
+        /// </summary>
+        public bool IsSkillLocked(BaseSkillDataSo skill)
+        {
+            if (!skill || !database) return false;
+            var key = SkillUnlockKey.Of(skill);
+            if (!database.IsSkillGated(key)) return false;
+            var p = CurrentPlayerData;
+            return p?.UnlockedSkills == null || !p.UnlockedSkills.Contains(key);
         }
 
         private PlayerData CurrentPlayerData =>
@@ -130,6 +144,9 @@ namespace Achievements
 
                 case AchievementConditionType.MapMilestoneClearedAtLeast:
                     return AchievementConditionConfig.HighestMilestoneCleared(p, c.mapId) >= Mathf.Max(0, c.milestoneAtLeast);
+
+                case AchievementConditionType.SkillUsedAtLeast:
+                    return c.skill && SkillUnlockKey.UsedCount(p, c.skill) >= c.minSkillUsed;
             }
 
             return false;
@@ -156,6 +173,13 @@ namespace Achievements
                     case AchievementRewardType.UnlockChallenge:
                         if (!string.IsNullOrEmpty(r.refId))
                             ProgressionManager.Instance.UnlockChallenge(r.refId, saveNow: true);
+                        break;
+
+                    case AchievementRewardType.UnlockSkill:
+                        if (r.skill && ProgressionManager.Instance.UnlockSkill(SkillUnlockKey.Of(r.skill), saveNow: true)
+                            && SceneManager.GetActiveScene().name == "Gameplay")
+                            NotificationManager.Instance?.PlayNotification("notify_unlock",
+                                $"New skill unlocked: {SkillUnlockKey.DisplayName(r.skill)}!", 10f, NotificationType.Reward);
                         break;
 
                     case AchievementRewardType.UnlockPermanentUpgrade:

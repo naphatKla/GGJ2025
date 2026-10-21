@@ -100,8 +100,12 @@ namespace Characters.SkillSystems
                 .Select(s => s.RootNode)
                 .ToHashSet();
 
+            // สกิลใหม่: ไม่เอาตัวที่ยังล็อก (เป็นรางวัล Unlock Skill ของ Achievement ที่ยังไม่ปลด)
+            // อัปเลเวลสกิลที่ถืออยู่แล้วไม่เกี่ยว
+            var achievements = Achievements.AchievementManager.Current;
             if (hasOpenSkillSlot)
-                options.AddRange(_skillPool.Where(s => s != null && !currentRoots.Contains(s.RootNode)));
+                options.AddRange(_skillPool.Where(s => s != null && !currentRoots.Contains(s.RootNode)
+                                                       && (achievements == null || !achievements.IsSkillLocked(s))));
 
             foreach (var skill in slotData.All)
             {

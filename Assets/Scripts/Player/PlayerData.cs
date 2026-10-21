@@ -31,6 +31,7 @@ namespace Player
         public int HighestHealOnRun;
         public Dictionary<string, int> takeDamageOnRunDictionary = new();
         public Dictionary<string, int> totalDiedDictionary = new();
+        public Dictionary<string, int> totalSkillUsedDictionary = new(); // key = ชื่อ asset สกิล Lv1 (SkillUnlockKey) สะสมทุกรอบ
         
         // Permanent Upgrade
         public Dictionary<PermanentUpgradeType, int> PermanentUpgrades =
@@ -41,6 +42,7 @@ namespace Player
         public HashSet<string> UnlockedChallenges = new HashSet<string>();
         public HashSet<PermanentUpgradeType> UnlockedPermanentUpgrade = new HashSet<PermanentUpgradeType>();
         public HashSet<string> UnlockedAchievements = new HashSet<string>();
+        public HashSet<string> UnlockedSkills = new HashSet<string>(); // key = SkillUnlockKey
         
         // Key ที่ยังไม่เคยเปิดดู
         public HashSet<string> RedDotKeys = new();
@@ -66,6 +68,8 @@ namespace Player
             totalDiedDictionary ??= new();
             UnlockedPermanentUpgrade ??= new HashSet<PermanentUpgradeType>();
             UnlockedAchievements ??= new HashSet<string>();
+            UnlockedSkills ??= new HashSet<string>();
+            totalSkillUsedDictionary ??= new Dictionary<string, int>();
 
             //migration
             if (SchemaVersion < 2)

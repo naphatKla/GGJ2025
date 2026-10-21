@@ -412,6 +412,8 @@ namespace Player
                 SaveNow();
             }
             GUILayout.EndHorizontal();
+
+            DrawSkillUnlockDebug(current);
             
             GUILayout.Label("Unlock Map", _hdrStyle);
             GUILayout.BeginHorizontal();
@@ -576,6 +578,88 @@ namespace Player
 #endif
         }
 
+
+        /// <summary>
+        /// รายการสกิลที่ล็อกด้วย Achievement (รางวัล Unlock Skill): ไอคอน + ชื่อ + สถานะ + ความคืบหน้าเงื่อนไข
+        /// ปุ่มขวาสุดสลับ ปลด/ล็อก สกิลนั้นทันที (ไม่แตะ Achievement)
+        /// </summary>
+        private void DrawSkillUnlockDebug(PlayerData current)
+        {
+            var db = Achievements.AchievementManager.Current?.Database
+                     ?? Resources.FindObjectsOfTypeAll<Achievements.AchievementDatabase>().FirstOrDefault();
+            GUILayout.Label("Skill Unlocks (Achievement)", _hdrStyle);
+            if (db == null)
+            {
+                GUILayout.Label("AchievementDatabase not loaded (open Achievement panel or enter a run once)", _kvStyle);
+                return;
+            }
+
+            current.UnlockedSkills ??= new HashSet<string>();
+            current.totalSkillUsedDictionary ??= new Dictionary<string, int>();
+            var rich = new GUIStyle(_kvStyle) { richText = true, wordWrap = false, clipping = TextClipping.Clip };
+
+            GUILayout.BeginHorizontal();
+            if (GUILayout.Button("Unlock All Skills"))
+            {
+                foreach (var key in db.GatedSkillKeys) current.UnlockedSkills.Add(key);
+                SaveNow();
+            }
+            if (GUILayout.Button("Reset Skill Unlocks"))
+            {
+                // ล็อกกลับ + ล้างจำนวนการใช้สกิล + ล้าง Achievement ที่ให้สกิล (ทดสอบปลดใหม่)
+                current.UnlockedSkills.Clear();
+                current.totalSkillUsedDictionary.Clear();
+                foreach (var e in db.entries)
+                    if (e?.rewards != null && e.rewards.Any(r => r != null && r.type == Achievements.AchievementRewardType.UnlockSkill))
+                        current.UnlockedAchievements?.Remove(e.id);
+                SaveNow();
+            }
+            GUILayout.EndHorizontal();
+
+            foreach (var entry in db.entries)
+            {
+                if (entry?.rewards == null) continue;
+                foreach (var reward in entry.rewards)
+                {
+                    if (reward == null || reward.type != Achievements.AchievementRewardType.UnlockSkill || !reward.skill)
+                        continue;
+
+                    string key = Achievements.SkillUnlockKey.Of(reward.skill);
+                    bool unlocked = current.UnlockedSkills.Contains(key);
+
+                    var cond = entry.conditions?.FirstOrDefault(c => c != null
+                        && c.type == Achievements.AchievementConditionType.SkillUsedAtLeast);
+                    string progress = cond != null && cond.skill
+                        ? $"{Achievements.SkillUnlockKey.DisplayName(cond.skill)} {Achievements.SkillUnlockKey.UsedCount(current, cond.skill)}/{cond.minSkillUsed}"
+                        : "-";
+
+                    GUILayout.BeginHorizontal();
+                    // ปุ่มไว้ต้นแถว (แถวยาวเกินหน้าต่างแล้วปุ่มท้ายแถวจะตกขอบ)
+                    if (GUILayout.Button(unlocked ? "Lock" : "Unlock", GUILayout.Width(58)))
+                    {
+                        if (unlocked) current.UnlockedSkills.Remove(key);
+                        else current.UnlockedSkills.Add(key);
+                        SaveNow();
+                    }
+                    DrawSpriteIcon(entry.icon ? entry.icon : reward.skill.SkillIcon, 20f);
+                    GUILayout.Label(
+                        $"{(unlocked ? "<color=#5CFF5C>UNLOCKED</color>" : "<color=#FF5C5C>LOCKED</color>")}  " +
+                        $"<b>{Achievements.SkillUnlockKey.DisplayName(reward.skill)}</b>  <color=#AAAAAA>use {progress}</color>",
+                        rich);
+                    GUILayout.EndHorizontal();
+                }
+            }
+        }
+
+        private static void DrawSpriteIcon(Sprite sprite, float size)
+        {
+            var rect = GUILayoutUtility.GetRect(size, size, GUILayout.Width(size), GUILayout.Height(size));
+            if (!sprite || !sprite.texture) return;
+            var tr = sprite.textureRect;
+            var tex = sprite.texture;
+            GUI.DrawTextureWithTexCoords(rect, tex,
+                new Rect(tr.x / tex.width, tr.y / tex.height, tr.width / tex.width, tr.height / tex.height));
+        }
 
         private void DrawKV(string k, string v)
         {

@@ -201,6 +201,7 @@ namespace Characters.Controllers
             statsPerRun.totalPrimarySkillUsed = skillSystem.TotalPrimarySkillUsed;
             statsPerRun.totalSecondarySkillUsed = skillSystem.TotalSecondarySkillUsed;
             statsPerRun.totalAutoSkillUsed = skillSystem.TotalAutoSkillUsed;
+            statsPerRun.skillUsedDictionary = new Dictionary<string, int>(skillSystem.SkillUsedCount);
 
             statsPerRun.totalDamageTaken = hs.TotalDamageTaken;
             statsPerRun.totalHeal = hs.TotalHeal;

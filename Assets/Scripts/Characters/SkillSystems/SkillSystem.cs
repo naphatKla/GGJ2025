@@ -25,6 +25,9 @@ namespace Characters.SkillSystems
         public int TotalSecondarySkillUsed { get; private set; }
         public int TotalAutoSkillUsed { get; private set; }
 
+        /// <summary>จำนวนครั้งที่ใช้แต่ละสกิลในรอบนี้ (key = SkillUnlockKey: นับรวมทุก Lv ของสกิลเดียวกัน)</summary>
+        public Dictionary<string, int> SkillUsedCount { get; } = new();
+
         // progress: 0..1, index
         public event Action<float, float, int> OnSkillCooldownUpdate;
         public event Action<int> OnSkillCooldownReset;
@@ -311,8 +314,12 @@ namespace Characters.SkillSystems
             runtime.SetCurrentCooldown(0);
             int index = GetSkillIndex(newSkillData);
 
+            string usageKey = Achievements.SkillUnlockKey.Of(newSkillData);
             runtime.SkillPerformCallback = () =>
             {
+                if (usageKey != null)
+                    SkillUsedCount[usageKey] = SkillUsedCount.TryGetValue(usageKey, out var used) ? used + 1 : 1;
+
                 if (type == SkillType.PrimarySkill)
                     TotalPrimarySkillUsed++;
                 else if (type == SkillType.SecondarySkill)

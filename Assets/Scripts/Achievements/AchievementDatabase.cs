@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Characters.SO.SkillDataSo;
 using PermanentUpgrade;
 using Player;
 using Sirenix.OdinInspector;
@@ -34,6 +35,8 @@ namespace Achievements
         MapWinAtLeast = 12,
         /// <summary>Cleared milestone N (1 = first) or higher on the given map (MapStat.HighestMilestoneCleared).</summary>
         MapMilestoneClearedAtLeast = 13,
+        /// <summary>ใช้สกิลนี้ (นับรวมทุก Lv ของสกิลเดียวกัน) สะสมทุกรอบอย่างน้อย N ครั้ง</summary>
+        SkillUsedAtLeast = 14,
     }
 
     public enum AchievementConditionLogic
@@ -48,6 +51,35 @@ namespace Achievements
         UnlockMap = 1,
         UnlockChallenge = 2,
         UnlockPermanentUpgrade = 3,
+        /// <summary>ปลดสกิล (การ์ด Auto Skill) - สกิลที่เป็นรางวัลของ Achievement ไหนก็ตาม จะถูกล็อกจนกว่าจะปลด</summary>
+        UnlockSkill = 4,
+    }
+
+    /// <summary>
+    /// ตัวช่วยระบบปลดสกิล: Key ของสกิล = ชื่อ asset ของ Lv1 (RootNode) จึงนับ/ปลดรวมทุก Lv ของสกิลเดียวกัน
+    /// </summary>
+    public static class SkillUnlockKey
+    {
+        public static string Of(BaseSkillDataSo skill)
+        {
+            if (!skill) return null;
+            var root = skill.RootNode;
+            return root ? root.name : skill.name;
+        }
+
+        public static int UsedCount(PlayerData p, BaseSkillDataSo skill)
+        {
+            var key = Of(skill);
+            if (p?.totalSkillUsedDictionary == null || key == null) return 0;
+            return p.totalSkillUsedDictionary.TryGetValue(key, out var n) ? n : 0;
+        }
+
+        public static string DisplayName(BaseSkillDataSo skill)
+        {
+            if (!skill) return "(none)";
+            var root = skill.RootNode ? skill.RootNode : skill;
+            return string.IsNullOrEmpty(root.SkillName) ? root.name : root.SkillName;
+        }
     }
 
     /// <summary>Context ตอนเช็คเงื่อนไข</summary>
@@ -120,6 +152,15 @@ namespace Achievements
         [ShowIf(nameof(type), AchievementConditionType.DiedAtLeast)]
         public int diedAtLeast;
 
+        [ShowIf(nameof(type), AchievementConditionType.SkillUsedAtLeast)]
+        [InfoBox("ลากสกิล Lv ไหนก็ได้มาใส่ (นับรวมทุก Lv ของสกิลนั้น) - นับสะสมทุกรอบ, บันทึกตอนจบรอบ")]
+        [Tooltip("สกิลที่ต้องใช้ (Dash / Parry / Auto Skill)")]
+        public BaseSkillDataSo skill;
+
+        [ShowIf(nameof(type), AchievementConditionType.SkillUsedAtLeast)]
+        [MinValue(1)] [LabelText("Use At Least")]
+        public int minSkillUsed;
+
         // แสดงสรุปให้ดูอ่านง่าย (ไม่บังคับใช้ก็ได้)
         [ShowInInspector, ReadOnly]
         private string Summary =>
@@ -139,6 +180,7 @@ namespace Achievements
                 AchievementConditionType.DiedAtLeast => $"Died from {diedFromId} >= {diedAtLeast}",
                 AchievementConditionType.MapWinAtLeast => $"Win map {mapId} >= {winAtLeast}",
                 AchievementConditionType.MapMilestoneClearedAtLeast => $"Clear {mapId} milestone Lv.{milestoneAtLeast} (or higher)",
+                AchievementConditionType.SkillUsedAtLeast => $"Use {SkillUnlockKey.DisplayName(skill)} >= {minSkillUsed} (all runs)",
                 _ => ""
             };
 
@@ -204,6 +246,11 @@ namespace Achievements
                     current = Mathf.Clamp(HighestMilestoneCleared(p, mapId) + 1, 0, target);
                     return true;
 
+                case AchievementConditionType.SkillUsedAtLeast:
+                    target = minSkillUsed;
+                    current = Mathf.Min(SkillUnlockKey.UsedCount(p, skill), target);
+                    return true;
+
                 default:
                     return false;
             }
@@ -237,8 +284,13 @@ namespace Achievements
                 AchievementRewardType.UnlockMap => $"Unlock Map: {refId}",
                 AchievementRewardType.UnlockChallenge => $"Unlock Challenge: {refId}",
                 AchievementRewardType.UnlockPermanentUpgrade => $"Unlock Perm: {permanentType}",
+                AchievementRewardType.UnlockSkill => $"Unlock Skill: {SkillUnlockKey.DisplayName(skill)}",
                 _ => ""
             };
+
+        [ShowIf(nameof(type), AchievementRewardType.UnlockSkill)]
+        [InfoBox("สกิลนี้จะไม่ถูกสุ่มเป็นการ์ดจนกว่าจะปลด Achievement นี้ (ลาก Lv ไหนก็ได้ ปลดทั้งสาย)")]
+        public BaseSkillDataSo skill;
 
         [ShowIf(nameof(type), AchievementRewardType.NanoCoin)]
         public int nanoAmount;
@@ -361,5 +413,32 @@ namespace Achievements
     public class AchievementDatabase : SerializedScriptableObject
     {
         public List<AchievementEntry> entries = new();
+
+        [NonSerialized] private HashSet<string> _gatedSkillKeys;
+
+        /// <summary>สกิลที่ต้องปลดก่อนใช้ = ทุกสกิลที่เป็นรางวัล Unlock Skill ของ Achievement ใดก็ได้</summary>
+        public bool IsSkillGated(string skillKey)
+        {
+            if (string.IsNullOrEmpty(skillKey)) return false;
+            _gatedSkillKeys ??= BuildGatedSkillKeys();
+            return _gatedSkillKeys.Contains(skillKey);
+        }
+
+        public IReadOnlyCollection<string> GatedSkillKeys => _gatedSkillKeys ??= BuildGatedSkillKeys();
+
+        private HashSet<string> BuildGatedSkillKeys()
+        {
+            var set = new HashSet<string>();
+            foreach (var e in entries)
+            {
+                if (e?.rewards == null) continue;
+                foreach (var r in e.rewards)
+                    if (r != null && r.type == AchievementRewardType.UnlockSkill && r.skill)
+                        set.Add(SkillUnlockKey.Of(r.skill));
+            }
+            return set;
+        }
+
+        private void OnValidate() => _gatedSkillKeys = null;
     }
 }

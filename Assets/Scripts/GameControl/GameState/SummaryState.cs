@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Achievements;
 using Characters.Controllers;
 using Cysharp.Threading.Tasks;
@@ -80,6 +81,15 @@ namespace GameControl.GameState
                 profile.totalDiedDictionary.TryAdd(keyValuePair.Key, 0);
                 profile.totalDiedDictionary[keyValuePair.Key]++;
             }
+
+            // add skill usage of this run (used by Achievement: Skill Used At Least -> unlock skills)
+            profile.totalSkillUsedDictionary ??= new Dictionary<string, int>();
+            if (dataStatus.skillUsedDictionary != null)
+                foreach (var kv in dataStatus.skillUsedDictionary)
+                {
+                    profile.totalSkillUsedDictionary.TryAdd(kv.Key, 0);
+                    profile.totalSkillUsedDictionary[kv.Key] += kv.Value;
+                }
 
             // add total kill of each enemy type  
             foreach (var kv in dataStatus.totalKillDictionary)
