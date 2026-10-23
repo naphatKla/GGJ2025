@@ -5024,23 +5024,36 @@ MonoBehaviour:
   shield: {fileID: 8385231983187331084}
   shards: {fileID: 5345288434642532596}
   look: 0
-  shieldSize: 19
-  spikeSize: 18
-  shieldPopTime: 0.08
+  shieldSize: 36
+  spikeSize: 35
+  brightness: 1
+  shieldAppearTime: 0.14
   crackTime: 0.18
-  splitTime: 0.55
-  splitDistance: 0.55
+  crackShakeForce: 0.6
   spikeGrowTime: 0.06
   spikeFadeTime: 0.5
+  coreFlash: 0.6
+  splitTime: 0.55
+  splitDistance: 0.55
+  ringTime: 0.45
   shatterShakeForce: 3
   shatterShakeDuration: 0.4
   hitStop: 0.07
   hitStopTimeScale: 0.05
+  postPunch: 1
+  punchTime: 0.45
+  punchBloom: 2.5
+  punchChromatic: 0.8
+  punchLensDistortion: -0.25
   lingerLength: 0.5
   lingerAlpha: 0.55
   lingerFlickerSpeed: 9
+  lingerSparkInterval: 1.2
   recoverTime: 0.5
   recoverColor: {r: 0.6, g: 1.6, b: 2.6, a: 1}
+  recoverShakeForce: 1
+  breakFeedback: {fileID: 0}
+  recoverFeedback: {fileID: 0}
 --- !u!1 &8824472171148290758
 GameObject:
   m_ObjectHideFlags: 0
