@@ -46,6 +46,10 @@ namespace Characters.SO.SkillDataSo
         [ValueDropdown("@FeedbackName.Odin.ShortGroupWithNone(\"Skill\")")] 
         [SerializeField] private string parrySuccessFeedback;
 
+        [FoldoutGroup("Feedback")]
+        [Tooltip("โล่รังผึ้ง: ขึ้นระหว่างช่วง Parry, ขยายถึง Explosion Radius ตอน Parry สำเร็จ (ว่าง = ไม่มี)")]
+        [SerializeField] private VFX.HexShieldVFX hexShieldPrefab;
+
         [FoldoutGroup("Status Effects")] [SerializeField]
         private List<StatusEffectDataPayload> selfEffectsOnParrySuccess;
         
@@ -66,6 +70,7 @@ namespace Characters.SO.SkillDataSo
         public ParrySuccessData NormalParrySuccess => normalParrySuccess;
         public ParrySuccessData PerfectParrySuccess => perfectParrySuccess;
         public float CooldownReduceOnPerfectParry => cooldownReduceOnPerfectParry;
+        public VFX.HexShieldVFX HexShieldPrefab => hexShieldPrefab;
 
         [Serializable]
         public struct ParrySuccessData

@@ -22,8 +22,12 @@ namespace Characters.SkillSystems.SkillRuntimes
         // เก็บ hit ที่ทำให้ parry ติด (ไม่ว่าจะมาจาก coyote หรือ guard)
         private HealthSystem.HitInfo? _parryHitInfo;
 
+        private VFX.HexShieldVFX _shield;
+        private bool _shieldBurst;
+
         private void OnDestroy()
         {
+            if (_shield) Destroy(_shield.gameObject);
             if (!owner) return;
             owner.HealthSystem.OnHitAttempt -= OnHitAttempt;
         }
@@ -37,12 +41,20 @@ namespace Characters.SkillSystems.SkillRuntimes
             // กัน duplicate subscribe
             owner.HealthSystem.OnHitAttempt -= OnHitAttempt;
             owner.HealthSystem.OnHitAttempt += OnHitAttempt;
+
+            if (!_shield && this.skillData.HexShieldPrefab)
+            {
+                _shield = Instantiate(this.skillData.HexShieldPrefab, owner.transform);
+                _shield.transform.localPosition = Vector3.zero;
+            }
         }
 
         protected override void OnSkillStart()
         {
             _isParryTrigger = false;
             _parryHitInfo   = null;
+            _shieldBurst = false;
+            if (_shield) _shield.ShowGuard();
 
             owner.MovementSystem.StopFromParry(skillData.StopWhileParry);
 
@@ -101,6 +113,7 @@ namespace Characters.SkillSystems.SkillRuntimes
             _parryHitInfo   = null;
 
             owner.MovementSystem.StopFromParry(false);
+            if (_shield && !_shieldBurst) _shield.Hide();
 
             // คืนขนาด collider กลับค่าเดิม
             if (Math.Abs(skillData.ParryColliderSizeMultiplier - 1f) < 0.01f) return;
@@ -129,6 +142,11 @@ namespace Characters.SkillSystems.SkillRuntimes
             OnTriggerAutoSkill?.Invoke();
 
             owner.TryPlayFeedback(skillData.ParrySuccessFeedback);
+            if (_shield)
+            {
+                _shieldBurst = true;
+                _shield.Burst(skillData.ExplosionRadius, isPerfect);
+            }
 
             LayerMask damageLayer = CharacterGlobalSettings.Instance.EnemyLayerDictionary[owner.tag];
             var targetsInRange = Physics2D.OverlapCircleAll(
