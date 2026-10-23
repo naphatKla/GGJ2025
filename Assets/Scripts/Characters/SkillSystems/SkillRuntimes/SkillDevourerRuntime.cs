@@ -44,10 +44,31 @@ namespace Characters.SkillSystems.SkillRuntimes
 
         // ======================== LIFECYCLE ========================
 
+        private VFX.DevourerVFX _vfx;
+        private bool _vfxPullDone;
+
+        public override void AssignSkillData(BaseSkillDataSo skillData, BaseController owner)
+        {
+            base.AssignSkillData(skillData, owner);
+            if (!_vfx && this.skillData.VfxPrefab)
+            {
+                _vfx = Instantiate(this.skillData.VfxPrefab, owner.transform);
+                _vfx.transform.localPosition = Vector3.zero;
+            }
+        }
+
+        private void OnDestroy()
+        {
+            CancelSkill(); // แทน OnDestroy ของ BaseSkillRuntime ที่ถูกบังไว้
+            if (_vfx) Destroy(_vfx.gameObject);
+        }
+
         protected override void OnSkillStart()
         {
             _pulledTargets.Clear();
             _nextHitTime.Clear();
+            _vfxPullDone = false;
+            if (_vfx) _vfx.PlayPull(skillData.PullRadius, skillData.PullDuration);
 
             if (skillData.ImmuneToExternalPull && owner && owner.MovementSystem)
             {
@@ -59,16 +80,19 @@ namespace Characters.SkillSystems.SkillRuntimes
         protected override async UniTask OnSkillUpdate(CancellationToken cancelToken)
         {
             await PullPhase(cancelToken);
+            _vfxPullDone = true; // ดูดครบเวลา: ปล่อยหลุมดำเล่นจนจบเอง
 
             // Phase 1 & 2 Devourer simply ends here.
             if (!skillData.EnableFleeAndExplode) return;
 
+            if (_vfx) _vfx.PlayCharge(skillData.ExplodeRadius, skillData.FleeDuration);
             await FleePhase(cancelToken);
             Explode();
         }
 
         protected override void OnSkillExit()
         {
+            if (_vfx && !_vfxPullDone) _vfx.StopAll(); // ถูกยกเลิกกลางคัน
             ReleaseAllPulledTargets();
             _nextHitTime.Clear();
 
@@ -314,6 +338,7 @@ namespace Characters.SkillSystems.SkillRuntimes
             if (!owner) return;
 
             Vector2 center = owner.transform.position;
+            if (_vfx) _vfx.PlayExplode(skillData.ExplodeRadius); // เล่นเสมอ แม้ไม่โดนใคร
             var targets = Physics2D.OverlapCircleAll(center, skillData.ExplodeRadius, DamageLayer);
             if (targets.Length == 0) return;
 

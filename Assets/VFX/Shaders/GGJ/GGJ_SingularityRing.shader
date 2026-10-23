@@ -19,6 +19,11 @@ Shader "GGJ/VFX/SingularityRing"
         _DotDensity ("Dot Density", Range(4, 120)) = 48
         _DotSize ("Dot Size", Range(0.02, 0.5)) = 0.16
         _DotPullSpeed ("Dot Pull Speed", Range(0, 3)) = 0.35
+        _DotPhase ("Dot Pull Phase (script-driven)", Float) = 0
+        _DotTwist ("Dot Spiral Twist", Range(-3, 3)) = 0
+        [HDR] _DotColorInner ("Dot Color (inner)", Color) = (1, 1, 1.1, 1)
+        _DotInnerMix ("Inner Color Mix", Range(0, 1)) = 0
+        _DotHole ("Dot Hole Radius (empty center)", Range(0, 0.8)) = 0
         _RingAlpha ("Ring Alpha", Range(0, 1)) = 1
         _Intensity ("Intensity", Range(0, 4)) = 1
     }
@@ -45,6 +50,8 @@ Shader "GGJ/VFX/SingularityRing"
                 float4 _RingColor, _GlowColor, _DotColor;
                 float _RingRadius, _RingWidth, _GlowWidth, _GlowAmount, _InnerGlow, _InnerGlowWidth;
                 float _DotAlpha, _DotDensity, _DotSize, _DotPullSpeed, _Intensity, _RingAlpha;
+                float _DotPhase, _DotTwist, _DotInnerMix, _DotHole;
+                float4 _DotColorInner;
             CBUFFER_END
 
             Varyings vert (Attributes v)
@@ -84,20 +91,31 @@ Shader "GGJ/VFX/SingularityRing"
                     float logR = log(max(r, 1e-3));
                     float ang = atan2(p.y, p.x) / 6.28318 + 0.5;
                     // polar grid: rows march inwards over time
-                    float rows = _DotDensity * 0.25;
-                    float2 g = float2(ang * _DotDensity, logR * rows + _Time.y * _DotPullSpeed * rows);
+                    float rows = _DotDensity * 0.159;   // = density / 2pi -> square cells (round dots)
+                    ang += logR * _DotTwist * 0.159;   // spiral arms
+                float2 g = float2(ang * _DotDensity, logR * rows + (_Time.y * _DotPullSpeed + _DotPhase) * rows);
                     float2 cell = floor(g);
-                    float2 f = frac(g) - 0.5;
                     float rnd = hash21(cell);
+                    // ระยะจริงถึงจุดกึ่งกลางของช่อง (กลับจากพิกัดเกลียว -> พิกัดจอ) จุดจึงกลมเสมอ ไม่ยืดตามเกลียว
+                    float2 gc = cell + 0.5;
+                    float logRc = gc.y / rows - (_Time.y * _DotPullSpeed + _DotPhase);
+                    float angC = gc.x / _DotDensity - logRc * _DotTwist * 0.159;
+                    float rc = exp(logRc);
+                    float a2 = (angC - 0.5) * 6.28318;
+                    float2 pc = rc * float2(cos(a2), sin(a2));
+                    float cellSize = rc * 6.28318 / _DotDensity;
+                    float dist = length(p - pc) / max(cellSize, 1e-4);
                     float size = _DotSize * (0.6 + 0.8 * rnd) * smoothstep(0.0, 0.35, r);   // smaller near the center
-                    dots = 1.0 - smoothstep(size, size + 0.08, length(f));
+                    dots = 1.0 - smoothstep(size, size + 0.08, dist);
                     dots *= smoothstep(_RingRadius, _RingRadius - 0.15, r);                   // fade at the ring
                     dots *= 0.35 + 0.65 * (0.5 + 0.5 * sin(_Time.y * 4.0 + rnd * 30.0));    // twinkle
+                    dots *= smoothstep(_DotHole, _DotHole + 0.08, r);   // empty center (core)
                     dots *= _DotAlpha;
                 }
 
                 ring *= _RingAlpha; glow *= _RingAlpha; inner *= _RingAlpha;
-                float3 col = _RingColor.rgb * ring + _GlowColor.rgb * (glow + inner) + _DotColor.rgb * dots;
+                float3 dotCol = lerp(_DotColor.rgb, _DotColorInner.rgb, _DotInnerMix * (1.0 - smoothstep(0.0, _RingRadius, r)));
+                float3 col = _RingColor.rgb * ring + _GlowColor.rgb * (glow + inner) + dotCol * dots;
                 float alpha = saturate(ring + glow + inner + dots * 0.8);
                 // never reach the quad edge
                 alpha *= 1.0 - smoothstep(0.96, 1.0, r);

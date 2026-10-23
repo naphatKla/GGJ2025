@@ -165,6 +165,10 @@ namespace Characters.SO.SkillDataSo
         [ValueDropdown("@FeedbackName.Odin.ShortGroupWithNone(\"Skill\")")]
         [SerializeField] private string explodeFeedback;
 
+        [FoldoutGroup("Feedback")]
+        [PropertyTooltip("ภาพของสกิล: หลุมดำตอนดูด, วงเตือนตอนหยุดดูด (Phase 3), คลื่นตอนระเบิด (ว่าง = ไม่มีภาพ)")]
+        [SerializeField] private VFX.DevourerVFX vfxPrefab;
+
         // ---------------- Properties ----------------
 
         public float PullDuration => pullDuration;
@@ -194,5 +198,6 @@ namespace Characters.SO.SkillDataSo
 
         public string ExplodeFeedback =>
             string.IsNullOrEmpty(explodeFeedback) ? null : FeedbackName.ResolveFullKey("Skill", explodeFeedback);
+        public VFX.DevourerVFX VfxPrefab => vfxPrefab;
     }
 }

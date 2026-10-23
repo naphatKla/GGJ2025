@@ -57,6 +57,11 @@ namespace GameControl.EventMap
             [Tooltip("Small 12 / Medium 16 / Large 20")]
             public float knockbackDistance = 12f;
 
+            [Tooltip("ภาพระเบิดตอนถูก Devourer กลืน (ขนาดตาม Explode Radius) - ว่าง = ไม่มีภาพ")]
+            public VFX.DevourerVFX explodeVfx;
+            [Tooltip("ปรับขนาดภาพระเบิด เทียบกับ Explode Radius")]
+            public float explodeVfxSize = 1f;
+
             public float knockbackDuration = 0.5f;
 
             [Tooltip("Layers caught in the explosion - \"everything surrounding\", so player AND enemies. "
@@ -270,6 +275,11 @@ namespace GameControl.EventMap
             LayerMask explodeLayer = specialInteraction.affectedLayer.value != 0
                 ? specialInteraction.affectedLayer
                 : hitLayer;
+
+            // เล่นภาพเสมอ แม้ไม่โดนใคร
+            if (specialInteraction.explodeVfx)
+                VFX.DevourerVFX.SpawnBurst(specialInteraction.explodeVfx, center,
+                    specialInteraction.explodeRadius * specialInteraction.explodeVfxSize);
 
             var hits = Physics2D.OverlapCircleAll(center, specialInteraction.explodeRadius, explodeLayer);
             if (hits.Length == 0) return;
