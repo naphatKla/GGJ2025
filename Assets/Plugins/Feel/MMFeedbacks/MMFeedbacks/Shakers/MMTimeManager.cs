@@ -108,7 +108,7 @@ namespace MoreMountains.Feedbacks
 		/// a test button for the inspector
 		public bool TestButton;
 
-		protected Stack<TimeScaleProperties> _timeScaleProperties;
+		protected Stack<TimeScaleProperties> _timeScaleProperties = new Stack<TimeScaleProperties>(); // GGJ: init here too - was null when an event arrived before Awake (NRE in SetTimeScale)
 		protected TimeScaleProperties _currentProperty;
 		protected TimeScaleProperties _resetProperty;
 		protected float _initialFixedDeltaTime = 0f;

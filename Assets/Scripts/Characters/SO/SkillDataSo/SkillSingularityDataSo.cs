@@ -65,6 +65,11 @@ namespace Characters.SO.SkillDataSo
         [PropertyTooltip("Stun effect applied by each pulse. Iron Body still blocks it, same as any stun.")]
         [SerializeField] private StunEffectDataSo stunEffectData;
 
+        [FoldoutGroup("Singularity")]
+        [LabelText("VFX")]
+        [PropertyTooltip("วงแหวนขาว + dot field + กล้องขาวดำ ระหว่างสกิล (ว่าง = ไม่มีภาพ)")]
+        [SerializeField] private VFX.SingularityVFX vfxPrefab;
+
         public float SkillRadius => skillRadius;
         public float Duration => duration;
         public float TriggerPerSecond => triggerPerSecond;
@@ -73,5 +78,6 @@ namespace Characters.SO.SkillDataSo
         public bool AffectEnemies => affectEnemies;
         public LayerMask AffectedLayer => affectedLayer;
         public StunEffectDataSo StunEffectData => stunEffectData;
+        public VFX.SingularityVFX VfxPrefab => vfxPrefab;
     }
 }

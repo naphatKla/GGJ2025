@@ -22,9 +22,27 @@ namespace Characters.SkillSystems.SkillRuntimes
     {
         private readonly Collider2D[] _hitBuffer = new Collider2D[64];
         private readonly HashSet<BaseController> _pulseTargets = new();
+        private VFX.SingularityVFX _vfx;
+
+        public override void AssignSkillData(BaseSkillDataSo skillData, BaseController owner)
+        {
+            base.AssignSkillData(skillData, owner);
+            if (!_vfx && this.skillData.VfxPrefab)
+            {
+                _vfx = Instantiate(this.skillData.VfxPrefab, owner.transform);
+                _vfx.transform.localPosition = Vector3.zero;
+            }
+        }
 
         protected override void OnSkillStart()
         {
+            if (_vfx) _vfx.Play(skillData.SkillRadius, skillData.Duration);
+        }
+
+        private void OnDestroy()
+        {
+            CancelSkill(); // แทน OnDestroy ของ BaseSkillRuntime ที่ถูกบังไว้
+            if (_vfx) Destroy(_vfx.gameObject);
         }
 
         protected override async UniTask OnSkillUpdate(CancellationToken cancelToken)
@@ -54,6 +72,7 @@ namespace Characters.SkillSystems.SkillRuntimes
         protected override void OnSkillExit()
         {
             _pulseTargets.Clear();
+            if (_vfx) _vfx.Stop();
         }
 
         /// <summary>Stuns everything currently inside the radius. Nothing is remembered between pulses.</summary>
