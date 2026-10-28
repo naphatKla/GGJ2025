@@ -16,7 +16,7 @@ MonoBehaviour:
   title: Milestone 0 [Void Metro]
   description: '<size=23><color=#58E6FF><b>Task</b></color></size>
 
-    - 3 minutes
+    - 2 minutes
 
 
     <size=23><color=#D260FF><b>Difficulty</b></color></size>
@@ -30,7 +30,7 @@ MonoBehaviour:
   confirmSelectedMapIds:
   - autoSelectedMapID: map_voidmetro
     selectOnLevel: 0
-  flatScoreBonusPercent: 0
+  flatScoreBonusPercent: 1000
   statMode: 0
   playerSetMods: []
   playerMods: []
@@ -57,4 +57,93 @@ MonoBehaviour:
       rushDamage: 0
       rushMoveSpeed: 0
       rushSetChance: 0
-  timeModify: -420
+  timeModify: -480
+  overridePlayAllDecrease: 0
+  playAllCanDecrease: 1
+  playAllDecreaseInterval: 60
+  playAllDecreaseRate: 1
+  playAllDecreaseMinimum: 5
+  overrideMapSpawn: 1
+  spawnFlow: 0
+  spawnHandOver: 0
+  spawnHandOverAt: 120
+  spawnMapTimelineStartsAtHandOver: 1
+  spawnMixWithConditions: 0
+  spawnRandomSpawnerPool: 0
+  spawnPatternEnemyPool: 1
+  spawnRules:
+  - enabled: 1
+    enemyId: Enemy_Normal
+    note: 
+    intervalMode: 0
+    customInterval: 10
+    intervalMin: 5
+    intervalMax: 15
+    spawnOnStart: 1
+    amountMin: 1
+    amountMax: 1
+    burstDelay: 0
+    maxTotal: 0
+    maxAlive: 0
+    fillToMaxEachWave: 0
+    useWaveChance: 0
+    chance: 100
+    respectPerEnemyMax: 1
+    checkSpawnConditions: 0
+    playSpawnEffects: 1
+    spawnPosition: 0
+    radiusMin: 20
+    radiusMax: 25
+    startAt: 0
+    useExpire: 0
+    expireAt: 120
+  - enabled: 1
+    enemyId: Enemy_Pressure
+    note: 
+    intervalMode: 0
+    customInterval: 10
+    intervalMin: 5
+    intervalMax: 15
+    spawnOnStart: 1
+    amountMin: 1
+    amountMax: 1
+    burstDelay: 0
+    maxTotal: 0
+    maxAlive: 0
+    fillToMaxEachWave: 0
+    useWaveChance: 0
+    chance: 100
+    respectPerEnemyMax: 1
+    checkSpawnConditions: 0
+    playSpawnEffects: 1
+    spawnPosition: 0
+    radiusMin: 20
+    radiusMax: 25
+    startAt: 20
+    useExpire: 0
+    expireAt: 120
+  - enabled: 1
+    enemyId: Enemy_Piercer
+    note: 
+    intervalMode: 0
+    customInterval: 10
+    intervalMin: 5
+    intervalMax: 15
+    spawnOnStart: 1
+    amountMin: 1
+    amountMax: 1
+    burstDelay: 0
+    maxTotal: 0
+    maxAlive: 0
+    fillToMaxEachWave: 0
+    useWaveChance: 0
+    chance: 100
+    respectPerEnemyMax: 1
+    checkSpawnConditions: 0
+    playSpawnEffects: 1
+    spawnPosition: 0
+    radiusMin: 20
+    radiusMax: 25
+    startAt: 40
+    useExpire: 0
+    expireAt: 120

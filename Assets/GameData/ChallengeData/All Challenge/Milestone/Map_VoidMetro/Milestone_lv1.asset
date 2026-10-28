@@ -34,7 +34,7 @@ MonoBehaviour:
   allowAutoUnlock: 1
   confirmSelectedMapIds:
   - autoSelectedMapID: map_voidmetro
-    selectOnLevel: 1
+    selectOnLevel: 5
   flatScoreBonusPercent: 0
   statMode: 0
   playerSetMods: []
@@ -74,6 +74,11 @@ MonoBehaviour:
       rushMoveSpeed: 0
       rushSetChance: 0
   timeModify: -300
+  overridePlayAllDecrease: 0
+  playAllCanDecrease: 1
+  playAllDecreaseInterval: 60
+  playAllDecreaseRate: 1
+  playAllDecreaseMinimum: 5
   overrideMapSpawn: 0
   spawnFlow: 0
   spawnHandOver: 0
