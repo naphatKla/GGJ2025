@@ -25,9 +25,9 @@ MonoBehaviour:
     <size=23><color=#D260FF><b>Difficulty</b></color></size>
 
     -
-    Enemy max HP +125%
+    Enemy max HP +100%
 
-    - Enemy damage +70%'
+    - Enemy damage +50%'
   lockdescription: 
   hideFromUI: 1
   allowedMapIds: []
@@ -47,12 +47,12 @@ MonoBehaviour:
     enemyNotincluded:
     - Boss_Twin
     stats:
-      maxHP: 125
-      damage: 70
+      maxHP: 100
+      damage: 50
       moveSpeed: 0
       spawnChance: 0
-      rushMaxHP: 125
-      rushDamage: 70
+      rushMaxHP: 100
+      rushDamage: 50
       rushMoveSpeed: 0
       rushSetChance: 0
   - groupName: 2
@@ -130,7 +130,7 @@ MonoBehaviour:
     spawnPosition: 0
     radiusMin: 20
     radiusMax: 25
-    startAt: 25
+    startAt: 30
     useExpire: 1
     expireAt: 480
   - enabled: 1
@@ -155,7 +155,7 @@ MonoBehaviour:
     spawnPosition: 0
     radiusMin: 20
     radiusMax: 25
-    startAt: 50
+    startAt: 60
     useExpire: 0
     expireAt: 120
   - enabled: 1
@@ -180,7 +180,7 @@ MonoBehaviour:
     spawnPosition: 0
     radiusMin: 20
     radiusMax: 25
-    startAt: 75
+    startAt: 90
     useExpire: 0
     expireAt: 120
   - enabled: 1
@@ -205,7 +205,7 @@ MonoBehaviour:
     spawnPosition: 0
     radiusMin: 20
     radiusMax: 25
-    startAt: 100
+    startAt: 120
     useExpire: 0
     expireAt: 120
   - enabled: 1
@@ -230,7 +230,7 @@ MonoBehaviour:
     spawnPosition: 0
     radiusMin: 20
     radiusMax: 25
-    startAt: 125
+    startAt: 150
     useExpire: 0
     expireAt: 120
   - enabled: 1
@@ -255,7 +255,7 @@ MonoBehaviour:
     spawnPosition: 0
     radiusMin: 20
     radiusMax: 25
-    startAt: 150
+    startAt: 180
     useExpire: 0
     expireAt: 120
   - enabled: 1
@@ -280,7 +280,7 @@ MonoBehaviour:
     spawnPosition: 0
     radiusMin: 20
     radiusMax: 25
-    startAt: 175
+    startAt: 210
     useExpire: 0
     expireAt: 120
   - enabled: 1
@@ -305,32 +305,7 @@ MonoBehaviour:
     spawnPosition: 0
     radiusMin: 20
     radiusMax: 25
-    startAt: 200
-    useExpire: 0
-    expireAt: 120
-  - enabled: 1
-    enemyId: Enemy_Absorption
-    note: 
-    intervalMode: 0
-    customInterval: 10
-    intervalMin: 5
-    intervalMax: 15
-    spawnOnStart: 1
-    amountMin: 1
-    amountMax: 1
-    burstDelay: 0
-    maxTotal: 0
-    maxAlive: 50
-    fillToMaxEachWave: 0
-    useWaveChance: 0
-    chance: 100
-    respectPerEnemyMax: 1
-    checkSpawnConditions: 0
-    playSpawnEffects: 1
-    spawnPosition: 0
-    radiusMin: 20
-    radiusMax: 25
-    startAt: 225
+    startAt: 240
     useExpire: 0
     expireAt: 120
   - enabled: 1
