@@ -24,15 +24,15 @@ MonoBehaviour:
   entries:
   - id: achivement_juniorofficers
     displayName: Junior Officers
-    description: "Win <color=#5ea0ed><b>Survival mode</b></color>\r\nReward: Unlock
+    description: "Clear <color=#ffce00><b>Void Metro - Milestone Lv.1\nReward: Unlock
       \"Challenge mode\"\r"
     icon: {fileID: 21300000, guid: b5ac6f10df2bbb54f99d3d5772a9f330, type: 3}
     triggerType: 1
     logic: 0
     conditions:
-    - type: 1
-      mapId: 
-      milestoneAtLeast: 1
+    - type: 13
+      mapId: map_voidmetro
+      milestoneAtLeast: 0
       challengeId: 
       minHighestScore: 0
       minTotalDamage: 0
@@ -74,38 +74,6 @@ MonoBehaviour:
       nanoAmount: 0
       refId: challenge_thirsty
       permanentType: 0
-  - id: achievement_stilllearning
-    displayName: Still Learning
-    description: "<color=#ffce00><b>First dead</b></color> of the game\r\nReward:
-      \"Pick Up Range\" upgrade form shop\r"
-    icon: {fileID: 21300000, guid: 452a0d5da81472d4788625bd0beb9be4, type: 3}
-    triggerType: 0
-    logic: 0
-    conditions:
-    - type: 11
-      mapId: 
-      milestoneAtLeast: 1
-      challengeId: 
-      minHighestScore: 0
-      minTotalDamage: 0
-      enemyId: 
-      minKillAtLeast: 0
-      challengeAtLeast: 0
-      minParryAmountOnRun: 0
-      winAtLeast: 0
-      takeHitFromId: 
-      takeHitLessThan: 0
-      healAtLeastOnRun: 0
-      diedFromId: '*'
-      diedAtLeast: 1
-      skill: {fileID: 0}
-      minSkillUsed: 0
-    rewards:
-    - type: 3
-      skill: {fileID: 0}
-      nanoAmount: 0
-      refId: 
-      permanentType: 8
   - id: achievement_draculasurviving
     displayName: Dracula Surviving
     description: "Heal <color=#acda4d><b>500 health</b></color> in one run\r\nReward:
@@ -175,38 +143,6 @@ MonoBehaviour:
       nanoAmount: 0
       refId: challenge_plasticfang
       permanentType: 0
-  - id: achievement_iunderstanditnow
-    displayName: I understand it now
-    description: "Reach <color=#ffce00><b>1,000,000</b></color> highest score\r\nReward:
-      \"EXP Multiply\" upgrade form shop\r"
-    icon: {fileID: 21300000, guid: 51c016c342ee9b544ad65fc04b569038, type: 3}
-    triggerType: 0
-    logic: 0
-    conditions:
-    - type: 3
-      mapId: 
-      milestoneAtLeast: 1
-      challengeId: 
-      minHighestScore: 1000000
-      minTotalDamage: 0
-      enemyId: 
-      minKillAtLeast: 0
-      challengeAtLeast: 0
-      minParryAmountOnRun: 0
-      winAtLeast: 0
-      takeHitFromId: 
-      takeHitLessThan: 0
-      healAtLeastOnRun: 0
-      diedFromId: 
-      diedAtLeast: 0
-      skill: {fileID: 0}
-      minSkillUsed: 0
-    rewards:
-    - type: 3
-      skill: {fileID: 0}
-      nanoAmount: 0
-      refId: 
-      permanentType: 7
   - id: achievement_arrogant
     displayName: Arrogant
     description: "Win anymode mode with \"<color=#c38fe1><b>Ordinary</b></color>\"
@@ -673,74 +609,6 @@ MonoBehaviour:
       nanoAmount: 0
       refId: challenge_newtype
       permanentType: 0
-  - id: achievement_bulkbeings
-    displayName: Bulk Beings?
-    description: "Died by \"<color=#bcb6ef><b>Black hole</b></color>\" event\r\nReward:
-      \"Invincible Time After Hurt\" upgrade form shop\r"
-    icon: {fileID: 21300000, guid: a46883cf73df6b54fa21641803e2969c, type: 3}
-    triggerType: 0
-    logic: 1
-    conditions:
-    - type: 11
-      mapId: 
-      milestoneAtLeast: 1
-      challengeId: 
-      minHighestScore: 0
-      minTotalDamage: 0
-      enemyId: 
-      minKillAtLeast: 0
-      challengeAtLeast: 0
-      minParryAmountOnRun: 0
-      winAtLeast: 0
-      takeHitFromId: 
-      takeHitLessThan: 0
-      healAtLeastOnRun: 0
-      diedFromId: mapevent_bigbackhole
-      diedAtLeast: 1
-      skill: {fileID: 0}
-      minSkillUsed: 0
-    - type: 11
-      mapId: 
-      milestoneAtLeast: 1
-      challengeId: 
-      minHighestScore: 0
-      minTotalDamage: 0
-      enemyId: 
-      minKillAtLeast: 0
-      challengeAtLeast: 0
-      minParryAmountOnRun: 0
-      winAtLeast: 0
-      takeHitFromId: 
-      takeHitLessThan: 0
-      healAtLeastOnRun: 0
-      diedFromId: mapevent_mediumbackhole
-      diedAtLeast: 1
-      skill: {fileID: 0}
-      minSkillUsed: 0
-    - type: 11
-      mapId: 
-      milestoneAtLeast: 1
-      challengeId: 
-      minHighestScore: 0
-      minTotalDamage: 0
-      enemyId: 
-      minKillAtLeast: 0
-      challengeAtLeast: 0
-      minParryAmountOnRun: 0
-      winAtLeast: 0
-      takeHitFromId: 
-      takeHitLessThan: 0
-      healAtLeastOnRun: 0
-      diedFromId: mapevent_smallbackhole
-      diedAtLeast: 1
-      skill: {fileID: 0}
-      minSkillUsed: 0
-    rewards:
-    - type: 3
-      skill: {fileID: 0}
-      nanoAmount: 0
-      refId: 
-      permanentType: 9
   - id: achievement_beatvoidmetro
     displayName: Beyond The Gate
     description: 'Clear <color=#ffce00><b>Void Metro - Milestone Lv.2</b></color>
@@ -775,137 +643,9 @@ MonoBehaviour:
       nanoAmount: 0
       refId: map_galacticcore
       permanentType: 0
-  - id: achievement_skill_lightstep
-    displayName: Light Step
-    description: Clear <color=#ffce00><b>Void Metro - Milestone Lv.1 to unlock skill
-      <color=#FFD700>Light Step</color>.
-    icon: {fileID: 21300000, guid: 57cf91cff34d30046a7de0ab08bca628, type: 3}
-    triggerType: 0
-    logic: 0
-    conditions:
-    - type: 13
-      mapId: map_voidmetro
-      milestoneAtLeast: 0
-      challengeId: 
-      minHighestScore: 0
-      minTotalDamage: 0
-      enemyId: 
-      minKillAtLeast: 0
-      challengeAtLeast: 0
-      minParryAmountOnRun: 0
-      winAtLeast: 0
-      takeHitFromId: 
-      takeHitLessThan: 0
-      healAtLeastOnRun: 0
-      diedFromId: 
-      diedAtLeast: 0
-      skill: {fileID: 11400000, guid: 0e1b5bdaf3cd54043a42bec2bc82dcb1, type: 2}
-      minSkillUsed: 10
-    rewards:
-    - type: 4
-      skill: {fileID: 11400000, guid: 02f494aec9efadf499b6ab476216f076, type: 2}
-      nanoAmount: 0
-      refId: 
-      permanentType: 0
-  - id: achievement_skill_overloop
-    displayName: Overloop
-    description: Clear <color=#ffce00><b>Void Metro - Milestone Lv.1 to unlock skill
-      <color=#FFD700>Overloop</color>.
-    icon: {fileID: 21300000, guid: 5530a67f3bb55ec4595eae9675d7ffc7, type: 3}
-    triggerType: 0
-    logic: 0
-    conditions:
-    - type: 13
-      mapId: map_voidmetro
-      milestoneAtLeast: 0
-      challengeId: 
-      minHighestScore: 0
-      minTotalDamage: 0
-      enemyId: 
-      minKillAtLeast: 0
-      challengeAtLeast: 0
-      minParryAmountOnRun: 0
-      winAtLeast: 0
-      takeHitFromId: 
-      takeHitLessThan: 0
-      healAtLeastOnRun: 0
-      diedFromId: 
-      diedAtLeast: 0
-      skill: {fileID: 11400000, guid: 036dd44949542964bab041b05f72cac6, type: 2}
-      minSkillUsed: 20
-    rewards:
-    - type: 4
-      skill: {fileID: 11400000, guid: e84ada3c5bce8024fb05f6faad9d978c, type: 2}
-      nanoAmount: 0
-      refId: 
-      permanentType: 0
-  - id: achievement_skill_repulsionwave
-    displayName: Repulsion Wave
-    description: Clear <color=#ffce00><b>Void Metro - Milestone Lv.1 to unlock skill
-      <color=#FFD700>Repulsion Wave</color>.
-    icon: {fileID: 21300000, guid: 0d7a01db29d12af4bbc9edffe840b734, type: 3}
-    triggerType: 0
-    logic: 0
-    conditions:
-    - type: 13
-      mapId: map_voidmetro
-      milestoneAtLeast: 0
-      challengeId: 
-      minHighestScore: 0
-      minTotalDamage: 0
-      enemyId: 
-      minKillAtLeast: 0
-      challengeAtLeast: 0
-      minParryAmountOnRun: 0
-      winAtLeast: 0
-      takeHitFromId: 
-      takeHitLessThan: 0
-      healAtLeastOnRun: 0
-      diedFromId: 
-      diedAtLeast: 0
-      skill: {fileID: 11400000, guid: 02f494aec9efadf499b6ab476216f076, type: 2}
-      minSkillUsed: 100
-    rewards:
-    - type: 4
-      skill: {fileID: 11400000, guid: fe92fcb3f2347f84db587cb8715e7dda, type: 2}
-      nanoAmount: 0
-      refId: 
-      permanentType: 0
-  - id: achievement_skill_gravityorb
-    displayName: Gravity Orb
-    description: Clear <color=#ffce00><b>Void Metro - Milestone Lv.1 to unlock skill
-      <color=#FFD700>Gravity Orb</color>.
-    icon: {fileID: 21300000, guid: 2bc548fc19d98454c94b495d32c12126, type: 3}
-    triggerType: 0
-    logic: 0
-    conditions:
-    - type: 13
-      mapId: map_voidmetro
-      milestoneAtLeast: 0
-      challengeId: 
-      minHighestScore: 0
-      minTotalDamage: 0
-      enemyId: 
-      minKillAtLeast: 0
-      challengeAtLeast: 0
-      minParryAmountOnRun: 0
-      winAtLeast: 0
-      takeHitFromId: 
-      takeHitLessThan: 0
-      healAtLeastOnRun: 0
-      diedFromId: 
-      diedAtLeast: 0
-      skill: {fileID: 11400000, guid: fe92fcb3f2347f84db587cb8715e7dda, type: 2}
-      minSkillUsed: 150
-    rewards:
-    - type: 4
-      skill: {fileID: 11400000, guid: 2f13e039c285ef547bc2198deebc58b6, type: 2}
-      nanoAmount: 0
-      refId: 
-      permanentType: 0
   - id: achievement_skill_novacutter
     displayName: Nova Cutter
-    description: Clear <color=#ffce00><b>Void Metro - Milestone Lv.2 to unlock skill
+    description: Clear <color=#ffce00><b>Void Metro - Milestone Lv.1 to unlock skill
       <color=#FFD700>Nova Cutter</color>.
     icon: {fileID: 21300000, guid: e513f3aa21f08a6499739a1d2e9a0697, type: 3}
     triggerType: 0
@@ -913,7 +653,7 @@ MonoBehaviour:
     conditions:
     - type: 13
       mapId: map_voidmetro
-      milestoneAtLeast: 1
+      milestoneAtLeast: 0
       challengeId: 
       minHighestScore: 0
       minTotalDamage: 0
@@ -937,7 +677,7 @@ MonoBehaviour:
       permanentType: 0
   - id: achievement_skill_photonbarrage
     displayName: Photon Barrage
-    description: Clear <color=#ffce00><b>Void Metro - Milestone Lv.2 to unlock skill
+    description: Clear <color=#ffce00><b>Void Metro - Milestone Lv.1 to unlock skill
       <color=#FFD700>Photon Barrage</color>.
     icon: {fileID: 21300000, guid: 69657b03c53f15b4ca0e27ca2f37fe6f, type: 3}
     triggerType: 0
@@ -945,7 +685,7 @@ MonoBehaviour:
     conditions:
     - type: 13
       mapId: map_voidmetro
-      milestoneAtLeast: 1
+      milestoneAtLeast: 0
       challengeId: 
       minHighestScore: 0
       minTotalDamage: 0
@@ -969,7 +709,7 @@ MonoBehaviour:
       permanentType: 0
   - id: achievement_skill_plasmatag
     displayName: Plasma Tag
-    description: Clear <color=#ffce00><b>Void Metro - Milestone Lv.3 to unlock skill
+    description: Clear <color=#ffce00><b>Void Metro - Milestone Lv.1 to unlock skill
       <color=#FFD700>Plasma Tag</color>.
     icon: {fileID: 21300000, guid: c1b12003c3a48e34bbc0d3596ccaecea, type: 3}
     triggerType: 0
@@ -977,7 +717,7 @@ MonoBehaviour:
     conditions:
     - type: 13
       mapId: map_voidmetro
-      milestoneAtLeast: 1
+      milestoneAtLeast: 0
       challengeId: 
       minHighestScore: 0
       minTotalDamage: 0
