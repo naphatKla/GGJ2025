@@ -177,22 +177,22 @@ MonoBehaviour:
     descriptionUpgrade: Gain more EXP from the orbs
     unit: '%'
     lockDescriptionUpgrade: 
-    mode: 0
+    mode: 1
     levels:
     - nanoCost: 150
-      value: 2
+      value: 5
     - nanoCost: 450
-      value: 3
+      value: 5
     - nanoCost: 900
-      value: 3
+      value: 5
     - nanoCost: 1800
       value: 5
     - nanoCost: 3600
       value: 5
     - nanoCost: 7200
-      value: 5
-    - nanoCost: 14400
       value: 7
+    - nanoCost: 14400
+      value: 8
   - type: 8
     nameUpgrade: ' Pick Up Range'
     iconUpgrade: {fileID: 21300000, guid: a3b75a011a256274e833655764834aa5, type: 3}
@@ -241,8 +241,6 @@ MonoBehaviour:
     lockDescriptionUpgrade: 
     mode: 0
     levels:
-    - nanoCost: 300
-      value: 1
     - nanoCost: 800
       value: 1
     - nanoCost: 2400
