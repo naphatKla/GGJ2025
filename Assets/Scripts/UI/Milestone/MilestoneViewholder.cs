@@ -73,6 +73,12 @@ namespace UI.Milestone
             _isSelected = false;
             transform.localScale = Vector3.one;
             KeepTextUnscaled();
+            // cell ถูกคืนเข้า pool: ซ่อน Marker ด้วย ไม่งั้นตอนหยิบมาใช้ใหม่ ApplySelectedState จะ return ก่อนและ ▼ ค้าง
+            if (selectedMarker != null)
+            {
+                if (_hasMarkerBasePos) selectedMarker.anchoredPosition = _markerBasePos;
+                selectedMarker.gameObject.SetActive(false);
+            }
 
             if (_path != null && nodePoint != null && _index >= 0)
                 _path.UnregisterNode(_index, nodePoint);

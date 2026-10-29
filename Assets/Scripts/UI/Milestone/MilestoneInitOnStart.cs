@@ -119,15 +119,22 @@ namespace UI.Milestone
                 return;
             }
 
+            if (Current == null) return;
+
             LoadItems();
             pathRenderer.ClearAll();
-
-            ApplyToScrollRect();
 
             var mapState = Current.GetOrCreateMapStat(mapId);
 
             int idx = mapState.MaxLevelUnlockMilestone;
             idx = Mathf.Clamp(idx, 0, Mathf.Max(0, _items.Count - 1));
+
+            // ล้างตัวที่เลือกค้างจากโปรไฟล์/แมพก่อน (เช่นหลัง New Game) แล้วตั้ง index ใหม่ก่อน Refill
+            // เพื่อให้ cell ถูกวาดด้วยตัวเลือกที่ถูกต้อง แม้ RefreshCells จะไม่ทำงานตอน panel ยังปิดอยู่
+            m_SelectedIndex = idx;
+            m_SelectedObject = null;
+
+            ApplyToScrollRect();
 
             SelectIndex(idx, mapState, notifyChallenge: true);
             await UniTask.NextFrame();
