@@ -192026,6 +192026,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f1be4fcfce7ce1478d9b86d67377cdc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  rushWarningLeadTime: 2
   mapContainer: {fileID: 0}
   currentMapIndex: 0
   gameResult: 0
@@ -192062,9 +192063,12 @@ MonoBehaviour:
   itemParent: {fileID: 0}
   regionSize: {x: 0, y: 0}
   itemdropRegionSize: {x: 0, y: 0}
+  milestoneDataContainer: {fileID: 0}
   debugPattern: 0
   debugEnemy: 0
   debugMapEvent: 0
+  debugSpawnSchedule: 0
+  debugMilestoneOverride: -1
   notSpawnEnemyOnStart: 0
 --- !u!4 &1580191023
 Transform:
@@ -202241,7 +202245,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: V 0.0.16 Alpha
+  m_text: V 0.0.29 Alpha
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 2dc7aeb059816db4192dac5f7d09c010, type: 2}
   m_sharedMaterial: {fileID: 3646004497337031475, guid: 2dc7aeb059816db4192dac5f7d09c010, type: 2}
