@@ -195,7 +195,13 @@ namespace Characters.SkillSystems.SkillRuntimes
                 skillData.ReleaseOnHit,
                 skillData.RotateProjectileToDirection,
                 skillData.ProjectileRotationOffsetDegrees,
-                skillData.CanHitWithDamageOnTouch));
+                skillData.CanHitWithDamageOnTouch,
+                skillData.CanBreakByPlayerDash,
+                skillData.DashBreakRadius,
+                skillData.BreakVfxPrefab,
+                skillData.BreakVfxLifetime,
+                skillData.BreakFeedback,
+                skillData.DebugLogBreak));
         }
 
         private LayerMask ResolveTargetLayer()

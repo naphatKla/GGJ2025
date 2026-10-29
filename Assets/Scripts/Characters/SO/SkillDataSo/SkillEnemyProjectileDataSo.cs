@@ -145,7 +145,50 @@ namespace Characters.SO.SkillDataSo
         [SerializeField]
         private LayerMask targetLayer;
 
+        [FoldoutGroup("Dash Break")]
+        [GUIColor("@this.canBreakByPlayerDash ? Color.green : Color.red")]
+        [Tooltip("เปิด = Player พุ่ง (Dash) ชนกระสุนนี้แล้วกระสุนแตก")]
+        [SerializeField]
+        private bool canBreakByPlayerDash = true;
+
+        [FoldoutGroup("Dash Break")]
+        [ShowIf(nameof(canBreakByPlayerDash))]
+        [Tooltip("ระยะที่นับว่าชน (จากกลางกระสุนถึงตัว Player)\n0 = ใช้ Hitbox Radius ของกระสุน")]
+        [SerializeField, MinValue(0f)]
+        private float dashBreakRadius;
+
+        [FoldoutGroup("Dash Break")]
+        [ShowIf(nameof(canBreakByPlayerDash))]
+        [Tooltip("VFX ตอนกระสุนแตก (ไม่ใส่ก็ได้)")]
+        [SerializeField]
+        private GameObject breakVfxPrefab;
+
+        [FoldoutGroup("Dash Break")]
+        [ShowIf("@this.canBreakByPlayerDash && this.breakVfxPrefab != null")]
+        [SerializeField, MinValue(0.05f), Unit(Units.Second)]
+        private float breakVfxLifetime = 1f;
+
+        [FoldoutGroup("Dash Break")]
+        [ShowIf(nameof(canBreakByPlayerDash))]
+        [Tooltip("ชื่อ Feedback ที่เล่นบนตัว Player ตอนชนกระสุนแตก (ว่าง = ไม่เล่น)")]
+        [SerializeField]
+        private string breakFeedback;
+
+        [FoldoutGroup("Dash Break")]
+        [ShowIf(nameof(canBreakByPlayerDash))]
+        [Tooltip("Debug: Log ทุกครั้งที่กระสุนแตก")]
+        [SerializeField]
+        private bool debugLogBreak;
+
         public EnemyProjectileSkillObject ProjectilePrefab => projectilePrefab;
+        public bool CanBreakByPlayerDash => canBreakByPlayerDash;
+        public float DashBreakRadius => dashBreakRadius > 0f
+            ? dashBreakRadius
+            : hitShape == DamageOnTouch.OverlapShape.Circle ? hitboxRadius : Mathf.Max(hitboxSize.x, hitboxSize.y) * 0.5f;
+        public GameObject BreakVfxPrefab => breakVfxPrefab;
+        public float BreakVfxLifetime => breakVfxLifetime;
+        public string BreakFeedback => breakFeedback;
+        public bool DebugLogBreak => debugLogBreak;
         public int PrewarmCount => prewarmCount;
         public float ProjectileSpeed => projectileSpeed;
         public float ProjectileLifetime => projectileLifetime;

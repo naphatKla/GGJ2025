@@ -1,5 +1,6 @@
 using System;
 using Characters.CombatSystems;
+using Characters.Controllers;
 using Manager;
 using UnityEngine;
 
@@ -20,6 +21,16 @@ namespace Characters.SkillSystems.SkillObjects
         private float _rotationOffsetDegrees;
         private bool _isLaunched;
 
+        private bool _canBreakByDash;
+        private float _dashBreakRadius;
+        private GameObject _breakVfxPrefab;
+        private float _breakVfxLifetime;
+        private string _breakFeedback;
+        private bool _debugLogBreak;
+
+        [SerializeField, Tooltip("Debug: วาดวงรัศมีที่ Dash ชนแล้วแตก")]
+        private bool debugDrawBreakRadius;
+
         public event Action<EnemyProjectileSkillObject> OnReleaseRequested;
 
         protected override void Awake()
@@ -37,6 +48,12 @@ namespace Characters.SkillSystems.SkillObjects
             _releaseOnHit = payload.ReleaseOnHit;
             _rotateToDirection = payload.RotateToDirection;
             _rotationOffsetDegrees = payload.RotationOffsetDegrees;
+            _canBreakByDash = payload.CanBreakByDash;
+            _dashBreakRadius = Mathf.Max(0f, payload.DashBreakRadius);
+            _breakVfxPrefab = payload.BreakVfxPrefab;
+            _breakVfxLifetime = payload.BreakVfxLifetime;
+            _breakFeedback = payload.BreakFeedback;
+            _debugLogBreak = payload.DebugLogBreak;
             _elapsed = 0f;
             _hitCount = 0;
             _isLaunched = true;
@@ -44,6 +61,9 @@ namespace Characters.SkillSystems.SkillObjects
             transform.position = payload.Position;
             ApplyRotation();
             ResetTrail();
+
+            // ลงทะเบียนก่อน DamageOnTouch -> เช็ค Dash ชนแตกก่อนทำดาเมจ (ถ้าลำดับใน FixedUpdateManager ยังตามนี้)
+            FixedUpdateManager.Instance.Register(this);
 
             DamageOnTouch.ResetDamageOnTouch();
             DamageOnTouch.EnableDamage(
@@ -60,12 +80,12 @@ namespace Characters.SkillSystems.SkillObjects
                 canHitWithDamageOnTouch: payload.CanHitWithDamageOnTouch);
 
             gameObject.SetActive(true);
-            FixedUpdateManager.Instance.Register(this);
         }
 
         public void OnFixedUpdate()
         {
             if (!_isLaunched) return;
+            if (TryBreakByDash()) return;
 
             float dt = Time.fixedDeltaTime;
             _elapsed += dt;
@@ -82,9 +102,45 @@ namespace Characters.SkillSystems.SkillObjects
             RequestRelease();
         }
 
+        /// <summary>Player กำลัง Dash และอยู่ในรัศมี -> กระสุนแตก (ไม่นับเป็น Hit)</summary>
+        private bool TryBreakByDash()
+        {
+            if (!_canBreakByDash || !PlayerDashBreaker.IsActive) return false;
+
+            Vector2 offset = PlayerDashBreaker.Position - (Vector2)transform.position;
+            if (offset.sqrMagnitude > _dashBreakRadius * _dashBreakRadius) return false;
+
+            BreakByDash();
+            return true;
+        }
+
+        private void BreakByDash()
+        {
+            Vector3 position = transform.position;
+
+            if (_breakVfxPrefab)
+                Destroy(Instantiate(_breakVfxPrefab, position, Quaternion.identity), _breakVfxLifetime);
+
+            if (!string.IsNullOrEmpty(_breakFeedback) && PlayerDashBreaker.Player &&
+                PlayerDashBreaker.Player.TryGetComponent(out BaseController player))
+                player.TryPlayFeedback(_breakFeedback);
+
+            if (_debugLogBreak)
+                Debug.Log($"[EnemyProjectile] '{name}' broken by player dash at {position}");
+
+            RequestRelease();
+        }
+
         private void HandleHit(GameObject target)
         {
             if (!_isLaunched) return;
+
+            // ชน Player ระหว่าง Dash (กรณี DamageOnTouch อัปเดตก่อนเรา) -> นับเป็นแตก ไม่ใช่ Hit
+            if (_canBreakByDash && PlayerDashBreaker.IsActive && target == PlayerDashBreaker.Player.gameObject)
+            {
+                BreakByDash();
+                return;
+            }
 
             _hitCount++;
             if (_releaseOnHit || _hitCount >= _maxHits)
@@ -128,6 +184,13 @@ namespace Characters.SkillSystems.SkillObjects
             Cleanup();
         }
 
+        private void OnDrawGizmos()
+        {
+            if (!debugDrawBreakRadius || !_isLaunched || !_canBreakByDash) return;
+            Gizmos.color = PlayerDashBreaker.IsActive ? Color.yellow : Color.cyan;
+            Gizmos.DrawWireSphere(transform.position, _dashBreakRadius);
+        }
+
         public readonly struct LaunchPayload
         {
             public readonly GameObject Owner;
@@ -148,6 +211,12 @@ namespace Characters.SkillSystems.SkillObjects
             public readonly bool RotateToDirection;
             public readonly float RotationOffsetDegrees;
             public readonly bool CanHitWithDamageOnTouch;
+            public readonly bool CanBreakByDash;
+            public readonly float DashBreakRadius;
+            public readonly GameObject BreakVfxPrefab;
+            public readonly float BreakVfxLifetime;
+            public readonly string BreakFeedback;
+            public readonly bool DebugLogBreak;
 
             public LaunchPayload(
                 GameObject owner,
@@ -167,7 +236,13 @@ namespace Characters.SkillSystems.SkillObjects
                 bool releaseOnHit,
                 bool rotateToDirection,
                 float rotationOffsetDegrees,
-                bool canHitWithDamageOnTouch)
+                bool canHitWithDamageOnTouch,
+                bool canBreakByDash = false,
+                float dashBreakRadius = 0f,
+                GameObject breakVfxPrefab = null,
+                float breakVfxLifetime = 1f,
+                string breakFeedback = null,
+                bool debugLogBreak = false)
             {
                 Owner = owner;
                 OwnerId = ownerId;
@@ -187,6 +262,12 @@ namespace Characters.SkillSystems.SkillObjects
                 RotateToDirection = rotateToDirection;
                 RotationOffsetDegrees = rotationOffsetDegrees;
                 CanHitWithDamageOnTouch = canHitWithDamageOnTouch;
+                CanBreakByDash = canBreakByDash;
+                DashBreakRadius = dashBreakRadius;
+                BreakVfxPrefab = breakVfxPrefab;
+                BreakVfxLifetime = breakVfxLifetime;
+                BreakFeedback = breakFeedback;
+                DebugLogBreak = debugLogBreak;
             }
         }
     }

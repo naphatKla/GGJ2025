@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using Cameras;
+using Characters.CombatSystems;
 using Characters.Controllers;
 using Characters.SO.SkillDataSo;
 using Characters.StatusEffectSystems;
@@ -48,6 +49,10 @@ namespace Characters.SkillSystems.SkillRuntimes
             owner.DamageOnTouch.OnHit -= OnDashHit;
             owner.DamageOnTouch.OnHit += OnDashHit;
             owner.DamageOnTouch.EnableDamage(owner.gameObject, owner.CharacterData.CharacterId, this, 1, skillData.DashBaseDamage, skillData.DamageMultiplier, canHitWithDamageOnTouch:true, baseHeavyDamage: skillData.BaseHeavyDamage);
+
+            // เฉพาะ Player: พุ่งชนกระสุนศัตรูแล้วแตก (ศัตรูก็ใช้ SkillDashRuntime)
+            if (owner is PlayerController)
+                PlayerDashBreaker.Begin(this, owner.transform);
 
             if (!skillData.IsFlexibleDash) 
                 return;
@@ -96,6 +101,7 @@ namespace Characters.SkillSystems.SkillRuntimes
 
         protected override void OnSkillExit()
         {
+            PlayerDashBreaker.End(this);
             effectsApplyOnStart = new List<StatusEffectDataPayload>(skillData.StatusEffectOnSkillStart);
             owner.DamageOnTouch.DisableDamage(this);
             owner.DamageOnTouch.OnHit -= OnDashHit;
@@ -103,6 +109,7 @@ namespace Characters.SkillSystems.SkillRuntimes
 
         private void OnDisable()
         {
+            PlayerDashBreaker.End(this);
             owner.DamageOnTouch.OnHit -= OnDashHit;
         }
         
