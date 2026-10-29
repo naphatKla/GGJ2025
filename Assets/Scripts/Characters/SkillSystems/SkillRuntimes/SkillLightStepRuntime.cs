@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using Cameras;
 using Characters.Controllers;
@@ -28,6 +29,10 @@ namespace Characters.SkillSystems.SkillRuntimes
         // ใช้ buffer ร่วมกันสำหรับ OverlapAreaNonAlloc
         private readonly Collider2D[] _candidates = new Collider2D[64];
 
+        // ถูก disable/destroy ระหว่างใช้สกิล (เช่น ตอนอัปเลเวล) → loop ต้องหยุด และห้าม exit ไปทับตัวใหม่
+        private bool _retired;
+        private bool _suppressLateExit;
+
         public override void PerformSkill()
         {
             if (IsCooldown || IsPerforming) return;
@@ -45,12 +50,31 @@ namespace Characters.SkillSystems.SkillRuntimes
 
         protected override async UniTask OnSkillUpdate(CancellationToken cancelToken)
         {
+            try
+            {
+                await DashLoop(cancelToken);
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
+            }
+            catch (Exception e)
+            {
+                // ห้ามให้ exception หลุด ไม่งั้น HandleSkillExit ไม่ถูกเรียก → hitbox เปิดค้าง
+                Debug.LogException(e, this);
+            }
+        }
+
+        private async UniTask DashLoop(CancellationToken cancelToken)
+        {
             var camHandle = Cinemachine2DCameraController.Instance.PushOrtho(15.5f, 10, this, 0.25f);
 
             StatusEffectManager.ApplyEffectTo(owner.gameObject, skillData.EffectWhileLightStep);
 
             for (int i = 0; i < skillData.TargetAmount; i++)
             {
+                if (_retired) break;
+
                 var targetPosition = GetBestTargetPositionInView();
 
                 owner.DamageOnTouch.DisableDamage(this);
@@ -110,11 +134,28 @@ namespace Characters.SkillSystems.SkillRuntimes
                     .SetEase(Ease.InSine)
                     .WithCancellation(cancelToken);
 
-                if (cancelToken.IsCancellationRequested)
+                // continuation ข้างบนอาจรันอยู่ "ข้างใน" OnComplete/OnKill ของ DOTween
+                // ถ้า StopTween()/สร้าง tween ใหม่ตรงนั้น = Kill tween ซ้อนระหว่าง DOTween กำลัง despawn → array พัง
+                // yield ออกไปก่อน (PostLateUpdate = เฟรมเดียวกัน ไม่มี gap ระหว่าง dash ให้เห็น)
+                await UniTask.Yield(PlayerLoopTiming.PostLateUpdate);
+
+                if (_retired || cancelToken.IsCancellationRequested)
                 {
                     break;
                 }
             }
+        }
+
+        protected override void HandleSkillExit()
+        {
+            // exit จากตัวที่ถูก retire แล้ว → cleanup ไปแล้วใน OnDisable, ห้ามทับตัวใหม่
+            if (_suppressLateExit)
+            {
+                _suppressLateExit = false;
+                return;
+            }
+
+            base.HandleSkillExit();
         }
 
         protected override void OnSkillExit()
@@ -131,9 +172,34 @@ namespace Characters.SkillSystems.SkillRuntimes
                 .SetEase(Ease.InSine);
         }
 
+        private void OnEnable()
+        {
+            _retired = false;
+        }
+
         private void OnDisable()
         {
+            if (!owner || !IsPerforming) return;
+
+            // ไม่ Kill tween ที่นี่ (OnDisable อาจถูกเรียกระหว่าง DOTween update → kill ซ้อน)
+            // ปล่อย dash ที่ค้างอยู่วิ่งจนจบ หรือให้ตัวใหม่ StopTween เอง
+            // loop ตัวเก่าตื่นเมื่อไหร่ก็จะเจอ _retired → break และ exit ถูก suppress
+            _retired = true;
+            _suppressLateExit = true;
+            IsPerforming = false;
+
+            // cleanup ที่ปกติ HandleSkillExit ทำ
             ResetOnEnd().Forget();
+            ClearStartBuffs();
+        }
+
+        private void ClearStartBuffs()
+        {
+            if (!skillData || !skillData.ClearBuffOnSkillExit) return;
+            if (!owner) return;
+
+            foreach (var effectName in skillData.StatusEffectOnSkillStart.Select(e => e.EffectData.EffectName))
+                StatusEffectManager.RemoveEffectAt(owner.gameObject, effectName);
         }
 
         // ====================== START CONDITION ======================
@@ -167,7 +233,6 @@ namespace Characters.SkillSystems.SkillRuntimes
                 if (!col) continue;
                 if (!CombatManager.TryGetCharacterFromCache(col.gameObject, out var targetController)) continue;
 
-                // ใช้ GetComponentInParent เผื่อ enemy มีหลาย collider
                 var health = targetController.HealthSystem;
                 if (!health.CanAim) continue;
 
@@ -185,13 +250,12 @@ namespace Characters.SkillSystems.SkillRuntimes
 
             const int minimumHitToStartSkill = 3;
             const int minimumTargetInRange = 3;
-            
-            if (sumHpOfTargets < (damageCalculatedPerHit.Damage * minimumHitToStartSkill) 
+
+            if (sumHpOfTargets < (damageCalculatedPerHit.Damage * minimumHitToStartSkill)
                 && targetAimable < minimumTargetInRange)
             {
                 return false;
             }
-               
 
             return true;
         }
@@ -214,6 +278,7 @@ namespace Characters.SkillSystems.SkillRuntimes
 
             try
             {
+                // ตอนถูก destroy token นี้จะถูก cancel → finally ลบ Iframe ทันที
                 await UniTask.Delay(TimeSpan.FromSeconds(0.5f), cancellationToken: destroyCancellationToken);
             }
             catch (OperationCanceledException)
@@ -264,9 +329,9 @@ namespace Characters.SkillSystems.SkillRuntimes
                 var col = _candidates[i];
                 if (!col) continue;
                 if (!CombatManager.TryGetCharacterFromCache(col.gameObject, out var targetController)) continue;
-                
+
                 var health = targetController.HealthSystem;
-             
+
                 if (!health.CanAim) continue;
 
                 Transform t = health.transform;
