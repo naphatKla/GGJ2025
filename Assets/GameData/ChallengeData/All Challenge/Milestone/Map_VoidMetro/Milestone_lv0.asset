@@ -29,11 +29,13 @@ MonoBehaviour:
   allowAutoUnlock: 1
   confirmSelectedMapIds:
   - autoSelectedMapID: map_voidmetro
-    selectOnLevel: 0
-  flatScoreBonusPercent: 20000
+    selectOnLevel: 6
+  flatScoreBonusPercent: 0
   statMode: 0
   playerSetMods: []
-  playerMods: []
+  playerMods:
+  - stat: 0
+    percentDelta: 65
   disableAutoCalculate: 1
   enemyGroups:
   - groupName: 1

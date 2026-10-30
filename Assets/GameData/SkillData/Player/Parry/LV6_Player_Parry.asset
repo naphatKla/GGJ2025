@@ -63,11 +63,11 @@ MonoBehaviour:
   normalParrySuccess:
     knockBackDistance: 10
     knockBackDuration: 0.25
-    healOnSuccess: 5
+    healOnSuccess: 10
   perfectParrySuccess:
     knockBackDistance: 10
     knockBackDuration: 0.25
-    healOnSuccess: 7
+    healOnSuccess: 15
   parrySuccessFeedback: ParrySuccess_Lv6
   hexShieldPrefab: {fileID: 6190414525836858360, guid: aeebc74538bb4c34a926e89d28b064e8, type: 3}
   selfEffectsOnParrySuccess:
@@ -76,7 +76,7 @@ MonoBehaviour:
     overrideDuration: 0.2
   - effectData: {fileID: 11400000, guid: 8201e9322f6e67f44a6cb81110e0c458, type: 2}
     isOverrideDuration: 1
-    overrideDuration: 1
+    overrideDuration: 2
   explosionEffectsToTarget:
   - effectData: {fileID: 11400000, guid: e5ae6010e3c4a7b43bc80da0bf5a9ef5, type: 2}
     isOverrideDuration: 1
