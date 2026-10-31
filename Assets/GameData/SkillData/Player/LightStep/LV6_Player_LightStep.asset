@@ -35,7 +35,8 @@ MonoBehaviour:
   skillDescription: "<color=#FF3131><b>[Attack]</b></color>\r\n<size=3.5><color=#adadad><i>[Multi-Target],
     [Homing]</i></color>\r\n<color=#5CE5FF><b>[UPGRADE]</b></color> \r\n<color=#FFE02E><b>[+]</b></color>
     Life Steal chance\n<color=#FFE02E><b>[-]</b></color> Cooldown\r\n\r\nCooldown:
-    <b>23s</b>\r\n\n- Rush at the enemy, hitting them multiple times.\n\n"
+    <b>19s</b>\r\n\n- Rush at the enemy, hitting them multiple times with a small
+    chance to \"Life steal\".\n\n"
   previousSkillData: {fileID: 11400000, guid: d9cfdf69e82af9647842041d40220886, type: 2}
   nextSkillDataUpgrade: {fileID: 0}
   level: 6
@@ -50,7 +51,7 @@ MonoBehaviour:
   statusEffectOnSkillStart: []
   baseDamagePerHit: 20
   damageMultiplier: 70
-  lifeStealPercentChance: 5
+  lifeStealPercentChance: 10
   lifeStealEffective: 2
   lightStepSpeed: 36
   minStepDistance: 8
