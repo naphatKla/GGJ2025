@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1425634994468330012}
   - component: {fileID: 1772412812397307873}
   - component: {fileID: 4264027343452816709}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Circle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4896,6 +4896,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 7393053919734050039}
     m_Modifications:
+    - target: {fileID: 317353729294797058, guid: 3b40595ac356fcc4fa0c8cf8407b985c, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: 1162291355330201052, guid: 3b40595ac356fcc4fa0c8cf8407b985c, type: 3}
       propertyPath: m_LocalScale.x
       value: 3
@@ -4971,6 +4975,14 @@ PrefabInstance:
     - target: {fileID: 3675650688142906400, guid: 3b40595ac356fcc4fa0c8cf8407b985c, type: 3}
       propertyPath: m_Name
       value: Projectile
+      objectReference: {fileID: 0}
+    - target: {fileID: 3675650688142906400, guid: 3b40595ac356fcc4fa0c8cf8407b985c, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 7840808789999811557, guid: 3b40595ac356fcc4fa0c8cf8407b985c, type: 3}
+      propertyPath: m_Layer
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 8413420933677771832, guid: 3b40595ac356fcc4fa0c8cf8407b985c, type: 3}
       propertyPath: m_PreviewTimeScale
@@ -5088,6 +5100,10 @@ PrefabInstance:
       value: EnemyProjectile
       objectReference: {fileID: 0}
     - target: {fileID: 7465628874131661711, guid: 367908e6650508b47946f4c314822e66, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 7465628874131661711, guid: 367908e6650508b47946f4c314822e66, type: 3}
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
@@ -5121,6 +5137,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   trail: {fileID: 7795718352330229370}
+  debugDrawBreakRadius: 0
 --- !u!4 &7393053919734050039 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3335842061098748086, guid: 367908e6650508b47946f4c314822e66, type: 3}
